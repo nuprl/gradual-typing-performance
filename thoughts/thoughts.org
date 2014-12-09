@@ -1,0 +1,31 @@
+* Thoughts on the Gradual Typing Hypothesis
+** Hypothesis
+  Code runs fine at the top and bottom of the gradual typing lattice.
+  Along any path from fully-untyped to fully-typed, if you reach a point with unacceptable performance (>20\% worse) then there is a path up the lattice with acceptable performance (<20\% worse) that imposes an acceptable burden of adding types (~10,000 sloc).
+  Many paths from the bottom to the top of such a lattice are free from performance bottlenecks but a fair number of paths suffer from slowdowns of up to an order of magnitude.
+** Racket/Typed Racket
+*** One plan of attack
+  - Find interesting, complete programs with comprehensive test suites.
+    - Can be fully typed or fully untyped.
+    - i.e. [[https://github.com/mfelleisen/Acquire][Acquire]], [[https://github.com/takikawa/tr-pfds][PFDS]], Neil's math packages, Dr. Racket
+  - Manually (for now) build module dependency graph
+  - Manually (for now) implement the nodes of the gradual typing lattice.
+    Add types, provides, requires, and anything else.
+    - Determine a way to organize lattice nodes. Could be separate folders or git branches.
+  - Run a script that executes the tests in each lattice and records the results.
+*** Removing type annotations
+  - Possible to format all type annotations so that the following sed scripts hide all type annotations?
+    - `sed 's/(: /;(: /g'`
+    - `sed 's/ :/; :/g'`
+  - `struct:` and `lambda:` could also be replaced with `struct;:`, etc.
+** Python/Reticulated
+  - Paper (version 3) [[http://wphomes.soic.indiana.edu/jsiek/files/2014/08/retic-python-v3.pdf][here]]
+  - Implementation [[https://github.com/mvitousek/reticulated][here]]
+*** Which semantics?
+  - _guarded_ is (for now) unacceptable because it does not preserve Python's semantics
+  - _transient_ is not comparable to the typed racket approach, but may be ok
+  - _monotonic_ is probably best -- objects store a type with each field and program flows can increase precision of this type
+*** What is the lattice?
+  - We can add types at the function and class level, but now the lattice has many, many points.
+    Can we manage this much larger lattice?
+    Do we want to still use the Typed Racket module-level approach?
