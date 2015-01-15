@@ -2,8 +2,7 @@
 
 (require "data.rkt"
          "block.rkt"
-         "consts.rkt"
-         "list-fun.rkt")
+         "consts.rkt")
 
 ;; blocks-contains? : BSet Block -> Boolean
 ;; Determine if the block is in the set of blocks.
@@ -79,19 +78,19 @@
 ;; Compute the maximum y coordinate;
 ;; if set is empty, return 0, the coord of the board's top edge.
 (define (blocks-max-y bs)
-  (foldr-n (λ (b n) (max (block-y b) n)) 0 bs))
+  (foldr (λ (b n) (max (block-y b) n)) 0 bs))
 
 ;; blocks-min-x : BSet -> Number
 ;; Compute the minimum x coordinate;
 ;; if set is empty, return the coord of the board's right edge.
 (define (blocks-min-x bs)
-  (foldr-n (λ (b n) (min (block-x b) n)) board-width bs))
+  (foldr (λ (b n) (min (block-x b) n)) board-width bs))
 
 ;; blocks-max-x : BSet -> Number
 ;; Compute the maximum x coordinate;
 ;; if set is empty, return 0, the coord of the board's left edge.
 (define (blocks-max-x bs)
-  (foldr-n (λ (b n) (max (block-x b) n)) 0 bs))
+  (foldr (λ (b n) (max (block-x b) n)) 0 bs))
 
 (provide/contract
  [blocks-contains? (BSET/C BLOCK/C . -> . boolean?)]

@@ -1,12 +1,12 @@
 #lang racket
 
-(require "image.rkt"
+(require 2htdp/image
          "data.rkt"
          "consts.rkt"
          "world.rkt"
-         "list-fun.rkt"
          "aux.rkt")
 
+(define image/c image?)
 (provide/contract
  [world->image (WORLD/C . -> . image/c)]
  [blocks->image (BSET/C . -> . image/c)]
@@ -27,7 +27,7 @@
 
 ;; BSet -> Scene
 (define (blocks->image bs)
-  (foldr-i (λ (b img)
+  (foldr (λ (b img)
              (cond [(<= 0 (block-y b)) (place-block b img)]
                    [else img]))
            (empty-scene (add1 (* board-width block-size)) 
