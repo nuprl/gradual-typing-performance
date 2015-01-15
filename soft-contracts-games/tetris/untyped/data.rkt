@@ -5,17 +5,17 @@
 (struct tetra (center blocks))
 (struct world (tetra blocks))
 
-(define COLOR/C symbol?)
-(define POSN/C (struct/c posn real? real?))
-(define BLOCK/C (struct/c block real? real? COLOR/C))
-(define BSET/C (listof BLOCK/C))  
-(define TETRA/C (struct/c tetra POSN/C BSET/C))
-(define WORLD/C (struct/c world TETRA/C BSET/C))
-
 (define (posn=? p1 p2)
   (and (= (posn-x p1) (posn-x p2))
        (= (posn-y p1) (posn-y p2))))
 
+(provide
+ (struct-out block)
+ (struct-out posn)
+ (struct-out tetra)
+ (struct-out world)
+ posn=?)
+#;
 (provide
  (contract-out
   (struct block ([x real?] [y real?] [color COLOR/C]))
