@@ -1,12 +1,9 @@
 #lang racket
 
-#|
-(require block bset data elim-row elim tetras visual image world)
-|#
-
 (require "visual.rkt" "world.rkt" "bset.rkt" "data.rkt")
-(require 2htdp/universe)
+;; (require 2htdp/universe)
 
+#;#;#;#;
 (define history empty)
 (define (! e)
   (set! history (cons e history)))
@@ -44,9 +41,8 @@
        (λ (w) (blocks-overflow? (world-blocks w)))
        w])))
 
-(define w0 (world0))
-(provide replay w0 start)
-
-
 (module+ main
-  (play))
+  (define w0 (world0))
+  (define hist (reverse (with-input-from-file "../tetris-hist-3.txt" read)))
+
+  (replay w0 hist))
