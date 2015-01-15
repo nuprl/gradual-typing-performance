@@ -1,4 +1,4 @@
-#lang racket
+#lang typed/racket
 
 (require "data.rkt"
          "tetras.rkt")  
@@ -7,17 +7,12 @@
  list-pick-random
  neg-1
  tetras)
-#;
-(provide/contract
- [list-pick-random ((listof TETRA/C) . -> . TETRA/C)]
- [neg-1 integer?] ;; ha!
- [tetras (listof TETRA/C)])
 
 (define r (make-pseudo-random-generator))
 (parameterize ((current-pseudo-random-generator r))
   (random-seed 43453))
 
-
+(: list-pick-random (-> (Listof Tetra) Tetra))
 (define (list-pick-random ls)
   (list-ref ls (random (length ls) r)))
 
