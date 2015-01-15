@@ -1,19 +1,19 @@
-#lang racket
+#lang typed/racket
 
-(require 2htdp/image
-         "data.rkt")
+(require "data.rkt")
+(require/typed
+    2htdp/image
+  [#:opaque Image image?]
+  [overlay   (-> Image Image Image)]
+  [circle    (-> Integer String String Image)]
+  [rectangle (-> Integer Integer Color Color Image)]
+  [place-image (-> Image Integer Integer Image Image)]
+  [empty-scene (-> Integer Integer Image)])
 
 (provide   
+ Image
  overlay
  circle
  rectangle
  place-image
  empty-scene)
-#;
-(provide/contract
- [overlay (image/c image/c . -> . image/c)]
- [circle (integer? string? string? . -> . image/c)]
- [rectangle (integer? integer? COLOR/C COLOR/C . -> . image/c)]
- [place-image (image/c integer? integer? image/c . -> . image/c)]
- [empty-scene (integer? integer? . -> . image/c)])
-
