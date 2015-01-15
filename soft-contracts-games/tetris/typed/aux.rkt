@@ -3,6 +3,11 @@
 (require "data.rkt"
          "tetras.rkt")  
 
+(provide
+ list-pick-random
+ neg-1
+ tetras)
+#;
 (provide/contract
  [list-pick-random ((listof TETRA/C) . -> . TETRA/C)]
  [neg-1 integer?] ;; ha!

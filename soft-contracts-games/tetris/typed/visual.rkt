@@ -7,6 +7,14 @@
          "aux.rkt")
 
 (define image/c image?)
+
+(provide
+ world->image
+ blocks->image
+ block->image
+ place-block
+ world0)
+#;
 (provide/contract
  [world->image (WORLD/C . -> . image/c)]
  [blocks->image (BSET/C . -> . image/c)]

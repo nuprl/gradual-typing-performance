@@ -26,6 +26,12 @@
 (define (block-rotate-cw c b)
   (block-rotate-ccw c (block-rotate-ccw c (block-rotate-ccw c b))))
 
+(provide
+ block-rotate-ccw
+ block-rotate-cw
+ block=?
+ block-move)
+#;
 (provide/contract
  [block-rotate-ccw (POSN/C BLOCK/C . -> . BLOCK/C)]
  [block-rotate-cw (POSN/C BLOCK/C . -> . BLOCK/C)]

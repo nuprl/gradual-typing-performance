@@ -15,5 +15,8 @@
         [else (blocks-union (elim-row bs (sub1 i) offset)
                             (blocks-move 0 offset (blocks-row
                                                    bs i)))]))
+(provide
+ eliminate-full-rows)
+#;
 (provide/contract
  [eliminate-full-rows (BSET/C . -> . BSET/C)])

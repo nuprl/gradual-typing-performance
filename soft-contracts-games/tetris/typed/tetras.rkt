@@ -48,6 +48,14 @@
                            (block x3 y3 color)
                            (block x4 y4 color)))))
 
+(provide
+ tetra-move
+ tetra-rotate-ccw
+ tetra-rotate-cw
+ tetra-overlaps-blocks?
+ build-tetra-blocks
+ tetra-change-color)
+#;
 (provide/contract
  [tetra-move (integer? integer? TETRA/C . -> . TETRA/C)]
  [tetra-rotate-ccw (TETRA/C . -> . TETRA/C)]

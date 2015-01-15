@@ -92,6 +92,24 @@
 (define (blocks-max-x bs)
   (foldr (λ (b n) (max (block-x b) n)) 0 bs))
 
+(provide
+ blocks-contains?
+ blocks=?
+ blocks-subset?
+ blocks-intersect
+ blocks-count
+ blocks-overflow?
+ blocks-move
+ blocks-rotate-cw
+ blocks-rotate-ccw
+ blocks-change-color
+ blocks-row
+ full-row?
+ blocks-union
+ blocks-max-x
+ blocks-min-x
+ blocks-max-y)
+#;
 (provide/contract
  [blocks-contains? (BSET/C BLOCK/C . -> . boolean?)]
  [blocks=? (BSET/C BSET/C . -> . boolean?)]
