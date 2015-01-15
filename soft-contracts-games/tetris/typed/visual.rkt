@@ -1,12 +1,10 @@
 #lang racket
 
-(require 2htdp/image
+(require "image.rkt"
          "data.rkt"
          "consts.rkt"
          "world.rkt"
          "aux.rkt")
-
-(define image/c image?)
 
 (provide
  world->image
