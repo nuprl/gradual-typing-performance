@@ -1,4 +1,4 @@
-#lang racket
+#lang typed/racket
 
 (require "bset.rkt"
          "data.rkt"
@@ -8,38 +8,39 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tetras
 
-;; tetra-move : Number Number Tetra -> Tetra
 ;; Move the Tetra by the given X & Y displacement.
+(: tetra-move (-> Real Real Tetra Tetra))
 (define (tetra-move dx dy t)
   (tetra (posn (+ dx (posn-x (tetra-center t)))
                (+ dy (posn-y (tetra-center t))))
          (blocks-move dx dy (tetra-blocks t))))
 
-;; tetra-rotate-ccw : Tetra -> Tetra
 ;; Rotate the tetra 90 degrees counterclockwise around its center.
+(: tetra-rotate-ccw (-> Tetra Tetra))
 (define (tetra-rotate-ccw t)
   (tetra (tetra-center t)
          (blocks-rotate-ccw (tetra-center t)
                             (tetra-blocks t))))
 
-;; tetra-rotate-cw : Tetra -> Tetra
 ;; Rotate the tetra 90 degrees clockwise around its center.
+(: tetra-rotate-cw (-> Tetra Tetra))
 (define (tetra-rotate-cw t)
   (tetra (tetra-center t)
          (blocks-rotate-cw (tetra-center t)
                            (tetra-blocks t))))
 
-;; tetra-overlaps-blocks? : Tetra BSet -> Boolean
 ;; Is the tetra on any of the blocks?
+(: tetra-overlaps-blocks? (-> Tetra BSet Boolean))
 (define (tetra-overlaps-blocks? t bs)
   (not (empty? (blocks-intersect (tetra-blocks t) bs))))
 
-;; tetra-change-color : Tetra Color -> Tetra
 ;; Change the color of the given tetra.
+(: tetra-change-color (-> Tetra Color Tetra))
 (define (tetra-change-color t c)
   (tetra (tetra-center t)
          (blocks-change-color (tetra-blocks t) c)))
 
+(: build-tetra-blocks (-> Color Real Real Real Real Real Real Real Real Real Real Tetra))
 (define (build-tetra-blocks color xc yc x1 y1 x2 y2 x3 y3 x4 y4)
   (tetra-move 3 0 
               (tetra (posn xc yc)
@@ -55,12 +56,4 @@
  tetra-overlaps-blocks?
  build-tetra-blocks
  tetra-change-color)
-#;
-(provide/contract
- [tetra-move (integer? integer? TETRA/C . -> . TETRA/C)]
- [tetra-rotate-ccw (TETRA/C . -> . TETRA/C)]
- [tetra-rotate-cw (TETRA/C . -> . TETRA/C)]
- [tetra-overlaps-blocks? (TETRA/C BSET/C . -> . boolean?)]
- [build-tetra-blocks (COLOR/C real? real? integer? integer? integer? integer? integer? integer? integer? integer?
-                              . -> .  TETRA/C)]
- [tetra-change-color (TETRA/C COLOR/C . -> . TETRA/C)])
+
