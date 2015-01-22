@@ -1,4 +1,4 @@
-(module cut-tail racket
+(module cut-tail typed/racket
   
   (require "data.rkt")
   ;; NeSegs is one of:
@@ -7,6 +7,7 @@
   
   ;; cut-tail : NeSegs -> Segs
   ;; Cut off the tail.
+  (: cut-tail : ((NEListof Posn) . -> . (Listof Posn)))
   (define (cut-tail segs)
     (let ([r (cdr segs)])
       (cond [(empty? r) empty]

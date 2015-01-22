@@ -26,4 +26,6 @@
    [struct-out world]
    Snake
    World
-   Posn))
+   Posn
+   NEListof
+   ))
