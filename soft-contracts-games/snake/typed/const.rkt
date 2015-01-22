@@ -1,13 +1,19 @@
-(module const racket  
+(module const typed/racket
   (require "image.rkt"
            "data.rkt")
-  
+
   (define GRID-SIZE 30)
+
   (define BOARD-HEIGHT 20)
+
   (define BOARD-WIDTH 30)
+  
   (define (BOARD-HEIGHT-PIXELS) (* GRID-SIZE BOARD-HEIGHT))
+
   (define (BOARD-WIDTH-PIXELS) (* GRID-SIZE BOARD-WIDTH))
+
   (define (BACKGROUND) (empty-scene (BOARD-WIDTH-PIXELS) (BOARD-HEIGHT-PIXELS)))
+
   (define (SEGMENT-RADIUS) (/ GRID-SIZE 2))
   (define (SEGMENT-IMAGE)  (circle (SEGMENT-RADIUS) "solid" "red"))
   (define (FOOD-RADIUS) (SEGMENT-RADIUS))
@@ -24,4 +30,3 @@
    BOARD-HEIGHT-PIXELS
    BOARD-WIDTH
    BOARD-HEIGHT))
-
