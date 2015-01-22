@@ -1,25 +1,6 @@
 #lang racket  
 
-(module image racket
-  (require 2htdp/image)
-  (define image/c (λ (x) (image? x)))
-  (provide/contract
-   [image/c any/c]
-   [circle (real? string? string? . -> . image/c)]
-   [empty-scene (real? real? . -> . image/c)]
-   [place-image (image/c real? real? image/c . -> . image/c)])
-  
-  #;(define (image? x) •))
 
-(module unsafe-image racket
-  (require 2htdp/image)
-  (define image/c (λ (x) (image? x)))
-  (provide
-   circle 
-   empty-scene
-   place-image)
-  
-  #;(define (image? x) •))
 
 (module data racket
   (struct snake (dir segs))
@@ -47,31 +28,6 @@
    [WORLD/C any/c]
    [nelistof (any/c . -> . any/c)]))
 
-(module unsafe-data racket
-  (struct snake (dir segs))
-  (struct world (snake food))
-  (struct posn (x y))
-  
-  (define (nelistof c) (cons/c c (listof c)))
-  (define DIR/C (or/c "up" "down" "left" "right"))
-  (define POSN/C (struct/c posn real? real?))
-  (define SNAKE/C (struct/c snake DIR/C (nelistof POSN/C)))
-  (define WORLD/C (struct/c world SNAKE/C POSN/C))
-    
-  (define (posn=? p1 p2)
-    (and (= (posn-x p1) (posn-x p2))
-         (= (posn-y p1) (posn-y p2))))  
-  
-  (provide [struct-out posn])
-  
-  (provide
-   posn=?
-   [struct-out snake]
-   [struct-out world]
-   DIR/C
-   POSN/C
-   SNAKE/C
-   WORLD/C))
 
 (module const racket  
   (require (submod ".." image)
@@ -601,6 +557,9 @@
 (define w0 (WORLD))
 (define unsafe:w0 (unsafe:WORLD))
 ;(replay (WORLD) h)
+
+(module+ main
+  (start unsafe:w0))
 (provide replay unsafe:replay w0 unsafe:w0 start)
 
 
