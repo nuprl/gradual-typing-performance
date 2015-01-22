@@ -1,5 +1,10 @@
-(module image racket
-  (require 2htdp/image)
+(module image typed/racket
+  (require/typed
+   2htdp/image
+   [#:opaque Image image?]
+   [circle (-> Real String String Image)]
+   [empty-scene (-> Real Real Image)]
+   [place-image (-> Image Real Image Image)])
   (provide
    circle 
    empty-scene
