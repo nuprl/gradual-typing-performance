@@ -5,10 +5,11 @@
  Graph
  MBTA
  Path 
- Station*
+ Station-x-Line
  Station 
+ Line*
  Line
- Bundles)
+ Colors->Lines)
 
 ;; ===================================================================================================
 (require/typed graph [#:opaque Graph graph?])
@@ -18,31 +19,24 @@
    (init-field
     [G Graph]
     [stations [Listof Station]]
-    [connection-on [-> Station Station [Setof Line]]]
-    [bundles Bundles])
+    [connection-on (-> Station Station [Setof Line])]
+    [bundles Colors->Lines])
    [find-path (-> Station Station [Listof Path])]
    [render (-> [Setof Station] String)]
    [station?  (-> String Boolean)]
    [station   (-> String (U Station [Listof Station]))]))
 
-(define-type Path [Listof Station*])
-;; interpretation: take the specified lines to the next station from here 
+(define-type Path [Listof Station-x-Line])
+;; interpretation: a sequence of stations with a set of lines to take to next station on the path
 
-(define-type Station* [List Station [Setof Line]])
+(define-type Station-x-Line [List Station [Setof Line]])
+;; interpretation: connect a station to a set of lines
 
 (define-type Station String)
 
-(define-type Line 
-  (U "green"
-     "E"
-     "D"
-     "C"
-     "B"
-     "red"
-     "Mattapan"
-     "Braintree"
-     "orange"
-     "blue"
-     ))
+(define-type Line* [Listof Line])
 
-(define-type Bundles [Listof [List String [Setof Line]]])
+(define-type Line (U "green" "E" "D" "C" "B" "red" "Mattapan" "Braintree" "orange" "blue"))
+
+(define-type Colors->Lines [Listof [List String [Setof Line]]])
+;; interpretation: associates external line names with the internally used, sub-lines

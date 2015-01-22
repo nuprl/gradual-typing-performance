@@ -6,27 +6,30 @@
 
 ;; ===================================================================================================
 (require "t-graph-types.rkt")
-(require/typed
- "my-graph.rkt"
- [unweighted-graph/directed (-> Connections Graph)]
- [attach-edge-property 
-  (->* (Graph) (#:init [Setof Line] #:for-each Any) 
-       (Values (-> Station Station (Setof Line)) Any (-> Station Station [Setof Line] Void)))]
- [in-neighbors (-> Graph Station [Sequenceof Station])])
+(require/typed "my-graph.rkt"
+               [unweighted-graph/directed (-> Connection* Graph)]
+               [in-neighbors (-> Graph Station [Sequenceof Station])]
+               [attach-edge-property 
+                (->* (Graph) (#:init [Setof Line] #:for-each Any) 
+                     (Values 
+                      (-> Station Station (Setof Line))
+                      Any
+                      (-> Station Station [Setof Line] Void)))])
 
-(define-type Lines [Listof [List Line Connections]])
-(define-type Connections [Listof Connection])
+(define-type Line->Connection* [Listof [List Line Connection*]])
+(define-type Connection* [Listof Connection])
 (define-type Connection  [List Station Station])
-(define-type ***Bundles [Listof [List String [Setof Line]]])
 
 (define SOURCE-DIRECTORY "../Data/~a.dat")
 (define COLORS '("blue" "orange" "green" "red"))
 
 ;; ---------------------------------------------------------------------------------------------------
-(: line-specification? (-> String (U False [Listof Line])))
-(define (line-specification? line)
+(: line-specification (-> String (U False Line*)))
+(define (line-specification line)
   (define r (regexp-match #px"--* (.*)" line))
-  (and r #;"for type checker:" (car (cdr r)) (string-split (cast (car (cdr r)) String)) #f))
+  (and r #;"for type checker:" (cadr r) 
+       ;; the outer cast is for conversting strings to lines
+       (cast (string-split (cast (cadr r) String)) Line*)))
 
 #| ASSUMPTIONS about source files:
 
@@ -45,27 +48,22 @@
 ;; ---------------------------------------------------------------------------------------------------
 (: read-t-graph (-> [Instance MBTA]))
 (define (read-t-graph)
-  (define-values (all-lines bundles)
-    (for/fold : (Values Lines Bundles)
-      ((all-lines : Lines '()) (all-bundles : Bundles '())) ((color COLORS))
-      (define next (read-t-line-from-file color))
-      (define los ((inst map Line [List Line Connections]) first next))
-      (values (append next all-lines)
-              (cons (list color (apply set los)) all-bundles))))
+  (define-values (stations lines bundles)
+    (for/fold : (Values [Listof Station] Line->Connection* Colors->Lines) 
+      ((stations* : [Listof Station] '())
+       (line* : Line->Connection* '())
+       (bundle* : Colors->Lines '())) ((color COLORS))
+      (define-values (next-stations next) (read-t-line-from-file color))
+      (define one-bundle (list color (apply set (map {inst first Line Connection*}  next))))
+      (values (append next-stations stations*) (append next line*) (cons one-bundle bundle*))))
   
-  (define connections 
-    (apply append ((inst map Connections [List Line Connections]) second all-lines)))
-  (define stations 
-    (set-map
-     (for/fold : [Setof Station] ((s* : [Setof Station] (set))) ((c : Connection connections)) 
-       (set-add s* (first c)))
-     (lambda ({x : Station}) x)))
+  (define connections (apply append ((inst map Connection* [List Line Connection*]) second lines)))
   
   (define graph (unweighted-graph/directed connections))
   (define set-of-lines : (Setof Line) (set))
   (define-values (connection-on _  connection-on-set!)
     (attach-edge-property graph #:init set-of-lines))
-  (for ((line (in-list all-lines)))
+  (for ((line (in-list lines)))
     (define name (first line))
     (define connections* (second line))
     (for ((c connections*))
@@ -76,50 +74,60 @@
   (new mbta% [G graph][stations stations][bundles bundles][connection-on connection-on]))
 
 ;; ---------------------------------------------------------------------------------------------------
-(: read-t-line-from-file (-> String Lines))
-(define (read-t-line-from-file line-file)
-  (define files-as-lines (file->lines (format SOURCE-DIRECTORY line-file)))
-  (for/list : Lines ([({name : Line} {line : PartialLine}) (lines->hash files-as-lines)])
-    (list name (partial-line-connections line))))
-
-;; ---------------------------------------------------------------------------------------------------
-(struct partial-line ({pred : Station} {connections : Connections}))
+;; auxiliary type defs to break down the problem, struct for type checking
+;; these lines should be moved into the lexical scope of lines->hash 
+;; or they should be in a submodule but drracket doesn't do a good job on those
+(struct partial-line ({pred : Station} {connections : Connection*}))
 (define-type PartialLine partial-line)
-(define-type HLines [HashTable Line PartialLine])
+(define-type H-Line->Connection* [HashTable Line PartialLine])
 
-(: lines->hash (-> [Listof String] HLines))
-(define (lines->hash lines0)
-  (define names0 (line-specification? (first lines0)))
-  (cond
-    [(boolean? names0) (error "KNOWLEDGE: we know that the file is properly formatted")]
-    [else 
-     (define pred0 (second lines0))
-     (define Hlines0 : HLines 
-       (make-immutable-hash
-        (for/list : [Listof [Pairof Line PartialLine]] ([name : Line names0])
-          (cons name (partial-line pred0 (ann '() Connections))))))
-     (let read-t-line : HLines ([lines (cddr lines0)][names names0][Hlines Hlines0])
+(: read-t-line-from-file (-> String (Values [Listof Station] Line->Connection*)))
+(define (read-t-line-from-file line-file)
+  (define file*0 (file->lines (format SOURCE-DIRECTORY line-file)))
+  ;; this re-ordering matches the type-oriented decomposition I used in the untyped world
+  ;; -------------------------------------------------------------------------------------------------
+  (: lines->hash (-> Line* (Values [Listof Station] Line->Connection*)))
+  (define (lines->hash lines0)
+    (define mt-partial-line : Connection* '())
+    (define first-station (second file*0))
+    (define hlc0 
+      (make-immutable-hash
+       (for/list : [Listof [Pairof Line PartialLine]] ([line lines0])
+         (cons line (partial-line first-station mt-partial-line)))))
+    (define-values (stations hlc) (process-file-body (cddr file*0) (list first-station) lines0 hlc0))
+    (define line->connection*
+      (for/list : Line->Connection* ([({line : Line} {partial-line : PartialLine}) hlc])
+        (list line (partial-line-connections partial-line))))
+    (values (reverse stations) line->connection*))
+  ;; -------------------------------------------------------------------------------------------------
+  (: process-file-body 
+     (-> [Listof String] [Listof Station] Line* H-Line->Connection*
+         (Values [Listof Station] H-Line->Connection*)))
+  (define (process-file-body file* stations lines hlc)
+    (cond
+      [(empty? file*) (values stations hlc)]
+      [else 
+       (define ?station (string-trim (first file*)))
        (cond
-         [(empty? lines) Hlines]
-         [else 
-          (define current-stop (string-trim (first lines)))
-          (cond
-            [(line-specification? current-stop) 
-             => (lambda (names) (read-t-line (rest lines) names Hlines))]
-            [else 
-             (define new-connections
-               (for/fold : HLines ([Hlines1 Hlines]) ([name : Line names])
-                 (define line 
-                   ((inst hash-ref Line PartialLine Nothing)
-                    Hlines1 name (lambda () (error "KNOLWEDGE: impossible"))))
-                 (define predecessor (partial-line-pred line))
-                 (define connections 
-                   (list* (list predecessor current-stop)
-                          (list current-stop predecessor)
-                          (partial-line-connections line)))
-                 (define station-connections (partial-line current-stop connections))
-                 ((inst hash-set Line PartialLine) Hlines1 name station-connections)))
-             (read-t-line (rest lines) names new-connections)])]))]))
+         [(line-specification ?station) 
+          => (lambda (lines) (process-file-body (rest file*) stations lines hlc))]
+         [else ;; now we know ?station is a station
+          (define new-hlc (add-station-to-lines hlc lines ?station))
+          (process-file-body (rest file*) (cons ?station stations) lines new-hlc)])]))
+  ;; -------------------------------------------------------------------------------------------------
+  (: add-station-to-lines (-> H-Line->Connection* Line* Station H-Line->Connection*))
+  (define (add-station-to-lines hlc lines station)
+    (for/fold : H-Line->Connection* ([hlc1 hlc]) ([line lines])
+      (define the-partial-line (hash-ref hlc1 line (lambda () (error "KNOLWEDGE: impossible"))))
+      (define predecessor (partial-line-pred the-partial-line))
+      (define prefix (partial-line-connections the-partial-line))
+      (define connections (list* (list predecessor station) (list station predecessor) prefix))
+      (hash-set hlc1 line (partial-line station connections))))
+  ;; -------------------------------------------------------------------------------------------------
+  ;; IN: check file format (prefix), then process proper file content 
+  (define lines0 (line-specification (first file*0)))
+  (unless lines0 (error "KNOWLEDGE: we know that the file is properly formatted"))
+  (lines->hash lines0))
 
 ;; ---------------------------------------------------------------------------------------------------
 

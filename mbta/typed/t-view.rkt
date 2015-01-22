@@ -40,10 +40,8 @@
 (define SWITCH             "---switch from ~a to ~a")
 
 ;; type Path* ~~ Path with "switch from Line to Line" strings in the middle 
-(define-type Path* [Listof (U String Station*)])
+(define-type Path* [Listof (U String Station-x-Line)])
 ;; BAD: this ought to appear inside of the class only 
-
-(for/list : [Listof Path*] ([p : Path* '()]) p)
 
 (: manage% Manage)
 (define manage%
@@ -99,7 +97,7 @@
     (define/private (removed-paths-with-disabled-stations paths*)
       (for/list ([p : Path paths*] 
                  #:unless ;; any of the disabled stations is on the path 
-                 (let ([stations ((inst map Station Station*) first p)])
+                 (let ([stations ((inst map Station Station-x-Line) first p)])
                    ;; MF: why is this Any needed? 
                    (for/or : Any ((s stations)) (member s disabled))))
         p))
