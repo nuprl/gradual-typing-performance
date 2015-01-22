@@ -4,7 +4,7 @@
    [#:opaque Image image?]
    [circle (-> Real String String Image)]
    [empty-scene (-> Real Real Image)]
-   [place-image (-> Image Real Image Image)])
+   [place-image (-> Image Real Real Image Image)])
   (provide
    circle 
    empty-scene
