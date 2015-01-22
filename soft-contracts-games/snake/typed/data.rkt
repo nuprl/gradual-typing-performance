@@ -24,6 +24,7 @@
    [struct-out posn]
    [struct-out snake]
    [struct-out world]
+   Dir
    Snake
    World
    Posn
