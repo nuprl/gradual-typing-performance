@@ -1,16 +1,29 @@
-(module data racket
-  
-  (struct snake (dir segs))
-  (struct world (snake food))
-  (struct posn (x y))
-  
+(module data typed/racket
+
+  (struct: snake ([dir  : Dir]
+                  [segs : (NEListof Posn)]))
+  (struct: world ([snake : Snake]
+                  [food  : Posn]))
+
+  (struct: posn ([x : Real]
+                 [y : Real]))
+
+  (define-type Dir (U "up" "down" "left" "right"))
+  (define-type Snake snake)
+  (define-type World world)
+  (define-type Posn  posn)
+  (define-type (NEListof A) (Pairof A (Listof A)))
+
+  (: posn=? (-> Posn Posn Boolean))
   (define (posn=? p1 p2)
     (and (= (posn-x p1) (posn-x p2))
          (= (posn-y p1) (posn-y p2))))  
   
-  (provide [struct-out posn])
-  
   (provide
    posn=?
+   [struct-out posn]
    [struct-out snake]
-   [struct-out world]))
+   [struct-out world]
+   Snake
+   World
+   Posn))
