@@ -6,7 +6,8 @@
    [empty-scene (-> Real Real Image)]
    [place-image (-> Image Real Real Image Image)])
   (provide
-   circle 
+   Image
+   circle
    empty-scene
    place-image)
   
