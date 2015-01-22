@@ -31,10 +31,13 @@
 
 ;; ===================================================================================================
 (require "t-graph-types.rkt")
-(require (only-in graph define-edge-property))
-(require/typed graph 
-               [unweighted-graph/directed (-> Connections Graph)]
-               [in-neighbors (-> Graph [Sequenceof Station])])
+(require/typed
+ "my-graph.rkt"
+ [unweighted-graph/directed (-> Connections Graph)]
+ [attach-edge-property 
+  (->* (Graph) (#:init [Setof Line] #:for-each Any) 
+       (Values (-> Station Station (Setof Line)) Any (-> Station Station Line Void)))]
+ [in-neighbors (-> Graph [Sequenceof Station])])
 
 (define-type Lines [Listof [List String Connections]])
 (define-type Connections [Listof Connection])
@@ -47,7 +50,7 @@
 (: line-specification? (-> String (U False [Listof String])))
 (define (line-specification? line)
   (define r (regexp-match #px"--* (.*)" line))
-  (and r #;"for type checker:"(second r) (string-split (second r))))
+  (and r #;"for type checker:" (car (cdr r)) (string-split (cast (car (cdr r)) String)) #f))
 
 #| ASSUMPTIONS about source files:
 
@@ -64,20 +67,25 @@
 |#
 
 ;; ---------------------------------------------------------------------------------------------------
-(: read-t-graph (-> MBTA))
+(: read-t-graph (-> [Instance MBTA]))
 (define (read-t-graph)
   (define-values (all-lines bundles)
-    (for/fold : (Values Lines Bundles) ((all-lines '()) (all-bundles '())) ((color COLORS))
+    (for/fold : (Values Lines Bundles)
+      ((all-lines : Lines '()) (all-bundles : Bundles '())) ((color COLORS))
       (define next (read-t-line-from-file color))
       (values (append next all-lines) (cons (list color (apply set (map first next))) all-bundles))))
   
   (define connections (apply append (map second all-lines)))
   (define stations 
     (set-map
-     (for/fold : [Listof Station] ((s* (set))) ((c connections)) (set-add s* (first c))) values))
+     (for/fold : [Setof Station] ((s* : [Setof Station] (set))) ((c connections)) 
+       (set-add s* (first c)))
+     values))
   
   (define graph (unweighted-graph/directed connections))
-  (define-edge-property graph connection-on #:init (set))
+  (define set-of-lines : (Setof Line) (set))
+  (define-values (connection-on _  connection-on-set!)
+    (attach-edge-property graph #:init set-of-lines))
   (for ((line (in-list all-lines)))
     (define name (first line))
     (define connections* (second line))

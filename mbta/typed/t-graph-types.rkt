@@ -18,7 +18,7 @@
    (init-field
     [G Graph]
     [stations [Listof Station]]
-    [connection-on [Station Station -> Line]]
+    [connection-on [-> Station Station [Setof Line]]]
     [bundles Bundles])
    [find-path (-> Station Station [Listof Path])]
    [render (-> [Setof Station] String)]

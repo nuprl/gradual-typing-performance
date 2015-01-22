@@ -30,7 +30,7 @@
  read-t-graph)
 
 ;; ===================================================================================================
-(require graph)
+(require "my-graph.rkt")
 
 ;; type Lines       = [Listof [List String Connections]]
 ;; type Connections = [Listof Connection]
@@ -70,7 +70,7 @@
   (define stations (set-map (for/fold ((s* (set))) ((c connections)) (set-add s* (first c))) values))
   
   (define graph (unweighted-graph/directed connections))
-  (define-edge-property graph connection-on #:init (set))
+  (define-values (connection-on _  connection-on-set!) (attach-edge-property graph #:init (set)))
   (for ((line (in-list all-lines)))
     (define name (first line))
     (define connections* (second line))
