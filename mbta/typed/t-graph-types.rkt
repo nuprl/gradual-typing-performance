@@ -6,6 +6,7 @@
  MBTA
  Path 
  Station-x-Line
+ Station*
  Station 
  Line*
  Line
@@ -31,6 +32,8 @@
 
 (define-type Station-x-Line [List Station [Setof Line]])
 ;; interpretation: connect a station to a set of lines
+
+(define-type Station* [Listof Station])
 
 (define-type Station String)
 

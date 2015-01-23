@@ -48,30 +48,34 @@
 ;; ---------------------------------------------------------------------------------------------------
 (: read-t-graph (-> [Instance MBTA]))
 (define (read-t-graph)
-  (define-values (stations lines bundles)
-    (for/fold : (Values [Listof Station] Line->Connection* Colors->Lines) 
-      ((stations* : [Listof Station] '())
-       (line* : Line->Connection* '())
-       (bundle* : Colors->Lines '())) ((color COLORS))
-      (define-values (next-stations next) (read-t-line-from-file color))
-      (define one-bundle (list color (apply set (map {inst first Line Connection*}  next))))
-      (values (append next-stations stations*) (append next line*) (cons one-bundle bundle*))))
-  
-  (define connections (apply append ((inst map Connection* [List Line Connection*]) second lines)))
-  
+  (define-values (stations connections lines color->lines) (read-parse-organize))
+  (define-values (graph connection-on) (generate-graph connections lines))
+  (new mbta% [G graph][stations stations][bundles color->lines][connection-on connection-on]))
+
+;; ---------------------------------------------------------------------------------------------------
+(: read-parse-organize (-> (Values Station* Connection* Line->Connection* Colors->Lines)))
+(define (read-parse-organize)
+  (for/fold : (Values Station* Connection* Line->Connection* Colors->Lines) 
+    ((s* : Station* '()) (c* : Connection* '()) (lc : Line->Connection* '()) (cl : Colors->Lines '()))
+    ((color COLORS))
+    (define-values (new-s* new-lc) (read-t-line-from-file color))
+    (define new-c* ((inst map Connection* [List Line Connection*]) second new-lc))
+    (define new-cl (list color (apply set (map {inst first Line Connection*}  new-lc))))
+    (values (append new-s* s*) (apply append c* new-c*) (append new-lc lc) (cons new-cl cl))))
+
+;; ---------------------------------------------------------------------------------------------------
+(: generate-graph (-> Connection* Line->Connection* (Values Graph (Station Station -> [Setof Line]))))
+(define (generate-graph connections lines)
   (define graph (unweighted-graph/directed connections))
-  (define set-of-lines : (Setof Line) (set))
   (define-values (connection-on _  connection-on-set!)
-    (attach-edge-property graph #:init set-of-lines))
+    (attach-edge-property graph #:init (ann (set) [Setof Line])))
   (for ((line (in-list lines)))
     (define name (first line))
-    (define connections* (second line))
-    (for ((c connections*))
+    (for ((c (second line)))
       (define from (first c))
       (define to (second c))
       (connection-on-set! from to (set-add (connection-on from to) name))))
-  
-  (new mbta% [G graph][stations stations][bundles bundles][connection-on connection-on]))
+    (values graph connection-on))
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; auxiliary type defs to break down the problem, struct for type checking
@@ -81,12 +85,12 @@
 (define-type PartialLine partial-line)
 (define-type H-Line->Connection* [HashTable Line PartialLine])
 
-(: read-t-line-from-file (-> String (Values [Listof Station] Line->Connection*)))
+(: read-t-line-from-file (-> String (Values Station* Line->Connection*)))
 (define (read-t-line-from-file line-file)
   (define file*0 (file->lines (format SOURCE-DIRECTORY line-file)))
   ;; this re-ordering matches the type-oriented decomposition I used in the untyped world
   ;; -------------------------------------------------------------------------------------------------
-  (: lines->hash (-> Line* (Values [Listof Station] Line->Connection*)))
+  (: lines->hash (-> Line* (Values Station* Line->Connection*)))
   (define (lines->hash lines0)
     (define mt-partial-line : Connection* '())
     (define first-station (second file*0))
@@ -101,8 +105,8 @@
     (values (reverse stations) line->connection*))
   ;; -------------------------------------------------------------------------------------------------
   (: process-file-body 
-     (-> [Listof String] [Listof Station] Line* H-Line->Connection*
-         (Values [Listof Station] H-Line->Connection*)))
+     (-> [Listof String] Station* Line* H-Line->Connection*
+         (Values Station* H-Line->Connection*)))
   (define (process-file-body file* stations lines hlc)
     (cond
       [(empty? file*) (values stations hlc)]
@@ -135,6 +139,9 @@
 (define mbta%
   (class object% (init-field G stations connection-on bundles)
     
+    (: stations-set [Setof Station])
+    (define stations-set (apply set stations))
+    
     (super-new)
     
     (define/public (render b)
@@ -144,14 +151,14 @@
     (define/public (station word)
       (define word# (regexp-quote word))
       (define candidates
-        (for/list : [Listof Station] ([s stations] #:when (regexp-match word# s))
+        (for/list : Station* ([s stations-set] #:when (regexp-match word# s))
           s))
       (if (and (cons? candidates) (empty? (rest candidates)))
           (first candidates)
           candidates))
     
-    (define/public (station? s)
-      (cons? ((inst member Station) s stations)))
+    (define/public (station? s) 
+      (set-member? stations-set s))
     
     (define/public (find-path from0 to)
       (define paths* (find-path/aux from0 to))
@@ -169,19 +176,19 @@
                (values station (cons (list station (connection-on station predecessor)) r))))
            (reverse result)])))
     
-    (: find-path/aux (-> Station Station [Listof [Pairof Station [Listof Station]]]))
+    (: find-path/aux (-> Station Station [Listof [Pairof Station Station*]]))
     (define/private (find-path/aux from0 to)
-      (let search :  [Listof [Pairof Station [Listof Station]]] ([from from0][visited '()])
+      (let search :  [Listof [Pairof Station Station*]] ([from from0][visited '()])
         (cond
           [(equal? from to) (list (list from))]
           [(member from visited) (list)]
           [else
            (define visited* (cons from visited))
-           (for/fold : [Listof [Pairof Station [Listof Station]]] 
-             ((all-paths : [Listof [Pairof Station [Listof Station]]] '())) 
+           (for/fold : [Listof [Pairof Station Station*]] 
+             ((all-paths : [Listof [Pairof Station Station*]] '())) 
              ([n (in-neighbors G from)])
              (define paths-from-from-to-to
-               (map (lambda ({p : [Listof Station]}) : [Pairof Station [Listof Station]] 
+               (map (lambda ({p : Station*}) : [Pairof Station Station*] 
                       (cons from p))
                     (search n visited*)))
              (append all-paths paths-from-from-to-to))])))))

@@ -64,9 +64,9 @@
         (displayln status))))
 
 ;; ---------------------------------------------------------------------------------------------------
-#;
 (module+ test
   (define DONE-RESULT (string-append DONE "\n"))
+  (: run-run-t-on (-> String String))
   (define (run-run-t-on request)
     (define r
       (with-input-from-string 
@@ -80,7 +80,6 @@
     prep))
 
 ;; ---------------------------------------------------------------------------------------------------
-#;
 (module+ test ;; imperative lookup test
   
   (define DISABLE-GOVERNMENT "disable Government")
@@ -116,7 +115,6 @@ Northeastern University Station, take E
   (check-equal? (run-run-t-on ENABLE-GOVERNMENT) DONE-RESULT))
 
 ;; ---------------------------------------------------------------------------------------------------
-#;
 (module+ test ;; functional lookup tests
   
   (define AIRPORT-TO-NORTHEASTERN-PATH
@@ -141,7 +139,6 @@ Northeastern University Station, take E
   (check-equal? (run-run-t-on AIRPORT-TO-NORTHEASTERN) AIRPORT-TO-NORTHEASTERN-PATH))
 
 ;; ---------------------------------------------------------------------------------------------------
-#;
 (module+ test ;; functional lookup tests
   (define RUGGLES-TO-CENTRE "from Ruggles to Newton Centre")
   (define RUGGLES-TO-CENTRE-PATH 
