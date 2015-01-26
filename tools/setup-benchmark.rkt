@@ -27,7 +27,7 @@
 
   (for ([dir (in-list (list base typed untyped))])
     (unless (directory-exists? dir)
-      (raise-user-error "directory ~a does not exist" dir)))
+      (raise-user-error 'setup-benchmark "directory `~a' does not exist" dir)))
 
   (define typed-dir (directory-list typed))
   (define untyped-dir (directory-list untyped))
