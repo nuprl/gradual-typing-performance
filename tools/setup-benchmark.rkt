@@ -2,13 +2,19 @@
 
 (provide create-benchmark-dirs)
     
+;; Usage:
+;;   racket setup-benchmark.rkt
+;; will set up benchmarks using the current directory
+(module+ main
+  (create-benchmark-dirs))
 
-
-(define (create-benchmark-dirs #:base [base "Base"]
-                               #:typed [typed "Typed"]
-                               #:untyped [untyped  "Untyped"]
-                               #:dir-base-name [name "Variation"]
-                               #:benchmark-dir [bdir "Benchmark-Folders"])
+(define (create-benchmark-dirs #:base [base "base"]
+                               #:typed [typed "typed"]
+                               #:untyped [untyped  "untyped"]
+                               #:dir-base-name [name "variation"]
+                               #:benchmark-dir [bdir "benchmark"])
+  (define pwd (current-directory))
+  (displayln pwd)
                                
   (unless (andmap directory-exists? (list base typed untyped))
     (error "Invalid Directory."))
@@ -24,29 +30,31 @@
                  (map path->string untyped-dir))
     (error "Typed and Untyped directories do not contain the same file names."))
   
-  (define file-names (map path->string typed-dir))
+  (define file-names (for/list ([path (in-list typed-dir)]
+                                #:when (regexp-match? #rx"\\.rkt$|\\.ss$" path))
+                       (path->string path)))
   (define num-files (length file-names))
-  
+
   (define combinations (build-combinations num-files))
   ;; make benchmark directory
-  (make-directory (string-append "./" bdir))
+  (make-directory (build-path pwd bdir))
   (list file-names 
         (for/list ([combo (in-list combinations)])
           ; build target directory
           (define var-dir-num (number->string (combination->number combo)))
-          (define cdir (string-append "./" bdir "/" name var-dir-num))
-          (copy-directory/files (string-append "./" base)
+          (define cdir (build-path pwd bdir (string-append name var-dir-num)))
+          (copy-directory/files (build-path pwd base)
                                 cdir
                                 #:keep-modify-seconds? #t)
           (for ([item (in-list (zip combo file-names))])
             (copy-file
-             (string-append "./" (if (first item) typed untyped) "/" (second item))
-             (string-append cdir "/" (second item)))
+             (build-path pwd (if (first item) typed untyped) (second item))
+             (build-path cdir (second item)))
             ;; special case for acquire
             #;(when (string=? (second item) "tree.rkt")
               (copy-file
-               (string-append "./Conditional/" (if (first item) typed untyped) "/typed-wrapper.rkt")
-               (string-append cdir "/typed-wrapper.rkt"))))
+               (build-path pwd "conditional" (if (first item) typed untyped) "typed-wrapper.rkt")
+               (build-path cdir "typed-wrapper.rkt"))))
           cdir)))  
 
 ;; zip
