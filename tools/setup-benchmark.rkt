@@ -46,6 +46,9 @@
 
   (define combinations (build-combinations num-files))
   ;; make benchmark directory
+  (when (directory-exists? bdir)
+    (printf "Deleting ~a before setup~n" bdir)
+    (delete-directory/files bdir))
   (make-directory bdir)
   (list file-names 
         (for/list ([combo (in-list combinations)])
