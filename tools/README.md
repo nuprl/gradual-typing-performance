@@ -9,13 +9,30 @@ directory structure:
     ** <project>/typed
     ** <project>/untyped
 
-Then run the setup-benchmark.rkt script on the folder
+Then run the setup-benchmark.rkt script on the folder:
 
   racket setup-benchmark.rkt <project>
 
 This will generate a <project>/benchmark folder containing the variations.
+If there is an existing folder, it will be deleted. So do not make changes
+to the generated files.
 
-Modify and use the driver script to run the variations.
+A sample driver script "run.rkt" is included. It assumes the default
+directory structure. You can run it like this:
+
+  racket run.rkt <project> <entry-point.rkt> <#-iterations>
+
+In order to conditionally do `require/typed`, install the "benchmark-util"
+package contained in this folder.
+
+  raco install benchmark-util/
+
+Then add
+
+  (require benchmark-util)
+
+to typed files as needed. It provides a macro `require/typed/check` that
+turns on/off contracted imports as needed.
 
 Other notes
 -----------
