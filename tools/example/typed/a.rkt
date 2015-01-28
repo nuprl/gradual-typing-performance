@@ -2,4 +2,6 @@
 
 (provide f)
 
-(define (f [x : Integer]) (add1 x))
+(define (f [x : Integer])
+  (sleep 0.01)
+  (add1 x))

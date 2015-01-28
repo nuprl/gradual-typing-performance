@@ -2,4 +2,6 @@
 
 (provide f)
 
-(define (f x) (add1 x))
+(define (f x)
+  (sleep 0.01)
+  (add1 x))

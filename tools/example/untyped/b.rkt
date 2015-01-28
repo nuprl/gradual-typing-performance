@@ -2,5 +2,4 @@
 
 (require "a.rkt")
 
-(for ([i 500])
-  (f i))
+(for ([i 100]) (f i))

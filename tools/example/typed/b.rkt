@@ -1,6 +1,7 @@
 #lang typed/racket
 
-(require "a.rkt")
+(require benchmark-util)
 
-(for ([i 500])
-  (f i))
+(require/typed/check "a.rkt" [f (-> Integer Integer)])
+
+(for ([i 100]) (f i))
