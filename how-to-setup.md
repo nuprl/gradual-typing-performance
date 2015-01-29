@@ -5,9 +5,9 @@ To set up an experiment, create a folder <project> with the following
 directory structure:
 
   * <project>
-    ** <project>/base (put original files that don't get ported here)
-    ** <project>/typed (put typed ports of files here)
-    ** <project>/untyped (put original files here)
+    * <project>/base (put original files that don't get ported here)
+    * <project>/typed (put typed ports of files here)
+    * <project>/untyped (put original files here)
 
 The `typed` and `untyped` folders should contain files with the same
 names. Additional libraries that shouldn't get ported (e.g., cannot add
