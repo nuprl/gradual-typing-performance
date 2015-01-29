@@ -4,10 +4,10 @@ Instructions on setting up an experiment
 To set up an experiment, create a folder <project> with the following
 directory structure:
 
-  * <project>
-    * <project>/base (put original files that don't get ported here)
-    * <project>/typed (put typed ports of files here)
-    * <project>/untyped (put original files here)
+  * [project]
+    * [project]/base (put original files that don't get ported here)
+    * [project]/typed (put typed ports of files here)
+    * [project]/untyped (put original files here)
 
 The `typed` and `untyped` folders should contain files with the same
 names. Additional libraries that shouldn't get ported (e.g., cannot add
@@ -16,9 +16,9 @@ types, has macros that don't need to be ported, etc.) should go in
 
 Then run the `setup.rkt` script on the project:
 
-  ./setup.rkt <project>
+  ./setup.rkt [project]
 
-This will generate a <project>/benchmark folder containing the variations.
+This will generate a [project]/benchmark folder containing the variations.
 If there is an existing folder, it will be deleted. So do not make changes
 to the generated files.
 
