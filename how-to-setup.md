@@ -1,13 +1,30 @@
--- install some package 
--- modify typed modules to require and use certain macros 
--- run setup 
--- run benchmarks 
-
 Instructions on setting up an experiment
 ----------------------------------------
 
-To set up an experiment, create a folder <project> with the following
-directory structure:
+The steps that you need to take to set up an experiment are:
+
+  * Install the "tools/benchmark-utils" package.
+  * Set up your project with a particular directory layout.
+  * Modify typed modules to require and use `require/typed/check`
+  * Run setup.rkt to get all typed/untyped variations.
+  * Run benchmarks
+
+These steps are detailed below in separate sections.
+
+See the "example" folder in the top-level of this repo
+for concrete examples for directory layout, how to modify typed
+modules, and so on.
+
+Install package
+---------------
+
+Run `raco pkg install tools/benchmark-utils`
+
+Directory layout
+----------------
+
+The directory structure should look like the following for some project
+called [project]:
 
   * [project]
     * [project]/base (put original files that don't get ported here)
@@ -22,7 +39,31 @@ types, has macros that don't need to be ported, etc.) should go in
 See below for how to arrange the typed modules so that they can import
 typed and untyped versions. 
 
-Then run the `setup.rkt` script on the project:
+Modifications to typed modules
+------------------------------
+
+To work with the benchmark setup, typed modules in the `typed` folder need
+to conditionally apply types to `require` statements because the linking
+module may be typed or untyped depending on the variation.
+
+First, in all typed modules that might end up requiring an untyped module
+in the mixed program, add the following require:
+
+````
+  (require benchmark-util)
+````
+
+Then, if a module "a" requires "b" then the typed version of
+"a" needs to change `(require b)` to something like
+`(require/typed/checked b [f (-> t s)] [g (-> x y)])`.
+
+The syntax of `require/typed/check` is the same as `require/typed`.
+
+Run setup.rkt
+-------------
+
+Run the `setup.rkt` script on the project to generate the variations in its
+own folder that can be run by the driver script (described below):
 
   ./setup.rkt [project]
 
@@ -30,36 +71,10 @@ This will generate a [project]/benchmark folder containing the variations.
 If there is an existing folder, it will be deleted. So do not make changes
 to the generated files.
 
-Instructions for porting untyped modules
-----------------------------------------
+Running the benchmark
+---------------------
 
-To work with the benchmark setup, typed modules in the `typed` folder need
-to conditionally apply types to `require` statements because the linking
-module may be typed or untyped depending on the variation.
-
-a : (require b) (require/typed/checked b [f (-> t s)] [g (-> x y)])
-b : (require c)
-c : (require d)
-d : -- 
-
-Running `./setup.rkt` will automatically install the "benchmark-util"
-package, which provides a `require/typed/check` macro for this purpose.
-
-The changes you need to make are to add a single require statement to
-typed modules that require other modules:
-
-````
-  (require benchmark-util)
-````
-
-Then replace uses of `require` with `require/typed/check`. The syntax of
-`require/typed/check` is the same as `require/typed`.
-
-Examples
---------
-
-The "example" folder in the top-level of this repo contains an example
-of the required directory structure and uses of `require/typed/check`.
+This section will be filled in later.
 
 Other notes
 -----------
