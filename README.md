@@ -5,7 +5,8 @@ the performance hypothesis underlying gradual typing.
 | Project name     | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | ---------------- | ----------- | ------- | ------------ | --------- | ---------------- |
 | funkytown        | Ben         | Yes     | No           |           |                  |
-| mbta             | Matthias    | Yes     | No           |           |                  |
+| zo traversal     | Ben         | No      | No           |           |                  |
+| mbta             | Matthias    | Yes     | No           | 4         | one chain        |
 | snake            | Max         | Yes     | No           |           |                  |
 | tetris           | Max         | Yes     | No           |           |                  |
 | protbuf          |             | No      | No           |           |                  |

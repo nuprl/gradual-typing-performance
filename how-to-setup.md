@@ -1,3 +1,8 @@
+-- install some package 
+-- modify typed modules to require and use certain macros 
+-- run setup 
+-- run benchmarks 
+
 Instructions on setting up an experiment
 ----------------------------------------
 
@@ -14,6 +19,9 @@ names. Additional libraries that shouldn't get ported (e.g., cannot add
 types, has macros that don't need to be ported, etc.) should go in
 `base`.
 
+See below for how to arrange the typed modules so that they can import
+typed and untyped versions. 
+
 Then run the `setup.rkt` script on the project:
 
   ./setup.rkt [project]
@@ -28,6 +36,11 @@ Instructions for porting untyped modules
 To work with the benchmark setup, typed modules in the `typed` folder need
 to conditionally apply types to `require` statements because the linking
 module may be typed or untyped depending on the variation.
+
+a : (require b) (require/typed/checked b [f (-> t s)] [g (-> x y)])
+b : (require c)
+c : (require d)
+d : -- 
 
 Running `./setup.rkt` will automatically install the "benchmark-util"
 package, which provides a `require/typed/check` macro for this purpose.
