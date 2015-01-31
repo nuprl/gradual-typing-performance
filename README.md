@@ -13,5 +13,6 @@ the performance hypothesis underlying gradual typing.
 | simulation (?)   |             | No      | No           |           |                  |
 | ragg (?)         |             | No      | No           |           |                  |
 | parser-tools (?) |             | No      | No           |           |                  |
+| rmacs (?)        |             | No      | No           |           |                  |
 
 See "how-to-setup.md" in this repo for how to structure a project.
