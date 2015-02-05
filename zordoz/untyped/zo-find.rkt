@@ -14,7 +14,7 @@
          (only-in racket/string string-split string-trim)
          (only-in compiler/zo-structs zo?)
          (only-in "zo-transition.rkt" zo-transition)
-         (only-in "zo-string.rkt" zo->spec spec/c)
+         (only-in "zo-string.rkt" zo->spec)
          racket/match)
 
 ;; -----------------------------------------------------------------------------
