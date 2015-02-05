@@ -1,11 +1,12 @@
 
 The purpose of this repo is to share work among the team members that study
-the performance hypothesis underlying gradual typing. 
+the performance hypothesis underlying gradual typing.
 
 | Project name          | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | --------------------- | ----------- | ------- | ------------ | --------- | ---------------- |
 | funkytown             | Ben         | Yes     | No           |           |                  |
 | zo traversal          | Ben         | No      | No           |           |                  |
+| sieve                 | Ben         | Yes     | No           | 2         | one chain        |
 | mbta                  | Matthias    | Yes     | No           | 4         | one chain        |
 | snake                 | Max         | Yes     | No           |           |                  |
 | tetris                | Max         | Yes     | No           |           |                  |
