@@ -1,6 +1,6 @@
 #lang racket
 
-(require (only-in racket/fixnum fx<= fxmax)
+(require (only-in racket/fixnum fx<= fxmax fxmodulo)
          (only-in "array-struct.rkt"
                   Array
                   array-strict?
@@ -9,11 +9,7 @@
                   array-size
                   unsafe-array-proc
                   unsafe-build-array)
-         (only-in "../unsafe.rkt"
-                  unsafe-fxmodulo
-                  unsafe-vector-ref
-                  unsafe-vector-set!)
-         (only-in "typed-utils.rkt" make-thread-local-indexes))
+         (only-in "array-utils.rkt" make-thread-local-indexes))
 
 (provide array-broadcasting
          array-broadcast
@@ -43,10 +39,10 @@
      (let ([old-js  (old-js)])
        (let loop ([k  0])
          (cond [(k . < . old-dims)
-                (define new-jk (unsafe-vector-ref new-js (+ k shift)))
-                (define old-dk (unsafe-vector-ref old-ds k))
-                (define old-jk (unsafe-fxmodulo new-jk old-dk))
-                (unsafe-vector-set! old-js k old-jk)
+                (define new-jk (vector-ref new-js (+ k shift)))
+                (define old-dk (vector-ref old-ds k))
+                (define old-jk (fxmodulo new-jk old-dk))
+                (vector-set! old-js k old-jk)
                 (loop (+ k 1))]
                [else  (old-f old-js)]))))))
 
@@ -64,9 +60,9 @@
   (define new-ds (make-vector dims 0))
   (let loop ([k 0])
     (cond [(k . < . dims)
-           (define dk1 (unsafe-vector-ref ds1 k))
-           (define dk2 (unsafe-vector-ref ds2 k))
-           (unsafe-vector-set!
+           (define dk1 (vector-ref ds1 k))
+           (define dk2 (vector-ref ds2 k))
+           (vector-set!
             new-ds k
             (cond [(or (= dk1 0) (= dk2 0))  (fail)]
                   [else  (fxmax dk1 dk2)]))
@@ -77,9 +73,9 @@
   (define new-ds (make-vector dims 0))
   (let loop ([k 0])
     (cond [(k . < . dims)
-           (define dk1 (unsafe-vector-ref ds1 k))
-           (define dk2 (unsafe-vector-ref ds2 k))
-           (unsafe-vector-set!
+           (define dk1 (vector-ref ds1 k))
+           (define dk2 (vector-ref ds2 k))
+           (vector-set!
             new-ds k
             (cond [(= dk1 dk2)  dk1]
                   [(and (= dk1 1) (dk2 . > . 0))  dk2]

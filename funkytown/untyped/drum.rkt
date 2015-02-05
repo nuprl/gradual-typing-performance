@@ -1,12 +1,12 @@
 #lang racket
 
-(require (only-in "math/array.rkt"
+(require (only-in "array-struct.rkt"
                   Array
-                  array-append*
                   array-size
+                  make-array
                   build-array
-                  for/array
-                  make-array)
+                  for/array)
+         (only-in "array-transform.rkt" array-append*)
          (only-in "synth.rkt" fs seconds->samples))
 
 (provide drum)

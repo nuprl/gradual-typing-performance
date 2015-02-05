@@ -1,8 +1,7 @@
 #lang racket
 
-(require (only-in "math/array.rkt"
-                  array-broadcasting
-                  array-map))
+(require (only-in "array-pointwise.rkt" array-map)
+         (only-in "array-broadcast.rkt" array-broadcasting))
 
 (provide mix)
 

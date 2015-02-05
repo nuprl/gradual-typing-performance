@@ -6,10 +6,10 @@
   seconds->samples
   emit)
 
-(require (only-in "math/array.rkt"
-                  array-size
-                  array-strictness
-                  in-array))
+(require (only-in "array-struct.rkt"
+           array-size
+           array-strictness
+           in-array))
 
 ;; TODO this slows down a bit, it seems, but improves memory use
 (array-strictness #f)
