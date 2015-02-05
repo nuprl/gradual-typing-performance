@@ -1,3 +1,4 @@
 #lang info
 
-(define deps '("base" "typed-racket"))
+(define deps '("base" "typed-racket"
+               "typed-racket-more"))
