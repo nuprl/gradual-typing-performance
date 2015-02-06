@@ -43,7 +43,7 @@
 
 (module+ main
   (define w0 (world0))
-  (define hist (reverse (with-input-from-file "../tetris-hist-3.txt" read)))
+  (define hist (reverse (with-input-from-file "tetris-hist-3.txt" read)))
 
   (time
    (replay w0 hist)))

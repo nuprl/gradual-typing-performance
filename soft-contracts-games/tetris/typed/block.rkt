@@ -1,6 +1,8 @@
 #lang typed/racket
 
-(require "data.rkt")
+(require "base-types.rkt")
+(require/typed/check "data.rkt"
+                     [posn=? (-> Posn Posn Boolean)])
 
 ;; Determines if two blocks are the same (ignoring color).
 (: block=? (-> Block Block Boolean))
