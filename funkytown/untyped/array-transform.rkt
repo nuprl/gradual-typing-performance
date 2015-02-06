@@ -9,7 +9,7 @@
                   array-default-strict)
          (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
          (only-in "array-utils.rkt" unsafe-vector-remove vector-copy-all unsafe-vector-insert)
-         "array-untypes.rkt")
+         "array-types.rkt")
 
 (provide array-append*)
 

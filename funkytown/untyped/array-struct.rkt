@@ -11,7 +11,7 @@
            check-array-shape
            next-indexes!
            unsafe-array-index->value-index)
-         "array-untypes.rkt")
+         "array-types.rkt")
 
 (provide
  array?
