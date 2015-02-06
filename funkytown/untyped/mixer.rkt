@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 (require (only-in "array-pointwise.rkt" array-map)
          (only-in "array-broadcast.rkt" array-broadcasting))
@@ -15,18 +15,18 @@
 (define (mix . ss)
   (define signals
     (for/list ([s ss])
-      (first s)))
+      (car s)))
   (define weights
     (for/list ([x ss])
-      (real->double-flonum (second x))))
+      (real->double-flonum (cadr x))))
   (define downscale-ratio (/ 1.0 (apply + weights)))
   ;; scale-signal : Float -> (Float -> Float)
   (define ((scale-signal w) x) (* x w downscale-ratio))
   (parameterize ([array-broadcasting 'permissive]) ; repeat short signals
-    (for/fold ([res (array-map (scale-signal (first weights))
-                               (first signals))])
-        ([s (in-list (rest signals))]
-         [w (in-list (rest weights))])
+    (for/fold ([res (array-map (scale-signal (car weights))
+                               (car signals))])
+        ([s (in-list (cdr signals))]
+         [w (in-list (cdr weights))])
       (define scale (scale-signal w))
       (array-map (lambda (acc  ; : Float
                           new) ; : Float

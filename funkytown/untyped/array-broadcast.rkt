@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 (require (only-in racket/fixnum fx<= fxmax fxmodulo)
          (only-in "array-struct.rkt"
@@ -9,7 +9,10 @@
                   array-size
                   unsafe-array-proc
                   unsafe-build-array)
-         (only-in "array-utils.rkt" make-thread-local-indexes))
+         (only-in "array-utils.rkt" make-thread-local-indexes)
+         (only-in racket/vector vector-append)
+         (only-in racket/string string-join)
+         (only-in racket/list empty? first rest))
 
 (provide array-broadcasting
          array-broadcast

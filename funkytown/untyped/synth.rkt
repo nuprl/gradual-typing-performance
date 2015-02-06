@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 (provide
   fs
@@ -9,7 +9,8 @@
 (require (only-in "array-struct.rkt"
            array-size
            array-strictness
-           in-array))
+           in-array)
+         (only-in racket/math exact-floor))
 
 ;; TODO this slows down a bit, it seems, but improves memory use
 (array-strictness #f)

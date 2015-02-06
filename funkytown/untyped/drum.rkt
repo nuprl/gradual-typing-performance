@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 (require (only-in "array-struct.rkt"
                   Array
