@@ -1,12 +1,48 @@
 #lang typed/racket
 
-(require "data.rkt"
-         "bset.rkt"
-         "block.rkt"
-         "tetras.rkt"
-         "aux.rkt"
-         "elim.rkt"
-         "consts.rkt")
+(require "base-types.rkt")
+(require/typed "data.rkt"
+  [posn=? (-> Posn Posn Boolean)])
+(require/typed "bset.rkt"
+   [blocks-contains? (-> BSet Block Boolean)]
+   [blocks=? (-> BSet BSet Boolean)]
+   [blocks-subset? (-> BSet BSet Boolean)]
+   [blocks-intersect (-> BSet BSet BSet)]
+   [blocks-count (-> BSet Natural)]
+   [blocks-overflow? (-> BSet Boolean)]
+   [blocks-move (-> Real Real BSet BSet)]
+   [blocks-rotate-cw (-> Posn BSet BSet)]
+   [blocks-rotate-ccw (-> Posn BSet BSet)]
+   [blocks-change-color (-> BSet Color BSet)]
+   [blocks-row (-> BSet Real BSet)]
+   [full-row? (-> BSet Natural Boolean)]
+   [blocks-union (-> BSet BSet BSet)]
+   [blocks-max-x (-> BSet Real)]
+   [blocks-min-x (-> BSet Real)]
+   [blocks-max-y (-> BSet Real)]
+  )
+(require/typed "block.rkt"
+  [block-rotate-ccw (-> Posn Block Block)]
+  [block-rotate-cw (-> Posn Block Block)]
+  [block=? (-> Block Block Boolean)]
+  [block-move (-> Real Real Block Block)])
+(require/typed "tetras.rkt"
+  [tetra-move (-> Real Real Tetra Tetra)]
+  [tetra-rotate-ccw (-> Tetra Tetra)]
+  [tetra-rotate-cw (-> Tetra Tetra)]
+  [tetra-overlaps-blocks? (-> Tetra BSet Boolean)]
+  [tetra-change-color (-> Tetra Color Tetra)]
+  [build-tetra-blocks (-> Color Real Real Real Real Real Real Real Real Real Real Tetra)])
+(require/typed "aux.rkt"
+  [list-pick-random (-> (Listof Tetra) Tetra)]
+  [neg-1  Negative-Fixnum]
+  [tetras (Listof Tetra)])
+(require/typed "elim.rkt"
+  [eliminate-full-rows (-> BSet BSet)])
+(require/typed "consts.rkt"
+  [block-size Integer]
+  [board-height Integer]
+  [board-width Integer])
 
 (provide world-key-move
          next-world
