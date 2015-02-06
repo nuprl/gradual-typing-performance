@@ -4,8 +4,8 @@ the performance hypothesis underlying gradual typing.
 
 | Project name          | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | --------------------- | ----------- | ------- | ------------ | --------- | ---------------- |
-| funkytown             | Ben         | No      | No           |           |                  |
-| zo traversal          | Ben         | No      | No           |           |                  |
+| funkytown             | Ben         | Yes     | No           | 11        | vine-like        |
+| zo traversal          | Ben         | Yes     | No           | 5         | almost diamond   |
 | sieve                 | Ben         | Yes     | No           | 2         | one chain        |
 | echo                  | Ben         | Yes     | No           | 4         | directed diamond |
 | mbta                  | Matthias    | Yes     | No           | 4         | one chain        |
