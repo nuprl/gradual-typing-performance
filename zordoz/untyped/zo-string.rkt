@@ -27,8 +27,7 @@
          racket/match
          (only-in racket/list   empty?)
          (only-in racket/string string-join)
-         (for-syntax racket/base racket/syntax)
-         (only-in "dispatch-table.rkt" make-table))
+         (for-syntax racket/base racket/syntax))
 
 ;; -----------------------------------------------------------------------------
 
@@ -61,87 +60,94 @@
 
 ;; --- dispatch tables
 
-(define try-spec
-  (make-table
-   #:action ->spec
-   compilation-top
-   prefix
-   global-bucket
-   module-variable
-   stx
-   form
-   expr
-   wrapped
-   wrap
-   free-id-info
-   all-from-module
-   module-binding
-   nominal-path
-   provided))
 
-(define form->spec
-  (make-table
-   #:action ->spec
-   def-values
-   def-syntaxes
-   seq-for-syntax
-   req
-   seq
-   splice
-   inline-variant
-   mod
-   provided
-   expr))
+(define (try-spec z)
+  (match z
+   [(? compilation-top?) (compilation-top->spec z)]
+   [(? prefix?) (prefix->spec z)]
+   [(? global-bucket?) (global-bucket->spec z)]
+   [(? module-variable?) (module-variable->spec z)]
+   [(? stx?) (stx->spec z)]
+   [(? form?) (form->spec z)]
+   [(? expr?) (expr->spec z)]
+   [(? wrapped?) (wrapped->spec z)]
+   [(? wrap?) (wrap->spec z)]
+   [(? free-id-info?) (free-id-info->spec z)]
+   [(? all-from-module?) (all-from-module->spec z)]
+   [(? module-binding?) (module-binding->spec z)]
+   [(? nominal-path?) (nominal-path->spec z)]
+   [(? provided?) (provided->spec z)]
+   [x (error (format "unknown struct ~a" z))]
+))
 
-(define expr->spec
-  (make-table
-   #:action ->spec
-   lam
-   closure
-   case-lam
-   let-one
-   let-void
-   install-value
-   let-rec
-   boxenv
-   localref
-   toplevel
-   topsyntax
-   application
-   branch
-   with-cont-mark
-   beg0
-   varref
-   assign
-   apply-values
-   primval))
+(define (form->spec z)
+  (match z
+   [(? def-values?) (def-values->spec z)]
+   [(? def-syntaxes?) (def-syntaxes->spec z)]
+   [(? seq-for-syntax?) (seq-for-syntax->spec z)]
+   [(? req?) (req->spec z)]
+   [(? seq?) (seq->spec z)]
+   [(? splice?) (splice->spec z)]
+   [(? inline-variant?) (inline-variant->spec z)]
+   [(? mod?) (mod->spec z)]
+   [(? provided?) (provided->spec z)]
+   [(? expr?) (expr->spec z)]
+   [x (error (format "unknown struct ~a" z))]
+))
 
-(define wrap->spec
-  (make-table
-   #:action ->spec
-   top-level-rename
-   mark-barrier
-   lexical-rename
-   phase-shift
-   module-rename
-   wrap-mark
-   prune))
+(define (expr->spec z)
+  (match z
+   [(? lam?) (lam->spec z)]
+   [(? closure?) (closure->spec z)]
+   [(? case-lam?) (case-lam->spec z)]
+   [(? let-one?) (let-one->spec z)]
+   [(? let-void?) (let-void->spec z)]
+   [(? install-value?) (install-value->spec z)]
+   [(? let-rec?) (let-rec->spec z)]
+   [(? boxenv?) (boxenv->spec z)]
+   [(? localref?) (localref->spec z)]
+   [(? toplevel?) (toplevel->spec z)]
+   [(? topsyntax?) (topsyntax->spec z)]
+   [(? application?) (application->spec z)]
+   [(? branch?) (branch->spec z)]
+   [(? with-cont-mark?) (with-cont-mark->spec z)]
+   [(? beg0?) (beg0->spec z)]
+   [(? varref?) (varref->spec z)]
+   [(? assign?) (assign->spec z)]
+   [(? apply-values?) (apply-values->spec z)]
+   [(? primval?) (primval->spec z)]
+   [x (error (format "unknown struct ~a" z))]
+))
 
-(define module-binding->spec
-  (make-table
-   #:action ->spec
-   simple-module-binding
-   phased-module-binding
-   exported-nominal-module-binding
-   nominal-module-binding
-   exported-module-binding))
+(define (wrap->spec z)
+  (match z
+   [(? top-level-rename?) (top-level-rename->spec z)]
+   [(? mark-barrier?) (mark-barrier->spec z)]
+   [(? lexical-rename?) (lexical-rename->spec z)]
+   [(? phase-shift?) (phase-shift->spec z)]
+   [(? module-rename?) (module-rename->spec z)]
+   [(? wrap-mark?) (wrap-mark->spec z)]
+   [(? prune?) (prune->spec z)]
+   [x (error (format "unknown struct ~a" z))]
+))
 
-(define nominal-path->spec
-  (make-table
-   #:action ->spec
-   simple-nominal-path
-   imported-nominal-path
-   phased-nominal-path))
+(define (module-binding->spec z)
+  (match z
+   [(? simple-module-binding?) (simple-module-binding->spec z)]
+   [(? phased-module-binding?) (phased-module-binding->spec z)]
+   [(? exported-nominal-module-binding?) (exported-nominal-module-binding->spec z)]
+   [(? nominal-module-binding?) (nominal-module-binding->spec z)]
+   [(? exported-module-binding?) (exported-module-binding->spec z)]
+   [x (error (format "unknown struct ~a" z))]
+))
+
+(define (nominal-path->spec z)
+  (match z
+   [(? simple-nominal-path?) (simple-nominal-path->spec z)]
+   [(? imported-nominal-path?) (imported-nominal-path->spec z)]
+   [(? phased-nominal-path?) (phased-nominal-path->spec z)]
+   [x (error (format "unknown struct ~a" z))]
+))
 
 ;; --- private functions
 
@@ -918,13 +924,13 @@
                   (cons "stx"
                         (list (cons "encoded" "<struct:wrapped>")))))
 
-  ;; form->spec (see below)
-  (let* ([z (form)])
-    (check-equal? (form->spec z) #f))
+  ;; ;; form->spec (see below)
+  ;; (let* ([z (form)])
+  ;;   (check-equal? (form->spec z) #f))
 
-  ;; expr->spec (see below)
-  (let* ([z (expr)])
-    (check-equal? (expr->spec z) #f))
+  ;; ;; expr->spec (see below)
+  ;; (let* ([z (expr)])
+  ;;   (check-equal? (expr->spec z) #f))
 
   ;; wrapped->spec
   (let* ([wps (list (prune 'A) (prune 'B) (prune 'C))]
@@ -935,9 +941,9 @@
                               (cons "wraps" "<struct:prune>[3]")
                               (cons "tamper-status" "tainted")))))
 
-  ;; wrap->spec (see below)
-  (let* ([z (wrap)])
-    (check-equal? (wrap->spec z) #f))
+  ;; ;; wrap->spec (see below)
+  ;; (let* ([z (wrap)])
+  ;;   (check-equal? (wrap->spec z) #f))
   
   ;; free-id-info->spec
   (let* ([mpi (module-path-index-join #f #f)]
@@ -965,13 +971,13 @@
                               (cons "prefix" "#f")
                               (cons "context" "[]")))))
 
-  ;; module-binding->spec (see below)
-  (let* ([z (module-binding)])
-    (check-equal? (module-binding->spec z) #f))
+  ;; ;; module-binding->spec (see below)
+  ;; (let* ([z (module-binding)])
+  ;;   (check-equal? (module-binding->spec z) #f))
   
-  ;; nominal-path->spec (see below)
-  (let* ([z (nominal-path)])
-    (check-equal? (nominal-path->spec z) #f))
+  ;; ;; nominal-path->spec (see below)
+  ;; (let* ([z (nominal-path)])
+  ;;   (check-equal? (nominal-path->spec z) #f))
 
   ;; def-values->spec
   (let* ([ids (list (toplevel 1 2 #t #f))]
