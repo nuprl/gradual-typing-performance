@@ -1,7 +1,16 @@
 #lang typed/racket
 
-(require "data.rkt"
-         "tetras.rkt")  
+(require "base-types.rkt")
+(require/typed/check "data.rkt"
+  [posn=? (-> Posn Posn Boolean)])
+(require/typed/check "tetras.rkt"
+  [tetra-move (-> Real Real Tetra Tetra)]
+  [tetra-rotate-ccw (-> Tetra Tetra)]
+  [tetra-rotate-cw (-> Tetra Tetra)]
+  [tetra-overlaps-blocks? (-> Tetra BSet Boolean)]
+  [tetra-change-color (-> Tetra Color Tetra)]
+  [build-tetra-blocks (-> Color Real Real Real Real Real Real Real Real Real Real Tetra)]
+  )
 
 (provide
  list-pick-random
