@@ -1,9 +1,9 @@
 #lang typed/racket
 
 (require "base-types.rkt")
-(require/typed "data.rkt"
+(require/typed/check "data.rkt"
   [posn=? (-> Posn Posn Boolean)])
-(require/typed "bset.rkt"
+(require/typed/check "bset.rkt"
    [blocks-contains? (-> BSet Block Boolean)]
    [blocks=? (-> BSet BSet Boolean)]
    [blocks-subset? (-> BSet BSet Boolean)]
@@ -21,25 +21,25 @@
    [blocks-min-x (-> BSet Real)]
    [blocks-max-y (-> BSet Real)]
   )
-(require/typed "block.rkt"
+(require/typed/check "block.rkt"
   [block-rotate-ccw (-> Posn Block Block)]
   [block-rotate-cw (-> Posn Block Block)]
   [block=? (-> Block Block Boolean)]
   [block-move (-> Real Real Block Block)])
-(require/typed "tetras.rkt"
+(require/typed/check "tetras.rkt"
   [tetra-move (-> Real Real Tetra Tetra)]
   [tetra-rotate-ccw (-> Tetra Tetra)]
   [tetra-rotate-cw (-> Tetra Tetra)]
   [tetra-overlaps-blocks? (-> Tetra BSet Boolean)]
   [tetra-change-color (-> Tetra Color Tetra)]
   [build-tetra-blocks (-> Color Real Real Real Real Real Real Real Real Real Real Tetra)])
-(require/typed "aux.rkt"
+(require/typed/check "aux.rkt"
   [list-pick-random (-> (Listof Tetra) Tetra)]
   [neg-1  Negative-Fixnum]
   [tetras (Listof Tetra)])
-(require/typed "elim.rkt"
+(require/typed/check "elim.rkt"
   [eliminate-full-rows (-> BSet BSet)])
-(require/typed "consts.rkt"
+(require/typed/check "consts.rkt"
   [block-size Integer]
   [board-height Integer]
   [board-width Integer])
