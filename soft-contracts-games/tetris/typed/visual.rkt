@@ -1,10 +1,28 @@
 #lang typed/racket
 
-(require "image.rkt"
-         "data.rkt"
-         "consts.rkt"
-         "world.rkt"
-         "aux.rkt")
+(require "base-types.rkt")
+(require/typed/check "data.rkt"
+  [posn=? (-> Posn Posn Boolean)])
+(require/typed/check "consts.rkt"
+  [block-size Integer]
+  [board-height Integer]
+  [board-width Integer])
+(require/typed/check "aux.rkt"
+  [list-pick-random (-> (Listof Tetra) Tetra)]
+  [neg-1  Negative-Fixnum]
+  [tetras (Listof Tetra)])
+(require/typed/check "world.rkt"
+  [world-key-move (-> World String World)]
+  [next-world (-> World World)]
+  [ghost-blocks (-> World BSet)])
+(require/typed
+    2htdp/image
+  [#:opaque Image image?]
+  [overlay   (-> Image Image Image)]
+  [circle    (-> Integer String String Image)]
+  [rectangle (-> Integer Integer Color Color Image)]
+  [place-image (-> Image Integer Integer Image Image)]
+  [empty-scene (-> Integer Integer Image)])
 
 (provide
  world->image
