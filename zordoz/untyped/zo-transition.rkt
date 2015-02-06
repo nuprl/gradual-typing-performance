@@ -59,7 +59,7 @@
    [(? module-binding?) (module-binding-> z str)]
    [(? nominal-path?) (nominal-path-> z str)]
    [(? provided?) (provided-> z str)]
-   [x (error (format "unknown struct ~a" z))]
+   [x #f]
 ))
 (define (form-> z str)
   (match z
@@ -73,7 +73,7 @@
    [(? mod?) (mod-> z str)]
    [(? provided?) (provided-> z str)]
    [(? expr?) (expr-> z str)]
-   [x (error (format "unknown struct ~a" z))]
+   [x #f]
 ))
 (define (expr-> z str)
   (match z
@@ -96,7 +96,7 @@
    [(? assign?) (assign-> z str)]
    [(? apply-values?) (apply-values-> z str)]
    [(? primval?) (primval-> z str)]
-   [x (error (format "unknown struct ~a" z))]
+   [x #f]
 ))
 (define (wrap-> z str)
   (match z
@@ -107,7 +107,7 @@
    [(? module-rename?) (module-rename-> z str)]
    [(? wrap-mark?) (wrap-mark-> z str)]
    [(? prune?) (prune-> z str)]
-   [x (error (format "unknown struct ~a" z))]
+   [x #f]
 ))
 (define (module-binding-> z str)
   (match z
@@ -116,14 +116,14 @@
    [(? exported-nominal-module-binding?) (exported-nominal-module-binding-> z str)]
    [(? nominal-module-binding?) (nominal-module-binding-> z str)]
    [(? exported-module-binding?) (exported-module-binding-> z str)]
-   [x (error (format "unknown struct ~a" z))]
+   [x #f]
 ))
 (define (nominal-path-> z str)
   (match z
    [(? simple-nominal-path?) (simple-nominal-path-> z str)]
    [(? imported-nominal-path?) (imported-nominal-path-> z str)]
    [(? phased-nominal-path?) (phased-nominal-path-> z str)]
-   [x (error (format "unknown struct ~a" z))]
+   [x #f]
 ))
 ;; --- getters
 
@@ -183,7 +183,7 @@
   ;; (-> def-values? string? (or/c (listof zo?) zo? #f))
   (match field-name
     ["ids"
-     (def-values-ids z)]
+     (filter toplevel? (def-values-ids z))]
     ["rhs"
      (match (def-values-rhs z)
        [(or (? expr? rhs) (? seq? rhs) (? inline-variant? rhs))
