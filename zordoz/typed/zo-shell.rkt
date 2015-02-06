@@ -11,8 +11,9 @@
 (require
          (only-in racket/string string-split string-join)
          (only-in "zo-find.rkt" zo-find result result? result-z result-path)
-         (only-in "zo-string.rkt" zo->string zo zo?)
+         (only-in "zo-string.rkt" zo->string)
          (only-in "zo-transition.rkt" zo-transition)
+         "typed-zo-structs.rkt"
          racket/match)
 
 (require/typed compiler/zo-parse
