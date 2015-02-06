@@ -1,6 +1,7 @@
 #lang typed/racket
 
 (require "base-types.rkt")
+(require benchmark-util)
 (require/typed/check "data.rkt"
   [posn=? (-> Posn Posn Boolean)])
 (require/typed/check "consts.rkt"
