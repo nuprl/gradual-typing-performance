@@ -1,8 +1,17 @@
 #lang typed/racket
 
-(require "data.rkt"
-         "block.rkt"
-         "consts.rkt")
+(require "base-types.rkt")
+(require/typed/check "data.rkt"
+  [posn=? (-> Posn Posn Boolean)])
+(require/typed/check "block.rkt"
+  [block-rotate-ccw (-> Posn Block Block)]
+  [block-rotate-cw (-> Posn Block Block)]
+  [block=? (-> Block Block Boolean)]
+  [block-move (-> Real Real Block Block)])
+(require/typed/check "consts.rkt"
+  [block-size Integer]
+  [board-height Integer]
+  [board-width Integer])
 
 ;; Determine if the block is in the set of blocks.
 (: blocks-contains? (-> BSet Block Boolean))
