@@ -25,7 +25,10 @@
       (build-path basepath "benchmark" file entry-point)))
 
   (for ([var (in-list variations)])
+    (define-values (base _ _) (split-path var))
     (for ([i (in-range iters)])
       (printf "iteration #~a of ~a~n" i var)
       ;; FIXME: use benchmark library
-      (time (system (string-append "racket " (path->string var)))))))
+      (parameterize ([current-directory base])
+        (time (system (string-append "racket " (path->string var))
+                      #:use-pwd? #t))))))
