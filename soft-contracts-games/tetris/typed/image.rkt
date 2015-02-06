@@ -1,6 +1,6 @@
 #lang typed/racket
 
-(require "data.rkt")
+(require "base-types.rkt")
 (require/typed
     2htdp/image
   [#:opaque Image image?]
