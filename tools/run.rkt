@@ -25,10 +25,10 @@
       (build-path basepath "benchmark" file entry-point)))
 
   (for ([var (in-list variations)])
-    (define-values (base _ _) (split-path var))
+    (define-values (new-cwd file _2) (split-path var))
     (for ([i (in-range iters)])
       (printf "iteration #~a of ~a~n" i var)
       ;; FIXME: use benchmark library
-      (parameterize ([current-directory base])
-        (time (system (string-append "racket " (path->string var))
-                      #:use-pwd? #t))))))
+      (parameterize ([current-directory new-cwd])
+        (time (system (string-append "racket " (path->string file))
+                      #:set-pwd? #t))))))
