@@ -1,31 +1,43 @@
 #lang racket/base
 
 (require (only-in "array-struct.rkt"
-                  Array
                   array-size
                   make-array
                   build-array
-                  for/array)
+                  for/array
+                  unsafe-vector->array)
+         (only-in "array-utils.rkt"
+                  array-shape-size
+                  check-array-shape)
          (only-in "array-transform.rkt" array-append*)
-         (only-in "synth.rkt" fs seconds->samples))
+         (only-in "synth.rkt" fs seconds->samples)
+         "array-untypes.rkt")
 
 (provide drum)
 
 (define (random-sample) (- (* 2.0 (random)) 1.0))
 
 ;; Drum "samples" (Arrays of floats)
-;; TODO compute those at compile-time
 (define bass-drum
   (let ()
     ;; 0.05 seconds of noise whose value changes every 12 samples
     (define n-samples           (seconds->samples 0.05))
     (define n-different-samples (quotient n-samples 12))
-    (for/array #:shape (vector n-samples) #:fill 0.0
-               ([i      (in-range n-different-samples)]
-                [sample (in-producer random-sample (lambda _ #f))]
-                #:when #t
-                [j (in-range 12)])
-      sample)))
+    (define ds* (vector n-samples))
+    (define ds
+      (check-array-shape ds*
+                         (λ () (raise-argument-error 'name "Indexes" ds))))
+    (define vs
+      (for/vector
+                  #:length (array-shape-size ds)
+                  #:fill 0.0
+                  ([i      (in-range n-different-samples)]
+                   [sample (in-producer random-sample)]
+                   #:when #t
+                   [j      (in-range 12)])
+                  sample))
+    (unsafe-vector->array ds vs)))
+
 (define snare
   ;; 0.05 seconds of noise
   (build-array (vector (seconds->samples 0.05))

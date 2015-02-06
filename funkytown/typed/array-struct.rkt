@@ -5,12 +5,10 @@
          (only-in "array-for-each.rkt"
                   for-each-array-index
                   inline-build-array-data)
-         "array-utils.rkt")
+         "array-utils.rkt"
+         "array-types.rkt")
            
 (provide
- Array
- Mutable-Array
- Settable-Array
  array?
  array-default-strict
  array-shape
@@ -30,12 +28,6 @@
 
 (: array-strictness (Parameterof (U #f #t)))
 (define array-strictness (make-parameter #t))
-
-(struct: (A) Array ([shape : Indexes]
-                    [size : Index]
-                    [strict? : (Boxof Boolean)]
-                    [strict! : (-> Void)]
-                    [unsafe-proc : (Indexes -> A)]))
 
 (define-syntax-rule (make-unsafe-array-proc ds ref)
   (λ: ([js : Indexes])
@@ -104,8 +96,6 @@
 ;; ===================================================================================================
 ;; Abstract settable array data type
 
-(struct: (A) Settable-Array Array ([set-proc : (Indexes A -> Void)]))
-
 (define settable-array? Settable-Array?)
 (define unsafe-settable-array-set-proc Settable-Array-set-proc)
 
@@ -170,8 +160,6 @@
       [[_ clause] (raise-syntax-error 'in-array "expected (in-array <Array>)" #'clause #'clause)])))
 
 ;; --- from mutable-array.rkt
-
-(struct: (A) Mutable-Array Settable-Array ([data : (Vectorof A)]))
 
 (: unsafe-vector->array (All (A) (Indexes (Vectorof A) -> (Mutable-Array A))))
 (define (unsafe-vector->array ds vs)

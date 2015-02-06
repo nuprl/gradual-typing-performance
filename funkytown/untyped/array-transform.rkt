@@ -3,13 +3,13 @@
 (require racket/vector
          (only-in racket/fixnum fx+)
          (only-in "array-struct.rkt"
-                  Array
                   array-shape
                   unsafe-array-proc
                   unsafe-build-array
                   array-default-strict)
          (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
-         (only-in "array-utils.rkt" unsafe-vector-remove vector-copy-all unsafe-vector-insert))
+         (only-in "array-utils.rkt" unsafe-vector-remove vector-copy-all unsafe-vector-insert)
+         "array-untypes.rkt")
 
 (provide array-append*)
 

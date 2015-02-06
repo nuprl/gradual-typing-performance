@@ -3,15 +3,14 @@
 (provide array-map)
 
 (require (only-in "array-struct.rkt"
-                    Array
                     array?
                     array-shape
                     array-default-strict
                     unsafe-array-proc
                     unsafe-build-array)
          (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
-         (only-in "array-utils.rkt" Indexes)
-           (for-syntax racket/base))
+         "array-types.rkt"
+         (for-syntax racket/base))
 
 (define-syntax-rule (ensure-array name arr-expr)
   (let ([arr arr-expr])

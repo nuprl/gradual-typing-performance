@@ -48,13 +48,13 @@
 
 ;; Small test, for development
 (define (small-test)
-  (emit
-   (mix/sugar
-    (sequence 1 (list
-      (note 'C 5 1)
-      (cons #f 1)
-      (note 'C 5 1))
-      1200 sawtooth-wave)
+ (emit
+  (mix/sugar
+   (sequence 1 (list
+     (note 'C 5 1)
+     (cons #f 1)
+     (note 'C 5 1))
+     1200 sawtooth-wave)
     (drum 1 '(O #f #f #f X) 1200))))
 
 (time (begin (large-test) (void)))

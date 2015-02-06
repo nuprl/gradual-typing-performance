@@ -7,11 +7,10 @@
   emit)
 
 (require (only-in "array-struct.rkt"
-           Array
            array-size
            array-strictness
            in-array)
-         (only-in "array-utils.rkt" Indexes)
+         "array-types.rkt"
          (only-in racket/math exact-floor))
 
 ;; TODO this slows down a bit, it seems, but improves memory use

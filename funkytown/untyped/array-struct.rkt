@@ -10,11 +10,10 @@
            check-array-shape-size
            check-array-shape
            next-indexes!
-           unsafe-array-index->value-index))
+           unsafe-array-index->value-index)
+         "array-untypes.rkt")
 
 (provide
- Array
- Settable-Array
  array?
  array-default-strict
  array-shape
@@ -29,15 +28,10 @@
  make-unsafe-array-set-proc
  unsafe-array-proc
  unsafe-build-array
- unsafe-build-simple-array)
+ unsafe-build-simple-array
+ unsafe-vector->array)
 
 (define array-strictness (make-parameter #t))
-
-(struct Array ([shape ]
-               [size ]
-               [strict? ]
-               [strict! ]
-               [unsafe-proc ]))
 
 (define-syntax-rule (make-unsafe-array-proc ds ref)
   (lambda (js)
@@ -98,8 +92,6 @@
 
 ;; ===================================================================================================
 ;; Abstract settable array data type
-
-(struct Settable-Array Array ([set-proc ]))
 
 (define settable-array? Settable-Array?)
 (define unsafe-settable-array-set-proc Settable-Array-set-proc)
@@ -166,8 +158,6 @@
       [[_ clause] (raise-syntax-error 'in-array "expected (in-array <Array>)" #'clause #'clause)])))
 
 ;; --- from mutable-array.rkt
-
-(struct Mutable-Array Settable-Array ([data ]))
 
 (define (unsafe-vector->array ds vs)
   (define proc (make-unsafe-array-proc ds (λ (j) (vector-ref vs j))))

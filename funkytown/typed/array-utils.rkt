@@ -3,7 +3,8 @@
 (require 
          (only-in racket/performance-hint begin-encourage-inline)
          (for-syntax racket/base)
-         (only-in racket/fixnum fx* fx+))
+         (only-in racket/fixnum fx* fx+)
+         "array-types.rkt")
 
 (provide
 array-shape-size
@@ -15,14 +16,10 @@ unsafe-array-index->value-index
 unsafe-vector-insert
 unsafe-vector-remove
 vector-copy-all
-Indexes In-Indexes
 )
 
 (begin-encourage-inline
   
- (define-type Indexes (Vectorof Index))
- (define-type In-Indexes (U (Vectorof Integer) Indexes))
-
   (: vector->supertype-vector (All (A B) ((Vectorof A) -> (Vectorof (U A B)))))
   (define (vector->supertype-vector js)
     (define dims (vector-length js))

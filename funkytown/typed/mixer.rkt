@@ -1,14 +1,11 @@
 #lang typed/racket/base
 
 (require (only-in "array-pointwise.rkt" array-map)
-         (only-in "array-struct.rkt" Array)
          (only-in "array-broadcast.rkt" array-broadcasting)
+         "array-types.rkt"
          (only-in racket/list first second rest))
 
-(provide mix Weighted-Signal)
-
-;; A Weighted-Signal is a (List (Array Float) Real)
-(define-type Weighted-Signal (List (Array Float) Real))
+(provide mix)
 
 ;; Weighted sum of signals, receives a list of lists (signal weight).
 ;; Shorter signals are repeated to match the length of the longest.

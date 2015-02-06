@@ -1,21 +1,18 @@
 #lang typed/racket/base
 
 (require (only-in "array-struct.rkt"
-                  Array
-                  Mutable-Array
                   array-size
                   make-array
                   build-array
                   unsafe-vector->array)
          (only-in "array-utils.rkt"
                   array-shape-size
-                  check-array-shape
-                  Indexes
-                  In-Indexes)
+                  check-array-shape)
          (only-in "array-transform.rkt" array-append*)
-         (only-in "synth.rkt" fs seconds->samples))
+         (only-in "synth.rkt" fs seconds->samples)
+         "array-types.rkt")
 
-(provide drum Drum-Symbol Pattern)
+(provide drum)
 
 (: random-sample (-> Float))
 (define (random-sample) (- (* 2.0 (random)) 1.0))
@@ -57,10 +54,6 @@
                   (lambda ([x : Indexes]) (random-sample))])
     (build-array indexes arr-gen)))
 
-;; drum patterns are simply lists with either O (bass drum), X (snare) or
-;; #f (pause)
-(define-type Drum-Symbol (U 'O 'X #f))
-(define-type Pattern (Listof Drum-Symbol))
 ;; limited drum machine
 (: drum (-> Natural Pattern Natural (Array Float)))
 (define (drum n pattern tempo)

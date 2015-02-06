@@ -1,10 +1,11 @@
 #lang typed/racket/base
 
 (require (only-in "sequencer.rkt" note sequence)
-         (only-in "drum.rkt" drum Drum-Symbol Pattern)
+         (only-in "drum.rkt" drum)
          (only-in "mixer.rkt" mix)
-         (only-in "array-struct.rkt" Array in-array)
-         (only-in "synth.rkt" emit sawtooth-wave))
+         (only-in "array-struct.rkt" in-array)
+         (only-in "synth.rkt" emit sawtooth-wave)
+         "array-types.rkt")
 
 (require (for-syntax racket/base syntax/parse) racket/stxparam)
 

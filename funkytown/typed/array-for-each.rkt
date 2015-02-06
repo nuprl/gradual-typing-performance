@@ -4,7 +4,7 @@
          inline-build-array-data)
 
 (require (only-in racket/fixnum fx+ fx*)
-         "array-utils.rkt")
+         "array-types.rkt")
 
 (define-syntax-rule (for-each-array+data-index ds-expr f-expr)
   (let*: ([ds : Indexes  ds-expr]
