@@ -1,7 +1,8 @@
 #lang typed/racket
 
 (define-type Color Symbol)
-(require/typed "data.rkt"
+(require benchmark-util)
+(require/typed/check "data.rkt"
   [#:struct posn ([x : Real]
                   [y : Real])]
   [#:struct block ([x : Real]
