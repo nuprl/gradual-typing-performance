@@ -3,7 +3,7 @@ Sieve
 
 Simple implementation of the Sieve of Eratosthenes.
 Implemented using two modules:
-- `stream.rkt` implements a simple stream library
+- `stream.rkt` implements a simple stream library based on lambdas
 - `primes.rkt` implements the Sieve using the streams library
 
 The file `primes.rkt` depends on `streams.rkt`; `streams.rkt` only depends on the base libraries.
