@@ -1,2 +1,0 @@
-all:
-	xelatex graph.tex
