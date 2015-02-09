@@ -2,7 +2,7 @@ Zordoz
 ======
 
 Simple bytecode analyzer.
-Run all tests with `racket main.rkt`.
+Run `racket main.rkt` to run a small stress test, searching all the bytecode sources for this benchmark for occurrences of `branch` zo structs.
 
 - `dispatch-table.rkt` macro for `zo-transition` and `zo-string`.
 - `zo-string.rkt` convert any zo-struct to a struct
