@@ -1,9 +1,10 @@
 #lang racket/base
 
-(require (only-in racket/system system))
+(require (only-in "zo-shell.rkt" init))
 
-;; TODO add stress tests.
-(system "raco test zo-string.rkt")
-(system "raco test zo-transition.rkt")
-(system "raco test zo-find.rkt")
-(system "raco test zo-shell.rkt")
+;; Stress tests: search entire bytecode for the fairly-common branch struct
+(define BYTECODE '("zo-shell.zo" "zo-find.zo" "zo-string.zo" "zo-transition.zo"))
+(define (main)
+  (for ([b BYTECODE]) (init (vector b "branch"))))
+
+(time (with-output-to-file "/dev/null" main #:exists 'append))
