@@ -6,7 +6,12 @@ The steps that you need to take to set up an experiment are:
   * Install the "tools/benchmark-utils" package.
   * Set up your project with a particular directory layout.
   * Modify typed modules to require and use `require/typed/check`
-  * Run setup.rkt to get all typed/untyped variations.
+  * Run setup.rkt to generate all typed/untyped variations.
+
+     ******************************************
+     DO NOT MAKE CHANGES TO THE GENERATED FILES.
+     ******************************************
+
   * Run benchmarks
 
 These steps are detailed below in separate sections.
@@ -53,23 +58,27 @@ in the mixed program, add the following require:
   (require benchmark-util)
 ````
 
-Then, if a module "a" requires "b" then the typed version of
+Second, if a module "a" requires "b" then the typed version of
 "a" needs to change `(require b)` to something like
 `(require/typed/checked b [f (-> t s)] [g (-> x y)])`.
 
 The syntax of `require/typed/check` is the same as `require/typed`.
 
+Finally, get the typed and untyped program to run via relative [to base]
+paths. 
+
 Run setup.rkt
 -------------
 
-Run the `setup.rkt` script on the project to generate the variations in its
-own folder that can be run by the driver script (described below):
+In the top directory, run the `setup.rkt` script on the project 
 
   ./setup.rkt [project]
 
 This will generate a [project]/benchmark folder containing the variations.
-If there is an existing folder, it will be deleted. So do not make changes
-to the generated files.
+Each variation is in its own folder, plus a README file that specifies
+where files come from.
+
+If there is an existing benchmark/ folder, it will be deleted. 
 
 Running the benchmark
 ---------------------
