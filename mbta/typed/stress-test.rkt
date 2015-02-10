@@ -4,7 +4,11 @@
 
 ;; ===================================================================================================
 ; (require/typed "run-t.rkt" [EOM String] [run-t (-> Port Port Void)])
-(require "run-t.rkt")
+(require benchmark-util)
+(require/typed "run-t.rkt"
+               [EOM String]
+               [run-t (-> Input-Port Output-Port Thread)])
+                     
 
 (: stress-test (-> Natural Void))
 ;; run the stress test n times

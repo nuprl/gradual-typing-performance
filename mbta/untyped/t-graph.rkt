@@ -30,13 +30,13 @@
  read-t-graph)
 
 ;; ===================================================================================================
-(require "my-graph.rkt")
+(require "../base/my-graph.rkt")
 
 ;; type Lines       = [Listof [List String Connections]]
 ;; type Connections = [Listof Connection]
 ;; type Connection  = [List Station Station]
 
-(define SOURCE-DIRECTORY "../Data/~a.dat")
+(define SOURCE-DIRECTORY "../base/~a.dat")
 (define COLORS '("blue" "orange" "green" "red"))
 
 ;; ---------------------------------------------------------------------------------------------------

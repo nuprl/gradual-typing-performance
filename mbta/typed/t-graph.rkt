@@ -5,8 +5,8 @@
 (provide read-t-graph)
 
 ;; ===================================================================================================
-(require "t-graph-types.rkt")
-(require/typed "my-graph.rkt"
+(require "../base/t-graph-types.rkt")
+(require/typed "../base/my-graph.rkt"
                [unweighted-graph/directed (-> Connection* Graph)]
                [in-neighbors (-> Graph Station [Sequenceof Station])]
                [attach-edge-property 
@@ -20,7 +20,7 @@
 (define-type Connection* [Listof Connection])
 (define-type Connection  [List Station Station])
 
-(define SOURCE-DIRECTORY "../Data/~a.dat")
+(define SOURCE-DIRECTORY "../base/~a.dat")
 (define COLORS '("blue" "orange" "green" "red"))
 
 ;; ---------------------------------------------------------------------------------------------------
@@ -75,7 +75,7 @@
       (define from (first c))
       (define to (second c))
       (connection-on-set! from to (set-add (connection-on from to) name))))
-    (values graph connection-on))
+  (values graph connection-on))
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; auxiliary type defs to break down the problem, struct for type checking

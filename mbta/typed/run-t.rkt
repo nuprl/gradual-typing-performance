@@ -15,9 +15,9 @@
  run-t)
 
 ;; ===================================================================================================
-
-(require "t-view.rkt")
-(require "t-view-types.rkt")
+(require benchmark-util)
+(require/typed/check "t-view.rkt" [manage% Manage])
+(require "../base/t-view-types.rkt")
 ; (require/typed "t-view.rkt" [manage% Manage])
 (module+ test (require typed/rackunit))
 

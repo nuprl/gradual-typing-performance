@@ -4,13 +4,16 @@
 
 (provide 
  ;; type Manage 
+ 
+ ;; Manage
+ ;; a class for managing the 'view' of paths through the T system
  manage%)
 
-(require "t-view-types.rkt") ;; for export 
-
 ;; ===================================================================================================
-(require "t-graph-types.rkt")
-(require/typed "t-graph.rkt" [read-t-graph (-> [Instance MBTA])])
+(require benchmark-util)
+(require "../base/t-view-types.rkt") ;; for exporting manage% and Manage
+(require "../base/t-graph-types.rkt")
+(require/typed/check "t-graph.rkt" [read-t-graph (-> [Instance MBTA])])
 
 ;; BAD: 
 ;; [X -> Real] [Listof X] -> X
