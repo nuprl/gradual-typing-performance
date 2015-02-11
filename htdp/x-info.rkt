@@ -15,7 +15,7 @@
  ;; where is cross-referencing information for htdp2e and notes stored to/retrieved from
  info-htdp draft-info-htdp info-note draft-info-note
  ;; typed identifiers
- part)
+ part Render)
 
 ;; The documents end up in: 
 ;; ROOT
@@ -41,12 +41,14 @@
  scribble/xref
  [#:opaque Xref xref?])
 
+(define-type Render (Class)) ;; TODO actually give types to the interface
+
 (require/typed
  scribble/render
  ;; bg: Only typing the optional args I'm using
  [render (-> (Listof part)
              (Listof Path-String)
-             [#:render-mixin (-> Any Any)] ;; TODO
+             [#:render-mixin (-> Render Render)]
              [#:dest-dir (U #f Path-String)]
              [#:xrefs (Listof Xref)]
              [#:quiet? Any]
@@ -57,8 +59,8 @@
 
 (require/typed
  scribble/html-render
- [render-mixin (-> Any Any)]
- [render-multi-mixin (-> Any Any)])
+ [render-mixin (-> Render Render)]
+ [render-multi-mixin (-> Render Render)])
 
 (require/typed
  setup/xref
@@ -70,7 +72,7 @@
 (define HTDP2 "HtDP2e")
 (define DRAFT "Draft")
 
-(define HTDP2-DESTINATION ROOT)
+(define HTDP2-DESTINATION (build-path ROOT))
 (define DRAFT-DESTINATION (build-path ROOT "HtDP2e"))
 
 (define info-fmt "info-~a~a.rktl")
@@ -82,24 +84,24 @@
 
 ;; create a renderer and a path for the documentation, then scribble the desired document
 ;; bg: hacked the apply
-(: process-whole (-> Boolean
-                     (-> Boolean
-                         String
-                         Path-String
-                         String
-                         (-> Any Any)
-                         Void)
-                     String
-                     Path-String
-;                     (Listof Any)
-                     Void))
-(define (process-whole draft? scribble-it stem destination); . stuff)
+(: process-whole (->* (Boolean
+                       (-> Boolean
+                           String
+                           Path-String
+                           String
+                           (-> Render Render)
+                           Void)
+                       String
+                       Path-String)
+                      (Boolean)
+                      Void))
+(define (process-whole draft? scribble-it stem destination [maybe-flag #f])
   (define redirect 
     (if draft?
         "http://plt.eecs.northwestern.edu/snapshots/current/doc/"
         "http://docs.racket-lang.org/"))
   (define renderer (compose render-multi-mixin render-mixin))
-  (scribble-it draft? stem destination redirect renderer))
+  (scribble-it draft? stem destination redirect renderer ));maybe-flag))
   ;; (apply scribble-it draft? stem destination redirect renderer stuff))
 
 
@@ -108,15 +110,16 @@
 ;; (without running a decision again and thus duplicating the whole thing)
 ;; bg: passing optional argument as false, if missing. But that syntax-rule trick was fun.
 ;; (define-syntax-rule (run renderer stem stem.doc destination redirect? in-file out-file ...)
-(: run (->* ((-> Any Any)
+(: run (->* ((-> Render Render)
              Path-String
              part
              Path-String
-             String
+             (U String #f)
              Path-String)
             (#:info-out-file Path-String)
            Any))
 (define (run renderer stem stem.doc destination redirect? in-file #:info-out-file [out-file #f])
+  (displayln "PASSING IT OFF TO RENDER")
   (render (list stem.doc)
           (list stem)
           #:render-mixin renderer

@@ -1,3 +1,7 @@
+#! /bin/sh
+#|
+exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
+|#
 #lang typed/racket
 
 ;; ---------------------------------------------------------------------------------------------------
@@ -14,11 +18,12 @@
 ; net/sendurl
  "x-info.rkt")
 
-;; Hard-coded
+;; TODO Hard-coded
 (require/typed
  "notes.scrbl"
  [doc Any])
 
+(: main (->* () (Boolean) Void))
 (define (main (draft? #f))
   (if draft?
       (process-whole #t scribble-it NOTES (build-path DRAFT-DESTINATION DRAFT))
@@ -32,13 +37,14 @@
 ;; -- using renderer, which implements render<%>, to scribble 
 ;; produce [draft-]info-file for cross-references to HtDP
 ;; open browser on stem.html 
-(: scribble-it (-> Boolean
-                   String
-                   Path-String
-                   String
-                   (-> Any Any)
-                   Void))
-(define (scribble-it draft? stem destination redirect? renderer)
+(: scribble-it (->* (Boolean
+                     String
+                     Path-String
+                     (U String #f)
+                     (-> Render Render))
+                    (Boolean)
+                    Void))
+(define (scribble-it draft? stem destination redirect? renderer [unused-flag #f])
   ;; (: stem.scrbl Resolved-Module-Path)
   ;; (define stem.scrbl (make-resolved-module-path
   ;;                     (build-path stem ".scrbl")))
@@ -48,10 +54,6 @@
   (define stem.html  (string-append stem ".html"))
   (displayln `(rendering ,stem.scrbl draft: ,draft?))
   ;; TODO cannot type ;; (define stem.doc (dynamic-require stem.scrbl 'doc))
-    ;; (let ([x (dynamic-require stem.scrbl 'doc)])
-    ;;   (if (eq? #f x)
-    ;;       (error "false")
-    ;;       x)))
   (: stem.doc part) ;; TODO this is a crappy solution
   (define stem.doc (cast doc part))
   (define-values (in-file out-file)

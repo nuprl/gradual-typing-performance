@@ -2,7 +2,7 @@
 #|
 exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
 |#
-#lang racket/gui
+#lang typed/racket
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; runs scribble and opens preview for section, draft, release
@@ -15,12 +15,28 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
  main)
 
 ;; ---------------------------------------------------------------------------------------------------
-   (require
-    "x-info.rkt"
-    (prefix-in notes: "xnotes")
-    net/sendurl
-    scribble/html-render)
+(require
+ "x-info.rkt"
+ ;net/sendurl
+ (prefix-in notes: "xnotes"))
 
+(require/typed
+ scribble/html-render
+ [render-mixin (-> Render Render)])
+
+;; TODO these hard-coded require/typed are bad --
+(require/typed
+ "Shared/shared.rkt"
+ [is-draft? (Parameterof Boolean)]) ;; TODO is actually a parameter. How to get the value out?
+(require/typed
+ "Draft.scrbl"
+ [(doc doc-draft) Any])
+(require/typed
+ "HtDP2e.scrbl"
+ [(doc doc-htdp) Any])
+;; -- TODO these hard-coded require/typed are bad
+
+(: main (-> String Void))
 (define (main arg)
   (cond 
     [(string=? "release" arg) 
@@ -28,17 +44,23 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
     [(string=? "draft" arg)
      (create-draft-file)
      (process-whole #t scribble-it DRAFT DRAFT-DESTINATION #t)]
-    [(file-exists? (string-append arg ".scrbl")) (process arg)]
-    [(and (file-exists? arg) (regexp-match "(.*)\\.scrbl" arg)) => (compose process second)]
-    [else (error 'xhtml "no such file: ~a.scrbl" arg)]))
+    [(file-exists? (string-append arg ".scrbl"))
+     (process arg)]
+    [(and (file-exists? arg) (regexp-match "(.*)\\.scrbl" arg))
+     (error "ben could not type this")]
+     ;; (compose process second)]
+    [else
+     (error 'xhtml "no such file: ~a.scrbl" arg)]))
 
 ;; -> Void
+(: create-draft-file (-> Void))
 (define (create-draft-file)
   (when (file-exists? "Draft.scrbl") (delete-file "Draft.scrbl"))
   (copy-file "HtDP2e.scrbl" "Draft.scrbl"))
 
 ;; String -> Void
-;; create a destination directory, then scribble the desired document 
+;; create a destination directory, then scribble the desired document
+(: process (-> String Void))
 (define (process stem)
   (define destination (string-append "HTML/" stem))
   (unless (directory-exists? destination) (make-directory destination))
@@ -52,13 +74,25 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
 ;; -- using renderer, which implements render<%>, to scribble 
 ;; produce [draft-]info-file for cross-references to HtDP
 ;; -- but only if produce-info? calls for it (DON'T DO IT FOR CHAPTERS and INTERMEZZOS)
-;; open browser on stem.html 
+;; open browser on stem.html
+(: scribble-it (->* (Boolean
+                     String
+                     Path-String
+                     (U String #f))
+                    ((-> Render Render)
+                     Boolean)
+                    Void))
 (define (scribble-it draft? stem destination redirect? (renderer render-mixin) (produce-info? #f))
   (define stem.scrbl (string-append stem ".scrbl"))
   (define stem.html  (string-append stem ".html"))
-  (displayln `(scribbling ,stem.scrbl draft: ,draft?))
-  ((dynamic-require "Shared/shared.rkt" 'is-draft?) draft?)
-  (define stem.doc (dynamic-require stem.scrbl 'doc))
+  ;; (displayln `(scribbling ,stem.scrbl draft: ,draft?))
+  (define draft? (is-draft?))
+  ;; TODO cannot type yet ;; (define stem.doc (dynamic-require stem.scrbl 'doc))
+  (: stem.doc part)
+  (define stem.doc
+    (cond [(string=? stem HTDP2) (cast doc-htdp part)]
+          [(string=? stem DRAFT) (cast doc-draft part)]
+          [else (error (format "Could not find file ~e" stem.scrbl))]))
   (define-values (in-file out-file)
     (if draft?
         (values draft-info-note draft-info-htdp)
@@ -70,59 +104,53 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
       (run renderer stem stem.doc  destination redirect? in-file))
   (displayln `(done rendering))
   ;; ---
-  (parameterize ([current-directory destination])
-    (displayln `(cleaning up ,stem))
-    (cleanup)
-    (displayln `(opening browser at ,destination ,stem.html))
-    (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html")))))
-
+  ;; (parameterize ([current-directory destination])
+  ;;   (displayln `(cleaning up ,stem))
+  ;;   (cleanup)
+  ;;   (displayln `(opening browser at ,destination ,stem.html))
+  ;;   (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html")))))
+)
 ;; ---------------------------------------------------------------------------------------------------
 ;; the code below used to be a standalone script 
 
-;; -> Void 
+;; -> Void
+(: cleanup (-> Void))
 (define (cleanup)
   (for ((f (directory-list)) #:when (regexp-match ".html$" (path->string f)))
-    (fix-1-file f)))
+    (fix-1-file (path->string f))))
 
 ;; String -> Void 
 ;; given the file name ... 
 ;; [i know i can do this with regexp-replace ...]
+(: fix-1-file (-> String Void))
 (define (fix-1-file file-name)
+  (: change-all (-> Void))
   (define (change-all)
+    (: loop (-> Void))
     (define (loop)
+      (: next (U EOF Char))
       (define next (read-char))
       (unless (eof-object? next) 
         (cond
-          #;	  
-          [(char=? next #\#)
-           (let ([next2 (read-char)])
-             (cond
-               #;
-               [(char=? next2 #\t) (error 'bad! "#t showed up ~a" file-name) (display "#true")]
-               #;
-               [(char=? next2 #\f) (error 'bad! "#f showed up ~a" file-name) (display "#false")]
-               [else (display next) (display next2)]))]
-          #;
-          [(char=? next #\')
-           (let ([next2 (read-char)])
-             (cond
-               [(char=? next2 #\() (display "(list ")]
-               [else (display next) (display next2)]))]
           [(char=? next #\-)
            (let ([next2 (read-char)])
-             (if (char=? #\1 next2)
+             (if (and (not (eof-object? next2))
+                      (char=? #\1 next2))
                  (let ([next3 (read-char)])
-                   (if (char=? #\. next3)
+                   (if (and (not (eof-object? next3))
+                            (char=? #\. next3))
                        (let ([next4 (read-char)])
-                         (if (char=? #\0 next4)
+                         (if (and (not (eof-object? next4))
+                                  (char=? #\0 next4))
                              (display "#i-1.0")
                              (for-each display (list #\- #\1 #\. next4))))
                        (for-each display (list #\- #\1 next3))))
                  (for-each display (list #\- next2))))]
           [else (display next)])
-        (loop)))
+      (loop))
+    )
     ;; -----------------------------------------------------------------------------------------------
-    (with-handlers ([exn:fail? (lambda (e) (displayln `(failing in change-all ,(exn-message e))))])
+    (with-handlers ([exn:fail? (lambda ([e : exn]) (displayln `(failing in change-all ,(exn-message e))))])
       (with-output-to-file "tmp.html" loop #:exists 'truncate)))
   (with-input-from-file file-name change-all)
   (rename-file-or-directory "tmp.html" file-name #t))
