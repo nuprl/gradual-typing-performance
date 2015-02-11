@@ -1,8 +1,4 @@
-;; #! /bin/sh
-;; #|
-;; exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
-;; |#
-#lang racket/gui
+#lang typed/racket
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; runs scribble and opens preview for section, draft, release
@@ -14,7 +10,9 @@
  main)
 
 ;; ---------------------------------------------------------------------------------------------------
-(require "x-info.rkt" net/sendurl)
+(require
+; net/sendurl
+ "x-info.rkt")
 
 (define (main (draft? #f))
   (if draft?
@@ -29,21 +27,37 @@
 ;; -- using renderer, which implements render<%>, to scribble 
 ;; produce [draft-]info-file for cross-references to HtDP
 ;; open browser on stem.html 
+(: scribble-it (-> Boolean
+                   String
+                   Path-String
+                   String
+                   (-> Any Any)
+                   Void))
 (define (scribble-it draft? stem destination redirect? renderer)
-  (define stem.scrbl (string-append stem ".scrbl"))
+  ;; (: stem.scrbl Resolved-Module-Path)
+  ;; (define stem.scrbl (make-resolved-module-path
+  ;;                     (build-path stem ".scrbl")))
+  (: stem.scrbl String)
+  (define stem.scrbl 
+                      (string-append stem ".scrbl"))
   (define stem.html  (string-append stem ".html"))
   (displayln `(rendering ,stem.scrbl draft: ,draft?))
+  (: stem.doc AnyValues) ; ?????
   (define stem.doc (dynamic-require stem.scrbl 'doc))
-  (define-values (in-file out-file)
-    (if draft?
-        (values draft-info-htdp draft-info-note)
-        (values info-htdp       info-note)))
-  (unless (file-exists? in-file)
-    (copy-file "x-info.dat" in-file)
-    (printf "WARNING: xnotes is using an old info file. RUN xnotes AGAIN"))
-  ;; (printf "CALLING RENDER WITH\ndestination = ~a\nin-file = ~a\nout-file = ~a\n" destination in-file out-file)
-  ;; (printf "is path? dest = ~a\n" (path-for-some-system? destination))
-  (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
+    ;; (let ([x (dynamic-require stem.scrbl 'doc)])
+    ;;   (if (eq? #f x)
+    ;;       (error "false")
+    ;;       x)))
+  ;; (define-values (in-file out-file)
+  ;;   (if draft?
+  ;;       (values draft-info-htdp draft-info-note)
+  ;;       (values info-htdp       info-note)))
+  ;; (unless (file-exists? in-file)
+  ;;   (copy-file "x-info.dat" in-file)
+  ;;   (printf "WARNING: xnotes is using an old info file. RUN xnotes AGAIN"))
+  ;; ;; (printf "CALLING RENDER WITH\ndestination = ~a\nin-file = ~a\nout-file = ~a\n" destination in-file out-file)
+  ;; ;; (printf "is path? dest = ~a\n" (path-for-some-system? destination))
+  ;; (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
   (displayln `(done rendering))
 )  ;; ---
   ;; (parameterize ([current-directory destination])

@@ -1,19 +1,21 @@
 #lang typed/racket/base
 
-;; (provide
-;;  ;; Boolean [Boolean String String [Maybe String] [Class -> Class] . Any -> Void] String String -> Any
-;;  process-whole 
+(provide
+ ;; Boolean [Boolean String String [Maybe String] [Class -> Class] . Any -> Void] String String -> Any
+ process-whole 
 
-;;  ;; [ -> ] PathString PathString PathString [Maybe PathString] PathString X ... -> Any
-;;  ;; syntax
-;;  run
+ ;; [ -> ] PathString PathString PathString [Maybe PathString] PathString X ... -> Any
+ ;; syntax
+ run
 
-;;  ;; String
-;;  NOTES HTDP2 DRAFT HTDP2-DESTINATION DRAFT-DESTINATION
+ ;; String
+ NOTES HTDP2 DRAFT HTDP2-DESTINATION DRAFT-DESTINATION
 
-;;  ;; PathString:
-;;  ;; where is cross-referencing information for htdp2e and notes stored to/retrieved from
-;;  info-htdp draft-info-htdp info-note draft-info-note)
+ ;; PathString:
+ ;; where is cross-referencing information for htdp2e and notes stored to/retrieved from
+ info-htdp draft-info-htdp info-note draft-info-note
+ ;; typed identifiers
+ part)
 
 ;; The documents end up in: 
 ;; ROOT
@@ -83,12 +85,12 @@
 (: process-whole (-> Boolean
                      (-> Boolean
                          String
-                         String
+                         Path-String
                          String
                          (-> Any Any)
                          Void)
                      String
-                     String
+                     Path-String
 ;                     (Listof Any)
                      Void))
 (define (process-whole draft? scribble-it stem destination); . stuff)
@@ -114,8 +116,7 @@
              Path-String)
             (#:info-out-file Path-String)
            Any))
-(define (run renderer stem stem.doc destination redirect?
-             in-file #:info-out-file [out-file #f])
+(define (run renderer stem stem.doc destination redirect? in-file #:info-out-file [out-file #f])
   (render (list stem.doc)
           (list stem)
           #:render-mixin renderer
