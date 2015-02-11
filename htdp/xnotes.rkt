@@ -14,6 +14,11 @@
 ; net/sendurl
  "x-info.rkt")
 
+;; Hard-coded
+(require/typed
+ "notes.scrbl"
+ [doc Any])
+
 (define (main (draft? #f))
   (if draft?
       (process-whole #t scribble-it NOTES (build-path DRAFT-DESTINATION DRAFT))
@@ -42,22 +47,23 @@
                       (string-append stem ".scrbl"))
   (define stem.html  (string-append stem ".html"))
   (displayln `(rendering ,stem.scrbl draft: ,draft?))
-  (: stem.doc AnyValues) ; ?????
-  (define stem.doc (dynamic-require stem.scrbl 'doc))
+  ;; TODO cannot type ;; (define stem.doc (dynamic-require stem.scrbl 'doc))
     ;; (let ([x (dynamic-require stem.scrbl 'doc)])
     ;;   (if (eq? #f x)
     ;;       (error "false")
     ;;       x)))
-  ;; (define-values (in-file out-file)
-  ;;   (if draft?
-  ;;       (values draft-info-htdp draft-info-note)
-  ;;       (values info-htdp       info-note)))
-  ;; (unless (file-exists? in-file)
-  ;;   (copy-file "x-info.dat" in-file)
-  ;;   (printf "WARNING: xnotes is using an old info file. RUN xnotes AGAIN"))
+  (: stem.doc part) ;; TODO this is a crappy solution
+  (define stem.doc (cast doc part))
+  (define-values (in-file out-file)
+    (if draft?
+        (values draft-info-htdp draft-info-note)
+        (values info-htdp       info-note)))
+  (unless (file-exists? in-file)
+    (copy-file "x-info.dat" in-file)
+    (printf "WARNING: xnotes is using an old info file. RUN xnotes AGAIN"))
   ;; ;; (printf "CALLING RENDER WITH\ndestination = ~a\nin-file = ~a\nout-file = ~a\n" destination in-file out-file)
   ;; ;; (printf "is path? dest = ~a\n" (path-for-some-system? destination))
-  ;; (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
+  (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
   (displayln `(done rendering))
 )  ;; ---
   ;; (parameterize ([current-directory destination])
