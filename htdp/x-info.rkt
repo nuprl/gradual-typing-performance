@@ -119,7 +119,6 @@
             (#:info-out-file Path-String)
            Any))
 (define (run renderer stem stem.doc destination redirect? in-file #:info-out-file [out-file #f])
-  (displayln "PASSING IT OFF TO RENDER")
   (render (list stem.doc)
           (list stem)
           #:render-mixin renderer
