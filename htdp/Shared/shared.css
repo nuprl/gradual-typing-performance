@@ -1,0 +1,20 @@
+.Figure {
+  border: 1px solid #000000;
+  padding: 0.2em;
+  background-color: #eee;
+}
+
+.Ftitle {
+  border: 1px solid #000000;
+  padding: 0.2em;
+  background-color: lightgrey;
+}
+
+.inbox {
+  padding: 0.2em;
+  border: 1px solid #000000;
+}
+
+.Right {
+  text-align: right; 
+}
