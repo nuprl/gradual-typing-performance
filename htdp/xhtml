@@ -17,24 +17,27 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
 ;; ---------------------------------------------------------------------------------------------------
 (require
  "x-info.rkt"
- ;net/sendurl
  (prefix-in notes: "xnotes"))
+
+;; (require/typed
+;;  net/sendurl
+;;  [send-url/file (-> Path-String Void)])
 
 (require/typed
  scribble/html-render
  [render-mixin (-> Render Render)])
 
-;; TODO these hard-coded require/typed are bad --
-(require/typed
- "Shared/shared.rkt"
- [is-draft? (Parameterof Boolean)]) ;; TODO is actually a parameter. How to get the value out?
-(require/typed
- "Draft.scrbl"
- [(doc doc-draft) Any])
-(require/typed
- "HtDP2e.scrbl"
- [(doc doc-htdp) Any])
-;; -- TODO these hard-coded require/typed are bad
+;; ;; TODO these hard-coded require/typed are bad --
+;; (require/typed
+;;  "Shared/shared.rkt"
+;;  [is-draft? (Parameterof Boolean)]) ;; TODO is actually a parameter. How to get the value out?
+;; (require/typed
+;;  "Draft.scrbl"
+;;  [(doc doc-draft) Any])
+;; (require/typed
+;;  "HtDP2e.scrbl"
+;;  [(doc doc-htdp) Any])
+;; ;; -- TODO these hard-coded require/typed are bad
 
 (: main (-> String Void))
 (define (main arg)
@@ -85,14 +88,9 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
 (define (scribble-it draft? stem destination redirect? (renderer render-mixin) (produce-info? #f))
   (define stem.scrbl (string-append stem ".scrbl"))
   (define stem.html  (string-append stem ".html"))
-  ;; (displayln `(scribbling ,stem.scrbl draft: ,draft?))
-  (define draft? (is-draft?))
-  ;; TODO cannot type yet ;; (define stem.doc (dynamic-require stem.scrbl 'doc))
+  ((cast (dynamic-require "Shared/shared.rkt" 'is-draft?) (Parameterof Boolean)) draft?)
   (: stem.doc part)
-  (define stem.doc
-    (cond [(string=? stem HTDP2) (cast doc-htdp part)]
-          [(string=? stem DRAFT) (cast doc-draft part)]
-          [else (error (format "Could not find file ~e" stem.scrbl))]))
+  (define stem.doc (cast (dynamic-require stem.scrbl 'doc) part))
   (define-values (in-file out-file)
     (if draft?
         (values draft-info-note draft-info-htdp)
@@ -103,13 +101,13 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
       (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
       (run renderer stem stem.doc  destination redirect? in-file))
   (displayln `(done rendering))
-  ;; ---
+)  ;; ---
   ;; (parameterize ([current-directory destination])
   ;;   (displayln `(cleaning up ,stem))
   ;;   (cleanup)
   ;;   (displayln `(opening browser at ,destination ,stem.html))
   ;;   (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html")))))
-)
+
 ;; ---------------------------------------------------------------------------------------------------
 ;; the code below used to be a standalone script 
 

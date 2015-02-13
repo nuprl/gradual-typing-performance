@@ -15,13 +15,12 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
 
 ;; ---------------------------------------------------------------------------------------------------
 (require
-; net/sendurl
+ 
  "x-info.rkt")
 
-;; TODO Hard-coded
-(require/typed
- "notes.scrbl"
- [doc Any])
+;; (require/typed
+;;  net/sendurl
+;;  [send-url/file (-> Path-String Void)])
 
 (: main (->* () (Boolean) Void))
 (define (main (draft? #f))
@@ -53,9 +52,9 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
                       (string-append stem ".scrbl"))
   (define stem.html  (string-append stem ".html"))
   (displayln `(rendering ,stem.scrbl draft: ,draft?))
-  ;; TODO cannot type ;; (define stem.doc (dynamic-require stem.scrbl 'doc))
-  (: stem.doc part) ;; TODO this is a crappy solution
-  (define stem.doc (cast doc part))
+  (define stem.doc (cast (dynamic-require stem.scrbl 'doc) part))
+  ;; (: stem.doc part) ;; TODO this is a crappy solution
+  ;; (define stem.doc (cast doc part))
   (define-values (in-file out-file)
     (if draft?
         (values draft-info-htdp draft-info-note)

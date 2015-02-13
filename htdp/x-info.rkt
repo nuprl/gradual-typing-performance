@@ -108,7 +108,7 @@
 ;; run renderer on the remaining arguments with keywords supplied 
 ;; it's a syntax rule because I don't know how to supply an optional keyword otherwise 
 ;; (without running a decision again and thus duplicating the whole thing)
-;; bg: passing optional argument as false, if missing. But that syntax-rule trick was fun.
+;; TODO bg: passing optional argument as false, if missing. But that syntax-rule trick was fun.
 ;; (define-syntax-rule (run renderer stem stem.doc destination redirect? in-file out-file ...)
 (: run (->* ((-> Render Render)
              Path-String
