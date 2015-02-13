@@ -8,6 +8,7 @@ the performance hypothesis underlying gradual typing.
 | zo traversal          | Ben         | Yes     | No           | 5         | almost diamond   |
 | sieve                 | Ben         | Yes     | No           | 2         | one chain        |
 | echo                  | Ben         | Yes     | No           | 4         | directed diamond |
+| HTDP script           | Ben         | Yes     | No           | 3         | vee              |
 | mbta                  | Matthias    | Yes     | No           | 4         | one chain        |
 | snake                 | Max         | Yes     | No           |           |                  |
 | tetris                | Max         | Yes     | No           |           |                  |
