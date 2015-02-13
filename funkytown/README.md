@@ -4,7 +4,7 @@ funkytown
 Funkytown benchmark.
 Original code taken from [the chaperones benchmarks](http://github.com/stamourv/contract-benchmarks) and the Racket [math/array](http://docs.racket-lang.org/math/array.html) library.
 
-Run `funky-town.rkt` to create (and discard) some music.
+Run `main.rkt` to create (and discard) some music.
 
 Some modules are taken from the `math/array` library.
 Remember, an array is a function with a rectangular domain.
