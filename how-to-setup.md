@@ -83,7 +83,15 @@ If there is an existing benchmark/ folder, it will be deleted.
 Running the benchmark
 ---------------------
 
-This section will be filled in later.
+In the top directory, call the run script in the tools folder:
+
+  `racket tools/run.rkt [project] [main.rkt] [num-iterations]`
+
+Arguments are:
+- `[project]` the project folder's name (the script searches for `[project]/benchmark/variation*` folders)
+- `[main.rkt]` the name of the project file to execute. Please call it `main.rkt`.
+- `[num-iterations]` number of times to run each variation.
+
 
 Other notes
 -----------
