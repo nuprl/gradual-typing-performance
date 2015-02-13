@@ -13,7 +13,7 @@
          (only-in "zo-find.rkt" zo-find result result? result-z result-path)
          (only-in "zo-string.rkt" zo->string)
          (only-in "zo-transition.rkt" zo-transition)
-         "typed-zo-structs.rkt"
+         "../base/typed-zo-structs.rkt"
          racket/match)
 
 (require/typed compiler/zo-parse

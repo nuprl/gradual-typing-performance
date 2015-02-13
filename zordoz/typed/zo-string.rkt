@@ -37,7 +37,7 @@
          (only-in racket/list   empty?)
          (only-in racket/string string-join)
          (for-syntax racket/base racket/syntax)
-         "typed-zo-structs.rkt")
+         "../base/typed-zo-structs.rkt")
 
 ;; -----------------------------------------------------------------------------
 
