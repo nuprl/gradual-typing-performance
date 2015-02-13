@@ -21,7 +21,8 @@
     (raise-user-error (format "expected a number, given ~a" num-iterations)))
 
   (define variations
-    (for/list ([file (in-list (directory-list (build-path basepath "benchmark")))])
+    (for/list ([file (in-list (directory-list (build-path basepath "benchmark")))]
+               #:when (not (equal? "base" (path->string file))))
       (build-path basepath "benchmark" file entry-point)))
 
   (for ([var (in-list variations)])
