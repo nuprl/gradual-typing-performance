@@ -19,6 +19,7 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
  "x-info.rkt"
  (prefix-in notes: "xnotes"))
 
+;; Uncomment if RENDER IN BROWSER snippet is uncommented, below
 ;; (require/typed
 ;;  net/sendurl
 ;;  [send-url/file (-> Path-String Void)])
@@ -26,18 +27,6 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
 (require/typed
  scribble/html-render
  [render-mixin (-> Render Render)])
-
-;; ;; TODO these hard-coded require/typed are bad --
-;; (require/typed
-;;  "Shared/shared.rkt"
-;;  [is-draft? (Parameterof Boolean)]) ;; TODO is actually a parameter. How to get the value out?
-;; (require/typed
-;;  "Draft.scrbl"
-;;  [(doc doc-draft) Any])
-;; (require/typed
-;;  "HtDP2e.scrbl"
-;;  [(doc doc-htdp) Any])
-;; ;; -- TODO these hard-coded require/typed are bad
 
 (: main (-> String Void))
 (define (main arg)
@@ -50,7 +39,7 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
     [(file-exists? (string-append arg ".scrbl"))
      (process arg)]
     [(and (file-exists? arg) (regexp-match "(.*)\\.scrbl" arg))
-     (error "ben could not type this")]
+     (error "ben could not type this")] ;; TODO: though, the case appears unused
      ;; (compose process second)]
     [else
      (error 'xhtml "no such file: ~a.scrbl" arg)]))
@@ -101,7 +90,7 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
       (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
       (run renderer stem stem.doc  destination redirect? in-file))
   (displayln `(done rendering))
-)  ;; ---
+)  ;; --- RENDER IN BROWSER
   ;; (parameterize ([current-directory destination])
   ;;   (displayln `(cleaning up ,stem))
   ;;   (cleanup)

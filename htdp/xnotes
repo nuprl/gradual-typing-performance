@@ -18,6 +18,7 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
  
  "x-info.rkt")
 
+;; Uncomment if RENDER IN BROWSER is uncommented
 ;; (require/typed
 ;;  net/sendurl
 ;;  [send-url/file (-> Path-String Void)])
@@ -53,8 +54,6 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
   (define stem.html  (string-append stem ".html"))
   (displayln `(rendering ,stem.scrbl draft: ,draft?))
   (define stem.doc (cast (dynamic-require stem.scrbl 'doc) part))
-  ;; (: stem.doc part) ;; TODO this is a crappy solution
-  ;; (define stem.doc (cast doc part))
   (define-values (in-file out-file)
     (if draft?
         (values draft-info-htdp draft-info-note)
@@ -62,11 +61,9 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
   (unless (file-exists? in-file)
     (copy-file "x-info.dat" in-file)
     (printf "WARNING: xnotes is using an old info file. RUN xnotes AGAIN"))
-  ;; ;; (printf "CALLING RENDER WITH\ndestination = ~a\nin-file = ~a\nout-file = ~a\n" destination in-file out-file)
-  ;; ;; (printf "is path? dest = ~a\n" (path-for-some-system? destination))
   (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
   (displayln `(done rendering))
-)  ;; ---
+)  ;; --- RENDER IN BROWSER
   ;; (parameterize ([current-directory destination])
   ;;   (displayln `(opening browser at ,destination ,stem.html))
   ;;   (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html")))))
