@@ -2,15 +2,21 @@
 
 (provide array-map)
 
-(require (only-in "array-struct.rkt"
-                    array?
-                    array-shape
-                    array-default-strict
-                    unsafe-array-proc
-                    unsafe-build-array)
-         (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
+(require benchmark-util
          "array-types.rkt"
          (for-syntax racket/base))
+
+(require/typed/check "array-struct.rkt"
+  [array? (-> Any Boolean)]
+  [array-shape (-> (Array Any) Indexes)]
+  [array-default-strict (-> (Array Any) Void)]
+  [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
+  [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))])
+
+(require/typed/check "array-broadcast.rkt"
+  [array-broadcast (-> (Array Any) Indexes (Array Any))]
+  [array-shape-broadcast (case-> ((Listof Indexes) -> Indexes)
+                                 ((Listof Indexes) (U #f #t 'permissive) -> Indexes))])
 
 (define-syntax-rule (ensure-array name arr-expr)
   (let ([arr arr-expr])

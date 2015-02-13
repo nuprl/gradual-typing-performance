@@ -1,16 +1,25 @@
 #lang typed/racket/base
 
-(require (only-in "array-struct.rkt"
-                  array-size
-                  make-array
-                  build-array
-                  unsafe-vector->array)
-         (only-in "array-utils.rkt"
-                  array-shape-size
-                  check-array-shape)
-         (only-in "array-transform.rkt" array-append*)
-         (only-in "synth.rkt" fs seconds->samples)
+(require benchmark-util
          "array-types.rkt")
+
+(require/typed/check "array-struct.rkt"
+  [array-size (-> (Array Any) Index)]
+  [make-array (-> In-Indexes Any (Array Any))]
+  [build-array (-> In-Indexes (-> Indexes Any) (Array Any))]
+  [unsafe-vector->array (-> (Indexes (Vectorof Any) (Mutable-Array Any)))])
+
+(require/typed/check "array-utils.rkt"
+  [array-shape-size (-> Indexes Natural)]
+  [check-array-shape (-> In-Indexes (-> Nothing) Indexes)])
+
+(require/typed/check "array-transform.rkt"
+  [array-append* (case-> ((Listof (Array A)) -> (Array A))
+                         ((Listof (Array A)) Integer -> (Array A)))])
+
+(require/typed/check "synth.rkt"
+  [fs Natural]
+  [seconds->samples (-> Float Index)])
 
 (provide drum)
 

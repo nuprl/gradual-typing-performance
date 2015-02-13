@@ -1,5 +1,4 @@
 #lang typed/racket
-;; TODO move to a base/ folder
 
 (provide
  (struct-out zo)

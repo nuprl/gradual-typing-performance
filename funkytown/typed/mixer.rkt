@@ -1,9 +1,15 @@
 #lang typed/racket/base
 
-(require (only-in "array-pointwise.rkt" array-map)
-         (only-in "array-broadcast.rkt" array-broadcasting)
+(require benchmark-util
          "array-types.rkt"
          (only-in racket/list first second rest))
+
+(require/typed/check "array-pointwise.rkt"
+  [array-map (case-> (-> (-> Float Float Float) (Array Float) Float (Array Float))
+                     (-> (-> Float Float) (Array Float) (Array Float)))])
+
+(require/typed/check "array-broadcast.rkt"
+  [array-broadcasting (Parameterof (U #f #t 'permissive))])
 
 (provide mix)
 

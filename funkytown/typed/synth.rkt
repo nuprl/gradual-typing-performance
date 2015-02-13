@@ -6,12 +6,14 @@
   seconds->samples
   emit)
 
-(require (only-in "array-struct.rkt"
-           array-size
-           array-strictness
-           in-array)
+(require benchmark-util
          "array-types.rkt"
          (only-in racket/math exact-floor))
+
+(require/typed/check "array-struct.rkt"
+  [array-size (-> (Array Any) Index)]
+  [array-strictness (Parameterof (U #f #t))]
+  [in-array (-> (Array Float) Float)])
 
 ;; TODO this slows down a bit, it seems, but improves memory use
 (array-strictness #f)

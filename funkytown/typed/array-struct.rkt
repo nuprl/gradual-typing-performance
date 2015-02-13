@@ -2,12 +2,15 @@
 
 (require (for-syntax racket/base syntax/parse)
          (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
-         (only-in "array-for-each.rkt"
-                  for-each-array-index
-                  inline-build-array-data)
-         "array-utils.rkt"
+         benchmark-util
          "array-types.rkt")
-           
+
+(require/typed/check "array-utils.rkt"
+)
+
+(require/typed/check "array-for-each.rkt"
+  [inline-build-array-data (-> Indexes (-> Indexes Any Any) (Array Any))])
+
 (provide
  array?
  array-default-strict

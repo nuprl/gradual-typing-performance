@@ -2,14 +2,24 @@
 
 (require racket/vector
          (only-in racket/fixnum fx+)
-         (only-in "array-struct.rkt"
-                  array-shape
-                  unsafe-array-proc
-                  unsafe-build-array
-                  array-default-strict)
-         (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
-         (only-in "array-utils.rkt" unsafe-vector-remove vector-copy-all unsafe-vector-insert)
+         benchmark-util
          "array-types.rkt")
+
+(require/typed/check "array-struct.rkt"
+  [array-shape (-> (Array Any) Index)]
+  [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
+  [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))]
+  [array-default-strict (-> (Array Any) Void)])
+
+(require/typed/check "array-broadcast.rkt"
+  [array-broadcast (-> (Array Any) Indexes (Array Any))]
+  [array-shape-broadcast (case-> ((Listof Indexes) -> Indexes)                       (-> 
+                                 ((Listof Indexes) (U #f #t 'permissive))))])
+
+(require/typed/check "array-utils.rkt"
+  [unsafe-vector-remove (-> (Vectorof Any) Index (Vectorof Any))]
+  [vector-copy-all (-> (Vectorof Any) (Vectorof Any))]
+  [unsafe-vector-insert (-> (Vectorof Any) Index Any (Vectorof Any))])
 
 (provide array-append*)
 

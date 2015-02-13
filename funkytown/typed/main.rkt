@@ -1,11 +1,21 @@
 #lang typed/racket/base
 
-(require (only-in "sequencer.rkt" note sequence)
-         (only-in "drum.rkt" drum)
-         (only-in "mixer.rkt" mix)
-         (only-in "array-struct.rkt" in-array)
-         (only-in "synth.rkt" emit sawtooth-wave)
+(require benchmark-util
          "array-types.rkt")
+
+(require/typed/check "sequencer.rkt"
+  [note (-> Symbol Natural Natural (Pairof Natural Natural))]
+  [sequence (-> Natural (Listof (Pairof (U Natural #f) Natural)) Natural (-> Float (-> Indexes Float)) (Array Float))])
+
+(require/typed/check "drum.rkt"
+  [drum (-> Natural Pattern Natural (Array Float))])
+
+(require/typed/check "mixer.rkt"
+  [mix (-> Weighted-Signal * (Array Float))])
+
+(require/typed/check "synth.rkt"
+  [emit (-> (Array Float) (Vectorof Integer))]
+  [sawtooth-wave (-> Float (-> Indexes Float))])
 
 (require (for-syntax racket/base syntax/parse) racket/stxparam)
 

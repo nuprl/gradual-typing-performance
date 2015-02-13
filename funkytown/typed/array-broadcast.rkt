@@ -1,18 +1,22 @@
 #lang typed/racket/base
 
 (require (only-in racket/fixnum fx<= fxmax fxmodulo)
-         (only-in "array-struct.rkt"
-                  array-strict?
-                  array-default-strict
-                  array-shape
-                  array-size
-                  unsafe-array-proc
-                  unsafe-build-array)
-         (only-in "array-utils.rkt" make-thread-local-indexes)
          (only-in racket/vector vector-append)
          (only-in racket/string string-join)
          (only-in racket/list empty? first rest)
+         benchmark-util
          "array-types.rkt")
+
+(require/typed/check "array-struct.rkt"
+  [array-strict? (-> (Array Any) Boolean)]
+  [array-default-strict (-> (Array Any) Void)]
+  [array-shape (-> (Array Any) Indexes)]
+  [array-size (-> (Array Any) Index)]
+  [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
+  [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))])
+
+(require/typed/check "array-utils.rkt"
+  [make-thread-local-indexes (-> Integer (-> Indexes))])
 
 (provide array-broadcasting
          array-broadcast
