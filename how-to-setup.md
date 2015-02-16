@@ -72,13 +72,13 @@ Run setup.rkt
 
 In the top directory, run the `setup.rkt` script on the project 
 
-  ./setup.rkt [project]
+  `./setup.rkt [project]`
 
-This will generate a [project]/benchmark folder containing the variations.
+This will generate a `[project]/benchmark` folder containing the variations.
 Each variation is in its own folder, plus a README file that specifies
 where files come from.
 
-If there is an existing benchmark/ folder, it will be deleted. 
+If there is an existing `benchmark/` folder, it will be deleted.
 
 Compile all variations
 ----------------------
