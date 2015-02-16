@@ -80,17 +80,27 @@ where files come from.
 
 If there is an existing benchmark/ folder, it will be deleted. 
 
+Compile all variations
+----------------------
+
+In the top directory, call the driver script in compile-mode:
+
+  `racket tools/run.rkt -c [project] [main.rkt]`
+
+This will compile all variations to make sure that they build, but
+will not run any of them.
+
 Running the benchmark
 ---------------------
 
 In the top directory, call the run script in the tools folder:
 
-  `racket tools/run.rkt [project] [main.rkt] [num-iterations]`
+  `racket tools/run.rkt -i [num-iterations] [project] [main.rkt]`
 
 Arguments are:
 - `[project]` the project folder's name (the script searches for `[project]/benchmark/variation*` folders)
 - `[main.rkt]` the name of the project file to execute. Please call it `main.rkt`.
-- `[num-iterations]` number of times to run each variation.
+- `[num-iterations]` number of times to run each variation. (optional flag)
 
 
 Other notes
