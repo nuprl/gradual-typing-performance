@@ -3,7 +3,7 @@
 (require (for-syntax racket/base syntax/parse)
          (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
          benchmark-util
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "array-utils.rkt"
   [unsafe-array-index->value-index (-> Indexes Indexes Integer)]

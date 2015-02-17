@@ -7,7 +7,7 @@
   emit)
 
 (require benchmark-util
-         "array-types.rkt"
+         "../base/array-types.rkt"
          (only-in racket/math exact-floor))
 
 (require/typed/check "array-struct.rkt"

@@ -3,7 +3,7 @@
 (provide array-map)
 
 (require benchmark-util
-         "array-types.rkt"
+         "../base/array-types.rkt"
          (for-syntax racket/base))
 
 (require/typed/check "array-struct.rkt"

@@ -11,7 +11,7 @@
                   check-array-shape)
          (only-in "array-transform.rkt" array-append*)
          (only-in "synth.rkt" fs seconds->samples)
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (provide drum)
 

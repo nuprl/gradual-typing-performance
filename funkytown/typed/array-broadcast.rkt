@@ -5,7 +5,7 @@
          (only-in racket/string string-join)
          (only-in racket/list empty? first rest)
          benchmark-util
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "array-struct.rkt"
   [array-strict? (-> (Array Any) Boolean)]

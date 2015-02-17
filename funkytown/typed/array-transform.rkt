@@ -3,7 +3,7 @@
 (require racket/vector
          (only-in racket/fixnum fx+)
          benchmark-util
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "array-struct.rkt"
   [array-shape (-> (Array Any) Integer)]

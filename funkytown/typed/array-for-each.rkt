@@ -5,7 +5,7 @@
 
 (require (only-in racket/fixnum fx+ fx*)
          benchmark-util
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (define-syntax-rule (for-each-array+data-index ds-expr f-expr)
   (let*: ([ds : Indexes  ds-expr]

@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "sequencer.rkt"
   [note (-> Symbol Natural Natural (Pairof Natural Natural))]

@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "array-types.rkt"
+         "../base/array-types.rkt"
          (only-in racket/list first second rest))
 
 (require/typed/check "array-pointwise.rkt"

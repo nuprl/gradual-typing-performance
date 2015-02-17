@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "array-struct.rkt"
   [build-array (-> (Vectorof Nonnegative-Integer) (-> Indexes Flonum) (Array Flonum))])
