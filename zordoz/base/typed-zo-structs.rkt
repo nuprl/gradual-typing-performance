@@ -1,6 +1,7 @@
 #lang typed/racket
 
 (provide
+ Spec
  (struct-out zo)
  (struct-out compilation-top)
  (struct-out prefix)
@@ -68,6 +69,15 @@
  (struct-out accessor-shape)
  (struct-out mutator-shape)
  (struct-out struct-other-shape))
+
+;; A Spec is the name of a zo struct and a list of pairs representing its fields:
+;; - The car of each field is the name of that field
+;; - The cdr of each field is a thunk for building a representation of the field's value.
+;;   If the value is a zo-struct, the thunk should build a Spec
+;;   Otherwise, the thunk should build a string
+(define-type Spec
+  (Rec Spec
+   (Pair String (Listof (Pair String (-> (U Spec String)))))))
 
 (require/typed compiler/zo-structs
                [#:struct zo ()]

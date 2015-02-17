@@ -10,7 +10,7 @@
 
 (require (only-in compiler/zo-parse zo? zo-parse)
          (only-in racket/string string-split string-join)
-         (only-in "zo-find.rkt" zo-find result result? result-zo result-path)
+         (only-in "zo-find.rkt" zo-find result result? result-z result-path)
          (only-in "zo-string.rkt" zo->string)
          (only-in "zo-transition.rkt" zo-transition)
          racket/match)
@@ -207,7 +207,7 @@
          (define res (list-ref ctx index))
          ;; If list elements are search results, current `hist` can be safely ignored.
          (if (result? res)
-             (values (result-zo res) (result-path res))
+             (values (result-z res) (result-path res))
              (values res             (push hist ctx)))]))
 
 ;; Use the string `field` to access a field in the zo struct `ctx`.
@@ -314,7 +314,7 @@
     ['()
      (displayln "'()")]
     [(cons x _)
-     (define z (if (result? x) (result-zo x) x))
+     (define z (if (result? x) (result-z x) x))
      (printf "~a[~a]\n"
              (zo->string z #:deep? #f)
              (length ctx))]

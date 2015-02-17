@@ -12,10 +12,15 @@
 
 (require (only-in racket/list empty?)
          (only-in racket/string string-split string-trim)
-         (only-in "zo-transition.rkt" zo-transition)
-         (only-in "zo-string.rkt" zo->spec Spec)
+         benchmark-util
          "../base/typed-zo-structs.rkt"
          racket/match)
+
+(require/typed/check "zo-transition.rkt"
+  [zo-transition (-> zo String (values (U zo (Listof zo)) Boolean))])
+
+(require/typed/check "zo-string.rkt"
+  [zo->spec (-> zo Spec)])
 
 ;; -----------------------------------------------------------------------------
 

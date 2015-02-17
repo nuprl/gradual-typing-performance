@@ -8,7 +8,7 @@
  ;; Search a struct recursively for member zo-structs matching a string.
  zo-find
  ;; Search result: a zo-struct and the path to reach it
- result result? result-zo result-path)
+ (struct-out result))
 
 (require (only-in racket/list empty?)
          (only-in racket/string string-split string-trim)
@@ -21,7 +21,7 @@
 
 ;; --- API functions
 
-(struct result (zo path) #:transparent)
+(struct result (z path) #:transparent)
 
 ;; Searches a zo-struct `z` recursively for member zo-structs matching the `s`.
 ;; Terminates after at most `#:limit` recursive calls.

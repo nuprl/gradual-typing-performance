@@ -8,14 +8,19 @@
  ;; Start a REPL using command-line arguments
  init)
 
-(require
+(require benchmark-util
          (only-in racket/string string-split string-join)
-         (only-in "zo-find.rkt" zo-find result result? result-z result-path)
-         (only-in "zo-string.rkt" zo->string)
-         (only-in "zo-transition.rkt" zo-transition)
          "../base/typed-zo-structs.rkt"
          racket/match)
 
+(require/typed/check "zo-string.rkt"
+  [zo->string (->* (zo) (#:deep? Boolean) String)])
+(require/typed/check "zo-transition.rkt"
+  [zo-transition (-> zo String (values (U zo (Listof zo)) Boolean))])
+(require/typed/check "zo-find.rkt"
+  [zo-find (-> zo String [#:limit (U Natural #f)] (Listof result))]
+  [#:struct result ([z : zo]
+                    [path : (Listof zo)])])
 (require/typed compiler/zo-parse
                [zo-parse (->* () (Input-Port) zo)])
 

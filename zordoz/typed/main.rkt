@@ -1,6 +1,9 @@
 #lang typed/racket/base
 
-(require (only-in "zo-shell.rkt" init))
+(require benchmark-util)
+
+(require/typed/check "zo-shell.rkt"
+  [init (-> (Vectorof String) Void)])
 
 ;; Stress tests: search entire bytecode for the fairly-common branch struct
 (: BYTECODE (Listof String))
