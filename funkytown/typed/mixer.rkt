@@ -5,7 +5,7 @@
          (only-in racket/list first second rest))
 
 (require/typed/check "array-pointwise.rkt"
-  [array-map (case-> (-> (-> Float Float Float) (Array Float) Float (Array Float))
+  [array-map (case-> (-> (-> Float Float Float) (Array Float) (Array Float) (Array Float))
                      (-> (-> Float Float) (Array Float) (Array Float)))])
 
 (require/typed/check "array-broadcast.rkt"
@@ -32,7 +32,7 @@
   (: scale-signal (Float -> (Float -> Float)))
   (define ((scale-signal w) x) (* x w downscale-ratio))
   (parameterize ([array-broadcasting 'permissive]) ; repeat short signals
-    (for/fold ([res (array-map (scale-signal (first weights))
+    (for/fold ([res : (Array Float) (array-map (scale-signal (first weights))
                                (first signals))])
         ([s (in-list (rest signals))]
          [w (in-list (rest weights))])
