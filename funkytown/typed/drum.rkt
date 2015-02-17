@@ -5,17 +5,17 @@
 
 (require/typed/check "array-struct.rkt"
   [array-size (-> (Array Any) Integer)]
-  [make-array (-> In-Indexes Any (Array Any))]
-  [build-array (-> In-Indexes (-> Indexes Any) (Array Any))]
-  [unsafe-vector->array (-> (Indexes (Vectorof Any) (Mutable-Array Any)))])
+  [make-array (-> In-Indexes Any (Array Float))]
+  [build-array (-> In-Indexes (-> Indexes Float) (Array Float))]
+  [unsafe-vector->array (-> Indexes (Vectorof Float) (Mutable-Array Float))])
 
 (require/typed/check "array-utils.rkt"
   [array-shape-size (-> Indexes Natural)]
   [check-array-shape (-> In-Indexes (-> Nothing) Indexes)])
 
 (require/typed/check "array-transform.rkt"
-  [array-append* (case-> ((Listof (Array A)) -> (Array A))
-                         ((Listof (Array A)) Integer -> (Array A)))])
+  [array-append* (case-> ((Listof (Array Float)) -> (Array Float))
+                         ((Listof (Array Float)) Integer -> (Array Float)))])
 
 (require/typed/check "synth.rkt"
   [fs Natural]
