@@ -25,7 +25,7 @@ vector-copy-all
     (define dims (vector-length js))
     (cond [(= dims 0)  (vector)]
           [else  (define: new-js : (Vectorof (U A B)) (make-vector dims (vector-ref js 0)))
-                 (let loop ([#{i : Nonnegative-Fixnum} 1])
+                 (let loop ([#{i : Integer} 1])
                    (cond [(i . < . dims)  (vector-set! new-js i (vector-ref js i))
                                           (loop (+ i 1))]
                          [else  new-js]))]))
@@ -33,25 +33,25 @@ vector-copy-all
   (: vector-copy-all (All (A) ((Vectorof A) -> (Vectorof A))))
   (define (vector-copy-all js) ((inst vector->supertype-vector A A) js))
   
-  (: array-shape-size (Indexes -> Natural))
+  (: array-shape-size (Indexes -> Integer))
   (define (array-shape-size ds)
     (define dims (vector-length ds))
-    (let loop ([#{i : Nonnegative-Fixnum} 0] [#{n : Natural} 1])
+    (let loop ([#{i : Integer} 0] [#{n : Integer} 1])
       (cond [(i . < . dims)  (define d (vector-ref ds i))
                              (loop (+ i 1) (* n d))]
             [else  n])))
   
-  (: check-array-shape-size (Symbol Indexes -> Index))
+  (: check-array-shape-size (Symbol Indexes -> Integer))
   (define (check-array-shape-size name ds)
     (define size (array-shape-size ds))
     (cond [(index? size)  size]
           [else  (error name "array size ~e (for shape ~e) is too large (is not an Index)" size ds)]))
   
-  (: check-array-shape (In-Indexes (-> Nothing) -> Indexes))
+  (: check-array-shape ((Vectorof Integer) (-> Nothing) -> Indexes))
   (define (check-array-shape ds fail)
     (define dims (vector-length ds))
     (define: new-ds : Indexes (make-vector dims 0))
-    (let loop ([#{i : Nonnegative-Fixnum} 0])
+    (let loop ([#{i : Integer} 0])
       (cond [(i . < . dims)
              (define di (vector-ref ds i))
              (cond [(index? di)  (vector-set! new-ds i di)
@@ -59,10 +59,10 @@ vector-copy-all
                    [else  (fail)])]
             [else  new-ds])))
   
-  (: unsafe-array-index->value-index (Indexes Indexes -> Nonnegative-Fixnum))
+  (: unsafe-array-index->value-index (Indexes Indexes -> Integer))
   (define (unsafe-array-index->value-index ds js)
     (define dims (vector-length ds))
-    (let loop ([#{i : Nonnegative-Fixnum} 0] [#{j : Nonnegative-Fixnum} 0])
+    (let loop ([#{i : Integer} 0] [#{j : Integer} 0])
       (cond [(i . < . dims)
              (define di (vector-ref ds i))
              (define ji (vector-ref js i))
@@ -76,12 +76,12 @@ vector-copy-all
   (error name "expected indexes for shape ~e; given ~e"
          (vector->list ds) js))
 
-(: array-index->value-index (Symbol Indexes In-Indexes -> Nonnegative-Fixnum))
+(: array-index->value-index (Symbol Indexes In-Indexes -> Integer))
 (define (array-index->value-index name ds js)
   (define (raise-index-error) (raise-array-index-error name ds js))
   (define dims (vector-length ds))
   (unless (= dims (vector-length js)) (raise-index-error))
-  (let loop ([#{i : Nonnegative-Fixnum} 0] [#{j : Nonnegative-Fixnum}  0])
+  (let loop ([#{i : Integer} 0] [#{j : Integer}  0])
     (cond [(i . < . dims)
            (define di (vector-ref ds i))
            (define ji (vector-ref js i))
@@ -96,7 +96,7 @@ vector-copy-all
   (define dims (vector-length ds))
   (unless (= dims (vector-length js)) (raise-index-error))
   (define: new-js : Indexes (make-vector dims 0))
-  (let loop ([#{i : Nonnegative-Fixnum} 0])
+  (let loop ([#{i : Integer} 0])
     (cond [(i . < . dims)
            (define di (vector-ref ds i))
            (define ji (vector-ref js i))
@@ -106,7 +106,7 @@ vector-copy-all
                  [else  (raise-index-error)])]
           [else  new-js])))
 
-(: unsafe-vector-remove (All (I) ((Vectorof I) Index -> (Vectorof I))))
+(: unsafe-vector-remove (All (I) ((Vectorof I) Integer -> (Vectorof I))))
 (define (unsafe-vector-remove vec k)
   (define n (vector-length vec))
   (define n-1 (sub1 n))
@@ -114,25 +114,25 @@ vector-copy-all
     [(not (index? n-1)) (error 'unsafe-vector-remove "internal error")]
     [else
      (define: new-vec : (Vectorof I) (make-vector n-1 (vector-ref vec 0)))
-     (let loop ([#{i : Nonnegative-Fixnum} 0])
+     (let loop ([#{i : Integer} 0])
        (when (i . < . k)
          (vector-set! new-vec i (vector-ref vec i))
          (loop (+ i 1))))
-     (let loop ([#{i : Nonnegative-Fixnum} k])
+     (let loop ([#{i : Integer} k])
        (cond [(i . < . n-1)
               (vector-set! new-vec i (vector-ref vec (+ i 1)))
               (loop (+ i 1))]
              [else  new-vec]))]))
 
-(: unsafe-vector-insert (All (I) ((Vectorof I) Index I -> (Vectorof I))))
+(: unsafe-vector-insert (All (I) ((Vectorof I) Integer I -> (Vectorof I))))
 (define (unsafe-vector-insert vec k v)
   (define n (vector-length vec))
   (define: dst-vec : (Vectorof I) (make-vector (+ n 1) v))
-  (let loop ([#{i : Nonnegative-Fixnum} 0])
+  (let loop ([#{i : Integer} 0])
     (when (i . < . k)
       (vector-set! dst-vec i (vector-ref vec i))
       (loop (+ i 1))))
-  (let loop ([#{i : Nonnegative-Fixnum} k])
+  (let loop ([#{i : Integer} k])
     (when (i . < . n)
       (let ([i+1  (+ i 1)])
         (vector-set! dst-vec i+1 (vector-ref vec i))
@@ -147,10 +147,10 @@ vector-copy-all
                 (thread-cell-set! val v)
                 v)))))
 
-(: next-indexes! (Indexes Index Indexes -> Void))
+(: next-indexes! (Indexes Integer Indexes -> Void))
 ;; Sets js to the next vector of indexes, in row-major order
 (define (next-indexes! ds dims js)
-  (let loop ([#{k : Nonnegative-Fixnum}  dims])
+  (let loop ([#{k : Integer}  dims])
     (unless (zero? k)
       (let ([k  (- k 1)])
         (define jk (vector-ref js k))

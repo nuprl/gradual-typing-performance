@@ -4,7 +4,7 @@
          "array-types.rkt")
 
 (require/typed/check "array-struct.rkt"
-  [array-size (-> (Array Any) Index)]
+  [array-size (-> (Array Any) Integer)]
   [make-array (-> In-Indexes Any (Array Any))]
   [build-array (-> In-Indexes (-> Indexes Any) (Array Any))]
   [unsafe-vector->array (-> (Indexes (Vectorof Any) (Mutable-Array Any)))])
@@ -19,7 +19,7 @@
 
 (require/typed/check "synth.rkt"
   [fs Natural]
-  [seconds->samples (-> Float Index)])
+  [seconds->samples (-> Float Integer)])
 
 (provide drum)
 
@@ -32,7 +32,7 @@
 (define bass-drum
   (let ()
     ;; 0.05 seconds of noise whose value changes every 12 samples
-    (: n-samples Index)
+    (: n-samples Integer)
     (define n-samples           (seconds->samples 0.05))
     (: n-different-samples Integer)
     (define n-different-samples (quotient n-samples 12))

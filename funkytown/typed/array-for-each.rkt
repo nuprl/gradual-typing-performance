@@ -9,40 +9,40 @@
 
 (define-syntax-rule (for-each-array+data-index ds-expr f-expr)
   (let*: ([ds : Indexes  ds-expr]
-          [dims : Index  (vector-length ds)])
+          [dims : Integer  (vector-length ds)])
     (define-syntax-rule (f js j)
-      ((ann f-expr (Indexes Nonnegative-Fixnum -> Void)) js j))
+      ((ann f-expr (Indexes Integer -> Void)) js j))
     (cond
       [(= dims 0)  (f ds 0)]
       [else
        (define: js : Indexes (make-vector dims 0))
        (case dims
-         [(1)  (define: d0 : Index (vector-ref ds 0))
-               (let: j0-loop : Void ([j0 : Nonnegative-Fixnum  0])
+         [(1)  (define: d0 : Integer (vector-ref ds 0))
+               (let: j0-loop : Void ([j0 : Integer  0])
                  (when (j0 . < . d0)
                    (vector-set! js 0 j0)
                    (f js j0)
                    (j0-loop (+ j0 1))))]
-         [(2)  (define: d0 : Index (vector-ref ds 0))
-               (define: d1 : Index (vector-ref ds 1))
-               (let: j0-loop : Void ([j0 : Nonnegative-Fixnum  0]
-                                     [j : Nonnegative-Fixnum  0])
+         [(2)  (define: d0 : Integer (vector-ref ds 0))
+               (define: d1 : Integer (vector-ref ds 1))
+               (let: j0-loop : Void ([j0 : Integer  0]
+                                     [j : Integer  0])
                  (when (j0 . < . d0)
                    (vector-set! js 0 j0)
-                   (let: j1-loop : Void ([j1 : Nonnegative-Fixnum  0]
-                                         [j : Nonnegative-Fixnum  j])
+                   (let: j1-loop : Void ([j1 : Integer  0]
+                                         [j : Integer  j])
                      (cond [(j1 . < . d1)
                             (vector-set! js 1 j1)
                             (f js j)
                             (j1-loop (+ j1 1) (fx+ j 1))]
                            [else
                             (j0-loop (+ j0 1) j)]))))]
-         [else  (let: i-loop : Nonnegative-Fixnum ([i : Nonnegative-Fixnum  0]
-                                                   [j : Nonnegative-Fixnum  0])
+         [else  (let: i-loop : Integer ([i : Integer  0]
+                                                   [j : Integer  0])
                   (cond [(i . < . dims)
-                        (define: di : Index (vector-ref ds i))
-                         (let: ji-loop : Nonnegative-Fixnum ([ji : Nonnegative-Fixnum  0]
-                                                             [j : Nonnegative-Fixnum  j])
+                        (define: di : Integer (vector-ref ds i))
+                         (let: ji-loop : Integer ([ji : Integer  0]
+                                                             [j : Integer  j])
                            (cond [(ji . < . di)
                                   (vector-set! js i ji)
                                   (ji-loop (+ ji 1) (i-loop (+ i 1) j))]
@@ -53,7 +53,7 @@
 
 (define-syntax-rule (for-each-array-index ds-expr f-expr)
   (let*: ([ds : Indexes  ds-expr]
-          [dims : Index  (vector-length ds)])
+          [dims : Integer  (vector-length ds)])
     (define-syntax-rule (f js)
       ((ann f-expr (Indexes -> Void)) js))
     (cond
@@ -61,28 +61,28 @@
       [else
        (define: js : Indexes (make-vector dims 0))
        (case dims
-         [(1)  (define: d0 : Index (vector-ref ds 0))
-               (let: j0-loop : Void ([j0 : Nonnegative-Fixnum  0])
+         [(1)  (define: d0 : Integer (vector-ref ds 0))
+               (let: j0-loop : Void ([j0 : Integer  0])
                  (when (j0 . < . d0)
                    (vector-set! js 0 j0)
                    (f js)
                    (j0-loop (+ j0 1))))]
-         [(2)  (define: d0 : Index (vector-ref ds 0))
-               (define: d1 : Index (vector-ref ds 1))
-               (let: j0-loop : Void ([j0 : Nonnegative-Fixnum  0])
+         [(2)  (define: d0 : Integer (vector-ref ds 0))
+               (define: d1 : Integer (vector-ref ds 1))
+               (let: j0-loop : Void ([j0 : Integer  0])
                  (when (j0 . < . d0)
                    (vector-set! js 0 j0)
-                   (let: j1-loop : Void ([j1 : Nonnegative-Fixnum  0])
+                   (let: j1-loop : Void ([j1 : Integer  0])
                      (cond [(j1 . < . d1)
                             (vector-set! js 1 j1)
                             (f js)
                             (j1-loop (+ j1 1))]
                            [else
                             (j0-loop (+ j0 1))]))))]
-         [else  (let: i-loop : Void ([i : Nonnegative-Fixnum  0])
+         [else  (let: i-loop : Void ([i : Integer  0])
                   (cond [(i . < . dims)
-                         (define: di : Index (vector-ref ds i))
-                         (let: ji-loop : Void ([ji : Nonnegative-Fixnum  0])
+                         (define: di : Integer (vector-ref ds i))
+                         (let: ji-loop : Void ([ji : Integer  0])
                            (when (ji . < . di)
                              (vector-set! js i ji)
                              (i-loop (+ i 1))
@@ -91,36 +91,36 @@
 
 (define-syntax-rule (for-each-data-index ds-expr f-expr)
   (let*: ([ds : Indexes  ds-expr]
-          [dims : Index  (vector-length ds)])
+          [dims : Integer  (vector-length ds)])
     (define-syntax-rule (f j)
-      ((ann f-expr (Nonnegative-Fixnum -> Void)) j))
+      ((ann f-expr (Integer -> Void)) j))
     (cond
       [(= dims 0)  (f 0)]
       [else
        (case dims
-         [(1)  (define: d0 : Index (vector-ref ds 0))
-               (let: j0-loop : Void ([j0 : Nonnegative-Fixnum  0])
+         [(1)  (define: d0 : Integer (vector-ref ds 0))
+               (let: j0-loop : Void ([j0 : Integer  0])
                  (when (j0 . < . d0)
                    (f j0)
                    (j0-loop (+ j0 1))))]
-         [(2)  (define: d0 : Index (vector-ref ds 0))
-               (define: d1 : Index (vector-ref ds 1))
-               (let: j0-loop : Void ([j0 : Nonnegative-Fixnum  0]
-                                     [j : Nonnegative-Fixnum  0])
+         [(2)  (define: d0 : Integer (vector-ref ds 0))
+               (define: d1 : Integer (vector-ref ds 1))
+               (let: j0-loop : Void ([j0 : Integer  0]
+                                     [j : Integer  0])
                  (when (j0 . < . d0)
-                   (let: j1-loop : Void ([j1 : Nonnegative-Fixnum  0]
-                                         [j : Nonnegative-Fixnum  j])
+                   (let: j1-loop : Void ([j1 : Integer  0]
+                                         [j : Integer  j])
                      (cond [(j1 . < . d1)
                             (f j)
                             (j1-loop (+ j1 1) (fx+ j 1))]
                            [else
                             (j0-loop (+ j0 1) j)]))))]
-         [else  (let: i-loop : Nonnegative-Fixnum ([i : Nonnegative-Fixnum  0]
-                                                   [j : Nonnegative-Fixnum  0])
+         [else  (let: i-loop : Integer ([i : Integer  0]
+                                                   [j : Integer  0])
                   (cond [(i . < . dims)
-                         (define: di : Index (vector-ref ds i))
-                         (let: ji-loop : Nonnegative-Fixnum ([ji : Nonnegative-Fixnum  0]
-                                                             [j : Nonnegative-Fixnum  j])
+                         (define: di : Integer (vector-ref ds i))
+                         (let: ji-loop : Integer ([ji : Integer  0]
+                                                             [j : Integer  j])
                            (cond [(ji . < . di)
                                   (ji-loop (+ ji 1) (i-loop (+ i 1) j))]
                                  [else  j]))]
@@ -130,11 +130,11 @@
 
 (define-syntax-rule (inline-build-array-data ds-expr g-expr A)
   (let*: ([ds : Indexes  ds-expr]
-          [dims : Index  (vector-length ds)])
+          [dims : Integer  (vector-length ds)])
     (define-syntax-rule (g js j)
-      ((ann g-expr (Indexes Nonnegative-Fixnum -> A)) js j))
-    (define: size : Nonnegative-Fixnum
-      (let: loop : Nonnegative-Fixnum ([k : Nonnegative-Fixnum  0] [size : Nonnegative-Fixnum  1])
+      ((ann g-expr (Indexes Integer -> A)) js j))
+    (define: size : Integer
+      (let: loop : Integer ([k : Integer  0] [size : Integer  1])
         (cond [(k . < . dims)  (loop (+ k 1) (fx* size (vector-ref ds k)))]
               [else  size])))
     (cond [(= size 0)  (ann (vector) (Vectorof A))]

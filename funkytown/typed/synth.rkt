@@ -11,7 +11,7 @@
          (only-in racket/math exact-floor))
 
 (require/typed/check "array-struct.rkt"
-  [array-size (-> (Array Any) Index)]
+  [array-size (-> (Array Any) Integer)]
   [array-strictness (Parameterof (U #f #t))]
   [in-array (-> (Array Float) Float)])
 
@@ -24,13 +24,13 @@
 (define bits-per-sample 16)
 
 ;; Wow this is too much work
-(: freq->sample-period (-> Float Index))
+(: freq->sample-period (-> Float Integer))
 (define (freq->sample-period freq)
   (: res Exact-Rational)
   (define res (inexact->exact (round (/ fs freq))))
   (if (index? res) res (error "not index")))
 
-(: seconds->samples (-> Float Index))
+(: seconds->samples (-> Float Integer))
 (define (seconds->samples s)
   (: res Exact-Rational)
   (define res (inexact->exact (round (* s fs))))
@@ -40,8 +40,8 @@
 
 ;; array functions receive a vector of indices
 (define-syntax-rule (array-lambda (i) body ...)
-  (lambda ([i* : (Vectorof Index)])
-    (let: ([i : Index (vector-ref i* 0)]) body ...)))
+  (lambda ([i* : (Vectorof Integer)])
+    (let: ([i : Integer (vector-ref i* 0)]) body ...)))
 
 (: make-sawtooth-wave (-> Float (-> Float (-> Indexes Float))))
 (define ((make-sawtooth-wave coeff) freq)

@@ -11,7 +11,7 @@
   [array-strict? (-> (Array Any) Boolean)]
   [array-default-strict (-> (Array Any) Void)]
   [array-shape (-> (Array Any) Indexes)]
-  [array-size (-> (Array Any) Index)]
+  [array-size (-> (Array Any) Integer)]
   [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
   [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))])
 
@@ -42,7 +42,7 @@
    new-ds
    (λ: ([new-js : Indexes])
      (let ([old-js  (old-js)])
-       (let: loop : A ([k : Nonnegative-Fixnum  0])
+       (let: loop : A ([k : Integer  0])
          (cond [(k . < . old-dims)
                 (define new-jk (vector-ref new-js (+ k shift)))
                 (define old-dk (vector-ref old-ds k))
@@ -61,12 +61,12 @@
 
 (: shape-insert-axes (Indexes Integer -> Indexes))
 (define (shape-insert-axes ds n)
-  (vector-append ((inst make-vector Index) n 1) ds))
+  (vector-append ((inst make-vector Integer) n 1) ds))
 
-(: shape-permissive-broadcast (Indexes Indexes Index (-> Nothing) -> Indexes))
+(: shape-permissive-broadcast (Indexes Indexes Integer (-> Nothing) -> Indexes))
 (define (shape-permissive-broadcast ds1 ds2 dims fail)
   (define: new-ds : Indexes (make-vector dims 0))
-  (let loop ([#{k : Nonnegative-Fixnum} 0])
+  (let loop ([#{k : Integer} 0])
     (cond [(k . < . dims)
            (define dk1 (vector-ref ds1 k))
            (define dk2 (vector-ref ds2 k))
@@ -77,10 +77,10 @@
            (loop (+ k 1))]
           [else  new-ds])))
 
-(: shape-normal-broadcast (Indexes Indexes Index (-> Nothing) -> Indexes))
+(: shape-normal-broadcast (Indexes Indexes Integer (-> Nothing) -> Indexes))
 (define (shape-normal-broadcast ds1 ds2 dims fail)
   (define: new-ds : Indexes (make-vector dims 0))
-  (let loop ([#{k : Nonnegative-Fixnum} 0])
+  (let loop ([#{k : Integer} 0])
     (cond [(k . < . dims)
            (define dk1 (vector-ref ds1 k))
            (define dk2 (vector-ref ds2 k))

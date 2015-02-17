@@ -6,7 +6,9 @@
          "array-types.rkt")
 
 (require/typed/check "array-utils.rkt"
-)
+  [unsafe-array-index->value-index (-> Indexes Indexes Integer)]
+  [check-array-shape-size (-> Symbol Indexes Integer)]
+  [check-array-shape (-> (Vectorof Integer) (-> Nothing) Indexes)])
 
 (require/typed/check "array-for-each.rkt"
   [inline-build-array-data (-> Indexes (-> Indexes Any Any) (Array Any))])
@@ -54,7 +56,7 @@
     ((Array-strict! arr))
     (set-box! strict? #t)))
 
-(: unsafe-build-array (All (A) (Indexes (Indexes -> A) -> (Array A))))
+(: unsafe-build-array (All (A) ((Vectorof Integer) ((Vectorof Integer) -> A) -> (Array A))))
 (define (unsafe-build-array ds f)
   ;; This box's contents get replaced when the array we're constructing is made strict, so that
   ;; the array stops referencing f. If we didn't do this, long chains of array computations would
@@ -65,8 +67,8 @@
     ;; strict; that's okay - array-strict! does it instead, which makes the "once strict, always
     ;; strict" invariant easier to ensure in subtypes, which we don't always have control over
     (define (strict!)
-      (let* ([old-f  (unbox f)]
-             [vs     (inline-build-array-data ds (lambda (js j) (old-f js)) A)])
+      (let* ([old-f  : (-> (Vectorof Integer) A) (unbox f)]
+             [vs     : (Vectorof A) (inline-build-array-data ds (lambda (js j) (old-f js)) A)])
         ;; Make a new f that just indexes into vs
         (set-box! f (λ: ([js : Indexes])
                       (vector-ref vs (unsafe-array-index->value-index ds js))))))
@@ -79,17 +81,17 @@
   (define size (check-array-shape-size 'unsafe-build-simple-array ds))
   (Array ds size (box #t) void f))
 
-(: build-array (All (A) (In-Indexes (Indexes -> A) -> (Array A))))
+(: build-array (All (A) ((Vectorof Integer) ((Vectorof Integer) -> A) -> (Array A))))
 (define (build-array ds proc)
   (let ([ds  (check-array-shape
-              ds (lambda () (raise-argument-error 'build-array "(Vectorof Index)" 0 ds proc)))])
+              ds (lambda () (raise-argument-error 'build-array "(Vectorof Integer)" 0 ds proc)))])
     (define arr
-      (unsafe-build-array ds (λ: ([js : Indexes])
+      (unsafe-build-array ds (λ: ([js : (Vectorof Integer)])
                                (proc (vector->immutable-vector js)))))
     (array-default-strict! arr)
     arr))
 
-(: build-simple-array (All (A) (In-Indexes (Indexes -> A) -> (Array A))))
+(: build-simple-array (All (A) ((Vectorof Integer) (Indexes -> A) -> (Array A))))
 (define (build-simple-array ds proc)
   (let ([ds  (check-array-shape
               ds (lambda () (raise-argument-error 'build-simple-array "(Vectorof Index)" 0 ds proc)))])
@@ -108,10 +110,10 @@
 
 ;; -- from 'array-constructors.rkt'
 
-(: make-array (All (A) (In-Indexes A -> (Array A))))
+(: make-array (All (A) ((Vectorof Integer) A -> (Array A))))
 (define (make-array ds v)
   (let ([ds  (check-array-shape
-              ds (λ () (raise-argument-error 'make-array "(Vectorof Index)" 0 ds v)))])
+              ds (λ () (raise-argument-error 'make-array "(Vectorof Integer)" 0 ds v)))])
     (unsafe-build-simple-array ds (λ (js) v))))
 
 ;; --- Syntax
