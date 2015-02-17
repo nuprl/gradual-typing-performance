@@ -57,4 +57,9 @@
      1200 sawtooth-wave)
     (drum 1 '(O #f #f #f X) 1200))))
 
-(time (begin (large-test) (void)))
+(define (main)
+  ;;(large-test)
+  (small-test)
+  (void))
+
+(time (main))
