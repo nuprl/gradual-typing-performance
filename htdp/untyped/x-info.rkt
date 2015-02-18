@@ -25,16 +25,16 @@
 ;; ---------------------------------------------------------------------------------------------------
 (require scribble/render scribble/html-render setup/xref)
 
-(define ROOT "./Trash")
+(define ROOT "../base/Trash")
 
 (define NOTES "notes")
 (define HTDP2 "HtDP2e")
 (define DRAFT "Draft")
 
 (define HTDP2-DESTINATION ROOT)
-(define DRAFT-DESTINATION (build-path ROOT "HtDP2e"))
+(define DRAFT-DESTINATION (build-path ROOT "../base/HtDP2e"))
 
-(define info-fmt "info-~a~a.rktl")
+(define info-fmt "../base/info-~a~a.rktl")
 
 (define info-htdp (format info-fmt HTDP2 ""))
 (define info-note (format info-fmt NOTES ""))
