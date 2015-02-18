@@ -23,7 +23,7 @@
      (create-draft-file)
      (process-whole #t scribble-it DRAFT DRAFT-DESTINATION #t)]
     [(file-exists? (string-append "../base/" arg ".scrbl")) (process arg)]
-    [(and (file-exists? arg) (regexp-match "../base/(.*)\\.scrbl" arg)) => (compose process second)]
+    [(and (file-exists? arg) (regexp-match "(.*)\\.scrbl" arg)) => (compose process second)]
     [else (error 'xhtml "no such file: ~a.scrbl" arg)]))
 
 ;; -> Void

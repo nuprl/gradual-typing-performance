@@ -3,9 +3,9 @@
 (require "xhtml.rkt")
 
 (time
-  ;(with-output-to-file "/dev/null"
-  ;  (lambda ()
+  (with-output-to-file "/dev/null"
+    (lambda ()
     (main "release"))
-    ;(main "draft")
+    ;(main "draft"))
     ;(main "file.scrbl")
-  ;#:exists 'append))
+  #:exists 'append))
