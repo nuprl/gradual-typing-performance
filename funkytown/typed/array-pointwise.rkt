@@ -9,7 +9,7 @@
 (require/typed/check "array-struct.rkt"
   [array? (-> Any Boolean)]
   [array-shape (-> (Array Any) Indexes)]
-  [array-default-strict (-> (Array Any) Void)]
+  [array-default-strict (-> (Array Any) (Array Any))]
   [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
   [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))])
 
