@@ -12,8 +12,8 @@
   [array-default-strict! (-> (Array Any) Void)]
   [array-shape (-> (Array Any) Indexes)]
   [array-size (-> (Array Any) Integer)]
-  [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
-  [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))])
+  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
+  [unsafe-build-array (-> Indexes (-> Indexes Float) (Array Float))])
 
 (require/typed/check "array-utils.rkt"
   [make-thread-local-indexes (-> Integer (-> Indexes))])
@@ -25,7 +25,7 @@
 (: array-broadcasting (Parameterof (U #f #t 'permissive)))
 (define array-broadcasting (make-parameter #t))
 
-(: shift-stretch-axes (All (A) ((Array A) Indexes -> (Array A))))
+(: shift-stretch-axes (-> (Array Float) Indexes (Array Float)))
 (define (shift-stretch-axes arr new-ds)
   (define old-ds (array-shape arr))
   (define old-dims (vector-length old-ds))
@@ -42,16 +42,16 @@
    new-ds
    (λ: ([new-js : Indexes])
      (let ([old-js  (old-js)])
-       (let: loop : A ([k : Integer  0])
+       (let: loop : Float ([k : Integer  0])
          (cond [(k . < . old-dims)
                 (define new-jk (vector-ref new-js (+ k shift)))
                 (define old-dk (vector-ref old-ds k))
                 (define old-jk (fxmodulo new-jk old-dk))
                 (vector-set! old-js k old-jk)
                 (loop (+ k 1))]
-               [else  (old-f old-js)]))))))
+               [else  (old-f old-js)]))))) )
 
-(: array-broadcast (All (A) ((Array A) Indexes -> (Array A))))
+(: array-broadcast (-> (Array Float) Indexes (Array Float)))
 (define (array-broadcast arr ds)
   (cond [(equal? ds (array-shape arr))  arr]
         [else  (define new-arr (shift-stretch-axes arr ds))
