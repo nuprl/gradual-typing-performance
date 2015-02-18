@@ -15,6 +15,9 @@
   [next-indexes! (-> Indexes Integer Indexes Void)])
 
 (require/typed/check "array-struct.rkt"
+  [array? (-> (Array Any) Boolean)] ;; Cannot be "Any". Get error about passing higher-order value
+  [array-shape (-> (Array Any) Indexes)]
+  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
   [array-size (-> (Array Any) Integer)]
   [array-strictness (Parameterof (U #f #t))])
 
@@ -30,7 +33,7 @@
          [(x)
           (:do-in
            ([(ds size dims js proc)
-             (plet: (A) ([arr : (Array A)  arr-expr])
+             (let: ([arr : (Array Float)  arr-expr])
                (cond [(array? arr)
                       (define ds (array-shape arr))
                       (define dims (vector-length ds))
