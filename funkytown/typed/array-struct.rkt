@@ -1,7 +1,6 @@
 #lang typed/racket/base
 
 (require (for-syntax racket/base syntax/parse)
-         (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
          (only-in racket/fixnum fx+ fx*)
          benchmark-util
          "../base/array-types.rkt")
@@ -12,23 +11,21 @@
   [check-array-shape (-> (Vectorof Integer) (-> Nothing) Indexes)])
 
 (provide
- array?
- array-default-strict
+ (rename-out (Array? array?))
+ (rename-out (Array-shape array-shape))
+ (rename-out (Array-size  array-size))
+ (rename-out (Array-unsafe-proc unsafe-array-proc))
  array-default-strict!
- array-shape
- array-size
  array-strict?
  array-strictness
  build-array
- in-array
  make-array
  make-unsafe-array-proc
  make-unsafe-array-set-proc
- unsafe-array-proc
  unsafe-build-array
  unsafe-build-simple-array
  unsafe-vector->array
- )
+)
 
 ;; -- array-for-each
 (define-syntax-rule (for-each-array+data-index ds-expr f-expr)
@@ -254,54 +251,6 @@
   (let ([ds  (check-array-shape
               ds (λ () (raise-argument-error 'make-array "(Vectorof Integer)" 0 ds v)))])
     (unsafe-build-simple-array ds (λ (js) v))))
-
-;; --- Syntax
-
-(define-syntax array? (make-rename-transformer #'Array?))
-(define-syntax array-shape (make-rename-transformer #'Array-shape))
-(define-syntax array-size (make-rename-transformer #'Array-size))
-(define-syntax unsafe-array-proc (make-rename-transformer #'Array-unsafe-proc))
-
-(define-syntax-rule (array-strict arr-expr)
-  (let ([arr arr-expr])
-    (array-strict! arr)
-    arr))
-
-(define-syntax-rule (array-default-strict arr-expr)
-  (let ([arr arr-expr])
-    (array-default-strict! arr)
-    arr))
-
-;; --- from array-sequence.rkt
-
-(define-sequence-syntax in-array
-  (λ () #'in-array)
-  (λ (stx)
-    (syntax-case stx ()
-      [[(x) (_ arr-expr)]
-       (syntax/loc stx
-         [(x)
-          (:do-in
-           ([(ds size dims js proc)
-             (plet: (A) ([arr : (Array A)  arr-expr])
-               (cond [(array? arr)
-                      (define ds (array-shape arr))
-                      (define dims (vector-length ds))
-                      (define size (array-size arr))
-                      (define proc (unsafe-array-proc arr))
-                      (define: js : Indexes (make-vector dims 0))
-                      (values ds size dims js proc)]
-                     [else
-                      (raise-argument-error 'in-array "Array" arr)]))])
-           (void)
-           ([j 0])
-           (unsafe-fx< j size)
-           ([(x)  (proc js)])
-           #true
-           #true
-           [(begin (next-indexes! ds dims js)
-                   (unsafe-fx+ j 1))])])]
-      [[_ clause] (raise-syntax-error 'in-array "expected (in-array <Array>)" #'clause #'clause)])))
 
 ;; --- from mutable-array.rkt
 

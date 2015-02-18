@@ -9,7 +9,7 @@
 (require/typed/check "array-struct.rkt"
   [array? (-> Any Boolean)]
   [array-shape (-> (Array Any) Indexes)]
-  [array-default-strict (-> (Array Any) (Array Any))]
+  [array-default-strict! (-> Indexes Void)]
   [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
   [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))])
 
@@ -29,8 +29,9 @@
        (let ([arr  (ensure-array 'array-map arr-expr)])
          (define ds (array-shape arr))
          (define proc (unsafe-array-proc arr))
-         (array-default-strict
-          (unsafe-build-array ds (λ: ([js : Indexes]) (f (proc js)))))))]
+         (define arr* (unsafe-build-array ds (λ ([js : Indexes]) (f (proc js)))))
+         (array-default-strict! arr*)
+         arr*))]
     [(_ f arr-expr arr-exprs ...)
      (with-syntax ([(arrs ...)   (generate-temporaries #'(arr-exprs ...))]
                    [(procs ...)  (generate-temporaries #'(arr-exprs ...))])
@@ -42,8 +43,9 @@
                  [arrs  (array-broadcast arrs ds)] ...)
              (define proc  (unsafe-array-proc arr))
              (define procs (unsafe-array-proc arrs)) ...
-             (array-default-strict
-              (unsafe-build-array ds (λ: ([js : Indexes]) (f (proc js) (procs js) ...))))))))]))
+             (define arr* (unsafe-build-array ds (λ ([js : Indexes]) (f (proc js) (procs js) ...))))
+             (array-default-strict! arr*)
+             arr*))))]))
 
 (: array-map (All (R A B T ...)
                   (case->

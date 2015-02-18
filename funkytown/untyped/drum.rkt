@@ -4,7 +4,6 @@
                   array-size
                   make-array
                   build-array
-                  for/array
                   unsafe-vector->array)
          (only-in "array-utils.rkt"
                   array-shape-size
@@ -14,6 +13,8 @@
          "../base/array-types.rkt")
 
 (provide drum)
+
+;; -- drum
 
 (define (random-sample) (- (* 2.0 (random)) 1.0))
 

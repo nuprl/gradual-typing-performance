@@ -80,8 +80,8 @@
                                   (vector-set! old-jks jk i)
                                   (i-loop (+ i 1) (fx+ jk 1))]
                    [else  (arrs-loop (cdr arrs) (cdr dks) jk)]))))
-       (: arr (Array Float))
-       (define arr
+       (: arr* (Array Float))
+       (define arr*
         (unsafe-build-array
          new-ds (λ: ([js : Indexes])
                   (define jk (vector-ref js k))
@@ -89,5 +89,5 @@
                   (define v ((vector-ref old-procs jk) js))
                   (vector-set! js k jk)
                   v)))
-       (array-default-strict! arr)
-       arr])))
+       (array-default-strict! arr*)
+       arr*])))

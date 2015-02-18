@@ -9,7 +9,7 @@
 
 (require/typed/check "array-struct.rkt"
   [array-strict? (-> (Array Any) Boolean)]
-  [array-default-strict (-> (Array Any) (Array Any))]
+  [array-default-strict! (-> (Array Any) Void)]
   [array-shape (-> (Array Any) Indexes)]
   [array-size (-> (Array Any) Integer)]
   [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
@@ -57,7 +57,7 @@
         [else  (define new-arr (shift-stretch-axes arr ds))
                (if (or (array-strict? arr) ((array-size new-arr) . fx<= . (array-size arr)))
                    new-arr
-                   (array-default-strict new-arr))]))
+                   (begin (array-default-strict! new-arr) new-arr))]))
 
 (: shape-insert-axes (Indexes Integer -> Indexes))
 (define (shape-insert-axes ds n)
