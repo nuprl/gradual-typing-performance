@@ -6,29 +6,36 @@
          "../base/array-types.rkt")
 
 (require/typed/check "array-struct.rkt"
-  [array-shape (-> (Array Any) Integer)]
-  [unsafe-array-proc (-> (Array Any) (-> Indexes Any))]
-  [unsafe-build-array (-> Indexes (-> Indexes Any) (Array Any))]
-  [array-default-strict (-> (Array Any) Void)])
+  [array-shape (-> (Array Any) Indexes)]
+  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
+  [array-default-strict! (-> (Array Any) Void)]
+  [unsafe-build-array (-> Indexes (-> Indexes Float) (Array Float))])
 
 (require/typed/check "array-broadcast.rkt"
-  [array-broadcast (-> (Array Any) Indexes (Array Any))]
-  [array-shape-broadcast (case-> ((Listof Indexes) -> Indexes)                       (-> 
-                                 ((Listof Indexes) (U #f #t 'permissive))))])
+  [array-broadcast (-> (Array Float) Indexes (Array Float))]
+  [array-shape-broadcast (-> (Listof Indexes) Indexes)])
 
 (require/typed/check "array-utils.rkt"
-  [unsafe-vector-remove (-> (Vectorof Any) Integer (Vectorof Any))]
-  [vector-copy-all (-> (Vectorof Any) (Vectorof Any))]
-  [unsafe-vector-insert (-> (Vectorof Any) Integer Any (Vectorof Any))])
+  [unsafe-vector-remove (-> Indexes Integer Indexes)]
+  [vector-copy-all (-> Indexes Indexes)]
+  [unsafe-vector-insert (-> Indexes Integer Any Indexes)])
 
 (provide array-append*)
 
-(: array-broadcast-for-append (All (A) ((Listof (Array A))
-                                        Integer -> (Values (Listof (Array A))
-                                                           (Listof Integer)))))
+(: array-broadcast-for-append (-> (Listof (Array Float))
+                                        Integer (values (Listof (Array Float))
+                                                           (Listof Integer))))
 (define (array-broadcast-for-append arrs k)
-  (define dss (map (λ: ([arr : (Array A)]) (array-shape arr)) arrs))
-  (define dims (apply max (map vector-length dss)))
+  (: dss (Listof Indexes))
+  (define dss
+    (for/list : (Listof Indexes)
+      ([arr : (Array Float) arrs])
+      (array-shape arr)))
+  (: dims Natural)
+  (define dims (apply max (for/list : (Listof Natural)
+                            ([ds : Indexes dss])
+                            (vector-length ds))))
+  ;(define dims (apply max (map vector-length dss)))
   (cond [(not (index? dims))  (error 'array-broadcast-for-append "can't happen")]
         [(or (k . < . 0) (k . >= . dims))
          (raise-argument-error 'array-append* (format "Integer < ~a" dims) k)]
@@ -42,11 +49,10 @@
                 [ds   (array-shape-broadcast dss)]
                 [dss  (map (λ: ([dk : Integer]) (unsafe-vector-insert ds k dk)) dks)])
            (define new-arrs
-             (map (λ: ([arr : (Array A)] [ds : Indexes]) (array-broadcast arr ds)) arrs dss))
+             (map (λ: ([arr : (Array Float)] [ds : Indexes]) (array-broadcast arr ds)) arrs dss))
            (values new-arrs dks))]))
 
-(: array-append* (All (A) (case-> ((Listof (Array A)) -> (Array A))
-                                  ((Listof (Array A)) Integer -> (Array A)))))
+(: array-append* (-> (Listof (Array Float)) (Array Float)))
 (define (array-append* arrs [k 0])
   (when (null? arrs) (raise-argument-error 'array-append* "nonempty (Listof (Array A))" arrs))
   (let-values ([(arrs dks)  (array-broadcast-for-append arrs k)])
@@ -54,7 +60,9 @@
     (cond
       [(not (index? new-dk))  (error 'array-append* "resulting axis is too large (not an Integer)")]
       [else
-       (define dss (map (λ: ([arr : (Array A)]) (array-shape arr)) arrs))
+       (: dss (Listof Indexes))
+       (define dss (map (λ: ([arr : (Array Float)]) (array-shape arr)) arrs))
+       (: new-ds Indexes)
        (define new-ds (vector-copy-all (car dss)))
        (vector-set! new-ds k new-dk)
        ;; Make two mappings:
@@ -72,11 +80,14 @@
                                   (vector-set! old-jks jk i)
                                   (i-loop (+ i 1) (fx+ jk 1))]
                    [else  (arrs-loop (cdr arrs) (cdr dks) jk)]))))
-       (array-default-strict
+       (: arr (Array Float))
+       (define arr
         (unsafe-build-array
          new-ds (λ: ([js : Indexes])
                   (define jk (vector-ref js k))
                   (vector-set! js k (vector-ref old-jks jk))
                   (define v ((vector-ref old-procs jk) js))
                   (vector-set! js k jk)
-                  v)))])))
+                  v)))
+       (array-default-strict! arr)
+       arr])))

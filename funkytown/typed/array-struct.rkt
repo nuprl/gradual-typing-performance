@@ -16,6 +16,7 @@
 (provide
  array?
  array-default-strict
+ array-default-strict!
  array-shape
  array-size
  array-strict?
