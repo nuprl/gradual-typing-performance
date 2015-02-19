@@ -13,7 +13,8 @@
 ;; ---------------------------------------------------------------------------------------------------
 (require "x-info.rkt"
   "xnotes.rkt"
-  net/sendurl scribble/html-render)
+  net/sendurl scribble/html-render
+  (only-in racket/list second))
 
 (define (main arg)
   (cond 

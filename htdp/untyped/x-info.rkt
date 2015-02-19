@@ -42,13 +42,14 @@
 (define draft-info-note (format info-fmt NOTES DRAFT))
 
 ;; create a renderer and a path for the documentation, then scribble the desired document 
-(define (process-whole draft? scribble-it stem destination . stuff)
-  (define redirect 
+(define (process-whole draft? scribble-it stem destination [maybe-flag #f])
+  (define redirect
     (if draft?
         "http://plt.eecs.northwestern.edu/snapshots/current/doc/"
         "http://docs.racket-lang.org/"))
   (define renderer (compose render-multi-mixin render-mixin))
-  (apply scribble-it draft? stem destination redirect renderer stuff))
+  (scribble-it draft? stem destination redirect renderer ));maybe-flag))
+  ;(apply scribble-it draft? stem destination redirect renderer stuff))
 
 
 ;; run renderer on the remaining arguments with keywords supplied 
