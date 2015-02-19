@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@(require "Shared/shared.rkt" "Shared/shared1.rkt")
+@(require "../base/Shared/shared.rkt" "../base/Shared/shared1.rkt")
 
 @; -----------------------------------------------------------------------------
 @intermezzo[#:unnumbered? #t #:tag "part:prologue"]{Prologue: How to Program}
@@ -27,7 +27,7 @@ Now you're switching roles. You program, and the computer is a child. Of
  into the top part of @dr[], click @button{Run}, and a result shows up in the
  bottom part: @racketresult[2] 
 
-@image{Images/drracket-plain.png}
+@image{../base/Images/drracket-plain.png}
 
 That's how simple programming is. You ask questions as if @dr[] were
  a child, and @dr[] computes for you. @margin-note*{People often say the
@@ -484,7 +484,7 @@ You may also recall that your teacher not only asked for the fifth, sixth,
  numeric example, the teacher wants to see something like
  this:@margin-note*{Write @math{x^2} if you want to be fancy.}
 @;
-@centerline{@image{Images/xsqr.png}}
+@centerline{@image{../base/Images/xsqr.png}}
 @;
  If you plug in 1, 2, 3, and so on for @math{x}, you get 1, 4, 9, and so on for
  @math{y}---just as the table says. For the sequence of images, you could say
@@ -686,8 +686,10 @@ As soon as you hit the ``return'' key, @dr{} evaluates the expression but
  point, animate returns the number of ticks that have passed.
  
 The question is where the images on the window come
- from.@margin-note*{@Exref{ex:animate} explains how to design
- @racket[animate].} The short explanation is that @racket[animate] runs its
+ from.
+ @;@margin-note*{@Exref{ex:animate} explains how to design
+ @;@racket[animate].}
+ The short explanation is that @racket[animate] runs its
  operand on the numbers @racket[0], @racket[1], @racket[2], etc. and
  displays the resulting images. The long explanation is this: 
 @itemlist[
@@ -734,7 +736,7 @@ This idea suggests that computations should proceed differently, depending
 
 In a sense, the idea shouldn't be new to you. Even your mathematics
  teachers define functions that distinguish various situations:
-@centerline{@image{Images/sign.png}}
+@centerline{@image{../base/Images/sign.png}}
  This @math{sign} distinguishes three kinds of inputs: those
  numbers larger than 0, those equal to 0, and those smaller than 0. Depending on the
  input, the result of the function---or output as we may occasionally call
@@ -813,7 +815,7 @@ See @figure-ref[(crs 2)] for the revised function definition.
 @interaction[
 @#:eval (bsl-eval 
 [(require 2htdp/image)
- (define rocket (bitmap "Images/rocket-s.jpg"))
+ (define rocket (bitmap "../base/Images/rocket-s.jpg"))
  (define (create-rocket-scene height)
    (place-image rocket 50 height (empty-scene 100 100)))
  (define (create-rocket-scene.v2 height)
@@ -1114,14 +1116,14 @@ To understand how this process works precisely, you must think back to your
  other disciplines and, obviously, not even programmers know everything. So
  they look it up. Or they are told what deceleration means in terms of
  distance traveled: 
-@centerline{@image{Images/d.png}}
+@centerline{@image{../base/Images/d.png}}
  That is, if @math{v} is the speed of the object and @math{a} is the
  deceleration---change of speed---then the object travels @math{d}
  miles (or meters or pixels or whatever) in @math{t} seconds. 
 
 By now you know that a good teacher would have shown you a proper function
  definition: 
-@centerline{@image{Images/d2.png}}
+@centerline{@image{../base/Images/d2.png}}
  because this tells everyone immediately that the computation of @math{d}
  depends on @math{t} and that @math{v} and @math{a} are constants. A
  programmer goes even further and uses meaningful names for these
