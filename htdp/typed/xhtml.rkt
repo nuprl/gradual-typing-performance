@@ -28,9 +28,9 @@
                       (Boolean)
                       Void)]
   [NOTES String]
-  [DRAFT-DESTINATION Module-Path]
+  [DRAFT-DESTINATION Path-String]
   [DRAFT String]
-  [HTDP2-DESTINATION Module-Path]
+  [HTDP2-DESTINATION Path-String]
   [draft-info-htdp String]
   [draft-info-note String]
   [info-htdp String]
