@@ -30,6 +30,7 @@
   [NOTES String]
   [DRAFT-DESTINATION Path-String]
   [DRAFT String]
+  [HTDP2 String]
   [HTDP2-DESTINATION Path-String]
   [draft-info-htdp String]
   [draft-info-note String]
