@@ -7,14 +7,11 @@ Original code taken from [the chaperones benchmarks](http://github.com/stamourv/
 Run `main.rkt` to create (and discard) some music.
 
 Some modules are taken from the `math/array` library.
-Remember, an array is a function with a rectangular domain.
-- `array-broadcast.rkt` interface to fine-tune array operations.
-- `array-for-each.rkt` syntax rules to iterate over arrays.
-- `array-pointwise.rkt` defines the `array-map` function (which is only used by `mix`).
+(Remember, an array is a function with a rectangular domain.)
+- `array-broadcast.rkt` tweak array performance (strict vs lazy)
 - `array-struct.rkt` basic array operations
 - `array-transform.rkt` defines the `array-append*` function (used by `drum` and `sequencer`).
-- `array-types.rkt` type and data definitions (shared file for typed/untyped implementations).
-- `array-utils.rkt` important helpers for working with arrays (could probably merge with `array-struct`).
+- `array-utils.rkt` important helpers for working with arrays
 
 Other modules implement the benchmark.
 - `drum.rkt` builds drum beats.
