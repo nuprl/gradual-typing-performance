@@ -58,8 +58,8 @@
     (drum 1 '(O #f #f #f X) 1200))))
 
 (define (main)
-  ;;(large-test)
-  (small-test)
+  (large-test)
+  ;;(small-test)
   (void))
 
 (time (main))

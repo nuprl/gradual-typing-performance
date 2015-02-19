@@ -27,7 +27,7 @@
 (define primes (sieve (count-from 2)))
 
 ;; Compute the 10,000th prime number
-(define N-1 999)
+(define N-1 9999)
 
 (define (main)
   (printf "The ~a-th prime number is: ~a\n" (add1 N-1) (stream-get primes N-1)))
