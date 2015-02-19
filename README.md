@@ -4,11 +4,11 @@ the performance hypothesis underlying gradual typing.
 
 | Project name          | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | --------------------- | ----------- | ------- | ------------ | --------- | ---------------- |
-| funkytown             | Ben         | Yes     | No           | 11        | vine-like        |
+| funkytown             | Ben         | Yes     | No           | 9         | vine-like        |
 | zo traversal          | Ben         | Yes     | No           | 5         | almost diamond   |
 | sieve                 | Ben         | Yes     | No           | 2         | one chain        |
 | echo                  | Ben         | Yes     | No           | 4         | directed diamond |
-| HTDP script           | Ben         | Yes     | No           | 3         | vee              |
+| HTDP script           | Ben         | Yes     | No           | 4         | triangle         |
 | mbta                  | Matthias    | Yes     | No           | 4         | one chain        |
 | snake                 | Max         | Yes     | No           |           |                  |
 | tetris                | Max         | Yes     | No           |           |                  |
