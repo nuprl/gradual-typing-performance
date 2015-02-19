@@ -14,8 +14,7 @@
  ;; PathString:
  ;; where is cross-referencing information for htdp2e and notes stored to/retrieved from
  info-htdp draft-info-htdp info-note draft-info-note
- ;; typed identifiers
- part Render)
+)
 
 ;; The documents end up in: 
 ;; ROOT
@@ -25,30 +24,19 @@
 ;; -- HtDP2e/Draft ## the draft version of HtDP/2e
 
 ;; ---------------------------------------------------------------------------------------------------
-(require/typed
- scribble/core
- [#:opaque Tag tag?]
- [#:opaque Block block?]
- [#:struct part ([tag-prefix : (U #f String)]
-                 [tags : (Listof Tag)]
-                 [title-content : (U #f (Listof Any))]
-                 [style : Any] ;; "A style property can be anything, including a symbol or a structure such as color-property." http://docs.racket-lang.org/scribble/core.html?q=scribble%2Frender#%28tech._style._property%29
-                 [to-collect : (Listof Any)]
-                 [blocks : (Listof Block)]
-                 [parts : (Listof part)])])
+
+(require "../base/types.rkt")
 
 (require/typed
  scribble/xref
  [#:opaque Xref xref?])
-
-(define-type Render (Class)) ;; TODO actually give types to the interface
 
 (require/typed
  scribble/render
  ;; bg: Only typing the optional args I'm using
  [render (-> (Listof part)
              (Listof Path-String)
-             [#:render-mixin (-> Render Render)]
+             [#:render-mixin (-> (Class) (Class))]
              [#:dest-dir (U #f Path-String)]
              [#:xrefs (Listof Xref)]
              [#:quiet? Any]
@@ -59,23 +47,23 @@
 
 (require/typed
  scribble/html-render
- [render-mixin (-> Render Render)]
- [render-multi-mixin (-> Render Render)])
+ [render-mixin (-> (Class) (Class))]
+ [render-multi-mixin (-> (Class) (Class))])
 
 (require/typed
  setup/xref
  [load-collections-xref (->* () ((-> Any)) Xref)])
 
-(define ROOT "./Trash")
+(define ROOT "../base/Trash")
 
 (define NOTES "notes")
 (define HTDP2 "HtDP2e")
 (define DRAFT "Draft")
 
 (define HTDP2-DESTINATION (build-path ROOT))
-(define DRAFT-DESTINATION (build-path ROOT "HtDP2e"))
+(define DRAFT-DESTINATION (build-path ROOT "../base/HtDP2e"))
 
-(define info-fmt "info-~a~a.rktl")
+(define info-fmt "../base/info-~a~a.rktl")
 
 (define info-htdp (format info-fmt HTDP2 ""))
 (define info-note (format info-fmt NOTES ""))
@@ -89,7 +77,7 @@
                            String
                            Path-String
                            String
-                           (-> Render Render)
+                           (-> (Class) (Class))
                            Void)
                        String
                        Path-String)
@@ -110,7 +98,7 @@
 ;; (without running a decision again and thus duplicating the whole thing)
 ;; TODO bg: passing optional argument as false, if missing. But that syntax-rule trick was fun.
 ;; (define-syntax-rule (run renderer stem stem.doc destination redirect? in-file out-file ...)
-(: run (->* ((-> Render Render)
+(: run (->* ((-> (Class) (Class))
              Path-String
              part
              Path-String

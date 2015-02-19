@@ -7,10 +7,48 @@
   emit)
 
 (require (only-in "array-struct.rkt"
+           array?
+           array-shape
+           unsafe-array-proc
            array-size
-           array-strictness
-           in-array)
+           array-strictness)
+         (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
+         (only-in "array-utils.rkt" next-indexes!)
          (only-in racket/math exact-floor))
+
+;; --- from array-sequence.rkt
+
+(require (for-syntax racket/base syntax/parse))
+(define-sequence-syntax in-array
+  (λ () #'in-array)
+  (λ (stx)
+    (syntax-case stx ()
+      [[(x) (_ arr-expr)]
+       (syntax/loc stx
+         [(x)
+          (:do-in
+           ([(ds size dims js proc)
+             (let ([arr  arr-expr])
+               (cond [(array? arr)
+                      (define ds (array-shape arr))
+                      (define dims (vector-length ds))
+                      (define size (array-size arr))
+                      (define proc (unsafe-array-proc arr))
+                      (define js (make-vector dims 0))
+                      (values ds size dims js proc)]
+                     [else
+                      (raise-argument-error 'in-array "Array" arr)]))])
+           (void)
+           ([j 0])
+           (unsafe-fx< j size)
+           ([(x)  (proc js)])
+           #true
+           #true
+           [(begin (next-indexes! ds dims js)
+                   (unsafe-fx+ j 1))])])]
+      [[_ clause] (raise-syntax-error 'in-array "expected (in-array <Array>)" #'clause #'clause)])))
+
+;; -- synth
 
 ;; TODO this slows down a bit, it seems, but improves memory use
 (array-strictness #f)

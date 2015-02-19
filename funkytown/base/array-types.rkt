@@ -9,11 +9,13 @@
          Drum-Symbol
          Pattern)
 
-(define-type Indexes (Vectorof Index))
-(define-type In-Indexes (U (Vectorof Integer) Indexes))
+(define-type Indexes (Vectorof Integer))
+(define-type In-Indexes Indexes)
+;(define-type Indexes (Vectorof Index))
+;(define-type In-Indexes (U (Vectorof Integer) Indexes))
 
 (struct: (A) Array ([shape : Indexes]
-                    [size : Index]
+                    [size : Integer]
                     [strict? : (Boxof Boolean)]
                     [strict! : (-> Void)]
                     [unsafe-proc : (Indexes -> A)]))

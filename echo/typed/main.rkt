@@ -1,7 +1,12 @@
 #lang typed/racket/base
 
-(require (only-in "client.rkt" client)
-         (only-in "server.rkt" server))
+(require benchmark-util)
+
+(require/typed/check "client.rkt"
+  [client (-> Natural Void)])
+
+(require/typed/check "server.rkt"
+  [server (-> Void)])
 
 ;; ---------------------------------------------------------------------------------------------------
 

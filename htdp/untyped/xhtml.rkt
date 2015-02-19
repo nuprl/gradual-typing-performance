@@ -1,8 +1,4 @@
-#! /bin/sh
-#|
-exec /Users/matthias/plt/racket/bin/racket -tm "$0" ${1+"$@"}
-|#
-#lang racket/gui
+#lang racket/base
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; runs scribble and opens preview for section, draft, release
@@ -15,7 +11,10 @@ exec /Users/matthias/plt/racket/bin/racket -tm "$0" ${1+"$@"}
  main)
 
 ;; ---------------------------------------------------------------------------------------------------
-(require "x-info.rkt" (prefix-in notes: "xnotes") net/sendurl scribble/html-render)
+(require "x-info.rkt"
+  "xnotes.rkt"
+  net/sendurl scribble/html-render
+  (only-in racket/list second))
 
 (define (main arg)
   (cond 
@@ -24,19 +23,19 @@ exec /Users/matthias/plt/racket/bin/racket -tm "$0" ${1+"$@"}
     [(string=? "draft" arg)
      (create-draft-file)
      (process-whole #t scribble-it DRAFT DRAFT-DESTINATION #t)]
-    [(file-exists? (string-append arg ".scrbl")) (process arg)]
+    [(file-exists? (string-append "../base/" arg ".scrbl")) (process arg)]
     [(and (file-exists? arg) (regexp-match "(.*)\\.scrbl" arg)) => (compose process second)]
     [else (error 'xhtml "no such file: ~a.scrbl" arg)]))
 
 ;; -> Void
 (define (create-draft-file)
-  (when (file-exists? "Draft.scrbl") (delete-file "Draft.scrbl"))
-  (copy-file "HtDP2e.scrbl" "Draft.scrbl"))
+  (when (file-exists? "../base/Draft.scrbl") (delete-file "../base/Draft.scrbl"))
+  (copy-file "../base/HtDP2e.scrbl" "../base/Draft.scrbl"))
 
 ;; String -> Void
 ;; create a destination directory, then scribble the desired document 
 (define (process stem)
-  (define destination (string-append "HTML/" stem))
+  (define destination (string-append "../base/HTML/" stem))
   (unless (directory-exists? destination) (make-directory destination))
   (scribble-it #f stem destination #f))
 
@@ -50,10 +49,10 @@ exec /Users/matthias/plt/racket/bin/racket -tm "$0" ${1+"$@"}
 ;; -- but only if produce-info? calls for it (DON'T DO IT FOR CHAPTERS and INTERMEZZOS)
 ;; open browser on stem.html 
 (define (scribble-it draft? stem destination redirect? (renderer render-mixin) (produce-info? #f))
-  (define stem.scrbl (string-append stem ".scrbl"))
-  (define stem.html  (string-append stem ".html"))
+  (define stem.scrbl (string-append "../base/" stem ".scrbl"))
+  (define stem.html  (string-append "../base/" stem ".html"))
   (displayln `(scribbling ,stem.scrbl draft: ,draft?))
-  ((dynamic-require "Shared/shared.rkt" 'is-draft?) draft?)
+  ((dynamic-require "../base/Shared/shared.rkt" 'is-draft?) draft?)
   (define stem.doc (dynamic-require stem.scrbl 'doc))
   (define-values (in-file out-file)
     (if draft?
@@ -65,12 +64,12 @@ exec /Users/matthias/plt/racket/bin/racket -tm "$0" ${1+"$@"}
       (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
       (run renderer stem stem.doc  destination redirect? in-file))
   (displayln `(done rendering))
-  ;; ---
-  (parameterize ([current-directory destination])
-    (displayln `(cleaning up ,stem))
-    (cleanup)
-    (displayln `(opening browser at ,destination ,stem.html))
-    (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html")))))
+  );; --- Uncomment to render HTML
+  ;;(parameterize ([current-directory destination])
+  ;;  (displayln `(cleaning up ,stem))
+  ;;  (cleanup)
+  ;;  (displayln `(opening browser at ,destination ,stem.html))
+  ;;  (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html"))))
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; the code below used to be a standalone script 

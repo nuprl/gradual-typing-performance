@@ -1,16 +1,25 @@
 #lang typed/racket/base
 
-(require (only-in "array-struct.rkt"
-                  array-size
-                  make-array
-                  build-array
-                  unsafe-vector->array)
-         (only-in "array-utils.rkt"
-                  array-shape-size
-                  check-array-shape)
-         (only-in "array-transform.rkt" array-append*)
-         (only-in "synth.rkt" fs seconds->samples)
-         "array-types.rkt")
+(require benchmark-util
+         "../base/array-types.rkt")
+
+(require/typed/check "array-struct.rkt"
+  [array-size (-> (Array Any) Integer)]
+  [make-array (-> In-Indexes Any (Array Float))]
+  [build-array (-> In-Indexes (-> Indexes Float) (Array Float))]
+  [unsafe-vector->array (-> Indexes (Vectorof Float) (Mutable-Array Float))])
+
+(require/typed/check "array-utils.rkt"
+  [array-shape-size (-> Indexes Natural)]
+  [check-array-shape (-> In-Indexes (-> Nothing) Indexes)])
+
+(require/typed/check "array-transform.rkt"
+  [array-append* (case-> ((Listof (Array Float)) -> (Array Float))
+                         ((Listof (Array Float)) Integer -> (Array Float)))])
+
+(require/typed/check "synth.rkt"
+  [fs Natural]
+  [seconds->samples (-> Float Integer)])
 
 (provide drum)
 
@@ -23,7 +32,7 @@
 (define bass-drum
   (let ()
     ;; 0.05 seconds of noise whose value changes every 12 samples
-    (: n-samples Index)
+    (: n-samples Integer)
     (define n-samples           (seconds->samples 0.05))
     (: n-different-samples Integer)
     (define n-different-samples (quotient n-samples 12))

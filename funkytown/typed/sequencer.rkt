@@ -1,10 +1,20 @@
 #lang typed/racket/base
 
-(require (only-in "array-struct.rkt" build-array)
-         (only-in "array-transform.rkt" array-append*)
-         "array-types.rkt"
-         (only-in "synth.rkt" fs)
-         (only-in "mixer.rkt" mix))
+(require benchmark-util
+         "../base/array-types.rkt")
+
+(require/typed/check "array-struct.rkt"
+  [build-array (-> (Vectorof Nonnegative-Integer) (-> Indexes Flonum) (Array Flonum))])
+
+(require/typed/check "array-transform.rkt"
+  [array-append* (case-> ((Listof (Array Flonum)) -> (Array Flonum))
+                         ((Listof (Array Flonum)) Integer -> (Array Flonum)))])
+
+(require/typed/check "synth.rkt"
+  [fs Natural])
+
+(require/typed/check "mixer.rkt"
+  [mix (-> Weighted-Signal * (Array Float))])
 
 (provide sequence note)
 

@@ -1,18 +1,22 @@
 #lang typed/racket/base
 
 (require (only-in racket/fixnum fx<= fxmax fxmodulo)
-         (only-in "array-struct.rkt"
-                  array-strict?
-                  array-default-strict
-                  array-shape
-                  array-size
-                  unsafe-array-proc
-                  unsafe-build-array)
-         (only-in "array-utils.rkt" make-thread-local-indexes)
          (only-in racket/vector vector-append)
          (only-in racket/string string-join)
          (only-in racket/list empty? first rest)
-         "array-types.rkt")
+         benchmark-util
+         "../base/array-types.rkt")
+
+(require/typed/check "array-struct.rkt"
+  [array-strict? (-> (Array Any) Boolean)]
+  [array-default-strict! (-> (Array Any) Void)]
+  [array-shape (-> (Array Any) Indexes)]
+  [array-size (-> (Array Any) Integer)]
+  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
+  [unsafe-build-array (-> Indexes (-> Indexes Float) (Array Float))])
+
+(require/typed/check "array-utils.rkt"
+  [make-thread-local-indexes (-> Integer (-> Indexes))])
 
 (provide array-broadcasting
          array-broadcast
@@ -21,7 +25,7 @@
 (: array-broadcasting (Parameterof (U #f #t 'permissive)))
 (define array-broadcasting (make-parameter #t))
 
-(: shift-stretch-axes (All (A) ((Array A) Indexes -> (Array A))))
+(: shift-stretch-axes (-> (Array Float) Indexes (Array Float)))
 (define (shift-stretch-axes arr new-ds)
   (define old-ds (array-shape arr))
   (define old-dims (vector-length old-ds))
@@ -38,31 +42,31 @@
    new-ds
    (λ: ([new-js : Indexes])
      (let ([old-js  (old-js)])
-       (let: loop : A ([k : Nonnegative-Fixnum  0])
+       (let: loop : Float ([k : Integer  0])
          (cond [(k . < . old-dims)
                 (define new-jk (vector-ref new-js (+ k shift)))
                 (define old-dk (vector-ref old-ds k))
                 (define old-jk (fxmodulo new-jk old-dk))
                 (vector-set! old-js k old-jk)
                 (loop (+ k 1))]
-               [else  (old-f old-js)]))))))
+               [else  (old-f old-js)]))))) )
 
-(: array-broadcast (All (A) ((Array A) Indexes -> (Array A))))
+(: array-broadcast (-> (Array Float) Indexes (Array Float)))
 (define (array-broadcast arr ds)
   (cond [(equal? ds (array-shape arr))  arr]
         [else  (define new-arr (shift-stretch-axes arr ds))
                (if (or (array-strict? arr) ((array-size new-arr) . fx<= . (array-size arr)))
                    new-arr
-                   (array-default-strict new-arr))]))
+                   (begin (array-default-strict! new-arr) new-arr))]))
 
 (: shape-insert-axes (Indexes Integer -> Indexes))
 (define (shape-insert-axes ds n)
-  (vector-append ((inst make-vector Index) n 1) ds))
+  (vector-append ((inst make-vector Integer) n 1) ds))
 
-(: shape-permissive-broadcast (Indexes Indexes Index (-> Nothing) -> Indexes))
+(: shape-permissive-broadcast (Indexes Indexes Integer (-> Nothing) -> Indexes))
 (define (shape-permissive-broadcast ds1 ds2 dims fail)
   (define: new-ds : Indexes (make-vector dims 0))
-  (let loop ([#{k : Nonnegative-Fixnum} 0])
+  (let loop ([#{k : Integer} 0])
     (cond [(k . < . dims)
            (define dk1 (vector-ref ds1 k))
            (define dk2 (vector-ref ds2 k))
@@ -73,10 +77,10 @@
            (loop (+ k 1))]
           [else  new-ds])))
 
-(: shape-normal-broadcast (Indexes Indexes Index (-> Nothing) -> Indexes))
+(: shape-normal-broadcast (Indexes Indexes Integer (-> Nothing) -> Indexes))
 (define (shape-normal-broadcast ds1 ds2 dims fail)
   (define: new-ds : Indexes (make-vector dims 0))
-  (let loop ([#{k : Nonnegative-Fixnum} 0])
+  (let loop ([#{k : Integer} 0])
     (cond [(k . < . dims)
            (define dk1 (vector-ref ds1 k))
            (define dk2 (vector-ref ds2 k))

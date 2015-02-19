@@ -6,12 +6,54 @@
   seconds->samples
   emit)
 
-(require (only-in "array-struct.rkt"
-           array-size
-           array-strictness
-           in-array)
-         "array-types.rkt"
+(require benchmark-util
+         "../base/array-types.rkt"
+         (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
          (only-in racket/math exact-floor))
+
+(require/typed/check "array-utils.rkt"
+  [next-indexes! (-> Indexes Integer Indexes Void)])
+
+(require/typed/check "array-struct.rkt"
+  [array? (-> (Array Any) Boolean)] ;; Cannot be "Any". Get error about passing higher-order value
+  [array-shape (-> (Array Any) Indexes)]
+  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
+  [array-size (-> (Array Any) Integer)]
+  [array-strictness (Parameterof (U #f #t))])
+
+;; --- from array-sequence.rkt
+
+(require (for-syntax racket/base syntax/parse))
+(define-sequence-syntax in-array
+  (λ () #'in-array)
+  (λ (stx)
+    (syntax-case stx ()
+      [[(x) (_ arr-expr)]
+       (syntax/loc stx
+         [(x)
+          (:do-in
+           ([(ds size dims js proc)
+             (let: ([arr : (Array Float)  arr-expr])
+               (cond [(array? arr)
+                      (define ds (array-shape arr))
+                      (define dims (vector-length ds))
+                      (define size (array-size arr))
+                      (define proc (unsafe-array-proc arr))
+                      (define: js : Indexes (make-vector dims 0))
+                      (values ds size dims js proc)]
+                     [else
+                      (raise-argument-error 'in-array "Array" arr)]))])
+           (void)
+           ([j 0])
+           (unsafe-fx< j size)
+           ([(x)  (proc js)])
+           #true
+           #true
+           [(begin (next-indexes! ds dims js)
+                   (unsafe-fx+ j 1))])])]
+      [[_ clause] (raise-syntax-error 'in-array "expected (in-array <Array>)" #'clause #'clause)])))
+
+;; -- synth
 
 ;; TODO this slows down a bit, it seems, but improves memory use
 (array-strictness #f)
@@ -22,13 +64,13 @@
 (define bits-per-sample 16)
 
 ;; Wow this is too much work
-(: freq->sample-period (-> Float Index))
+(: freq->sample-period (-> Float Integer))
 (define (freq->sample-period freq)
   (: res Exact-Rational)
   (define res (inexact->exact (round (/ fs freq))))
   (if (index? res) res (error "not index")))
 
-(: seconds->samples (-> Float Index))
+(: seconds->samples (-> Float Integer))
 (define (seconds->samples s)
   (: res Exact-Rational)
   (define res (inexact->exact (round (* s fs))))
@@ -38,8 +80,8 @@
 
 ;; array functions receive a vector of indices
 (define-syntax-rule (array-lambda (i) body ...)
-  (lambda ([i* : (Vectorof Index)])
-    (let: ([i : Index (vector-ref i* 0)]) body ...)))
+  (lambda ([i* : (Vectorof Integer)])
+    (let: ([i : Integer (vector-ref i* 0)]) body ...)))
 
 (: make-sawtooth-wave (-> Float (-> Float (-> Indexes Float))))
 (define ((make-sawtooth-wave coeff) freq)

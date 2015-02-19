@@ -6,8 +6,8 @@
 (define is-draft? (make-parameter #false))
 (provide is-draft?)
 
-(define note-on-teaching "Notes/A_Note_on_Teaching_part_I.html")
-(define note-on-mice-and-men "Notes/A_Note_on_Mice_and_Characters.html")
+(define note-on-teaching "../base/Notes/A_Note_on_Teaching_part_I.html")
+(define note-on-mice-and-men "../base/Notes/A_Note_on_Mice_and_Characters.html")
 
 (define (bsl) "BSL")
 (define (bsl+) "BSL+")
@@ -92,8 +92,8 @@
   (make-style "a bunch of things"
               (list
                'toc
-               (make-css-addition "Shared/shared.css")
-               (make-tex-addition "Shared/shared.tex"))))
+               (make-css-addition "../base/Shared/shared.css")
+               (make-tex-addition "../base/Shared/shared.tex"))))
 
 (define p make-paragraph)
 
@@ -517,8 +517,8 @@
 
 ;; -----------------------------------------------------------------------------
 ;; images 
-(define (img x) (image (string-append "Images/" x)))
-(define (img/p x) (image/plain (string-append "Images/" x)))
+(define (img x) (image (string-append "../base/Images/" x)))
+(define (img/p x) (image/plain (string-append "../base/Images/" x)))
 
 (define (dr-world) (img "drscheme-world.png"))
 
@@ -687,8 +687,8 @@
 
 (require (only-in 2htdp/image frame bitmap))
 
-(define (web-page1) (frame (bitmap "../Images/web-page1.png")))
-(define (web-page2) (frame (bitmap "../Images/web-page2.png")))
+(define (web-page1) (frame (bitmap "../../base/Images/web-page1.png")))
+(define (web-page2) (frame (bitmap "../../base/Images/web-page2.png")))
 
 (define red-color (style #f (list (color-property "red"))))
 

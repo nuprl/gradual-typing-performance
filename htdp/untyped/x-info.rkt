@@ -25,16 +25,16 @@
 ;; ---------------------------------------------------------------------------------------------------
 (require scribble/render scribble/html-render setup/xref)
 
-(define ROOT "./Trash")
+(define ROOT "../base/Trash")
 
 (define NOTES "notes")
 (define HTDP2 "HtDP2e")
 (define DRAFT "Draft")
 
-(define HTDP2-DESTINATION ROOT)
-(define DRAFT-DESTINATION (build-path ROOT "HtDP2e"))
+(define HTDP2-DESTINATION (build-path ROOT))
+(define DRAFT-DESTINATION (build-path ROOT "../base/HtDP2e"))
 
-(define info-fmt "info-~a~a.rktl")
+(define info-fmt "../base/info-~a~a.rktl")
 
 (define info-htdp (format info-fmt HTDP2 ""))
 (define info-note (format info-fmt NOTES ""))
@@ -42,24 +42,26 @@
 (define draft-info-note (format info-fmt NOTES DRAFT))
 
 ;; create a renderer and a path for the documentation, then scribble the desired document 
-(define (process-whole draft? scribble-it stem destination . stuff)
-  (define redirect 
+(define (process-whole draft? scribble-it stem destination [maybe-flag #f])
+  (define redirect
     (if draft?
         "http://plt.eecs.northwestern.edu/snapshots/current/doc/"
         "http://docs.racket-lang.org/"))
   (define renderer (compose render-multi-mixin render-mixin))
-  (apply scribble-it draft? stem destination redirect renderer stuff))
+  (scribble-it draft? stem destination redirect renderer ));maybe-flag))
+  ;(apply scribble-it draft? stem destination redirect renderer stuff))
 
 
 ;; run renderer on the remaining arguments with keywords supplied 
 ;; it's a syntax rule because I don't know how to supply an optional keyword otherwise 
 ;; (without running a decision again and thus duplicating the whole thing)
-(define-syntax-rule (run renderer stem stem.doc destination redirect? in-file out-file ...)
-  (render (list stem.doc) (list stem)
+(define (run renderer stem stem.doc destination redirect? in-file #:info-out-file [out-file #f])
+  (render (list stem.doc)
+          (list stem)
           #:render-mixin renderer
           #:dest-dir destination
           #:xrefs (list (load-collections-xref))
           #:quiet? #false
           #:redirect-main redirect?
           #:info-in-files (list in-file)
-          out-file ...))
+          #:info-out-file out-file))

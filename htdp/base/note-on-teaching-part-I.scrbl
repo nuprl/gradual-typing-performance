@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@(require "Shared/shared.rkt" (prefix-in 2: 2htdp/image) "Shared/shared1.rkt")
+@(require "../base/Shared/shared.rkt" (prefix-in 2: 2htdp/image) "../base/Shared/shared1.rkt")
 
 @(define (tech/link x)
    (link (format "../part_one.html#%28tech._~a%29" (string-downcase x)) x))

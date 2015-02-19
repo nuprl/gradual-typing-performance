@@ -3,7 +3,7 @@
 (require (only-in racket/fixnum fx<= fxmax fxmodulo)
          (only-in "array-struct.rkt"
                   array-strict?
-                  array-default-strict
+                  array-default-strict!
                   array-shape
                   array-size
                   unsafe-array-proc
@@ -12,7 +12,7 @@
          (only-in racket/vector vector-append)
          (only-in racket/string string-join)
          (only-in racket/list empty? first rest)
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (provide array-broadcasting
          array-broadcast
@@ -54,7 +54,8 @@
         [else  (define new-arr (shift-stretch-axes arr ds))
                (if (or (array-strict? arr) ((array-size new-arr) . fx<= . (array-size arr)))
                    new-arr
-                   (array-default-strict new-arr))]))
+                   (begin (array-default-strict! new-arr)
+                   new-arr))]))
 
 (define (shape-insert-axes ds n)
   (vector-append (make-vector n 1) ds))

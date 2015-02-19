@@ -15,3 +15,4 @@ The dependency graph is a simple diamond.
 Both `client.rkt` and `server.rkt` depend on `constants.rkt`.
 The main module depends on the client and server.
 
+Gradual typing adds very little overhead.

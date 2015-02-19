@@ -6,10 +6,10 @@
                   array-shape
                   unsafe-array-proc
                   unsafe-build-array
-                  array-default-strict)
+                  array-default-strict!)
          (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
          (only-in "array-utils.rkt" unsafe-vector-remove vector-copy-all unsafe-vector-insert)
-         "array-types.rkt")
+         "../base/array-types.rkt")
 
 (provide array-append*)
 
@@ -61,11 +61,13 @@
                                   (vector-set! old-jks jk i)
                                   (i-loop (+ i 1) (fx+ jk 1))]
                    [else  (arrs-loop (cdr arrs) (cdr dks) jk)]))))
-       (array-default-strict
+       (define arr*
         (unsafe-build-array
          new-ds (λ (js)
                   (define jk (vector-ref js k))
                   (vector-set! js k (vector-ref old-jks jk))
                   (define v ((vector-ref old-procs jk) js))
                   (vector-set! js k jk)
-                  v)))])))
+                  v)))
+         (array-default-strict! arr*)
+         arr*])))

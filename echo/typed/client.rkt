@@ -6,8 +6,12 @@
 
 (provide client)
 
-(require "constants.rkt"
+(require benchmark-util
          (only-in racket/tcp tcp-connect))
+
+(require/typed/check "constants.rkt"
+  [PORT Natural]
+  [DATA String])
 
 ;; ---------------------------------------------------------------------------------------------------
 

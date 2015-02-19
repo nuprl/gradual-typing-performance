@@ -1,8 +1,4 @@
-#! /bin/sh
-#|
-exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
-|#
-#lang typed/racket
+#lang racket/base
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; runs scribble and opens preview for section, draft, release
@@ -11,20 +7,12 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
  ;; -> Void
  ;; ./xnotes
  ;; renders the stable and the draft version of Notes
- main)
+ notes:main)
 
 ;; ---------------------------------------------------------------------------------------------------
-(require
- 
- "x-info.rkt")
+(require "x-info.rkt" net/sendurl)
 
-;; Uncomment if RENDER IN BROWSER is uncommented
-;; (require/typed
-;;  net/sendurl
-;;  [send-url/file (-> Path-String Void)])
-
-(: main (->* () (Boolean) Void))
-(define (main (draft? #f))
+(define (notes:main (draft? #f))
   (if draft?
       (process-whole #t scribble-it NOTES (build-path DRAFT-DESTINATION DRAFT))
       (process-whole #f scribble-it NOTES (build-path HTDP2-DESTINATION NOTES))))
@@ -37,33 +25,21 @@ exec /home/ben/code/racket/fork/racket/bin/racket -tm "$0" ${1+"$@"}
 ;; -- using renderer, which implements render<%>, to scribble 
 ;; produce [draft-]info-file for cross-references to HtDP
 ;; open browser on stem.html 
-(: scribble-it (->* (Boolean
-                     String
-                     Path-String
-                     (U String #f)
-                     (-> Render Render))
-                    (Boolean)
-                    Void))
-(define (scribble-it draft? stem destination redirect? renderer [unused-flag #f])
-  ;; (: stem.scrbl Resolved-Module-Path)
-  ;; (define stem.scrbl (make-resolved-module-path
-  ;;                     (build-path stem ".scrbl")))
-  (: stem.scrbl String)
-  (define stem.scrbl 
-                      (string-append stem ".scrbl"))
+(define (scribble-it draft? stem destination redirect? renderer)
+  (define stem.scrbl (string-append stem ".scrbl"))
   (define stem.html  (string-append stem ".html"))
   (displayln `(rendering ,stem.scrbl draft: ,draft?))
-  (define stem.doc (cast (dynamic-require stem.scrbl 'doc) part))
+  (define stem.doc (dynamic-require stem.scrbl 'doc))
   (define-values (in-file out-file)
     (if draft?
         (values draft-info-htdp draft-info-note)
         (values info-htdp       info-note)))
   (unless (file-exists? in-file)
-    (copy-file "x-info.dat" in-file)
+    (copy-file "../base/x-info.dat" in-file)
     (printf "WARNING: xnotes is using an old info file. RUN xnotes AGAIN"))
   (run renderer stem stem.doc  destination redirect? in-file #:info-out-file out-file)
   (displayln `(done rendering))
-)  ;; --- RENDER IN BROWSER
-  ;; (parameterize ([current-directory destination])
-  ;;   (displayln `(opening browser at ,destination ,stem.html))
-  ;;   (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html")))))
+  );; --- Uncomment to render HTML
+  ;;(parameterize ([current-directory destination])
+  ;;  (displayln `(opening browser at ,destination ,stem.html))
+  ;;  (send-url/file (if (file-exists? stem.html) stem.html (build-path stem "index.html"))))

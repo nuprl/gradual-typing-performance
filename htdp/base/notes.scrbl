@@ -1,6 +1,6 @@
 #lang scribble/manual
 
-@(require "Shared/shared.rkt")
+@(require "../base/Shared/shared.rkt")
 @(require racket/date (for-label racket))
 
 @title[#:tag "notes" #:style book-style ]{Notes on How to Design Programs, Second Edition}
