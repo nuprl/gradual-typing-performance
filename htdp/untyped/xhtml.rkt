@@ -1,4 +1,4 @@
-#lang racket/gui
+#lang racket/base
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; runs scribble and opens preview for section, draft, release
