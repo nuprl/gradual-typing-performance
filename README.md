@@ -10,9 +10,9 @@ the performance hypothesis underlying gradual typing.
 | echo                  | Ben         | Yes     | No           | 4         | directed diamond |
 | HTDP script           | Ben         | Yes     | No           | 4         | triangle         |
 | mbta                  | Matthias    | Yes     | No           | 4         | one chain        |
-| snake                 | Max         | Yes     | No           |           |                  |
-| tetris                | Max         | Yes     | No           |           |                  |
-| protbuf               |             | No      | No           |           |                  |
+| tetris                | Max         | Yes     | No           | 9         | diamond          |
+| snake                 | Max         | Yes     | No           | 12        | diamond          |
+| protbuf (?)           |             | No      | No           |           |                  |
 | [simulation][1] (?)   |             | No      | No           |           |                  |
 | [ragg][2] (?)         |             | No      | No           |           |                  |
 | [parser-tools][3] (?) |             | No      | No           |           |                  |
