@@ -2,8 +2,12 @@
 
 ;; Benchmark driver
 
-(require math/statistics
+(require "data-lattice.rkt"
+         math/statistics
+         pict
+         racket/class
          racket/cmdline
+         racket/draw
          racket/match
          racket/system)
 
@@ -15,8 +19,9 @@
 ;; be parsed later)
 (define num-iterations (make-parameter "1"))
 
-;; A path to write data to
+;; Paths to write results/diagrams
 (define output-path (make-parameter #f))
+(define lattice-path (make-parameter #f))
 
 (module+ main
   (match-define (list basepath entry-point)
@@ -27,6 +32,9 @@
                   [("-o" "--output") o-p
                                      "A path to write data to"
                                      (output-path o-p)]
+                  [("-l" "--latice") l-p
+                                     "A path to write the lattice diagram to"
+                                     (lattice-path l-p)]
                   #:multi
                   [("-i" "--iterations") n-i
                                          "The number of iterations to run"
@@ -72,4 +80,11 @@
     (with-output-to-file (output-path)
       (λ () (write results))
       #:mode 'text
-      #:exists 'replace)))
+      #:exists 'replace))
+
+  (when (lattice-path)
+    (send ;; default size is too small to see, so apply a scaling factor
+          (pict->bitmap (scale (make-performance-lattice results) 3))
+          save-file
+          (lattice-path)
+          'png)))
