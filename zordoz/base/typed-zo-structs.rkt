@@ -1,74 +1,5 @@
 #lang typed/racket
 
-(provide
- Spec
- (struct-out zo)
- (struct-out compilation-top)
- (struct-out prefix)
- (struct-out global-bucket)
- (struct-out module-variable)
- (struct-out stx)
- (struct-out form)
- (struct-out expr)
- (struct-out wrapped)
- (struct-out wrap)
- (struct-out free-id-info)
- (struct-out all-from-module)
- (struct-out module-binding)
- (struct-out nominal-path)
- (struct-out provided)
- (struct-out def-values)
- (struct-out def-syntaxes)
- (struct-out seq-for-syntax)
- (struct-out req)
- (struct-out seq)
- (struct-out splice)
- (struct-out inline-variant)
- (struct-out mod)
- (struct-out provided)
- (struct-out expr)
- (struct-out lam)
- (struct-out closure)
- (struct-out case-lam)
- (struct-out let-one)
- (struct-out let-void)
- (struct-out install-value)
- (struct-out let-rec)
- (struct-out boxenv)
- (struct-out localref)
- (struct-out toplevel)
- (struct-out topsyntax)
- (struct-out application)
- (struct-out branch)
- (struct-out with-cont-mark)
- (struct-out beg0)
- (struct-out varref)
- (struct-out assign)
- (struct-out apply-values)
- (struct-out primval)
- (struct-out top-level-rename)
- (struct-out mark-barrier)
- (struct-out lexical-rename)
- (struct-out phase-shift)
- (struct-out module-rename)
- (struct-out wrap-mark)
- (struct-out prune)
- (struct-out simple-module-binding)
- (struct-out phased-module-binding)
- (struct-out exported-nominal-module-binding)
- (struct-out nominal-module-binding)
- (struct-out exported-module-binding)
- (struct-out simple-nominal-path)
- (struct-out imported-nominal-path)
- (struct-out phased-nominal-path)
- (struct-out function-shape)
- (struct-out struct-shape)
- (struct-out struct-type-shape)
- (struct-out constructor-shape)
- (struct-out predicate-shape)
- (struct-out accessor-shape)
- (struct-out mutator-shape)
- (struct-out struct-other-shape))
 
 ;; A Spec is the name of a zo struct and a list of pairs representing its fields:
 ;; - The car of each field is the name of that field
@@ -78,8 +9,9 @@
 (define-type Spec
   (Rec Spec
    (Pair String (Listof (Pair String (-> (U Spec String)))))))
+(provide Spec)
 
-(require/typed compiler/zo-structs
+(require/typed/provide compiler/zo-structs
                [#:struct zo ()]
                [#:struct (compilation-top zo) ([max-let-depth : Exact-Nonnegative-Integer]
                                           [prefix : prefix]
