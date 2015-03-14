@@ -203,42 +203,43 @@
 ;;; @result{} 1
 ;;; @end lisp
 
-(define levenshtein/predicate
-  ;; TODO: Change this to a let-syntax.
-  (let ((foo (lambda (a b pred a-emp a-len a-vec)
-               (let ((bar (lambda (b-emp b-len b-vec)
-                            (if (b-emp b)
-                                (a-len a)
-                                (vector-levenshtein/predicate (a-vec a)
-                                                              (b-vec b)
-                                                              pred)))))
-                 (cond ((vector? b) (bar %vector-empty?
-                                         vector-length
-                                         %identity))
-                       ((string? b) (bar %string-empty?
-                                         string-length
-                                         %string->vector))
-                       ((list?   b) (bar null? length list->vector))
-                       (else (error "term 2 must be vector, list, or string:"
-                                    b)))))))
-    (lambda (a b pred)
-      (cond ((vector? a) (if (vector? b)
-                             (vector-levenshtein/predicate a b pred)
-                             (foo a b pred
-                                  %vector-empty?
-                                  vector-length
-                                  %identity)))
-            ((string? a) (if (string? b)
-                             (%string-levenshtein/predicate
-                              a b pred)
-                             (foo a b pred
-                                  %string-empty?
-                                  string-length
-                                  %string->vector)))
-            ((list?   a) (if (list? b)
-                             (list-levenshtein/predicate a b pred)
-                             (foo a b pred null? length list->vector)))
-            (else (error "term 1 must be vector, list, or string:" a))))))
+;;;bg too hard
+;(define levenshtein/predicate
+;  ;; TODO: Change this to a let-syntax.
+;  (let ((foo (lambda (a b pred a-emp a-len a-vec)
+;               (let ((bar (lambda (b-emp b-len b-vec)
+;                            (if (b-emp b)
+;                                (a-len a)
+;                                (vector-levenshtein/predicate (a-vec a)
+;                                                              (b-vec b)
+;                                                              pred)))))
+;                 (cond ((vector? b) (bar %vector-empty?
+;                                         vector-length
+;                                         %identity))
+;                       ((string? b) (bar %string-empty?
+;                                         string-length
+;                                         %string->vector))
+;                       ((list?   b) (bar null? length list->vector))
+;                       (else (error "term 2 must be vector, list, or string:"
+;                                    b)))))))
+;    (lambda (a b pred)
+;      (cond ((vector? a) (if (vector? b)
+;                             (vector-levenshtein/predicate a b pred)
+;                             (foo a b pred
+;                                  %vector-empty?
+;                                  vector-length
+;                                  %identity)))
+;            ((string? a) (if (string? b)
+;                             (%string-levenshtein/predicate
+;                              a b pred)
+;                             (foo a b pred
+;                                  %string-empty?
+;                                  string-length
+;                                  %string->vector)))
+;            ((list?   a) (if (list? b)
+;                             (list-levenshtein/predicate a b pred)
+;                             (foo a b pred null? length list->vector)))
+;            (else (error "term 1 must be vector, list, or string:" a))))))
 
 ;;; @defproc levenshtein a b
 ;;;
@@ -319,7 +320,7 @@
 
 (provide
  levenshtein
- levenshtein/predicate
+ ;levenshtein/predicate
  list-levenshtein
  list-levenshtein/eq
  list-levenshtein/equal
