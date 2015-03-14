@@ -255,10 +255,19 @@
 ;;; (levenshtein g "umbrage") @result{} 5
 ;;; @end lisp
 
+;;;bg
+;(define (levenshtein a b)
+;  (if (and (string? a) (string? b))
+;      (string-levenshtein a b)
+;      (levenshtein/predicate a b equal?)))
 (define (levenshtein a b)
-  (if (and (string? a) (string? b))
-      (string-levenshtein a b)
-      (levenshtein/predicate a b equal?)))
+  (cond [(and (string? a) (string? b))
+         (string-levenshtein a b)]
+        [(and (vector? a) (vector? b))
+         (vector-levenshtein a b)]
+        [(and (list? a) (list? b))
+         (list-levenshtein a b)]
+        [else (error "levenshtein")]))
 
 ;; @appendix Trullenque Perl Implementation
 ;;
