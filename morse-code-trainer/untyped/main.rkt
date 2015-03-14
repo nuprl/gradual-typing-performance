@@ -28,7 +28,7 @@
 
 (require
   "levenshtein.rkt"
-  "morse-code-sounds.rkt"
+  "morse-code-strings.rkt"
   racket/runtime-path
   (only-in racket/file file->value))
 
