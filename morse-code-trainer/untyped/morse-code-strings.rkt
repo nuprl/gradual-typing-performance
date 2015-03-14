@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 ;; Copyright 2013 John Clements (clements@racket-lang.org)
 ;; Code licensed under the Mozilla Public License 2.0
@@ -15,12 +15,13 @@
 
 ;; map a character to a dit-dah string
 (define (char->dit-dah-string letter)
-  (match (hash-ref char-table (char-downcase letter) #f)
-    [#f (raise-argument-error 'letter-map "character in map"
-                              0 letter)]
-    [str str]))
+  (define res (hash-ref char-table (char-downcase letter) #f))
+  (if (eq? #f res)
+    (raise-argument-error 'letter-map "character in map"
+                              0 letter)
+    res))
 
 (define (string->morse str)
-  (apply string-append
-    (for/list ([c str])
-      (char->dit-dah-string c))))
+  (define morse-list (for/list ([c str])
+      (char->dit-dah-string c)))
+  (apply string-append morse-list))
