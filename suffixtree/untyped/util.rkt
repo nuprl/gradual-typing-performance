@@ -3,7 +3,9 @@
 
 (require racket/contract
          racket/list
-         "suffixtree.rkt")
+         "structs.rkt"
+         "ukkonen2.rkt"
+         "label.rkt")
 
 
 (define false-thunk (lambda () #f))

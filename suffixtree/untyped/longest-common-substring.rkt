@@ -1,5 +1,8 @@
 #lang racket/base
 (require "suffixtree.rkt"
+         "label.rkt"
+         "structs.rkt"
+         "ukkonen2.rkt"
          racket/list
          racket/contract
          racket/local

@@ -1,6 +1,7 @@
 #lang racket/base
 (require rackunit
          rackunit/text-ui
+         "label.rkt" "structs.rkt" "ukkonen2.rkt"
          "suffixtree.rkt"
          (for-syntax racket/base))
 

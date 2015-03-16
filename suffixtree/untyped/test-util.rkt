@@ -1,8 +1,10 @@
 #lang racket/base
 (require rackunit
          rackunit/text-ui
-         "suffixtree.rkt"
-         "util.rkt")
+         "util.rkt"
+         "label.rkt"
+         "structs.rkt"
+         "ukkonen2.rkt")
 
 
 (define-simple-check (check-label-equal? a b)
