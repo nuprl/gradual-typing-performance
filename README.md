@@ -9,6 +9,7 @@ the performance hypothesis underlying gradual typing.
 | sieve                 | Ben         | Yes     | No           | 2         | one chain        |
 | echo                  | Ben         | Yes     | No           | 4         | directed diamond |
 | HTDP script           | Ben         | Yes     | No           | 4         | triangle         |
+| morse-code            | Ben         | Yes     | No           | 4         | vee              |
 | mbta                  | Matthias    | Yes     | No           | 4         | one chain        |
 | tetris                | Max         | Yes     | No           | 9         | diamond          |
 | snake                 | Max         | Yes     | No           | 12        | diamond          |
