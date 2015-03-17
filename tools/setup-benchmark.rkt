@@ -23,6 +23,7 @@
 (define (create-benchmark-dirs 
          pwd
          #:base [base (build-path pwd "base")]
+         #:both [both (build-path pwd "both")]
          #:typed [typed (build-path pwd "typed")]
          #:untyped [untyped (build-path pwd "untyped")]
          #:benchmark-dir [bdir (build-path pwd "benchmark")]
@@ -33,6 +34,8 @@
   ;; (1) make sure directories base, typed, and untyped exist 
   ;; (2) the typed and untyped contain the same number of files 
   ;; (3) ... and files with the same names
+  ;;
+  ;; Note: 'both' directory is optional
   
   (define typed-dir (directory-list typed))
   (define untyped-dir (directory-list untyped))
@@ -49,17 +52,17 @@
   
   (set-up-benchmark-directory bdir)
   (create-populate-base-directory base bdir)
-  (create-populate-variations-directories* variation bdir typed untyped file-names*)
+  (create-populate-variations-directories* variation bdir both typed untyped file-names*)
   ;; throw them away: 
   (void))
 
 ;; ---------------------------------------------------------------------------------------------------
-;; String Path Path Path [Listof String] -> [Listof String]
-(define (create-populate-variations-directories* name bdir typed untyped file-names*)
+;; String Path Path Path Path [Listof String] -> [Listof String]
+(define (create-populate-variations-directories* name bdir both typed untyped file-names*)
   (for/list ([combination (in-list (build-combinations* (length file-names*)))])
     (define cdir (build-path bdir (apply string-append "variation" (map number->string combination))))
     (make-directory cdir)
-    (create-readme cdir (populate-variation cdir file-names* combination typed untyped))
+    (create-readme cdir (populate-variation cdir file-names* combination both typed untyped))
     cdir))
 
 ;; ---------------------------------------------------------------------------------------------------
@@ -68,8 +71,11 @@
   (with-output-to-file (build-path cdir "README") (lambda () (pretty-print population))))
 
 ;; ---------------------------------------------------------------------------------------------------
-;; Path [Listof String] Combination Path Path -> Void 
-(define (populate-variation cdir file-names* combination typed untyped)
+;; Path [Listof String] Combination Path Path Path -> Void
+(define (populate-variation cdir file-names* combination both typed untyped)
+  (when (directory-exists? both) ; both is optional
+    (for ([file-name (in-directory both)])
+      (copy-file (build-path both file-name) (build-path cdir file-name))))
   (for/list ([file-name (in-list file-names*)][src (in-list combination)])
     (copy-file (build-path (if (typed? src) typed untyped) file-name) (build-path cdir file-name))
     #;

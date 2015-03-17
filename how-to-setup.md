@@ -35,11 +35,16 @@ called [project]:
     * [project]/base (put original files that don't get ported here)
     * [project]/typed (put typed ports of files here)
     * [project]/untyped (put original files here)
+    * [project]/both (optional, put shared files that are copied into each variation)
 
 The `typed` and `untyped` folders should contain files with the same
 names. Additional libraries that shouldn't get ported (e.g., cannot add
 types, has macros that don't need to be ported, etc.) should go in
 `base`.
+
+The `both` directory is like `base`, but for files that don't work with
+the relative require path structure required for `base`. This directory
+is optional.
 
 See below for how to arrange the typed modules so that they can import
 typed and untyped versions. 
