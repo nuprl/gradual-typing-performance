@@ -74,8 +74,8 @@
 ;; Path [Listof String] Combination Path Path Path -> Void
 (define (populate-variation cdir file-names* combination both typed untyped)
   (when (directory-exists? both) ; both is optional
-    (for ([file-name (in-directory both)])
-      (copy-file file-name (build-path cdir file-name))))
+    (for ([file-name (in-list (directory-list both))])
+      (copy-file (build-path both file-name) (build-path cdir file-name))))
   (for/list ([file-name (in-list file-names*)][src (in-list combination)])
     (copy-file (build-path (if (typed? src) typed untyped) file-name) (build-path cdir file-name))
     #;
