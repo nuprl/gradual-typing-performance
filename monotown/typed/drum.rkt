@@ -7,7 +7,7 @@
   [array-size (-> Array Integer)]
   [make-array (-> In-Indexes Any Array)]
   [build-array (-> In-Indexes (-> Indexes Float) Array)]
-  [unsafe-vector->array (-> Indexes (Vectorof Float) (Mutable-Array Float))])
+  [unsafe-vector->array (-> Indexes (Vectorof Float) Mutable-Array)])
 
 (require/typed/check "array-utils.rkt"
   [array-shape-size (-> Indexes Natural)]
