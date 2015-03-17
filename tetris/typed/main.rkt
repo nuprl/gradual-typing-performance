@@ -26,7 +26,8 @@
   [next-world (-> World World)]
   [ghost-blocks (-> World BSet)])
 (require/typed/check "visual.rkt"
-  [world->image (-> World Image)])
+  [world->image (-> World Image)]
+  [world0 (-> World)])
 
 
 (: replay : World (Listof Any) -> World)

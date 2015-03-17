@@ -18,7 +18,6 @@
   [ghost-blocks (-> World BSet)])
 (require/typed
     2htdp/image
-  [#:opaque Image image?]
   [overlay   (-> Image Image Image)]
   [circle    (-> Integer String String Image)]
   [rectangle (-> Integer Integer Color Color Image)]
@@ -30,7 +29,8 @@
  blocks->image
  block->image
  place-block
- world0)
+ world0
+ Image)
 
 ;; Visualize whirled peas
 (: world->image (-> World Image))
