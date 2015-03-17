@@ -25,8 +25,9 @@
 (: label-element-equal? (-> Any Any Boolean))
 (define label-element-equal? equal?)
 
+(define-type Label label)
 
-(provide label?
+(provide Label label?
         (rename-out [ext:make-label make-label])
         label-element?
         label-element-equal?
