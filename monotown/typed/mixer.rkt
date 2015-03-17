@@ -8,7 +8,7 @@
 (require/typed/check "array-struct.rkt"
   [array? (-> Array Boolean)]
   [array-shape (-> Array Indexes)]
-  [array-default-strict! (-> ArrayVoid)]
+  [array-default-strict! (-> Array Void)]
   [unsafe-array-proc (-> Array (-> Indexes Float))]
   [unsafe-build-array (-> Indexes (-> Indexes Float) Array)])
 
