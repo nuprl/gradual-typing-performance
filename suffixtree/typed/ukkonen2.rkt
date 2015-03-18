@@ -24,6 +24,7 @@
 #;(provide enable-ukkonen-debug-messages)
 #;(provide disable-ukkonen-debug-messages)
 
+(define dummy-node (node (make-label "dummy") #f '() #f))
 
 ;; current-node->id: parameter of node -> string
 ;;
@@ -36,9 +37,8 @@
          ;; the node keys weakly to
          ;; avoid memory leaking!
          (n : Integer 0)
-         (sema : Semaphore (make-semaphore 1))
-         (dummy : Node (node (make-label "dummy") #f '() #f)))
-     (hash-set! hash dummy "#f")
+         (sema : Semaphore (make-semaphore 1)))
+     (hash-set! hash dummy-node "#f")
      (lambda ([node : Node])
        (call-with-semaphore sema
                             (lambda ()
@@ -199,146 +199,130 @@
    (loop-first initial-i))
 
 
-;; (provide extend-at-point!)
-;; ;; extend-at-point!: node number label number -> node
-;; (define extend-at-point!
-;;   (letrec [
-;;            (main-logic
-;;             (lambda (node offset label i)
-;;               (if (should-extend-as-leaf? node offset)
-;;                   (attach-as-leaf! node label i)
-;;                   (splice-with-internal-node! node offset label i))))
-;; 
-;;            (should-extend-as-leaf?
-;;             (lambda (node offset)
-;;               (node-position-at-end? node offset)))
-;; 
-;;            (attach-as-leaf!
-;;             (lambda (node label i)
-;;               (debug "adding ~S as leaf off of ~A"
-;;                      (label->string (sublabel label i))
-;;                      ((current-node->id) node))
-;;               (let ((leaf (node-add-leaf! node (sublabel label i))))
-;;                 (debug "leaf ~A added" ((current-node->id) leaf))
-;;                 node)))
-;; 
-;;            (splice-with-internal-node!
-;;             (lambda (node offset label i)
-;;               (debug "adding ~S within edge above ~A between ~S and ~S"
-;;                      (label->string (sublabel label i))
-;;                      ((current-node->id) node)
-;;                      (label->string (sublabel (node-up-label node) 0 offset))
-;;                      (label->string (sublabel (node-up-label node) offset)))
-;;               ;; otherwise, extend by splicing
-;;               (let-values (((split-node leaf)
-;;                             (node-up-splice-leaf!
-;;                              node offset (sublabel label i))))
-;;                 (debug "spliced ~A with leaf ~A"
-;;                        ((current-node->id) split-node)
-;;                        ((current-node->id) leaf))
-;;                 split-node)))
-;;            ]
-;;     main-logic))
-;; 
-;; 
-;; 
-;; 
-;; 
-;; (provide suffix-tree-add!)
-;; ;; suffix-tree-add!: tree label -> void
-;; ;; Adds a new label and its suffixes to the suffix tree.
-;; ;; Precondition: label is nonempty.
-;; (define suffix-tree-add!
-;;   (letrec
-;;       [
-;;        (do-construction!
-;;         (lambda (tree label)
-;;           (debug "Starting construction for ~S" (label->string label))
-;;           (debug "Root node is ~A"
-;;                  ((current-node->id) (suffix-tree-root tree)))
-;;           (let-values (((starting-node starting-offset)
-;;                         (add-first-suffix! tree label)))
-;;             (add-rest-suffixes! label starting-node starting-offset)
-;;             (debug "finished construction"))))
-;;        
-;;        (add-first-suffix!
-;;         (let
-;;             [
-;;              (matched-at-node
-;;               (lambda (node)
-;;                 (report-implicit-tree-constructed)))
-;;              (matched-in-node
-;;               (lambda (node offset)
-;;                 (report-implicit-tree-constructed)))
-;;              (mismatched-at-node
-;;               (lambda (node label label-offset)
-;;                 (let ((leaf (node-add-leaf!
-;;                              node (sublabel label label-offset))))
-;;                   (debug "adding leaf ~A with label ~S"
-;;                          ((current-node->id) leaf)
-;;                          (label->string (node-up-label leaf)))
-;;                   (values node label-offset))))
-;;              (mismatched-in-node
-;;               (lambda (node offset label label-offset)
-;;                 (let-values (((joint leaf)
-;;                               (node-up-splice-leaf!
-;;                                node offset
-;;                                (sublabel label label-offset))))
-;;                   (debug "spliced leaf ~A with label ~S"
-;;                          ((current-node->id) leaf)
-;;                          (label->string (node-up-label leaf)))
-;;                   (values joint label-offset))))
-;;              ]
-;;           (lambda (tree label)
-;;             (node-follow/k
-;;              (suffix-tree-root tree) label
-;;              matched-at-node
-;;              matched-in-node
-;;              mismatched-at-node
-;;              mismatched-in-node))))
-;; 
-;;        (add-rest-suffixes!
-;;         (lambda (label starting-node starting-offset)
-;;           (add-rest-suffixes-loop!
-;;            label
-;;            (label-length label)
-;;            (max starting-offset 1)
-;;            1
-;;            starting-node)))
-;;        
-;;        (add-rest-suffixes-loop!
-;;         (lambda (label N i j active-node)
-;;           (when (< j N)
-;;             (debug "At node ~a (i=~a, j=~a)"
-;;                    ((current-node->id) active-node) i j)
-;;             (let-values (((next-extension-node next-extension-offset i*)
-;;                           (find-next-extension-point/add-suffix-link!
-;;                            active-node label i j)))
-;;               (if i*
-;;                   (begin
-;;                     (let ((new-active-node
-;;                            (extend-at-point! next-extension-node
-;;                                              next-extension-offset
-;;                                              label i*)))
-;;                       (try-to-set-suffix-edge! active-node new-active-node)
-;;                       (add-rest-suffixes-loop!
-;;                        label N
-;;                        (max i* (add1 j)) (add1 j) new-active-node)))
-;;                   (begin
-;;                     (report-implicit-tree-constructed)))))))
-;; 
-;;        
-;;        (report-implicit-tree-constructed
-;;         (lambda ()
-;;           (debug "Implicit tree constructed")
-;;           (void)))
-;;        ]
-;;     
-;;     do-construction!))
-;; 
-;; ;; -- from suffixtree.rkt
-;; 
-;; (provide tree-add!)
-;; (define tree-add! suffix-tree-add!)
-;; 
-;; 
+(provide extend-at-point!)
+;; extend-at-point!: node number label number -> node
+(: extend-at-point! (-> Node Index Label Index Node))
+(define (extend-at-point! node offset label i)
+  (: main-logic (-> Node Index Label Index Node))
+  (define (main-logic node offset label i)
+    (if (should-extend-as-leaf? node offset)
+        (attach-as-leaf! node label i)
+        (splice-with-internal-node! node offset label i)))
+  (: should-extend-as-leaf? (-> Node Index Boolean))
+  (define (should-extend-as-leaf? node offset)
+    (node-position-at-end? node offset))
+  (: attach-as-leaf! (-> Node Label Index Node))
+  (define (attach-as-leaf! node label i)
+    (debug "adding ~S as leaf off of ~A"
+           (label->string (sublabel label i))
+           ((current-node->id) node))
+    (: leaf Node)
+    (define leaf (node-add-leaf! node (sublabel label i)))
+    (debug "leaf ~A added" ((current-node->id) leaf))
+    node)
+  (: splice-with-internal-node! (-> Node Index Label Index Node))
+  (define (splice-with-internal-node! node offset label i)
+    (debug "adding ~S within edge above ~A between ~S and ~S"
+           (label->string (sublabel label i))
+           ((current-node->id) node)
+           (label->string (sublabel (node-up-label node) 0 offset))
+           (label->string (sublabel (node-up-label node) offset)))
+    ;; otherwise, extend by splicing
+    (define-values (split-node leaf)
+      (node-up-splice-leaf!
+       node offset (sublabel label i)))
+    (debug "spliced ~A with leaf ~A"
+           ((current-node->id) split-node)
+           ((current-node->id) leaf))
+    split-node)
+  (main-logic node offset label i))
+
+(provide suffix-tree-add!)
+;; suffix-tree-add!: tree label -> void
+;; Adds a new label and its suffixes to the suffix tree.
+;; Precondition: label is nonempty.
+(: suffix-tree-add! (-> Tree Label Void))
+(define (suffix-tree-add! tree label)
+  (: do-construction! (-> Tree Label Void))
+  (define (do-construction! tree label)
+    (debug "Starting construction for ~S" (label->string label))
+    (debug "Root node is ~A"
+           ((current-node->id) (suffix-tree-root tree)))
+    (define pr (add-first-suffix! tree label))
+    (define starting-node (car pr))
+    (define starting-offset (cdr pr))
+    (add-rest-suffixes! label starting-node starting-offset)
+    (debug "finished construction"))
+  (: add-first-suffix! (-> Tree Label (Pairof Node Index)))
+  (define (add-first-suffix! tree label)
+    (: matched-at-node (-> Node (Pairof Node Index)))
+    (define (matched-at-node node)
+      (report-implicit-tree-constructed))
+    (: matched-in-node (-> Node Index (Pairof Node Index)))
+    (define (matched-in-node node offset)
+      (report-implicit-tree-constructed))
+    (: mismatched-at-node (-> Node Label Index (Pairof Node Index)))
+    (define (mismatched-at-node node label label-offset)
+      (define leaf
+        (node-add-leaf! node (sublabel label label-offset)))
+      (debug "adding leaf ~A with label ~S"
+             ((current-node->id) leaf)
+             (label->string (node-up-label leaf)))
+      (cons node label-offset))
+    (: mismatched-in-node (-> Node Index Label Index (Pairof Node Index)))
+    (define (mismatched-in-node node offset label label-offset)
+      (define-values (joint leaf)
+        (node-up-splice-leaf! node offset (sublabel label label-offset)))
+      (debug "spliced leaf ~A with label ~S"
+             ((current-node->id) leaf)
+             (label->string (node-up-label leaf)))
+      (cons joint label-offset))
+    (define res (node-follow/k
+                 (suffix-tree-root tree)
+                 label
+                 matched-at-node
+                 matched-in-node
+                 mismatched-at-node
+                 mismatched-in-node))
+    (when (void? res) (error "foo"))
+    res)
+  (: add-rest-suffixes! (-> Label Node Index Void))
+  (define (add-rest-suffixes! label starting-node starting-offset)
+    (add-rest-suffixes-loop!
+     label
+     (let ([i (label-length label)]) (unless (index? i) (error "ars")) i)
+     (max starting-offset 1)
+     1
+     starting-node))
+  (: add-rest-suffixes-loop! (-> Label Index Index Index Node Void))
+  (define (add-rest-suffixes-loop! label N i j active-node)
+    (when (< j N)
+      (debug "At node ~a (i=~a, j=~a)"
+             ((current-node->id) active-node) i j)
+      (define-values (next-extension-node next-extension-offset i*)
+        (find-next-extension-point/add-suffix-link! active-node label i j))
+      (cond [(and i* next-extension-node (index? next-extension-offset))
+             (define new-active-node
+               (extend-at-point! next-extension-node
+                                     next-extension-offset
+                                     label i*))
+             (try-to-set-suffix-edge! active-node new-active-node)
+             (add-rest-suffixes-loop!
+              label
+              N
+              (let ([num (max i* (add1 j))]) (unless (index? num) (error "foo")) num)
+              (let ([num (add1 j)]) (unless (index? num) (error "foo")) num)
+              new-active-node)]
+            [else
+             (define x (report-implicit-tree-constructed))
+             (void)])))
+  (: report-implicit-tree-constructed (-> (Pairof Node Index)))
+  (define (report-implicit-tree-constructed)
+    (debug "Implicit tree constructed")
+    (cons dummy-node 0))
+  (do-construction! tree label))
+
+;; -- from suffixtree.rkt
+
+(provide tree-add!)
+(define tree-add! suffix-tree-add!)
