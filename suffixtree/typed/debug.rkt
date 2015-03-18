@@ -17,7 +17,7 @@
          (begin
            ;; Enable debugging hooks by calling (enable-debugging),
            ;; and disable them by (disable-debugging).
-
+           (: debug-on? (Parameter Boolean))
            (define debug-on?
              (make-parameter #f))
            (define (enable)
