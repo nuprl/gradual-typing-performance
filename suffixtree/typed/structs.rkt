@@ -114,15 +114,15 @@
 
 ;; tree-contains?: tree label -> boolean
 ;; Returns true if the tree contains the given label.
-;; (: tree-contains? (-> Tree Label Boolean))
-;; (define (tree-contains? tree label)
-;;   (node-follow/k (suffix-tree-root tree)
-;;                  label
-;;                  (lambda args #t)
-;;                  (lambda args #t)
-;;                  (lambda args #f)
-;;                  (lambda args #f)))
-;;TODO
+(: tree-contains? (-> Tree Label Boolean))
+(define (tree-contains? tree label)
+  (node-follow/k (suffix-tree-root tree)
+                 label
+                 (lambda args #t)
+                 (lambda args #t)
+                 (lambda args #f)
+                 (lambda args #f)))
+
 
 ;; node-follow/k: node label (node -> A)
 ;;                           (node number -> B)
@@ -133,7 +133,14 @@
 ;; Traverses the node's edges along the elements of the input label.
 ;; Written in continuation-passing-style for leakage containment.
 ;; One of the four continuation arguments will be executed.
-(: node-follow/k (All (A B C D) (-> Node Label (-> Node A) (-> Node Index B) (-> Node Label Index C) (-> Node Index Label Index D) (U A B C D))))
+(: node-follow/k (All (A B C D)
+                      (-> Node
+                          Label
+                          (-> Node A)
+                          (-> Node Index B)
+                          (-> Node Label Index C)
+                          (-> Node Index Label Index D)
+                          (U A B C D))))
 (define (node-follow/k node
                        original-label
                        matched-at-node/k
@@ -147,19 +154,20 @@
     (let loop ((k 0))
       (define k+label-offset (+ k label-offset))
       (cond
-       ((and (= k (label-length up-label)) (index? k+label-offset))
+       ((= k (label-length up-label))
+        (unless (index? k+label-offset) (error "node/folllowd"))
         (NODE/k node label k+label-offset))
-       ((and (index? k)
-             (= k+label-offset (label-length label)))
+       ((= k+label-offset (label-length label))
+        (unless (index? k) (error "node/followk"))
         (matched-in-edge/k node k))
-       ((and (index? k) (index? k+label-offset)
-             (label-element-equal? (label-ref up-label k)
-                                   (label-ref label k+label-offset)))
+       ((label-element-equal? (label-ref up-label k)
+                              (label-ref label k+label-offset))
         (loop (add1 k)))
-       ((and (index? k) (index? k+label-offset))
+       (else
+        (unless (and (index? k)
+                     (index? k+label-offset)) (error "node-follow/k mismatched fail"))
         (mismatched-in-edge/k node k label
-                              k+label-offset))
-       (else (error "EDGE/k")))))
+                              k+label-offset)))))
   (: NODE/k (-> Node Label Index (U A B C D)))
   (define (NODE/k node label label-offset)
     (if (= (label-length label) label-offset)

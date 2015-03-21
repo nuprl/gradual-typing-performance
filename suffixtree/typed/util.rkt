@@ -38,7 +38,7 @@
   (: label-2-marks (HashTable Node Boolean))
   (define label-2-marks (make-hasheq))
   (: deepest-node Node)
-  (define deepest-node (node (make-label "dummy") #f '() #f))
+  (define deepest-node (node (make-label "no lcs") #f '() #f))
   (: deepest-depth Index)
   (define deepest-depth 0)
   (: main (-> Label))

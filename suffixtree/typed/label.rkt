@@ -73,7 +73,8 @@
 ;; Constructs a new label from the input vector.
 (: vector->label (-> (Vectorof (U Char Symbol)) label))
 (define (vector->label vector)
-  (make-label (vector->immutable-vector vector) 0 (vector-length vector)))
+  (make-label (vector->immutable-vector vector)
+              0 (vector-length vector)))
 
 
 ;; vector->label vector
@@ -111,20 +112,19 @@
 
 ;; label-length: label -> number?
 ;; Returns the length of the label.
-(: label-length (-> label Integer))
+(: label-length (-> label Index))
 (define (label-length label)
-  (- (label-j label) (label-i label)))
+  (define len (- (label-j label) (label-i label)))
+  (unless (index? len) (error "label-length"))
+  len)
 
 
 ; label-ref: label number? -> char
 ; Returns the kth element in the label.
-(: label-ref (-> label Index Char))
+(: label-ref (-> label Integer (U Symbol Char)))
 (define (label-ref label k)
-  (: val (U Char Symbol))
-  (define val (vector-ref (label-datum label) (+ k (label-i label))))
-  (unless (char? val)
-    (error "label-ref"))
-  val)
+  (unless (index? k) (error "label ref INDEX"))
+  (vector-ref (label-datum label) (+ k (label-i label))))
 
 ;; sublabel: label number number -> label
 ;; Gets a slice of the label on the half-open interval [i, j)
@@ -133,17 +133,13 @@
 (define sublabel
   (case-lambda
     ((label i)
-     (: len Integer)
-     (define len (label-length label))
-     (unless (index? len) (error "sublabel"))
-     (sublabel label i len))
+     (sublabel label i (label-length label)))
     ((label i j)
      (unless (<= i j)
        (error 'sublabel "illegal sublabel [~a, ~a]" i j))
      (make-label (label-datum label)
                  (+ i (label-i label))
                  (+ j (label-i label))))))
-
 
 ;; sublabel!: label number number -> void
 ;; destructively sets the input label to sublabel.
@@ -152,10 +148,7 @@
 (define sublabel!
   (case-lambda
     ((label i)
-     (: len Integer)
-     (define len (label-length label))
-     (unless (index? len) (error "sublabel!"))
-     (sublabel! label i len))
+     (sublabel! label i (label-length label)))
     ((label i j)
      (begin
        ;; order dependent code ahead!
@@ -204,28 +197,24 @@
 (define (label->string label)
   (: V (Vectorof (U Char Symbol)))
   (define V (label->vector label))
-  (: L (Listof String))
-  (define L (for/list : (Listof String) ([c : (U Char Symbol) (in-vector V)])
-                      (format "~a" c)))
-  (apply string-append L))
+  (: L (Listof Char))
+  (define L (for/list : (Listof Char)
+                      ([c : (U Char Symbol) (in-vector V)])
+              (unless (char? c) (error "label->string invariant broken"))
+              c))
+  (list->string L))
 
 (: label->string/removing-sentinel (-> label String))
 (define (label->string/removing-sentinel label)
-  (: ln Integer)
-  (define ln (label-length label))
-  (: ln-1 Integer)
-  (define ln-1 (sub1 ln))
-  (unless (index? ln) (error "label->string/removing-sentinel"))
-  (: N Integer)
-  (define N (cond [(and (index? ln-1)
-                        (sentinel? (label-ref label ln-1)))
-                   ln-1]
-                  [(index? ln) ln]
-                  [else (error "label->string/removing-sentinel")]))
-  (build-string N (lambda ([i : Integer])
-                    (unless (index? i) (error "whwhwhahhaha"))
-                    (label-ref label i))))
-
+  (let* ([ln (label-length label)]
+         [N (if (and (> ln 0) (sentinel? (label-ref label (sub1 ln))))
+                (sub1 ln)
+                ln)])
+    (build-string N (lambda ([i : Integer])
+                      (unless (index? i) (error "label->string 1"))
+                      (let ([val (label-ref label i)])
+                        (unless (char? val) (error "label->string 2"))
+                        val)))))
 
 ;; label->vector: label -> vector
 ;; Extracts the vector that the label represents.
