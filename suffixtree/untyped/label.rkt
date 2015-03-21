@@ -65,7 +65,8 @@
 ;; vector->label vector
 ;; Constructs a new label from the input vector.
 (define (vector->label vector)
-  (make-label (vector->immutable-vector vector) 0 (vector-length vector)))
+  (make-label (vector->immutable-vector vector)
+              0 (vector-length vector)))
 
 
 ;; vector->label vector

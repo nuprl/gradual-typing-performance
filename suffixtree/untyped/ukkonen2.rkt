@@ -92,19 +92,25 @@
 ;; If we hit the root, that offset is #f to indicate that we have to
 ;; start searching the suffix from scratch.
 (define (jump-to-suffix node)
+  (define PARENT (node-parent node))
   (cond ((node-root? node)
          (values node #f))
         ((node-suffix-link node)
          (begin (debug "following suffix link from ~a to ~a"
                        ((current-node->id) node)
                        ((current-node->id) (node-suffix-link node)))
-                (values (node-suffix-link node) 0)))
-        ((node-root? (node-parent node))
-         (values (node-parent node) #f))
+                (let ([node2 (node-suffix-link node)])
+                  (unless node2 (error "jump to suffix"))
+                  (values node2 0))))
+        ((and PARENT (node-root? PARENT))
+           (values PARENT #f))
         (else
-         (values (node-suffix-link (node-parent node))
-                 (label-length (node-up-label node))))))
-
+         (let* ([parent (node-parent node)]
+                [sl (begin (unless parent (error "j2s"))
+                           (node-suffix-link parent))])
+           (unless sl (error "j2s whoahao"))
+           (values sl
+                   (label-length (node-up-label node)))))))
 
 (provide try-to-set-suffix-edge!)
 ;; try-to-set-suffix-edge!: node node -> void

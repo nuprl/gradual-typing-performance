@@ -34,7 +34,7 @@
 (define (longest-common-sublabel label-1 label-2)
   (let ((label-1-marks (make-hasheq))
         (label-2-marks (make-hasheq))
-        (deepest-node #f)
+        (deepest-node (node (make-label "no lcs") #f '() #f))
         (deepest-depth 0))
     (letrec
         [
