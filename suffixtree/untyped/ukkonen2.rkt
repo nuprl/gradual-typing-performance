@@ -5,47 +5,8 @@
 ;; biology.
 
 (require "label.rkt"
-         "structs.rkt"
-         "debug.rkt")
+         "structs.rkt")
 
-
-;; Let's add a debug log statement.
-(debug-add-hooks ukkonen2
-                 (debug enable-ukkonen-debug-messages
-                        disable-ukkonen-debug-messages))
-;; The following syntax and functions are generated:
-;;
-;; debug: string -> void   (syntax)
-;; enable-ukkonen-debug-messages: -> void
-;; disable-ukkonen-debug-messages: -> void
-;;
-;; We can call these functions to see what Ukkonen's algorithm is
-;; really doing.
-#;(provide enable-ukkonen-debug-messages)
-#;(provide disable-ukkonen-debug-messages)
-
-
-;; current-node->id: parameter of node -> string
-;;
-;; A debug-related parameter for mapping nodes to strings used in
-;; debug messages.
-(define current-node->id
-  (make-parameter 
-   (let ((hash (make-weak-hasheq)) ;; make sure we hold onto
-         ;; the node keys weakly to
-         ;; avoid memory leaking!
-         (n 0)
-         (sema (make-semaphore 1)))
-     (hash-set! hash #f "#f")
-     (lambda (node)
-       (call-with-semaphore sema
-                            (lambda ()
-                              (hash-ref hash node
-                                              (lambda ()
-                                                (hash-set! hash node
-                                                                 (number->string n))
-                                                (set! n (add1 n))
-                                                (hash-ref hash node)))))))))
 
 
 
@@ -96,9 +57,7 @@
   (cond ((node-root? node)
          (values node #f))
         ((node-suffix-link node)
-         (begin (debug "following suffix link from ~a to ~a"
-                       ((current-node->id) node)
-                       ((current-node->id) (node-suffix-link node)))
+         (begin 
                 (let ([node2 (node-suffix-link node)])
                   (unless node2 (error "jump to suffix"))
                   (values node2 0))))
@@ -119,9 +78,7 @@
 ;; hasn't been set yet.
 (define (try-to-set-suffix-edge! from-node to-node)
   (when (not (node-suffix-link from-node))
-    (debug "setting suffix link from ~a to ~a"
-           ((current-node->id) from-node)
-           ((current-node->id) to-node))
+    
     (set-node-suffix-link! from-node to-node)))
 
 
@@ -211,27 +168,16 @@
 
            (attach-as-leaf!
             (lambda (node label i)
-              (debug "adding ~S as leaf off of ~A"
-                     (label->string (sublabel label i))
-                     ((current-node->id) node))
               (let ((leaf (node-add-leaf! node (sublabel label i))))
-                (debug "leaf ~A added" ((current-node->id) leaf))
+                
                 node)))
 
            (splice-with-internal-node!
             (lambda (node offset label i)
-              (debug "adding ~S within edge above ~A between ~S and ~S"
-                     (label->string (sublabel label i))
-                     ((current-node->id) node)
-                     (label->string (sublabel (node-up-label node) 0 offset))
-                     (label->string (sublabel (node-up-label node) offset)))
               ;; otherwise, extend by splicing
               (let-values (((split-node leaf)
                             (node-up-splice-leaf!
                              node offset (sublabel label i))))
-                (debug "spliced ~A with leaf ~A"
-                       ((current-node->id) split-node)
-                       ((current-node->id) leaf))
                 split-node)))
            ]
     main-logic))
@@ -249,13 +195,10 @@
       [
        (do-construction!
         (lambda (tree label)
-          (debug "Starting construction for ~S" (label->string label))
-          (debug "Root node is ~A"
-                 ((current-node->id) (suffix-tree-root tree)))
           (let-values (((starting-node starting-offset)
                         (add-first-suffix! tree label)))
             (add-rest-suffixes! label starting-node starting-offset)
-            (debug "finished construction"))))
+            )))
        
        (add-first-suffix!
         (let
@@ -270,9 +213,6 @@
               (lambda (node label label-offset)
                 (let ((leaf (node-add-leaf!
                              node (sublabel label label-offset))))
-                  (debug "adding leaf ~A with label ~S"
-                         ((current-node->id) leaf)
-                         (label->string (node-up-label leaf)))
                   (values node label-offset))))
              (mismatched-in-node
               (lambda (node offset label label-offset)
@@ -280,9 +220,6 @@
                               (node-up-splice-leaf!
                                node offset
                                (sublabel label label-offset))))
-                  (debug "spliced leaf ~A with label ~S"
-                         ((current-node->id) leaf)
-                         (label->string (node-up-label leaf)))
                   (values joint label-offset))))
              ]
           (lambda (tree label)
@@ -305,8 +242,6 @@
        (add-rest-suffixes-loop!
         (lambda (label N i j active-node)
           (when (< j N)
-            (debug "At node ~a (i=~a, j=~a)"
-                   ((current-node->id) active-node) i j)
             (let-values (((next-extension-node next-extension-offset i*)
                           (find-next-extension-point/add-suffix-link!
                            active-node label i j)))
@@ -326,7 +261,6 @@
        
        (report-implicit-tree-constructed
         (lambda ()
-          (debug "Implicit tree constructed")
           (void)))
        ]
     
