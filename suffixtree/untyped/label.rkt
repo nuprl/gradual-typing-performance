@@ -11,8 +11,8 @@
 ;; FIXME: set custom writer for labels to be displayed for debugging
 ;; purposes.
 ;; (http://download.plt-scheme.org/doc/299.400/html/mzscheme/mzscheme-Z-H-11.html#node_sec_11.2.10)
-(define-struct label (datum i j) #:mutable)
 
+(define-struct label (datum i j) #:mutable)
 
 ;; label-element? object -> true
 ;; Every value is considered to be a possible label-element.

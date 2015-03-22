@@ -1,8 +1,9 @@
 #lang racket/base
 
-(require
-  "util.rkt"
-  (only-in racket/file file->lines))
+(require benchmark-util
+         (only-in racket/file file->lines))
+
+(require "lcs.rkt")
 
 (define LARGE_TEST "../base/prufock.txt")
 (define SMALL_TEST "../base/hunt.txt")

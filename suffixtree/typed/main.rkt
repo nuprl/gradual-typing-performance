@@ -1,8 +1,10 @@
 #lang typed/racket/base
 
-(require
-  "util.rkt"
-  (only-in racket/file file->lines))
+(require benchmark-util
+ (only-in racket/file file->lines))
+
+(require/typed/check "lcs.rkt"
+  [longest-common-substring (-> String String String)])
 
 (define LARGE_TEST "../base/prufock.txt")
 (define SMALL_TEST "../base/hunt.txt")

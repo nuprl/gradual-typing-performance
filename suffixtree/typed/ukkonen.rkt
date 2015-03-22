@@ -4,9 +4,67 @@
 ;; strings, trees, and sequences: computer science and computational
 ;; biology.
 
-(require "label.rkt"
-         "structs.rkt")
+(require
+ benchmark-util
+)
+(require/typed/check "structs.rkt"
+  [#:opaque Label label?]
+  [#:opaque Tree suffix-tree?]
+  [#:opaque Node node?]
+  [node (-> Label (U #f Node) (Listof Node) (U #f Node) Node)]
+  [make-tree (-> Tree)]
+  [tree-root (-> Tree Node)]
+  [make-label (-> (U String (Vectorof (U Char Symbol))) Label)]
+  [label-length (-> Label Index)]
+  [label-ref (-> Label Integer (U Symbol Char))]
+  [label->string (-> Label String)]
+  [string->label (-> String Label)]
+  [string->label/with-sentinel (-> String Label)]
+  [label-element-equal? (-> Any Any Boolean)]
+  [label-source-eq? (-> Label Label Boolean)]
+  [sublabel (case-> (-> Label Index Label)
+                    (-> Label Index Index Label))]
+  [new-suffix-tree (-> Tree)]
+  [node-find-child (-> Node Any (U Node #f))]
+  [node-children (-> Node (Listof Node))]
+  [node-up-label (-> Node Label)]
+  [node-parent (-> Node (U Node #f))]
+  [node-root? (-> Node Boolean)]
+  [node-suffix-link (-> Node (U #f Node))]
+  [set-node-suffix-link! (-> Node Node Void)]
+  [node-position-at-end? (-> Node Index Boolean)]
+  [node-add-leaf! (-> Node Label Node)]
+  [vector->label (-> (Vectorof (U Char Symbol)) Label)]
+  [node-up-splice-leaf! (-> Node Index Label (values Node Node))]
+  [node-follow/k (-> Node
+                     Label
+                     (-> Node (Pairof Node Index))
+                     (-> Node Index (Pairof Node Index))
+                     (-> Node Label Index (Pairof Node Index))
+                     (-> Node Index Label Index (Pairof Node Index))
+                     (Pairof Node Index))]
+  [suffix-tree-root (-> Tree Node)]
+  )
 
+(provide
+  Label
+  Node
+  Tree
+  node
+  make-label
+  make-tree
+  tree-root
+  make-label
+  label-ref
+  node-children
+  label-source-eq?
+  node-up-label
+  node-parent
+  vector->label
+  label->string
+  string->label
+  string->label/with-sentinel
+  label-length)
 
 
 (define dummy-node (node (make-label "dummy") #f '() #f))

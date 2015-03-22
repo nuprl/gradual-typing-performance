@@ -1,23 +1,76 @@
 #lang typed/racket/base
-(require "label.rkt"
+(require benchmark-util
          racket/list)
-(provide (all-defined-out))
 
+(require/typed/check
+ "label.rkt"
+ [#:opaque Label label?]
+ [make-label (-> (U String (Vectorof (U Char Symbol))) Label)]
+ [label-element-equal? (-> Any Any Boolean)]
+ [label-length (-> Label Index)]
+ [label-ref (-> Label Integer (U Symbol Char))]
+ [sublabel (case-> (-> Label Index Label)
+                    (-> Label Index Index Label))]
+ [label-copy (-> Label Label)]
+ [label-ref-at-end? (-> Label Integer Boolean)]
+ [label->string (-> Label String)]
+ [label-source-eq? (-> Label Label Boolean)]
+ [string->label (-> String Label)]
+ [string->label/with-sentinel (-> String Label)]
+ [vector->label (-> (Vectorof (U Char Symbol)) Label)]
+ [vector->label/with-sentinel (-> (Vectorof (U Char Symbol)) Label)]
+ [label-same-source? (-> Label Label Boolean)]
+ )
 
-;; A suffix tree consists of a root node.
-(define-struct suffix-tree ([root : node]))
-(define-type Tree suffix-tree)
+(provide
+ ;; -- from label.rkt
+         make-label
+         label?
+         vector->label
+         label-ref
+         label-element-equal?
+         string->label
+         sublabel
+         label-ref-at-end?
+         label-source-eq?
+         label-same-source?
+         string->label/with-sentinel
+         vector->label
+         vector->label/with-sentinel
+         label->string
+         label-length
+ ;; -- from structs.rkt
+ node?
+ suffix-tree?
+ node
+ make-tree
+ tree-root
+ new-suffix-tree
+ node-find-child
+ node-children
+ node-up-label
+ node-parent
+ node-root?
+ node-suffix-link
+ set-node-suffix-link!
+ node-position-at-end?
+ node-add-leaf!
+ node-up-splice-leaf!
+ node-follow/k
+ suffix-tree-root
+ Label
+ Node
+ Tree)
 
-;; up-label: label
-;; parent: (union #f node)
-;; children: (listof node)
-;; suffix-link: (union #f node)
 (define-struct node ([up-label : Label]
-                     [parent : (U #f node)]
-                     [children : (Listof node)]
-                     [suffix-link : (U #f node)]) #:mutable)
-(define-type Node node)
+                     [parent : (U #f Node)]
+                     [children : (Listof Node)]
+                     [suffix-link : (U #f Node)]) #:mutable)
+(define-struct suffix-tree ([root : Node]))
 
+(define-type Tree suffix-tree)
+(define-type Node node)
+                     
 ;; new-suffix-tree: void -> suffix-tree
 ;; Builds a new empty suffix-tree.
 (: new-suffix-tree (-> Tree))

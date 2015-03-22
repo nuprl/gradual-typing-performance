@@ -1,20 +1,14 @@
 #lang racket/base
 ;; Some utilities.
 
-(require racket/contract
-         racket/list
-         "structs.rkt"
-         "ukkonen2.rkt"
-         "label.rkt")
-
+(require "ukkonen.rkt")
 
 (define false-thunk (lambda () #f))
 
 
-
 ;; longest-common-substring: string string -> string
 ;; Returns the longest common substring between the two strings.
-(provide/contract (longest-common-substring (-> string? string? string?)))
+(provide longest-common-substring)
 (define (longest-common-substring s1 s2)
   (label->string (longest-common-sublabel (string->label/with-sentinel s1)
                                           (string->label/with-sentinel s2))))
@@ -30,7 +24,7 @@
 ;; This approach simply adds both labels to a common suffix tree,
 ;; does a postorder traversal to mark up the inner nodes, and then
 ;; finds the inner node with the deepest string depth.
-(provide/contract (longest-common-sublabel (-> label? label? label?)))
+(provide longest-common-sublabel)
 (define (longest-common-sublabel label-1 label-2)
   (let ((label-1-marks (make-hasheq))
         (label-2-marks (make-hasheq))
@@ -117,7 +111,7 @@
 ;; rope data structure might be better...  I need to read Hans
 ;; Boehm's paper on "Ropes, an alternative to strings" to see how
 ;; much work this would be.
-(provide/contract (path-label (-> node? label?)))
+(provide path-label)
 (define path-label
   (letrec
       [(collect-loop

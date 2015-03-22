@@ -8,14 +8,6 @@
 ;; text strings.  It might be useful to have them as arbitrary
 ;; elements, perhaps as vectors?
 
-;; FIXME: set custom writer for labels to be displayed for debugging
-;; purposes.
-;; (http://download.plt-scheme.org/doc/299.400/html/mzscheme/mzscheme-Z-H-11.html#node_sec_11.2.10)
-(define-struct label ([datum : (Vectorof (U Char Symbol))]
-                      [i : Natural]
-                      [j : Natural]) #:mutable)
-
-
 ;; label-element? object -> true
 ;; Every value is considered to be a possible label-element.
 (: label-element? (-> Any Boolean))
@@ -25,6 +17,9 @@
 (: label-element-equal? (-> Any Any Boolean))
 (define label-element-equal? equal?)
 
+(define-struct label ([datum : (Vectorof (U Char Symbol))]
+                      [i : Natural]
+                      [j : Natural]) #:mutable)
 (define-type Label label)
 
 (provide Label label?
@@ -54,7 +49,7 @@
 
 ;;make-label: label-element -> label
 ;;Constructs a new label from either a string or a vector of things.
-(: ext:make-label (-> (U String (Vectorof (U Char Symbol))) label))
+(: ext:make-label (-> (U String (Vectorof (U Char Symbol))) Label))
 (define (ext:make-label label-element)
  (cond ((string? label-element) (string->label label-element))
        ((vector? label-element) (vector->label label-element))

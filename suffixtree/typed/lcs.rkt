@@ -1,11 +1,30 @@
 #lang typed/racket/base
 ;; Some utilities.
 
-(require ;racket/contract
-         racket/list
-         "structs.rkt"
-         "ukkonen2.rkt"
-         "label.rkt")
+(require benchmark-util
+         racket/list)
+
+(require/typed/check
+ "ukkonen.rkt"
+ [#:opaque Label label?]
+ [#:opaque Node node?]
+ [#:opaque Tree suffix-tree?]
+ [label->string (-> Label String)]
+ [string->label (-> String Label)]
+ [string->label/with-sentinel (-> String Label)]
+ [make-label (-> (U String (Vectorof (U Char Symbol))) Label)]
+ [label-source-eq? (-> Label Label Boolean)]
+ [label-length (-> Label Index)]
+ [label-ref (-> Label Integer (U Symbol Char))]
+ [vector->label (-> (Vectorof (U Char Symbol)) Label)]
+ [node (-> Label (U #f Node) (Listof Node) (U #f Node) Node)]
+ [make-tree (-> Tree)]
+ [tree-root (-> Tree Node)]
+ [node-children (-> Node (Listof Node))]
+ [node-up-label (-> Node Label)]
+ [node-parent (-> Node (U Node #f))]
+ [tree-add! (-> Tree Label Void)]
+ )
 
 
 (: false-thunk (-> #f))

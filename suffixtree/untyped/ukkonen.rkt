@@ -4,10 +4,29 @@
 ;; strings, trees, and sequences: computer science and computational
 ;; biology.
 
-(require "label.rkt"
-         "structs.rkt")
+(require "structs.rkt")
+(provide
+  node
+  label?
+  node?
+  suffix-tree?
+  make-label
+  make-tree
+  tree-root
+  make-label
+  label-ref
+  node-children
+  label-source-eq?
+  node-up-label
+  node-parent
+  vector->label
+  label->string
+  string->label
+  string->label/with-sentinel
+  label-length)
 
 
+(define dummy-node (node (make-label "dummy") #f '() #f))
 
 
 (provide skip-count)
@@ -195,8 +214,9 @@
       [
        (do-construction!
         (lambda (tree label)
-          (let-values (((starting-node starting-offset)
-                        (add-first-suffix! tree label)))
+          (let* ((pair (add-first-suffix! tree label))
+                 (starting-node (car pair))
+                 (starting-offset (cdr pair)))
             (add-rest-suffixes! label starting-node starting-offset)
             )))
        
@@ -213,14 +233,14 @@
               (lambda (node label label-offset)
                 (let ((leaf (node-add-leaf!
                              node (sublabel label label-offset))))
-                  (values node label-offset))))
+                  (cons node label-offset))))
              (mismatched-in-node
               (lambda (node offset label label-offset)
                 (let-values (((joint leaf)
                               (node-up-splice-leaf!
                                node offset
                                (sublabel label label-offset))))
-                  (values joint label-offset))))
+                  (cons joint label-offset))))
              ]
           (lambda (tree label)
             (node-follow/k
@@ -256,12 +276,13 @@
                        label N
                        (max i* (add1 j)) (add1 j) new-active-node)))
                   (begin
-                    (report-implicit-tree-constructed)))))))
+                    (report-implicit-tree-constructed)
+                    (void)))))))
 
        
        (report-implicit-tree-constructed
         (lambda ()
-          (void)))
+          (cons dummy-node 0)))
        ]
     
     do-construction!))

@@ -1,19 +1,56 @@
 #lang racket/base
-(require "label.rkt"
+(require
          racket/list)
-(provide (all-defined-out))
 
+(require "label.rkt")
+
+(provide
+         make-label
+         label?
+         vector->label
+         label-ref
+         label-element-equal?
+         string->label
+         sublabel
+         label-ref-at-end?
+         label-source-eq?
+         label-same-source?
+         string->label/with-sentinel
+         vector->label
+         vector->label/with-sentinel
+         label->string
+         label->string/removing-sentinel
+         label->vector
+         label-length
+)
+(provide
+ node?
+ suffix-tree?
+ node
+ make-tree
+ tree-root
+ new-suffix-tree
+ node-find-child
+ node-children
+ node-up-label
+ node-parent
+ node-root?
+ node-suffix-link
+ set-node-suffix-link!
+ node-position-at-end?
+ node-add-leaf!
+ node-up-splice-leaf!
+ node-follow/k
+ suffix-tree-root)
 
 ;; A suffix tree consists of a root node.
 (define-struct suffix-tree (root))
-
 
 ;; up-label: label
 ;; parent: (union #f node)
 ;; children: (listof node)
 ;; suffix-link: (union #f node)
 (define-struct node (up-label parent children suffix-link) #:mutable)
-
 
 ;; new-suffix-tree: void -> suffix-tree
 ;; Builds a new empty suffix-tree.
