@@ -1,0 +1,21 @@
+Ideas for visualizations
+
+Tony
+  - PCA, reduce dimensions in the data?
+  - Hill-climbing in the lattice
+
+Vincent
+  - Plot paths, scatterplot
+      x-axis: mean slowdown along path
+      y-axis: max slowdown along path
+  - Histogram
+      x-axis: number of successors that are good/bad
+      y-axis: number of nodes in the lattice with that
+
+Justin
+  - Random walk for paths to see path badness
+
+Jesse
+  - factor analysis
+  - map lattice data into dependency graph for modules
+    (weight on dependency edges)
