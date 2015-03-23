@@ -9,7 +9,8 @@
          racket/cmdline
          racket/draw
          racket/match
-         racket/system)
+         racket/system
+         racket/vector)
 
 ;; Flag to set compilation-only mode. If #f it will compile and
 ;; run, otherwise only compiles.
@@ -74,7 +75,9 @@
              null))
           (printf "cpu: ~a real: ~a gc: ~a~n" cpu real gc)
           (set! times (cons real times)))))
-    (vector-set! results var-idx (cons (mean times) (stddev times))))
+    ;; the order of runs doesn't really matter, but keep them in the order
+    ;; they were run anyway just in case
+    (vector-set! results var-idx (reverse times)))
 
   (when (output-path)
     (with-output-to-file (output-path)
@@ -83,8 +86,10 @@
       #:exists 'replace))
 
   (when (lattice-path)
+    (define averaged-results
+      (vector-map (λ (times) (cons (mean times) (stddev times))) results))
     (send ;; default size is too small to see, so apply a scaling factor
-          (pict->bitmap (scale (make-performance-lattice results) 3))
+          (pict->bitmap (scale (make-performance-lattice averaged-results) 3))
           save-file
           (lattice-path)
           'png)))
