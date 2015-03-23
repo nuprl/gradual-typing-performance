@@ -33,7 +33,7 @@
 
 (define (make-point data init-data num-in-row the-min the-max)
   (define intensity
-    (- 255 (round (* 255 (/ (- (car data) the-min) the-max)))))
+    (- 255 (round (* 255 (/ (- (car data) the-min) (- the-max the-min))))))
   (define color
     (make-color intensity intensity intensity))
   (colorize (filled-rectangle (/ *width* num-in-row) *height*)
