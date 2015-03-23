@@ -10,7 +10,8 @@ We test lcs on all pairs of lines in a file in `base/`:
 - the small test is `hunt.txt`
 - the large test is `prufock.txt`
 
-Note: this project uses mutable structs.
-  These are not export-able by typed racket, so we instead
-  export the accessor functions and linearize the module
-  dependencies.
+---
+
+This version uses #:opaque types and a linear inheritance hierarchy
+(each module in the chain imports only from its predecessor -- and not from
+ any other ancestor)
