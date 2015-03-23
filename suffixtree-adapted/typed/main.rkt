@@ -10,7 +10,7 @@
 (define SMALL_TEST "../base/hunt.txt")
 
 (define (main)
-  (define lines (file->lines SMALL_TEST))
+  (define lines (file->lines LARGE_TEST))
   (for* ([a lines] [b lines])
     (longest-common-substring a b))
   (void))
