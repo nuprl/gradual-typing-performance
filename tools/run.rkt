@@ -65,8 +65,7 @@
       (printf "iteration #~a of ~a~n" i var)
       ;; FIXME: use benchmark library
       (parameterize ([current-directory new-cwd])
-        ;; FIXME: compile first in separate pass?
-        (system (string-append "raco make -v " (path->string file)))
+          (system (string-append "raco make -v " (path->string file)))
         (unless (only-compile?)
           (define-values (_ cpu real gc)
             (time-apply
