@@ -2,6 +2,9 @@
 
 (require "base-types.rkt")
 (require benchmark-util)
+(require/typed/check "aux.rkt"
+  [list-pick-random (-> (Listof Tetra) Tetra)]
+  [tetras (Listof Tetra)])
 (require/typed/check "data.rkt"
   [posn=? (-> Posn Posn Boolean)])
 (require/typed/check "bset.rkt"
@@ -25,25 +28,24 @@
   [world-key-move (-> World String World)]
   [next-world (-> World World)]
   [ghost-blocks (-> World BSet)])
-(require/typed/check "visual.rkt"
-  [world->image (-> World Image)]
-  [world0 (-> World)])
 
+(define (world0)
+  (world (list-pick-random tetras) empty))
 
-(: replay : World (Listof Any) -> World)
+(: replay : World (Listof Any) -> Void)
 (define (replay w0 hist)
   (for/fold ([w : World w0])
             ([e hist])
     (match e
       [`(on-key ,(? string? ke)) (world-key-move w ke)]
       [`(on-tick) (next-world w)]
-      [`(to-draw) (world->image w) w]
       [`(stop-when) 
        (λ ([w : World]) (blocks-overflow? (world-blocks w)))
-       w])))
+       w]))
+  (void))
 
-(define w0 (world0))
-(define raw (with-input-from-file "tetris-hist-3.txt" read))
-(when (list? raw)
-  (define hist (reverse raw))
-  (replay w0 hist))
+(time
+ (define w0 (world0))
+ (define raw (with-input-from-file "tetris-hist-3.txt" read))
+ (when (list? raw)
+   (replay w0 (reverse raw))))

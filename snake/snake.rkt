@@ -1,7 +1,5 @@
 #lang racket  
 
-
-
 (module data racket
   (struct snake (dir segs))
   (struct world (snake food))
