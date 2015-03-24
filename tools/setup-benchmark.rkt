@@ -40,7 +40,7 @@
   (define typed-dir (directory-list typed))
   (define untyped-dir (directory-list untyped))
   
-  (files-exist? pwd base typed untyped)
+  (files-exist? pwd typed untyped)
   (same-number-of-files? typed-dir untyped-dir)
   (same-file-names? typed-dir untyped-dir)
   ;; -------------------------------------------------------------------------------------------------
