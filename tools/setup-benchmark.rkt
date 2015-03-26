@@ -3,14 +3,14 @@
 (provide create-benchmark-dirs)
 
 ;; Usage:
-;;   racket setup-benchmark.rkt
 ;;   racket setup-benchmark.rkt <directory>
-;; will set up benchmarks using the current directory or the
-;; provided one
+;; will set up benchmarks using the provided directory
+;; expects empty benchmark to be present
 (module+ main
   (match (current-command-line-arguments)
-    [(vector path) (create-benchmark-dirs path)]
-    [_             (create-benchmark-dirs (current-directory))]))
+    [(vector path)
+     (create-benchmark-dirs "empty")
+     (create-benchmark-dirs path)]))
 
 ;; ===================================================================================================
 (require srfi/13)
