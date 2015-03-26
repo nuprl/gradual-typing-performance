@@ -86,7 +86,7 @@
   (unless (number? iters)
     (raise-user-error (format "expected a number, given ~a" (num-iterations))))
 
-  (define empty-results    (run-benchmarks "empty" entry-point iters))
+  (define empty-results    (run-benchmarks "empty" "main.rkt" iters))
   (define specific-results (run-benchmarks basepath entry-point iters))
   (define full-results (benchmark empty-results specific-results))
 
