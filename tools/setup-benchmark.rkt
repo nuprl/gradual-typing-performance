@@ -3,14 +3,14 @@
 (provide create-benchmark-dirs)
 
 ;; Usage:
-;;   racket setup-benchmark.rkt
 ;;   racket setup-benchmark.rkt <directory>
-;; will set up benchmarks using the current directory or the
-;; provided one
+;; will set up benchmarks using the provided directory
+;; expects empty benchmark to be present
 (module+ main
   (match (current-command-line-arguments)
-    [(vector path) (create-benchmark-dirs path)]
-    [_             (create-benchmark-dirs (current-directory))]))
+    [(vector path)
+     (create-benchmark-dirs "empty")
+     (create-benchmark-dirs path)]))
 
 ;; ===================================================================================================
 (require srfi/13)
@@ -37,8 +37,8 @@
   ;;
   ;; Note: 'both' directory is optional
   
-  (define typed-dir (directory-list typed))
-  (define untyped-dir (directory-list untyped))
+  (define typed-dir (source-paths (directory-list typed)))
+  (define untyped-dir (source-paths (directory-list untyped)))
   
   (files-exist? pwd typed untyped)
   (same-number-of-files? typed-dir untyped-dir)
@@ -47,7 +47,7 @@
   ;; WORK: 
   
   (define file-names* ;; because typed-dir and untyped-dir contains same file names 
-    (for/list ([path (in-list typed-dir)] #:when (regexp-match? #rx"\\.rkt$|\\.ss$" path))
+    (for/list ([path (in-list typed-dir)])
       (path->string path)))
   
   (set-up-benchmark-directory bdir)
@@ -57,6 +57,14 @@
   (void))
 
 ;; ---------------------------------------------------------------------------------------------------
+;; [Listof Path] -> [Listof Path]
+(define (source-paths ps)
+  (define (is-source-path p)
+    (define ext (filename-extension p))
+    (or (equal? ext #"rkt")
+        (equal? ext #"ss")))
+  (filter is-source-path ps))
+
 ;; String Path Path Path Path [Listof String] -> [Listof String]
 (define (create-populate-variations-directories* name bdir both typed untyped file-names*)
   (for/list ([combination (in-list (build-combinations* (length file-names*)))])
@@ -100,7 +108,8 @@
 ;; ---------------------------------------------------------------------------------------------------
 ;; Path Path -> Void 
 (define (create-populate-base-directory base bdir)
-  (copy-directory/files base (build-path bdir "base") #:keep-modify-seconds? #t))
+  (when (directory-exists? base)
+    (copy-directory/files base (build-path bdir "base") #:keep-modify-seconds? #t)))
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; [Listof Path] [Listof Path] -> Void
