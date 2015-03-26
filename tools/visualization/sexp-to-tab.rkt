@@ -27,7 +27,7 @@
 
 ;; Convert a natural to a binary string, padded to the supplied width
 (define (natural->binary n pad-width)
-  (nat->bin-aux n (make-string pad-width #\0)))
+  (string-reverse (nat->bin-aux n (make-string pad-width #\0))))
 (define (nat->bin-aux n str)
   (cond [(= n 0) str]
         [else (nat->bin-aux (sub1 n) (incr-bit str))]))
@@ -42,6 +42,10 @@
         [else
          (string-set! str i #\0)
          (incr-bit-aux str (add1 i))]))
+
+;; Reverse a string
+(define (string-reverse str)
+  (list->string (reverse (string->list str))))
 
 ;; Read in-file as a vector, print each row to out-file
 (define (copy-data in-file out-file)
