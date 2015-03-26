@@ -9,6 +9,7 @@
          racket/cmdline
          racket/draw
          racket/match
+         racket/port
          racket/system
          racket/vector)
 
@@ -45,19 +46,25 @@
       (parameterize ([current-directory new-cwd])
         (system (string-append "raco make -v " (path->string file)))
         (unless (only-compile?)
-          (define-values (_ cpu real gc)
-            (time-apply
-             (λ () (system (string-append "racket " (path->string file))
-                           #:set-pwd? #t))
-             null))
+          (define command `(time (dynamic-require ,(path->string file) #f)))
+          (match-define (list in out pid err proc)
+            (process (format "racket -e '~s'" command)
+                     #:set-pwd? #t))
+          ;; if this match fails, something went wrong since we put time in above
+          (match-define (list full (app string->number cpu)
+                                   (app string->number real)
+                                   (app string->number gc))
+            (for/or ([line (in-list (port->lines in))])
+              (regexp-match #rx"cpu time: (.*) real time: (.*) gc time: (.*)" line)))
           (printf "cpu: ~a real: ~a gc: ~a~n" cpu real gc)
+          (close-input-port in)
+          (close-input-port err)
+          (close-output-port out)
           (set! times (cons real times)))))
     ;; the order of runs doesn't really matter, but keep them in the order
     ;; they were run anyway just in case
     (vector-set! results var-idx (reverse times)))
   results)
-
-(struct benchmark (empty-results results) #:prefab)
 
 (module+ main
   (match-define (list basepath entry-point)
@@ -86,20 +93,18 @@
   (unless (number? iters)
     (raise-user-error (format "expected a number, given ~a" (num-iterations))))
 
-  (define empty-results    (run-benchmarks "empty" "main.rkt" iters))
-  (define specific-results (run-benchmarks basepath entry-point iters))
-  (define full-results (benchmark empty-results specific-results))
+  (define results (run-benchmarks basepath entry-point iters))
 
   (when (output-path)
     (with-output-to-file (output-path)
-      (λ () (write full-results))
+      (λ () (write results))
       #:mode 'text
       #:exists 'replace))
 
   ;; TODO: update lattice to account for empty-result startup time
   (when (lattice-path)
     (define averaged-results
-      (vector-map (λ (times) (cons (mean times) (stddev times))) specific-results))
+      (vector-map (λ (times) (cons (mean times) (stddev times))) results))
     (send ;; default size is too small to see, so apply a scaling factor
           (pict->bitmap (scale (make-performance-lattice averaged-results) 3))
           save-file
