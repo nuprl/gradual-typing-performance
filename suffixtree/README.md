@@ -12,6 +12,6 @@ We test lcs on all pairs of lines in a file in `base/`:
 
 ---
 
-This version uses #:opaque types and a linear inheritance hierarchy
-(each module in the chain imports only from its predecessor -- and not from
- any other ancestor)
+This version uses an adapter module.
+So, typed files can use typed data and untyped files can use untyped data.
+

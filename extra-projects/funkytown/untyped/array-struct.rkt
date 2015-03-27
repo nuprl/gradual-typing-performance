@@ -8,7 +8,7 @@
            check-array-shape
            next-indexes!
            unsafe-array-index->value-index)
-         "data.rkt")
+         "../base/array-types.rkt")
 
 (provide
  (rename-out (Array? array?))

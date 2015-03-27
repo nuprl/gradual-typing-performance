@@ -12,7 +12,7 @@
          (only-in racket/vector vector-append)
          (only-in racket/string string-join)
          (only-in racket/list empty? first rest)
-         "../base/array-types.rkt")
+         "data.rkt")
 
 (provide array-broadcasting
          array-broadcast

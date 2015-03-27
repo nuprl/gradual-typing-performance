@@ -10,7 +10,7 @@
                   check-array-shape)
          (only-in "array-transform.rkt" array-append*)
          (only-in "synth.rkt" fs seconds->samples)
-         "../base/array-types.rkt")
+         "data.rkt")
 
 (provide drum)
 

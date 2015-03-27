@@ -1,20 +1,20 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "typed-data.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "array-struct.rkt"
-  [build-array (-> (Vectorof Nonnegative-Integer) (-> Indexes Flonum) Array)])
+  [build-array (-> (Vectorof Nonnegative-Integer) (-> Indexes Flonum) (Array Flonum))])
 
 (require/typed/check "array-transform.rkt"
-  [array-append* (case-> ((Listof Array) -> Array)
-                         ((Listof Array) Integer -> Array))])
+  [array-append* (case-> ((Listof (Array Flonum)) -> (Array Flonum))
+                         ((Listof (Array Flonum)) Integer -> (Array Flonum)))])
 
 (require/typed/check "synth.rkt"
   [fs Natural])
 
 (require/typed/check "mixer.rkt"
-  [mix (-> Weighted-Signal * Array)])
+  [mix (-> Weighted-Signal * (Array Float))])
 
 (provide sequence note)
 
@@ -54,7 +54,7 @@
 (: synthesize-note (-> (U #f Natural)
                        Natural
                        (-> Float (-> Indexes Float))
-                       Array))
+                       (Array Float)))
 (define (synthesize-note note n-samples function)
   (build-array (vector n-samples)
                (if note
@@ -67,12 +67,12 @@
 (: sequence (-> Natural
                 (Listof (Pairof (U Natural #f) Natural))
                 Natural
-                (-> Float (-> Indexes Float)) Array))
+                (-> Float (-> Indexes Float)) (Array Float)))
 (define (sequence n pattern tempo function)
   (: samples-per-beat Natural)
   (define samples-per-beat (quotient (* fs 60) tempo))
   (array-append*
-   (for*/list : (Listof Array) ([i   (in-range n)] ; repeat the whole pattern
+   (for*/list : (Listof (Array Float)) ([i   (in-range n)] ; repeat the whole pattern
                                         [note : (Pairof (U Natural #f) Natural) (in-list  pattern)])
      (: nsamples Natural)
      (define nsamples (* samples-per-beat (cdr note)))

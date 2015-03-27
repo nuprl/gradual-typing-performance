@@ -3,16 +3,16 @@
 (require racket/vector
          (only-in racket/fixnum fx+)
          benchmark-util
-         "typed-data.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "array-struct.rkt"
-  [array-shape (-> Array Indexes)]
-  [unsafe-array-proc (-> Array (-> Indexes Float))]
-  [array-default-strict! (-> Array Void)]
-  [unsafe-build-array (-> Indexes (-> Indexes Float) Array)])
+  [array-shape (-> (Array Any) Indexes)]
+  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
+  [array-default-strict! (-> (Array Any) Void)]
+  [unsafe-build-array (-> Indexes (-> Indexes Float) (Array Float))])
 
 (require/typed/check "array-broadcast.rkt"
-  [array-broadcast (-> Array Indexes Array)]
+  [array-broadcast (-> (Array Float) Indexes (Array Float))]
   [array-shape-broadcast (-> (Listof Indexes) Indexes)])
 
 (require/typed/check "array-utils.rkt"
@@ -22,14 +22,14 @@
 
 (provide array-append*)
 
-(: array-broadcast-for-append (-> (Listof Array)
-                                        Integer (values (Listof Array)
+(: array-broadcast-for-append (-> (Listof (Array Float))
+                                        Integer (values (Listof (Array Float))
                                                            (Listof Integer))))
 (define (array-broadcast-for-append arrs k)
   (: dss (Listof Indexes))
   (define dss
     (for/list : (Listof Indexes)
-      ([arr : Array arrs])
+      ([arr : (Array Float) arrs])
       (array-shape arr)))
   (: dims Natural)
   (define dims (apply max (for/list : (Listof Natural)
@@ -49,19 +49,19 @@
                 [ds   (array-shape-broadcast dss)]
                 [dss  (map (λ: ([dk : Integer]) (unsafe-vector-insert ds k dk)) dks)])
            (define new-arrs
-             (map (λ: ([arr : Array] [ds : Indexes]) (array-broadcast arr ds)) arrs dss))
+             (map (λ: ([arr : (Array Float)] [ds : Indexes]) (array-broadcast arr ds)) arrs dss))
            (values new-arrs dks))]))
 
-(: array-append* (-> (Listof Array) Array))
+(: array-append* (-> (Listof (Array Float)) (Array Float)))
 (define (array-append* arrs [k 0])
-  (when (null? arrs) (raise-argument-error 'array-append* "nonempty (Listof Array)" arrs))
+  (when (null? arrs) (raise-argument-error 'array-append* "nonempty (Listof (Array A))" arrs))
   (let-values ([(arrs dks)  (array-broadcast-for-append arrs k)])
     (define new-dk (apply + dks))
     (cond
       [(not (index? new-dk))  (error 'array-append* "resulting axis is too large (not an Integer)")]
       [else
        (: dss (Listof Indexes))
-       (define dss (map (λ: ([arr : Array]) (array-shape arr)) arrs))
+       (define dss (map (λ: ([arr : (Array Float)]) (array-shape arr)) arrs))
        (: new-ds Indexes)
        (define new-ds (vector-copy-all (car dss)))
        (vector-set! new-ds k new-dk)
@@ -80,7 +80,7 @@
                                   (vector-set! old-jks jk i)
                                   (i-loop (+ i 1) (fx+ jk 1))]
                    [else  (arrs-loop (cdr arrs) (cdr dks) jk)]))))
-       (: arr* Array)
+       (: arr* (Array Float))
        (define arr*
         (unsafe-build-array
          new-ds (λ: ([js : Indexes])

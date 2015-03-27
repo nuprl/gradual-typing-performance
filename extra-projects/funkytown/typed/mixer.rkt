@@ -1,19 +1,19 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "typed-data.rkt"
+         "../base/array-types.rkt"
          (for-syntax racket/base)
          (only-in racket/list first second rest))
 
 (require/typed/check "array-struct.rkt"
-  [array? (-> Array Boolean)]
-  [array-shape (-> Array Indexes)]
-  [array-default-strict! (-> Array Void)]
-  [unsafe-array-proc (-> Array (-> Indexes Float))]
-  [unsafe-build-array (-> Indexes (-> Indexes Float) Array)])
+  [array? (-> (Array Any) Boolean)]
+  [array-shape (-> (Array Float) Indexes)]
+  [array-default-strict! (-> (Array Float) Void)]
+  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
+  [unsafe-build-array (-> Indexes (-> Indexes Float) (Array Float))])
 
 (require/typed/check "array-broadcast.rkt"
-  [array-broadcast (-> Array Indexes Array)]
+  [array-broadcast (-> (Array Float) Indexes (Array Float))]
   [array-shape-broadcast (case-> ((Listof Indexes) -> Indexes)
                                  ((Listof Indexes) (U #f #t 'permissive) -> Indexes))]
   [array-broadcasting (Parameterof (U #f #t 'permissive))])
@@ -52,24 +52,24 @@
 
 (: array-map
                   (case->
-                   (-> (-> Float Float Float) Array Array Array)
-                   (-> (-> Float Float) Array Array)))
+                   (-> (-> Float Float Float) (Array Float) (Array Float) (Array Float))
+                   (-> (-> Float Float) (Array Float) (Array Float))))
 (define array-map
   (case-lambda:
-    [([f : (Float -> Float)] [arr : Array])
+    [([f : (Float -> Float)] [arr : (Array Float)])
      (inline-array-map f arr)]
-    [([f : (Float Float -> Float)] [arr0 : Array] [arr1 : Array])
+    [([f : (Float Float -> Float)] [arr0 : (Array Float)] [arr1 : (Array Float)])
      (inline-array-map f arr0 arr1)]))
 
 ;; Weighted sum of signals, receives a list of lists (signal weight).
 ;; Shorter signals are repeated to match the length of the longest.
 ;; Normalizes output to be within [-1,1].
 
-(: mix (-> Weighted-Signal * Array))
+(: mix (-> Weighted-Signal * (Array Float)))
 (define (mix . ss)
-  (: signals (Listof Array))
+  (: signals (Listof (Array Float)))
   (define signals
-    (for/list : (Listof Array) ([s : Weighted-Signal ss])
+    (for/list : (Listof (Array Float)) ([s : Weighted-Signal ss])
       (first s)))
   (: weights (Listof Float))
   (define weights
@@ -80,7 +80,7 @@
   (: scale-signal (Float -> (Float -> Float)))
   (define ((scale-signal w) x) (* x w downscale-ratio))
   (parameterize ([array-broadcasting 'permissive]) ; repeat short signals
-    (for/fold ([res : Array (array-map (scale-signal (first weights))
+    (for/fold ([res : (Array Float) (array-map (scale-signal (first weights))
                                (first signals))])
         ([s (in-list (rest signals))]
          [w (in-list (rest weights))])

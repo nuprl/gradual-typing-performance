@@ -1,20 +1,20 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "typed-data.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "sequencer.rkt"
   [note (-> Symbol Natural Natural (Pairof Natural Natural))]
-  [sequence (-> Natural (Listof (Pairof (U Natural #f) Natural)) Natural (-> Float (-> Indexes Float)) Array)])
+  [sequence (-> Natural (Listof (Pairof (U Natural #f) Natural)) Natural (-> Float (-> Indexes Float)) (Array Float))])
 
 (require/typed/check "drum.rkt"
-  [drum (-> Natural Pattern Natural Array)])
+  [drum (-> Natural Pattern Natural (Array Float))])
 
 (require/typed/check "mixer.rkt"
-  [mix (-> Weighted-Signal * Array)])
+  [mix (-> Weighted-Signal * (Array Float))])
 
 (require/typed/check "synth.rkt"
-  [emit (-> Array (Vectorof Integer))]
+  [emit (-> (Array Float) (Vectorof Integer))]
   [sawtooth-wave (-> Float (-> Indexes Float))])
 
 (require (for-syntax racket/base syntax/parse) racket/stxparam)

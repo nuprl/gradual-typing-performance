@@ -10,3 +10,8 @@ Run `racket main.rkt` to run a small stress test, searching bytecode file(s) for
 - `zo-find.rkt` search a zo-struct for sub-structs matching a given name
 - `zo-shell.rkt` interactive front-end for the zo functions
 
+---
+
+The core data are zo structs from the compiler library.
+These structs are UNTYPED.
+Typed files go through a contract boundary.
