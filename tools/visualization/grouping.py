@@ -45,7 +45,7 @@ def make_bins(tbl, num_bins):
     # Evenly space the buckets across the interval
     max_runtime = max((obj["max"] for obj in tbl))
     min_runtime = min((obj["min"] for obj in tbl))
-    rng = max_runtime - min_runtime
+    rng = max_runtime# - min_runtime
     chunk_width = rng / num_bins
     # Each bucket is a (min,max) tuple
     bins = [(i * chunk_width , (1 + i) * chunk_width)
@@ -57,8 +57,8 @@ def make_bins(tbl, num_bins):
         b["min"] = lo
         b["max"] = hi
         b["data"] = [obj for obj in tbl if lo <= obj["mean"] < hi]
-        b["mean"] = statistics.mean([obj["mean"] for obj in b["data"]])
-        b["median"] = statistics.median([obj["median"] for obj in b["data"]])
+        b["mean"] = statistics.mean([obj["mean"] for obj in b["data"]]) if b["data"] else None
+        b["median"] = statistics.median([obj["median"] for obj in b["data"]]) if b["data"] else None
         b["count"] = len(b["data"])
         bkts.append(b)
     return bkts, ("BINS-%d" % num_bins)
@@ -84,23 +84,27 @@ def save_graph(data, fname, tag):
     # `fname` is the raw data file
     # `tag` helps create a uniquely-named output file
     new_name = util.gen_name(fname, tag, "png")
-    plt.xlabel("Avg. Runtime (milliseconds)")
-    plt.ylabel("Num. Configs (percentage of total #configurations)")
+    plt.xlabel("Avg. Runtime (milliseconds)", )
+    plt.ylabel("Num. Configs / Total Configs")
     plt.title(new_name.rsplit(".", 1)[0].rsplit("/", 1)[-1])
     num_configs = count_lines(fname) - 1
     bin_width = data[0]["max"] - data[0]["min"]
     # Plot bins
     for bkt in data:
         # x-position is average runtime, height is count
-        plt.bar(bkt["mean"],
-                int(100 * (bkt["count"] / num_configs)),
+        plt.bar(bkt["min"],
+                bkt["count"] / num_configs,
                 alpha=0.6, # opacity
                 bottom=0,
-                label="%s - %s" % (bkt["min"], bkt["max"]),
+                # label="%s - %s" % (bkt["min"], bkt["max"]),
                 width=bin_width)
     # Add median line (take median of alread-computed rows' medians)
-    plt.axvline(statistics.median(bkt["median"] for bkt in data),
+    md = statistics.median([bkt["median"] for bkt in data if bkt["median"] is not None])
+    plt.axvline(md,
                 color='r', linestyle="dashed", linewidth=5)
+    plt.xticks(sorted([bkt["min"] for bkt in data] + [data[-1]["max"], md]))#, rotation="vertical")
+    plt.xlim(xmax=data[-1]["max"])
+    plt.ylim(ymax=0.5) #50%
     plt.savefig(new_name)
     print("Saved plot to '%s'" % new_name)
     plt.clf()
@@ -111,7 +115,7 @@ def save_file(data, fname, tag):
     new_name = util.gen_name(fname, tag, "tab")
     with open(new_name, "w") as f:
         f.write("Avg.Runtime\tKeys\n")
-        for bkt in data:
+        for bkt in ((x for x in data if x["data"])):
             f.write(str(int(bkt["mean"])))
             f.write("\t")
             f.write("\t".join([obj["key"] for obj in bkt["data"]]))
@@ -129,8 +133,9 @@ def main(fname):
     print("Starting with %d points\n" % len(tbl))
     results = [
         make_bins(tbl, 5),
-        # make_bins(tbl, 10),
-        # make_bins(tbl, 15),
+        make_bins(tbl, 6),
+        make_bins(tbl, 7),
+        make_bins(tbl, 10),
     ]
     x = [save(g, fname, tag) for (g, tag) in results]
     print("All done.")
