@@ -95,17 +95,6 @@ def group_by_std(tbl, num_devs):
         num_devs = 1
     return group_by(tbl, (lambda obj1, obj2 : std_overlap(obj1, obj2, num_devs)))
 
-
-def save_file(data, fname, tag):
-    # Save data to a file, using fname and tag to create a hopefully-unique name.
-    new_name = util.gen_name(fname, tag, "txt")
-    with open(new_name, "w") as f:
-        for group in data:
-            f.write("\t".join(group))
-            f.write("\n")
-    print("Saved file to '%s'" % new_name)
-    return new_name
-
 def fold_all_values(fname, g, init):
     # Apply g to the list of values in each row of the table, plus an accum.
     acc = init
@@ -139,6 +128,17 @@ def mean_of_bucket(bkt, fname):
     # Return the average of all these means
     return statistics.mean([statistics.mean(get_values(key, fname))
                             for key in bkt])
+
+def save_file(data, fname, tag):
+    # Save data to a file, using fname and tag to create a hopefully-unique name.
+    new_name = util.gen_name(fname, tag, "txt")
+    with open(new_name, "w") as f:
+        f.write("Avg.Runtime\tKeys\n")
+        for group in data:
+            f.write("\t".join([str(int(mean_of_bucket(group, fname)))] + group))
+            f.write("\n")
+    print("Saved file to '%s'" % new_name)
+    return new_name
 
 def save_graph(data, fname, tag):
     # `data` are the groups (by ID)

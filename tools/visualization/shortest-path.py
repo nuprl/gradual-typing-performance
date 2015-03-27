@@ -78,6 +78,34 @@ def save_path(fname, g, path, start):
     print("Saved graph to '%s'" % new_name)
     return new_name
 
+# def edges_of_path(path, g):
+#     edges = []
+#     prev = None
+#     for n in path:
+#         
+
+def runtime(path,g):
+    # Return the sum of all edge weights in path
+    total = 0
+    prev = None
+    for node in path:
+        if prev is not None:
+            total += g.get_edge_data(prev, node)["weight"]
+        prev = node
+    return total
+
+def save_all_paths(all_paths, g, fname, tag):
+    plt.xlabel("Path Runtime (sum)")
+    plt.ylabel("Nothing")
+    plt.title("All paths' Runtimes")
+    xs,ys = map(list, zip(*[(runtime(p,g), 1) for p in all_paths]))
+    plt.bar(xs, ys, bottom=0)
+    # Save figure
+    new_name = util.gen_name(fname, tag, "png")
+    plt.savefig(new_name)
+    plt.clf()
+    return new_name
+
 def main(fname):
     # Read fname as a networkx graph
     # Each key is a node, has edges to all keys +1 bit away
@@ -86,7 +114,17 @@ def main(fname):
     p1 = nx.dijkstra_path(g, bot, top)
     # p2 = shortest_path(g, max, g)
     print("Shortest path is: %s" % p1)
-    save_path(fname, g, p1, bot)
+    # save_path(fname, g, p1, bot)
+    all_paths = nx.all_simple_paths(g, bot, top)
+    # lo_weight = min((e["weight"] for e in g.edges_iter()))
+    # hi_weight = max((e["weight"] for e in g.edges_iter()))
+    # avg_weight = statistics.mean(
+    # med_weight = TODO
+    # print("Lowest path weight is: %s" % lo_weight)
+    # print("Highest path weight is: %s" % hi_weight)
+    # print("Avg. path weight is: %s" % avg_weight)
+    # print("Median path weight is: %s" % med_weight)
+    print("Saved graph of paths to file '%s'" % save_all_paths(all_paths, g, fname, "paths"))
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
