@@ -37,7 +37,8 @@
   (incr-bit-aux str 0)
   str)
 (define (incr-bit-aux str i)
-  (cond [(eq? #\0 (string-ref str i))
+  (cond [(>= i (string-length str)) (void)] ;; Silently fail
+        [(eq? #\0 (string-ref str i))
          (string-set! str i #\1)]
         [else
          (string-set! str i #\0)
@@ -47,8 +48,8 @@
 (define (string-reverse str)
   (list->string (reverse (string->list str))))
 
-;; Read in-file as a vector, print each row to out-file
-(define (copy-data in-file out-file)
+;; Read in-file as a vector, transpose data & print
+(define (copy-data-transpose in-file out-file)
   (define vec (file->value in-file))
   (with-output-to-file out-file #:exists 'replace
     (lambda ()
@@ -63,6 +64,21 @@
         ;; Pre-pend run number and print
         (displayln (string-join (cons (number->string n) vals) "\t"))))))
 
+(define (copy-data in-file out-file)
+  (define vec (file->value in-file))
+  (with-output-to-file out-file #:exists 'replace
+    (lambda ()
+      ;; First print index
+      (define num-configs (vector-length vec))
+      (define num-runs (length (vector-ref vec 0)))
+      (displayln (string-join (cons "Run" (for/list ([n (in-range num-runs)]) (format "~a" (add1 n)))) "\t"))
+      ;; Start counter for configurations
+      (define N (make-string (log2 num-configs) #\0))
+      ;; For each row, print the config ID and all the values
+      (for ([row vec])
+        (displayln (string-join (cons (string-reverse N) (for/list ([v row]) (format "~a" v))) "\t"))
+        (incr-bit N)))))
+    
 ;; Replace the characters after the "." in the first arguemnt with the second
 (define (replace-extension str ext)
   (string-append (car (string-split str ".")) "." ext))
