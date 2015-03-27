@@ -12,5 +12,8 @@ We test lcs on all pairs of lines in a file in `base/`:
 
 ---
 
-This version of the benchmark defines untyped data & adds a typed wrapper.
-Update functions are provided explicitly by this wrapper.
+This version uses #:opaque types and a linear inheritance hierarchy
+(each module in the chain imports only from its predecessor -- and not from
+ any other ancestor)
+
+Performs well across configurations; opaque checks are cheap.

@@ -14,3 +14,6 @@ We test lcs on all pairs of lines in a file in `base/`:
 
 This version of the benchmark defines untyped data & adds a typed wrapper.
 Update functions are provided explicitly by this wrapper.
+
+Gets a huge slowdown on the fully typed version. Beware!
+
