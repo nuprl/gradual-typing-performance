@@ -22,6 +22,7 @@ Other modules implement the benchmark.
 
 ---
 
-This version uses an ADAPTER module.
-Thus typed modules get typed data (through the adapter)
-and untyped modules get untyped data.
+This is a "faithful as possible" conversion of the funky town benchmark.
+The core data is TYPED using parametric structs.
+
+Because of that, the fully-untyped version is much slower.

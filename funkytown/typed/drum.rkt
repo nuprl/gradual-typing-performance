@@ -1,21 +1,21 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "../base/array-types.rkt")
+         "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
-  [array-size (-> (Array Any) Integer)]
-  [make-array (-> In-Indexes Any (Array Float))]
-  [build-array (-> In-Indexes (-> Indexes Float) (Array Float))]
-  [unsafe-vector->array (-> Indexes (Vectorof Float) (Mutable-Array Float))])
+  [array-size (-> Array Integer)]
+  [make-array (-> In-Indexes Any Array)]
+  [build-array (-> In-Indexes (-> Indexes Float) Array)]
+  [unsafe-vector->array (-> Indexes (Vectorof Float) Mutable-Array)])
 
 (require/typed/check "array-utils.rkt"
   [array-shape-size (-> Indexes Natural)]
   [check-array-shape (-> In-Indexes (-> Nothing) Indexes)])
 
 (require/typed/check "array-transform.rkt"
-  [array-append* (case-> ((Listof (Array Float)) -> (Array Float))
-                         ((Listof (Array Float)) Integer -> (Array Float)))])
+  [array-append* (case-> ((Listof Array) -> Array)
+                         ((Listof Array) Integer -> Array))])
 
 (require/typed/check "synth.rkt"
   [fs Natural]
@@ -28,7 +28,7 @@
 
 ;; Drum "samples" (Arrays of floats)
 ;; TODO compute those at compile-time
-(: bass-drum (Array Float))
+(: bass-drum Array)
 (define bass-drum
   (let ()
     ;; 0.05 seconds of noise whose value changes every 12 samples
@@ -54,7 +54,7 @@
                   sample))
     (unsafe-vector->array ds vs)))
 
-(: snare (Array Float))
+(: snare Array)
 (define snare
   ;; 0.05 seconds of noise
   (let: ([indexes : In-Indexes
@@ -64,25 +64,25 @@
     (build-array indexes arr-gen)))
 
 ;; limited drum machine
-(: drum (-> Natural Pattern Natural (Array Float)))
+(: drum (-> Natural Pattern Natural Array))
 (define (drum n pattern tempo)
   (: samples-per-beat Natural)
   (define samples-per-beat (quotient (* fs 60) tempo))
-  (: make-drum (-> (Array Float) Natural (Array Float)))
+  (: make-drum (-> Array Natural Array))
   (define (make-drum drum-sample samples-per-beat)
     (array-append*
      (list drum-sample
            (make-array (vector (- samples-per-beat
                                   (array-size drum-sample)))
                        0.0))))
-  (: O (Array Float))
+  (: O Array)
   (define O     (make-drum bass-drum samples-per-beat))
-  (: X (Array Float))
+  (: X Array)
   (define X     (make-drum snare     samples-per-beat))
-  (: pause (Array Float))
+  (: pause Array)
   (define pause (make-array (vector samples-per-beat) 0.0))
   (array-append*
-   (for*/list : (Listof (Array Float)) ([i : Integer (in-range n)]
+   (for*/list : (Listof Array) ([i : Integer (in-range n)]
                                         [beat : Drum-Symbol (in-list pattern)])
      (case beat
        [(X)  X]

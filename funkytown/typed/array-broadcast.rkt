@@ -5,15 +5,15 @@
          (only-in racket/string string-join)
          (only-in racket/list empty? first rest)
          benchmark-util
-         "../base/array-types.rkt")
+         "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
-  [array-strict? (-> (Array Any) Boolean)]
-  [array-default-strict! (-> (Array Any) Void)]
-  [array-shape (-> (Array Any) Indexes)]
-  [array-size (-> (Array Any) Integer)]
-  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
-  [unsafe-build-array (-> Indexes (-> Indexes Float) (Array Float))])
+  [array-strict? (-> Array Boolean)]
+  [array-default-strict! (-> Array Void)]
+  [array-shape (-> Array Indexes)]
+  [array-size (-> Array Integer)]
+  [unsafe-array-proc (-> Array (-> Indexes Float))]
+  [unsafe-build-array (-> Indexes (-> Indexes Float) Array)])
 
 (require/typed/check "array-utils.rkt"
   [make-thread-local-indexes (-> Integer (-> Indexes))])
@@ -25,7 +25,7 @@
 (: array-broadcasting (Parameterof (U #f #t 'permissive)))
 (define array-broadcasting (make-parameter #t))
 
-(: shift-stretch-axes (-> (Array Float) Indexes (Array Float)))
+(: shift-stretch-axes (-> Array Indexes Array))
 (define (shift-stretch-axes arr new-ds)
   (define old-ds (array-shape arr))
   (define old-dims (vector-length old-ds))
@@ -51,7 +51,7 @@
                 (loop (+ k 1))]
                [else  (old-f old-js)]))))) )
 
-(: array-broadcast (-> (Array Float) Indexes (Array Float)))
+(: array-broadcast (-> Array Indexes Array))
 (define (array-broadcast arr ds)
   (cond [(equal? ds (array-shape arr))  arr]
         [else  (define new-arr (shift-stretch-axes arr ds))

@@ -4,7 +4,7 @@
          (only-in racket/performance-hint begin-encourage-inline)
          (for-syntax racket/base)
          (only-in racket/fixnum fx* fx+)
-         "../base/array-types.rkt")
+         "typed-data.rkt")
 
 (provide
 array-shape-size

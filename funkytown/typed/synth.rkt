@@ -7,7 +7,7 @@
   emit)
 
 (require benchmark-util
-         "../base/array-types.rkt"
+         "typed-data.rkt"
          (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
          (only-in racket/math exact-floor))
 
@@ -15,10 +15,10 @@
   [next-indexes! (-> Indexes Integer Indexes Void)])
 
 (require/typed/check "array-struct.rkt"
-  [array? (-> (Array Any) Boolean)] ;; Cannot be "Any". Get error about passing higher-order value
-  [array-shape (-> (Array Any) Indexes)]
-  [unsafe-array-proc (-> (Array Float) (-> Indexes Float))]
-  [array-size (-> (Array Any) Integer)]
+  [array? (-> Array Boolean)] ;; Cannot be "Any". Get error about passing higher-order value
+  [array-shape (-> Array Indexes)]
+  [unsafe-array-proc (-> Array (-> Indexes Float))]
+  [array-size (-> Array Integer)]
   [array-strictness (Parameterof (U #f #t))])
 
 ;; --- from array-sequence.rkt
@@ -33,7 +33,7 @@
          [(x)
           (:do-in
            ([(ds size dims js proc)
-             (let: ([arr : (Array Float)  arr-expr])
+             (let: ([arr : Array  arr-expr])
                (cond [(array? arr)
                       (define ds (array-shape arr))
                       (define dims (vector-length ds))
@@ -101,7 +101,7 @@
 
 ;; assumes array of floats in [-1.0,1.0]
 ;; assumes gain in [0,1], which determines how loud the output is
-(: signal->integer-sequence (-> (Array Float) [#:gain Float] (Vectorof Integer)))
+(: signal->integer-sequence (-> Array [#:gain Float] (Vectorof Integer)))
 (define (signal->integer-sequence signal #:gain [gain 1])
   (for/vector : (Vectorof Integer) #:length (array-size signal)
               ([sample : Float (in-array signal)])
@@ -113,7 +113,7 @@
 
 ;; `emit` used to write a file.
 ;; For now, it just converts a signal to a sequence.
-(: emit (-> (Array Float) (Vectorof Integer)))
+(: emit (-> Array (Vectorof Integer)))
 (define (emit signal)
   (signal->integer-sequence signal #:gain 0.3))
 

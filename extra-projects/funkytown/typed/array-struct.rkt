@@ -3,7 +3,7 @@
 (require (for-syntax racket/base syntax/parse)
          (only-in racket/fixnum fx+ fx*)
          benchmark-util
-         "typed-data.rkt")
+         "../base/array-types.rkt")
 
 (require/typed/check "array-utils.rkt"
   [unsafe-array-index->value-index (-> Indexes Indexes Integer)]
@@ -174,25 +174,25 @@
   (λ: ([js : Indexes])
     (ref (unsafe-array-index->value-index ds js))))
 
-(: array-strict? (Array -> Boolean))
+(: array-strict? (All (A) ((Array A) -> Boolean)))
 (define (array-strict? arr)
   (unbox (Array-strict? arr)))
 
-(: array-strict! (Array -> Void))
+(: array-strict! (All (A) ((Array A) -> Void)))
 (define (array-strict! arr)
   (define strict? (Array-strict? arr))
   (unless (unbox strict?)
     ((Array-strict! arr))
     (set-box! strict? #t)))
 
-(: array-default-strict! (Array -> Void))
+(: array-default-strict! (All (A) ((Array A) -> Void)))
 (define (array-default-strict! arr)
   (define strict? (Array-strict? arr))
   (when (and (not (unbox strict?)) (array-strictness))
     ((Array-strict! arr))
     (set-box! strict? #t)))
 
-(: unsafe-build-array ((Vectorof Integer) ((Vectorof Integer) -> Float) -> Array))
+(: unsafe-build-array (All (A) ((Vectorof Integer) ((Vectorof Integer) -> A) -> (Array A))))
 (define (unsafe-build-array ds f)
   ;; This box's contents get replaced when the array we're constructing is made strict, so that
   ;; the array stops referencing f. If we didn't do this, long chains of array computations would
@@ -203,8 +203,8 @@
     ;; strict; that's okay - array-strict! does it instead, which makes the "once strict, always
     ;; strict" invariant easier to ensure in subtypes, which we don't always have control over
     (define (strict!)
-      (let* ([old-f  : (-> (Vectorof Integer) Float) (unbox f)]
-             [vs     : (Vectorof Float) (inline-build-array-data ds (lambda (js j) (old-f js)) Float)])
+      (let* ([old-f  : (-> (Vectorof Integer) A) (unbox f)]
+             [vs     : (Vectorof A) (inline-build-array-data ds (lambda (js j) (old-f js)) A)])
         ;; Make a new f that just indexes into vs
         (set-box! f (λ: ([js : Indexes])
                       (vector-ref vs (unsafe-array-index->value-index ds js))))))
@@ -212,12 +212,12 @@
       (λ: ([js : Indexes]) ((unbox f) js)))
     (Array ds size ((inst box Boolean) #f) strict! unsafe-proc)))
 
-(: unsafe-build-simple-array (Indexes (Indexes -> Float) -> Array))
+(: unsafe-build-simple-array (All (A) (Indexes (Indexes -> A) -> (Array A))))
 (define (unsafe-build-simple-array ds f)
   (define size (check-array-shape-size 'unsafe-build-simple-array ds))
   (Array ds size (box #t) void f))
 
-(: build-array ((Vectorof Integer) ((Vectorof Integer) -> Float) -> Array))
+(: build-array (All (A) ((Vectorof Integer) ((Vectorof Integer) -> A) -> (Array A))))
 (define (build-array ds proc)
   (let ([ds  (check-array-shape
               ds (lambda () (raise-argument-error 'build-array "(Vectorof Integer)" 0 ds proc)))])
@@ -227,7 +227,7 @@
     (array-default-strict! arr)
     arr))
 
-(: build-simple-array ((Vectorof Integer) (Indexes -> Float) -> Array))
+(: build-simple-array (All (A) ((Vectorof Integer) (Indexes -> A) -> (Array A))))
 (define (build-simple-array ds proc)
   (let ([ds  (check-array-shape
               ds (lambda () (raise-argument-error 'build-simple-array "(Vectorof Index)" 0 ds proc)))])
@@ -246,7 +246,7 @@
 
 ;; -- from 'array-constructors.rkt'
 
-(: make-array ((Vectorof Integer) Float -> Array))
+(: make-array (All (A) ((Vectorof Integer) A -> (Array A))))
 (define (make-array ds v)
   (let ([ds  (check-array-shape
               ds (λ () (raise-argument-error 'make-array "(Vectorof Integer)" 0 ds v)))])
@@ -254,8 +254,8 @@
 
 ;; --- from mutable-array.rkt
 
-(: unsafe-vector->array (Indexes (Vectorof Float) -> Mutable-Array))
+(: unsafe-vector->array (All (A) (Indexes (Vectorof A) -> (Mutable-Array A))))
 (define (unsafe-vector->array ds vs)
   (define proc (make-unsafe-array-proc ds (λ (j) (vector-ref vs j))))
-  (define set-proc (make-unsafe-array-set-proc Float ds (λ (j v) (vector-set! vs j v))))
+  (define set-proc (make-unsafe-array-set-proc A ds (λ (j v) (vector-set! vs j v))))
   (Mutable-Array ds (vector-length vs) (box #t) void proc set-proc vs))
