@@ -64,6 +64,7 @@ def make_bins(tbl, num_bins):
     return bkts, ("BINS-%d" % num_bins)
 
 def every_point_in(fname):
+    # Collect every single data point in the spreadsheet `fname` as a list of ints
     pts = []
     with open(fname, "r") as f:
         next(f)
@@ -79,6 +80,16 @@ def count_lines(fname):
             count += 1
     return count
 
+def get_row(fname, key):
+    # Return the integers in the row keyed by `key`
+    with open(fname, "r") as f:
+        next(f)
+        for line in f:
+            data = line.strip().split("\t")
+            if data[0] == key:
+                return [int(x) for x in data[1::]]
+    raise ValueError("could not find key '%s'" % key)
+
 def save_graph(data, fname, tag):
     # `data` are the groups (by ID)
     # `fname` is the raw data file
@@ -88,7 +99,7 @@ def save_graph(data, fname, tag):
     plt.ylabel("Num. Configs / Total Configs")
     plt.title(new_name.rsplit(".", 1)[0].rsplit("/", 1)[-1])
     num_configs = count_lines(fname) - 1
-    bin_width = data[0]["max"] - data[0]["min"]
+    bin_width = data[0]["max"]
     # Plot bins
     for bkt in data:
         # x-position is average runtime, height is count
@@ -100,12 +111,18 @@ def save_graph(data, fname, tag):
                 width=bin_width)
     # Add median line (take median of alread-computed rows' medians)
     md = statistics.median([bkt["median"] for bkt in data if bkt["median"] is not None])
-    plt.axvline(md,
-                color='r', linestyle="dashed", linewidth=5)
-    plt.xticks(sorted([bkt["min"] for bkt in data] + [data[-1]["max"], md]))#, rotation="vertical")
+    plt.axvline(md, color='k', linestyle="solid", linewidth=5, label="median = %s" % int(md))
+    # Add UNTYPED  & TYPED configuration line
+    arbitrary_key = next((bkt["data"][0]["key"] for bkt in data if bkt["data"]))
+    untyped = statistics.mean(get_row(fname, "".join(("0" for _ in arbitrary_key))))
+    typed   = statistics.mean(get_row(fname, "".join(("1" for _ in arbitrary_key))))
+    plt.axvline(untyped, color='g', linestyle='dashed', linewidth=5, label="untyped = %s" % int(untyped))
+    plt.axvline(typed, color='r', linestyle='dotted', linewidth=5, label="typed = %s" % int(typed))
+    plt.xticks(sorted([bkt["min"] for bkt in data] + [data[-1]["max"]]))#, rotation="vertical")
     plt.xlim(xmax=data[-1]["max"])
     plt.ylim(ymax=0.5) #50%
-    plt.savefig(new_name)
+    lgd = plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.savefig(new_name,bbox_extra_artists=(lgd,), bbox_inches='tight')
     print("Saved plot to '%s'" % new_name)
     plt.clf()
     return new_name
