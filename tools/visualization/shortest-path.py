@@ -45,16 +45,6 @@ def graph_of_file(fname):
     return g, zerod, oned
 
 
-def num_swaps(s):
-    # Count the number of times that s[i] and s[i+1] differ
-    prev = s[0]
-    count = 0
-    for i in range(1, len(s)):
-        if prev != s[i]:
-            count += 1
-            prev = s[i]
-    return count
-
 def count_ones(s):
     # Count the number of "1" in a bitstring
     return sum((1 for c in s if c == "1"))
@@ -62,29 +52,57 @@ def count_ones(s):
 def pos_of_str(s):
     return [num_swaps(s), count_ones(s)]
 
+def positions_of_file(fname):
+    # Build up a dictionary of "bitstring->(x,y)"
+    # x position = among configs on same level, 0 1 -1 2 -2 3 ...
+    # y position = number of typed modules
+    posn = {}
+    i_level = {} #index into current level
+    voffset = None #vertical offset, number of bits in our strings
+    max_x = 0
+    # Walk over the file to get all keys
+    with open(fname, "r") as f:
+        next(f)
+        for line in f:
+            key = line.strip().split("\t", 1)[0]
+            num_ones = sum((1 for c in key if c == "1"))
+            # Init table entry, if not already
+            if num_ones not in i_level:
+                i_level[num_ones] = 0
+            else:
+                non_pos = int(i_level[num_ones] <= 0)
+                i_level[num_ones] = (-1 * i_level[num_ones]) + non_pos
+                max_x = max(max_x, i_level[num_ones])
+            posn[key] = (i_level[num_ones], 2 * len(key) * num_ones)
+    return posn, (max_x + len(key))
+
 def save_path(fname, g, path, start):
-    # Save a picture of the graph g, with `path` highlighted
-    p = dict([(n, pos_of_str(n)) for n in g.nodes()])
-    pos = nx.spring_layout(g, pos=p)
-    nx.draw(g, pos, node_color="k")
-    # draw path in RED
+    ## Save a picture of the graph g, with `path` highlighted
+    new_name = util.gen_name(fname, "dijkstra", "png")
+    positions, max_x = positions_of_file(fname)
+    p = dict([(n, positions[n]) for n in g.nodes()])
+    ## Add labels
+    title_str = fname.rsplit(".", 1)[0].rsplit("/", 1)[-1]
+    plt.title("%s\n\n%s"
+      % (title_str
+        ,"\n\n".join(path[::-1]))
+      , loc="left", position=(0,0))
+    keylen = len(str(path[0]))
+    ## Draw graph
+    pos = nx.spring_layout(g, pos=p, fixed=g.nodes())
+    nx.draw(g, pos, node_color="k", font_size=80)
+    ## draw path in RED
     path_edges = [x for x in zip(path, path[1:])]
     nx.draw_networkx_nodes(g, pos, nodelist=path, node_color="r")
-    nx.draw_networkx_edges(g, pos, edgelist=path_edges, edge_color="r", width=10)
+    nx.draw_networkx_edges(g, pos, edgelist=path_edges, edge_color="r", width=2, arrows=False)
+    ## Save plot
     plt.axis('equal')
-    new_name = util.gen_name(fname, "dijkstra", "png")
     plt.savefig(new_name)
     plt.clf()
     print("Saved graph to '%s'" % new_name)
     return new_name
 
-# def edges_of_path(path, g):
-#     edges = []
-#     prev = None
-#     for n in path:
-#         
-
-def runtime(path,g):
+def sum_runtime(path,g):
     # Return the sum of all edge weights in path
     total = 0
     prev = None
@@ -98,7 +116,7 @@ def save_all_paths(all_paths, g, fname, tag):
     plt.xlabel("Path Runtime (sum)")
     plt.ylabel("Nothing")
     plt.title("All paths' Runtimes")
-    xs,ys = map(list, zip(*[(runtime(p,g), 1) for p in all_paths]))
+    xs,ys = map(list, zip(*[(sum_runtime(p,g), 1) for p in all_paths]))
     plt.bar(xs, ys, bottom=0)
     # Save figure
     new_name = util.gen_name(fname, tag, "png")
@@ -111,11 +129,13 @@ def main(fname):
     # Each key is a node, has edges to all keys +1 bit away
     # (00 -> 01 ; 00 -> 10 ; 10 -> 11 ; 01 -> 11)
     g, bot, top = graph_of_file(fname)
+    ## Compute shortest path
     p1 = nx.dijkstra_path(g, bot, top)
     # p2 = shortest_path(g, max, g)
     print("Shortest path is: %s" % p1)
-    # save_path(fname, g, p1, bot)
-    all_paths = nx.all_simple_paths(g, bot, top)
+    save_path(fname, g, p1, bot)
+    ## Compute all paths
+    # all_paths = nx.all_simple_paths(g, bot, top)
     # lo_weight = min((e["weight"] for e in g.edges_iter()))
     # hi_weight = max((e["weight"] for e in g.edges_iter()))
     # avg_weight = statistics.mean(
@@ -124,7 +144,7 @@ def main(fname):
     # print("Highest path weight is: %s" % hi_weight)
     # print("Avg. path weight is: %s" % avg_weight)
     # print("Median path weight is: %s" % med_weight)
-    print("Saved graph of paths to file '%s'" % save_all_paths(all_paths, g, fname, "paths"))
+    # print("Saved graph of paths to file '%s'" % save_all_paths(all_paths, g, fname, "paths"))
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
