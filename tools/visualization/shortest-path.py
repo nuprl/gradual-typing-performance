@@ -102,27 +102,68 @@ def save_path(fname, g, path, start):
     print("Saved graph to '%s'" % new_name)
     return new_name
 
-def sum_runtime(path,g):
-    # Return the sum of all edge weights in path
-    total = 0
+def fold_edge_weights(f, acc, path, g):
+    # For building measures: call `f` with accumulator and edge weight
     prev = None
     for node in path:
         if prev is not None:
-            total += g.get_edge_data(prev, node)["weight"]
+            acc = f(acc, g.get_edge_data(prev, node)["weight"])
         prev = node
-    return total
+    return acc
 
-def save_all_paths(all_paths, g, fname, tag):
-    plt.xlabel("Path Runtime (sum)")
-    plt.ylabel("Nothing")
-    plt.title("All paths' Runtimes")
-    xs,ys = map(list, zip(*[(sum_runtime(p,g), 1) for p in all_paths]))
-    plt.bar(xs, ys, bottom=0)
+def min_runtime(path, g):
+    # Measure: Return the min of all weights in path
+    init = g.get_edge_data(path[0], path[1])["weight"]
+    return fold_edge_weights(min, init, path, g)
+
+def max_runtime(path, g):
+    # Measure: Return the max of all weights in path
+    return fold_edge_weights(max, 0, path, g)
+
+def sum_runtime(path,g):
+    # Measure: Return the sum of all edge weights in path
+    f = lambda x, y: x + y
+    return fold_edge_weights(f, 0, path, g)
+
+def save_all_paths(gen_paths, g, fname, tag, num_bins, measure):
+    plt.xlabel("Runtime (ms)")
+    plt.ylabel("Num. Paths")
+    plt.title("%s-%s" % (fname.rsplit(".", 1)[0].rsplit("/", 1)[-1], tag))
+    gen_runtimes = lambda: (measure(p,g) for p in gen_paths())
+    min_runtime = min(gen_runtimes())
+    max_runtime = max(gen_runtimes())
+    med_runtime = statistics.median(gen_runtimes())
+    bkt_width = (max_runtime - min_runtime) / num_bins
+    bins = ((min_runtime + int(i * bkt_width), min_runtime + int((1 + i) * bkt_width)) for i in range(0, num_bins))
+    for (lo, hi) in bins:
+        plt.bar(lo
+               ,sum((1 for rt in gen_runtimes() if lo <= rt <= hi))
+               ,alpha=0.6
+               ,width=bkt_width)
+    # Max, Min, Median path lines
+    plt.axvline(med_runtime, color="k", linestyle="solid", linewidth=5, label="median = %s" % int(med_runtime))
+    plt.axvline(min_runtime, color="g", linestyle="dashed", linewidth=5, label="min = %s" % int(min_runtime))
+    plt.axvline(max_runtime, color="r", linestyle="dotted", linewidth=5, label="max = %s" % int(max_runtime))
     # Save figure
     new_name = util.gen_name(fname, tag, "png")
-    plt.savefig(new_name)
+    lgd = plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.savefig(new_name,bbox_extra_artists=(lgd,), bbox_inches='tight')
+    print("Saved plot to '%s'" % new_name)
+    ## Save data
+    save_runtimes(zip(gen_paths(), gen_runtimes()), util.gen_name(fname, tag, "tab"))
     plt.clf()
     return new_name
+
+def save_runtimes(path_and_time, fname):
+    with open(fname, "w") as f:
+        f.write("Measure\tPath\n")
+        for (path, time) in path_and_time:
+            f.write(str(int(time)))
+            f.write("\t")
+            f.write("\t".join(path))
+            f.write("\n")
+    print("Saved data to '%s'" % fname)
+    return fname
 
 def main(fname):
     # Read fname as a networkx graph
@@ -131,20 +172,15 @@ def main(fname):
     g, bot, top = graph_of_file(fname)
     ## Compute shortest path
     p1 = nx.dijkstra_path(g, bot, top)
-    # p2 = shortest_path(g, max, g)
     print("Shortest path is: %s" % p1)
     save_path(fname, g, p1, bot)
     ## Compute all paths
-    # all_paths = nx.all_simple_paths(g, bot, top)
-    # lo_weight = min((e["weight"] for e in g.edges_iter()))
-    # hi_weight = max((e["weight"] for e in g.edges_iter()))
-    # avg_weight = statistics.mean(
-    # med_weight = TODO
-    # print("Lowest path weight is: %s" % lo_weight)
-    # print("Highest path weight is: %s" % hi_weight)
-    # print("Avg. path weight is: %s" % avg_weight)
-    # print("Median path weight is: %s" % med_weight)
-    # print("Saved graph of paths to file '%s'" % save_all_paths(all_paths, g, fname, "paths"))
+    gen_paths = lambda: nx.all_simple_paths(g, bot, top)
+    for n in [20]:#5, 10, 15, 20]:
+        save_all_paths(gen_paths, g, fname, "PATH-SUM-%s" % n, n, sum_runtime)
+        save_all_paths(gen_paths, g, fname, "PATH-MIN-%s" % n, n, min_runtime)
+        save_all_paths(gen_paths, g, fname, "PATH-MAX-%s" % n, n, max_runtime)
+    print("All done")
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:

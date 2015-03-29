@@ -45,10 +45,10 @@ def make_bins(tbl, num_bins):
     # Evenly space the buckets across the interval
     max_runtime = max((obj["max"] for obj in tbl))
     min_runtime = min((obj["min"] for obj in tbl))
-    rng = max_runtime# - min_runtime
+    rng = max_runtime - min_runtime
     chunk_width = rng / num_bins
     # Each bucket is a (min,max) tuple
-    bins = [(i * chunk_width , (1 + i) * chunk_width)
+    bins = [(min_runtime + int(i * chunk_width) , min_runtime + int((1 + i) * chunk_width))
             for i in range(0, num_bins)]
     # Create a bucket (interval) object for each bin.
     bkts = []
@@ -95,17 +95,17 @@ def save_graph(data, fname, tag):
     # `fname` is the raw data file
     # `tag` helps create a uniquely-named output file
     new_name = util.gen_name(fname, tag, "png")
-    plt.xlabel("Avg. Runtime (milliseconds)", )
-    plt.ylabel("Num. Configs / Total Configs")
+    plt.xlabel("Avg. Runtime (ms)", )
+    plt.ylabel("Num. Configs")
     plt.title(new_name.rsplit(".", 1)[0].rsplit("/", 1)[-1])
     num_configs = count_lines(fname) - 1
-    bin_width = data[0]["max"]
+    bin_width = data[0]["max"] - data[0]["min"]
     # Plot bins
     for bkt in data:
         # x-position is average runtime, height is count
         plt.bar(bkt["min"],
-                bkt["count"] / num_configs,
-                alpha=0.6, # opacity
+                bkt["count"],# / num_configs,
+                alpha=0.6,
                 bottom=0,
                 # label="%s - %s" % (bkt["min"], bkt["max"]),
                 width=bin_width)
@@ -120,7 +120,7 @@ def save_graph(data, fname, tag):
     plt.axvline(typed, color='r', linestyle='dotted', linewidth=5, label="typed = %s" % int(typed))
     plt.xticks(sorted([bkt["min"] for bkt in data] + [data[-1]["max"]]))#, rotation="vertical")
     plt.xlim(xmax=data[-1]["max"])
-    plt.ylim(ymax=0.5) #50%
+    #plt.ylim(ymax=0.5) #50%
     lgd = plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
     plt.savefig(new_name,bbox_extra_artists=(lgd,), bbox_inches='tight')
     print("Saved plot to '%s'" % new_name)
