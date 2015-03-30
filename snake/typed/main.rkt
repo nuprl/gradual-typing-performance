@@ -1,9 +1,19 @@
 #lang typed/racket
 
-(require "data-adaptor.rkt")
-(require "const.rkt"
-         "handlers.rkt"
-         "motion.rkt")
+(require benchmark-util
+         "data-adaptor.rkt")
+(require/typed/check "const.rkt"
+                     [WORLD (-> World)]
+                     [GRID-SIZE Integer]
+                     [BOARD-HEIGHT-PIXELS (-> Positive-Index)]
+                     [BOARD-WIDTH Integer]
+                     [BOARD-HEIGHT Integer])
+(require/typed/check "motion.rkt"
+                     [world-change-dir (World Dir . -> . World)]
+                     [world->world     (World . -> . World)])
+(require/typed/check "handlers.rkt"
+                     [handle-key (World String . -> . World)]
+                     [game-over? (World . -> . Boolean)])
 
 (: replay : World (Listof Any) -> Void)
 (define (replay w0 hist)
