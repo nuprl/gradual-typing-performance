@@ -23,7 +23,7 @@
            (cdr h))))))
 
 (define w0 (WORLD))
-(define raw-hist (with-input-from-file "../snake-hist-4.txt" read))
+(define raw-hist (with-input-from-file "../base/snake-hist-4.txt" read))
 
 (cond [(list? raw-hist)
        (define hist (reverse raw-hist))
