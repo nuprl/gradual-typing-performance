@@ -41,9 +41,7 @@
   (define i (add1 (random (sub1 BOARD-WIDTH) r)))
   (define j (add1 (random (sub1 BOARD-HEIGHT) r)))
   (world (snake-grow (world-snake w))
-         (posn i j)
-         
-         #;(posn (- BOARD-WIDTH 1) (- BOARD-HEIGHT 1))))
+         (posn i j)))
 (provide
  world-change-dir
  world->world)
