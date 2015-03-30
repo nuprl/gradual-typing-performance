@@ -1,6 +1,6 @@
 #lang typed/racket
-(require "data.rkt"
-         "cut-tail.rkt")
+(require "data-adaptor.rkt")
+(require "cut-tail.rkt")
 
 ;; next-head : Posn Direction -> Posn
 ;; Compute next position for head.

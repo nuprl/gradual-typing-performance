@@ -1,6 +1,7 @@
-#lang typed/racket  
-(require "data.rkt"
-         "const.rkt"
+#lang typed/racket
+(require "data-adaptor.rkt")
+(require "const.rkt"
+         "data.rkt"
          "motion-help.rkt")
 
 (provide reset!)

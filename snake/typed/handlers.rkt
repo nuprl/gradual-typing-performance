@@ -1,8 +1,8 @@
 #lang typed/racket
 ;; Movie handlers
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
-(require "data.rkt"
-         "motion.rkt"
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require "data-adaptor.rkt")
+(require "motion.rkt"
          "collide.rkt")
 
 (: handle-key : (World String . -> . World) )

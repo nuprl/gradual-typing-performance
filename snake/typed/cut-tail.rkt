@@ -1,6 +1,6 @@
 #lang typed/racket
 
-(require "data.rkt")
+(require "data-adaptor.rkt")
 ;; NeSegs is one of:
 ;; - (cons Posn empty)
 ;; - (cons Posn NeSegs)

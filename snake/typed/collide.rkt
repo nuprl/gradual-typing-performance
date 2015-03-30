@@ -1,6 +1,7 @@
 #lang typed/racket
-(require "data.rkt"
-         "const.rkt")
+(require "data-adaptor.rkt")
+(require "const.rkt"
+         "data.rkt")
 
 ;; Is the snake colliding with any of the walls?
 (: snake-wall-collide? : (Snake . -> . Boolean))

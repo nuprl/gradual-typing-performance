@@ -1,5 +1,5 @@
 #lang typed/racket
-(require "data.rkt")
+(require "data-adaptor.rkt")
 
 (define GRID-SIZE 30)
 
