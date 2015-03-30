@@ -51,16 +51,22 @@
             (process (format "racket -e '~s'" command)
                      #:set-pwd? #t))
           ;; if this match fails, something went wrong since we put time in above
-          (match-define (list full (app string->number cpu)
-                                   (app string->number real)
-                                   (app string->number gc))
+          (define time-info
             (for/or ([line (in-list (port->lines in))])
               (regexp-match #rx"cpu time: (.*) real time: (.*) gc time: (.*)" line)))
-          (printf "cpu: ~a real: ~a gc: ~a~n" cpu real gc)
+          (match time-info
+            [(list full (app string->number cpu)
+                        (app string->number real)
+                        (app string->number gc))
+             (printf "cpu: ~a real: ~a gc: ~a~n" cpu real gc)
+             (set! times (cons real times))]
+            [#f (void)])
+          ;; print anything we get on stderr so we can detect errors
+          (for-each displayln (port->lines err))
+          ;; we're reponsible for closing these
           (close-input-port in)
           (close-input-port err)
-          (close-output-port out)
-          (set! times (cons real times)))))
+          (close-output-port out))))
     ;; the order of runs doesn't really matter, but keep them in the order
     ;; they were run anyway just in case
     (vector-set! results var-idx (reverse times)))
