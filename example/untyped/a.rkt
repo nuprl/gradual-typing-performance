@@ -1,6 +1,6 @@
 #lang racket
 
-(require "c.rkt")
+(require "../base/c.rkt")
 
 (provide f)
 
