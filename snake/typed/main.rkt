@@ -36,12 +36,11 @@
   (void))
 
 (define w0 (WORLD))
-(define raw-hist (time (with-input-from-file "../snake-hist-4.txt" read)))
+(define raw-hist (with-input-from-file "../snake-hist-4.txt" read))
 
 (cond [(list? raw-hist)
-       (time
-        (define hist (reverse raw-hist))
-        (for ([i (in-range 100)])
-          (replay w0 hist)))]
+       (define hist (reverse raw-hist))
+       (for ([i (in-range 100)])
+         (replay w0 hist))]
       [else
        (error "THIS BENCHMARK IS BROKEN")])
