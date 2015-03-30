@@ -1,48 +1,48 @@
-(module motion typed/racket  
-  (require "data.rkt"
-           "const.rkt"
-           "motion-help.rkt")
+#lang typed/racket  
+(require "data.rkt"
+         "const.rkt"
+         "motion-help.rkt")
 
-  (provide reset!)
-  (define r (make-pseudo-random-generator)) 
-  (define (reset!)
-    (parameterize ((current-pseudo-random-generator r))
-		  (random-seed 1324)))
+(provide reset!)
+(define r (make-pseudo-random-generator)) 
+(define (reset!)
+  (parameterize ((current-pseudo-random-generator r))
+    (random-seed 1324)))
 
-  (: world->world : (World . -> . World))
-  (define (world->world w)
-    (cond [(eating? w) (snake-eat w)]
-          [else
-           (world (snake-slither (world-snake w))
-                  (world-food w))]))
+(: world->world : (World . -> . World))
+(define (world->world w)
+  (cond [(eating? w) (snake-eat w)]
+        [else
+         (world (snake-slither (world-snake w))
+                (world-food w))]))
 
-  ;; Is the snake eating the food in the world.
-  (: eating? : (World . -> . Boolean))
-  (define (eating? w)
-    (posn=? (world-food w)
-            (car (snake-segs (world-snake w)))))
+;; Is the snake eating the food in the world.
+(: eating? : (World . -> . Boolean))
+(define (eating? w)
+  (posn=? (world-food w)
+          (car (snake-segs (world-snake w)))))
 
-  ;; Change the direction of the snake.
-  (: snake-change-direction : (Snake Dir . -> . Snake))
-  (define (snake-change-direction snk dir)
-    (snake dir
-           (snake-segs snk)))
+;; Change the direction of the snake.
+(: snake-change-direction : (Snake Dir . -> . Snake))
+(define (snake-change-direction snk dir)
+  (snake dir
+         (snake-segs snk)))
 
-  ;; Change direction of the world.
-  (: world-change-dir : (World Dir . -> . World))
-  (define (world-change-dir w dir)
-    (world (snake-change-direction (world-snake w) dir)
-           (world-food w)))
+;; Change direction of the world.
+(: world-change-dir : (World Dir . -> . World))
+(define (world-change-dir w dir)
+  (world (snake-change-direction (world-snake w) dir)
+         (world-food w)))
 
-  ;; Eat the food and generate a new one.
-  (: snake-eat : (World . -> . World))
-  (define (snake-eat w)
-    (define i (add1 (random (sub1 BOARD-WIDTH) r)))
-    (define j (add1 (random (sub1 BOARD-HEIGHT) r)))
-    (world (snake-grow (world-snake w))
-           (posn i j)
-                 
-           #;(posn (- BOARD-WIDTH 1) (- BOARD-HEIGHT 1))))
-  (provide
-   world-change-dir
-   world->world))
+;; Eat the food and generate a new one.
+(: snake-eat : (World . -> . World))
+(define (snake-eat w)
+  (define i (add1 (random (sub1 BOARD-WIDTH) r)))
+  (define j (add1 (random (sub1 BOARD-HEIGHT) r)))
+  (world (snake-grow (world-snake w))
+         (posn i j)
+         
+         #;(posn (- BOARD-WIDTH 1) (- BOARD-HEIGHT 1))))
+(provide
+ world-change-dir
+ world->world)
