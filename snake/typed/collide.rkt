@@ -1,7 +1,15 @@
 #lang typed/racket
-(require "data-adaptor.rkt")
-(require "const.rkt"
-         "data.rkt")
+
+(require benchmark-util
+         "data-adaptor.rkt")
+(require/typed/check "const.rkt"
+                     [WORLD (-> World)]
+                     [GRID-SIZE Integer]
+                     [BOARD-HEIGHT-PIXELS (-> Positive-Index)]
+                     [BOARD-WIDTH Integer]
+                     [BOARD-HEIGHT Integer])
+(require/typed/check "data.rkt"
+                     [posn=? (Posn Posn . -> . Boolean)])
 
 ;; Is the snake colliding with any of the walls?
 (: snake-wall-collide? : (Snake . -> . Boolean))

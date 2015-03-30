@@ -6,7 +6,7 @@
   [#:struct posn ([x : Real]
                   [y : Real])]
   [#:struct snake ([dir : Dir]
-                   [segs : NEListof Posn])]
+                   [segs : (NEListof Posn)])]
   [#:struct world ([snake : Snake]
                    [food  : Posn])])
 
