@@ -9,7 +9,6 @@
 (module+ main
   (match (current-command-line-arguments)
     [(vector path)
-     (create-benchmark-dirs "empty")
      (create-benchmark-dirs path)]))
 
 ;; ===================================================================================================
