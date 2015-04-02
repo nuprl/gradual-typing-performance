@@ -14,6 +14,22 @@ import matplotlib.pyplot as plt
 # Z95 is the constant for 95% confidence
 Z95 = 1.96
 
+# Data definition: StatTable
+#   A StatTable summarizes a row from the input spreadsheet.
+# fields:
+# - key : first column from the sheet
+# - num-samples : num. columns - 1
+# - mean, median, min, max, range, std, variance, confidence-interval : computed from column values
+# Implemented as a Python dictionary
+
+# Data definition: BinObject
+#   A BinObject represents data grouped together
+# fields:
+# - count : number of items in bin
+# - data : raw data from the bin
+# - min, max, median : computed stats
+
+# (-> Path-String StatTable)
 def stats_of_tab(fname):
     # Create a list of "statistics" objects, keyed by title from the spreadsheet
     tbl = []
@@ -40,6 +56,7 @@ def stats_of_tab(fname):
             tbl.append(obj)
     return tbl
 
+# (-> StatTable Nat (Listof BinObject))
 def make_bins(tbl, num_bins):
     # Cluster stat objects in `tbl` into `num_bins` buckets.
     # Evenly space the buckets across the interval
@@ -63,6 +80,7 @@ def make_bins(tbl, num_bins):
         bkts.append(b)
     return bkts, ("BINS-%d" % num_bins)
 
+# (-> Path-String (Listof Nat))
 def every_point_in(fname):
     # Collect every single data point in the spreadsheet `fname` as a list of ints
     pts = []
@@ -73,15 +91,19 @@ def every_point_in(fname):
                 pts.append(int(pt))
     return pts
 
+# (-> Path-String Nat)
 def count_lines(fname):
+    # Count the number of lines in a file
     count = -1
     with open(fname, "r") as f:
         for line in f:
             count += 1
     return count
 
+# (-> Path-String String (Listof Nat))
 def get_row(fname, key):
     # Return the integers in the row keyed by `key`
+    # i.e., ignore the first column and parse the rest as Python ints
     with open(fname, "r") as f:
         next(f)
         for line in f:
@@ -90,6 +112,7 @@ def get_row(fname, key):
                 return [int(x) for x in data[1::]]
     raise ValueError("could not find key '%s'" % key)
 
+# (-> (Listof BinObj) Path-String String String)
 def save_graph(data, fname, tag):
     # `data` are the groups (by ID)
     # `fname` is the raw data file
@@ -127,6 +150,7 @@ def save_graph(data, fname, tag):
     plt.clf()
     return new_name
 
+# (-> (Listof BinObj) Path-String String String)
 def save_file(data, fname, tag):
     # Save data to a file, using fname and tag to create a hopefully-unique name.
     new_name = util.gen_name(fname, tag, "tab")
@@ -140,10 +164,12 @@ def save_file(data, fname, tag):
     print("Saved file to '%s'" % new_name)
     return new_name
 
+# (-> (Listof BinObj) Path-String String String)
 def save(data, fname, tag):
     save_graph(data, fname, tag)
     return save_file(data, fname, tag)
 
+# (-> Path-String Void)
 def main(fname):
     # Try grouping by CI and std-dev. Print results and save actual numbers to a file.
     tbl = stats_of_tab(fname)

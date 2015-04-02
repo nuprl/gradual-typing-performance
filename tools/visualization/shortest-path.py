@@ -71,7 +71,7 @@ def positions_of_file(fname):
             posn[key] = (i_level[num_ones], 2 * len(key) * num_ones)
     return posn, (max_x + len(key))
 
-# (-> String Graph (Listof Edge) Node Void)
+# (-> String Graph (Listof Edge) Node String)
 def save_path(fname, g, path):
     ## Save a picture of the graph g, with `path` highlighted
     new_name = util.gen_name(fname, "dijkstra", "png")
@@ -125,7 +125,7 @@ def sum_runtime(path,g):
     f = lambda x, y: x + y
     return fold_edge_weights(f, 0, path, g)
 
-# (-> (-> (Sequenceof Edge)) Graph Path-String String Nat (-> (Listof Edge) Graph Nat) Void)
+# (-> (-> (Sequenceof Edge)) Graph Path-String String Nat (-> (Listof Edge) Graph Nat) String)
 def save_all_paths(gen_paths, g, fname, tag, num_bins, measure):
     # Create a histogram of all paths in the graph, save it to `fname`
     plt.xlabel("Runtime (ms)")
@@ -156,7 +156,7 @@ def save_all_paths(gen_paths, g, fname, tag, num_bins, measure):
     plt.clf()
     return new_name
 
-# (-> (Sequenceof (List (Sequenceof Edge) (Sequenceof Nat))) String Void)
+# (-> (Sequenceof (List (Sequenceof Edge) (Sequenceof Nat))) String String)
 def save_runtimes(path_and_time, fname):
     # Save a spreadsheet of runtimes
     with open(fname, "w") as f:
