@@ -7,9 +7,10 @@ import statistics
 import sys
 import networkx as nx
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('Agg') # Disable the display, does not affect graph generation
 import matplotlib.pyplot as plt
 
+# (-> String (Listof String))
 def prev_keys(key):
     # `key` is a bitstring
     # Return all bitstrings reachable by decrementing any
@@ -20,6 +21,7 @@ def prev_keys(key):
             prevs.append("".join((key[j] if j != i else '0' for j in range(0, len(key)))))
     return prevs
 
+# (-> Path-String Graph)
 def graph_of_file(fname):
     # Read `fname` as a networkx graph
     # Edge weights are the avg. runtime of target config
@@ -44,14 +46,7 @@ def graph_of_file(fname):
     oned = "".join(("1" for _ in title))
     return g, zerod, oned
 
-
-def count_ones(s):
-    # Count the number of "1" in a bitstring
-    return sum((1 for c in s if c == "1"))
-
-def pos_of_str(s):
-    return [num_swaps(s), count_ones(s)]
-
+# (-> String (Dict String (List Nat Nat)))
 def positions_of_file(fname):
     # Build up a dictionary of "bitstring->(x,y)"
     # x position = among configs on same level, 0 1 -1 2 -2 3 ...
@@ -76,7 +71,8 @@ def positions_of_file(fname):
             posn[key] = (i_level[num_ones], 2 * len(key) * num_ones)
     return posn, (max_x + len(key))
 
-def save_path(fname, g, path, start):
+# (-> String Graph (Listof Edge) Node Void)
+def save_path(fname, g, path):
     ## Save a picture of the graph g, with `path` highlighted
     new_name = util.gen_name(fname, "dijkstra", "png")
     positions, max_x = positions_of_file(fname)
@@ -102,6 +98,7 @@ def save_path(fname, g, path, start):
     print("Saved graph to '%s'" % new_name)
     return new_name
 
+# (All (A) (-> (-> A Edge A) A (Listof Edge) Graph A))
 def fold_edge_weights(f, acc, path, g):
     # For building measures: call `f` with accumulator and edge weight
     prev = None
@@ -111,21 +108,26 @@ def fold_edge_weights(f, acc, path, g):
         prev = node
     return acc
 
+# (-> (Listof Edge) Graph Nat)
 def min_runtime(path, g):
     # Measure: Return the min of all weights in path
     init = g.get_edge_data(path[0], path[1])["weight"]
     return fold_edge_weights(min, init, path, g)
 
+# (-> (Listof Edge) Graph Nat)
 def max_runtime(path, g):
     # Measure: Return the max of all weights in path
     return fold_edge_weights(max, 0, path, g)
 
+# (-> (Listof Edge) Graph Nat)
 def sum_runtime(path,g):
     # Measure: Return the sum of all edge weights in path
     f = lambda x, y: x + y
     return fold_edge_weights(f, 0, path, g)
 
+# (-> (-> (Sequenceof Edge)) Graph Path-String String Nat (-> (Listof Edge) Graph Nat) Void)
 def save_all_paths(gen_paths, g, fname, tag, num_bins, measure):
+    # Create a histogram of all paths in the graph, save it to `fname`
     plt.xlabel("Runtime (ms)")
     plt.ylabel("Num. Paths")
     plt.title("%s-%s" % (fname.rsplit(".", 1)[0].rsplit("/", 1)[-1], tag))
@@ -154,7 +156,9 @@ def save_all_paths(gen_paths, g, fname, tag, num_bins, measure):
     plt.clf()
     return new_name
 
+# (-> (Sequenceof (List (Sequenceof Edge) (Sequenceof Nat))) String Void)
 def save_runtimes(path_and_time, fname):
+    # Save a spreadsheet of runtimes
     with open(fname, "w") as f:
         f.write("Measure\tPath\n")
         for (path, time) in path_and_time:
@@ -165,6 +169,7 @@ def save_runtimes(path_and_time, fname):
     print("Saved data to '%s'" % fname)
     return fname
 
+# (-> String Void)
 def main(fname):
     # Read fname as a networkx graph
     # Each key is a node, has edges to all keys +1 bit away
@@ -172,13 +177,13 @@ def main(fname):
     g, bot, top = graph_of_file(fname)
     ## Compute shortest path
     p1 = nx.dijkstra_path(g, bot, top)
-    print("Shortest path is: %s" % p1)
-    save_path(fname, g, p1, bot)
+    print("Shortest path (SUM) is: %s" % p1)
+    save_path(fname, g, p1)
     ## Compute all paths
     gen_paths = lambda: nx.all_simple_paths(g, bot, top)
     for n in [20]:#5, 10, 15, 20]:
         save_all_paths(gen_paths, g, fname, "PATH-SUM-%s" % n, n, sum_runtime)
-        save_all_paths(gen_paths, g, fname, "PATH-MIN-%s" % n, n, min_runtime)
+        #save_all_paths(gen_paths, g, fname, "PATH-MIN-%s" % n, n, min_runtime)
         save_all_paths(gen_paths, g, fname, "PATH-MAX-%s" % n, n, max_runtime)
     print("All done")
 
