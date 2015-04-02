@@ -3,7 +3,7 @@ Instructions on setting up an experiment
 
 The steps that you need to take to set up an experiment are:
 
-  * Install the "tools/benchmark-utils" package.
+  * Install the "tools/benchmark-util" package.
   * Set up your project with a particular directory layout.
   * Modify typed modules to require and use `require/typed/check`
   * Run setup.rkt to generate all typed/untyped variations.
@@ -23,7 +23,7 @@ modules, and so on.
 Install package
 ---------------
 
-Run `raco pkg install tools/benchmark-utils`
+Run `raco pkg install tools/benchmark-util`
 
 Directory layout
 ----------------
