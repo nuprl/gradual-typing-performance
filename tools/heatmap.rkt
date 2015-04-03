@@ -78,9 +78,12 @@
                                   min max))
          (vector-set! pict-vec num pict)
          pict))))
-  (define pict (vc-append 10
-                          (frame (apply vc-append 0 level-picts))
-                          (text (format "~a" data-path))))
+  (define diagram (vc-append 10
+                             (frame (apply vc-append 0 level-picts))
+                             (text (format "~a" data-path))))
+  (define pict (cc-superimpose diagram
+                               (blank (+ (pict-width diagram) 20)
+                                      (+ (pict-height diagram) 20))))
 
   (send (pict->bitmap pict)
         save-file
