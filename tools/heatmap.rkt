@@ -53,7 +53,12 @@
     (raise-user-error 'heatmap "input data in the wrong format"))
 
   (define averaged-results
-    (vector-map (λ (times) (cons (mean times) (stddev times))) results))
+    (vector-map (λ (times)
+                  ;; allow old style data too
+                  (if (list? times)
+                      (cons (mean times) (stddev times))
+                      times))
+                results))
 
   (define min (car (vector-argmin car averaged-results)))
   (define max (car (vector-argmax car averaged-results)))
