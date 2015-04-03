@@ -73,7 +73,9 @@
                                   min max))
          (vector-set! pict-vec num pict)
          pict))))
-  (define pict (apply vc-append 0 level-picts))
+  (define pict (vc-append 10
+                          (frame (apply vc-append 0 level-picts))
+                          (text (format "~a" data-path))))
 
   (send (pict->bitmap pict)
         save-file
