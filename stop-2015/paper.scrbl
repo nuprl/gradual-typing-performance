@@ -168,8 +168,8 @@ programs.
 @section{Conclusion}
 
 Runtime overhead for gradually-typed programs is a pressing concern as gradual typing
-is adopted both by researchers and by industrial groups. However, there are open
-questions in both diagnosing where these overheads occur and in solving them.
+is adopted both by researchers and by industrial groups@note{For example, Hack for PHP and Flow for JavaScript}.
+However, there are open questions in both diagnosing where these overheads occur and in solving them.
 We propose an idea for a methodology
 for diagnosing such overheads by visualizing how adding types to existing programs affects the runtime
 along various gradual typing paths. Using the diagnostic information, we hope to
