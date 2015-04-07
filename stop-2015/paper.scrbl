@@ -119,7 +119,7 @@ lattice (the fully typed program) may still have run-time overhead.
 Paths in the graph that start from the bottom correspond to the timeline
 of a hypothetical programmer who is adding types to the program.
 Ideally, most configurations of the program have reasonable overhead.
-In practice, however, many portions of the lattice will contain regions of poor
+In practice, however, large portions of the lattice will contain regions of poor
 performance due to, for example,
 tightly coupled modules with dynamic checks on the boundary.
 
