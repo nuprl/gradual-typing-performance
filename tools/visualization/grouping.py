@@ -1,5 +1,7 @@
 """ grouping.py
 Group data points by confidence interval & standard deviation.
+
+TODO add 'thermometer' picture that projects counts as 'hot' colors, instead of 2-d histogram?
 """
 import util
 import math
