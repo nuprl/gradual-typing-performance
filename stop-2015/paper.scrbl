@@ -123,6 +123,9 @@ Ideally, most configurations of the program have reasonable overhead.
 In practice, however, large portions of the lattice will contain regions of poor
 performance due to, for example,
 tightly coupled modules with dynamic checks on the boundary.
+Base on these lattices, we hope to understand to what degree programs
+suffer from these regions of poor performance and what kinds of
+typed-untyped boundaries are especially problematic.
 
 As a first attempt, several of the authors worked on a small-scale
 version of this approach in @citet[tfdffthf-ecoop-2015] in the context of
