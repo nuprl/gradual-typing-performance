@@ -86,7 +86,7 @@ separate compilation within gradually typed programs.
      (scale (make-performance-lattice vec*) 0.7))
 }
 
-This is in contract to the @emph{micro}-level approach, in which typed and
+This is in contrast with the @emph{micro}-level approach, in which typed and
 untyped code is mixed freely in a program. Variables without type annotations
 are assigned the type @tt{Dyn}. These variables induce casts when typed
 portions of the program expect more specific types. We comment on the difficulties
