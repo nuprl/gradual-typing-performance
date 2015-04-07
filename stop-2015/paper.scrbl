@@ -72,7 +72,8 @@ intermediate states in which some parts of the program are typed and others are
 untyped. The specific granularity of these type annotated sections depends on
 the gradual type system.
 
-For our evaluation, we focus on Typed Racket because of its
+For our evaluation, we focus on Typed Racket---a gradually typed sister language
+to Racket---because of its
 maturity as a gradual type system (it has been in development since 2006).
 Typed Racket is a @emph{macro}-level gradual type system, which means
 that types are added to the program at module granularity and dynamic checks
