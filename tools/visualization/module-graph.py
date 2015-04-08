@@ -9,7 +9,7 @@ Checklist:
 - [X] create one module graph
 - [X] label edges by num unacceptable configs active in
 - [X] label edges by avg, med runtime
-- [ ] repeat for all files
+- [X] repeat for all files
 - [ ] more clever label representations
 - [ ] typed vs untyped
 - [ ] try representing / identifying clusters
@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 ### constants
 
 # Factor away from minumum runtime a path must be to be considered "unacceptably bad"
-UNACCEPTABLE = 10
+UNACCEPTABLE = 20
 # Separator for input files
 SEP = "\t"
 
@@ -54,9 +54,9 @@ def _check_colnames(col_names, fname):
 def _check_col(values):
     # Check that column values are well-formed.
     # If so, return the parsed values.
-    len_ok = len(values) == 3
+    len_ok = 1 < len(values) < 4 # Expecting 2-3 columns (requires are optional)
     if not len_ok:
-        raise ValueError("expected 3 columns in row, got %d columns" % len(values))
+        raise ValueError("expected 2 or 3 columns in row, got %d columns" % len(values))
     module_name = values[0]
     if not module_name.endswith(".rkt"):
         raise ValueError("expected module name to end with '.rkt', instead got '%s'" % module_name)
@@ -65,9 +65,11 @@ def _check_col(values):
         index = int(values[1])
     except ValueError:
         raise ValueError("expected integer INDEX, got %s" % values[1])
-    requires = values[2].split(",")
+    requires = values[2].split(",") if len(values) == 3 else []
     if not (all((rq.endswith(".rkt") for rq in requires))):
         raise ValueError("expected each REQUIRE to be a .rkt filename, instead got '%s'" % requires)
+    if not(bool(requires)):
+        print("WARNING: module '%s' has no requires" % values[0])
     return [module_name, index, requires]
 
 ### core functions
@@ -128,13 +130,45 @@ def edge_labels_by_runtime(g, fname, agg_f):
         labels[(u,v)] = int(agg_f(runtimes))
     return labels
 
+def gen_positions(g, tag, edge_labels):
+    # Generate positions for nodes in a graph
+    # f_layout = nx.spring_layout
+    f_layout = nx.spectral_layout
+    pos = None
+    if edge_labels is not None:
+        for (i,j), val in edge_labels.items():
+            g.add_edge(i,j, tag = val)
+        pos = f_layout(g, weight=tag)
+    else:
+        pos = f_layout(g)
+    return pos
+
+def gen_widths(g, tag, edge_labels):
+    # Return a dictionary of edges -> weights, or a natural
+    if edge_labels is None:
+        return 1
+    # Get max/min, each weight is the values % of max
+    min_w, max_w = None, None
+    for (i,j),w in edge_labels.items():
+        min_w = min(min_w, w) if min_w else w
+        max_w = max(max_w, w) if max_w else w
+    widths = {}
+    for (i,j),w in edge_labels.items():
+        widths[(i,j)] = int(100 * ((w - min_w) / (max_w - min_w)))
+    return widths
+
 def save_graph(g, fname, tag, edge_labels=None):
     new_name = util.gen_name(fname, tag, "png")
     plt.title(new_name.rsplit(".", 1)[0].rsplit("/", 1)[-1])
-    # pos = nx.spring_layout(g)
-    pos = nx.spectral_layout(g)
+    pos = gen_positions(g, tag, edge_labels)
     nx.draw_networkx_nodes(g, pos, node_color="b", node_size=1000, alpha=0.6)
-    nx.draw_networkx_edges(g, pos, width=1, alpha=0.5)
+    # wds = gen_widths(g, tag, edge_labels)
+    # keys, vals = [], []
+    # for k,v in wds.items():
+    #     keys.append(k)
+    #     vals.append(v)
+    # nx.draw(g, pos, edges=keys, weight=vals, alpha=0.5) # UH OH not associating edges with the right weights
+    nx.draw_networkx_edges(g, pos, alpha=0.5)
     labels = dict(( (str(node), str(node) ) for node in g.nodes_iter()))
     nx.draw_networkx_labels(g, pos, labels)
     if edge_labels is not None:
@@ -150,13 +184,14 @@ def main(fname, graph_name):
     g = module_graph_init(graph_name)
     ## Simple measures
     # - normal, boring module graph
-    save_graph(g,fname,"modules")
+    # save_graph(g,fname,"modules")
     # - Label edges by mean, median runtimes
     el_mean = edge_labels_by_runtime(g, fname, statistics.mean)
     save_graph(g,fname,"edges-avg", el_mean)
     el_median = edge_labels_by_runtime(g, fname, statistics.median)
     save_graph(g,fname,"edges-med", el_median)
     # - Label edges by number of 'unacceptable' configs they're in
+    # (seeming like a dead-end the number is just A LOT -- ah nvm, just need a better layout)
     unacceptable = gen_unacceptable(fname)
     unaccept_measure = lambda xs: sum((1 for x in xs if unacceptable(x)))
     el_badconfs = edge_labels_by_runtime(g, fname, unaccept_measure)
