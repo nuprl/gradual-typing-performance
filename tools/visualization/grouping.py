@@ -93,15 +93,6 @@ def every_point_in(fname):
                 pts.append(int(pt))
     return pts
 
-# (-> Path-String Nat)
-def count_lines(fname):
-    # Count the number of lines in a file
-    count = -1
-    with open(fname, "r") as f:
-        for line in f:
-            count += 1
-    return count
-
 # (-> Path-String String (Listof Nat))
 def get_row(fname, key):
     # Return the integers in the row keyed by `key`
@@ -123,7 +114,7 @@ def save_graph(data, fname, tag):
     plt.xlabel("Avg. Runtime (ms)", )
     plt.ylabel("Num. Configs")
     plt.title(new_name.rsplit(".", 1)[0].rsplit("/", 1)[-1])
-    num_configs = count_lines(fname) - 1
+    num_configs = util.count_lines(fname) - 1
     bin_width = data[0]["max"] - data[0]["min"]
     # Plot bins
     for bkt in data:
