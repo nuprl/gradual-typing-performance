@@ -164,8 +164,8 @@ through the state space using techniques such as Feature-specific
 Profiling@~cite[saf-cc-2015] with contracts/casts as the target feature.
 
 We also intend to investigate the use of tracing JIT compilation based on the Pycket
-work by @citet[bauman-et-al-icfp-2015]. The Pycket authors report dramatic reductions
-in contract checking overhead in untyped Racket programs. We are interested in seeing
+work by @citet[fbpsth-dyla-2014]. The Pycket authors report dramatic reductions
+in contract checking overhead in untyped Racket programs@~cite[bauman-et-al-icfp-2015]. We are interested in seeing
 if tracing also benefits the kinds of contract usages that we see in gradually typed
 programs.
 

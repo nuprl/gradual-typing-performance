@@ -59,6 +59,7 @@
 (define/short ml-workshop "ML Workshop")
 (define/short sac "SAC" (string-append Symposium "on Applied Computing"))
 (define/short gpce "GPCE" "Generative Programming: Concepts & Experiences")
+(define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications"))
 
 ;; ----------------------------------------
 
@@ -963,6 +964,14 @@
 
 ;; ----------------------------------------
 ; Pycket
+
+(define fbpsth-dyla-2014
+  (make-bib
+   #:author (authors "Carl Friedrich Bolz" "Tobias Pape"
+                     "Jeremy G. Siek" "Sam Tobin-Hochstadt")
+   #:title "Meta-tracing makes a fast Racket"
+   #:location (proceedings-location dyla)
+   #:date 2014))
 
 (define bauman-et-al-icfp-2015
   (make-bib
