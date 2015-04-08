@@ -126,53 +126,66 @@ def edge_labels_by_runtime(g, fname, agg_f):
                 title = rows[0]
                 # If this edge is a typed/untyped boundary...
                 if title[index1] != title[index2]:
-                    runtimes.extend([int(x) for x in rows[1::]])
+                    runtimes.append(statistics.mean([int(x) for x in rows[1::]]))
         labels[(u,v)] = int(agg_f(runtimes))
     return labels
 
 def gen_positions(g, tag, edge_labels):
     # Generate positions for nodes in a graph
     # f_layout = nx.spring_layout
-    f_layout = nx.spectral_layout
-    pos = None
-    if edge_labels is not None:
-        for (i,j), val in edge_labels.items():
-            g.add_edge(i,j, tag = val)
-        pos = f_layout(g, weight=tag)
-    else:
-        pos = f_layout(g)
+    # f_layout = nx.spectral_layout
+    # pos = None
+    # if edge_labels is not None:
+    #     for (i,j), val in edge_labels.items():
+    #         g.add_edge(i,j, tag = val)
+    #     pos = f_layout(g, weight=tag)
+    # else:
+    #     pos = f_layout(g)
+    pos = nx.circular_layout(g, scale=1)
+    # pos = nx.random_layout(g)
+    # pos = nx.shell_layout(g, scale=1)
     return pos
 
-def gen_widths(g, tag, edge_labels):
-    # Return a dictionary of edges -> weights, or a natural
-    if edge_labels is None:
-        return 1
-    # Get max/min, each weight is the values % of max
-    min_w, max_w = None, None
-    for (i,j),w in edge_labels.items():
-        min_w = min(min_w, w) if min_w else w
-        max_w = max(max_w, w) if max_w else w
-    widths = {}
-    for (i,j),w in edge_labels.items():
-        widths[(i,j)] = int(100 * ((w - min_w) / (max_w - min_w)))
+# def old_gen_widths(g, tag, edge_labels):
+#     # Get max/min, each weight is the values % of max
+#     min_w, max_w = None, None
+#     for _,w in edge_labels.items():
+#         min_w = min(min_w, w) if min_w else w
+#         max_w = max(max_w, w) if max_w else w
+#     edges = []
+#     widths = []
+#     for (i,j),w in edge_labels.items():
+#         edges.append((i,j))
+#         widths.append(int(100 * ((w - min_w) / (max_w - min_w))))
+#     return edges, widths
+
+def widths_by_pct(g, tag, edge_labels, divisor):
+    widths = []
+    for (i,j) in g.edges_iter():
+        lbl = edge_labels.get((i,j), None)
+        if lbl is not None:
+            weight = lbl / divisor
+            pct = int(100 * weight)
+            widths.append(int(pct / 2))
     return widths
 
 def save_graph(g, fname, tag, edge_labels=None):
     new_name = util.gen_name(fname, tag, "png")
     plt.title(new_name.rsplit(".", 1)[0].rsplit("/", 1)[-1])
     pos = gen_positions(g, tag, edge_labels)
+    ## draw nodes & labels
     nx.draw_networkx_nodes(g, pos, node_color="b", node_size=1000, alpha=0.6)
-    # wds = gen_widths(g, tag, edge_labels)
-    # keys, vals = [], []
-    # for k,v in wds.items():
-    #     keys.append(k)
-    #     vals.append(v)
-    # nx.draw(g, pos, edges=keys, weight=vals, alpha=0.5) # UH OH not associating edges with the right weights
-    nx.draw_networkx_edges(g, pos, alpha=0.5)
-    labels = dict(( (str(node), str(node) ) for node in g.nodes_iter()))
-    nx.draw_networkx_labels(g, pos, labels)
+    node_labels = dict(( (str(node), str(node) ) for node in g.nodes_iter()))
+    nx.draw_networkx_labels(g, pos, node_labels)
+    ## draw edges & labels
     if edge_labels is not None:
-        nx.draw_networkx_edge_labels(g, pos, edge_labels, label_pos=0.5)
+        ws = widths_by_pct(g, tag, edge_labels, util.count_lines(fname) -1)
+        print("widths are %s" % ws)
+        nx.draw_networkx_edges(g, pos, alpha=0.5, arrows=False, width=ws) # UH OH not associating edges with the right weights
+        nx.draw_networkx_edge_labels(g, pos, edge_labels, label_pos=0.2)
+    else:
+        nx.draw_networkx_edges(g, pos, alpha=0.5, arrows=False)
+    ## Save figure
     plt.axis("off")
     plt.savefig(new_name)
     plt.clf()
@@ -183,15 +196,14 @@ def main(fname, graph_name):
     # Create a module graph, build & save figures
     g = module_graph_init(graph_name)
     ## Simple measures
-    # - normal, boring module graph
+    ### normal, boring module graph
     # save_graph(g,fname,"modules")
-    # - Label edges by mean, median runtimes
-    el_mean = edge_labels_by_runtime(g, fname, statistics.mean)
-    save_graph(g,fname,"edges-avg", el_mean)
-    el_median = edge_labels_by_runtime(g, fname, statistics.median)
-    save_graph(g,fname,"edges-med", el_median)
-    # - Label edges by number of 'unacceptable' configs they're in
-    # (seeming like a dead-end the number is just A LOT -- ah nvm, just need a better layout)
+    ### Label edges by mean, median runtimes
+    # el_mean = edge_labels_by_runtime(g, fname, statistics.mean)
+    # save_graph(g,fname,"edges-avg", el_mean)
+    # el_median = edge_labels_by_runtime(g, fname, statistics.median)
+    # save_graph(g,fname,"edges-med", el_median)
+    ### Label edges by number of 'unacceptable' configs they're in
     unacceptable = gen_unacceptable(fname)
     unaccept_measure = lambda xs: sum((1 for x in xs if unacceptable(x)))
     el_badconfs = edge_labels_by_runtime(g, fname, unaccept_measure)
