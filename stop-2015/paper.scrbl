@@ -181,7 +181,7 @@ programs.
 @section{Conclusion}
 
 Runtime overhead for gradually-typed programs is a pressing concern.
-Industrial groups@note{For example, Hack for PHP and Flow for JavaScript}
+Industrial groups@note{For example, Hack for PHP and Flow for JavaScript.}
 continue to adopt unsound interoperation citing performance concerns with run-time checks.
 However, there are open questions in both diagnosing where these overheads occur and in solving them.
 Here we propose a framework

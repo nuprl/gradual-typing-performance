@@ -979,5 +979,5 @@
                      "Vasily Kirilichev" "Tobias Pape" "Jeremy G. Siek"
                      "Sam Tobin-Hochstadt")
    #:title "Pycket: A Tracing JIT For a Functional Language"
-   #:location "in submission"
+   #:location "In submission"
    #:date 2015))
