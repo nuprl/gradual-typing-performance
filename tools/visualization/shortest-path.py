@@ -144,8 +144,9 @@ def save_all_paths(gen_paths, g, fname, tag, num_bins, measure):
                ,width=bkt_width)
     # Max, Min, Median path lines
     plt.axvline(med_runtime, color="k", linestyle="solid", linewidth=5, label="median = %s" % int(med_runtime))
-    plt.axvline(min_runtime, color="g", linestyle="dashed", linewidth=5, label="min = %s" % int(min_runtime))
-    plt.axvline(max_runtime, color="r", linestyle="dotted", linewidth=5, label="max = %s" % int(max_runtime))
+    # invisible lines
+    plt.axvline(min_runtime, alpha=0, color="0", linestyle="dashed", linewidth=0, label="min = %s" % int(min_runtime))
+    plt.axvline(max_runtime, alpha=0, color="0", linestyle="dotted", linewidth=0, label="max = %s" % int(max_runtime))
     # Save figure
     new_name = util.gen_name(fname, tag, "png")
     lgd = plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
