@@ -94,7 +94,7 @@ Typed Racket does not need to instrument untyped modules at all, which enables
 separate compilation within gradually typed programs.
 
 @figure["lattice-example" "Lattice example with five modules"]{
-  @(let* ([vec (file->value "zordoz-all-runs.rktd")]
+  @(let* ([vec (file->value "zordoz-2015-04-09.rktd")]
           [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
      (scale (make-performance-lattice vec*) 0.7))
 }
