@@ -7,6 +7,9 @@ import math
 import statistics
 import sys
 import modulegraph
+import matplotlib
+matplotlib.use('Agg') # Disable the display, does not affect graph generation
+import matplotlib.pyplot as plt
 
 def dict_of_file(gname):
     # Generate a dictionary-graph from a .graph file
@@ -86,8 +89,35 @@ def profile_group(fname, gname, *group):
     # Get information about the modules `group` with respect to the other files.
     # TODO
     group = list(group)
+    d = dict_of_file(gname)
     print("Profiling group '%s'" % group)
-    raise NotImplementedError("bear")
+    print("Key:")
+    with open(gname, "r") as f:
+        next(f)
+        for line in f:
+            print("  " + line.strip())
+    tr_list = [(title, int(statistics.mean(row))) for (title, row) in rows_where_group_is_boundary(fname, group, d)]
+    tr_list.sort(key=lambda x:x[1])
+    for title, val in tr_list:
+        print("Config '%s' has avg. runtime %d" % (title, val))
+    ## Plot bar graph
+    wd = 200
+    num_bars = len(tr_list)
+    ind = [i * wd for i in range(0, num_bars)]
+    xlabels = [x[0] for x in tr_list]
+    xvals = [x[1] for x in tr_list]
+    plt.axis([0, wd * (num_bars-1), 0, max(xvals)])
+    fig,ax = plt.subplots()
+    ax.bar(ind, xvals, width=100)
+    ax.set_xticks(ind)
+    ax.set_xticklabels(xlabels)
+    fig.set_size_inches(25,10)
+    plt.xlabel("Config. (%s)" % (sorted([(key, int(val[0])) for (key, val) in d.items()], key=lambda x:x[1])))
+    plt.ylabel("Avg. Runtime (ms)")
+    plt.title("%s, where group %s is a boundary" % (fname.rsplit("/", 1)[-1], group))
+    plt.savefig("foo.png")
+    plt.clf()
+    return
 
 if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1].endswith(".tab") and sys.argv[2].endswith(".graph"):
