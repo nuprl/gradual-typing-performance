@@ -13,6 +13,17 @@
 
 @title{Position Paper: Performance Evaluation for Gradual Typing}
 
+@abstract{
+Gradually typed programming languages aim to improve software maintenance
+by allowing programmers to selectively add type annotations to untyped programs.
+Run-time checks ensure that these typed portions interact soundly with
+unannotated parts of the program. These checks, however,
+may introduce unacceptable performance overhead.
+The extent of the overhead has not been systematically studied and no common
+methodology exists to diagnose such problems. In this position paper, we propose
+an idea for a framework for evaluating the performance of a gradual type system.
+}
+
 @section{The Gradual Typing Promise}
 
 Gradually typed programming languages promise to improve software maintenance
