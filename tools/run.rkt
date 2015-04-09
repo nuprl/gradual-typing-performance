@@ -40,12 +40,22 @@
   (for ([(var var-idx) (in-indexed (in-list variations))])
     (define-values (new-cwd file _2) (split-path var))
     (define times null)
-    (for ([i (in-range iters)])
-      (printf "iteration #~a of ~a~n" i var)
-      ;; FIXME: use benchmark library
-      (parameterize ([current-directory new-cwd])
-        (system (string-append "raco make -v " (path->string file)))
-        (unless (only-compile?)
+
+    (parameterize ([current-directory new-cwd])
+      ;; first compile the variation
+      (system (string-append "raco make -v " (path->string file)))
+
+      ;; run an extra run of the variation to throw away in order to avoid
+      ;; OS caching issues
+      (unless (only-compile?)
+        (displayln "throwaway build/run to avoid OS caching")
+        (process (format "racket ~a" (path->string file))))
+
+      ;; run the iterations that will count for the data
+      (unless (only-compile?)
+        (for ([i (in-range iters)])
+          (printf "iteration #~a of ~a~n" i var)
+          ;; FIXME: use benchmark library
           (define command `(time (dynamic-require ,(path->string file) #f)))
           (match-define (list in out pid err proc)
             (process (format "racket -e '~s'" command)
