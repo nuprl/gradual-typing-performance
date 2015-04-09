@@ -15,26 +15,16 @@ each edge is a boundary.
 Aggregate Runtimes
 ------------------
 
-tetris
-min time is 482, max time is 698
++------------+----------+----------+
+| Project    | Min Time | Max Time |
++------------+----------+----------+
+| echo       |     1888 |     2117 |
+| funkytown  |      334 |    14363 |
+| mbta       |   202842 |   318210 |
+| morse-code |      189 |      335 |
+| sieve      |     6810 |   699519 |
+| suffixtree |     2003 |   300812 |
+| tetris     |      482 |      698 |
+| zordoz     |      576 |     2126 |
++------------+----------+----------+
 
-morse code
-min time is 189, max time is 335
-
-funkytown
-min time is 334, max time is 14363
-
-zordoz
-min time is 576, max time is 2126
-
-suffixtree
-min time is 2003, max time is 300812
-
-echo
-min time is 1888, max time is 2117
-
-sieve
-min time is 6810, max time is 699519
-
-mbta
-min time is 202842, max time is 318210
