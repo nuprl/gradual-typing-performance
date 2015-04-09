@@ -236,5 +236,5 @@ if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1].endswith(".tab") and sys.argv[2].endswith(".graph"):
         main(sys.argv[1], sys.argv[2])
     else:
-        print("Usage: module-graph.py FILE.tab FILE.graph")
+        print("Usage: modulegraph.py FILE.tab FILE.graph")
 
