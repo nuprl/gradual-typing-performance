@@ -72,9 +72,19 @@ def _check_col(values):
         print("WARNING: module '%s' has no requires" % values[0])
     return [module_name, index, requires]
 
-### core functions
+# (-> Path-String Nat)
+def max_runtime(fname):
+    max_time = 0
+    with open(fname, "r") as f:
+        next(f)
+        for line in f:
+            data = [int(x) for x in line.strip().split(SEP)[1::]]
+            runtime = statistics.mean(data)
+            max_time = max(max_time, runtime)
+    return max_time
 
-def gen_unacceptable(fname):
+# (-> Path-String Nat)
+def min_runtime(fname):
     min_time = None
     with open(fname, "r") as f:
         next(f)
@@ -82,6 +92,12 @@ def gen_unacceptable(fname):
             data = [int(x) for x in line.strip().split(SEP)[1::]]
             runtime = statistics.mean(data)
             min_time = runtime if min_time is None else min(min_time, runtime)
+    return min_time
+
+### core functions
+
+def gen_unacceptable(fname):
+    min_time = min_runtime(fname)
     very_bad_runtime = min_time * UNACCEPTABLE
     return (lambda x: x > very_bad_runtime)
 
@@ -159,17 +175,15 @@ def gen_positions(g, tag, edge_labels):
 #         widths.append(int(100 * ((w - min_w) / (max_w - min_w))))
 #     return edges, widths
 
-def widths_by_pct(g, tag, edge_labels, divisor):
+def widths_by_pct(g, tag, edge_labels, f):
     widths = []
     for (i,j) in g.edges_iter():
         lbl = edge_labels.get((i,j), None)
         if lbl is not None:
-            weight = lbl / divisor
-            pct = int(100 * weight)
-            widths.append(int(pct / 2))
+            widths.append(f(lbl))
     return widths
 
-def save_graph(g, fname, tag, edge_labels=None):
+def save_graph(g, fname, tag, edge_labels=None, edge_widths=None):
     new_name = util.gen_name(fname, tag, "png")
     plt.title(new_name.rsplit(".", 1)[0].rsplit("/", 1)[-1])
     pos = gen_positions(g, tag, edge_labels)
@@ -177,14 +191,14 @@ def save_graph(g, fname, tag, edge_labels=None):
     nx.draw_networkx_nodes(g, pos, node_color="b", node_size=1000, alpha=0.6)
     node_labels = dict(( (str(node), str(node) ) for node in g.nodes_iter()))
     nx.draw_networkx_labels(g, pos, node_labels)
-    ## draw edges & labels
-    if edge_labels is not None:
-        ws = widths_by_pct(g, tag, edge_labels, util.count_lines(fname) -1)
-        print("widths are %s" % ws)
-        nx.draw_networkx_edges(g, pos, alpha=0.5, arrows=False, width=ws) # UH OH not associating edges with the right weights
-        nx.draw_networkx_edge_labels(g, pos, edge_labels, label_pos=0.2)
+    ## draw edges (optionally with widths)
+    if edge_widths is not None:
+        nx.draw_networkx_edges(g, pos, edge_color='k', alpha=0.5, arrows=False, width=edge_widths)
     else:
-        nx.draw_networkx_edges(g, pos, alpha=0.5, arrows=False)
+        nx.draw_networkx_edges(g, pos, edge_color='k', alpha=0.5, arrows=False)
+    ## draw edge labels
+    if edge_labels is not None:
+        nx.draw_networkx_edge_labels(g, pos, edge_labels, label_pos=0.2)
     ## Save figure
     plt.axis("off")
     plt.savefig(new_name)
@@ -195,19 +209,26 @@ def save_graph(g, fname, tag, edge_labels=None):
 def main(fname, graph_name):
     # Create a module graph, build & save figures
     g = module_graph_init(graph_name)
+    min_time = min_runtime(fname)
+    max_time = max_runtime(fname)
+    print("min time is %d, max time is %d" % (min_time, max_time))
     ## Simple measures
     ### normal, boring module graph
     # save_graph(g,fname,"modules")
     ### Label edges by mean, median runtimes
-    # el_mean = edge_labels_by_runtime(g, fname, statistics.mean)
-    # save_graph(g,fname,"edges-avg", el_mean)
+    tag = "edges-avg"
+    el_mean = edge_labels_by_runtime(g, fname, statistics.mean)
+    ew_mean = widths_by_pct(g, tag, el_mean, lambda x: int(x / min_time))
+    save_graph(g,fname, tag, el_mean, ew_mean)
     # el_median = edge_labels_by_runtime(g, fname, statistics.median)
     # save_graph(g,fname,"edges-med", el_median)
     ### Label edges by number of 'unacceptable' configs they're in
-    unacceptable = gen_unacceptable(fname)
-    unaccept_measure = lambda xs: sum((1 for x in xs if unacceptable(x)))
-    el_badconfs = edge_labels_by_runtime(g, fname, unaccept_measure)
-    save_graph(g, fname, "edges-over-%d" % UNACCEPTABLE, el_badconfs)
+    # unacceptable = gen_unacceptable(fname)
+    # unaccept_measure = lambda xs: sum((1 for x in xs if unacceptable(x)))
+    # tag = "edges-over-%d" % UNACCEPTABLE
+    # el_badconfs = edge_labels_by_runtime(g, fname, unaccept_measure)
+    # ew_badconfs = widths_by_pct(g, tag, el_badconfs, lambda x: x / util.count_lines(fname) -1)
+    # save_graph(g, fname, tag, el_badconfs, ew_badconfs)
     ## More interesting measures: TODO
     return None
 
