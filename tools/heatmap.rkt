@@ -6,11 +6,13 @@
          racket/cmdline
          racket/draw
          racket/match
+         racket/math
          racket/vector
          data/bit-vector
          math/number-theory
          math/statistics
-         pict)
+         pict
+         unstable/gui/pict)
 
 ;; some of this code stolen from lattice code
 (define (power-of-two-length? vec)
@@ -31,13 +33,33 @@
 (define *width* 400)
 (define *height* 10)
 
-(define (make-point data init-data num-in-row the-min the-max)
+(define (slowdown->color slowdown)
+  ;; tried a reciprocal scale here, looked too "smushed" at high end
+  ;(define proportion (/ (- 1 (/ 1 slowdown)) 1.5))
+  (define proportion (/ (log slowdown) 3))
   (define intensity
-    (- 255 (round (* 255 (/ (- (car data) the-min) (- the-max the-min))))))
-  (define color
-    (make-color intensity intensity intensity))
+    ;; we can't plot speedups with this, so cap it
+    ;; FIXME: that is misleading, so we should think about how to do that
+    ;; FIXME: proportions are sometimes bigger than 1 due to log, is the
+    ;;        reciprocal scale better?
+    (max 0 (min 255 (- 255 (exact-round (* 255 proportion))))))
+  (make-color intensity intensity intensity))
+
+(define (make-point data init-data num-in-row the-min the-max)
+  ;; use reciprocal scale to do the heat intensity of a given point
+  (define slowdown (/ (car data) (car init-data)))
+  (define color (slowdown->color slowdown))
   (colorize (filled-rectangle (/ *width* num-in-row) *height*)
             color))
+
+(define scale-pict
+  (apply hc-append 15
+         (for/list ([x (in-range 1 7 0.5)])
+           (vc-append 3
+                      (rectangle/border 10 10
+                                        #:border-color "black"
+                                        #:color (slowdown->color x))
+                      (text (format "~ax" x))))))
 
 (module+ main
   (match-define (list data-path output-path)
@@ -80,7 +102,8 @@
          pict))))
   (define diagram (vc-append 10
                              (frame (apply vc-append 0 level-picts))
-                             (text (format "~a" data-path))))
+                             (text (format "~a" data-path))
+                             scale-pict))
   (define pict (cc-superimpose diagram
                                (blank (+ (pict-width diagram) 20)
                                       (+ (pict-height diagram) 20))))
