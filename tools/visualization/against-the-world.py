@@ -6,6 +6,7 @@ import itertools
 import math
 import statistics
 import sys
+import util
 import modulegraph
 import matplotlib
 matplotlib.use('Agg') # Disable the display, does not affect graph generation
@@ -49,7 +50,7 @@ def rows_where_group_is_boundary(fname, group, d):
 
 def pretty_stable(runtimes, group):
     if len(runtimes) < 2:
-        print("Warning: less than 2 runtimes-as-boundary for group '%s'. Ignoring.")
+        print("Warning: less than 2 runtimes-as-boundary for group '%s'. Ignoring." % group)
         return False
     std = statistics.stdev(runtimes)
     avg = statistics.mean(runtimes)
@@ -115,8 +116,10 @@ def profile_group(fname, gname, *group):
     plt.xlabel("Config. (%s)" % (sorted([(key, int(val[0])) for (key, val) in d.items()], key=lambda x:x[1])))
     plt.ylabel("Avg. Runtime (ms)")
     plt.title("%s, where group %s is a boundary" % (fname.rsplit("/", 1)[-1], group))
-    plt.savefig("foo.png")
+    new_name = util.gen_name(fname, "+".join((x.rsplit(".", 1)[0] for x in group)), "png")
+    plt.savefig(new_name)
     plt.clf()
+    print("Saved figure as '%s'" % new_name)
     return
 
 if __name__ == "__main__":
