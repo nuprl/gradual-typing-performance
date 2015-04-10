@@ -9,6 +9,7 @@
                      [BOARD-WIDTH Integer]
                      [BOARD-HEIGHT Integer])
 (require/typed/check "motion.rkt"
+                     [reset!           (-> Void)]
                      [world-change-dir (World Dir . -> . World)]
                      [world->world     (World . -> . World)])
 (require/typed/check "handlers.rkt"
