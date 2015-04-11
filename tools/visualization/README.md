@@ -44,11 +44,10 @@ The measures we currently use are:
 module-graph.py
 ---------------
 
-Usage: `module-graph.py FILE.graph`
+Usage: `module-graph.py FILE.tab FILE.graph`
 
 Creates the module dependence graph from the specification in `FILE.graph`.
 
-TODO make sure is accurate with final product
 The script expects its input to be a tab-separated file with columns:
     MODULE	INDEX	REQUIRES
 The first column should be filenames, like `main.rkt`.
@@ -58,5 +57,37 @@ In this case the module with index 2 is the only typed module (marked with a "1"
 The last column should be a comma-separated list of filenames.
 These should be the files that `MODULE` requires, and are used to draw directed edges in the graph.
 
-After creating the graph, the script draws a few pictures:
-- TODO 
+After creating the graph, the script draws a few pictures.
+
+boxplot.py
+----------
+
+Usage: `boxplot.py FILE.tab`
+
+Create a boxplot representing `FILE.tab`.
+Make one box for each level of typed-ness.
+
+
+violinplot.py
+-------------
+Usage: `violinplot.py FILE.tab`
+
+Create a violin representing `FILE.tab`.
+Identical to `boxplot.py`, but shows the experiments' distribution.
+
+
+bigpicture.py
+-------------
+Usage: `bigpicture.py FILE.tab ...`
+
+Creates a violin plot for each argument file, using every single data point in the argument file.
+Plots all violins on the same graph, to give a sense of scale.
+
+
+sampling.py
+-----------
+Usage: `sampling.py FILE.tab`
+
+Do t-test sampling in `FILE.tab`.
+Current, the number of samples is `min(30, num_modules)`, where `num_modules` is the number of modules in the project that `FILE.tab` represents.
+
