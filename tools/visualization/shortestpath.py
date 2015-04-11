@@ -170,6 +170,10 @@ def save_runtimes(path_and_time, fname):
     print("Saved data to '%s'" % fname)
     return fname
 
+def least_sum_path(fname):
+    g, bot, top = graph_of_name(fname)
+    return nx.dijkstra_path(g, bot, top)
+
 # (-> String Void)
 def main(fname):
     # Read fname as a networkx graph
