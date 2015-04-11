@@ -5,14 +5,6 @@ Input should be two files
 - a .tab file of running-time data
 - a .graph file with columns MODULE  INDEX  RUNTIME
 
-Checklist:
-- [X] create one module graph
-- [X] label edges by num unacceptable configs active in
-- [X] label edges by avg, med runtime
-- [X] repeat for all files
-- [ ] more clever label representations
-- [ ] typed vs untyped
-- [ ] try representing / identifying clusters
 """
 
 ### imports
@@ -125,15 +117,19 @@ def module_graph_init(fname):
 def edge_labels_by_runtime(g, fname, agg_f):
     # Generate edge labels by collecting the runtimes
     # of all data samples where the edge is present, and
-    # aggregating these values with `agg_f : (-> (List Nat) Nat)`
+    # aggregating these values with `agg_f : (-> (Pairof (List Nat) (List Nat)) Nat)`
+    # FIRST ARG to agg is "boundary times"
+    # SECOND ARG is "no-boundary times"
     labels = {}
     for (u,v) in g.edges_iter():
         # Collect node's index, skip if there is no index
         if ('index' not in g.node[u]) or ('index' not in g.node[v]):
+            # Skip base nodes (that are not in the bitstring)
             continue
         index1 = g.node[u]['index']
         index2 = g.node[v]['index']
-        runtimes = []
+        bnd_times = []
+        nobnd_times = []
         # For each edge, go through the data file and collect all runtimes
         with open(fname, "r") as dataf:
             next(dataf)
@@ -142,8 +138,10 @@ def edge_labels_by_runtime(g, fname, agg_f):
                 title = rows[0]
                 # If this edge is a typed/untyped boundary...
                 if title[index1] != title[index2]:
-                    runtimes.append(statistics.mean([int(x) for x in rows[1::]]))
-        labels[(u,v)] = int(agg_f(runtimes))
+                    bnd_times.append(statistics.mean([int(x) for x in rows[1::]]))
+                else:
+                    nobnd_times.append(statistics.mean([int(x) for x in rows[1::]]))
+        labels[(u,v)] = agg_f(bnd_times, nobnd_times)
     return labels
 
 def gen_positions(g, tag, edge_labels):
@@ -216,18 +214,23 @@ def main(fname, graph_name):
     ### normal, boring module graph
     # save_graph(g,fname,"modules")
     ### Label edges by mean, median runtimes
-    tag = "edges-avg"
-    el_mean = edge_labels_by_runtime(g, fname, statistics.mean)
-    ew_mean = widths_by_pct(g, tag, el_mean, lambda x: int(x / min_time))
-    save_graph(g,fname, tag, el_mean, ew_mean)
-    # el_median = edge_labels_by_runtime(g, fname, statistics.median)
+    # tag = "edges-avg"
+    # el_mean = edge_labels_by_runtime(g, fname, lambda: bs,nobs: statistics.mean(bs))
+    # ew_mean = widths_by_pct(g, tag, el_mean, lambda x: int(x / min_time))
+    # save_graph(g,fname, tag, el_mean, ew_mean)
+    # el_median = edge_labels_by_runtime(g, fname, lambda bs,nobs: statistics.median(bs))
     # save_graph(g,fname,"edges-med", el_median)
+    ###
+    tag = "boundary+no-boundary=ratio"
+    el_bnd = edge_labels_by_runtime(g, fname, lambda bnds,nobnds: "%s/%s = %s" % (int(statistics.mean(bnds)), int(statistics.mean(nobnds)), round(statistics.mean(bnds) / statistics.mean(nobnds), 2)))
+    ew_bnd = widths_by_pct(g, tag, el_bnd, lambda x: 1)
+    save_graph(g, fname, tag, el_bnd, ew_bnd)
     ### Label edges by number of 'unacceptable' configs they're in
     # unacceptable = gen_unacceptable(fname)
     # unaccept_measure = lambda xs: sum((1 for x in xs if unacceptable(x)))
     # tag = "edges-over-%d" % UNACCEPTABLE
     # el_badconfs = edge_labels_by_runtime(g, fname, unaccept_measure)
-    # ew_badconfs = widths_by_pct(g, tag, el_badconfs, lambda x: x / util.count_lines(fname) -1)
+    # ew_badconfs = widths_by_pct(g, tag, el_badconfs, lambda x,_: x / util.count_lines(fname) -1)
     # save_graph(g, fname, tag, el_badconfs, ew_badconfs)
     ## More interesting measures: TODO
     return None
