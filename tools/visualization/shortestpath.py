@@ -171,7 +171,7 @@ def save_runtimes(path_and_time, fname):
     return fname
 
 def least_sum_path(fname):
-    g, bot, top = graph_of_name(fname)
+    g, bot, top = graph_of_file(fname)
     return nx.dijkstra_path(g, bot, top)
 
 # (-> String Void)
