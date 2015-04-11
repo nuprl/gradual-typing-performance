@@ -91,6 +91,14 @@ def main(fname):
     ax1.set_xlabel("Num. Typed Modules")
     ax1.set_ylabel("Runtime (ms)")
     ax1.set_xticklabels(range(0, len(path)))
+    ## Legend
+    # Reset y limit
+    ymin,ymax = ax1.get_ylim()
+    ax1.set_ylim(ymin-5, ymax)
+    plt.figtext(0.80, 0.04, "---", color='r', weight='roman', size='x-small')
+    plt.figtext(0.82, 0.04, "Least-sum path", color='k', weight='roman', size='x-small')
+    plt.figtext(0.80, 0.01, '*', color='white', backgroundcolor='royalblue',weight='roman', size='medium')
+    plt.figtext(0.82, 0.01, ' Average Value', color='black', weight='roman', size='x-small')
     ## Save & clear
     new_name = util.gen_name(fname, "boxplot", "png")
     plt.savefig(new_name)
