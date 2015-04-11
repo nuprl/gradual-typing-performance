@@ -12,3 +12,13 @@ def count_lines(fname):
             count += 1
     return count
 
+# (-> Path-String Nat)
+def count_modules(fname):
+    # Return the number of modules in the project that
+    # the '.tab' file `fname` reports on
+    with open(fname, "r") as f:
+        _     = next(f)
+        row   = next(f)
+        title = row.split("\t", 1)[0]
+    return len(title)
+
