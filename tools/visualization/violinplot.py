@@ -22,20 +22,18 @@ def num_typed(xs):
     # Count the number of "1" characters in the string `xs`
     return sum((1 for c in xs if c == "1"))
 
-# (-> Path-String (Listof (Listof Nat)))
-def data_by_numtyped(fname):
+# (-> Path-String (-> String Boolean) (Listof (Listof Nat)))
+def data_by_numtyped(fname, pred=None):
     # Group data into a list of lists.
     # Index = Number of typed modules
-    data = None
+    data = [[] for _ in range(1+util.count_modules(fname))]
     with open(fname, "r") as f:
         next(f)
         for line in f:
             cols = line.strip().split(SEP)
             title, vals = cols[0], cols[1::]
-            if data is None:
-                # initialize, because we didn't have the right length before
-                data = [[] for _ in range(0, 1+len(title))]
-            data[num_typed(title)].append([int(x) for x in vals])
+            if pred is None or pred(title):
+                data[num_typed(title)].append([int(x) for x in vals])
     return data
 
 # (-> Path-String (Listof String) (Listof Nat))
@@ -52,27 +50,31 @@ def runtimes_of_path(fname, path):
                 avgs_by_title[title] = min(vals)
     return [time for (_,time) in sorted(avgs_by_title.items(), key=lambda x:x[0])]
 
-# (-> Path-String Void)
-def main(fname):
-    data = data_by_numtyped(fname)
+def draw_violin(data, alpha=1, color='royalblue', meanmarker="*"):
     ## Add data
-    fig,ax1 = plt.subplots() #add figsize?
     vp = plt.violinplot(data, positions=range(1,1+len(data)), showmeans=True, showextrema=True, showmedians=True)
     ## Re-color bodies
     for v in vp['bodies']:
         v.set_edgecolors('k')
-        v.set_facecolors('royalblue')
-        v.set_alpha(1)
+        v.set_facecolors(color)
+        v.set_alpha(alpha)
     ## Re-color median, min, max lines to be black
     for field in ['cmaxes', 'cmins', 'cbars', 'cmedians']:
         vp[field].set_color('k')
     ## Draw stars, for means
     # Make line invisible
-    vp['cmeans'].set_color('royalblue')
-    vp['cmeans'].set_alpha(1)
+    vp['cmeans'].set_color(color)
+    vp['cmeans'].set_alpha(alpha)
     # Draw a *
     for i in range(len(data)):
-        plt.plot([i+1], [np.average(data[i])], color='w', marker='*', markeredgecolor='k')
+        plt.plot([i+1], [np.average(data[i])], color='w', marker=meanmarker, markeredgecolor='k')
+    return
+
+# (-> Path-String Void)
+def main(fname):
+    data = data_by_numtyped(fname)
+    fig,ax1 = plt.subplots() #add figsize?
+    draw_violin(data, color='royalblue')
     ## add a light-colored horizontal grid
     ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
     ## Shortest-path line
