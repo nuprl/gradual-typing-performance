@@ -119,5 +119,6 @@ def infer_edges(fname):
     # Collect indices of edges
     return [(d[mod][0], d[req][0])
             for mod in d.keys()
-            for req in d[mod][1]]
+            for req in d[mod][1]
+            if req in d]
 

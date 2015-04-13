@@ -22,8 +22,7 @@ import matplotlib.pyplot as plt
 
 def non_overlapping(d1, d2):
     # True if 
-    return all(((not set1) or (not set2)
-                or min(set1) > max(set2)
+    return all((min(set1) > max(set2)
                 or min(set2) > max(set1)
                for (set1, set2) in zip(d1, d2)))
 
@@ -31,7 +30,13 @@ def do_not_make_graph(data_with, data_without, fnames):
     # Check the datasets, make sure it's worthwhile to make a graph
     dont_graph = False
     # - All-empty data is worthless
-    if all((len(x) == 0 for x in data_with)):
+    if not data_with:
+        #print("No 'data_with', skipping %s" % fnames)
+        dont_graph = True
+    elif not data_without:
+        #print("No 'data_without', skipping %s" % fnames)
+        dont_graph = True
+    elif all((len(x) == 0 for x in data_with)):
         #print("Skipping edge %s for lack of data" % fnames)
         dont_graph = True
     elif len(data_with) != len(data_without):
@@ -64,11 +69,11 @@ def make_plot(fname, edge_list):
     fnames = "+".join(("-".join(util.infer_module_names(fname, *edge)) for edge in edge_list))
     data_with    = violinplot.data_by_numtyped(fname, lambda cfg: any((util.is_boundary(cfg, edge) for edge in edge_list)))
     data_without = violinplot.data_by_numtyped(fname, lambda cfg: all((not util.is_boundary(cfg, edge) for edge in edge_list)))
+    data_with, data_without, posns = remove_empty(data_with, data_without)
     ## Make sure data's worth graphing
     if do_not_make_graph(data_with, data_without, fnames):
         return
     ## Draw violins
-    data_with, data_without, posns = remove_empty(data_with, data_without)
     fig,ax1 = plt.subplots() #add figsize?
     violinplot.draw_violin(data_with, alpha=0.8, color='royalblue', meanmarker='*', positions=posns)
     violinplot.draw_violin(data_without, alpha=0.8, color='darkorange', meanmarker='o', positions=posns)
