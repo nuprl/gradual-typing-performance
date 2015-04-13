@@ -12,18 +12,6 @@ import matplotlib
 matplotlib.use('Agg') # Disable the display, does not affect graph generation
 import matplotlib.pyplot as plt
 
-def dict_of_file(gname):
-    # Generate a dictionary-graph from a .graph file
-    # Keys are module names, like "a.rkt"
-    # Values are pairs of indices and requires, like (3, [x.rkt, y.rkt])
-    d = {}
-    with open(gname, "r") as f:
-        modulegraph._check_colnames(next(f).strip().split(modulegraph.SEP), gname)
-        for line in f:
-            [mname, i, requires] = modulegraph._check_col(line.strip().split(modulegraph.SEP))
-            d[mname] = (int(i), requires)
-    return d
-
 def is_boundary(title, group, d):
     # True if the group of modules `group` are
     # 1. all typed or all untyped
@@ -63,7 +51,7 @@ def count_stable_groups(fname, gname):
        and part of a boundary (determined by the .graph file)
      - If these runtimes are pretty stable, print the group & runtimes
     """
-    d = dict_of_file(gname)
+    d = util.dict_of_file(gname)
     num_modules = len(d)
     ## init counters
     num_groups, num_stable, num_unstable = 0, 0, 0
@@ -90,7 +78,7 @@ def profile_group(fname, gname, *group):
     # Get information about the modules `group` with respect to the other files.
     # TODO
     group = list(group)
-    d = dict_of_file(gname)
+    d = util.dict_of_file(gname)
     print("Profiling group '%s'" % group)
     print("Key:")
     with open(gname, "r") as f:
