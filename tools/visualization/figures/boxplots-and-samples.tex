@@ -35,11 +35,11 @@ Boxplots carry this same message and tell about the distribution of running time
 \item
   Show less data overall, no extraneous details.
 \item
-  Boxplots can fairly reproducible with low-constant-factor sampling
+  Boxplots are fairly easy to reproduce with low, constant-factor sampling
 \end{itemize}
 
 
-\subsubsection{Cons}
+\subsubsection*{Cons}
 \begin{itemize}
 \item
   Configurations are not directly associated with runtimes
@@ -123,6 +123,15 @@ Note that the first box plot in each result is the ground truth data, duplicated
 \newpage
 \includegraphics[width=\textwidth]{boxplots/funkytown-boxplot.png}
 \includegraphics[width=\textwidth]{sampling/funkytown-sampling-10.png}
+
+\newpage
+\section{Big Picture}
+Wondering what all runtimes look like, in perpsective?
+Look no further.
+
+\includegraphics[width=\textwidth]{all-runtimes.png}
+
+We should consider adjusting the running times of our benchmarks to make this picture nicer.
 
 \newpage
 \section{The Future}
