@@ -50,9 +50,10 @@ def runtimes_of_path(fname, path):
                 avgs_by_title[title] = min(vals)
     return [time for (_,time) in sorted(avgs_by_title.items(), key=lambda x:x[0])]
 
-def draw_violin(data, alpha=1, color='royalblue', meanmarker="*"):
+def draw_violin(data, alpha=1, color='royalblue', meanmarker="*", positions=None):
     ## Add data
-    vp = plt.violinplot(data, positions=range(1,1+len(data)), showmeans=True, showextrema=True, showmedians=True)
+    posns = positions or range(1,1+len(data))
+    vp = plt.violinplot(data, positions=posns, showmeans=True, showextrema=True, showmedians=True)
     ## Re-color bodies
     for v in vp['bodies']:
         v.set_edgecolors('k')
@@ -67,7 +68,7 @@ def draw_violin(data, alpha=1, color='royalblue', meanmarker="*"):
     vp['cmeans'].set_alpha(alpha)
     # Draw a *
     for i in range(len(data)):
-        plt.plot([i+1], [np.average(data[i])], color='w', marker=meanmarker, markeredgecolor='k')
+        plt.plot(posns[i], [np.average(data[i])], color='w', marker=meanmarker, markeredgecolor='k')
     return
 
 # (-> Path-String Void)

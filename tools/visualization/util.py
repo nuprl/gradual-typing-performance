@@ -1,3 +1,5 @@
+import os
+
 ### Private
 SEP = "\t"
 
@@ -35,8 +37,8 @@ def _check_col(values):
     requires = values[2].split(",") if len(values) == 3 else []
     if not (all((rq.endswith(".rkt") for rq in requires))):
         raise ValueError("expected each REQUIRE to be a .rkt filename, instead got '%s'" % requires)
-    if not(bool(requires)):
-        print("WARNING: module '%s' has no requires" % values[0])
+    #if not(bool(requires)):
+    #    print("WARNING: module '%s' has no requires" % values[0])
     return [module_name, index, requires]
 
 ### Public
@@ -77,4 +79,45 @@ def dict_of_file(gname):
             [mname, i, requires] = _check_col(line.strip().split(SEP))
             d[mname] = (int(i), requires)
     return d
+
+# (-> String (List Nat Nat) Boolean)
+def is_boundary(config, edge):
+    # True if (i,j) is a typed/untyped boundary edge
+    return config[edge[0]] != config[edge[1]]
+
+def infer_graph(fname):
+    gfile1 = "%s.graph" % fname.rsplit(".", 1)[0]
+    gfile2 = "%s.graph" % fname.rsplit(".", 1)[0].split("-", 1)[0]
+    if os.path.exists(gfile1):
+        return gfile1
+    elif os.path.exists(gfile2):
+        return gfile2
+    else:
+        return None
+
+def infer_module_names(fname, *args):
+    # Try finding a .graph file near the filename,
+    # if so, return a name in place of each argument index.
+    # if not, print a warning and return the arguments
+    gfile = infer_graph(fname)
+    if gfile is None:
+        print("Warning: could not find .graph file")
+        return args
+    d = dict_of_file(gfile)
+    name_of_index = {}
+    for (k, (i, rqs)) in d.items():
+        name_of_index[i] = k
+    return [name_of_index[index].rsplit(".", 1)[0] for index in args]
+
+# (-> Path-String (U None (Listof (List Nat Nat))))
+def infer_edges(fname):
+    # Try to return a list of all edges (by indices) in the file
+    gfile = infer_graph(fname)
+    if gfile is None:
+        return None
+    d = dict_of_file(gfile)
+    # Collect indices of edges
+    return [(d[mod][0], d[req][0])
+            for mod in d.keys()
+            for req in d[mod][1]]
 

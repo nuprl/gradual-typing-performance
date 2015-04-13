@@ -16,63 +16,80 @@ import itertools
 import sys
 import violinplot
 import util
-import os
 import matplotlib
 matplotlib.use('Agg') # Disable the display, does not affect graph generation
 import matplotlib.pyplot as plt
 
-def is_edge(config, edge):
-    # True if (i,j) is a typed/untyped boundary edge
-    return config[edge[0]] != config[edge[1]]
+def non_overlapping(d1, d2):
+    # True if 
+    return all(((not set1) or (not set2)
+                or min(set1) > max(set2)
+                or min(set2) > max(set1)
+               for (set1, set2) in zip(d1, d2)))
 
-def infer_module_names(fname, *args):
-    # Try finding a .graph file near the filename,
-    # if so, return a name in place of each argument index.
-    # if not, print a warning and return the arguments
-    gfile1 = "%s.graph" % fname.rsplit(".", 1)[0]
-    gfile2 = "%s.graph" % fname.rsplit(".", 1)[0].split("-", 1)[0]
-    gfile = None
-    if os.path.exists(gfile1):
-        gfile = gfile1
-    elif os.path.exists(gfile2):
-        gfile = gfile2
-    else:
-        print("Warning: could not find .graph file")
-        return args
-    d = util.dict_of_file(gfile)
-    name_of_index = {}
-    for (k, (i, rqs)) in d.items():
-        name_of_index[i] = k
-    return [name_of_index[index].rsplit(".", 1)[0] for index in args]
-
-def make_plot(fname, edge):
-    source_file, dest_file = infer_module_names(fname, *edge)
-    data_with    = violinplot.data_by_numtyped(fname, lambda cfg: is_edge(cfg, edge))
-    data_without = violinplot.data_by_numtyped(fname, lambda cfg: not is_edge(cfg, edge))
-    ## Draw violins
+def do_not_make_graph(data_with, data_without, fnames):
+    # Check the datasets, make sure it's worthwhile to make a graph
+    dont_graph = False
+    # - All-empty data is worthless
     if all((len(x) == 0 for x in data_with)):
-        print("Skipping edge %s , %s for lack of data" % (source_file, dest_file))
+        #print("Skipping edge %s for lack of data" % fnames)
+        dont_graph = True
+    elif len(data_with) != len(data_without):
+        raise ValueError("WTF data with/without have different length")
+    elif not non_overlapping(data_with, data_without):
+        #print("Skipping edge %s because some data overlap" % fnames)
+        dont_graph = True
+    else:
+        print("Ready to graph %s" % fnames)
+    return dont_graph
+
+def remove_empty(d1, d2):
+    # Zip through datasets (pairwise),
+    # make sure both are non-empty,
+    # erase otherwise
+    # Return the non-empty corresponding pairs in two lists
+    # and a list of their original indices
+    xs, ys, posns = [], [], []
+    for i in range(len(d1)):
+        if d1[i] and d2[i]:
+            xs.append(d1[i])
+            ys.append(d2[i])
+            posns.append(i)
+    return xs, ys, posns
+
+def make_plot(fname, edge_list):
+    # `edge_list` is a list of edges to check
+    # Compare performance when these edges are not boundaries vs.
+    # when any one edge is a boundary
+    fnames = "+".join(("-".join(util.infer_module_names(fname, *edge)) for edge in edge_list))
+    data_with    = violinplot.data_by_numtyped(fname, lambda cfg: any((util.is_boundary(cfg, edge) for edge in edge_list)))
+    data_without = violinplot.data_by_numtyped(fname, lambda cfg: all((not util.is_boundary(cfg, edge) for edge in edge_list)))
+    ## Make sure data's worth graphing
+    if do_not_make_graph(data_with, data_without, fnames):
         return
+    ## Draw violins
+    data_with, data_without, posns = remove_empty(data_with, data_without)
     fig,ax1 = plt.subplots() #add figsize?
-    violinplot.draw_violin(data_with[1:-1], alpha=0.8, color='royalblue', meanmarker='*')
-    violinplot.draw_violin(data_without[1:-1], alpha=0.8, color='darkorange', meanmarker='o')
+    violinplot.draw_violin(data_with, alpha=0.8, color='royalblue', meanmarker='*', positions=posns)
+    violinplot.draw_violin(data_without, alpha=0.8, color='darkorange', meanmarker='o', positions=posns)
     ## add a light-colored horizontal grid
     ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
     ## Legend
     ymin,ymax = ax1.get_ylim()
     ax1.set_ylim(ymin-5, ymax)
     plt.figtext(0.80, 0.04, "-", color='royalblue', backgroundcolor='royalblue', weight='roman', size='x-small')
-    plt.figtext(0.82, 0.04, "With boundary", color='k', weight='roman', size='x-small')
+    plt.figtext(0.82, 0.04, "Any edge is a boundary", color='k', weight='roman', size='x-small')
     plt.figtext(0.80, 0.01, '-', color='darkorange', backgroundcolor='darkorange', weight='roman', size='x-small')
-    plt.figtext(0.82, 0.01, 'Without boundary', color='black', weight='roman', size='x-small')
+    plt.figtext(0.82, 0.01, 'No edges are boundaries', color='black', weight='roman', size='x-small')
     ax1.set_axisbelow(True)
-    ax1.set_title("%s-%s-%s" % (fname.rsplit("/",1)[-1].rsplit(".")[0], source_file, dest_file))
+    ax1.set_title("%s=%s" % (fname.rsplit("/",1)[-1].rsplit(".")[0], fnames))
     ax1.set_xlabel("Num. Typed Modules")
     ax1.set_ylabel("Runtime (ms)")
-    plt.xticks(range(1,1+len(data_with[1:-1])), range(1, 1+len(data_with[1:-1])))
-    new_name = util.gen_name(fname, "edge-%s-%s" % (source_file, dest_file), "png")
+    plt.xticks(posns, posns)
+    new_name = util.gen_name(fname, "edge=%s" % fnames, "png")
     plt.savefig(new_name)
     plt.clf()
+    plt.close(fig)
     print("Saved figure to %s" % new_name)
     return
 
@@ -80,8 +97,14 @@ def main(fname):
     # Generate all edge combinations,
     # make all the graphs
     num_modules = util.count_modules(fname)
-    for edge in itertools.combinations(range(num_modules), 2):
-        make_plot(fname, edge)
+    edges = util.infer_edges(fname)
+    if edges is None:
+        print("Error: could not find graph file for '%s'" % fname)
+        return
+    ## All combos that are reasonably small
+    for group_size in range(1, min(4, len(edges))):
+        for edge_list in itertools.combinations(edges, group_size):
+            make_plot(fname, edge_list)
     return
 
 if __name__ == "__main__":
