@@ -51,11 +51,28 @@ def fold_file(fname, acc, fn, ignore_first_line=True):
             acc = fn(acc, line.strip().split(SEP))
     return acc
 
+def bucketize(fname, get_bkt, num_buckets):
+    """
+        Group the rows in `fname` into buckets,
+        using `get_bkt` to assign a row of the file to a bucket.
+        Return the collected list of lists
+        (todo? optionally allow 'edit_row' function,
+          instead of mushing all values into a list)
+    """
+    init = [[] for _ in range(1+num_buckets)]
+    def add_row(acc, row):
+        # TODO maybe broken, idk about this 'functional/imp'
+        acc[get_bkt(row[0])].extend([int(x) for x in row[1::]])
+        return acc
+    return fold_file(fname, init, add_row)
+
 def strip_suffix(fname):
     """
         Remove everything after the rightmost "." in the string `fname`
     """
     return fname.rsplit(".", 1)[0]
+
+### GraphDict helpers
 
 def check_graphfile_titles(col_names, fname):
     # Check that column titles are well-formed
@@ -124,7 +141,7 @@ def dict_of_graphfile(gname):
             d[mname] = (int(i), requires)
     return d
 
-def basic_stats(dataset):
+def basic_row_stats(dataset):
     """ (-> (Listof Nat) (List Nat Nat Nat Nat)
         Compute basic statistics for list `dataset`
     """
@@ -135,6 +152,54 @@ def basic_stats(dataset):
         "min"      : min(dataset),
         "max"      : max(dataset),
     }
+
+def edges_iter(d):
+    """
+        Iterate over the "require" edges represented in
+        the GraphDict `d`.
+    """
+    for (k, v) in d.items():
+        for req in v[1]:
+            yield(k, req)
+
+# (-> String (List Nat Nat) Boolean)
+def is_boundary(config, i, j):
+    """
+        True if (i,j) is a typed/untyped boundary edge
+    """
+    return config[i] != config[j]
+
+def modules_of_config(config, d):
+    """
+        Given a configuration bitstring and a GraphDict `dict`,
+        return the module names (in-order) corresponding to indices
+        in the string.
+    """
+    # Transform dict, so index keys to a module name (drop requires)
+    name_of_index = dict([(v[0],k) for (k,v) in d.items()])
+    return [name_of_index[i] for i in range(len(config))]
+
+def boundaries_of_config(config, d):
+    """
+        Return a list of boundary edges in the bitstring `config`.
+        Use `d` to identify edges.
+    """
+    boundaries = []
+    for (m1, m2) in edges_iter(d):
+        i1 = d[m1][0]
+        i2 = d[m2][0]
+        if is_boundary(config, i1, i2):
+            boundaries.append((m1, m2))
+    return boundaries
+
+def basic_config_stats(config, time, graph):
+    """
+        Basic summary information for a configuration bitstring
+    """
+    return {"id"         : config
+           ,"boundaries" : boundaries_of_config(config, graph)
+           ,"time"       : time
+           }
 
 ### Graphing
 
@@ -286,13 +351,10 @@ def tabfile_of_rktd(rktdfile):
     # Strip the suffix from the input file, replace with .tab
     return "%s.tab" % rktdfile.rstrip(".", 1)[0]
 
-def all_results_for_rows(tabfile, tag, config_pred):
+def all_cells_matching(tabfile, config_pred):
     """
-        Read `tabfile`,
-        For each row whose first column satisfies `config_pred`,
-          save that data.
-        Generate summary statistics and graphs for collected data.
-        Return the summaries and graph filenames.
+        Return a list of all data cells in rows whose titles
+        match `config_pred`.
     """
     def process_row(row):
         title = row[0]
@@ -300,14 +362,9 @@ def all_results_for_rows(tabfile, tag, config_pred):
             return [int(x) for x in row[1::]]
         else:
             return []
-    data = fold_file(tabfile, [], lambda acc,row: acc + process_row(row))
-    summary = basic_stats(data)
-    title = "%s-%s" % (tabfile.rsplit(".", 1)[0].rsplit("/", 1)[-1], tag)
-    violin = violin_plot([data], title, "", "Runtime (ms)")
-    summary['violin'] = violin
-    box = box_plot([data], title, "", "Runtime (ms)")
-    summary['box'] = box
-    return summary
+    return fold_file(tabfile, [], lambda acc,row: acc + process_row(row))
+
+## config manipulation
 
 def is_untyped_config(s):
     """
@@ -321,21 +378,85 @@ def is_typed_config(s):
     """
     return all((c == "1" for c in s))
 
+def num_typed_modules(s):
+    """
+        Count the number of typed modules in the configuration
+        represented by `s`.
+        Examples:
+        - 0010, 0100, 1000 all have 1 typed module
+        - 1111             has 4 typed modules
+    """
+    return sum((1 for c in s if c == "1"))
+
+def best_row(tabfile, metric, val_of_row, init=None):
+    """ (->* (Path-String (-> A A Boolean) (-> (Listof Nat) A)) (A) A)
+        Return the "value" of the best row, according to `metric`.
+        i.e. the row R such that for any other row r: metric(val_of_row(r), val_of_row(R)) = True
+        - `tabfile` filename, a tab-separated file
+        - `metric`  a < judgment on rows
+        - `val_of_row` a pre-processing transformation on rows (used to filter, take mean, etc)
+        - `init` optionally, a first value to compare to
+    """
+    def process_row(acc, row):
+        # Get value from row.
+        # Return whichever is greater: this val or acc
+        val = val_of_row(row)
+        if acc is None:
+            return val
+        elif metric(acc, val):
+            return val
+        else:
+            return acc
+    return fold_file(tabfile, init, process_row)
+
 def results_of_tab(tabfile, dgraph):
     """ (-> Path-String GraphDict Result)
         Input: a .tab file, an overall summary of running all configurations
                of a project.
         Output: a Result object.
     """
-    return {
-        # "overall" : all_results_for_rows(tabfile, "overall-runtime", lambda x: True)
-        "untyped" : all_results_for_rows(tabfile, "untyped-runtime", is_untyped_config)
-        ,"typed"   : all_results_for_rows(tabfile, "typed-runtime", is_typed_config)
-        ,"gradual" : all_results_for_rows(tabfile, "gradual-runtime", lambda x: not (is_typed_config(x) or is_untyped_config(x)))
-        #,"strata"  : TODO
-        #,"best"    : TODO
-        #,"worst"   : TODO
+    fname = strip_suffix(tabfile).rsplit("/", 1)[-1]
+    ## Collect over-all running times, plot
+    #o_raw = all_cells_matching(tabfile, lambda x: True)
+    #o_violin = violin_plot([o_raw]           #dataset
+    #                      ,"%s_overall-runtime" % fname
+    #                      ,""
+    #                      ,"Runtime (ms)")
+    # Collect untyped, in-between, and typed running times, plot
+    u_raw = all_cells_matching(tabfile, is_untyped_config)
+    g_raw = all_cells_matching(tabfile, lambda x: not (is_typed_config(x) or is_untyped_config(x)))
+    t_raw = all_cells_matching(tabfile, is_typed_config)
+    ugt_violin = violin_plot([u_raw, g_raw, t_raw]
+                            ,"%s_untyped-vs-gradual-vs-typed" % fname
+                            ,"Configuration"
+                            ,"Runtime (ms)"
+                            ,xlabels=["untyped","gradual\n(all configs)","typed"])
+    # Collect absolute BEST and WORST times+configs
+    # TODO generalize to remember the top 10, or best 10%
+    b_config, b_time = best_row(tabfile
+                        ,lambda acc,tmp: tmp[1] < acc[1]
+                        ,lambda row:(row[0], int(statistics.mean([int(x) for x in row[1::]]))))
+    w_config, w_time = best_row(tabfile
+                        ,lambda acc,tmp: acc[1] < tmp[1]
+                        ,lambda row:(row[0], int(statistics.mean([int(x) for x in row[1::]]))))
+    num_modules = len(w_config)
+    stats = {
+        #"overall"  : {"img"     : [o_violin]
+        #             ,"summary" : basic_row_stats(o_raw)}
+        "ugt"     : {"img" : ugt_violin
+                     ,"summary" : {"untyped" : basic_row_stats(u_raw)
+                                  ,"gradual" : basic_row_stats(g_raw)
+                                  ,"typed"   : basic_row_stats(t_raw)}}
+        ,"best"    : basic_config_stats(b_config, b_time, dgraph)
+        ,"worst"   : basic_config_stats(w_config, w_time, dgraph)
+        ,"bucketed": {"img" : violin_plot(bucketize(tabfile, num_typed_modules, num_modules)
+                                         ,"%s_by-typed-modules" % fname
+                                         ,"Number of Typed Modules"
+                                         ,"Runtime (ms)"
+                                         ,positions=range(0, 1+num_modules)
+                                         ,xlabels=range(1, 2+num_modules))}
     }
+    return stats
 
 def pretty_print(results):
     """ (-> Result Void)
