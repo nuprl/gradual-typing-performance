@@ -91,7 +91,5 @@
          (copy-data in-file out-file)]
         [else (displayln "Usage: sexp-to-tab.rkt FILENAME")]))
 
-  (define vec (file->value "data/tetris.rktd"))
-
 (main (current-command-line-arguments))
 
