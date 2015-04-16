@@ -38,6 +38,16 @@ SEP = "\t"
 
 ### General Utils
 
+def count_modules(fname):
+    """ (-> Path-String Nat)
+        Count the number of modules in the project.
+    """
+    with open(fname, "r") as f:
+        _     = next(f)
+        row   = next(f)
+        title = row.split("\t", 1)[0]
+    return len(title)
+
 def fold_file(fname, acc, fn, ignore_first_line=True):
     """
         Iterate over lines in `fname`,
@@ -61,7 +71,6 @@ def bucketize(fname, get_bkt, num_buckets):
     """
     init = [[] for _ in range(1+num_buckets)]
     def add_row(acc, row):
-        # TODO maybe broken, idk about this 'functional/imp'
         acc[get_bkt(row[0])].extend([int(x) for x in row[1::]])
         return acc
     return fold_file(fname, init, add_row)
@@ -388,7 +397,7 @@ def num_typed_modules(s):
     """
     return sum((1 for c in s if c == "1"))
 
-def best_row(tabfile, metric, val_of_row, init=None):
+def best_rows(tabfile, limit, metric, val_of_row, init=None):
     """ (->* (Path-String (-> A A Boolean) (-> (Listof Nat) A)) (A) A)
         Return the "value" of the best row, according to `metric`.
         i.e. the row R such that for any other row r: metric(val_of_row(r), val_of_row(R)) = True
@@ -397,17 +406,36 @@ def best_row(tabfile, metric, val_of_row, init=None):
         - `val_of_row` a pre-processing transformation on rows (used to filter, take mean, etc)
         - `init` optionally, a first value to compare to
     """
+    cache = [None] * limit
+    cache[0] = init
     def process_row(acc, row):
         # Get value from row.
-        # Return whichever is greater: this val or acc
+        # Insert into the list `acc`
         val = val_of_row(row)
-        if acc is None:
-            return val
-        elif metric(acc, val):
-            return val
-        else:
-            return acc
-    return fold_file(tabfile, init, process_row)
+        return insert_sorted_bounded(acc, val, metric, 0)
+    return fold_file(tabfile, cache, process_row)
+
+def insert_sorted_bounded(xs, val, metric, i):
+    """
+        Insert `val` into the reverse-order sorted list `xs`.
+        The function `metric` is the sorting function (<)
+        (i.e, the greatest element is at the head of the list)
+        Do not increase the length of `xs`.
+    """
+    if i == len(xs):
+        # Done, ignore `val`
+        return xs
+    elif xs[i] is None:
+        # List unpopulated, just overwrite
+        xs[i] = val
+        return xs
+    elif metric(xs[i], val):
+        # `val` beats current list element,
+        # replace and push current element back.
+        tmp = xs[i]
+        xs[i] = val
+        val = tmp
+    return insert_sorted_bounded(xs, val, metric, i+1)
 
 def results_of_tab(tabfile, dgraph):
     """ (-> Path-String GraphDict Result)
@@ -416,6 +444,8 @@ def results_of_tab(tabfile, dgraph):
         Output: a Result object.
     """
     fname = strip_suffix(tabfile).rsplit("/", 1)[-1]
+    num_modules = count_modules(tabfile)
+    num_configs = 2 ** num_modules
     ## Collect over-all running times, plot
     #o_raw = all_cells_matching(tabfile, lambda x: True)
     #o_violin = violin_plot([o_raw]           #dataset
@@ -432,14 +462,15 @@ def results_of_tab(tabfile, dgraph):
                             ,"Runtime (ms)"
                             ,xlabels=["untyped","gradual\n(all configs)","typed"])
     # Collect absolute BEST and WORST times+configs
-    # TODO generalize to remember the top 10, or best 10%
-    b_config, b_time = best_row(tabfile
+    ten_percent = max(10, int(0.10 * num_configs))
+    best_cfg_and_times  = best_rows(tabfile
+                        ,ten_percent
                         ,lambda acc,tmp: tmp[1] < acc[1]
                         ,lambda row:(row[0], int(statistics.mean([int(x) for x in row[1::]]))))
-    w_config, w_time = best_row(tabfile
+    worst_cfg_and_times = best_rows(tabfile
+                        ,ten_percent
                         ,lambda acc,tmp: acc[1] < tmp[1]
                         ,lambda row:(row[0], int(statistics.mean([int(x) for x in row[1::]]))))
-    num_modules = len(w_config)
     stats = {
         #"overall"  : {"img"     : [o_violin]
         #             ,"summary" : basic_row_stats(o_raw)}
@@ -447,8 +478,10 @@ def results_of_tab(tabfile, dgraph):
                      ,"summary" : {"untyped" : basic_row_stats(u_raw)
                                   ,"gradual" : basic_row_stats(g_raw)
                                   ,"typed"   : basic_row_stats(t_raw)}}
-        ,"best"    : basic_config_stats(b_config, b_time, dgraph)
-        ,"worst"   : basic_config_stats(w_config, w_time, dgraph)
+        ,"best"    : [basic_config_stats(b_config, b_time, dgraph)
+                      for (b_config, b_time) in best_cfg_and_times]
+        ,"worse"   : [basic_config_stats(w_config, w_time, dgraph)
+                      for (w_config, w_time) in worst_cfg_and_times]
         ,"bucketed": {"img" : violin_plot(bucketize(tabfile, num_typed_modules, num_modules)
                                          ,"%s_by-typed-modules" % fname
                                          ,"Number of Typed Modules"
@@ -456,6 +489,7 @@ def results_of_tab(tabfile, dgraph):
                                          ,positions=range(0, 1+num_modules)
                                          ,xlabels=range(1, 2+num_modules))}
     }
+    # TODO Graph most-common bad edges?
     return stats
 
 def pretty_print(results):
@@ -463,13 +497,16 @@ def pretty_print(results):
         Given a Result object, pretty print summary information
         to console.
     """
+    # TODO
     print("HERE ARE YOUR RESULTS\n%s" % results)
+    return
 
 def save_as_tex(results):
     """ (-> Result Void)
         Given an Result object, save results to a nicely-formatted .tex file.
     """
-    raise NotImplementedError("save_as_tex")
+    # TODO
+    return
 
 ### Main functions, dispatch
 
@@ -489,7 +526,7 @@ def main(*args, **options):
         results = results_of_tab(args[0], args[1])
     else:
         raise ValueError("unexpected arguments '%s'" % str(args))
-    #save_as_tex(results)
+    save_as_tex(results)
     pretty_print(results)
     return
 
