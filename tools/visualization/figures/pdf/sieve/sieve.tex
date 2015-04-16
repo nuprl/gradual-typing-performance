@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{graphicx}
+\newcommand{\mono}[1]{\texttt{#1}}
+\begin{document}
+
+
+\section{Results: sieve}
+
+\subsection{Module Summary}
+\begin{itemize}
+\item \mono{streams.rkt}
+\item \mono{main.rkt}\end{itemize}
+
+\subsection{Overall Runtimes}
+\begin{itemize}
+\item Average \emph{untyped} runtime: 8595
+  \begin{itemize}
+  \item Median: 8597
+  \item Min: 8540
+  \item Max: 8675
+  \item 95\% confidence: 8581, 8608
+  \end{itemize}
+\item Average \emph{typed} runtime: 6810
+  \begin{itemize}
+  \item Median: 6802
+  \item Min: 6738
+  \item Max: 6884
+  \item 95\% confidence: 6795, 6824
+  \end{itemize}
+\item Average gradually-typed runtime is 73.34 times slower than untyped average.
+\item Best gradually-typed runtime is 65.3 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{01}\end{itemize}
+\item Worst gradually-typed runtime is 81.39 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{10}\end{itemize}
+\item Average of top 2 gradually-typed configurations is 73.34 times slower than untyped average
+\item Average of bottom 2 gradually-typed configurations is 73.34 times slower than untyped average
+\end{itemize}
+
+\subsection{Aggregate Figures}
+\includegraphics[width=\textwidth]{sieve_untyped-vs-gradual-vs-typed-violin.png}
+\includegraphics[width=\textwidth]{sieve_by-typed-modules-violin.png}
+\includegraphics[width=\textwidth]{sieve-normalized-runtimes-bar.png}
+
+\subsection{Worst Configurations}
+The worst 2 configurations and their boundaries are:
+\begin{itemize}
+\item 10 (81.39 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{streams.rkt})
+  \end{itemize}
+\item 01 (65.3 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{streams.rkt})
+  \end{itemize}
+
+\subsection{Top 2 Worst Configurations}
+\includegraphics[width=\textwidth]{sieve-module-graph-10.png}
+\includegraphics[width=\textwidth]{sieve-module-graph-01.png}
+\end{itemize}
+\end{document}

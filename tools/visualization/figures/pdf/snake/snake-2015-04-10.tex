@@ -1,0 +1,370 @@
+\documentclass{article}
+\usepackage{graphicx}
+\newcommand{\mono}[1]{\texttt{#1}}
+\begin{document}
+
+
+\section{Results: snake-2015-04-10}
+
+\subsection{Module Summary}
+\begin{itemize}
+\item \mono{data.rkt}
+\item \mono{collide.rkt}
+\item \mono{main.rkt}
+\item \mono{cut-tail.rkt}
+\item \mono{const.rkt}
+\item \mono{handlers.rkt}
+\item \mono{motion-help.rkt}
+\item \mono{motion.rkt}\end{itemize}
+
+\subsection{Overall Runtimes}
+\begin{itemize}
+\item Average \emph{untyped} runtime: 60
+  \begin{itemize}
+  \item Median: 60
+  \item Min: 59
+  \item Max: 63
+  \item 95\% confidence: 60, 60
+  \end{itemize}
+\item Average \emph{typed} runtime: 88
+  \begin{itemize}
+  \item Median: 88
+  \item Min: 87
+  \item Max: 92
+  \item 95\% confidence: 88, 88
+  \end{itemize}
+\item Average gradually-typed runtime is 32.58 times slower than untyped average.
+\item Best gradually-typed runtime is 1.67 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{10111111}\end{itemize}
+\item Worst gradually-typed runtime is 90.87 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{10000111}\end{itemize}
+\item Average of top 25 gradually-typed configurations is 6.32 times slower than untyped average
+\item Average of bottom 25 gradually-typed configurations is 79.2 times slower than untyped average
+\end{itemize}
+
+\subsection{Aggregate Figures}
+\includegraphics[width=\textwidth]{snake-2015-04-10_untyped-vs-gradual-vs-typed-violin.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10_by-typed-modules-violin.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10-normalized-runtimes-bar.png}
+
+\subsection{Worst Configurations}
+The worst 25 configurations and their boundaries are:
+\begin{itemize}
+\item 10000111 (90.87 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 11001111 (89.53 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 10001111 (87.9 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 11000111 (86.55 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 11001011 (85.92 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 10001011 (85.4 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 11100111 (85.02 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 11101111 (84.55 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 10100111 (83.92 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 10101111 (83.87 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 10000011 (83.83 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 10101011 (82.57 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 11101011 (82.35 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 11000011 (81.72 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 10100011 (79.9 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \end{itemize}
+\item 11100011 (78.83 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 10101001 (71.12 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 11100101 (71.1 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 11101001 (70.52 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 10100101 (70.33 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 10101101 (70.12 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 11101101 (69.62 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 10100001 (68.53 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 11001110 (68.15 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+\item 10001110 (67.82 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \end{itemize}
+
+\subsection{Top 5 Worst Configurations}
+\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-10000111.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-11001111.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-10001111.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-11000111.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-11001011.png}
+\end{itemize}
+\end{document}
