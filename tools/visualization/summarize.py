@@ -6,6 +6,7 @@ Summarize a project, output results to console, .png, and .tex
 
 ### Imports
 
+import math
 import matplotlib
 matplotlib.use('Agg') # Disable the display, does not affect graph generation
 import matplotlib.pyplot as plt
@@ -71,6 +72,7 @@ def bucketize(fname, get_bkt, num_buckets):
     """
     init = [[] for _ in range(1+num_buckets)]
     def add_row(acc, row):
+        # TODO don't graph all points because ... (I had a reason at some point)
         acc[get_bkt(row[0])].extend([int(x) for x in row[1::]])
         return acc
     return fold_file(fname, init, add_row)
@@ -154,13 +156,17 @@ def basic_row_stats(dataset):
     """ (-> (Listof Nat) (List Nat Nat Nat Nat)
         Compute basic statistics for list `dataset`
     """
-    return {
+    stat = {
         "mean"     : int(statistics.mean(dataset)),
         "median"   : int(statistics.median(dataset)),
         "variance" : int(statistics.variance(dataset)),
         "min"      : min(dataset),
         "max"      : max(dataset),
     }
+    Z = 2.04 # Close to t-stat for 30 degrees of freedom (TODO, make less magic)
+    delta = Z * (math.sqrt(stat["variance"]) / math.sqrt(len(dataset)))
+    stat["ci"] = [int(stat["mean"] - delta), int(stat["mean"] + delta)]
+    return stat
 
 def edges_iter(d):
     """
@@ -411,6 +417,9 @@ def best_rows(tabfile, limit, metric, val_of_row, init=None):
     def process_row(acc, row):
         # Get value from row.
         # Insert into the list `acc`
+        if is_untyped_config(row[0]) or is_typed_config(row[0]):
+            # Ignore fully typed / untyped configs
+            return acc
         val = val_of_row(row)
         return insert_sorted_bounded(acc, val, metric, 0)
     return fold_file(tabfile, cache, process_row)
@@ -446,6 +455,7 @@ def results_of_tab(tabfile, dgraph):
     fname = strip_suffix(tabfile).rsplit("/", 1)[-1]
     num_modules = count_modules(tabfile)
     num_configs = 2 ** num_modules
+    print("Project contains %s modules (%s configurations)" % (num_modules, num_configs))
     ## Collect over-all running times, plot
     #o_raw = all_cells_matching(tabfile, lambda x: True)
     #o_violin = violin_plot([o_raw]           #dataset
@@ -474,38 +484,115 @@ def results_of_tab(tabfile, dgraph):
     stats = {
         #"overall"  : {"img"     : [o_violin]
         #             ,"summary" : basic_row_stats(o_raw)}
-        "ugt"     : {"img" : ugt_violin
+        "title"    : fname
+        ,"graph"   : dgraph
+        ,"ugt"     : {"img" : ugt_violin
                      ,"summary" : {"untyped" : basic_row_stats(u_raw)
                                   ,"gradual" : basic_row_stats(g_raw)
                                   ,"typed"   : basic_row_stats(t_raw)}}
         ,"best"    : [basic_config_stats(b_config, b_time, dgraph)
                       for (b_config, b_time) in best_cfg_and_times]
-        ,"worse"   : [basic_config_stats(w_config, w_time, dgraph)
+        ,"worst"   : [basic_config_stats(w_config, w_time, dgraph)
                       for (w_config, w_time) in worst_cfg_and_times]
-        ,"bucketed": {"img" : violin_plot(bucketize(tabfile, num_typed_modules, num_modules)
+        ,"bucketed": violin_plot(bucketize(tabfile, num_typed_modules, num_modules)
                                          ,"%s_by-typed-modules" % fname
                                          ,"Number of Typed Modules"
                                          ,"Runtime (ms)"
                                          ,positions=range(0, 1+num_modules)
-                                         ,xlabels=range(1, 2+num_modules))}
+                                         ,xlabels=range(1, 2+num_modules))
     }
     # TODO Graph most-common bad edges?
     return stats
+
+def percent_diff(n1, n2):
+    """ (-> Nat Nat (List Nat String))
+       Percent-difference between `n1` and `n2`.
+       Think of `n1` as the observed value and `n2` as the expected.
+    """
+    val = round(n1 / n2, 2)
+    if val >= 1:
+        descr = "slower"
+    else:
+        descr = "faster"
+    return val, descr
 
 def pretty_print(results):
     """ (-> Result Void)
         Given a Result object, pretty print summary information
         to console.
     """
-    # TODO
-    print("HERE ARE YOUR RESULTS\n%s" % results)
+    print("RESULTS:")
+    u_summ = results["ugt"]["summary"]["untyped"]
+    print("Average runtime of untyped configuration: %s\n  (min: %s, max: %s, 95%%-confidence: [%s,%s])" % (u_summ["mean"], u_summ["min"], u_summ["max"], u_summ["ci"][0], u_summ["ci"][1]))
+    t_summ = results["ugt"]["summary"]["typed"]
+    print("Average runtime of typed configuration: %s\n  (min: %s, max: %s, 95%%-confidence: [%s,%s])" % (t_summ["mean"], t_summ["min"], t_summ["max"], t_summ["ci"][0], t_summ["ci"][1]))
+    g_summ = results["ugt"]["summary"]["gradual"]
+    g_vs_u, descr = percent_diff(g_summ["mean"], u_summ["mean"])
+    print("Average gradually-typed runtimes are %sx %s than untyped average." % (g_vs_u, descr))
+    best_vs_u, descr = percent_diff(results["best"][0]["time"], u_summ["mean"])
+    print("Best observed gradual runtime is %sx %s than untyped average. Observed on configuration %s" % (best_vs_u, descr, results["best"][0]["id"]))
+    worst_vs_u, descr = percent_diff(results["worst"][0]["time"], u_summ["mean"])
+    print("Worst observed gradual runtime is %sx %s than untyped average. Observed on configuration %s" % (worst_vs_u, descr, results["worst"][0]["id"]))
+    bavg = int(statistics.mean([x["time"] for x in results["best"]]))
+    bavg_vs_u, descr = percent_diff(bavg, u_summ["mean"])
+    print("Average of top %d gradual running times is %sx %s than untyped average." % (len(results["best"]), bavg_vs_u, descr))
+    wavg = int(statistics.mean([x["time"] for x in results["worst"]]))
+    wavg_vs_u, descr = percent_diff(wavg, u_summ["mean"])
+    print("Average of worst %s gradual running times is %sx %s than untyped average." % (len(results['worst']), wavg_vs_u, descr))
+    print("The worst %s configurations and their boundaries are (in order of badness):" % (len(results["worst"])))
+    for bad_cfg in results["worst"]:
+        vs_u, descr = percent_diff(bad_cfg["time"], u_summ["mean"])
+        edges_str = "\n    ".join(("(%s =(require)=> %s)" % (src,dst) for (src,dst) in bad_cfg["boundaries"]))
+        print("%s (%sx %s than untyped avg.):\n    %s" % (bad_cfg["id"], vs_u, descr, edges_str))
     return
 
-def save_as_tex(results):
-    """ (-> Result Void)
+def save_as_tex(results, outfile):
+    """ (-> Result Path-String Void)
         Given an Result object, save results to a nicely-formatted .tex file.
     """
-    # TODO
+    untyped = results["ugt"]["summary"]["untyped"]
+    typed   = results["ugt"]["summary"]["typed"]
+    gradual = results["ugt"]["summary"]["gradual"]
+    with open(outfile, "w") as f:
+        def render(s):
+            print(s, file=f)
+        render("\\documentclass{article}")
+        render("\\usepackage{graphicx}")
+        render("\\newcommand{\\mono}[1]{\\texttt{#1}}")
+        render("\\begin{document}")
+        render("\n\n\\section{Results: %s}" % results["title"])
+        render("\n\\subsection{Module Summary}")
+        render("\\begin{itemize}\n\\item \\mono{%s}\\end{itemize}" % "}\n\item \mono{".join(results["graph"].keys()))
+        render("\n\\subsection{Overall Runtimes}")
+        render("\\begin{itemize}")
+        render("\\item Average \\emph{untyped} runtime: %s" % untyped["mean"])
+        render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s, %s\n  \\end{itemize}" % (untyped["median"], untyped["min"], untyped["max"], untyped["ci"][0], untyped["ci"][1]))
+        render("\\item Average \\emph{typed} runtime: %s" % typed["mean"])
+        render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s, %s\n  \\end{itemize}" % (typed["median"], typed["min"], typed["max"], typed["ci"][0], typed["ci"][1]))
+        render("\\item Average gradually-typed runtime is %s times %s than untyped average." % percent_diff(gradual["mean"], untyped["mean"]))
+        render("\\item Best gradually-typed runtime is %s times %s than untyped average." % percent_diff(results["best"][0]["time"], untyped["mean"]))
+        render("\\begin{itemize}\\item Configuration: \\mono{%s}\\end{itemize}" % results["best"][0]["id"])
+        render("\\item Worst gradually-typed runtime is %s times %s than untyped average." % percent_diff(results["worst"][0]["time"], untyped["mean"]))
+        render("\\begin{itemize}\\item Configuration: \\mono{%s}\\end{itemize}" % results["worst"][0]["id"])
+        render(("\\item Average of top %s " % (len(results["best"]))) + ("gradually-typed configurations is %s times %s than untyped average" % percent_diff(statistics.mean([x["time"] for x in results["best"]]), untyped["mean"])))
+        render(("\\item Average of bottom %s " % (len(results["worst"]))) + ("gradually-typed configurations is %s times %s than untyped average" % percent_diff(statistics.mean([x["time"] for x in results["worst"]]), untyped["mean"])))
+        render("\\end{itemize}")
+        render("\n\\subsection{Aggregate Figures}")
+        render("\\includegraphics[width=\\textwidth]{%s}" % results["ugt"]["img"])
+        render("\\includegraphics[width=\\textwidth]{%s}" % results["bucketed"])
+        # TODO make relative times graph
+        # print("\\includegraphics[width=\\textwidth]{%s}" % results["relative_bar"])
+        render("\n\\subsection{Worst Configurations}")
+        render("The worst %s configurations and their boundaries are:" % len(results["worst"]))
+        render("\\begin{itemize}")
+        for bad_c in results["worst"]:
+            vs_u, descr = percent_diff(bad_c["time"], untyped["mean"])
+            edges_str = "  \\begin{itemize}\n  \\item %s\n  \\end{itemize}" % "\n  \\item ".join(("(\\mono{%s} $\\rightarrow$ \\mono{%s})" % (src,dst) for (src,dst) in bad_c["boundaries"]))
+            render("\\item %s (%s times %s than untyped average)\n%s" % (bad_c["id"], vs_u, descr, edges_str))
+        # TODO edges figures
+        render("\\end{itemize}")
+        render("\\end{document}")
+    print("View results in %s" % outfile)
     return
 
 ### Main functions, dispatch
@@ -526,8 +613,8 @@ def main(*args, **options):
         results = results_of_tab(args[0], args[1])
     else:
         raise ValueError("unexpected arguments '%s'" % str(args))
-    save_as_tex(results)
-    pretty_print(results)
+    # pretty_print(results)
+    save_as_tex(results, "%s.tex" % strip_suffix(args[0]).rsplit("/", 1)[-1])
     return
 
 def print_help():
