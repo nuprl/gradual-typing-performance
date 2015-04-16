@@ -32,11 +32,11 @@ SEP = "\t"
 # Associate module names to their bitstring index and requires
 # Key: String. By convention, ends with .rkt suffix
 # Value: (List Index (Listof String)).
-## END GraphDict
+##
 
 ## Result
-#
-## END Result
+# it's a giant dictionary sorry guys
+##
 
 ### General Utils
 
@@ -83,6 +83,14 @@ def strip_suffix(fname):
         Remove everything after the rightmost "." in the string `fname`
     """
     return fname.rsplit(".", 1)[0]
+
+def check_directory_structure(dname):
+    """ (-> Path-String Void)
+        Assert that the contents of directory `dname` are well-formed.
+        - contains typed/ untyped/ and base/ directories
+        - contains main.rkt file (in any above dir, or both/)
+    """
+    raise NotImplementedError("todo")
 
 ### GraphDict helpers
 
@@ -131,10 +139,13 @@ def infer_graph(fname):
     prefix = strip_suffix(fname)
     gfile1 = "%s.graph" % prefix
     gfile2 = "%s.graph" % prefix.split("-", 1)[0]
+    gfile3 = "%s.graph" % prefix.rsplit("/", 1)[-1]
     if os.path.exists(gfile1):
         return gfile1
     elif os.path.exists(gfile2):
         return gfile2
+    elif os.path.exists(gfile3):
+        return gfile3
     else:
         return None
 
@@ -544,6 +555,13 @@ def results_of_tab(tabfile, dgraph):
     # TODO Graph most-common bad edges?
     return stats
 
+def results_of_sampling(dname, graph):
+    # Emulate the `results_of_tabfile` function using simple random sampling
+    # TODO:
+    # - run setup.rkt
+    # - execute sample (get up to steady state, etc)
+    raise NotImplementedError('nope')
+
 def percent_diff(n1, n2):
     """ (-> Nat Nat (List Nat String))
        Percent-difference between `n1` and `n2`.
@@ -670,6 +688,10 @@ def main(*args, **options):
     elif len(args) == 2 and args[0].endswith(".tab"):
         # Collect results from the .tab file
         results = results_of_tab(args[0], args[1])
+    elif len(args) == 2 and os.path.isdir(args[0]):
+        # Sampling mode!
+        check_directory_structure(args[0])
+        results = results_of_sampling(args[0], args[1])
     else:
         raise ValueError("unexpected arguments '%s'" % str(args))
     # pretty_print(results)
