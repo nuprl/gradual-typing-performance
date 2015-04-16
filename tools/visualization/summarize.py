@@ -247,7 +247,7 @@ def module_plot(graph, fname, title, boundaries=[], alpha=1, edgecolor="k", node
     nx.draw_networkx_labels(g, pos, dict([(k,k) for k in graph.keys()]))
     nx.draw_networkx_edges(g, pos, edge_color=edgecolor, alpha=alpha)
     ## Draw boundaries
-    nx.draw_networkx_edges(g, pos, edgelist=boundaries, edge_color="darkorange", width=2)
+    nx.draw_networkx_edges(g, pos, edgelist=boundaries, edge_color="r", width=4)
     output = "%s-module-graph-%s.png" % (fname, title.split(":", 1)[0].rsplit(" ", 1)[-1])
     ax1.set_title(title)
     plt.axis("off")
@@ -402,7 +402,7 @@ def tabfile_of_rktd(rktdfile):
     # TODO replace with a call to Python's 'subprocess'
     os.system("racket sexp-to-tab.rkt %s" % rktdfile)
     # Strip the suffix from the input file, replace with .tab
-    return "%s.tab" % rktdfile.rstrip(".", 1)[0]
+    return "%s.tab" % rktdfile.rsplit(".", 1)[0]
 
 def all_cells_matching(tabfile, config_pred):
     """
@@ -528,10 +528,10 @@ def results_of_tab(tabfile, dgraph):
                      ,"summary" : {"untyped" : basic_row_stats(u_raw)
                                   ,"gradual" : basic_row_stats(g_raw)
                                   ,"typed"   : basic_row_stats(t_raw)}}
-        ,"best"    : [basic_config_stats(b_config, b_time, dgraph)
-                      for (b_config, b_time) in best_cfg_and_times]
-        ,"worst"   : [basic_config_stats(w_config, w_time, dgraph)
-                      for (w_config, w_time) in worst_cfg_and_times]
+        ,"best"    : [basic_config_stats(v[0], v[1], dgraph)
+                      for v in best_cfg_and_times if v is not None]
+        ,"worst"   : [basic_config_stats(v[0], v[1], dgraph)
+                      for v in worst_cfg_and_times if v is not None]
         ,"bucketed": violin_plot(bucketize(tabfile, num_typed_modules, num_modules)
                                          ,"%s_by-typed-modules" % fname
                                          ,"Number of Typed Modules"
@@ -663,7 +663,7 @@ def main(*args, **options):
     results = None
     if len(args) == 2 and args[0].endswith(".rktd"):
         # Parse the .rktd file into a .tab file, parse the .tab file
-        tabfile = tabfile_of_rkt(args[0])
+        tabfile = tabfile_of_rktd(args[0])
         results = results_of_tab(tabfile, args[1])
     elif len(args) == 2 and args[0].endswith(".tab"):
         # Collect results from the .tab file
