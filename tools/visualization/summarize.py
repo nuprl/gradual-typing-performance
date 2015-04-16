@@ -380,6 +380,8 @@ def parse_args(argv):
     """
     if len(argv) == 0:
         return None, None
+    elif any((x in argv for x in ["help", "-help", "--help"])):
+        return None, None
     target, options = parse_options(argv)
     gfile = infer_graph(target)
     if gfile is None:
