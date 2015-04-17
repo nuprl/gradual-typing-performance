@@ -35,8 +35,8 @@ Total of 16 configurations
 \begin{itemize}\item Configuration: \mono{1100}\end{itemize}
 \item Worst gradually-typed runtime is 1.01 times slower than untyped average.
 \begin{itemize}\item Configuration: \mono{0011}\end{itemize}
-\item Average of top 10 gradually-typed configurations is 0.78 times faster than untyped average
-\item Average of bottom 10 gradually-typed configurations is 0.92 times faster than untyped average
+\item Average of top 10 gradually-typed configurations is 0.8 times faster than untyped average
+\item Average of bottom 10 gradually-typed configurations is 0.9 times faster than untyped average
 \end{itemize}
 
 \subsection{Aggregate Figures}
@@ -53,12 +53,8 @@ The worst 10 configurations and their boundaries are:
   \end{itemize}
 \item 0001 (1.01 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
-  \end{itemize}
-\item 0000 (1.0 times slower than untyped average)
-  \begin{itemize}
-  \item 
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \end{itemize}
 \item 0010 (1.0 times slower than untyped average)
   \begin{itemize}
@@ -71,8 +67,8 @@ The worst 10 configurations and their boundaries are:
   \end{itemize}
 \item 1001 (0.92 times faster than untyped average)
   \begin{itemize}
-  \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
   \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
   \end{itemize}
 \item 1011 (0.86 times faster than untyped average)
   \begin{itemize}
@@ -80,27 +76,32 @@ The worst 10 configurations and their boundaries are:
   \end{itemize}
 \item 1010 (0.85 times faster than untyped average)
   \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
-  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \end{itemize}
 \item 0101 (0.84 times faster than untyped average)
   \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
-  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \end{itemize}
 \item 0100 (0.83 times faster than untyped average)
   \begin{itemize}
+  \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
+  \end{itemize}
+\item 0111 (0.8 times faster than untyped average)
+  \begin{itemize}
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
   \end{itemize}
 
 \subsection{Top 5 Worst Configurations}
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-0011.png}
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-0001.png}
-\includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-0000.png}
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-0010.png}
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-1000.png}
+\includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-1001.png}
 \end{itemize}
 
 \subsection{Best Configurations}
@@ -116,17 +117,13 @@ The best 10 configurations and their boundaries are:
   \end{itemize}
 \item 1110 (0.75 times faster than untyped average)
   \begin{itemize}
-  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
-  \end{itemize}
-\item 1111 (0.77 times faster than untyped average)
-  \begin{itemize}
-  \item 
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \end{itemize}
 \item 0110 (0.8 times faster than untyped average)
   \begin{itemize}
-  \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
   \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
   \end{itemize}
 \item 0111 (0.8 times faster than untyped average)
   \begin{itemize}
@@ -139,18 +136,23 @@ The best 10 configurations and their boundaries are:
   \end{itemize}
 \item 0101 (0.84 times faster than untyped average)
   \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
-  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \end{itemize}
 \item 1010 (0.85 times faster than untyped average)
   \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
   \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
-  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \end{itemize}
 \item 1011 (0.86 times faster than untyped average)
   \begin{itemize}
+  \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
+  \end{itemize}
+\item 1001 (0.92 times faster than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
   \item (\mono{stress-test.rkt} $\rightarrow$ \mono{run-t.rkt})
   \end{itemize}
 
@@ -158,7 +160,7 @@ The best 10 configurations and their boundaries are:
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-1100.png}
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-1101.png}
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-1110.png}
-\includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-1111.png}
 \includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-0110.png}
+\includegraphics[width=\textwidth]{mbta-2015-03-26-module-graph-0111.png}
 \end{itemize}
 \end{document}

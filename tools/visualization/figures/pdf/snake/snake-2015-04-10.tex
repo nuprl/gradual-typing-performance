@@ -35,11 +35,11 @@ Total of 256 configurations
   \item 95\% confidence: 88, 88
   \end{itemize}
 \item Average gradually-typed runtime is 32.58 times slower than untyped average.
-\item Best gradually-typed runtime is 1.0 times slower than untyped average.
-\begin{itemize}\item Configuration: \mono{00000000}\end{itemize}
+\item Best gradually-typed runtime is 1.67 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{10111111}\end{itemize}
 \item Worst gradually-typed runtime is 90.87 times slower than untyped average.
 \begin{itemize}\item Configuration: \mono{10000111}\end{itemize}
-\item Average of top 25 gradually-typed configurations is 5.69 times slower than untyped average
+\item Average of top 25 gradually-typed configurations is 6.32 times slower than untyped average
 \item Average of bottom 25 gradually-typed configurations is 79.2 times slower than untyped average
 \end{itemize}
 
@@ -56,46 +56,46 @@ The worst 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
 \item 11001111 (89.53 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 10001111 (87.9 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11000111 (86.55 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -104,45 +104,45 @@ The worst 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 10001011 (85.4 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11100111 (85.02 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
 \item 11101111 (84.55 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 10100111 (83.92 times slower than untyped average)
@@ -150,12 +150,12 @@ The worst 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -163,23 +163,23 @@ The worst 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 10000011 (83.83 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -187,12 +187,12 @@ The worst 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11101011 (82.35 times slower than untyped average)
@@ -200,34 +200,34 @@ The worst 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11000011 (81.72 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
 \item 10100011 (79.9 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -235,11 +235,11 @@ The worst 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -247,25 +247,25 @@ The worst 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11100101 (71.1 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -274,12 +274,12 @@ The worst 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 10100101 (70.33 times slower than untyped average)
@@ -287,13 +287,13 @@ The worst 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -301,36 +301,36 @@ The worst 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11101101 (69.62 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 10100001 (68.53 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
@@ -338,12 +338,12 @@ The worst 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \end{itemize}
@@ -352,11 +352,11 @@ The worst 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \end{itemize}
@@ -372,36 +372,28 @@ The worst 25 configurations and their boundaries are:
 \subsection{Best Configurations}
 The best 25 configurations and their boundaries are:
 \begin{itemize}
-\item 00000000 (1.0 times slower than untyped average)
-  \begin{itemize}
-  \item 
-  \end{itemize}
-\item 11111111 (1.47 times slower than untyped average)
-  \begin{itemize}
-  \item 
-  \end{itemize}
 \item 10111111 (1.67 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \end{itemize}
 \item 01000000 (1.7 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \end{itemize}
 \item 10111011 (3.17 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \end{itemize}
 \item 11111011 (3.18 times slower than untyped average)
   \begin{itemize}
@@ -412,17 +404,17 @@ The best 25 configurations and their boundaries are:
   \end{itemize}
 \item 11011111 (3.43 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \end{itemize}
 \item 10011111 (3.6 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11011011 (5.05 times slower than untyped average)
   \begin{itemize}
@@ -430,19 +422,19 @@ The best 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \end{itemize}
 \item 10011011 (5.08 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11110011 (5.47 times slower than untyped average)
   \begin{itemize}
@@ -457,9 +449,9 @@ The best 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
@@ -480,34 +472,34 @@ The best 25 configurations and their boundaries are:
   \end{itemize}
 \item 00100000 (7.18 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \end{itemize}
 \item 01100000 (7.27 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 01000100 (7.28 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \end{itemize}
 \item 10110111 (7.33 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
@@ -517,8 +509,8 @@ The best 25 configurations and their boundaries are:
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
@@ -527,20 +519,20 @@ The best 25 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
 \item 11011101 (8.55 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 11111010 (8.72 times slower than untyped average)
   \begin{itemize}
@@ -552,41 +544,59 @@ The best 25 configurations and their boundaries are:
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \end{itemize}
+\item 10011101 (8.78 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
 \item 10111010 (8.78 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
-  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
-  \end{itemize}
-\item 10011101 (8.78 times slower than untyped average)
-  \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
   \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
-  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \end{itemize}
 \item 11010111 (8.83 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{handlers.rkt})
-  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{cut-tail.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion-help.rkt} $\rightarrow$ \mono{cut-tail.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
   \item (\mono{handlers.rkt} $\rightarrow$ \mono{collide.rkt})
   \end{itemize}
+\item 11111110 (9.0 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \end{itemize}
+\item 10111110 (9.1 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{motion.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{motion.rkt} $\rightarrow$ \mono{motion-help.rkt})
+  \item (\mono{collide.rkt} $\rightarrow$ \mono{const.rkt})
+  \item (\mono{const.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{handlers.rkt} $\rightarrow$ \mono{motion.rkt})
+  \end{itemize}
 
 \subsection{Top 5 Best Configurations}
-\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-00000000.png}
-\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-11111111.png}
 \includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-10111111.png}
 \includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-01000000.png}
 \includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-10111011.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-11111011.png}
+\includegraphics[width=\textwidth]{snake-2015-04-10-module-graph-11011111.png}
 \end{itemize}
 \end{document}

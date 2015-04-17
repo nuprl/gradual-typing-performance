@@ -620,7 +620,8 @@ def save_as_tex(results, outfile):
         render("\\begin{document}")
         render("\n\n\\section{Results: %s}" % results["title"])
         render("\n\\subsection{Module Summary}")
-        render("\\begin{itemize}\n\\item \\mono{%s}\\end{itemize}" % "}\n\item \mono{".join(results["graph"].keys()))
+        render("\\begin{itemize}\n\\item \\mono{%s}\\end{itemize}" % "}\n\item \mono{".join([k for (k,v) in sorted([(k,v[0]) for (k,v) in results["graph"].items()])]))
+        render("Total of %s configurations" % (2 ** (len(results["graph"].keys()))))
         render("\n\\subsection{Overall Runtimes}")
         render("\\begin{itemize}")
         render("\\item Average \\emph{untyped} runtime: %s" % untyped["mean"])
@@ -661,6 +662,26 @@ def save_as_tex(results, outfile):
             config = results["worst"][i]["id"]
             time   = results["worst"][i]["time"]
             bnds   = results["worst"][i]["boundaries"]
+            vs_u, descr = percent_diff(time, untyped["mean"])
+            fname = module_plot(results["graph"]
+                               ,results["title"]
+                               ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
+                               ,boundaries=bnds)
+            render("\\includegraphics[width=\\textwidth]{%s}" % fname)
+        render("\\end{itemize}")
+        render("\n\\subsection{Best Configurations}")
+        render("The best %s configurations and their boundaries are:" % len(results["best"]))
+        render("\\begin{itemize}")
+        for bad_c in results["best"]:
+            vs_u, descr = percent_diff(bad_c["time"], untyped["mean"])
+            edges_str = "  \\begin{itemize}\n  \\item %s\n  \\end{itemize}" % "\n  \\item ".join(("(\\mono{%s} $\\rightarrow$ \\mono{%s})" % (src,dst) for (src,dst) in bad_c["boundaries"]))
+            render("\\item %s (%s times %s than untyped average)\n%s" % (bad_c["id"], vs_u, descr, edges_str))
+        num_mg_figs = min(5, len(results["best"]))
+        render("\n\\subsection{Top %s Best Configurations}" % num_mg_figs)
+        for i in range(num_mg_figs):
+            config = results["best"][i]["id"]
+            time   = results["best"][i]["time"]
+            bnds   = results["best"][i]["boundaries"]
             vs_u, descr = percent_diff(time, untyped["mean"])
             fname = module_plot(results["graph"]
                                ,results["title"]

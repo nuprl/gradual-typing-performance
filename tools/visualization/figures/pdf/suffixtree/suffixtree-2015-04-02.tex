@@ -33,11 +33,11 @@ Total of 64 configurations
   \item 95\% confidence: 1987, 2018
   \end{itemize}
 \item Average gradually-typed runtime is 51.24 times slower than untyped average.
-\item Best gradually-typed runtime is 0.67 times faster than untyped average.
-\begin{itemize}\item Configuration: \mono{111111}\end{itemize}
+\item Best gradually-typed runtime is 0.68 times faster than untyped average.
+\begin{itemize}\item Configuration: \mono{111011}\end{itemize}
 \item Worst gradually-typed runtime is 100.2 times slower than untyped average.
 \begin{itemize}\item Configuration: \mono{011111}\end{itemize}
-\item Average of top 10 gradually-typed configurations is 2.12 times slower than untyped average
+\item Average of top 10 gradually-typed configurations is 2.87 times slower than untyped average
 \item Average of bottom 10 gradually-typed configurations is 96.4 times slower than untyped average
 \end{itemize}
 
@@ -51,94 +51,94 @@ The worst 10 configurations and their boundaries are:
 \begin{itemize}
 \item 011111 (100.2 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 011110 (98.29 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
   \end{itemize}
 \item 011010 (97.88 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \end{itemize}
 \item 010110 (97.02 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \end{itemize}
 \item 010011 (96.96 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
-  \end{itemize}
-\item 011011 (96.73 times slower than untyped average)
-  \begin{itemize}
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \end{itemize}
+\item 011011 (96.73 times slower than untyped average)
+  \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 010010 (96.67 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \end{itemize}
 \item 010111 (96.55 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{structs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
   \end{itemize}
 \item 011101 (92.44 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \end{itemize}
 \item 011001 (91.3 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{structs.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{label.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \end{itemize}
 
 \subsection{Top 5 Worst Configurations}
@@ -152,17 +152,9 @@ The worst 10 configurations and their boundaries are:
 \subsection{Best Configurations}
 The best 10 configurations and their boundaries are:
 \begin{itemize}
-\item 111111 (0.67 times faster than untyped average)
-  \begin{itemize}
-  \item 
-  \end{itemize}
 \item 111011 (0.68 times faster than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
-  \end{itemize}
-\item 000000 (1.0 times slower than untyped average)
-  \begin{itemize}
-  \item 
   \end{itemize}
 \item 000100 (1.02 times slower than untyped average)
   \begin{itemize}
@@ -170,11 +162,11 @@ The best 10 configurations and their boundaries are:
   \end{itemize}
 \item 110111 (1.57 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \end{itemize}
 \item 110011 (1.69 times slower than untyped average)
   \begin{itemize}
@@ -185,43 +177,59 @@ The best 10 configurations and their boundaries are:
   \end{itemize}
 \item 111010 (3.12 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \end{itemize}
 \item 111110 (3.14 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
-  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
   \end{itemize}
 \item 110110 (3.98 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
-  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
-  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
   \end{itemize}
 \item 001000 (4.38 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
+  \end{itemize}
+\item 110010 (4.48 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
+  \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{structs.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{data.rkt})
+  \item (\mono{ukkonen.rkt} $\rightarrow$ \mono{label.rkt})
+  \end{itemize}
+\item 001100 (4.65 times slower than untyped average)
   \begin{itemize}
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{data.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{label.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{structs.rkt})
   \item (\mono{lcs.rkt} $\rightarrow$ \mono{ukkonen.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{lcs.rkt})
   \end{itemize}
 
 \subsection{Top 5 Best Configurations}
-\includegraphics[width=\textwidth]{suffixtree-2015-04-02-module-graph-111111.png}
 \includegraphics[width=\textwidth]{suffixtree-2015-04-02-module-graph-111011.png}
-\includegraphics[width=\textwidth]{suffixtree-2015-04-02-module-graph-000000.png}
 \includegraphics[width=\textwidth]{suffixtree-2015-04-02-module-graph-000100.png}
 \includegraphics[width=\textwidth]{suffixtree-2015-04-02-module-graph-110111.png}
+\includegraphics[width=\textwidth]{suffixtree-2015-04-02-module-graph-110011.png}
+\includegraphics[width=\textwidth]{suffixtree-2015-04-02-module-graph-111010.png}
 \end{itemize}
 \end{document}
