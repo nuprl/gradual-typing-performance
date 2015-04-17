@@ -1,0 +1,191 @@
+\documentclass{article}
+\usepackage{graphicx}
+\newcommand{\mono}[1]{\texttt{#1}}
+\begin{document}
+
+
+\section{Results: zordoz}
+
+\subsection{Module Summary}
+\begin{itemize}
+\item \mono{main.rkt}
+\item \mono{zo-find.rkt}
+\item \mono{zo-shell.rkt}
+\item \mono{zo-string.rkt}
+\item \mono{zo-transition.rkt}\end{itemize}
+Total of 32 configurations
+
+\subsection{Overall Runtimes}
+\begin{itemize}
+\item Average \emph{untyped} runtime: 576
+  \begin{itemize}
+  \item Median: 577
+  \item Min: 568
+  \item Max: 591
+  \item 95\% confidence: 574, 577
+  \end{itemize}
+\item Average \emph{typed} runtime: 1772
+  \begin{itemize}
+  \item Median: 1759
+  \item Min: 1751
+  \item Max: 1934
+  \item 95\% confidence: 1757, 1786
+  \end{itemize}
+\item Average gradually-typed runtime is 2.53 times slower than untyped average.
+\item Best gradually-typed runtime is 1.0 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{00000}\end{itemize}
+\item Worst gradually-typed runtime is 3.69 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{11101}\end{itemize}
+\item Average of top 10 gradually-typed configurations is 1.61 times slower than untyped average
+\item Average of bottom 10 gradually-typed configurations is 3.4 times slower than untyped average
+\end{itemize}
+
+\subsection{Aggregate Figures}
+\includegraphics[width=\textwidth]{zordoz_untyped-vs-gradual-vs-typed-violin.png}
+\includegraphics[width=\textwidth]{zordoz_by-typed-modules-violin.png}
+\includegraphics[width=\textwidth]{zordoz-normalized-runtimes-bar.png}
+
+\subsection{Worst Configurations}
+The worst 10 configurations and their boundaries are:
+\begin{itemize}
+\item 11101 (3.69 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 11001 (3.62 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 01001 (3.52 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 01101 (3.51 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 10111 (3.47 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 10011 (3.42 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 00111 (3.37 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 00011 (3.34 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 11111 (3.08 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 11011 (2.99 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \end{itemize}
+
+\subsection{Top 5 Worst Configurations}
+\includegraphics[width=\textwidth]{zordoz-module-graph-11101.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-11001.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-01001.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-01101.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-10111.png}
+\end{itemize}
+
+\subsection{Best Configurations}
+The best 10 configurations and their boundaries are:
+\begin{itemize}
+\item 00000 (1.0 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 10000 (1.22 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \end{itemize}
+\item 00100 (1.26 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \end{itemize}
+\item 10100 (1.27 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \end{itemize}
+\item 01010 (1.78 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \end{itemize}
+\item 01110 (1.79 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \end{itemize}
+\item 11010 (1.88 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \end{itemize}
+\item 11110 (1.93 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \end{itemize}
+\item 00010 (1.93 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+\item 00110 (1.99 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-find.rkt})
+  \item (\mono{zo-shell.rkt} $\rightarrow$ \mono{zo-transition.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{zo-shell.rkt})
+  \item (\mono{zo-find.rkt} $\rightarrow$ \mono{zo-string.rkt})
+  \end{itemize}
+
+\subsection{Top 5 Best Configurations}
+\includegraphics[width=\textwidth]{zordoz-module-graph-00000.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-10000.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-00100.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-10100.png}
+\includegraphics[width=\textwidth]{zordoz-module-graph-01010.png}
+\end{itemize}
+\end{document}

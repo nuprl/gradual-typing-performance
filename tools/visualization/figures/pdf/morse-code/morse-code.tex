@@ -8,10 +8,11 @@
 
 \subsection{Module Summary}
 \begin{itemize}
-\item \mono{morse-code-table.rkt}
-\item \mono{main.rkt}
 \item \mono{levenshtein.rkt}
-\item \mono{morse-code-strings.rkt}\end{itemize}
+\item \mono{main.rkt}
+\item \mono{morse-code-strings.rkt}
+\item \mono{morse-code-table.rkt}\end{itemize}
+Total of 16 configurations
 
 \subsection{Overall Runtimes}
 \begin{itemize}
@@ -30,12 +31,12 @@
   \item 95\% confidence: 328, 329
   \end{itemize}
 \item Average gradually-typed runtime is 1.57 times slower than untyped average.
-\item Best gradually-typed runtime is 1.31 times slower than untyped average.
-\begin{itemize}\item Configuration: \mono{0001}\end{itemize}
+\item Best gradually-typed runtime is 1.0 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{0000}\end{itemize}
 \item Worst gradually-typed runtime is 1.77 times slower than untyped average.
 \begin{itemize}\item Configuration: \mono{1101}\end{itemize}
-\item Average of top 10 gradually-typed configurations is 1.5 times slower than untyped average
-\item Average of bottom 10 gradually-typed configurations is 1.65 times slower than untyped average
+\item Average of top 10 gradually-typed configurations is 1.43 times slower than untyped average
+\item Average of bottom 10 gradually-typed configurations is 1.68 times slower than untyped average
 \end{itemize}
 
 \subsection{Aggregate Figures}
@@ -48,8 +49,8 @@ The worst 10 configurations and their boundaries are:
 \begin{itemize}
 \item 1101 (1.77 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
   \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
   \end{itemize}
 \item 1110 (1.76 times slower than untyped average)
   \begin{itemize}
@@ -59,48 +60,105 @@ The worst 10 configurations and their boundaries are:
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
   \end{itemize}
+\item 1111 (1.74 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
 \item 0110 (1.68 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
   \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
   \end{itemize}
 \item 0101 (1.68 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
-  \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
-  \end{itemize}
-\item 0111 (1.67 times slower than untyped average)
-  \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
   \end{itemize}
 \item 0100 (1.67 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
   \end{itemize}
-\item 1010 (1.56 times slower than untyped average)
+\item 0111 (1.67 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
-  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
+  \end{itemize}
+\item 1010 (1.56 times slower than untyped average)
+  \begin{itemize}
   \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
   \end{itemize}
 \item 1011 (1.49 times slower than untyped average)
   \begin{itemize}
   \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
   \end{itemize}
-\item 0010 (1.46 times slower than untyped average)
-  \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
-  \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
-  \end{itemize}
 
 \subsection{Top 5 Worst Configurations}
 \includegraphics[width=\textwidth]{morse-code-module-graph-1101.png}
 \includegraphics[width=\textwidth]{morse-code-module-graph-1110.png}
 \includegraphics[width=\textwidth]{morse-code-module-graph-1100.png}
+\includegraphics[width=\textwidth]{morse-code-module-graph-1111.png}
 \includegraphics[width=\textwidth]{morse-code-module-graph-0110.png}
-\includegraphics[width=\textwidth]{morse-code-module-graph-0101.png}
+\end{itemize}
+
+\subsection{Best Configurations}
+The best 10 configurations and their boundaries are:
+\begin{itemize}
+\item 0000 (1.0 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 0001 (1.31 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
+  \end{itemize}
+\item 0011 (1.38 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
+  \end{itemize}
+\item 1000 (1.39 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
+  \end{itemize}
+\item 1001 (1.39 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
+  \end{itemize}
+\item 0010 (1.46 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
+  \end{itemize}
+\item 1011 (1.49 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
+  \end{itemize}
+\item 1010 (1.56 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{morse-code-strings.rkt} $\rightarrow$ \mono{morse-code-table.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
+  \end{itemize}
+\item 0100 (1.67 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{morse-code-strings.rkt})
+  \end{itemize}
+\item 0111 (1.67 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{levenshtein.rkt})
+  \end{itemize}
+
+\subsection{Top 5 Best Configurations}
+\includegraphics[width=\textwidth]{morse-code-module-graph-0000.png}
+\includegraphics[width=\textwidth]{morse-code-module-graph-0001.png}
+\includegraphics[width=\textwidth]{morse-code-module-graph-0011.png}
+\includegraphics[width=\textwidth]{morse-code-module-graph-1000.png}
+\includegraphics[width=\textwidth]{morse-code-module-graph-1001.png}
 \end{itemize}
 \end{document}

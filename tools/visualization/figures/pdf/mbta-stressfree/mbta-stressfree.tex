@@ -1,0 +1,137 @@
+\documentclass{article}
+\usepackage{graphicx}
+\newcommand{\mono}[1]{\texttt{#1}}
+\begin{document}
+
+
+\section{Results: mbta-stressfree}
+
+\subsection{Module Summary}
+\begin{itemize}
+\item \mono{run-t.rkt}
+\item \mono{t-graph.rkt}
+\item \mono{t-view.rkt}\end{itemize}
+Total of 8 configurations
+
+\subsection{Overall Runtimes}
+\begin{itemize}
+\item Average \emph{untyped} runtime: 19110
+  \begin{itemize}
+  \item Median: 19317
+  \item Min: 17693
+  \item Max: 20682
+  \item 95\% confidence: 18838, 19381
+  \end{itemize}
+\item Average \emph{typed} runtime: 27993
+  \begin{itemize}
+  \item Median: 24991
+  \item Min: 22719
+  \item Max: 37083
+  \item 95\% confidence: 26097, 29888
+  \end{itemize}
+\item Average gradually-typed runtime is 1.34 times slower than untyped average.
+\item Best gradually-typed runtime is 1.0 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{000}\end{itemize}
+\item Worst gradually-typed runtime is 1.69 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{110}\end{itemize}
+\item Average of top 8 gradually-typed configurations is 1.31 times slower than untyped average
+\item Average of bottom 8 gradually-typed configurations is 1.31 times slower than untyped average
+\end{itemize}
+
+\subsection{Aggregate Figures}
+\includegraphics[width=\textwidth]{mbta-stressfree_untyped-vs-gradual-vs-typed-violin.png}
+\includegraphics[width=\textwidth]{mbta-stressfree_by-typed-modules-violin.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-normalized-runtimes-bar.png}
+
+\subsection{Worst Configurations}
+The worst 8 configurations and their boundaries are:
+\begin{itemize}
+\item 110 (1.69 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+\item 100 (1.67 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+\item 101 (1.57 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \end{itemize}
+\item 111 (1.46 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 010 (1.05 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \end{itemize}
+\item 011 (1.04 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+\item 001 (1.01 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+\item 000 (1.0 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+
+\subsection{Top 5 Worst Configurations}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-110.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-100.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-101.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-111.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-010.png}
+\end{itemize}
+
+\subsection{Best Configurations}
+The best 8 configurations and their boundaries are:
+\begin{itemize}
+\item 000 (1.0 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 001 (1.01 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+\item 011 (1.04 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+\item 010 (1.05 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \end{itemize}
+\item 111 (1.46 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 101 (1.57 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \end{itemize}
+\item 100 (1.67 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+\item 110 (1.69 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{t-view.rkt} $\rightarrow$ \mono{t-graph.rkt})
+  \item (\mono{run-t.rkt} $\rightarrow$ \mono{t-view.rkt})
+  \end{itemize}
+
+\subsection{Top 5 Best Configurations}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-000.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-001.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-011.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-010.png}
+\includegraphics[width=\textwidth]{mbta-stressfree-module-graph-111.png}
+\end{itemize}
+\end{document}

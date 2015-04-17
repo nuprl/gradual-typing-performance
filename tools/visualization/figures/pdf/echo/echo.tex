@@ -8,10 +8,11 @@
 
 \subsection{Module Summary}
 \begin{itemize}
+\item \mono{client.rkt}
 \item \mono{constants.rkt}
-\item \mono{server.rkt}
 \item \mono{main.rkt}
-\item \mono{client.rkt}\end{itemize}
+\item \mono{server.rkt}\end{itemize}
+Total of 16 configurations
 
 \subsection{Overall Runtimes}
 \begin{itemize}
@@ -30,11 +31,11 @@
   \item 95\% confidence: 2034, 2057
   \end{itemize}
 \item Average gradually-typed runtime is 1.09 times slower than untyped average.
-\item Best gradually-typed runtime is 1.06 times slower than untyped average.
-\begin{itemize}\item Configuration: \mono{0100}\end{itemize}
+\item Best gradually-typed runtime is 1.0 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{0000}\end{itemize}
 \item Worst gradually-typed runtime is 1.12 times slower than untyped average.
 \begin{itemize}\item Configuration: \mono{0110}\end{itemize}
-\item Average of top 10 gradually-typed configurations is 1.08 times slower than untyped average
+\item Average of top 10 gradually-typed configurations is 1.07 times slower than untyped average
 \item Average of bottom 10 gradually-typed configurations is 1.1 times slower than untyped average
 \end{itemize}
 
@@ -48,10 +49,10 @@ The worst 10 configurations and their boundaries are:
 \begin{itemize}
 \item 0110 (1.12 times slower than untyped average)
   \begin{itemize}
+  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
   \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
-  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
   \end{itemize}
 \item 0010 (1.12 times slower than untyped average)
   \begin{itemize}
@@ -60,8 +61,8 @@ The worst 10 configurations and their boundaries are:
   \end{itemize}
 \item 0111 (1.12 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
   \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
   \end{itemize}
 \item 0011 (1.11 times slower than untyped average)
   \begin{itemize}
@@ -75,13 +76,17 @@ The worst 10 configurations and their boundaries are:
   \end{itemize}
 \item 1010 (1.1 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
   \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
   \end{itemize}
 \item 1011 (1.09 times slower than untyped average)
   \begin{itemize}
-  \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
   \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
+  \end{itemize}
+\item 1111 (1.08 times slower than untyped average)
+  \begin{itemize}
+  \item 
   \end{itemize}
 \item 0001 (1.08 times slower than untyped average)
   \begin{itemize}
@@ -93,11 +98,6 @@ The worst 10 configurations and their boundaries are:
   \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
   \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
   \end{itemize}
-\item 0101 (1.07 times slower than untyped average)
-  \begin{itemize}
-  \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
-  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
-  \end{itemize}
 
 \subsection{Top 5 Worst Configurations}
 \includegraphics[width=\textwidth]{echo-module-graph-0110.png}
@@ -105,5 +105,67 @@ The worst 10 configurations and their boundaries are:
 \includegraphics[width=\textwidth]{echo-module-graph-0111.png}
 \includegraphics[width=\textwidth]{echo-module-graph-0011.png}
 \includegraphics[width=\textwidth]{echo-module-graph-1110.png}
+\end{itemize}
+
+\subsection{Best Configurations}
+The best 10 configurations and their boundaries are:
+\begin{itemize}
+\item 0000 (1.0 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 0100 (1.06 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
+  \end{itemize}
+\item 1001 (1.06 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
+  \end{itemize}
+\item 1000 (1.07 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
+  \end{itemize}
+\item 1101 (1.07 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
+  \end{itemize}
+\item 0101 (1.07 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
+  \end{itemize}
+\item 1100 (1.08 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{client.rkt})
+  \end{itemize}
+\item 0001 (1.08 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{main.rkt} $\rightarrow$ \mono{server.rkt})
+  \end{itemize}
+\item 1111 (1.08 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 1011 (1.09 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{client.rkt} $\rightarrow$ \mono{constants.rkt})
+  \item (\mono{server.rkt} $\rightarrow$ \mono{constants.rkt})
+  \end{itemize}
+
+\subsection{Top 5 Best Configurations}
+\includegraphics[width=\textwidth]{echo-module-graph-0000.png}
+\includegraphics[width=\textwidth]{echo-module-graph-0100.png}
+\includegraphics[width=\textwidth]{echo-module-graph-1001.png}
+\includegraphics[width=\textwidth]{echo-module-graph-1000.png}
+\includegraphics[width=\textwidth]{echo-module-graph-1101.png}
 \end{itemize}
 \end{document}

@@ -1,0 +1,98 @@
+\documentclass{article}
+\usepackage{graphicx}
+\newcommand{\mono}[1]{\texttt{#1}}
+\begin{document}
+
+
+\section{Results: sieve-2015-04-06}
+
+\subsection{Module Summary}
+\begin{itemize}
+\item \mono{main.rkt}
+\item \mono{streams.rkt}\end{itemize}
+Total of 4 configurations
+
+\subsection{Overall Runtimes}
+\begin{itemize}
+\item Average \emph{untyped} runtime: 6402
+  \begin{itemize}
+  \item Median: 6405
+  \item Min: 6372
+  \item Max: 6426
+  \item 95\% confidence: 6395, 6408
+  \end{itemize}
+\item Average \emph{typed} runtime: 6311
+  \begin{itemize}
+  \item Median: 6320
+  \item Min: 6281
+  \item Max: 6337
+  \item 95\% confidence: 6304, 6317
+  \end{itemize}
+\item Average gradually-typed runtime is 117.77 times slower than untyped average.
+\item Best gradually-typed runtime is 0.99 times faster than untyped average.
+\begin{itemize}\item Configuration: \mono{11}\end{itemize}
+\item Worst gradually-typed runtime is 131.63 times slower than untyped average.
+\begin{itemize}\item Configuration: \mono{10}\end{itemize}
+\item Average of top 4 gradually-typed configurations is 59.38 times slower than untyped average
+\item Average of bottom 4 gradually-typed configurations is 59.38 times slower than untyped average
+\end{itemize}
+
+\subsection{Aggregate Figures}
+\includegraphics[width=\textwidth]{sieve-2015-04-06_untyped-vs-gradual-vs-typed-violin.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06_by-typed-modules-violin.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-normalized-runtimes-bar.png}
+
+\subsection{Worst Configurations}
+The worst 4 configurations and their boundaries are:
+\begin{itemize}
+\item 10 (131.63 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{streams.rkt})
+  \end{itemize}
+\item 01 (103.9 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{streams.rkt})
+  \end{itemize}
+\item 00 (1.0 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 11 (0.99 times faster than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+
+\subsection{Top 4 Worst Configurations}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-10.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-01.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-00.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-11.png}
+\end{itemize}
+
+\subsection{Best Configurations}
+The best 4 configurations and their boundaries are:
+\begin{itemize}
+\item 11 (0.99 times faster than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 00 (1.0 times slower than untyped average)
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\item 01 (103.9 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{streams.rkt})
+  \end{itemize}
+\item 10 (131.63 times slower than untyped average)
+  \begin{itemize}
+  \item (\mono{main.rkt} $\rightarrow$ \mono{streams.rkt})
+  \end{itemize}
+
+\subsection{Top 4 Best Configurations}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-11.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-00.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-01.png}
+\includegraphics[width=\textwidth]{sieve-2015-04-06-module-graph-10.png}
+\end{itemize}
+\end{document}
