@@ -25,6 +25,8 @@ import sys
 DEBUG = 0
 # Separator for .tag and .graph files
 SEP = "\t"
+# Place to store intermediate results, when sampling.
+TMP_RESULTS = "summarize-tmp-results.txt"
 
 ### Data Definitions
 
@@ -39,6 +41,15 @@ SEP = "\t"
 ##
 
 ### General Utils
+
+def count_runs(fname):
+    with open(fname, "r") as f:
+        hdr = next(f)
+    title = hdr.split("\t", 1)[0]
+    if title != "Run":
+        raise ValueError("Expected first column of '%s' to be labeled 'Run', got label '%s'" % (fname, title))
+    last_index = hdr.rsplit("\t", 1)[-1]
+    return int(last_index)
 
 def count_modules(fname):
     """ (-> Path-String Nat)
@@ -168,6 +179,8 @@ def basic_row_stats(dataset):
     """ (-> (Listof Nat) (List Nat Nat Nat Nat)
         Compute basic statistics for list `dataset`
     """
+    if not dataset:
+        return None
     stat = {
         "mean"     : int(statistics.mean(dataset)),
         "median"   : int(statistics.median(dataset)),
@@ -244,7 +257,8 @@ def bar_plot(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue'
     print("Saved bar chart to '%s'" % output)
     return output
 
-def module_plot(graph, fname, title, boundaries=[], alpha=1, edgecolor="k", nodecolor='royalblue'):
+def module_plot(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange'):
+    config = title.split(":", 1)[0].rsplit(" ", 1)[-1]
     ## Make networkx graph
     g = nx.DiGraph()
     for (k,v) in graph.items():
@@ -254,12 +268,19 @@ def module_plot(graph, fname, title, boundaries=[], alpha=1, edgecolor="k", node
     ## Make pyplot
     pos = nx.circular_layout(g, scale=1)
     fig,ax1 = plt.subplots()
-    nx.draw_networkx_nodes(g, pos, node_color=nodecolor, node_size=1000, alpha=alpha)
+    # Untyped nodes, or the default
+    nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
+                           ,nodelist=[k for (k,v) in graph.items() if is_untyped(v[0], config)]
+                           ,node_color=untypedcolor)
+    # Typed nodes
+    nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
+                           ,nodelist=[k for (k,v) in graph.items() if is_typed(v[0], config)]
+                           ,node_color=typedcolor)
     nx.draw_networkx_labels(g, pos, dict([(k,k) for k in graph.keys()]))
     nx.draw_networkx_edges(g, pos, edge_color=edgecolor, alpha=alpha)
     ## Draw boundaries
     nx.draw_networkx_edges(g, pos, edgelist=boundaries, edge_color="r", width=4)
-    output = "%s-module-graph-%s.png" % (fname, title.split(":", 1)[0].rsplit(" ", 1)[-1])
+    output = "%s-module-graph-%s.png" % (fname, config)
     ax1.set_title(title)
     plt.axis("off")
     plt.savefig(output)
@@ -400,6 +421,60 @@ def parse_args(argv):
     d = dict_of_graphfile(gfile)
     return [target, d], {"verbose" : DEBUG}
 
+### Sampling
+
+# TODO: also, write a "one sample" function that takes a file and number of iterations.
+def run_sample(base_folder, config, entry_point="main.rkt", iters=50):
+    """
+        Search the `base_folder` for a benchmark/ subdirectory.
+        Under benchmark/, find the directory matching `config`
+        and execute the file `entry_point`.
+        Keep running until we have a reliable sample
+    """
+    cwd = os.getcwd()
+    os.chdir("%s/variation%s" % (base_folder, config))
+    os.system("raco make %s" % entry_point)
+    # Throwaway
+    os.system("racket %s" % entry_point)
+    for i in range(iters):
+        os.system("racket %s >> %s" % (entry_point, TMP_RESULTS))
+    os.chdir(cwd)
+    return result
+      #     (system (string-append "raco make -v " (path->string file)))
+
+      # ;; run an extra run of the variation to throw away in order to avoid
+      # ;; OS caching issues
+      # (unless (only-compile?)
+      #   (displayln "throwaway build/run to avoid OS caching")
+      #   (process (format "racket ~a" (path->string file))))
+
+      # ;; run the iterations that will count for the data
+      # (unless (only-compile?)
+      #   (for ([i (in-range iters)])
+      #     (printf "iteration #~a of ~a~n" i var)
+      #     ;; FIXME: use benchmark library
+      #     (define command `(time (dynamic-require ,(path->string file) #f)))
+      #     (match-define (list in out pid err proc)
+      #       (process (format "racket -e '~s'" command)
+      #                #:set-pwd? #t))
+      #     ;; if this match fails, something went wrong since we put time in above
+      #     (define time-info
+      #       (for/or ([line (in-list (port->lines in))])
+      #         (regexp-match #rx"cpu time: (.*) real time: (.*) gc time: (.*)" line)))
+      #     (match time-info
+      #       [(list full (app string->number cpu)
+      #                   (app string->number real)
+      #                   (app string->number gc))
+      #        (printf "cpu: ~a real: ~a gc: ~a~n" cpu real gc)
+      #        (set! times (cons real times))]
+      #       [#f (void)])
+      #     ;; print anything we get on stderr so we can detect errors
+      #     (for-each displayln (port->lines err))
+      #     ;; we're reponsible for closing these
+      #     (close-input-port in)
+      #     (close-input-port err)
+      #     (close-output-port out))))
+
 ### Summaries
 
 def tabfile_of_rktd(rktdfile):
@@ -431,6 +506,12 @@ def all_cells_matching(tabfile, config_pred):
     return fold_file(tabfile, [], lambda acc,row: acc + process_row(row))
 
 ## config manipulation
+
+def is_untyped(key, s):
+    return s[key] == "0"
+
+def is_typed(key, s):
+    return s[key] == "1"
 
 def is_untyped_config(s):
     """
@@ -507,13 +588,6 @@ def results_of_tab(tabfile, dgraph):
     num_modules = count_modules(tabfile)
     num_configs = 2 ** num_modules
     print("Project contains %s modules (%s configurations)" % (num_modules, num_configs))
-    ## Collect over-all running times, plot
-    #o_raw = all_cells_matching(tabfile, lambda x: True)
-    #o_violin = violin_plot([o_raw]           #dataset
-    #                      ,"%s_overall-runtime" % fname
-    #                      ,""
-    #                      ,"Runtime (ms)")
-    # Collect untyped, in-between, and typed running times, plot
     u_raw = all_cells_matching(tabfile, is_untyped_config)
     g_raw = all_cells_matching(tabfile, lambda x: not (is_typed_config(x) or is_untyped_config(x)))
     t_raw = all_cells_matching(tabfile, is_typed_config)
@@ -521,9 +595,9 @@ def results_of_tab(tabfile, dgraph):
                             ,"%s_untyped-vs-gradual-vs-typed" % fname
                             ,"Configuration"
                             ,"Runtime (ms)"
-                            ,xlabels=["untyped","gradual\n(all configs)","typed"])
+                            ,xlabels=["untyped","gradual\n(all configs)","typed"]) if u_raw and g_raw and t_raw else None
     # Collect absolute BEST and WORST times+configs
-    ten_percent = max(10, int(0.10 * num_configs))
+    ten_percent = max(3, min(10, int(0.10 * num_configs)))
     best_cfg_and_times  = best_rows(tabfile
                         ,ten_percent
                         ,lambda acc,tmp: tmp[1] < acc[1]
@@ -533,9 +607,8 @@ def results_of_tab(tabfile, dgraph):
                         ,lambda acc,tmp: acc[1] < tmp[1]
                         ,lambda row:(row[0], int(statistics.mean([int(x) for x in row[1::]]))))
     stats = {
-        #"overall"  : {"img"     : [o_violin]
-        #             ,"summary" : basic_row_stats(o_raw)}
         "title"    : fname
+        ,"runs"    : count_runs(tabfile)
         ,"graph"   : dgraph
         ,"ugt"     : {"img" : ugt_violin
                      ,"summary" : {"untyped" : basic_row_stats(u_raw)
@@ -550,9 +623,8 @@ def results_of_tab(tabfile, dgraph):
                                          ,"Number of Typed Modules"
                                          ,"Runtime (ms)"
                                          ,positions=range(0, 1+num_modules)
-                                         ,xlabels=range(1, 2+num_modules))
+                                         ,xlabels=range(0, 1+num_modules))
     }
-    # TODO Graph most-common bad edges?
     return stats
 
 def results_of_sampling(dname, graph):
@@ -615,82 +687,89 @@ def save_as_tex(results, outfile):
         def render(s):
             print(s, file=f)
         render("\\documentclass{article}")
-        render("\\usepackage{graphicx}")
+        render("\\usepackage{graphicx,enumitem}")
         render("\\newcommand{\\mono}[1]{\\texttt{#1}}")
         render("\\begin{document}")
+        render("\\setlist[enumerate,1]{start=0}")
         render("\n\n\\section{Results: %s}" % results["title"])
         render("\n\\subsection{Module Summary}")
-        render("\\begin{itemize}\n\\item \\mono{%s}\\end{itemize}" % "}\n\item \mono{".join([k for (k,v) in sorted([(k,v[0]) for (k,v) in results["graph"].items()])]))
+        render("\\begin{enumerate}\n\\item \\mono{%s}\\end{enumerate}" % "}\n\item \mono{".join([k for (k,v) in sorted([(k,v[0]) for (k,v) in results["graph"].items()])]))
         render("Total of %s configurations" % (2 ** (len(results["graph"].keys()))))
+        render("Ran each configuration %s times" % results["runs"])
         render("\n\\subsection{Overall Runtimes}")
         render("\\begin{itemize}")
         render("\\item Average \\emph{untyped} runtime: %s" % untyped["mean"])
-        render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s, %s\n  \\end{itemize}" % (untyped["median"], untyped["min"], untyped["max"], untyped["ci"][0], untyped["ci"][1]))
+        render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s~\\textendash~%s\n  \\end{itemize}" % (untyped["median"], untyped["min"], untyped["max"], untyped["ci"][0], untyped["ci"][1]))
         render("\\item Average \\emph{typed} runtime: %s" % typed["mean"])
-        render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s, %s\n  \\end{itemize}" % (typed["median"], typed["min"], typed["max"], typed["ci"][0], typed["ci"][1]))
-        g_vs_u = percent_diff(gradual["mean"], untyped["mean"])
-        render("\\item Average gradually-typed runtime is %s times %s than untyped average." % g_vs_u)
-        render("\\item Best gradually-typed runtime is %s times %s than untyped average." % percent_diff(results["best"][0]["time"], untyped["mean"]))
-        render("\\begin{itemize}\\item Configuration: \\mono{%s}\\end{itemize}" % results["best"][0]["id"])
-        render("\\item Worst gradually-typed runtime is %s times %s than untyped average." % percent_diff(results["worst"][0]["time"], untyped["mean"]))
-        render("\\begin{itemize}\\item Configuration: \\mono{%s}\\end{itemize}" % results["worst"][0]["id"])
-        bavg_vs_u = percent_diff(statistics.mean([x["time"] for x in results["best"]]), untyped["mean"])
-        render("\\item Average of top %s gradually-typed configurations is %s times %s than untyped average" % (len(results["best"]), bavg_vs_u[0], bavg_vs_u[1]))
-        wavg_vs_u = percent_diff(statistics.mean([x["time"] for x in results["worst"]]), untyped["mean"])
-        render("\\item Average of bottom %s gradually-typed configurations is %s times %s than untyped average" % (len(results["worst"]), wavg_vs_u[0], wavg_vs_u[1]))
-        render("\\end{itemize}")
-        render("\n\\subsection{Aggregate Figures}")
-        render("\\includegraphics[width=\\textwidth]{%s}" % results["ugt"]["img"])
-        render("\\includegraphics[width=\\textwidth]{%s}" % results["bucketed"])
-        bar = bar_plot(range(5)
-                      ,[1, g_vs_u[0], bavg_vs_u[0], wavg_vs_u[0], percent_diff(typed["mean"], untyped["mean"])[0]]
-                      ,"%s-normalized-runtimes" % results["title"]
-                      ,"Group"
-                      ,"Runtime (Normalized to untyped)"
-                      ,xlabels=["Untyped", "All\nGradually-Typed", "Top %s" % (len(results["best"])), "Bottom %s" % (len(results["worst"])), "Typed"])
-        render("\\includegraphics[width=\\textwidth]{%s}" % bar)
-        render("\n\\subsection{Worst Configurations}")
-        render("The worst %s configurations and their boundaries are:" % len(results["worst"]))
-        render("\\begin{itemize}")
-        for bad_c in results["worst"]:
-            vs_u, descr = percent_diff(bad_c["time"], untyped["mean"])
-            edges_str = "  \\begin{itemize}\n  \\item %s\n  \\end{itemize}" % "\n  \\item ".join(("(\\mono{%s} $\\rightarrow$ \\mono{%s})" % (src,dst) for (src,dst) in bad_c["boundaries"]))
-            render("\\item %s (%s times %s than untyped average)\n%s" % (bad_c["id"], vs_u, descr, edges_str))
-        num_mg_figs = min(5, len(results["worst"]))
-        render("\n\\subsection{Top %s Worst Configurations}" % num_mg_figs)
-        for i in range(num_mg_figs):
-            config = results["worst"][i]["id"]
-            time   = results["worst"][i]["time"]
-            bnds   = results["worst"][i]["boundaries"]
-            vs_u, descr = percent_diff(time, untyped["mean"])
-            fname = module_plot(results["graph"]
-                               ,results["title"]
-                               ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
-                               ,boundaries=bnds)
-            render("\\includegraphics[width=\\textwidth]{%s}" % fname)
-        render("\\end{itemize}")
-        render("\n\\subsection{Best Configurations}")
-        render("The best %s configurations and their boundaries are:" % len(results["best"]))
-        render("\\begin{itemize}")
-        for bad_c in results["best"]:
-            vs_u, descr = percent_diff(bad_c["time"], untyped["mean"])
-            edges_str = "  \\begin{itemize}\n  \\item %s\n  \\end{itemize}" % "\n  \\item ".join(("(\\mono{%s} $\\rightarrow$ \\mono{%s})" % (src,dst) for (src,dst) in bad_c["boundaries"]))
-            render("\\item %s (%s times %s than untyped average)\n%s" % (bad_c["id"], vs_u, descr, edges_str))
-        num_mg_figs = min(5, len(results["best"]))
-        render("\n\\subsection{Top %s Best Configurations}" % num_mg_figs)
-        for i in range(num_mg_figs):
-            config = results["best"][i]["id"]
-            time   = results["best"][i]["time"]
-            bnds   = results["best"][i]["boundaries"]
-            vs_u, descr = percent_diff(time, untyped["mean"])
-            fname = module_plot(results["graph"]
-                               ,results["title"]
-                               ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
-                               ,boundaries=bnds)
-            render("\\includegraphics[width=\\textwidth]{%s}" % fname)
-        render("\\end{itemize}")
+        render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s~\\textendash~%s\n  \\end{itemize}" % (typed["median"], typed["min"], typed["max"], typed["ci"][0], typed["ci"][1]))
+        if not gradual:
+          render("\\end{itemize}")
+        else:
+          g_vs_u = percent_diff(gradual["mean"], untyped["mean"])
+          render("\\item Average gradually-typed runtime is %s times %s than untyped average." % g_vs_u)
+          render("\\item Best gradually-typed runtime is %s times %s than untyped average." % percent_diff(results["best"][0]["time"], untyped["mean"]))
+          render("\\begin{itemize}\\item Configuration: \\mono{%s}\\end{itemize}" % results["best"][0]["id"])
+          render("\\item Worst gradually-typed runtime is %s times %s than untyped average." % percent_diff(results["worst"][0]["time"], untyped["mean"]))
+          render("\\begin{itemize}\\item Configuration: \\mono{%s}\\end{itemize}" % results["worst"][0]["id"])
+          bavg_vs_u = percent_diff(statistics.mean([x["time"] for x in results["best"]]), untyped["mean"])
+          render("\\item Average of top %s gradually-typed configurations is %s times %s than untyped average" % (len(results["best"]), bavg_vs_u[0], bavg_vs_u[1]))
+          wavg_vs_u = percent_diff(statistics.mean([x["time"] for x in results["worst"]]), untyped["mean"])
+          render("\\item Average of bottom %s gradually-typed configurations is %s times %s than untyped average" % (len(results["worst"]), wavg_vs_u[0], wavg_vs_u[1]))
+          render("\\end{itemize}")
+          render("\n\\subsection{Aggregate Figures}")
+          bar = bar_plot(range(5)
+                        ,[1, g_vs_u[0], bavg_vs_u[0], wavg_vs_u[0], percent_diff(typed["mean"], untyped["mean"])[0]]
+                        ,"%s-normalized-runtimes" % results["title"]
+                        ,"Group"
+                        ,"Runtime (Normalized to untyped)"
+                        ,xlabels=["Untyped", "All\nGradually-Typed", "Top %s" % (len(results["best"])), "Bottom %s" % (len(results["worst"])), "Typed"])
+          render("\\includegraphics[width=\\textwidth]{%s}" % bar)
+          render("\\includegraphics[width=\\textwidth]{%s}" % results["ugt"]["img"])
+          render("\\includegraphics[width=\\textwidth]{%s}" % results["bucketed"])
+          render("\n\\subsection{Worst (gradual) Configurations}")
+          render("The worst %s configurations and their boundaries are:" % len(results["worst"]))
+          render("\\begin{itemize}")
+          for bad_c in results["worst"]:
+              vs_u, descr = percent_diff(bad_c["time"], untyped["mean"])
+              edges_str = "  \\begin{itemize}\n  \\item %s\n  \\end{itemize}" % "\n  \\item ".join(("(\\mono{%s} $\\rightarrow$ \\mono{%s})" % (src,dst) for (src,dst) in bad_c["boundaries"]))
+              render("\\item %s (%s times %s than untyped average)\n%s" % (bad_c["id"], vs_u, descr, edges_str))
+          render("\\end{itemize}")
+          num_mg_figs = min(5, len(results["worst"]))
+          render("\n\\subsection{Top %s Worst (gradual) Configurations}" % num_mg_figs)
+          render("Untyped modules are \\textbf{blue} and typed modules are \\emph{orange}.\n")
+          for i in range(num_mg_figs):
+              config = results["worst"][i]["id"]
+              time   = results["worst"][i]["time"]
+              bnds   = results["worst"][i]["boundaries"]
+              vs_u, descr = percent_diff(time, untyped["mean"])
+              fname = module_plot(results["graph"]
+                                 ,results["title"]
+                                 ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
+                                 ,boundaries=bnds)
+              render("\\includegraphics[width=\\textwidth]{%s}" % fname)
+          render("\n\\subsection{Best (gradual) Configurations}")
+          render("The best %s configurations and their boundaries are:" % len(results["best"]))
+          render("\\begin{itemize}")
+          for bad_c in results["best"]:
+              vs_u, descr = percent_diff(bad_c["time"], untyped["mean"])
+              edges_str = "  \\begin{itemize}\n  \\item %s\n  \\end{itemize}" % "\n  \\item ".join(("(\\mono{%s} $\\rightarrow$ \\mono{%s})" % (src,dst) for (src,dst) in bad_c["boundaries"]))
+              render("\\item %s (%s times %s than untyped average)\n%s" % (bad_c["id"], vs_u, descr, edges_str))
+          render("\\end{itemize}")
+          num_mg_figs = min(5, len(results["best"]))
+          render("\n\\subsection{Top %s Best (gradual) Configurations}" % num_mg_figs)
+          render("Untyped modules are \\textbf{blue} and typed modules are \\emph{orange}.\n")
+          for i in range(num_mg_figs):
+              config = results["best"][i]["id"]
+              time   = results["best"][i]["time"]
+              bnds   = results["best"][i]["boundaries"]
+              vs_u, descr = percent_diff(time, untyped["mean"])
+              fname = module_plot(results["graph"]
+                                 ,results["title"]
+                                 ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
+                                 ,boundaries=bnds)
+              render("\\includegraphics[width=\\textwidth]{%s}" % fname)
         render("\\end{document}")
-    print("View results in %s" % outfile)
+    print("Results saved as %s" % outfile)
     return
 
 ### Main functions, dispatch
