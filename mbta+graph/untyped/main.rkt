@@ -50,7 +50,7 @@
     [(_ (f x y n)) (unless (= (length (f x y n)) n) (error '(f x y n)))]
     [(_ (f x y)) 
      (let ([r (f x y)])
-       (unless (= (length r) 1) (*debug `((f x y) ,r))))]))
+       (unless (= (length r) 1) (error `((f x y) ,r))))]))
 
 ;; -> [Listof String]
 ;; read up to x and collect lines into list

@@ -13,9 +13,8 @@
 (require
  (for-syntax racket/base racket/syntax syntax/parse 
              syntax/parse/experimental/template)
- "graph-unweighted.rkt"
  racket/stxparam
- )
+ "graph-struct.rkt")
 
 (define-syntax-parameter $from (syntax-rules ()))
 (define-syntax-parameter $to (syntax-rules ()))
@@ -56,7 +55,7 @@
                   (syntax-parameterize ([$from (syntax-id-rules () [_ i])]
                                         [$to (syntax-id-rules () [_ j])])
                     init-val)))))
-        (?? (let ([vs ((unweighted-graph-get-vertices g) g)])
+        (?? (let ([vs ((unweighted-graph-get-vertices g))])
               (for* ([i vs] [j vs])
                 (syntax-parameterize ([$from (syntax-id-rules () [_ i])]
                                       [$to (syntax-id-rules () [_ j])])

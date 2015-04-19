@@ -1,22 +1,15 @@
 #lang racket/base
 
 (require
- "graph-adjlist-utils.rkt")
-
-(require
- (only-in racket/set in-set)
-)
+ "graph-struct.rkt"
+ "graph-adjlist-utils.rkt"
+ (only-in racket/set in-set))
 
 ; unweighted, adjacency-list graph
 
 (provide
  unweighted-graph/directed
  (struct-out unweighted-graph))
-
-(struct unweighted-graph
-        (get-vertices
-         in-neighbors))
-
 
 ;; directed graph constructor
 (define (unweighted-graph/directed es)
@@ -36,5 +29,4 @@
   ;; Create graph
   (unweighted-graph
    get-vertices
-   in-neighbors
-))
+   in-neighbors))

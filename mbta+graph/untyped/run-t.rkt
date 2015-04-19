@@ -17,7 +17,6 @@
 ;; ===================================================================================================
 
 (require "t-view.rkt")
-(module+ test (require rackunit))
 
 (define PATH    #rx"from (.*) to (.*)$")
 (define DISABLE #rx"disable (.*)$")
