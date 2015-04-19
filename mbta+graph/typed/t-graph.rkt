@@ -17,7 +17,7 @@
                       Any
                       (-> Station Station [Setof Line] Void)))])
 (require/typed/check "graph-unweighted.rkt"
-  [unweighted-graph/directed (-> (Listof (List String Strig)) unweighted-graph)])
+  [unweighted-graph/directed (-> (Listof (List String String)) unweighted-graph)])
 
 (define-type Line->Connection* [Listof [List Line Connection*]])
 (define-type Connection* [Listof Connection])

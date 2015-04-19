@@ -33,6 +33,7 @@
 
 (require
  "graph-unweighted.rkt"
+ "graph-struct.rkt"
  (only-in "graph-attach-edge-property.rkt" attach-edge-property)
 )
 
