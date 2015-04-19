@@ -417,7 +417,8 @@ def parse_args(argv):
     target, options = parse_options(argv)
     gfile = infer_graph(target)
     if gfile is None:
-        raise ValueError("Could not find corresponding graph for file %s.\n  Suggestion: create a file '%s.graph' with columns 'MODULE\tINDEX\tREQUIRES' documenting\n  - The important modules in the project\n  - Their indexes in the configuration bitstrings\n  - The files these modules require." % (target, strip_suffix(target)))
+        print("Error: Could not find corresponding graph for file %s.\n  Suggestion: create a file '%s.graph' with columns 'MODULE\tINDEX\tREQUIRES' documenting\n  - The important modules in the project\n  - Their indexes in the configuration bitstrings\n  - The files these modules require." % (target, strip_suffix(target)))
+        sys.exit(1)
     d = dict_of_graphfile(gfile)
     return [target, d], {"verbose" : DEBUG}
 
