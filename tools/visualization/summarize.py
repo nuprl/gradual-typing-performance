@@ -701,7 +701,8 @@ def save_as_tex(results, outfile):
         render("\\begin{itemize}")
         render("\\item Average \\emph{untyped} runtime: %s" % untyped["mean"])
         render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s~\\textendash~%s\n  \\end{itemize}" % (untyped["median"], untyped["min"], untyped["max"], untyped["ci"][0], untyped["ci"][1]))
-        render("\\item Average \\emph{typed} runtime: %s" % typed["mean"])
+        t_vs_u, t_vs_u_descr = percent_diff(typed['mean'], untyped['mean'])
+        render("\\item Average \\emph{typed} runtime: %s (%s times %s than untyped average)" % (typed["mean"], t_vs_u, t_vs_u_descr))
         render("  \\begin{itemize}\n  \\item Median: %s\n  \\item Min: %s\n  \\item Max: %s\n  \\item 95\\%% confidence: %s~\\textendash~%s\n  \\end{itemize}" % (typed["median"], typed["min"], typed["max"], typed["ci"][0], typed["ci"][1]))
         if not gradual:
           render("\\end{itemize}")
