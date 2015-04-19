@@ -24,6 +24,7 @@
 ;; Paths to write results/diagrams
 (define output-path (make-parameter #f))
 (define lattice-path (make-parameter #f))
+(define entry-point-param (make-parameter #f))
 
 ;; Get paths for all variation directories
 ;; Path Path -> Listof Path
@@ -83,7 +84,7 @@
   results)
 
 (module+ main
-  (match-define (list basepath entry-point)
+  (define basepath
     (command-line #:program "benchmark-runner"
                   #:once-each
                   [("-c" "--only-compile") "Only compile and don't run"
@@ -94,12 +95,29 @@
                   [("-l" "--latice") l-p
                                      "A path to write the lattice diagram to"
                                      (lattice-path l-p)]
+                  [("-e" "--entry-point") e-p
+                                          "The main file to execute. (Defaults to 'main.rkt'.)"
+                                          (entry-point-param e-p)]
                   #:multi
                   [("-i" "--iterations") n-i
                                          "The number of iterations to run"
                                          (num-iterations n-i)]
-                  #:args (basepath entry-point)
-                  (list basepath entry-point)))
+                  #:args (basepath)
+                  basepath))
+  ;; Validate given entry-point, or fall back to default
+  (define entry-point
+    (cond [(and (entry-point-param)
+                (path-string? (entry-point-param))
+                (regexp-match? #rx"\\.rkt$" (entry-point-param)))
+           (entry-point-param)]
+          [(entry-point-param) ;; Optional argument given, but is not a .rkt file
+           (raise-user-error (format "expected a Racket file, given ~a" (entry-point-param)))]
+          [else ;; Default
+           "main.rkt"]))
+  ;; Assert that the parsed entry point exists in the project
+  (unless (and (file-exists? (build-path basepath "untyped" entry-point))
+               (file-exists? (build-path basepath "typed" entry-point)))
+    (raise-user-error (format "entry point '~a' not found in project '~a', cannot run" entry-point basepath)))
   (unless (path-string? basepath)
     (raise-user-error (format "expected a path, given ~a" basepath)))
   (unless (and (path-string? entry-point)
