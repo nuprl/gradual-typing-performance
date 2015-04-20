@@ -486,57 +486,37 @@ def parse_args(argv):
 
 ### Sampling
 
-# TODO: also, write a "one sample" function that takes a file and number of iterations.
-def run_sample(base_folder, config, entry_point="main.rkt", iters=50):
+def sample_file(fname, iters=50, drop=3):
     """
-        Search the `base_folder` for a benchmark/ subdirectory.
-        Under benchmark/, find the directory matching `config`
-        and execute the file `entry_point`.
-        Keep running until we have a reliable sample
+        Execute `fname` many times, collecting results into a temporary file
+        and finally returning the average of all results.
+        Use `drop` to set the number of warm-up trials.
+
+        Expects that running `fname` causes Racket's time output to print to STDOUT.
     """
+    if not os.path.exists(fname):
+        raise ValueError("Cannot run '%s'. File not found." % fname)
+    dname, main = fname.rsplit("/", 1)
     cwd = os.getcwd()
-    os.chdir("%s/variation%s" % (base_folder, config))
-    os.system("raco make %s" % entry_point)
-    # Throwaway
-    os.system("racket %s" % entry_point)
-    for i in range(iters):
-        os.system("racket %s >> %s" % (entry_point, TMP_RESULTS))
-    os.chdir(cwd)
-    return result
-      #     (system (string-append "raco make -v " (path->string file)))
+    os.chdir(dname)
+    with open(TMP_RESULTS, "w") as f:
+        f.write("")
+    make_cmd = "raco make %s" % main
+    drop_cmd = "for i in {1..%s}; do racket %s; done" % (drop, main)
+    run_cmd  = "for i in {1..%s}; do racket %s >> %s; done" % (iters, main, TMP_RESULTS)
+    os.system("; ".join([make_cmd, drop_cmd, run_cmd]))
+    times = []
+    with open(TMP_RESULTS, "r") as f:
+        for line in f:
+            times.append(int(re.match(r'^cpu: ([0-9]+) .*', line).group(1)))
+    return statistics.mean(times)
 
-      # ;; run an extra run of the variation to throw away in order to avoid
-      # ;; OS caching issues
-      # (unless (only-compile?)
-      #   (displayln "throwaway build/run to avoid OS caching")
-      #   (process (format "racket ~a" (path->string file))))
-
-      # ;; run the iterations that will count for the data
-      # (unless (only-compile?)
-      #   (for ([i (in-range iters)])
-      #     (printf "iteration #~a of ~a~n" i var)
-      #     ;; FIXME: use benchmark library
-      #     (define command `(time (dynamic-require ,(path->string file) #f)))
-      #     (match-define (list in out pid err proc)
-      #       (process (format "racket -e '~s'" command)
-      #                #:set-pwd? #t))
-      #     ;; if this match fails, something went wrong since we put time in above
-      #     (define time-info
-      #       (for/or ([line (in-list (port->lines in))])
-      #         (regexp-match #rx"cpu time: (.*) real time: (.*) gc time: (.*)" line)))
-      #     (match time-info
-      #       [(list full (app string->number cpu)
-      #                   (app string->number real)
-      #                   (app string->number gc))
-      #        (printf "cpu: ~a real: ~a gc: ~a~n" cpu real gc)
-      #        (set! times (cons real times))]
-      #       [#f (void)])
-      #     ;; print anything we get on stderr so we can detect errors
-      #     (for-each displayln (port->lines err))
-      #     ;; we're reponsible for closing these
-      #     (close-input-port in)
-      #     (close-input-port err)
-      #     (close-output-port out))))
+def sample_config(base_folder, config, entry_point="main.rkt", iters=50, drop=3):
+    """
+        Sample the configuration `config`
+    """
+    fname = "%s/variation%s/%s" % (base_folder, config, entry_point)
+    return sample_file(fname, iters=iters, drop=drop)
 
 ### Summaries
 
@@ -702,6 +682,7 @@ def results_of_sampling(dname, graph):
     # Emulate the `results_of_tabfile` function using simple random sampling
     # TODO:
     # - run setup.rkt
+    # - use run.rkt, instead of the solutions in this file
     # - execute sample (get up to steady state, etc)
     raise NotImplementedError('nope')
 
