@@ -1,7 +1,0 @@
-MODULE	INDEX	REQUIRES
-data.rkt	0	
-label.rkt	1	data.rkt
-lcs.rkt	2	data.rkt,label.rkt,structs.rkt,ukkonen.rkt
-main.rkt	3	lcs.rkt
-structs.rkt	4	label.rkt,data.rkt
-ukkonen.rkt	5	structs.rkt,data.rkt,label.rkt
