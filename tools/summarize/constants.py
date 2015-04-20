@@ -14,4 +14,4 @@ SEP = "\t"
 TMP_RESULTS = "summarize-tmp-results.txt"
 
 # Directory to save outputs
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "output-summary"
