@@ -255,6 +255,7 @@ def bar_plot(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue'
     output = "%s-bar.png" % title
     plt.savefig(output)
     plt.clf()
+    plt.close()
     print("Saved bar chart to '%s'" % output)
     return output
 
@@ -286,6 +287,7 @@ def module_plot(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", unty
     plt.axis("off")
     plt.savefig(output)
     plt.clf()
+    plt.close()
     print("Saved module graph to '%s'" % output)
     return output
 
@@ -340,6 +342,7 @@ def box_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"
     output = "%s-boxplot.png" % title
     plt.savefig(output)
     plt.clf()
+    plt.close()
     print("Saved figure to %s" % output)
     return output
 
@@ -400,6 +403,7 @@ def violin_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', mean
     output = "%s-violin.png" % title
     plt.savefig(output)
     plt.clf()
+    plt.close()
     print("Saved violin plot to '%s'" % output)
     return output
 
@@ -447,6 +451,7 @@ def double_violin_plot(series, title, xlabel, ylabel, alpha=0.8, colors=['royalb
     output = "%s-dv.png" % title
     plt.savefig(output)
     plt.clf()
+    plt.close()
     print("Saved double violin plot to '%s'" % output)
     return output
 
@@ -684,7 +689,7 @@ def results_of_tab(tabfile, dgraph):
                                 ,xlabels=range(0, 1+num_modules))
         ,"fixed"   : [double_violin_plot([bucketize(tabfile, num_typed_modules, num_modules, pred=lambda cfg: cfg[v[0]] == "0")
                                          ,bucketize(tabfile, num_typed_modules, num_modules, pred=lambda cfg: cfg[v[0]] == "1")]
-                                 ,"runtimes-fixing-%s" % k
+                                 ,"%s_fixing-%s" % (fname, k)
                                  ,"Number of Typed Modules"
                                  ,"Runtime (ms)"
                                  ,legend=["%s is untyped" % k
