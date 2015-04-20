@@ -49,7 +49,10 @@
       ;; OS caching issues
       (unless (only-compile?)
         (displayln "throwaway build/run to avoid OS caching")
-        (process (format "racket ~a" (path->string file))))
+        (match-define (list _ _ _ _ control)
+          (process (format "racket ~a" (path->string file))))
+        ;; make sure to block on this run
+        (control 'wait))
 
       ;; run the iterations that will count for the data
       (unless (only-compile?)
