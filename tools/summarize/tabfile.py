@@ -10,6 +10,7 @@ import constants
 import math
 import os
 import plot
+import shell
 import sorted_buffer
 import statistics
 import util
@@ -117,10 +118,11 @@ def of_rktd(rktdfile):
     """
     # We have a Racket script to generate the .tab file,
     # make sure it exists.
-    if not os.path.exists("sexp-to-tab.rkt"):
-        raise ValueError("internal error: cannot file the 'sexp-to-tab.rkt' script. Sorry.")
-    # TODO replace with a call to Python's 'subprocess'
-    os.system("racket sexp-to-tab.rkt %s" % rktdfile)
+    find_command = " ".join(["find", ".", "-name", "'sexp-to-tab.rkt'"])
+    sexp_to_tab = shell.execute(find_command)
+    if not sexp_to_tab:
+        raise ValueError("Could not access 'sexp_to_tab' script. Shutting down.")
+    shell.execute("racket %s %s" % (sexp_to_tab.split("\n", 1)[0], rktdfile))
     # Strip the suffix from the input file, replace with .tab
     return "%s.tab" % rktdfile.rsplit(".", 1)[0]
 

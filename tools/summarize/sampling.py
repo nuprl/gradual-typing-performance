@@ -7,6 +7,7 @@ Under construction.
 import constants
 import os
 import re
+import shell
 import statistics
 
 def check_directory_structure(dirname):
@@ -52,7 +53,7 @@ def run_file(fname, iters=50, drop=3):
     make_cmd = "raco make %s" % main
     drop_cmd = "for i in {1..%s}; do racket %s; done" % (drop, main)
     run_cmd  = "for i in {1..%s}; do racket %s >> %s; done" % (iters, main, constants.TMP_RESULTS)
-    os.system("; ".join([make_cmd, drop_cmd, run_cmd]))
+    shell.execute("; ".join([make_cmd, drop_cmd, run_cmd]))
     times = []
     with open(constants.TMP_RESULTS, "r") as f:
         for line in f:
