@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 """
 Entry point to the summary script.
 Accepts raw data as input
@@ -51,7 +52,7 @@ def print_help():
     """ (-> Void)
         Print usage information
     """
-    print("Usage: summarize.py FILE.tab")
+    print("Usage: ./summary FILE.rktd")
 
 ### Entry point
 
