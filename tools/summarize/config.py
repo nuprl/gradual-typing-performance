@@ -59,8 +59,8 @@ def boundaries(cfg, graph):
     """
     bds = []
     for (m1, m2) in graphdict.edges_iter(graph):
-        i1 = d[m1][0]
-        i2 = d[m2][0]
+        i1 = graph[m1][0]
+        i2 = graph[m2][0]
         if is_boundary(cfg, i1, i2):
             bds.append((m1, m2))
     return bds

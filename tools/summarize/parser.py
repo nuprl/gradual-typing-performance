@@ -31,5 +31,5 @@ def parse_args(argv):
         print("Error: Could not find corresponding graph for file %s.\n  Suggestion: create a file '%s.graph' with columns 'MODULE\tINDEX\tREQUIRES' documenting\n  - The important modules in the project\n  - Their indexes in the configuration bitstrings\n  - The files these modules require." % (target, strip_suffix(target)))
         sys.exit(1)
     d = graphdict.of_file(gfile)
-    return [target, d], {"verbose" : DEBUG}
+    return [target, d], options
 

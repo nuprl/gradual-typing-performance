@@ -6,6 +6,7 @@ Under construction.
 
 import constants
 import os
+import re
 import statistics
 
 def check_directory_structure(dirname):

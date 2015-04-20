@@ -23,3 +23,8 @@ def strip_suffix(fname):
     """
     return fname.rsplit(".", 1)[0]
 
+def strip_directory(fname):
+    """
+        Remove everything before the rightmost "/" in the string `fname`
+    """
+    return fname.rsplit("/", 1)[-1]

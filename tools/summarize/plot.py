@@ -3,7 +3,14 @@ Wrapper for matplotlib.
 Takes care of common-case, pretty graphs.
 """
 
+import config
 import constants
+import matplotlib
+matplotlib.use('Agg') # Disable the display, does not affect graph generation
+import matplotlib.pyplot as plt
+from matplotlib.patches import Polygon
+import networkx as nx
+import numpy as np
 
 def remove_empty(d1, d2):
     """
@@ -63,7 +70,7 @@ def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", unt
         - untypedcolor = Node color for untyped modules
         - typedcolor   = Node color for typed modules
     """
-    config = title.split(":", 1)[0].rsplit(" ", 1)[-1]
+    cfg = title.split(":", 1)[0].rsplit(" ", 1)[-1]
     ## Make networkx graph
     g = nx.DiGraph()
     for (k,v) in graph.items():
@@ -75,17 +82,17 @@ def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", unt
     fig,ax1 = plt.subplots()
     # Untyped nodes, or the default
     nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
-                           ,nodelist=[k for (k,v) in graph.items() if is_untyped(v[0], config)]
+                           ,nodelist=[k for (k,v) in graph.items() if config.untyped_at(cfg, v[0])]
                            ,node_color=untypedcolor)
     # Typed nodes
     nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
-                           ,nodelist=[k for (k,v) in graph.items() if is_typed(v[0], config)]
+                           ,nodelist=[k for (k,v) in graph.items() if config.typed_at(cfg, v[0])]
                            ,node_color=typedcolor)
     nx.draw_networkx_labels(g, pos, dict([(k,k) for k in graph.keys()]))
     nx.draw_networkx_edges(g, pos, edge_color=edgecolor, alpha=alpha)
     ## Draw boundaries
     nx.draw_networkx_edges(g, pos, edgelist=boundaries, edge_color="r", width=4)
-    output = "%s/%s-module-graph-%s.png" % (constants.OUTPUT_DIR, fname, config)
+    output = "%s/%s-module-graph-%s.png" % (constants.OUTPUT_DIR, fname, cfg)
     ax1.set_title(title)
     plt.axis("off")
     plt.savefig(output)
@@ -94,7 +101,7 @@ def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", unt
     print("Saved module graph to '%s'" % output)
     return output
 
-def box_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
+def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
     """
         Create and save a boxplot from the list `dataset`.
         Args:
@@ -174,7 +181,7 @@ def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
         plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
     return
 
-def violin_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None):
+def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None):
     """
         Create and save a violin plot representing the list `dataset`.
         Args:

@@ -4,7 +4,9 @@ Helpers for printing results to an output destination.
 2015-04-20: only renders a .tex file.
 """
 
-import graph
+import plot
+import statistics
+import util
 
 # TeX preamble / header
 PREAMBLE = "\n".join(["\\documentclass{article}"
@@ -28,6 +30,12 @@ def difference(n1, n2):
         descr = "faster"
     return val, descr
 
+def figure(fname):
+    """
+        Splice the filename `fname` into an imported figure
+        for the final .tex
+    """
+    return "\\includegraphics[width=\\textwidth]{%s}" % util.strip_directory(fname)
 
 def as_tex(results, outfile):
     """ (-> Result Path-String Void)
@@ -77,15 +85,15 @@ def as_tex(results, outfile):
           render("\\item Average of bottom %s gradually-typed configurations is %s times %s than untyped average" % (len(results["worst"]), wavg_vs_u[0], wavg_vs_u[1]))
           render("\\end{itemize}")
           render("\n\\subsection{Aggregate Figures}")
-          bar = graph.bar_plot(range(5)
+          bar = plot.bar(range(5)
                         ,[1, g_vs_u[0], bavg_vs_u[0], wavg_vs_u[0], difference(typed["mean"], untyped["mean"])[0]]
                         ,"%s-normalized-runtimes" % results["title"]
                         ,"Group"
                         ,"Runtime (Normalized to untyped)"
                         ,xlabels=["Untyped", "All\nGradually-Typed", "Top %s" % (len(results["best"])), "Bottom %s" % (len(results["worst"])), "Typed"])
-          render("\\includegraphics[width=\\textwidth]{%s}" % bar)
-          render("\\includegraphics[width=\\textwidth]{%s}" % results["ugt"]["img"])
-          render("\\includegraphics[width=\\textwidth]{%s}" % results["bucketed"])
+          render(figure(bar))
+          render(figure(results["ugt"]["img"]))
+          render(figure(results["bucketed"]))
           render("\n\\subsection{Worst (gradual) Configurations}")
           render("The worst %s configurations and their boundaries are:" % len(results["worst"]))
           render("\\begin{itemize}")
@@ -102,11 +110,11 @@ def as_tex(results, outfile):
               time   = results["worst"][i]["time"]
               bnds   = results["worst"][i]["boundaries"]
               vs_u, descr = difference(time, untyped["mean"])
-              fname = module_plot(results["graph"]
+              fname = plot.module_graph(results["graph"]
                                  ,results["title"]
                                  ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
                                  ,boundaries=bnds)
-              render("\\includegraphics[width=\\textwidth]{%s}" % fname)
+              render(figure(fname))
           render("\n\\subsection{Best (gradual) Configurations}")
           render("The best %s configurations and their boundaries are:" % len(results["best"]))
           render("\\begin{itemize}")
@@ -123,15 +131,15 @@ def as_tex(results, outfile):
               time   = results["best"][i]["time"]
               bnds   = results["best"][i]["boundaries"]
               vs_u, descr = difference(time, untyped["mean"])
-              fname = module_plot(results["graph"]
+              fname = plot.module_graph(results["graph"]
                                  ,results["title"]
                                  ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
                                  ,boundaries=bnds)
-              render("\\includegraphics[width=\\textwidth]{%s}" % fname)
+              render(figure(fname))
           if "fixed" in results and results["fixed"]:
               render("\n\\subsection{Fixing individual modules}")
               for fig in results["fixed"]:
-                  render("\\includegraphics[width=\\textwidth]{%s}" % fig)
+                  render(figure(fig))
         render("\\end{document}")
     print("Results saved as %s" % outfile)
     return

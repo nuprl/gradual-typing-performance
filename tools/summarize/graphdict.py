@@ -7,7 +7,9 @@ Data definition: GraphDict
   like (3, [x.rkt, y.rkt])
 """
 
+import constants
 import os
+import util
 
 def check_titles(col_names, fname):
     """
@@ -54,7 +56,7 @@ def infer(fname):
     """
         Try to find the .graph file associated with `fname`
     """
-    prefix = strip_suffix(fname)
+    prefix = util.strip_suffix(fname)
     gfile1 = "%s.graph" % prefix
     gfile2 = "%s.graph" % prefix.split("-", 1)[0]
     gfile3 = "%s.graph" % prefix.rsplit("/", 1)[-1]
@@ -76,7 +78,7 @@ def edges_iter(d):
         for req in v[1]:
             yield(k, req)
 
-def of_graphfile(gname):
+def of_file(gname):
     """ (-> Path-String GraphDict)
         Convert a .graph file to a GraphDict object
     """
