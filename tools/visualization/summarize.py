@@ -74,7 +74,7 @@ def fold_file(fname, acc, fn, ignore_first_line=True):
             acc = fn(acc, line.strip().split(SEP))
     return acc
 
-def bucketize(fname, get_bkt, num_buckets):
+def bucketize(fname, get_bkt, num_buckets, pred=None):
     """
         Group the rows in `fname` into buckets,
         using `get_bkt` to assign a row of the file to a bucket.
@@ -85,7 +85,8 @@ def bucketize(fname, get_bkt, num_buckets):
     init = [[] for _ in range(1+num_buckets)]
     def add_row(acc, row):
         # TODO don't graph all points because ... (I had a reason at some point)
-        acc[get_bkt(row[0])].extend([int(x) for x in row[1::]])
+        if (pred is None) or (pred(row[0])):
+            acc[get_bkt(row[0])].extend([int(x) for x in row[1::]])
         return acc
     return fold_file(fname, init, add_row)
 
@@ -342,6 +343,30 @@ def box_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"
     print("Saved figure to %s" % output)
     return output
 
+def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
+    """
+        Draw a violin to the current plot.
+        Color the mean point.
+        (Shared helper for `violin_plot` and `double_violin`)
+    """
+    ## Add data
+    vp = plt.violinplot(dataset, positions=posns, showmeans=True, showextrema=True, showmedians=True)
+    ## Re-color bodies
+    for v in vp['bodies']:
+        v.set_edgecolors('k')
+        v.set_facecolors(color)
+        v.set_alpha(alpha)
+    ## Re-color median, min, max lines to be black
+    for field in ['cmaxes', 'cmins', 'cbars', 'cmedians']:
+        vp[field].set_color('k')
+    ## Draw mean markers
+    # Make original mean line invisible
+    vp['cmeans'].set_alpha(0)
+    # Draw the mean marker
+    for i in range(len(dataset)):
+        plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
+    return
+
 def violin_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None):
     """
         Create and save a violin plot representing the list `dataset`.
@@ -354,22 +379,7 @@ def violin_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', mean
     # Set default values
     posns = positions or list(range(1,1+len(dataset)))
     fig,ax1 = plt.subplots() #add figsize?
-    vp = plt.violinplot(dataset, positions=posns, showmeans=True, showextrema=True, showmedians=True)
-    ## Re-color bodies
-    for v in vp['bodies']:
-        v.set_edgecolors('k')
-        v.set_facecolors(color)
-        v.set_alpha(alpha)
-    ## Re-color median, min, max lines to be black
-    for field in ['cmaxes', 'cmins', 'cbars', 'cmedians']:
-        vp[field].set_color('k')
-    ## Draw stars, for means
-    # Make original mean line invisible
-    vp['cmeans'].set_color(color)
-    vp['cmeans'].set_alpha(0)
-    # Draw the mean marker
-    for i in range(len(dataset)):
-        plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
+    draw_violin(dataset, posns, alpha=alpha, color=color, meanmarker=meanmarker)
     # Light gridlines
     ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
     # Titles + legend
@@ -391,6 +401,53 @@ def violin_plot(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', mean
     plt.savefig(output)
     plt.clf()
     print("Saved violin plot to '%s'" % output)
+    return output
+
+def remove_empty(d1, d2):
+    """
+       Zip through datasets (pairwise),
+       make sure both are non-empty; erase if empty.
+       Return the non-empty corresponding pairs in two lists
+       and a list of their original indices
+    """
+    xs, ys, posns = [], [], []
+    for i in range(len(d1)):
+        if d1[i] and d2[i]:
+            xs.append(d1[i])
+            ys.append(d2[i])
+            posns.append(i)
+    return xs, ys, posns
+
+def double_violin_plot(series, title, xlabel, ylabel, alpha=0.8, colors=['royalblue','darkorange'], markers=['*','o'], legend=False):
+    """
+        Plot 2 violins to the same plot.
+        TODO think of more ways to compare 2 datasets
+        TODO get working for more than 2 datasets, if necessary
+    """
+    # Set default values
+    series1, series2, posns = remove_empty(series[0], series[1])
+    fig,ax1 = plt.subplots() #add figsize?
+    draw_violin(series1, posns, alpha=alpha, color=colors[0], meanmarker=markers[0])
+    draw_violin(series2, posns, alpha=alpha, color=colors[1], meanmarker=markers[1])
+    ## Light gridlines
+    ax1.yaxis.grid(True, linestyle='-', which='major', color='lightgrey', alpha=0.5)
+    ## Legend
+    if legend and len(legend) == len(series):
+        ymin,ymax = ax1.get_ylim()
+        ax1.set_ylim(ymin-5, ymax)
+        plt.figtext(0.70, 0.04, "-", color=colors[0], backgroundcolor=colors[0], weight='roman', size='x-small')
+        plt.figtext(0.72, 0.04, legend[0], color='k', weight='roman', size='x-small')
+        plt.figtext(0.70, 0.01, '-', color=colors[1], backgroundcolor=colors[1], weight='roman', size='x-small')
+        plt.figtext(0.72, 0.01, legend[1], color='black', weight='roman', size='x-small')
+    # Titles + legend
+    ax1.set_axisbelow(True)
+    ax1.set_title(title)
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(ylabel)
+    output = "%s-dv.png" % title
+    plt.savefig(output)
+    plt.clf()
+    print("Saved double violin plot to '%s'" % output)
     return output
 
 ### Parsing
@@ -620,11 +677,19 @@ def results_of_tab(tabfile, dgraph):
         ,"worst"   : [basic_config_stats(v[0], v[1], dgraph)
                       for v in worst_cfg_and_times if v is not None]
         ,"bucketed": violin_plot(bucketize(tabfile, num_typed_modules, num_modules)
-                                         ,"%s_by-typed-modules" % fname
-                                         ,"Number of Typed Modules"
-                                         ,"Runtime (ms)"
-                                         ,positions=range(0, 1+num_modules)
-                                         ,xlabels=range(0, 1+num_modules))
+                                ,"%s_by-typed-modules" % fname
+                                ,"Number of Typed Modules"
+                                ,"Runtime (ms)"
+                                ,positions=range(0, 1+num_modules)
+                                ,xlabels=range(0, 1+num_modules))
+        ,"fixed"   : [double_violin_plot([bucketize(tabfile, num_typed_modules, num_modules, pred=lambda cfg: cfg[v[0]] == "0")
+                                         ,bucketize(tabfile, num_typed_modules, num_modules, pred=lambda cfg: cfg[v[0]] == "1")]
+                                 ,"runtimes-fixing-%s" % k
+                                 ,"Number of Typed Modules"
+                                 ,"Runtime (ms)"
+                                 ,legend=["%s is untyped" % k
+                                         ,"%s is typed" % k])
+                      for (k,v) in sorted(dgraph.items(), key=lambda item:item[1][0])]
     }
     return stats
 
@@ -770,6 +835,10 @@ def save_as_tex(results, outfile):
                                  ,"Config %s: %s times %s than untyped" % (config, vs_u, descr)
                                  ,boundaries=bnds)
               render("\\includegraphics[width=\\textwidth]{%s}" % fname)
+          if "fixed" in results and results["fixed"]:
+              render("\n\\subsection{Fixing individual modules}")
+              for fig in results["fixed"]:
+                  render("\\includegraphics[width=\\textwidth]{%s}" % fig)
         render("\\end{document}")
     print("Results saved as %s" % outfile)
     return
