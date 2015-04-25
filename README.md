@@ -2,6 +2,10 @@
 The purpose of this repo is to share work among the team members that study
 the performance hypothesis underlying gradual typing.
 
+Auxillary folders:
+- `thoughts/` our first folder, for gathering ideas
+- `tools/` scripts for creating, running, and visualizing the lattice
+
 | Project name          | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | --------------------- | ----------- | ------- | ------------ | --------- | ---------------- |
 | funkytown             | Ben         | Yes     | No           | 9         | vine-like        |
