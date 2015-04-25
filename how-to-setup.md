@@ -100,13 +100,28 @@ Running the benchmark
 
 In the top directory, call the run script in the tools folder:
 
-  `racket tools/run.rkt -i [num-iterations] [project] [main.rkt]`
+  `racket tools/run.rkt -o [output.rktd] -i [num-iterations] [project] [main.rkt]`
 
 Arguments are:
 - `[project]` the project folder's name (the script searches for `[project]/benchmark/variation*` folders)
 - `[main.rkt]` the name of the project file to execute. Please call it `main.rkt`.
 - `[num-iterations]` number of times to run each variation. (optional flag)
 
+Presenting Results
+------------------
+
+After generating experimental results with the run script, use the `summary`
+script to collect aggregate statistics and graphs.
+
+    `./summary OUTPUT.rktd`
+
+This script has two important dependencies:
+1. It is written in Python and uses `matplotlib`, `numpy`, and `networkx`.
+   Use `pip` to install these dependencies.
+2. It requires a `.graph` file summarizing the module dependence structure
+   of the project. See the folder `tools/data` for example `.graph` files.
+
+Outputs are saved to a new folder, titled "output-summary" or something similar.
 
 Other notes
 -----------
