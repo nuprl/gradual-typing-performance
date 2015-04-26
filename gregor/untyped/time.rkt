@@ -15,9 +15,6 @@
  time=?         ; (-> time? time? boolean?)]
  time<?         ; (-> time? time? boolean?)]
  time<=?        ; (-> time? time? boolean?)]
- time>?         ; (-> time? time? boolean?)]
- time>=?        ; (-> time? time? boolean?)]
- time-order     ; order?]
 )
 
 ;; -----------------------------------------------------------------------------
@@ -26,7 +23,6 @@
   benchmark-util
   (only-in racket/format ~r)
   "core-structs.rkt"
-  "compare.rkt"
   "gregor-structs.rkt"
   racket/match)
 (require (only-in
@@ -80,6 +76,15 @@
 
   (format "~a:~a:~a~a" (f h 2) (f m 2) pad (~r fsec #:precision 9)))
 
-(match-define (comparison time=? time<? time<=? time>? time>=? time-comparator time-order)
-  (build-comparison 'time-order Time? time->ns))
+;(: time=? (-> Time Time Boolean))
+(define (time=? t1 t2)
+  (= (time->ns t1) (time->ns t2)))
+
+;(: time<=? (-> Time Time Boolean))
+(define (time<=? t1 t2)
+  (<= (time->ns t1) (time->ns t2)))
+
+;(: time<? (-> Time Time Boolean))
+(define (time<? t1 t2)
+  (< (time->ns t1) (time->ns t2)))
 

@@ -7,7 +7,6 @@
   benchmark-util
   racket/match
   "core-structs.rkt"
-  "compare.rkt"
   "gregor-structs.rkt"
   (only-in racket/math exact-round exact-floor))
 
@@ -57,9 +56,6 @@
  datetime=?               ;(-> datetime? datetime? boolean?)]
  datetime<?               ;(-> datetime? datetime? boolean?)]
  datetime<=?              ;(-> datetime? datetime? boolean?)]
- datetime>?               ;(-> datetime? datetime? boolean?)]
- datetime>=?              ;(-> datetime? datetime? boolean?)]
- datetime-order           ;order?])
 )
 
 ;; =============================================================================
@@ -118,8 +114,17 @@
           (date->iso8601 (datetime->date dt))
           (time->iso8601 (datetime->time dt))))
 
-(match-define (comparison datetime=? datetime<? datetime<=? datetime>? datetime>=? datetime-comparator datetime-order)
-  (build-comparison 'datetime-order datetime? datetime->jd))
+;(: datetime=? (-> DateTime DateTime Boolean))
+(define (datetime=? dt1 dt2)
+  (= (datetime->jd dt1) (datetime->jd dt2)))
+
+;(: datetime<? (-> DateTime DateTime Boolean))
+(define (datetime<? dt1 dt2)
+  (< (datetime->jd dt1) (datetime->jd dt2)))
+
+;(: datetime<=? (-> DateTime DateTime Boolean))
+(define (datetime<=? dt1 dt2)
+  (<= (datetime->jd dt1) (datetime->jd dt2)))
 
 ;(: date+time->jd (-> Date Time Exact-Rational))
 (define (date+time->jd d t)

@@ -15,18 +15,13 @@
  date->iso-wyear ;(-> date? exact-integer?)]
  date->iso8601   ;(-> date? string?)]
  date=?          ;(-> date? date? boolean?)]
- date<?          ;(-> date? date? boolean?)]
  date<=?         ;(-> date? date? boolean?)]
- date>?          ;(-> date? date? boolean?)]
- date>=?         ;(-> date? date? boolean?)]
- date-order      ;order?])
 )
 
 ;; -----------------------------------------------------------------------------
 
 (require
   "core-structs.rkt"
-  "compare.rkt"
   "gregor-structs.rkt"
   benchmark-util
   (only-in racket/math exact-round)
@@ -113,6 +108,11 @@
   (match (Date-ymd d)
     [(YMD y m d) (format "~a-~a-~a" (f y 4) (f m 2) (f d 2))]))
 
-(match-define (comparison date=? date<? date<=? date>? date>=? date-compare date-order)
-  (build-comparison 'date-order date? date->jdn))
+;(: date=? (-> Date Date Boolean))
+(define (date=? d1 d2)
+ (= (date->jdn d1) (date->jdn d2)))
+
+;(: date<=? (-> Date Date Boolean))
+(define (date<=? d1 d2)
+  (<= (date->jdn d1) (date->jdn d2)))
 

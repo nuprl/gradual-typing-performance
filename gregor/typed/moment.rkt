@@ -188,8 +188,4 @@
 (: UTC String)
 (define UTC "Etc/UTC")
 
-;; (define tz/c (or/c string?
-;;                    (integer-in -64800 64800)))
-
-;; (provide tz/c)
 
