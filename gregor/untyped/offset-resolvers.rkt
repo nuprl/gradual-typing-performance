@@ -2,6 +2,35 @@
 
 ;; Resolving offsets between moments
 
+(require
+  benchmark-util
+  "../base/tzinfo/main.rkt"
+  "structs.rkt"
+  racket/match)
+(require (only-in "hmsn.rkt"
+    NS/SECOND ;Natural]
+))
+(require (only-in "datetime.rkt"
+    DateTime DateTime?
+    datetime->iso8601 ;(-> DateTime String)]
+    posix->datetime ;(-> Exact-Rational DateTime)]
+    datetime->posix ;(-> DateTime Exact-Rational)]
+    datetime ;(->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
+    datetime->jd ;(-> DateTime Exact-Rational)]
+    datetime-add-seconds ;(-> DateTime Integer DateTime)]
+))
+(require (only-in "moment-base.rkt"
+    Moment Moment?
+    Moment-utc-offset ;(-> Moment Integer)]
+    make-moment ;(-> DateTime Integer (U String #f) Moment)]
+    Moment-datetime/local ;(-> Moment DateTime)]
+    Moment-zone ;(-> Moment (U String #f))]
+    moment->iso8601 ;(-> Moment String)]
+    moment->iso8601/tzid ;(-> Moment String)]
+))
+
+;; -----------------------------------------------------------------------------
+
 (provide
          resolve-gap/pre
          resolve-gap/post
@@ -18,36 +47,22 @@
          resolve-offset/push
          resolve-offset/raise
 
-         offset-resolver)
-
-;; -----------------------------------------------------------------------------
-
-(require
-  benchmark-util
-  racket/match)
-(require (only-in "../base/tzinfo/main.rkt"
-  system-tzid ;(-> (U tz #f))]
-  tzgap tzgap?
-  tzoffset
-  tzoverlap
-  local-seconds->tzoffset ;(-> String Integer (U tzoffset tzgap tzoverlap))]
-  utc-seconds->tzoffset ;(-> String Exact-Rational tzoffset)]
-))
-(require (only-in "hmsn.rkt"
-    NS/SECOND ;Natural]
-))
-(require (only-in "datetime.rkt"
-    datetime->iso8601 ;(-> DateTime String)]
-    posix->datetime ;(-> Exact-Rational DateTime)]
-    datetime->posix ;(-> DateTime Exact-Rational)]
-    DateTime DateTime?
-))
-(require (only-in "moment-base.rkt"
-    Moment Moment?
-    Moment-utc-offset ;(-> Moment Integer)]
-    make-moment ;(-> DateTime Integer (U String #f) Moment)]
-))
-
+         offset-resolver
+         make-moment
+         Moment Moment?
+         Moment-datetime/local
+         Moment-utc-offset
+         Moment-zone
+         moment->iso8601
+         moment->iso8601/tzid
+         ;
+         DateTime DateTime?
+         datetime
+         datetime->posix
+         posix->datetime
+         datetime->jd
+         datetime-add-seconds
+)
 ;; =============================================================================
 
 ;; -- from exn.rkt

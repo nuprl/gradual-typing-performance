@@ -13,4 +13,5 @@ Notes
 - Made psuedo-adapters
   - `datetime.rkt` exports opaque types from `date.rkt` and `time.rkt`, to avoid generating new type definitions
   - `clock.rkt` does likewise, for `moment.rkt` and `moment-base.rkt`
+  - also `offset-resolvers.rkt`, for `moment.rkt`
 - Removed all generics (generics are incompatible with typed racket)

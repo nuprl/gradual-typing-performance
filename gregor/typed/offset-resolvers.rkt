@@ -2,6 +2,35 @@
 
 ;; Resolving offsets between moments
 
+(require
+  benchmark-util
+  "tzinfo-adapter.rkt"
+  "structs-adapter.rkt"
+  racket/match)
+(require/typed/check "hmsn.rkt"
+    [NS/SECOND Natural]
+)
+(require/typed/check "datetime.rkt"
+    [#:opaque DateTime DateTime?]
+    [datetime->iso8601 (-> DateTime String)]
+    [posix->datetime (-> Exact-Rational DateTime)]
+    [datetime->posix (-> DateTime Exact-Rational)]
+    [datetime (->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
+    [datetime->jd (-> DateTime Exact-Rational)]
+    [datetime-add-seconds (-> DateTime Integer DateTime)]
+)
+(require/typed/check "moment-base.rkt"
+    [#:opaque Moment Moment?]
+    [Moment-utc-offset (-> Moment Integer)]
+    [make-moment (-> DateTime Integer (U String #f) Moment)]
+    [Moment-datetime/local (-> Moment DateTime)]
+    [Moment-zone (-> Moment (U String #f))]
+    [moment->iso8601 (-> Moment String)]
+    [moment->iso8601/tzid (-> Moment String)]
+)
+
+;; -----------------------------------------------------------------------------
+
 (provide
          resolve-gap/pre
          resolve-gap/post
@@ -18,29 +47,22 @@
          resolve-offset/push
          resolve-offset/raise
 
-         offset-resolver)
-
-;; -----------------------------------------------------------------------------
-
-(require
-  benchmark-util
-  "tzinfo-adapter.rkt"
-  racket/match)
-(require/typed/check "hmsn.rkt"
-    [NS/SECOND Natural]
+         offset-resolver
+         make-moment
+         Moment Moment?
+         Moment-datetime/local
+         Moment-utc-offset
+         Moment-zone
+         moment->iso8601
+         moment->iso8601/tzid
+         ;
+         DateTime DateTime?
+         datetime
+         datetime->posix
+         posix->datetime
+         datetime->jd
+         datetime-add-seconds
 )
-(require/typed/check "datetime.rkt"
-    [datetime->iso8601 (-> DateTime String)]
-    [posix->datetime (-> Exact-Rational DateTime)]
-    [datetime->posix (-> DateTime Exact-Rational)]
-    [#:opaque DateTime DateTime?]
-)
-(require/typed/check "moment-base.rkt"
-    [#:opaque Moment Moment?]
-    [Moment-utc-offset (-> Moment Integer)]
-    [make-moment (-> DateTime Integer (U String #f) Moment)]
-)
-
 ;; =============================================================================
 
 ;; -- from exn.rkt
