@@ -14,12 +14,6 @@
  now/utc               ;(-> datetime?)]
  today/utc             ;(-> date?)]
  current-time/utc      ;(-> time?)])
- moment->iso8601
- moment->iso8601/tzid
- UTC
- moment
- moment=?
- posix->moment
 )
 
 ;; -----------------------------------------------------------------------------
