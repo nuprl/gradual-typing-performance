@@ -3,6 +3,38 @@
 ;; Working with DateTime objects
 ;; (i.e. dates and times at the same time)
 
+(require
+  benchmark-util
+  "structs-adapter.rkt"
+  racket/match
+  (only-in racket/math exact-round exact-floor))
+
+(require/typed/check
+  "hmsn.rkt"
+    [NS/DAY Natural]
+    [NS/SECOND Natural]
+)
+(require/typed/check
+  "date.rkt"
+    [#:opaque Date Date?]
+    [date->iso8601 (-> Date String)]
+    [date->jdn (-> Any Integer)]
+    [jdn->date (-> Exact-Rational Date)]
+    [date->ymd (-> Date YMD)]
+    [date (->* (Natural) (Month Natural) Date)]
+    [date=? (-> Date Date Boolean)]
+)
+(require/typed/check "time.rkt"
+    [#:opaque Time Time?]
+    [time->iso8601 (-> Time String)]
+    [time->ns (-> Any Natural)]
+    [day-ns->time (-> Natural Time)]
+    [time (->* (Integer) (Integer Integer Integer) Time)]
+    [time=? (-> Time Time Boolean)]
+)
+
+;; -----------------------------------------------------------------------------
+
 (provide;/contract
  datetime?                ;(-> any/c boolean?)]
  datetime                 ;(->i ([year exact-integer?])
@@ -41,38 +73,6 @@
  Time
  date->iso8601
  time->iso8601
-)
-
-;; -----------------------------------------------------------------------------
-
-(require
-  benchmark-util
-  "structs-adapter.rkt"
-  racket/match
-  (only-in racket/math exact-round exact-floor))
-
-(require/typed/check
-  "hmsn.rkt"
-    [NS/DAY Natural]
-    [NS/SECOND Natural]
-)
-(require/typed/check
-  "date.rkt"
-    [#:opaque Date Date?]
-    [date->iso8601 (-> Date String)]
-    [date->jdn (-> Any Integer)]
-    [jdn->date (-> Exact-Rational Date)]
-    [date->ymd (-> Date YMD)]
-    [date (->* (Natural) (Month Natural) Date)]
-    [date=? (-> Date Date Boolean)]
-)
-(require/typed/check "time.rkt"
-    [#:opaque Time Time?]
-    [time->iso8601 (-> Time String)]
-    [time->ns (-> Any Natural)]
-    [day-ns->time (-> Natural Time)]
-    [time (->* (Integer) (Integer Integer Integer) Time)]
-    [time=? (-> Time Time Boolean)]
 )
 
 ;; =============================================================================

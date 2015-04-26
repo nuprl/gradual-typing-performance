@@ -69,8 +69,7 @@
              sign
              (~r hrs #:min-width 2 #:pad-string "0" #:sign #f)
              (~r min #:min-width 2 #:pad-string "0" #:sign #f))]))
-     
-     
+
 (struct Moment ([datetime/local : DateTime]
                 [utc-offset : Integer]
                 [zone : (U String #f)]))

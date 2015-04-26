@@ -2,6 +2,41 @@
 
 ;; Moments in time
 
+;; Need the requires on top to stop syntax errors; opaques must
+;; come lexically before their use
+(require
+  benchmark-util
+  "structs-adapter.rkt"
+  racket/match
+  (only-in racket/math exact-round)
+  "tzinfo-adapter.rkt"
+)
+(require/typed/check "hmsn.rkt"
+    [NS/SECOND Natural]
+)
+(require/typed/check "datetime.rkt"
+    [#:opaque DateTime DateTime?]
+    [datetime (->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
+    [datetime->posix (-> DateTime Exact-Rational)]
+    [posix->datetime (-> Exact-Rational DateTime)]
+    [datetime->jd (-> DateTime Exact-Rational)]
+    [datetime-add-seconds (-> DateTime Integer DateTime)]
+)
+(require/typed/check "moment-base.rkt"
+    [#:opaque Moment Moment?]
+    [Moment-datetime/local (-> Moment DateTime)]
+    [Moment-utc-offset (-> Moment Integer)]
+    [Moment-zone (-> Moment (U String #f))]
+    [make-moment (-> DateTime Integer (U String #f) Moment)]
+    [moment->iso8601 (-> Moment String)]
+    [moment->iso8601/tzid (-> Moment String)]
+)
+(require/typed/check "offset-resolvers.rkt"
+    [resolve-offset/raise (-> (U tzgap tzoverlap) DateTime (U String #f) (U Moment #f) Moment)]
+)
+
+;; -----------------------------------------------------------------------------
+
 (provide;/contract
  current-timezone       ;(parameter/c tz/c)]
  Moment?                ;(-> any/c boolean?)]
@@ -40,39 +75,6 @@
  moment-order           ;order?]
  UTC                    ;tz/c]
  Moment
-)
-
-;; -----------------------------------------------------------------------------
-
-(require
-  benchmark-util
-  "structs-adapter.rkt"
-  racket/match
-  (only-in racket/math exact-round)
-  "tzinfo-adapter.rkt"
-)
-(require/typed/check "hmsn.rkt"
-    [NS/SECOND Natural]
-)
-(require/typed/check "datetime.rkt"
-    [#:opaque DateTime DateTime?]
-    [datetime (->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
-    [datetime->posix (-> DateTime Exact-Rational)]
-    [posix->datetime (-> Exact-Rational DateTime)]
-    [datetime->jd (-> DateTime Exact-Rational)]
-    [datetime-add-seconds (-> DateTime Integer DateTime)]
-)
-(require/typed/check "offset-resolvers.rkt"
-    [resolve-offset/raise (-> (U tzgap tzoverlap) DateTime (U String #f) (U Moment #f) Moment)]
-)
-(require/typed/check "moment-base.rkt"
-    [#:opaque Moment Moment?]
-    [make-moment (-> DateTime Integer (U String #f) Moment)]
-    [Moment-datetime/local (-> Moment DateTime)]
-    [Moment-utc-offset (-> Moment Integer)]
-    [Moment-zone (-> Moment (U #f String))]
-    [moment->iso8601 (-> Moment String)]
-    [moment->iso8601/tzid (-> Moment String)]
 )
 
 ;; =============================================================================
@@ -158,7 +160,10 @@
 
 (: timezone-adjust (-> Moment (U Natural String) Moment))
 (define (timezone-adjust m z)
-  (match-define (Moment dt neg-sec _) m)
+  (: dt DateTime)
+  (define dt (error 'foo));(Moment-datetime/local m))
+  (: neg-sec Integer)
+  (define neg-sec (error 'foo));(Moment-utc-offset m))
   (: dt/utc DateTime)
   (define dt/utc
     (datetime-add-seconds dt (- neg-sec)))
