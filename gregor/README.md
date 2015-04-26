@@ -9,9 +9,7 @@ Notes
 -----
 - Added Adapters:
   - `tzinfo-adapter.rkt` to interface with `tz` library
-  - `structs-adapter.rkt` to interface with core modules
-- Made psuedo-adapters
-  - `datetime.rkt` exports opaque types from `date.rkt` and `time.rkt`, to avoid generating new type definitions
-  - `clock.rkt` does likewise, for `moment.rkt` and `moment-base.rkt`
-  - also `offset-resolvers.rkt`, for `moment.rkt`
+  - `core-adapter.rkt` to interface with core modules
+  - `gregor-adapter.rkt` to handle the main structs
 - Removed all generics (generics are incompatible with typed racket)
+- Renamed `time` function, to avoid colliding with `racket/base`

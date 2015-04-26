@@ -35,7 +35,6 @@
 
 (provide;/contract
  current-timezone       ;(parameter/c tz/c)]
- Moment?                ;(-> any/c boolean?)]
  moment                 ;(->i ([year exact-integer?])
                         ;      ([month (integer-in 1 12)]
                         ;       [day (year month) (day-of-month/c year month)]
@@ -70,7 +69,6 @@
  moment>=?              ;(-> moment? moment? boolean?)]
  moment-order           ;order?]
  UTC                    ;tz/c]
- Moment
 )
 
 ;; =============================================================================

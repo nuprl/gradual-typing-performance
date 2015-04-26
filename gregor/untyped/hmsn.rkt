@@ -16,7 +16,7 @@
  day-ns->hmsn)
 
 (require
-  "structs.rkt"
+  "core-structs.rkt"
   racket/match)
 
 ;; =============================================================================

@@ -19,8 +19,6 @@
  UTC
  moment
  moment=?
- Moment
- Moment?
  posix->moment
 )
 
@@ -29,9 +27,9 @@
 (require
   benchmark-util
   (only-in racket/math exact-round)
+  "gregor-structs.rkt"
 )
 (require (only-in "moment.rkt"
-    Moment Moment?
     current-timezone ;(Parameterof (U tz #f))]
     posix->moment ;(-> Exact-Rational tz Moment)]
     moment->datetime/local ;(-> Moment DateTime)]
@@ -42,9 +40,6 @@
     moment->iso8601/tzid ;(-> Moment String)]
 ))
 (require (only-in "datetime.rkt"
-    Date Date?
-    DateTime DateTime?
-    Time Time?
     datetime->date ;(-> DateTime Date)]
     datetime->time ;(-> DateTime Time)]
 ))

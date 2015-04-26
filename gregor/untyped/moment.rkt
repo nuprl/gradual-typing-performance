@@ -2,9 +2,42 @@
 
 ;; Moments in time
 
+(require
+  benchmark-util
+  racket/match
+  "compare.rkt"
+  "gregor-structs.rkt"
+  (only-in racket/math exact-round)
+)
+(require (only-in "../base/tzinfo/main.rkt"
+  system-tzid ;(-> (U tz #f))]
+  tzoffset tzoffset? tzoffset-utc-seconds
+  local-seconds->tzoffset ;(-> String Integer (U tzoffset tzgap tzoverlap))]
+  utc-seconds->tzoffset ;(-> String Exact-Rational tzoffset)]
+))
+(require (only-in "hmsn.rkt"
+    NS/SECOND ;Natural]
+))
+(require (only-in "datetime.rkt"
+    datetime ;(->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
+    datetime->posix ;(-> DateTime Exact-Rational)]
+    posix->datetime ;(-> Exact-Rational DateTime)]
+    datetime->jd ;(-> DateTime Exact-Rational)]
+    datetime-add-seconds ;(-> DateTime Integer DateTime)]
+))
+(require (only-in "moment-base.rkt"
+    make-moment ;(-> DateTime Integer (U String #f) Moment)]
+    moment->iso8601 ;(-> Moment String)]
+    moment->iso8601/tzid ;(-> Moment String)]
+))
+(require (only-in "offset-resolvers.rkt"
+    resolve-offset/raise ;(-> (U tzgap tzoverlap) DateTime (U String #f) (U Moment #f) Moment)]
+))
+
+;; -----------------------------------------------------------------------------
+
 (provide;/contract
  current-timezone       ;(parameter/c tz/c)]
- Moment?                ;(-> any/c boolean?)]
  moment                 ;(->i ([year exact-integer?])
                         ;      ([month (integer-in 1 12)]
                         ;       [day (year month) (day-of-month/c year month)]
@@ -39,54 +72,7 @@
  moment>=?              ;(-> moment? moment? boolean?)]
  moment-order           ;order?]
  UTC                    ;tz/c]
- Moment
 )
-
-;; -----------------------------------------------------------------------------
-
-(require
-  benchmark-util
-  racket/match
-  "compare.rkt"
-  (only-in racket/math exact-round)
-)
-(require (only-in "../base/tzinfo/main.rkt"
-  system-tzid ;(-> (U tz #f))]
-  tzoffset tzoffset? tzoffset-utc-seconds
-  ;#:struct tzgap ([starts-at : Natural]
-  ;                [offset-before : tzoffset]
-  ;                [offset-after : Natural])]
-  ;#:struct tzoffset ([utc-seconds : Integer]
-  ;                   [dst? : Boolean]
-  ;                   [abbreviation : String])]
-  ;#:struct tzoverlap ([offset-before : Natural]
-  ;                    [offset-after : Natural])]
-  local-seconds->tzoffset ;(-> String Integer (U tzoffset tzgap tzoverlap))]
-  utc-seconds->tzoffset ;(-> String Exact-Rational tzoffset)]
-))
-(require (only-in "hmsn.rkt"
-    NS/SECOND ;Natural]
-))
-(require (only-in "datetime.rkt"
-    DateTime DateTime?
-    datetime ;(->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
-    datetime->posix ;(-> DateTime Exact-Rational)]
-    posix->datetime ;(-> Exact-Rational DateTime)]
-    datetime->jd ;(-> DateTime Exact-Rational)]
-    datetime-add-seconds ;(-> DateTime Integer DateTime)]
-))
-(require (only-in "offset-resolvers.rkt"
-    resolve-offset/raise ;(-> (U tzgap tzoverlap) DateTime (U String #f) (U Moment #f) Moment)]
-))
-(require (only-in "moment-base.rkt"
-    Moment Moment?
-    make-moment ;(-> DateTime Integer (U String #f) Moment)]
-    Moment-datetime/local ;(-> Moment DateTime)]
-    Moment-utc-offset ;(-> Moment Integer)]
-    Moment-zone ;(-> Moment (U #f String))]
-    moment->iso8601 ;(-> Moment String)]
-    moment->iso8601/tzid ;(-> Moment String)]
-))
 
 ;; =============================================================================
 
@@ -194,9 +180,4 @@
 
 ;(: UTC String)
 (define UTC "Etc/UTC")
-
-;; (define tz/c (or/c string?
-;;                    (integer-in -64800 64800)))
-
-;; (provide tz/c)
 

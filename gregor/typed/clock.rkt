@@ -19,8 +19,6 @@
  UTC
  moment
  moment=?
- Moment
- Moment?
  posix->moment
 )
 

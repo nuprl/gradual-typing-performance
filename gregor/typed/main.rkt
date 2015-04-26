@@ -29,10 +29,8 @@
     [datetime->iso8601 (-> DateTime String)]
     [datetime->posix (-> DateTime Exact-Rational)]
 )
-(require/typed/check "moment-base.rkt"
-    [moment (->* (Natural) (Month Natural Natural Natural Natural Natural #:tz (U tz #f) #:resolve-offset (-> (U tzgap tzoverlap) DateTime (U String #f) (U #f Moment) Moment)) Moment)]
-)
 (require/typed/check "moment.rkt"
+    [moment (->* (Natural) (Month Natural Natural Natural Natural Natural #:tz (U tz #f) #:resolve-offset (-> (U tzgap tzoverlap) DateTime (U String #f) (U #f Moment) Moment)) Moment)]
     [moment=? (-> Moment Moment Boolean)]
     [UTC String]
     [moment->iso8601/tzid (-> Moment String)]

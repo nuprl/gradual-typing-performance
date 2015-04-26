@@ -3,9 +3,6 @@
 ;; Working with dates
 
 (provide;/contract
- Date
- Date?
- date?           ;(-> any/c boolean?)]
  date            ;(->i ([year exact-integer?])
                  ;      ([month (integer-in 1 12)]
                  ;       [day (year month) (day-of-month/c year month)])
@@ -28,8 +25,9 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  "structs.rkt"
+  "core-structs.rkt"
   "compare.rkt"
+  "gregor-structs.rkt"
   benchmark-util
   (only-in racket/math exact-round)
   (only-in racket/format ~r)
@@ -57,24 +55,6 @@
 ;(: date-write-proc (-> Date Output-Port Any Void))
 (define (date-write-proc d out mode)
   (fprintf out "#<date ~a>" (date->iso8601 d)))
-
-(struct Date (ymd ;: YMD]
-              jdn ;: Integer]))
-))
-;;   #:methods gen:equal+hash
-;;   [(define equal-proc date-equal-proc)
-;;    (define hash-proc  date-hash-proc)
-;;    (define hash2-proc date-hash-proc)]
-  
-;;   #:methods gen:custom-write
-;;   [(define write-proc date-write-proc)]
-  
-;;   #:property prop:serializable
-;;   (make-serialize-info (λ (d) (vector (date->jdn d)))
-;;                        #'deserialize-info:Date
-;;                        #f
-;;                        (or (current-load-relative-directory)
-;;                            (current-directory))))
 
 ;(: date? (-> Any Boolean))
 (define date? Date?)
@@ -135,12 +115,4 @@
 
 (match-define (comparison date=? date<? date<=? date>? date>=? date-compare date-order)
   (build-comparison 'date-order date? date->jdn))
-
-;; (define deserialize-info:Date
-;;   (make-deserialize-info
-;;    jdn->date
-;;    (λ () (error "Date cannot have cycles"))))
-
-;; (module+ deserialize-info
-;;   (provide deserialize-info:Date))
 

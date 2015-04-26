@@ -5,13 +5,13 @@
 (require
   benchmark-util
   "../base/tzinfo/main.rkt"
-  "structs.rkt"
+  "core-structs.rkt"
+  "gregor-structs.rkt"
   racket/match)
 (require (only-in "hmsn.rkt"
     NS/SECOND ;Natural]
 ))
 (require (only-in "datetime.rkt"
-    DateTime DateTime?
     datetime->iso8601 ;(-> DateTime String)]
     posix->datetime ;(-> Exact-Rational DateTime)]
     datetime->posix ;(-> DateTime Exact-Rational)]
@@ -20,11 +20,7 @@
     datetime-add-seconds ;(-> DateTime Integer DateTime)]
 ))
 (require (only-in "moment-base.rkt"
-    Moment Moment?
-    Moment-utc-offset ;(-> Moment Integer)]
     make-moment ;(-> DateTime Integer (U String #f) Moment)]
-    Moment-datetime/local ;(-> Moment DateTime)]
-    Moment-zone ;(-> Moment (U String #f))]
     moment->iso8601 ;(-> Moment String)]
     moment->iso8601/tzid ;(-> Moment String)]
 ))
@@ -48,20 +44,6 @@
          resolve-offset/raise
 
          offset-resolver
-         make-moment
-         Moment Moment?
-         Moment-datetime/local
-         Moment-utc-offset
-         Moment-zone
-         moment->iso8601
-         moment->iso8601/tzid
-         ;
-         DateTime DateTime?
-         datetime
-         datetime->posix
-         posix->datetime
-         datetime->jd
-         datetime-add-seconds
 )
 ;; =============================================================================
 

@@ -23,7 +23,7 @@
 
 (require
   racket/match
-  "structs.rkt"
+  "core-structs.rkt"
   (only-in racket/math exact-truncate exact-floor))
 
 ;; =============================================================================

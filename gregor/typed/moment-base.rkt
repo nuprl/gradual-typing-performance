@@ -4,7 +4,6 @@
 ;; (Works together with offset-resolvers.rkt)
 
 (provide
- moment?
  moment->iso8601
  moment->iso8601/tzid
  make-moment
@@ -67,9 +66,6 @@
              sign
              (~r hrs #:min-width 2 #:pad-string "0" #:sign #f)
              (~r min #:min-width 2 #:pad-string "0" #:sign #f))]))
-
-(: moment? (-> Any Boolean))
-(define moment? Moment?)
 
 (: make-moment (-> DateTime Integer (U String #f) Moment))
 (define (make-moment dt off z)
