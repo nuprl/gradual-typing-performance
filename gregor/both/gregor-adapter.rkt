@@ -1,6 +1,8 @@
 #lang typed/racket/base
 
-(require benchmark-util)
+(require
+  benchmark-util
+  "core-adapter.rkt")
 
 (require/typed/check "gregor-structs.rkt"
   [#:struct Date ([ymd : YMD]

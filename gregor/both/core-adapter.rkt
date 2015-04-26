@@ -5,9 +5,6 @@
 (provide
   (struct-out YMD)
   (struct-out HMSN)
-  (struct-out comparison)
-  build-comparison
-  order?
   Month)
 
 (require
@@ -23,14 +20,3 @@
                  [s : Integer]
                  [n : Integer])])
 
-(require/typed/check "compare.rkt"
-  [#:opaque Order order?]
-  [#:struct comparison ([=? : (-> Any Any Boolean)]
-                        [<? : (-> Any Any Boolean)]
-                        [<=? : (-> Any Any Boolean)]
-                        [>? : (-> Any Any Boolean)]
-                        [>=? : (-> Any Any Boolean)]
-                        [comparator : (-> Any Any Symbol)]
-                        [order : Order])]
-  [build-comparison (-> Symbol (-> Any Boolean) (-> Any Exact-Rational) comparison)]
-)

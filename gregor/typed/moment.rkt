@@ -65,9 +65,6 @@
  moment=?               ;(-> moment? moment? boolean?)]
  moment<?               ;(-> moment? moment? boolean?)]
  moment<=?              ;(-> moment? moment? boolean?)]
- moment>?               ;(-> moment? moment? boolean?)]
- moment>=?              ;(-> moment? moment? boolean?)]
- moment-order           ;order?]
  UTC                    ;tz/c]
 )
 
@@ -176,8 +173,17 @@
 (define (timezone-coerce m z #:resolve-offset [resolve resolve-offset/raise])
   (datetime+tz->moment (moment->datetime/local m) z resolve))
 
-(match-define (comparison moment=? moment<? moment<=? moment>? moment>=? moment-comparator moment-order)
-  (build-comparison 'moment-order Moment? moment->jd))
+(: moment=? (-> Moment Moment Boolean))
+(define (moment=? m1 m2)
+  (= (moment->jd m1) (moment->jd m2)))
+
+(: moment<? (-> Moment Moment Boolean))
+(define (moment<? m1 m2)
+  (< (moment->jd m1) (moment->jd m2)))
+
+(: moment<=? (-> Moment Moment Boolean))
+(define (moment<=? m1 m2)
+  (<= (moment->jd m1) (moment->jd m2)))
 
 (: UTC String)
 (define UTC "Etc/UTC")

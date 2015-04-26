@@ -12,4 +12,5 @@ Notes
   - `core-adapter.rkt` to interface with core modules
   - `gregor-adapter.rkt` to handle the main structs
 - Removed all generics (generics are incompatible with typed racket)
+- Removed `compare.rkt` because of issues passing "higher order value as Any"
 - Renamed `time` function, to avoid colliding with `racket/base`
