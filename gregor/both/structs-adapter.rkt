@@ -21,7 +21,7 @@
   [#:struct HMSN ([h : Integer]
                  [m : Integer]
                  [s : Integer]
-                 [b : Integer])])
+                 [n : Integer])])
 
 (require/typed/check "compare.rkt"
   [#:opaque Order order?]
