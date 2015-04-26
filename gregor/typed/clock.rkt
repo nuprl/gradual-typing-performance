@@ -30,9 +30,9 @@
   benchmark-util
   (only-in racket/math exact-round)
   "tzinfo-adapter.rkt"
+  "gregor-adapter.rkt"
 )
 (require/typed/check "moment.rkt"
-    [#:opaque Moment Moment?]
     [current-timezone (Parameterof (U tz #f))]
     [posix->moment (-> Exact-Rational tz Moment)]
     [moment->datetime/local (-> Moment DateTime)]
@@ -43,9 +43,6 @@
     [moment->iso8601/tzid (-> Moment String)]
 )
 (require/typed/check "datetime.rkt"
-    [#:opaque Date Date?]
-    [#:opaque DateTime DateTime?]
-    [#:opaque Time Time?]
     [datetime->date (-> DateTime Date)]
     [datetime->time (-> DateTime Time)]
 )

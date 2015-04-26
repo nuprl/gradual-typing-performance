@@ -17,7 +17,7 @@
 
 (require
   racket/match
-  "structs-adapter.rkt")
+  "core-adapter.rkt")
 
 ;; =============================================================================
 

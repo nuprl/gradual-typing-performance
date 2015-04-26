@@ -13,7 +13,8 @@
 (require
   benchmark-util
   racket/match
-  "structs-adapter.rkt"
+  "core-adapter.rkt"
+  "gregor-adapter.rkt"
   (only-in racket/math exact-floor))
 (require/typed/check
   "ymd.rkt"
@@ -22,18 +23,17 @@
 (require/typed/check "hmsn.rkt"
     [NS/DAY Natural]
 )
+(require/typed/check "date.rkt"
+    [date->ymd (-> Date YMD)]
+    [date (->* (Natural) (Month Natural) Date)]
+)
 (require/typed/check "datetime.rkt"
-    [#:opaque DateTime]
-    [#:opaque Date]
-    [#:opaque Time]
     [datetime<? (-> Any Any Boolean)]
     [datetime->date (-> DateTime Date)]
     [date+time->datetime (-> Date Time DateTime)]
     [datetime->time (-> DateTime Time)]
     [datetime->jd (-> DateTime Exact-Rational)]
     [datetime (->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
-    [date->ymd (-> Date YMD)]
-    [date (->* (Natural) (Month Natural) Date)]
 )
 
 ;; =============================================================================

@@ -24,7 +24,7 @@
 (require
   racket/match
   (only-in racket/math exact-truncate exact-floor)
-  "structs-adapter.rkt")
+  "core-adapter.rkt")
 
 ;; =============================================================================
 

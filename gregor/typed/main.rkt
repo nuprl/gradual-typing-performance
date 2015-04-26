@@ -7,31 +7,38 @@
 
 (require
   benchmark-util
+  "gregor-adapter.rkt"
   "tzinfo-adapter.rkt"
 )
-
-(require/typed/check "datetime.rkt"
-    [#:opaque Date Date?]
-    [#:opaque DateTime DateTime?]
-    [#:opaque Time Time?]
-    [date (->* (Natural) (Month Natural) Date)]
+(require/typed/check "date.rkt"
     [date=? (-> Date Date Boolean)]
+    [date (->* (Natural) (Month Natural) Date)]
+    [date->iso8601 (-> Date String)]
+)
+(require/typed/check "time.rkt"
     [time=? (-> Time Time Boolean)]
+    [time->iso8601 (-> Time String)]
+    [make-time (->* (Integer) (Integer Integer Integer) Time)]
+)
+(require/typed/check "datetime.rkt"
     [datetime=? (-> DateTime DateTime Boolean)]
     [datetime<=? (-> DateTime DateTime Boolean)]
     [datetime (->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
     [datetime->time (-> DateTime Time)]
     [datetime->date (-> DateTime Date)]
-    [make-time (->* (Integer) (Integer Integer Integer) Time)]
-    [date->iso8601 (-> Date String)]
-    [time->iso8601 (-> Time String)]
     [datetime->iso8601 (-> DateTime String)]
     [datetime->posix (-> DateTime Exact-Rational)]
 )
-(require/typed/check "clock.rkt"
-    [#:opaque Moment Moment?]
+(require/typed/check "moment-base.rkt"
     [moment (->* (Natural) (Month Natural Natural Natural Natural Natural #:tz (U tz #f) #:resolve-offset (-> (U tzgap tzoverlap) DateTime (U String #f) (U #f Moment) Moment)) Moment)]
+)
+(require/typed/check "moment.rkt"
     [moment=? (-> Moment Moment Boolean)]
+    [UTC String]
+    [moment->iso8601/tzid (-> Moment String)]
+    [posix->moment (-> Exact-Rational Moment)]
+)
+(require/typed/check "clock.rkt"
     [current-clock (Parameterof (-> Exact-Rational))]
     [today/utc (-> Date)]
     [today (->* () (#:tz (U tz #f)) Date)]
@@ -41,9 +48,6 @@
     [now (-> DateTime)]
     [now/moment/utc (-> Moment)]
     [now/moment (-> Moment)]
-    [UTC String]
-    [moment->iso8601/tzid (-> Moment String)]
-    [posix->moment (-> Exact-Rational Moment)]
 )
 (require/typed/check "difference.rkt"
     [datetime-months-between (-> DateTime DateTime Integer)]

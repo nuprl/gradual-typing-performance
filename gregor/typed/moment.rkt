@@ -6,7 +6,8 @@
 ;; come lexically before their use
 (require
   benchmark-util
-  "structs-adapter.rkt"
+  "core-adapter.rkt"
+  "gregor-adapter.rkt"
   racket/match
   (only-in racket/math exact-round)
   "tzinfo-adapter.rkt"
@@ -14,22 +15,19 @@
 (require/typed/check "hmsn.rkt"
     [NS/SECOND Natural]
 )
-(require/typed/check "offset-resolvers.rkt"
-    [#:opaque Moment Moment?]
-    [#:opaque DateTime DateTime?]
+(require/typed/check "datetime.rkt"
     [datetime (->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
     [datetime->posix (-> DateTime Exact-Rational)]
     [posix->datetime (-> Exact-Rational DateTime)]
     [datetime->jd (-> DateTime Exact-Rational)]
     [datetime-add-seconds (-> DateTime Integer DateTime)]
-    ;
-    [Moment-datetime/local (-> Moment DateTime)]
-    [Moment-utc-offset (-> Moment Integer)]
-    [Moment-zone (-> Moment (U String #f))]
+)
+(require/typed/check "moment-base.rkt"
     [make-moment (-> DateTime Integer (U String #f) Moment)]
     [moment->iso8601 (-> Moment String)]
     [moment->iso8601/tzid (-> Moment String)]
-    ;
+)
+(require/typed/check "offset-resolvers.rkt"
     [resolve-offset/raise (-> (U tzgap tzoverlap) DateTime (U String #f) (U Moment #f) Moment)]
 )
 

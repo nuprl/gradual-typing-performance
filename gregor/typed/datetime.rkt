@@ -5,7 +5,8 @@
 
 (require
   benchmark-util
-  "structs-adapter.rkt"
+  "core-adapter.rkt"
+  "gregor-adapter.rkt"
   racket/match
   (only-in racket/math exact-round exact-floor))
 
@@ -16,7 +17,6 @@
 )
 (require/typed/check
   "date.rkt"
-    [#:opaque Date Date?]
     [date->iso8601 (-> Date String)]
     [date->jdn (-> Any Integer)]
     [jdn->date (-> Exact-Rational Date)]
@@ -25,18 +25,16 @@
     [date=? (-> Date Date Boolean)]
 )
 (require/typed/check "time.rkt"
-    [#:opaque Time Time?]
     [time->iso8601 (-> Time String)]
     [time->ns (-> Any Natural)]
     [day-ns->time (-> Natural Time)]
-    [time (->* (Integer) (Integer Integer Integer) Time)]
+    [make-time (->* (Integer) (Integer Integer Integer) Time)]
     [time=? (-> Time Time Boolean)]
 )
 
 ;; -----------------------------------------------------------------------------
 
 (provide;/contract
- datetime?                ;(-> any/c boolean?)]
  datetime                 ;(->i ([year exact-integer?])
                           ;      ([month (integer-in 1 12)]
                           ;       [day (year month) (day-of-month/c year month)]
@@ -61,23 +59,9 @@
  datetime>?               ;(-> datetime? datetime? boolean?)]
  datetime>=?              ;(-> datetime? datetime? boolean?)]
  datetime-order           ;order?])
- DateTime
- DateTime?
- ;; -- from date & time
- date
- date=?
- date->ymd
- make-time
- time=?
- Date
- Time
- date->iso8601
- time->iso8601
 )
 
 ;; =============================================================================
-
-(define make-time time)
 
 (: datetime-equal-proc (-> DateTime DateTime Boolean))
 (define (datetime-equal-proc x y)
@@ -91,24 +75,6 @@
 (: datetime-write-proc (-> DateTime Output-Port Any Void))
 (define (datetime-write-proc dt out mode)
   (fprintf out "#<datetime ~a>" (datetime->iso8601 dt)))
-
-(struct DateTime ([date : Date]
-                  [time : Time]
-                  [jd : Exact-Rational]))
-;;   #:methods gen:equal+hash
-;;   [(define equal-proc datetime-equal-proc)
-;;    (define hash-proc  datetime-hash-proc)
-;;    (define hash2-proc datetime-hash-proc)]
-
-;;   #:methods gen:custom-write
-;;   [(define write-proc datetime-write-proc)]
-
-;;   #:property prop:serializable
-;;   (make-serialize-info (λ (dt) (vector (datetime->jd dt)))
-;;                        #'deserialize-info:DateTime
-;;                        #f
-;;                        (or (current-load-relative-directory)
-;;                            (current-directory))))
 
 (: datetime? (-> Any Boolean))
 (define datetime? DateTime?)
@@ -143,7 +109,7 @@
 (: datetime (->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime))
 (define (datetime year [month 1] [day 1] [hour 0] [minute 0] [second 0] [nano 0])
   (date+time->datetime (date year month day)
-                       (time hour minute second nano)))
+                       (make-time hour minute second nano)))
 
 (: datetime->iso8601 (-> DateTime String))
 (define (datetime->iso8601 dt)
@@ -153,14 +119,6 @@
 
 (match-define (comparison datetime=? datetime<? datetime<=? datetime>? datetime>=? datetime-comparator datetime-order)
   (build-comparison 'datetime-order datetime? datetime->jd))
-
-;; (define deserialize-info:DateTime
-;;   (make-deserialize-info
-;;    jd->datetime
-;;    (λ () (error "DateTime cannot have cycles"))))
-
-;; (module+ deserialize-info
-;;   (provide deserialize-info:DateTime))
 
 (: date+time->jd (-> Date Time Exact-Rational))
 (define (date+time->jd d t)
