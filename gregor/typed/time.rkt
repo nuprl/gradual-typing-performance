@@ -51,9 +51,8 @@
 
 (: time->hmsn (-> Time HMSN))
 (define time->hmsn Time-hmsn)
-(: time->ns (-> Any Natural))
+(: time->ns (-> Time Natural))
 (define (time->ns t)
-  (unless (Time? t) (error "time->ns: type error"))
   (Time-ns t))
 
 (: hmsn->time (-> HMSN Time))

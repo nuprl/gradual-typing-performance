@@ -18,7 +18,7 @@
 (require/typed/check
   "date.rkt"
     [date->iso8601 (-> Date String)]
-    [date->jdn (-> Any Integer)]
+    [date->jdn (-> Date Integer)]
     [jdn->date (-> Exact-Rational Date)]
     [date->ymd (-> Date YMD)]
     [date (->* (Natural) (Month Natural) Date)]
@@ -26,7 +26,7 @@
 )
 (require/typed/check "time.rkt"
     [time->iso8601 (-> Time String)]
-    [time->ns (-> Any Natural)]
+    [time->ns (-> Time Natural)]
     [day-ns->time (-> Natural Time)]
     [make-time (->* (Integer) (Integer Integer Integer) Time)]
     [time=? (-> Time Time Boolean)]
@@ -80,9 +80,8 @@
 (define datetime->date DateTime-date)
 (: datetime->time (-> DateTime Time))
 (define datetime->time DateTime-time)
-(: datetime->jd (-> Any Exact-Rational))
+(: datetime->jd (-> DateTime Exact-Rational))
 (define (datetime->jd d)
-  (unless (DateTime? d) (error "datetime->jd type error"))
   (DateTime-jd d))
 
 (: datetime->posix (-> DateTime Exact-Rational))

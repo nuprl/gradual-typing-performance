@@ -28,7 +28,7 @@
     [date (->* (Natural) (Month Natural) Date)]
 )
 (require/typed/check "datetime.rkt"
-    [datetime<? (-> Any Any Boolean)]
+    [datetime<? (-> Date Date Boolean)]
     [datetime->date (-> DateTime Date)]
     [date+time->datetime (-> Date Time DateTime)]
     [datetime->time (-> DateTime Time)]

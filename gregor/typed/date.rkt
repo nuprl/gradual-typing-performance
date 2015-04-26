@@ -77,9 +77,8 @@
 
 (: date->ymd (-> Date YMD))
 (define date->ymd Date-ymd)
-(: date->jdn (-> Any Integer))
+(: date->jdn (-> Date Integer))
 (define (date->jdn d)
-  (unless (Date? d) (error "date->jdn type error"))
   (Date-jdn d))
 
 (: ymd->date (-> YMD Date))

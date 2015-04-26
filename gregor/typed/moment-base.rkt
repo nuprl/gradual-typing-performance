@@ -23,26 +23,6 @@
 
 ;; =============================================================================
 
-(: moment-equal-proc (-> Moment Moment Boolean))
-(define (moment-equal-proc x y)
-  (match* (x y)
-    [((Moment d1 o1 z1) (Moment d2 o2 z2))
-     (and (equal? d1 d2)
-          (= o1 o2)
-          (equal? z1 z2))]))
-
-(: moment-hash-proc (-> Moment (-> Any Integer) Integer))
-(define (moment-hash-proc x fn)
-  (match x
-    [(Moment d o z)
-     (bitwise-xor (fn d) (fn o) (fn z))]))
-
-(: moment-write-proc (-> Moment Output-Port Any Void))
-(define (moment-write-proc m out mode)
-  (fprintf out
-           "#<moment ~a>"
-           (moment->iso8601/tzid m)))
-
 (: moment->iso8601/tzid (-> Moment String))
 (define (moment->iso8601/tzid m)
   (: iso String)
