@@ -7,6 +7,7 @@
 
 (require
   benchmark-util
+  "core-adapter.rkt"
   "gregor-adapter.rkt"
   "tzinfo-adapter.rkt"
 )
@@ -34,16 +35,16 @@
     [moment=? (-> Moment Moment Boolean)]
     [UTC String]
     [moment->iso8601/tzid (-> Moment String)]
-    [posix->moment (-> Exact-Rational Moment)]
+    [posix->moment (-> Exact-Rational tz Moment)]
 )
 (require/typed/check "clock.rkt"
     [current-clock (Parameterof (-> Exact-Rational))]
     [today/utc (-> Date)]
     [today (->* () (#:tz (U tz #f)) Date)]
     [current-time/utc (-> Time)]
-    [current-time (-> Time)]
+    [current-time (->* () (#:tz (U tz #f)) Time)]
     [now/utc (-> DateTime)]
-    [now (-> DateTime)]
+    [now (->* () (#:tz (U tz #f)) DateTime)]
     [now/moment/utc (-> Moment)]
     [now/moment (-> Moment)]
 )
