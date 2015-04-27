@@ -3,11 +3,17 @@
 ;; Create a few examples and run abstract interpretation
 
 (require
+  benchmark-util
   "structs-adapted.rkt"
-  "ui.rkt"
 )
+(require/typed/check "ui.rkt"
+  [analyze (-> Exp MonoStore)]
+  [format-mono-store (-> MonoStore String)])
 
 ;; =============================================================================
+(define-type MonoStore (HashTable Var (Setof Exp)))
+
+;; --
 
 (define new-label gensym)
 

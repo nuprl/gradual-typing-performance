@@ -6,10 +6,10 @@
 
 (require/typed/check "structs.rkt"
   [#:struct Stx ([label : Label])]
-  [#:struct exp Stx ()]
-  [#:struct Ref exp ([var : Var])]
-  [#:struct Lam exp ([formals : (Listof Var)] [call : Exp])]
-  [#:struct Call Stx ([fun : Exp] [args : (Listof Exp)])]
+  [#:struct (exp Stx) ()]
+  [#:struct (Ref exp) ([var : Var])]
+  [#:struct (Lam exp) ([formals : (Listof Var)] [call : Exp])]
+  [#:struct (Call Stx) ([fun : Exp] [args : (Listof Exp)])]
 )
 
 (provide
