@@ -5,6 +5,7 @@ the performance hypothesis underlying gradual typing.
 Auxillary folders:
 - `thoughts/` our first folder, for gathering ideas
 - `tools/` scripts for creating, running, and visualizing the lattice
+- `threads/` experiments debugging MBTA
 
 | Project name          | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | --------------------- | ----------- | ------- | ------------ | --------- | ---------------- |
