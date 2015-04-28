@@ -44,7 +44,8 @@
 
     (parameterize ([current-directory new-cwd])
       ;; first compile the variation
-      (system (string-append "raco make -v " (path->string file)))
+      (unless (system (string-append "raco make -v " (path->string file)))
+        (error (format "Compilation failed for '~a/~a', shutting down" (current-directory) (path->string file))))
 
       ;; run an extra run of the variation to throw away in order to avoid
       ;; OS caching issues
