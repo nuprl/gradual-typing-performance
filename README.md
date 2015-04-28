@@ -9,7 +9,8 @@ Auxillary folders:
 
 | Project name          | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | --------------------- | ----------- | ------- | ------------ | --------- | ---------------- |
-| funkytown             | Ben         | Yes     | No           | 9         | vine-like        |
+| gregor                | Ben         | Yes     | No           | 13        | pyramidic        |
+| funkytown             | Ben         | Yes     | No           | 10        | vine-like        |
 | zo traversal          | Ben         | Yes     | No           | 5         | almost diamond   |
 | sieve                 | Ben         | Yes     | No           | 2         | one chain        |
 | echo                  | Ben         | Yes     | No           | 4         | directed diamond |
