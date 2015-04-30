@@ -10,6 +10,14 @@ import re
 import shell
 import statistics
 
+### Constants
+# Location of setup script
+SETUP = "setup.rkt"
+# Location of run script
+RUN = "tools/run.rkt"
+# File to save temporary results to
+OUTPUT = "sampling_output.rktd"
+
 def check_directory_structure(dirname):
     """
         Assert that directory `dirname` is a properly-formatted
@@ -30,43 +38,41 @@ def setup_variations(dirname):
         Create all untyped/typed variations for files
         in the experiment directory `dirname`.
         Clobber existing variations folder, if it exists.
+    """
+    if not os.path.exists(SETUP):
+        print("Cannot find '%s' script. Shutting down..." % SETUP)
+        sys.exit(1)
+    return shell.execute("racket %s %s" % (SETUP, dirname))
 
-        TODO: just use existing setup script
+def simple_random_sampling(TODO):
+    """
+        Return a list of variations to sample
     """
     raise NotImplementedError
 
-def run_file(fname, iters=50, drop=3):
+def parse_rkt_results():
     """
-        Execute `fname` many times, collecting results into a temporary file
-        and finally returning the average of all results.
-        Use `drop` to set the number of warm-up trials.
+        Parse experiment results from a .rktd file containing a
+        (Vector (Vectorof Int))
+    """
+    raw = None
+    with open(OUTPUT, "r") as f:
+        raw = next(f)
+    if raw.startswith("#((") and raw.endswith("))"):
+        return [int(x) for x in raw[3:-2].split(" ")]
+    raise ValueError("Could not parse results from %s. Results were:\n%s" % (OUTPUT, raw))
 
-        Expects that running `fname` causes Racket's time output to print to STDOUT.
+def run_config(base_folder, config, entry_point="main.rkt", iters=50):
     """
-    if not os.path.exists(fname):
-        raise ValueError("Cannot run '%s'. File not found." % fname)
-    dname, main = fname.rsplit("/", 1)
-    cwd = os.getcwd()
-    os.chdir(dname)
-    with open(constants.TMP_RESULTS, "w") as f:
-        f.write("")
-    make_cmd = "raco make %s" % main
-    drop_cmd = "for i in {1..%s}; do racket %s; done" % (drop, main)
-    run_cmd  = "for i in {1..%s}; do racket %s >> %s; done" % (iters, main, constants.TMP_RESULTS)
-    shell.execute("; ".join([make_cmd, drop_cmd, run_cmd]))
-    times = []
-    with open(constants.TMP_RESULTS, "r") as f:
-        for line in f:
-            times.append(int(re.match(r'^cpu: ([0-9]+) .*', line).group(1)))
-    return statistics.mean(times)
-
-def run_config(base_folder, config, entry_point="main.rkt", iters=50, drop=3):
+        Sample the configuration `config`, return a list of
+        observed runtimes.
     """
-        Sample the configuration `config`
-    """
-    fname = "%s/variation%s/%s" % (base_folder, config, entry_point)
-    return sample_file(fname, iters=iters, drop=drop)
-
+    if not os.path.exists(RUN):
+        print("Cannot find '%s' script. Shutting down." % RUN)
+        sys.exit(1)
+    shell.execute("racket %s -i %s -o %s -x %s -e %s %s" \
+      % (RUN, iters, OUTPUT, config, entry_point base_folder))
+    return parse_rkt_results()
 
 def main(dirname, graph):
     """
@@ -75,5 +81,8 @@ def main(dirname, graph):
     """
     check_directory_structure(dirname)
     setup_variations(dirname)
-    raise NotImplementedError
+    results = {}
+    for cfg in simple_random_sampling():
+        results[cfg] = run_config(dirname, cfg)
+    return results
 
