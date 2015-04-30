@@ -27,3 +27,13 @@ def execute(command, on_failure=None):
         # 2013-09-07: Explicitly convert bytestring to str, for python3
         output = output.decode('utf-8')
     return output
+
+def find_file(filename):
+    command = " ".join(["find"
+                        ,"."
+                        ,"-name"
+                        ,filename])
+    matches_str = execute(command)
+    if matches_str:
+        return matches_str.split("\n",1)[0]
+    return None
