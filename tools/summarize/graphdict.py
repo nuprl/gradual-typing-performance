@@ -9,6 +9,7 @@ Data definition: GraphDict
 
 import constants
 import os
+import shell
 import util
 
 def check_titles(col_names, fname):
@@ -59,15 +60,19 @@ def infer(fname):
     prefix = util.strip_suffix(fname)
     gfile1 = "%s.graph" % prefix
     gfile2 = "%s.graph" % prefix.split("-", 1)[0]
-    gfile3 = "%s.graph" % prefix.rsplit("/", 1)[-1]
+    tag = prefix.rsplit("/", 1)[-1]
+    gfile3 = "%s.graph" % tag
+    gfile4 = "%s/%s.graph" % (tag, tag)
     if os.path.exists(gfile1):
         return gfile1
     elif os.path.exists(gfile2):
         return gfile2
     elif os.path.exists(gfile3):
         return gfile3
-    else:
-        return None
+    elif os.path.exists(gfile4):
+        return gfile4
+    else: ## Last resort, try searching for the first result
+        return shell.find_file(gfile3)
 
 def edges_iter(d):
     """
