@@ -9,6 +9,7 @@ import os
 import re
 import shell
 import statistics
+import util
 
 ### Constants
 # Location of setup script
@@ -31,7 +32,28 @@ def check_directory_structure(dirname):
         - the `typed/` and `untyped/` folders should have the same
           numbers of files, and matching filenames.
     """
-    raise NotImplementedError
+    # Ensure directories exist
+    base_dir = "%s/base" % dirname
+    un_dir   = "%s/base" % dirname
+    ty_dir   = "%s/base" % dirname
+    req_dirs = [base_dir, un_dir, ty_dir]
+    for required_dir in req_dirs:
+        if not os.path.isdir(required_dir):
+            raise ValueError("Required directory '%s' not found. Please create it." % required_dir)
+    both_dir = "%s/both"
+    if os.path.isdir(both_dir):
+        req_dirs.append(both_dir)
+    # Ensure no nested directories
+    for d in req_dirs:
+        if util.contains_any_directories(d):
+            raise ValueError("Directory '%s' should not contain any sub-directories, but it does. Please remove." % d)
+    # Ensure num. typed and num. untyped files are the same
+    if not(util.count_files(ty_dir) == util.count_files(un_dir)):
+        raise ValueError("Directories '%s' and '%s' must have the same number of files." % (un_dir, ty_dir))
+    # Ensure filenames in typed/untyped are the same
+    if not (sorted((util.get_files(un_dir))) == sorted((util.get_files(ty_dir)))):
+        raise ValueError("The filenames in '%s' must match the filenames in '%s', but do not. Please fix." % (un_dir, ty_dir))
+    return
 
 def setup_variations(dirname):
     """
@@ -40,8 +62,7 @@ def setup_variations(dirname):
         Clobber existing variations folder, if it exists.
     """
     if not os.path.exists(SETUP):
-        print("Cannot find '%s' script. Shutting down..." % SETUP)
-        sys.exit(1)
+        raise ValueError("Cannot find '%s' script. Shutting down..." % SETUP)
     return shell.execute("racket %s %s" % (SETUP, dirname))
 
 def simple_random_sampling(TODO):
@@ -68,10 +89,13 @@ def run_config(base_folder, config, entry_point="main.rkt", iters=50):
         observed runtimes.
     """
     if not os.path.exists(RUN):
-        print("Cannot find '%s' script. Shutting down." % RUN)
-        sys.exit(1)
-    shell.execute("racket %s -i %s -o %s -x %s -e %s %s" \
-      % (RUN, iters, OUTPUT, config, entry_point base_folder))
+        raise ValueError("Cannot find '%s' script. Shutting down." % RUN)
+    shell.execute(" ".join(["racket" ,RUN
+                            ,"-i", iters       ## -i : Number of iterations
+                            ,"-o", OUTPUT      ## -o : Location to save output
+                            ,"-x", config      ## -x : Exact configuration to run
+                            ,"-e", entry_point ## -e : Main file to execute
+                            ,base_folder]))
     return parse_rkt_results()
 
 def main(dirname, graph):
@@ -79,7 +103,9 @@ def main(dirname, graph):
         Compute statistics for the experiment folder `dirname`
         by sampling.
     """
+    print("Sampling '%s'" % dirname)
     check_directory_structure(dirname)
+    raise NotImplementedError
     setup_variations(dirname)
     results = {}
     for cfg in simple_random_sampling():
