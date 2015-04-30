@@ -25,6 +25,7 @@
 (define output-path (make-parameter #f))
 (define lattice-path (make-parameter #f))
 (define entry-point-param (make-parameter #f))
+(define exclusive-config (make-parameter #f))
 
 ;; Get paths for all variation directories
 ;; Path Path -> Listof Path
@@ -34,9 +35,14 @@
     (build-path basepath "benchmark" file entry-point)))
 
 ;; Run the variations for each variation directory
-;; (Listof Path) Nat -> Results
-(define (run-benchmarks basepath entry-point iters)
-  (define variations (mk-variations basepath entry-point))
+;; Optional argument gives the exact variation to run.
+;; Default is to run all variations (either run all, or exactly one)
+;; (Listof Path) Nat [(U (Listof String) #f)] -> Results
+(define (run-benchmarks basepath entry-point iters #:config [cfg #f])
+  (define variations
+    (if cfg
+      (list (build-path basepath "benchmark" (string-append "variation" cfg) entry-point))
+      (mk-variations basepath entry-point)))
   (define results (make-vector (length variations)))
   (for ([(var var-idx) (in-indexed (in-list variations))])
     (define-values (new-cwd file _2) (split-path var))
@@ -91,6 +97,9 @@
   (define basepath
     (command-line #:program "benchmark-runner"
                   #:once-each
+                  [("-x" "--exclusive")    x-p
+                                           "Run the given configuration and no others"
+                                           (exclusive-config x-p)]
                   [("-c" "--only-compile") "Only compile and don't run"
                                            (only-compile? #t)]
                   [("-o" "--output") o-p
@@ -131,7 +140,7 @@
   (unless (number? iters)
     (raise-user-error (format "expected a number, given ~a" (num-iterations))))
 
-  (define results (run-benchmarks basepath entry-point iters))
+  (define results (run-benchmarks basepath entry-point iters #:config (exclusive-config)))
 
   (when (output-path)
     (with-output-to-file (output-path)
