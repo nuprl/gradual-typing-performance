@@ -5,6 +5,7 @@ Parsing command-line arguments
 import constants
 import graphdict
 import sys
+import util
 
 def parse_options(argv):
     """
@@ -28,8 +29,7 @@ def parse_args(argv):
     target, options = parse_options(argv)
     gfile = graphdict.infer(target)
     if gfile is None:
-        print("Error: Could not find corresponding graph for file %s.\n  Suggestion: create a file '%s.graph' with columns 'MODULE\tINDEX\tREQUIRES' documenting\n  - The important modules in the project\n  - Their indexes in the configuration bitstrings\n  - The files these modules require." % (target, strip_suffix(target)))
-        sys.exit(1)
+        raise ValueError("Error: Could not find corresponding graph for file %s.\n  Suggestion: create a file '%s.graph' with columns 'MODULE\tINDEX\tREQUIRES' documenting\n  - The important modules in the project\n  - Their indexes in the configuration bitstrings\n  - The files these modules require." % (target, util.strip_suffix(target)))
     d = graphdict.of_file(gfile)
     return [target, d], options
 
