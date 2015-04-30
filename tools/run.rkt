@@ -96,7 +96,7 @@
                   [("-o" "--output") o-p
                                      "A path to write data to"
                                      (output-path o-p)]
-                  [("-l" "--latice") l-p
+                  [("-l" "--lattice") l-p
                                      "A path to write the lattice diagram to"
                                      (lattice-path l-p)]
                   [("-e" "--entry-point") e-p
