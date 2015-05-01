@@ -45,8 +45,9 @@ def _check_col(values):
 
 # (-> String String String String)
 def gen_name(fname, tag, suffix):
+    fname = os.path.basename(fname)
     # Cut original suffix from `fname`, append `tag`, a dot, and `suffix`
-    return "%s-%s.%s" % (fname.split(".", 1)[0], tag, suffix)
+    return "%s-%s.%s" % (os.path.splitext(fname)[0], tag, suffix)
 
 # (-> Path-String Nat)
 def count_lines(fname):
@@ -64,7 +65,7 @@ def count_modules(fname):
     with open(fname, "r") as f:
         _     = next(f)
         row   = next(f)
-        title = row.split("\t", 1)[0]
+        title = row.split(maxsplit=1)[0]
     return len(title)
 
 # (-> Path-String Dict)
@@ -74,9 +75,9 @@ def dict_of_file(gname):
     # Values are pairs of indices and requires, like (3, [x.rkt, y.rkt])
     d = {}
     with open(gname, "r") as f:
-        _check_colnames(next(f).strip().split(SEP), gname)
+        _check_colnames(next(f).strip().split(), gname)
         for line in f:
-            [mname, i, requires] = _check_col(line.strip().split(SEP))
+            [mname, i, requires] = _check_col(line.strip().split())
             d[mname] = (int(i), requires)
     return d
 

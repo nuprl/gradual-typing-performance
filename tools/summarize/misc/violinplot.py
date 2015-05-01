@@ -30,8 +30,8 @@ def data_by_numtyped(fname, pred=None):
     with open(fname, "r") as f:
         next(f)
         for line in f:
-            cols = line.strip().split(SEP)
-            title, vals = cols[0], cols[1::]
+            cols = line.strip().split()
+            title, vals = cols[0], cols[1:]
             if pred is None or pred(title):
                 data[num_typed(title)].append([int(x) for x in vals])
     return data
@@ -43,10 +43,10 @@ def runtimes_of_path(fname, path):
     bitstrings = set(path)
     with open(fname, "r") as f:
         for line in f:
-            rows = line.strip().split(SEP)
+            rows = line.strip().split()
             title = rows[0]
             if title in bitstrings and title not in avgs_by_title:
-                vals = [int(x) for x in rows[1::]]
+                vals = [int(x) for x in rows[1:]]
                 avgs_by_title[title] = min(vals)
     return [time for (_,time) in sorted(avgs_by_title.items(), key=lambda x:x[0])]
 
