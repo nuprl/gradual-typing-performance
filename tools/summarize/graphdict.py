@@ -1,7 +1,7 @@
 """
 Parse and manipulate a dictionary representation of a module-dependence graph.
 
-Data definition: GraphDict
+A GraphDict is a special python dictionary.
 - Keys are module names, like "a.rkt"
 - Values are pairs of indices and required modules,
   like (3, [x.rkt, y.rkt])
