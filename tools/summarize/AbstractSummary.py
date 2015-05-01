@@ -1,19 +1,27 @@
 """
     Common supertype for experiments.
-    A summary object is built from a data source.
-    - Given data, produce a Summary
-   
+
+    A summary object is built from a data source, like a table of results or a raw project folder.
+    
+    Subclasses must:
+    - validate input (in the __init__ constructor)
+    - generate experimental results from a configuration (in `results_of_config`)
+    - implement `render`, to display results
+    
 """
+
+import constants
 
 class AbstractSummary(object):
     """
     """
-    ### Init ###################################################################
+    ### Fields #################################################################
     graph           = None ## Module graph object representing the project
     module_names    = None ## (List String), names of the modules in the project
     num_iters       = 50   ## Number of iterations for run.rkt
     project_name    = None ## Title of the project
     stats_by_config = {}   ## Map: bitstring -> {mean, median, min, max, ci95}
+    output_dir      = constants.OUTPUT_DIR  ## Default directory to save outputs
 
     ### Abstract Methods (subclasses must implement) ###########################
     # 1. Implement the __init__ constructor
@@ -26,7 +34,7 @@ class AbstractSummary(object):
         raise NotImplementedError
 
     # 3. Convert a summary object to some output format
-    def render(self, output_location):
+    def render(self, output_port, *args, **kwargs):
         """
             Convert this object to readable output.
             Subclasses should use the file extension
@@ -35,7 +43,7 @@ class AbstractSummary(object):
         """
         raise NotImplementedError
 
-    ### Utilities###############################################################
+    ### Methods ################################################################
 
     def all_configurations(self):
         """
@@ -56,11 +64,11 @@ class AbstractSummary(object):
         columns = [[stat["mean"] for stat in self.stats_of_predicate(pred)]
                    for pred in predicates]
         return plot.violin(columns
-                           ,title=title or "%s absolute runtimes" % self.get_project_name()
+                           ,title or "%s absolute runtimes" % self.get_project_name()
                            ,xtitle
                            ,"Runtime (ms)"
                            ,positions=xlabels
-                           ,output=output)
+                           ,output="%s/%s" (self.output_dir, output))
     
     def graph_config(self, config, title=None, output=None):
         """
@@ -68,8 +76,13 @@ class AbstractSummary(object):
             Color typed nodes and mark boundary edges.
             Return the name of the generated file.
         """
-        return plot.module_graph(self.graph, self.project_name, config,
-                                 title=title, output=output)
+        if not self.graph:
+            return None
+        return plot.module_graph(self.graph
+                                 , self.project_name
+                                 , config
+                                 , title=title
+                                 , output="%s/%s" % (self.output_dir, output))
 
     def graph_conditional(self, pred, xtitle, xlabels, title=None, output=None):
         """
@@ -106,7 +119,7 @@ class AbstractSummary(object):
                         ,""
                         ,"Runtime (Normalized to %s-th column)" % base_index
                         ,xlabels=xlabels
-                        ,output=output)
+                        ,output="%s/%s" % (self.output_dir, output))
 
     ## Getters
 
