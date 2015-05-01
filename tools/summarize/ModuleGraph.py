@@ -39,7 +39,7 @@ class ModuleGraph(object):
             for req in self.requires[mod_name]:
                 yield(mod_name, req)
 
-    def get_modules(self):
+    def get_module_names(self):
         return self.module_names
 
     def index_of_module(self, mod_name):
@@ -51,7 +51,7 @@ class ModuleGraph(object):
 
     ### Helpers ################################################################
 
-    def init_from_graph(self, fname):
+    def init_from_graph(self, gname):
         """ (-> Path-String Void)
             Convert a .graph file to a GraphDict object
         """

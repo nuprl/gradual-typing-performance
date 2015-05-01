@@ -52,6 +52,18 @@ class AbstractSummary(object):
         return ((util.bitstring_of_int(i)
                  for i in range(self.get_num_configurations())))
 
+    def best_rows(self, pred, metric, limit=5):
+        """
+            Return the identfiers of the `limit` best configurations,
+            according to the measure `metric`.
+            Ignores configurations that do not satisfy `pred`.
+        """
+        cache = [None] * limit
+        for cfg in self.all_configurations():
+            if pred(cfg):
+                cache = util.sorted_buffer_insert(cache, cfg, metric, 0)
+        return cache
+
     ## Graphing
 
     def graph_absolute_runtimes(self, preds, xtitle, xlabels, title=None, output=None):
