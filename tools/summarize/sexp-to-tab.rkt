@@ -33,7 +33,7 @@
       (define len (log2 num-configs))
       (display "Run")
       (for ([n num-configs])
-        (display (natural->binary n len)))
+        (printf "\t~a" (natural->binary n len)))
       (newline)
       ;; For each run
       (for ([n (length (vector-ref vec 0))])
