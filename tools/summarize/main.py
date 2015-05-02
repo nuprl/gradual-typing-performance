@@ -5,17 +5,14 @@ Accepts raw data as input
   (either a .tab file, or a raw .rktd file)
 Collects varied statistics on the data and outputs results to a .tex file
 
-TODO: accept project root folders as input, simulate results by sampling
 """
 
 import constants
 import os
-import parser
-import render
-import sampling
 import sys
-import tabfile
 import util
+from TabfileSummary import TabfileSummary
+# from SrsSummary import SrsSummary
 
 def init():
    """
@@ -25,27 +22,26 @@ def init():
        os.mkdir(constants.OUTPUT_DIR)
    return
 
-def main(*args, **options):
+def main(input_file):
     """ (-> (Listof Any) (Dictof String Any) Void)
         Collect summary information from the input args by dispatching to the
         appropriate helper function.
         Pretty-print and save results.
     """
-    results = None
+    summary = None
     init()
-    if len(args) == 2 and args[0].endswith(".rktd"):
-        # Parse the .rktd file into a .tab file, parse the .tab file
-        fname   = tabfile.of_rktd(args[0])
-        results = tabfile.main(fname, args[1])
-    elif len(args) == 2 and args[0].endswith(".tab"):
-        # Collect results from the .tab file
-        results = tabfile.main(args[0], args[1])
-    elif len(args) == 2 and os.path.isdir(args[0]):
-        # Sampling mode!
-        results = sampling.main(args[0], args[1])
+    if input_file.endswith(".rktd") or input_file.endswith(".tab"):
+       summary = TabfileSummary(input_file)
+    # elif os.path.isdir(input_file):
+    #     # Sampling mode!
+    #     summary = SrsSummary(input_file)
     else:
         raise ValueError("unexpected arguments '%s'" % str(args))
-    render.as_tex(results, "%s/%s.tex" % (constants.OUTPUT_DIR, util.strip_suffix(args[0]).rsplit("/", 1)[-1]))
+    out_file = "%s/%s.tex" % (constants.OUTPUT_DIR, util.strip_suffix(input_file).rsplit("/", 1)[-1])
+    out_port = open(out_file, "w")
+    summary.render(out_port)
+    out_port.close()
+    print("Results saved as '%s'" % out_file)
     return
 
 def print_help():
@@ -57,9 +53,8 @@ def print_help():
 ### Entry point
 
 if __name__ == "__main__":
-    args, options = parser.parse_args(sys.argv[1::])
-    if bool(args):
-        main(*args, **options)
+    if len(sys.argv) == 2:
+        main(sys.argv[1])
     else:
         print_help()
 

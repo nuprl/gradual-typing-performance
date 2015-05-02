@@ -3,7 +3,9 @@ Generic utility functions
 """
 
 import constants
+import math
 import os
+import statistics
 
 def fold_file(fname, acc, fn, ignore_first_line=True):
     """
@@ -57,13 +59,13 @@ def stats_of_row(dataset):
     """
     if not dataset:
         return None
-    stat = {
-        "mean"     : int(statistics.mean(dataset)),
-        "median"   : int(statistics.median(dataset)),
-        "variance" : int(statistics.variance(dataset)),
-        "min"      : min(dataset),
-        "max"      : max(dataset),
-    }
+    stat = {"raw"      : dataset
+           ,"mean"     : int(statistics.mean(dataset))
+           ,"median"   : int(statistics.median(dataset))
+           ,"variance" : int(statistics.variance(dataset))
+           ,"min"      : min(dataset)
+           ,"max"      : max(dataset)
+           }
     Z = 2.04 # Close to t-stat for 30 degrees of freedom (TODO, make less magic)
     delta = Z * (math.sqrt(stat["variance"]) / math.sqrt(len(dataset)))
     stat["ci"] = [int(stat["mean"] - delta), int(stat["mean"] + delta)]

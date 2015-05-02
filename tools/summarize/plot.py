@@ -27,7 +27,7 @@ def remove_empty(d1, d2):
             posns.append(i)
     return xs, ys, posns
 
-def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8):
+def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None):
     """
         Create and save a bar plot.
         Args:
@@ -49,7 +49,7 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     ax1.set_title(title)
     ax1.set_xlabel(xlabel)
     ax1.set_ylabel(ylabel)
-    output = "%s/%s-bar.png" % (constants.OUTPUT_DIR, title)
+    output = output or "%s/%s-bar.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
     plt.close()
@@ -181,7 +181,7 @@ def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
         plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
     return
 
-def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None):
+def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None,output=None):
     """
         Create and save a violin plot representing the list `dataset`.
         Args:
@@ -216,13 +216,12 @@ def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarke
     ax1.set_ylim(ymin-5, ymax)
     plt.figtext(0.80, 0.01, meanmarker, color='white', backgroundcolor=color, weight='roman', size='medium')
     plt.figtext(0.82, 0.01, ' Average Value', color='black', weight='roman', size='x-small')
-    output = "%s/%s-violin.png" % (constants.OUTPUT_DIR, title)
+    output = output or "%s/%s-violin.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
     plt.close()
     print("Saved violin plot to '%s'" % output)
     return output
-
 
 def double_violin(series, title, xlabel, ylabel, alpha=0.8, colors=['royalblue','darkorange'], markers=['*','o'], legend=False):
     """
