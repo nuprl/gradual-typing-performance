@@ -30,15 +30,15 @@ def graph_of_file(fname):
     with open(fname, "r") as f:
         next(f)
         for line in f:
-            title = line.strip().split("\t", 1)[0]
+            title = line.strip().split(maxsplit=1)[0]
             g.add_node(title)#, key=title)
     # Add edges
     with open(fname, "r") as f:
         next(f)
         for line in f:
-            data = line.strip().split("\t")
+            data = line.strip().split()
             key = data[0]
-            mean = statistics.mean([int(x) for x in data[1::]])
+            mean = statistics.mean([int(x) for x in data[1:]])
             for key2 in prev_keys(key):
                 g.add_edge(key2, key, weight=mean)
     # Get the first and last nodes, using that left-over `title` variable
@@ -59,7 +59,7 @@ def positions_of_file(fname):
     with open(fname, "r") as f:
         next(f)
         for line in f:
-            key = line.strip().split("\t", 1)[0]
+            key = line.strip().split(maxsplit=1)[0]
             num_ones = sum((1 for c in key if c == "1"))
             # Init table entry, if not already
             if num_ones not in i_level:

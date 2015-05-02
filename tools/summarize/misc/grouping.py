@@ -38,7 +38,7 @@ def stats_of_tab(fname):
     with open(fname, "r") as f:
         next(f) # Ignore first line, its just an index
         for line in f:
-            cols = line.strip().split("\t")
+            cols = line.strip().split()
             title = cols[0]
             # Collect statistics on each row
             data = [int(x) for x in cols[1::]]
@@ -89,7 +89,7 @@ def every_point_in(fname):
     with open(fname, "r") as f:
         next(f)
         for line in f:
-            for pt in line.strip().split("\t")[1::]:
+            for pt in line.strip().split()[1::]:
                 pts.append(int(pt))
     return pts
 
@@ -100,7 +100,7 @@ def get_row(fname, key):
     with open(fname, "r") as f:
         next(f)
         for line in f:
-            data = line.strip().split("\t")
+            data = line.strip().split()
             if data[0] == key:
                 return [int(x) for x in data[1::]]
     raise ValueError("could not find key '%s'" % key)
