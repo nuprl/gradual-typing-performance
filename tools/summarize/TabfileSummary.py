@@ -58,7 +58,7 @@ class TabfileSummary(AbstractSummary):
                             ,("bottom %s" % len(worst_cfgs), lambda x: x in worst_cfgs)
                             ,("typed", config.is_typed))
         self.render_absolute(output_port
-                            ,*[(str(n), lambda cfg: n == config.num_typed_modules(cfg))
+                            ,*[(str(n), config.has_typed_modules(n))
                               for n in range(self.get_num_modules())])
         #### TODO ####
         # self.render_worst_configs(???)

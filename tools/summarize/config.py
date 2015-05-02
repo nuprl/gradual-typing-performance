@@ -12,6 +12,9 @@ def untyped_at(cfg, key):
 def typed_at(cfg, key):
     return cfg[key] == "1"
 
+def has_typed_modules(n):
+    return (lambda cfg: num_typed_modules(cfg) == n)
+
 def is_untyped(cfg):
     """
         True if `cfg` is the fully-UNtyped configuration.
