@@ -1,12 +1,24 @@
 """
-Simulate 'ground truth' results by sampling.
+    Simulate results by random sampling.
+    A sample is a subset of configurations matching some predicate.
+    For example, we sample and plot all configurations with 3 typed modules.
+    - The predicate is "has 3 typed modules"
+    - The sample is a subset of matching configurations
+
+    These samples give a reasonable estimate of the population's true
+    mean and variance.
+    - The mean is less useful, but gives an idea what performance cost to expect
+    - The variance describes the range of performance costs at a given level.
+
+    TODO let's add some more measurements and samples,
+    like conditional distributions to help find bottlenecks
 """
 
 import constants
 import config
 import glob
 import os
-import re
+import random
 import shell
 import statistics
 import latex
@@ -16,13 +28,14 @@ from ModuleGraph import ModuleGraph
 
 class SrsSummary(AbstractSummary):
     ### Fields ################################################################
+    sample_size  = 50
     setup_script = "setup.rkt"
     run_script   = "run.rkt"
     tmp_output   = "sampling_output.rktd"
 
     ###
 
-    def __init__(self, fname):
+    def __init__(self, fname, *args, **kwargs):
         ### Find external scripts
         self.setup_script = shell.find_file(self.setup_script)
         if not self.setup_script:
@@ -37,11 +50,12 @@ class SrsSummary(AbstractSummary):
         self.project_name = fname
         self.graph        = ModuleGraph(fname)
         self.module_names = glob.glob("%s/untyped/*.rkt" % self.project_name)
+        self.num_iters    = kwargs.get("num_iters", self.num_iters)
+        self.sample_size  = kwargs.get("sample_size", self.sample_size)
 
     def results_of_config(self, config):
         # Execute the config for a pre-set number of iterations
-        print("Running configuration '%s'" % config)
-        return self.run_config(config)
+        return util.stats_of_row(self.run_config(config))
 
     def render(self, output_port):
         self.render_title(output_port, "Simple Random Sampling: %s" % self.project_name)
@@ -50,15 +64,16 @@ class SrsSummary(AbstractSummary):
                            ,("untyped", config.is_untyped)
                            ,("typed", config.is_typed))
         self.render_absolute(output_port
-                            ,*[(str(n), self.random_sample(num_modules=n))
+                            ,*[(str(n), self.in_random_sample(num_typed=n))
                               for n in range(self.get_num_modules())])
+        self.render_sample_results(output_port)
         print(latex.end(), file=output_port)
 
     def render_sample_results(self, output_port):
         print(latex.subsection("Notes"), file=output_port)
         num_sampled = sum((1 for v in self.stats_by_config.values() if v))
-        print("Sampled %s of %s configurations." % (num_sampled, self.get_num_configurations()))
-        print("Took %s measurements for each sample" % self.get_num_measurements())
+        print("Sampled %s of %s configurations." % (num_sampled, self.get_num_configurations()), file=output_port)
+        print("Took %s measurements for each sample" % self.get_num_measurements(), file=output_port)
 
     ### Helpers
 
@@ -109,7 +124,17 @@ class SrsSummary(AbstractSummary):
             raise ValueError("Cannot give number of measurements: No measurements recorded")
         if len(meas_set) > 1:
             raise ValueError("Detected unequal sample sizes in set '%s'" % meas_set)
-        return meas_set[0]
+        return meas_set.pop()
+
+    def in_random_sample(self, *args, **kwargs):
+        sample = self.random_sample(*args, **kwargs)
+        return (lambda cfg: cfg in sample)
+
+    def random_sample(self, num_typed=None):
+        matches = [cfg for cfg in self.all_configurations()
+                   if config.num_typed_modules(cfg) == num_typed]
+        return [matches[random.randint(0, len(matches)-1)]
+                for _ in range(self.sample_size)]
 
     def setup_variations(self, dirname):
         """
@@ -136,6 +161,7 @@ class SrsSummary(AbstractSummary):
             Sample the configuration `config`, return a list of
             observed runtimes.
         """
+        print("Running config '%s' for %s iterations"% (config, self.num_iters))
         shell.execute(" ".join(["racket" , self.run_script
                                 ,"-i", str(self.num_iters) ## -i : Number of iterations
                                 ,"-o", self.tmp_output ## -o : Location to save output

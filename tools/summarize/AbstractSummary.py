@@ -81,9 +81,9 @@ class AbstractSummary(object):
             each predicate in `preds`.
             (The number of columns in the result is equal to the size of `preds`)
         """
-        # TODO filter empty columns, so the violin plot never fails
         columns = [self.stats_of_predicate(pred)["raw"]
                    for pred in preds]
+        # TODO filter empty columns ?
         return plot.violin(columns
                            ,title or "%s absolute runtimes" % self.get_project_name()
                            ,xtitle
