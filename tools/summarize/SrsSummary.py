@@ -3,10 +3,13 @@ Simulate 'ground truth' results by sampling.
 """
 
 import constants
+import config
+import glob
 import os
 import re
 import shell
 import statistics
+import latex
 import util
 from AbstractSummary import AbstractSummary
 from ModuleGraph import ModuleGraph
@@ -20,38 +23,42 @@ class SrsSummary(AbstractSummary):
     ###
 
     def __init__(self, fname):
-        ### Setup fields
-        self.project_name = fname
-        self.graph = ModuleGraph(fname)
         ### Find external scripts
         self.setup_script = shell.find_file(self.setup_script)
         if not self.setup_script:
-            raise ValueError("Could not find setup script, goodbye.")
+            raise ValueError("Could not find setup script within current directory, goodbye.")
         self.run_script   = shell.find_file(self.run_script)
         if not self.run_script:
-            raise ValueError("Could not find run script, goodbye.")
+            raise ValueError("Could not find run script within current directory, goodbye.")
         ### Check assumptions
         self.check_directory_structure(fname)
         self.setup_variations(fname)
+        ### Setup fields
+        self.project_name = fname
+        self.graph        = ModuleGraph(fname)
+        self.module_names = glob.glob("%s/untyped/*.rkt" % self.project_name)
 
     def results_of_config(self, config):
         # Execute the config for a pre-set number of iterations
+        print("Running configuration '%s'" % config)
         return self.run_config(config)
 
     def render(self, output_port):
-        # Give normal stats on untpyed/typed
-        # Sample a few of the gradually typed ones, report on that.
-        # Also stratify and sample (also easy, but please lets do and test)
-        raise NotImplementedError
-        # print("Sampling '%s'" % dirname)
-        # check_directory_structure(dirname)
-        # raise NotImplementedError
-        # setup_variations(dirname)
-        # results = {}
-        # for cfg in simple_random_sampling():
-        #     results[cfg] = run_config(dirname, cfg)
-        # return results
+        self.render_title(output_port, "Simple Random Sampling: %s" % self.project_name)
+        self.render_summary(output_port)
+        self.render_overall(output_port
+                           ,("untyped", config.is_untyped)
+                           ,("typed", config.is_typed))
+        self.render_absolute(output_port
+                            ,*[(str(n), self.random_sample(num_modules=n))
+                              for n in range(self.get_num_modules())])
+        print(latex.end(), file=output_port)
 
+    def render_sample_results(self, output_port):
+        print(latex.subsection("Notes"), file=output_port)
+        num_sampled = sum((1 for v in self.stats_by_config.values() if v))
+        print("Sampled %s of %s configurations." % (num_sampled, self.get_num_configurations()))
+        print("Took %s measurements for each sample" % self.get_num_measurements())
 
     ### Helpers
 
@@ -91,15 +98,26 @@ class SrsSummary(AbstractSummary):
             raise ValueError("The filenames in '%s' must match the filenames in '%s', but do not. Please fix." % (un_dir, ty_dir))
         return
 
+    def get_num_measurements(self):
+        """
+            Return the number of measurements taken for each sampled
+            configuration.
+            Fail if the number is not the same across all configurations.
+        """
+        meas_set = set((len(v) for v in self.stats_by_config.values()))
+        if len(meas_set) == 0:
+            raise ValueError("Cannot give number of measurements: No measurements recorded")
+        if len(meas_set) > 1:
+            raise ValueError("Detected unequal sample sizes in set '%s'" % meas_set)
+        return meas_set[0]
+
     def setup_variations(self, dirname):
         """
             Create all untyped/typed variations for files
             in the experiment directory `dirname`.
             Clobber existing variations folder, if it exists.
         """
-        if not os.path.exists(SETUP):
-            raise ValueError("Cannot find '%s' script. Shutting down..." % SETUP)
-        return shell.execute("racket %s %s" % (SETUP, dirname))
+        return shell.execute("racket %s %s" % (self.setup_script, dirname))
 
     def parse_rkt_results(self):
         """
@@ -111,7 +129,7 @@ class SrsSummary(AbstractSummary):
             raw = next(f)
         if raw.startswith("#((") and raw.endswith("))"):
             return [int(x) for x in raw[3:-2].split(" ")]
-        raise ValueError("Could not parse results from %s. Results were:\n%s" % (OUTPUT, raw))
+        raise ValueError("Could not parse results from %s. Results were:\n%s" % (self.tmp_output, raw))
 
     def run_config(self, config, entry_point="main.rkt"):
         """
@@ -119,7 +137,7 @@ class SrsSummary(AbstractSummary):
             observed runtimes.
         """
         shell.execute(" ".join(["racket" , self.run_script
-                                ,"-i", self.num_iters ## -i : Number of iterations
+                                ,"-i", str(self.num_iters) ## -i : Number of iterations
                                 ,"-o", self.tmp_output ## -o : Location to save output
                                 ,"-x", config      ## -x : Exact configuration to run
                                 ,"-e", entry_point ## -e : Main file to execute

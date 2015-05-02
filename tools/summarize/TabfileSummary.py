@@ -40,7 +40,8 @@ class TabfileSummary(AbstractSummary):
                                                          if row[0] == config else None))
 
     def render(self, output_port):
-        self.render_title(output_port)
+        title = "Ground Truth Results: %s" % self.project_name
+        self.render_title(output_port, title)
         self.render_summary(output_port)
         best_cfgs = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] > self.stats_by_config[y]["mean"])
         worst_cfgs = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] < self.stats_by_config[y]["mean"])
@@ -74,49 +75,10 @@ class TabfileSummary(AbstractSummary):
         print(latex.end(), file=output_port)
 
     ### rendering
-    def render_title(self, output_port):
-        print(latex.PREAMBLE, file=output_port)
-        print(latex.section("Results: %s" % self.project_name), file=output_port)
-
     def render_summary(self, output_port):
-        print(latex.subsection("Module Summary"), file=output_port)
-        print(latex.list(["\\mono{%s}" % k for k in self.graph.module_names], numbers=True), file=output_port)
+        AbstractSummary.render_summary(self, output_port)
         print("Total of %s configurations" % self.get_num_configurations(), file=output_port)
         print("Ran each configuration %s times" % self.num_iters, file=output_port)
-
-    def render_overall(self, output_port, *labeled_preds):
-        labels = [k for (k,v) in labeled_preds]
-        preds  = [v for (k,v) in labeled_preds]
-        results = [self.stats_of_predicate(p) for p in preds]
-        baseline = (labels[0], results[0])
-        print(latex.subsection("Overall Runtimes"), file=output_port)
-        print(latex.list([" ".join(["Average"
-                                    ,"\\textbf{%s}" % tag
-                                    ,"runtime"
-                                    ,str(row["mean"])
-                                    ,"(%s times %s than %s)" % (latex.difference(row["mean"], baseline[1]["mean"])[0], latex.difference(row["mean"], baseline[1]["mean"])[1], baseline[0])
-                                    ,latex.list(["Median: %s" % row["median"]
-                                                 ,"Min: %s" % row["min"]
-                                                 ,"Max: %s" % row["max"]
-                                                 ,"95\\%% confidence: %s\\textendash~%s" % (row["ci"][0], row["ci"][1])])])
-                           for (tag, row) in zip(labels, results)]), file=output_port)
-
-    def render_normalized(self, output_port, *labeled_preds):
-        labels = [k for (k,_) in labeled_preds]
-        preds  = [v for (_,v) in labeled_preds]
-        graph  = self.graph_normalized_runtimes(preds
-                                               ,"%s-normalized.png" % self.project_name
-                                               , xlabels=labels)
-        print(latex.figure(graph), file=output_port)
-
-    def render_absolute(self, output_port, *labeled_preds):
-        labels = [k for (k,_) in labeled_preds]
-        preds  = [v for (_,v) in labeled_preds]
-        graph  = self.graph_absolute_runtimes(preds
-                                             ,"Num. typed modules"
-                                             ,labels
-                                             ,"%s-absolute.png" % self.project_name)
-        print(latex.figure(graph), file=output_port)
 
     def render_graphs(self, output_port, cfgs, baseline, title="Module Graphs"):
         print(latex.subsection(title), file=output_port)

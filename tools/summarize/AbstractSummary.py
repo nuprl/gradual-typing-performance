@@ -11,7 +11,7 @@
 """
 
 import constants
-import numpy
+import latex
 import plot
 import util
 
@@ -161,6 +161,58 @@ class AbstractSummary(object):
 
     def get_project_name(self):
         return self.project_name
+
+    ## Rendering
+
+    def render_normalized(self, output_port, *labeled_preds):
+        labels = [k for (k,_) in labeled_preds]
+        preds  = [v for (_,v) in labeled_preds]
+        title  = "%s-normalized.png" % self.project_name
+        graph  = self.graph_normalized_runtimes(preds
+                                               ,title
+                                               ,xlabels=labels)
+        print(latex.figure(graph), file=output_port)
+
+    def render_absolute(self, output_port, *labeled_preds):
+        labels = [k for (k,_) in labeled_preds]
+        preds  = [v for (_,v) in labeled_preds]
+        title = "%s-absolute.png" % self.project_name
+        graph  = self.graph_absolute_runtimes(preds
+                                             ,"Num. typed modules"
+                                             ,labels
+                                             ,title)
+        print(latex.figure(graph), file=output_port)
+
+    def render_overall(self, output_port, *labeled_preds):
+        labels = [k for (k,v) in labeled_preds]
+        preds  = [v for (k,v) in labeled_preds]
+        results = [self.stats_of_predicate(p) for p in preds]
+        baseline = (labels[0], results[0])
+        print(latex.subsection("Overall Runtimes"), file=output_port)
+        print(latex.list([" ".join(["Average"
+                                    ,"\\textbf{%s}" % tag
+                                    ,"runtime"
+                                    ,str(row["mean"])
+                                    ,"(%s times %s than %s)" % (latex.difference(row["mean"], baseline[1]["mean"])[0], latex.difference(row["mean"], baseline[1]["mean"])[1], baseline[0])
+                                    ,latex.list(["Median: %s" % row["median"]
+                                                 ,"Min: %s" % row["min"]
+                                                 ,"Max: %s" % row["max"]
+                                                 ,"95\\%% confidence: %s\\textendash~%s" % (row["ci"][0], row["ci"][1])])])
+                           for (tag, row) in zip(labels, results)]), file=output_port)
+
+    def render_summary(self, output_port):
+        """
+            Print basic information that every summary should give.
+        """
+        print(latex.subsection("Module Summary"), file=output_port)
+        print(latex.list(["\\mono{%s}" % mn for mn in self.module_names], numbers=True), file=output_port)
+
+    def render_title(self, output_port, title):
+        """
+            Begin a LaTeX document
+        """
+        print(latex.PREAMBLE, file=output_port)
+        print(latex.section(title), file=output_port)
 
     ## Compute experimental results
 

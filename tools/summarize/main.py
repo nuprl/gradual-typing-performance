@@ -22,7 +22,7 @@ def init():
        os.mkdir(constants.OUTPUT_DIR)
    return
 
-def main(input_file):
+def main(input_file, iters=3, verbose=0):
     """ (-> (Listof Any) (Dictof String Any) Void)
         Collect summary information from the input args by dispatching to the
         appropriate helper function.
@@ -34,7 +34,7 @@ def main(input_file):
        summary = TabfileSummary(input_file)
     elif os.path.isdir(input_file):
         # Sampling mode!
-        summary = SrsSummary(input_file)
+        summary = SrsSummary(input_file, iters=iters)
     else:
         print("Cannot read input file '%s'" % input_file)
         return
