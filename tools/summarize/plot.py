@@ -177,15 +177,15 @@ def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
         v.set_edgecolors('k')
         v.set_facecolors(color)
         v.set_alpha(alpha)
-    ## Re-color median, min, max lines to be black
-    for field in ['cmaxes', 'cmins', 'cbars', 'cmedians']:
-        vp[field].set_color('k')
     ## Draw mean markers
     # Make original mean line invisible
     vp['cmeans'].set_alpha(0)
     # Draw data points
     for i in range(len(dataset)):
-        plt.plot([posns[i]] * len(dataset[i]), dataset[i], color="red", marker="+")
+        plt.plot([posns[i]] * len(dataset[i]), dataset[i], "r+")
+    ## Re-color median, min, max lines to be black
+    for field in ['cmaxes', 'cmins', 'cbars', 'cmedians']:
+        vp[field].set_color('k')
     # Draw the mean marker
     for i in range(len(dataset)):
         plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
@@ -224,8 +224,8 @@ def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarke
     # Reset y limit
     ymin,ymax = ax1.get_ylim()
     ax1.set_ylim(ymin-5, ymax)
-    plt.figtext(0.80, 0.04, "+", color='red', weight='roman', size='medium')
-    plt.figtext(0.82, 0.04, " Sampled Point", color='black', weight='roman', size='x-small')
+    plt.figtext(0.80, 0.043, "+", color='red', weight='roman', size='medium')
+    plt.figtext(0.82, 0.043, " Sampled Point", color='black', weight='roman', size='x-small')
     plt.figtext(0.80, 0.01, meanmarker, color='white', backgroundcolor=color, weight='roman', size='medium')
     plt.figtext(0.82, 0.01, ' Average Value', color='black', weight='roman', size='x-small')
     output = output or "%s/%s-violin.png" % (constants.OUTPUT_DIR, title)
