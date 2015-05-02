@@ -60,8 +60,15 @@ class TabfileSummary(AbstractSummary):
         self.render_absolute(output_port
                             ,*[(str(n), config.has_typed_modules(n))
                               for n in range(self.get_num_modules())])
-        #### TODO ####
-        # self.render_worst_configs(???)
+        baseline = self.stats_of_config("0" * self.get_num_modules())["mean"]
+        self.render_graphs(output_port
+                          ,worst_cfgs
+                          ,baseline
+                          ,title="Top %s slowest gradually-typed configurations" % len(worst_cfgs))
+        self.render_graphs(output_port
+                          ,best_cfgs
+                          ,baseline
+                          ,title="Top %s fastest gradually-typed configurations" % len(best_cfgs))
         # self.render_best_configs(???)
         # self.render_edge_violins(???)
         print(render.end(), file=output_port)
@@ -111,6 +118,16 @@ class TabfileSummary(AbstractSummary):
                                              ,"%s-absolute.png" % self.project_name)
         print(render.figure(graph), file=output_port)
 
+    def render_graphs(self, output_port, cfgs, baseline, title="Module Graphs"):
+        print(render.subsection(title), file=output_port)
+        for cfg in cfgs:
+            mean = self.stats_of_config(cfg)["mean"]
+            diff, txt = render.difference(mean, baseline)
+            g = self.graph_config(cfg
+                             ,title="Config %s: %s %s than baseline" % (cfg, diff, txt)
+                             ,output="%s-graph-%s.png" % (self.project_name, cfg))
+            print(render.figure(g), file=output_port)
+
     ### Helpers ################################################################
 
     def of_tab(self, tabfile):
@@ -135,118 +152,3 @@ class TabfileSummary(AbstractSummary):
         # Strip the suffix from the input file, replace with .tab
         return "%s.tab" % rktdfile.rsplit(".", 1)[0]
 
-# ################################################################################
-# 
-# def all_cells_matching(tabfile, config_pred):
-#     """
-#         Return a list of all data cells in rows whose titles
-#         match `config_pred`.
-#     """
-#     def process_row(row):
-#         title = row[0]
-#         if config_pred(title):
-#             return [int(x) for x in row[1::]]
-#         else:
-#             return []
-#     return util.fold_file(tabfile, [], lambda acc,row: acc + process_row(row))
-# 
-# def bucketize(fname, get_bkt, num_buckets, pred=None):
-#     """
-#         Group the rows in `fname` into buckets,
-#         using `get_bkt` to assign a row of the file to a bucket.
-#         Return the collected list of lists
-#         (todo? optionally allow 'edit_row' function,
-#           instead of mushing all values into a list)
-#     """
-#     init = [[] for _ in range(1+num_buckets)]
-#     def add_row(acc, row):
-#         # TODO don't graph all points because ... (I had a reason at some point)
-#         if (pred is None) or (pred(row[0])):
-#             acc[get_bkt(row[0])].extend([int(x) for x in row[1::]])
-#         return acc
-#     return util.fold_file(fname, init, add_row)
-# 
-# def count_modules(fname):
-#     """ (-> Path-String Nat)
-#         Count the number of modules in the project.
-#     """
-#     with open(fname, "r") as f:
-#         _     = next(f)
-#         row   = next(f)
-#         title = row.split(constants.SEP, 1)[0]
-#     return len(title)
-# 
-# def count_runs(fname):
-#     """
-#         Count the number of runs recorded for each configuration in
-#         `fname`.
-# 
-#         2015-04-20: Warning, the count is not 'exact'.
-#           It trusts the title row, so if any data row has fewer
-#           columns than the title does we do not catch the error.
-#     """
-#     with open(fname, "r") as f:
-#         hdr = next(f)
-#     title = hdr.split(constants.SEP, 1)[0]
-#     if title != "Run":
-#         raise ValueError("Expected first column of '%s' to be labeled 'Run', got label '%s'" % (fname, title))
-#     last_index = hdr.rsplit(constants.SEP, 1)[-1]
-#     return int(last_index)
-# 
-# def main(tabfile, dgraph):
-#     """ (-> Path-String GraphDict Result)
-#         Input: a .tab file, an overall summary of running all configurations
-#                of a project.
-#         Output: a Result object.
-#     """
-#     print("Collecting results from ground truth data '%s'" % tabfile)
-#     fname = util.strip_suffix(tabfile).rsplit("/", 1)[-1]
-#     num_modules = count_modules(tabfile)
-#     num_configs = 2 ** num_modules
-#     print("Project contains %s modules (%s configurations)" % (num_modules, num_configs))
-#     u_raw = all_cells_matching(tabfile, config.is_untyped)
-#     g_raw = all_cells_matching(tabfile, lambda x: not (config.is_typed(x) or config.is_untyped(x)))
-#     t_raw = all_cells_matching(tabfile, config.is_typed)
-#     ugt_violin = plot.violin([u_raw, g_raw, t_raw]
-#                             ,"%s_untyped-vs-gradual-vs-typed" % fname
-#                             ,"Configuration"
-#                             ,"Runtime (ms)"
-#                             ,xlabels=["untyped","gradual\n(all configs)","typed"]) if u_raw and g_raw and t_raw else None
-#     # Collect absolute BEST and WORST times+configs
-#     ten_percent = max(3, min(10, int(0.10 * num_configs)))
-#     best_cfg_and_times  = best_rows(tabfile
-#                         ,ten_percent
-#                         ,lambda acc,tmp: tmp[1] < acc[1]
-#                         ,lambda row:(row[0], int(statistics.mean([int(x) for x in row[1::]]))))
-#     worst_cfg_and_times = best_rows(tabfile
-#                         ,ten_percent
-#                         ,lambda acc,tmp: acc[1] < tmp[1]
-#                         ,lambda row:(row[0], int(statistics.mean([int(x) for x in row[1::]]))))
-#     stats = {
-#         "title"    : fname
-#         ,"runs"    : count_runs(tabfile)
-#         ,"graph"   : dgraph
-#         ,"ugt"     : {"img" : ugt_violin
-#                      ,"summary" : {"untyped" : basic_row_stats(u_raw)
-#                                   ,"gradual" : basic_row_stats(g_raw)
-#                                   ,"typed"   : basic_row_stats(t_raw)}}
-#         ,"best"    : [config.basic_stats(v[0], v[1], dgraph)
-#                       for v in best_cfg_and_times if v is not None]
-#         ,"worst"   : [config.basic_stats(v[0], v[1], dgraph)
-#                       for v in worst_cfg_and_times if v is not None]
-#         ,"bucketed": plot.violin(bucketize(tabfile, config.num_typed_modules, num_modules)
-#                            ,"%s_by-typed-modules" % fname
-#                            ,"Number of Typed Modules"
-#                            ,"Runtime (ms)"
-#                            ,positions=range(0, 1+num_modules)
-#                            ,xlabels=range(0, 1+num_modules))
-#         ,"fixed"   : [plot.double_violin([bucketize(tabfile, config.num_typed_modules, num_modules, pred=lambda cfg: config.untyped_at(cfg, v[0]))
-#                                     ,bucketize(tabfile, config.num_typed_modules, num_modules, pred=lambda cfg: config.typed_at(cfg, v[0]))]
-#                                     ,"%s_fixing-%s" % (fname, k)
-#                                     ,"Number of Typed Modules"
-#                                     ,"Runtime (ms)"
-#                                     ,legend=["%s is untyped" % k
-#                                             ,"%s is typed" % k])
-#                       for (k,v) in sorted(dgraph.items(), key=lambda item:item[1][0])]
-#     }
-#     return stats

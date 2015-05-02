@@ -97,10 +97,10 @@ class AbstractSummary(object):
         if not self.graph:
             return None
         return plot.module_graph(self.graph
-                                 , self.project_name
-                                 , config
-                                 , title=title
-                                 , output="%s/%s" % (self.output_dir, output))
+                                 ,self.project_name
+                                 ,config
+                                 ,title=title
+                                 ,output="%s/%s" % (self.output_dir, output))
 
     def graph_conditional(self, pred, xtitle, xlabels, output, title=None):
         """

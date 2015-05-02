@@ -43,11 +43,10 @@ class ModuleGraph(object):
         return self.module_names
 
     def index_of_module(self, mod_name):
-        return self.indices["mod_name"]
+        return self.indices[mod_name]
 
     def requires_of_module(self, mod_name):
         return self.requires[mod_name]
-        
 
     ### Helpers ################################################################
 
@@ -122,4 +121,4 @@ class ModuleGraph(object):
             return gfile4
         else: ## Last resort, try searching for the first result
             return shell.find_file(gfile3)
-    
+

@@ -56,7 +56,7 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     print("Saved bar chart to '%s'" % output)
     return output
 
-def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange'):
+def module_graph(graph, project_name, cfg, title=None, alpha=1, edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange', output=None):
     """
         Show module-dependence graph.
         Args:
@@ -70,29 +70,31 @@ def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", unt
         - untypedcolor = Node color for untyped modules
         - typedcolor   = Node color for typed modules
     """
-    cfg = title.split(":", 1)[0].rsplit(" ", 1)[-1]
     ## Make networkx graph
     g = nx.DiGraph()
-    for (k,v) in graph.items():
-        g.add_node(k)
-        for req in v[1]:
-            g.add_edge(k, req)
+    for mn in graph.get_module_names():
+        g.add_node(mn)
+    for (src,dst) in graph.edges_iter():
+        g.add_edge(src,dst)
     ## Make pyplot
     pos = nx.circular_layout(g, scale=1)
     fig,ax1 = plt.subplots()
     # Untyped nodes, or the default
     nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
-                           ,nodelist=[k for (k,v) in graph.items() if config.untyped_at(cfg, v[0])]
+                           ,nodelist=[mn for mn in graph.get_module_names() if config.untyped_at(cfg, graph.index_of_module(mn))]
                            ,node_color=untypedcolor)
     # Typed nodes
     nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
-                           ,nodelist=[k for (k,v) in graph.items() if config.typed_at(cfg, v[0])]
+                           ,nodelist=[mn for mn in graph.get_module_names() if config.typed_at(cfg, graph.index_of_module(mn))]
                            ,node_color=typedcolor)
-    nx.draw_networkx_labels(g, pos, dict([(k,k) for k in graph.keys()]))
+    nx.draw_networkx_labels(g, pos, dict([(k,k) for k in graph.get_module_names()]))
     nx.draw_networkx_edges(g, pos, edge_color=edgecolor, alpha=alpha)
     ## Draw boundaries
+    boundaries = [(src,dst) for (src,dst) in graph.edges_iter()
+                  if config.is_boundary(cfg, graph.index_of_module(src), graph.index_of_module(dst))]
     nx.draw_networkx_edges(g, pos, edgelist=boundaries, edge_color="r", width=4)
-    output = "%s/%s-module-graph-%s.png" % (constants.OUTPUT_DIR, fname, cfg)
+    output = output or "%s/%s-module-graph-%s.png" % (constants.OUTPUT_DIR, project_name, cfg)
+    title = title or "%s-modulegraph-%s.png" % (project_name, cfg)
     ax1.set_title(title)
     plt.axis("off")
     plt.savefig(output)
