@@ -10,7 +10,7 @@ from ModuleGraph import ModuleGraph
 import config
 import constants
 import os
-import render
+import latex
 import shell
 import util
 
@@ -44,7 +44,7 @@ class TabfileSummary(AbstractSummary):
         self.render_summary(output_port)
         best_cfgs = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] > self.stats_by_config[y]["mean"])
         worst_cfgs = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] < self.stats_by_config[y]["mean"])
-        print(render.subsection("Aggregate Figures"), file=output_port)
+        print(latex.subsection("Aggregate Figures"), file=output_port)
         self.render_overall(output_port
                             ,("untyped", config.is_untyped)
                             ,("gradual", config.is_gradual)
@@ -71,16 +71,16 @@ class TabfileSummary(AbstractSummary):
                           ,title="Top %s fastest gradually-typed configurations" % len(best_cfgs))
         # self.render_best_configs(???)
         # self.render_edge_violins(???)
-        print(render.end(), file=output_port)
+        print(latex.end(), file=output_port)
 
     ### rendering
     def render_title(self, output_port):
-        print(render.PREAMBLE, file=output_port)
-        print(render.section("Results: %s" % self.project_name), file=output_port)
+        print(latex.PREAMBLE, file=output_port)
+        print(latex.section("Results: %s" % self.project_name), file=output_port)
 
     def render_summary(self, output_port):
-        print(render.subsection("Module Summary"), file=output_port)
-        print(render.list(["\\mono{%s}" % k for k in self.graph.module_names], numbers=True), file=output_port)
+        print(latex.subsection("Module Summary"), file=output_port)
+        print(latex.list(["\\mono{%s}" % k for k in self.graph.module_names], numbers=True), file=output_port)
         print("Total of %s configurations" % self.get_num_configurations(), file=output_port)
         print("Ran each configuration %s times" % self.num_iters, file=output_port)
 
@@ -89,13 +89,13 @@ class TabfileSummary(AbstractSummary):
         preds  = [v for (k,v) in labeled_preds]
         results = [self.stats_of_predicate(p) for p in preds]
         baseline = (labels[0], results[0])
-        print(render.subsection("Overall Runtimes"), file=output_port)
-        print(render.list([" ".join(["Average"
+        print(latex.subsection("Overall Runtimes"), file=output_port)
+        print(latex.list([" ".join(["Average"
                                     ,"\\textbf{%s}" % tag
                                     ,"runtime"
                                     ,str(row["mean"])
-                                    ,"(%s times %s than %s)" % (render.difference(row["mean"], baseline[1]["mean"])[0], render.difference(row["mean"], baseline[1]["mean"])[1], baseline[0])
-                                    ,render.list(["Median: %s" % row["median"]
+                                    ,"(%s times %s than %s)" % (latex.difference(row["mean"], baseline[1]["mean"])[0], latex.difference(row["mean"], baseline[1]["mean"])[1], baseline[0])
+                                    ,latex.list(["Median: %s" % row["median"]
                                                  ,"Min: %s" % row["min"]
                                                  ,"Max: %s" % row["max"]
                                                  ,"95\\%% confidence: %s\\textendash~%s" % (row["ci"][0], row["ci"][1])])])
@@ -107,7 +107,7 @@ class TabfileSummary(AbstractSummary):
         graph  = self.graph_normalized_runtimes(preds
                                                ,"%s-normalized.png" % self.project_name
                                                , xlabels=labels)
-        print(render.figure(graph), file=output_port)
+        print(latex.figure(graph), file=output_port)
 
     def render_absolute(self, output_port, *labeled_preds):
         labels = [k for (k,_) in labeled_preds]
@@ -116,17 +116,17 @@ class TabfileSummary(AbstractSummary):
                                              ,"Num. typed modules"
                                              ,labels
                                              ,"%s-absolute.png" % self.project_name)
-        print(render.figure(graph), file=output_port)
+        print(latex.figure(graph), file=output_port)
 
     def render_graphs(self, output_port, cfgs, baseline, title="Module Graphs"):
-        print(render.subsection(title), file=output_port)
+        print(latex.subsection(title), file=output_port)
         for cfg in cfgs:
             mean = self.stats_of_config(cfg)["mean"]
-            diff, txt = render.difference(mean, baseline)
+            diff, txt = latex.difference(mean, baseline)
             g = self.graph_config(cfg
                              ,title="Config %s: %s %s than baseline" % (cfg, diff, txt)
                              ,output="%s-graph-%s.png" % (self.project_name, cfg))
-            print(render.figure(g), file=output_port)
+            print(latex.figure(g), file=output_port)
 
     ### Helpers ################################################################
 
