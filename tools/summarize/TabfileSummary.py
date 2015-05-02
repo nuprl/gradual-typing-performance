@@ -48,8 +48,8 @@ class TabfileSummary(AbstractSummary):
         self.render_overall(output_port
                             ,("untyped", config.is_untyped)
                             ,("gradual", config.is_gradual)
-                            ,("fastest = %s" % best_cfgs[0], lambda x: x == best_cfgs[0])
-                            ,("slowest = %s" % worst_cfgs[0], lambda x: x == worst_cfgs[0])
+                            ,("fastest(%s)" % best_cfgs[0], lambda x: x == best_cfgs[0])
+                            ,("slowest(%s)" % worst_cfgs[0], lambda x: x == worst_cfgs[0])
                             ,("typed", config.is_typed))
         self.render_normalized(output_port
                             ,("untyped", config.is_untyped)
@@ -91,7 +91,7 @@ class TabfileSummary(AbstractSummary):
         baseline = (labels[0], results[0])
         print(render.subsection("Overall Runtimes"), file=output_port)
         print(render.list([" ".join(["Average"
-                                    ,"\\emph{%s}" % tag
+                                    ,"\\textbf{%s}" % tag
                                     ,"runtime"
                                     ,str(row["mean"])
                                     ,"(%s times %s than %s)" % (render.difference(row["mean"], baseline[1]["mean"])[0], render.difference(row["mean"], baseline[1]["mean"])[1], baseline[0])

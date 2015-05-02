@@ -12,7 +12,7 @@ import os
 import sys
 import util
 from TabfileSummary import TabfileSummary
-# from SrsSummary import SrsSummary
+from SrsSummary import SrsSummary
 
 def init():
    """
@@ -32,11 +32,12 @@ def main(input_file):
     init()
     if input_file.endswith(".rktd") or input_file.endswith(".tab"):
        summary = TabfileSummary(input_file)
-    # elif os.path.isdir(input_file):
-    #     # Sampling mode!
-    #     summary = SrsSummary(input_file)
+    elif os.path.isdir(input_file):
+        # Sampling mode!
+        summary = SrsSummary(input_file)
     else:
-        raise ValueError("unexpected arguments '%s'" % str(args))
+        print("Cannot read input file '%s'" % input_file)
+        return
     out_file = "%s/%s.tex" % (constants.OUTPUT_DIR, util.strip_suffix(input_file).rsplit("/", 1)[-1])
     out_port = open(out_file, "w")
     summary.render(out_port)

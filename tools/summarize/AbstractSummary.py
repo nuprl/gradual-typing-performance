@@ -1,7 +1,7 @@
 """
     Common supertype for experiments.
 
-    A summary object is built from a data source, like a table of results or a raw project folder.
+    A summary object is built from a data source, like a table of results or a project folder.
 
     Subclasses must:
     - validate input (in the __init__ constructor)
@@ -16,9 +16,8 @@ import plot
 import util
 
 class AbstractSummary(object):
-    """
-    """
     ### Fields #################################################################
+    # Subclasses must init
     graph           = None ## Module graph object representing the project
     module_names    = None ## (List String), names of the modules in the project
     num_iters       = 50   ## Number of iterations for run.rkt
@@ -68,6 +67,10 @@ class AbstractSummary(object):
         return cache
 
     def bitstring_of_int(self, n):
+        """
+            Convert a natural number to a configuration bitstring.
+            Project-dependent: uses the number of modules to pad.
+        """
         return bin(n)[2:].zfill(self.get_num_modules())
 
     ## Graphing
@@ -85,7 +88,7 @@ class AbstractSummary(object):
                            ,title or "%s absolute runtimes" % self.get_project_name()
                            ,xtitle
                            ,"Runtime (ms)"
-                           #,positions=xlabels
+                           ,xlabels=xlabels
                            ,output="%s/%s" % (self.output_dir, output))
 
     def graph_config(self, config, title=None, output=None):
