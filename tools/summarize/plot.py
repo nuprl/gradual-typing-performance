@@ -103,7 +103,7 @@ def module_graph(graph, project_name, cfg, title=None, alpha=1, edgecolor="k", u
     print("Saved module graph to '%s'" % output)
     return output
 
-def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
+def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+", xlabels=None, output=None):
     """
         Create and save a boxplot from the list `dataset`.
         Args:
@@ -141,6 +141,11 @@ def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
         ## Draw avg. dot
         plt.plot([np.average(med.get_xdata())], [np.average(dataset[i])], color='w', marker='*', markeredgecolor='k')
     ## plot axis: runtime + num types
+    posns = range(len(dataset))
+    if xlabels:
+        plt.xticks(posns, xlabels)
+    else:
+        plt.xticks(posns)
     ax1.set_axisbelow(True)
     ax1.set_title(title)
     ax1.set_xlabel(xlabel)
@@ -152,7 +157,7 @@ def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
     plt.figtext(0.80, 0.01, '*', color='white', backgroundcolor=color,weight='roman', size='medium')
     plt.figtext(0.82, 0.01, ' Average Value', color='black', weight='roman', size='x-small')
     ## Save & clear
-    output = "%s/%s-boxplot.png" % (constants.OUTPUT_DIR, title)
+    output = output or "%s/%s-boxplot.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
     plt.close()
@@ -178,6 +183,9 @@ def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
     ## Draw mean markers
     # Make original mean line invisible
     vp['cmeans'].set_alpha(0)
+    # Draw data points
+    for i in range(len(dataset)):
+        plt.plot([posns[i]] * len(dataset[i]), dataset[i], color="red", marker="+")
     # Draw the mean marker
     for i in range(len(dataset)):
         plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
@@ -216,6 +224,8 @@ def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarke
     # Reset y limit
     ymin,ymax = ax1.get_ylim()
     ax1.set_ylim(ymin-5, ymax)
+    plt.figtext(0.80, 0.04, "+", color='red', weight='roman', size='medium')
+    plt.figtext(0.82, 0.04, " Sampled Point", color='black', weight='roman', size='x-small')
     plt.figtext(0.80, 0.01, meanmarker, color='white', backgroundcolor=color, weight='roman', size='medium')
     plt.figtext(0.82, 0.01, ' Average Value', color='black', weight='roman', size='x-small')
     output = output or "%s/%s-violin.png" % (constants.OUTPUT_DIR, title)
