@@ -30,12 +30,25 @@ def difference(n1, n2):
         descr = "faster"
     return val, descr
 
+def list(items, numbers=False):
+    tag = "enumerate" if numbers else "itemize"
+    return "\\begin{%s}\n\\item %s\\end{%s}" % (tag, "\n\item ".join(items), tag)
+
+def end():
+    return "\\end{document}"
+
 def figure(fname):
     """
         Splice the filename `fname` into an imported figure
         for the final .tex
     """
     return "\\includegraphics[width=\\textwidth]{%s}" % util.strip_directory(fname)
+
+def section(title):
+    return "\n\n\\section{%s}" % title
+
+def subsection(title):
+    return "\n\\subsection{%s}" % title
 
 def as_tex(results, outfile):
     """ (-> Result Path-String Void)
