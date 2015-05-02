@@ -81,7 +81,7 @@ class ModuleGraph(object):
         if not c2_ok:
             raise ValueError("expected third column of '%s' to have title 'REQUIRES', instead has title '%s'" % (fname, col_names[2]))
         #Everything's good!
-    
+
     def check_column(self, values):
         # Check that column values are well-formed.
         # If so, return the parsed values.
@@ -100,7 +100,7 @@ class ModuleGraph(object):
         if not (all((rq.endswith(".rkt") for rq in requires))):
             raise ValueError("expected each REQUIRE to be a .rkt filename, instead got '%s'" % requires)
         return [module_name, index, requires]
-    
+
     def infer_graph(self, fname):
         """
             Try to find the .graph file associated with `fname`
