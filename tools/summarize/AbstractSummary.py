@@ -2,15 +2,18 @@
     Common supertype for experiments.
 
     A summary object is built from a data source, like a table of results or a raw project folder.
-    
+
     Subclasses must:
     - validate input (in the __init__ constructor)
     - generate experimental results from a configuration (in `results_of_config`)
     - implement `render`, to display results
-    
+
 """
 
 import constants
+import numpy
+import plot
+import util
 
 class AbstractSummary(object):
     """
@@ -49,7 +52,7 @@ class AbstractSummary(object):
         """
             Return a generator of all configuration bitstrings valid for this project
         """
-        return ((util.bitstring_of_int(i)
+        return ((self.bitstring_of_int(i)
                  for i in range(self.get_num_configurations())))
 
     def best_rows(self, pred, metric, limit=5):
@@ -61,27 +64,30 @@ class AbstractSummary(object):
         cache = [None] * limit
         for cfg in self.all_configurations():
             if pred(cfg):
-                cache = util.sorted_buffer_insert(cache, cfg, metric, 0)
+                util.sorted_buffer_insert(cache, cfg, metric, 0)
         return cache
+
+    def bitstring_of_int(self, n):
+        return bin(n)[2:].zfill(self.get_num_modules())
 
     ## Graphing
 
-    def graph_absolute_runtimes(self, preds, xtitle, xlabels, title=None, output=None):
+    def graph_absolute_runtimes(self, preds, xtitle, xlabels, output, title=None):
         """
             Plot the absolute running times of the configurations picked by
             each predicate in `preds`.
-            (The number of columns in the result is equal to the size of `predicates`)
+            (The number of columns in the result is equal to the size of `preds`)
         """
         # TODO filter empty columns, so the violin plot never fails
-        columns = [[stat["mean"] for stat in self.stats_of_predicate(pred)]
-                   for pred in predicates]
+        columns = [self.stats_of_predicate(pred)["raw"]
+                   for pred in preds]
         return plot.violin(columns
                            ,title or "%s absolute runtimes" % self.get_project_name()
                            ,xtitle
                            ,"Runtime (ms)"
-                           ,positions=xlabels
-                           ,output="%s/%s" (self.output_dir, output))
-    
+                           #,positions=xlabels
+                           ,output="%s/%s" % (self.output_dir, output))
+
     def graph_config(self, config, title=None, output=None):
         """
             Print the module graph of the configuration `config`.
@@ -96,7 +102,7 @@ class AbstractSummary(object):
                                  , title=title
                                  , output="%s/%s" % (self.output_dir, output))
 
-    def graph_conditional(self, pred, xtitle, xlabels, title=None, output=None):
+    def graph_conditional(self, pred, xtitle, xlabels, output, title=None):
         """
             Plot the absolute results conditioned on `pred`.
             Generates two distributions:
@@ -109,7 +115,7 @@ class AbstractSummary(object):
         # TODO figure out what graph to make & how
         raise NotImplementedError
 
-    def graph_normalized_runtimes(self, preds, base_index=0, title=None, output=None, xlabels=[]):
+    def graph_normalized_runtimes(self, preds, output, base_index=0, title=None, xlabels=[]):
         """
             Plot the normalized running times of the configurations picked
             by each predicate in `preds`.
@@ -122,11 +128,11 @@ class AbstractSummary(object):
             - output : Location to save graph to
             - xlabels : Labels for each column. Order matters! Must match `preds`
         """
-        columns = [[stat["mean"] for stat in self.stats_of_predicate(pred)]
-                   for pred in predicates]
-        base = statistics.mean(columns[base_index])
+        columns = [self.stats_of_predicate(pred)["mean"]
+                   for pred in preds]
+        base = columns[base_index]
         return plot.bar(range(len(columns))
-                        ,[statistics.mean(col) / base for col in columns]
+                        ,[col / base for col in columns]
                         ,title or ("%s normalized runtimes" % self.get_project_name())
                         ,""
                         ,"Runtime (Normalized to %s-th column)" % base_index
@@ -137,7 +143,7 @@ class AbstractSummary(object):
 
     def get_module_names(self):
         return self.module_names
-    
+
     def get_num_configurations(self):
         return 2 ** len(self.module_names)
 
@@ -154,6 +160,9 @@ class AbstractSummary(object):
         return self.project_name
 
     ## Compute experimental results
+
+    def set_stats(self, cfg, stats):
+        self.stats_by_config[cfg] = stats
 
     def stats_by_numtyped(self):
         """
@@ -177,9 +186,10 @@ class AbstractSummary(object):
             Return an array of the experimental results
             for each configuration matching `pred`.
         """
-        return [self.stats_of_config(cfg, recompute)
-                for cfg in self.all_configurations()
-                if pred(cfg)]
+        unflattened = [self.stats_of_config(cfg, recompute)
+                      for cfg in self.all_configurations()
+                      if pred(cfg)]
+        return util.stats_of_row([x for st in unflattened for x in st["raw"]])
 
     def stats_of_typed(self):
         return self.get_stats("1" * self.get_num_modules())
