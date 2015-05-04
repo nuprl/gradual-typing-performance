@@ -4,6 +4,7 @@
 
 (require benchmark-util
          racket/match
+         "data-block-adapted.rkt"
          "data-world-adapted.rkt")
 (require/typed/check "world-world-key-move.rkt"
   [world-key-move (-> World String World)])

@@ -7,7 +7,7 @@
          "data-tetra-adapted.rkt"
          "data-block-adapted.rkt")
 (require/typed/check "bset-blocks-move.rkt"
-  [bset-blocks-move (-> Real Real BSet BSet)])
+  [blocks-move (-> Real Real BSet BSet)])
 
 ;; =============================================================================
 

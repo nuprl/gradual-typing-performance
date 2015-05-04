@@ -3,6 +3,7 @@
 (provide try-new-tetra)
 
 (require benchmark-util
+         "data-block-adapted.rkt"
          "data-tetra-adapted.rkt"
          "data-world-adapted.rkt")
 (require/typed/check "bset-blocks-min-x.rkt"

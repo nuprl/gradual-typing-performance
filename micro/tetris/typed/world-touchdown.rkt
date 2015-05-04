@@ -3,12 +3,13 @@
 (provide touchdown)
 
 (require benchmark-util
+         "data-block-adapted.rkt"
          "data-world-adapted.rkt"
          "data-tetra-adapted.rkt")
 (require/typed/check "aux-list-pick-random.rkt"
   [list-pick-random (-> (Listof Tetra) Tetra)])
 (require/typed/check "aux-tetras.rkt"
-  [tetra (Listof Tetra)])
+  [tetras (Listof Tetra)])
 (require/typed/check "bset-blocks-union.rkt"
   [blocks-union (-> BSet BSet BSet)])
 (require/typed/check "elim-eliminate-full-rows.rkt"

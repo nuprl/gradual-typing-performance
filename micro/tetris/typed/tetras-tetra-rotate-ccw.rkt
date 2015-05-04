@@ -7,7 +7,7 @@
          "data-block-adapted.rkt"
          "data-tetra-adapted.rkt")
 (require/typed/check "bset-blocks-rotate-ccw.rkt"
-  [blocks-rotate-ccw (-> Posn Block Block)])
+  [blocks-rotate-ccw (-> Posn BSet BSet)])
 
 ;; =============================================================================
 

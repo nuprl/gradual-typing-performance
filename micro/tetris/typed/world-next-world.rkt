@@ -3,6 +3,7 @@
 (provide next-world)
 
 (require benchmark-util
+         "data-tetra-adapted.rkt"
          "data-world-adapted.rkt")
 (require/typed/check "world-touchdown.rkt"
   [touchdown (-> World World)])

@@ -9,7 +9,7 @@
 (require/typed/check "bset-blocks-count.rkt"
   [blocks-count (-> BSet Natural)])
 (require/typed/check "bset-blocks-row.rkt"
-  [blocks-row (-> BSet Read BSet)])
+  [blocks-row (-> BSet Real BSet)])
 
 ;; =============================================================================
 

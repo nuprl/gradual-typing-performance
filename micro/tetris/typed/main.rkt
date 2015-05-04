@@ -1,6 +1,7 @@
 #lang typed/racket/base
 
 (require benchmark-util
+         "data-tetra-adapted.rkt"
          "data-world-adapted.rkt")
 (require/typed/check "aux-tetras.rkt"
   [tetras (Listof Tetra)])

@@ -9,7 +9,7 @@
 (require/typed/check "tetras-tetra-overlaps-blocks.rkt"
   [tetra-overlaps-blocks? (-> Tetra BSet Boolean)])
 (require/typed/check "tetras-tetra-move.rkt"
-  [tetra-overlaps-blocks? (-> Real Real Tetra Tetra)])
+  [tetra-move (-> Real Real Tetra Tetra)])
 
 ;; =============================================================================
 
