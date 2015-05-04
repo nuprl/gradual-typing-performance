@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang typed/racket/base
 
 (: block-size Integer)
 (define block-size 20)
