@@ -18,18 +18,30 @@ The module graph is inferred from the input.
 Pre-Requisites
 --------------
 Nearly everything here is implemented in Python.
-You should install Python 3 and [pip](https://pypi.python.org/pypi/pip), then download the extra packages.
+Use [easy_install](http://peak.telecommunity.com/DevCenter/EasyInstall) and/or [pip](https://pypi.python.org/pypi/pip) to get the Python dependencies.
 
 - [Racket](http://www.racket-lang.org)
 - [Python 3](https://www.python.org/downloads/) (will probably work with Python 2.7)
 - [matplotlib](http://matplotlib.org/downloads.html)
 - [networkx](https://networkx.github.io/download.html)
 - [numpy](http://www.numpy.org/)
-
-As a heads up, we'll probably add these dependencies in the future:
 - [SciPy](http://www.scipy.org/)
 - [pandas](http://pandas.pydata.org/)
+- [statmodels](http://statsmodels.sourceforge.net/)
+
+As a heads up, we'll probably add these dependencies in the future:
 - [seaborn](http://stanford.edu/~mwaskom/software/seaborn/)
+
+### FAQ
+
+###### Cannot import `add_newdocs` (raised from Numpy's `__init__.py`)
+- __Observed__: when trying to install `SciPy 0.15.1` using `pip 6.1.1`.
+- __Solution__: remove `SciPy` and `numpy`, reinstall through `easy_install`.
+
+###### `numpy.dtype` has wrong size, try recompiling
+- __Observed__: when trying to install `statsmodels` using `pip 6.1.1` after building `numpy 1.9.2` from source
+- __Solution__: rebuild `numpy` and `scipy` and `pandas` using `easy_install`. Today's lesson was `easy_install > pip`.
+
 
 Basic Usage + Assumptions
 -------------------------
