@@ -17,6 +17,7 @@
 import constants
 import config
 import glob
+import math
 import os
 import random
 import shell
@@ -29,7 +30,7 @@ from ModuleGraph import ModuleGraph
 class SrsSummary(AbstractSummary):
     ### Fields ################################################################
     sample_size  = 50
-    setup_script = "setup.rkt"
+    #setup_script = "setup.rkt"
     run_script   = "run.rkt"
     tmp_output   = "sampling_output.rktd"
 
@@ -37,21 +38,22 @@ class SrsSummary(AbstractSummary):
 
     def __init__(self, fname, *args, **kwargs):
         ### Find external scripts
-        self.setup_script = shell.find_file(self.setup_script)
-        if not self.setup_script:
-            raise ValueError("Could not find setup script within current directory, goodbye.")
+        #self.setup_script = shell.find_file(self.setup_script)
+        #if not self.setup_script:
+        #    raise ValueError("Could not find setup script within current directory, goodbye.")
         self.run_script   = shell.find_file(self.run_script)
         if not self.run_script:
             raise ValueError("Could not find run script within current directory, goodbye.")
         ### Check assumptions
         self.check_directory_structure(fname)
-        self.setup_variations(fname)
+        #self.setup_variations(fname)
         ### Setup fields
         self.project_name = fname
         self.graph        = ModuleGraph(fname)
         self.module_names = glob.glob("%s/untyped/*.rkt" % self.project_name)
         self.num_iters    = kwargs.get("num_iters", self.num_iters)
         self.sample_size  = kwargs.get("sample_size", self.sample_size)
+        self.strategy     = constants.APPEND
 
     def results_of_config(self, config):
         # Execute the config for a pre-set number of iterations
@@ -73,7 +75,23 @@ class SrsSummary(AbstractSummary):
         print(latex.subsection("Notes"), file=output_port)
         num_sampled = sum((1 for v in self.stats_by_config.values() if v))
         print("Sampled %s of %s configurations." % (num_sampled, self.get_num_configurations()), file=output_port)
-        print("Took %s measurements for each sample" % self.get_num_measurements(), file=output_port)
+        print(latex.table(["Num. Typed", "Num. Configs", "Num. Samples", "Sample Mean", "Sample Variance", "Standard Error", "Jarque-Bera"]
+                         ,[self.sample_stats((lambda cfg, nt=n: config.num_typed_modules(cfg) == n), n) for n in range(self.get_num_modules())]), file=output_port)
+
+    def sample_stats(self, pred, tag):
+        """
+            Get statistics about the samples matching predicate `pred`
+        """
+        all_samples = [(k,v['raw']) for (k,v) in self.stats_by_config.items() if pred(k)]
+        configs = [k for (k,_) in all_samples]
+        vals    = [v for (k,vs) in all_samples for v in vs]
+        return [tag
+               ,len(set(configs))
+               ,len(vals)
+               ,round(statistics.mean(vals), 2)
+               ,round(statistics.variance(vals), 2)
+               ,round(statistics.stdev(vals) / math.sqrt(len(vals)), 2)
+               ,round(util.jarque_bera(vals), 2)]
 
     ### Helpers
 
@@ -113,18 +131,18 @@ class SrsSummary(AbstractSummary):
             raise ValueError("The filenames in '%s' must match the filenames in '%s', but do not. Please fix." % (un_dir, ty_dir))
         return
 
-    def get_num_measurements(self):
-        """
-            Return the number of measurements taken for each sampled
-            configuration.
-            Fail if the number is not the same across all configurations.
-        """
-        meas_set = set((len(v) for v in self.stats_by_config.values()))
-        if len(meas_set) == 0:
-            raise ValueError("Cannot give number of measurements: No measurements recorded")
-        if len(meas_set) > 1:
-            raise ValueError("Detected unequal sample sizes in set '%s'" % meas_set)
-        return meas_set.pop()
+    #def get_num_measurements(self):
+    #    """
+    #        Return the number of measurements taken for each sampled
+    #        configuration.
+    #        Fail if the number is not the same across all configurations.
+    #    """
+    #    meas_set = set((len(v['raw']) for v in self.stats_by_config.values()))
+    #    if len(meas_set) == 0:
+    #        raise ValueError("Cannot give number of measurements: No measurements recorded")
+    #    if len(meas_set) > 1:
+    #        raise ValueError("Detected unequal sample sizes in set '%s'" % meas_set)
+    #    return meas_set.pop()
 
     def in_random_sample(self, *args, **kwargs):
         sample = self.random_sample(*args, **kwargs)
@@ -136,13 +154,13 @@ class SrsSummary(AbstractSummary):
         return [matches[random.randint(0, len(matches)-1)]
                 for _ in range(self.sample_size)]
 
-    def setup_variations(self, dirname):
-        """
-            Create all untyped/typed variations for files
-            in the experiment directory `dirname`.
-            Clobber existing variations folder, if it exists.
-        """
-        return shell.execute("racket %s %s" % (self.setup_script, dirname))
+    #def setup_variations(self, dirname):
+    #    """
+    #        Create all untyped/typed variations for files
+    #        in the experiment directory `dirname`.
+    #        Clobber existing variations folder, if it exists.
+    #    """
+    #    return shell.execute("racket %s %s" % (self.setup_script, dirname))
 
     def parse_rkt_results(self):
         """
@@ -161,6 +179,7 @@ class SrsSummary(AbstractSummary):
             Sample the configuration `config`, return a list of
             observed runtimes.
         """
+        self.setup_config(config)
         print("Running config '%s' for %s iterations"% (config, self.num_iters))
         shell.execute(" ".join(["racket" , self.run_script
                                 ,"-i", str(self.num_iters) ## -i : Number of iterations
@@ -169,4 +188,31 @@ class SrsSummary(AbstractSummary):
                                 ,"-e", entry_point ## -e : Main file to execute
                                 ,self.project_name]))
         return self.parse_rkt_results()
+
+    def setup_config(self, config):
+        """
+            Assume `project_name` is a directory in the current folder
+            (This is justified by __init__)
+            Check that a benchmark/ folder exists with the right variation.
+            If not, create it.
+        """
+        benchmark_dir = "%s/benchmark" % self.project_name
+        variation_dir = "%s/variation%s" % (benchmark_dir, config)
+        both_dir      = "%s/both" % self.project_name
+        ty_dir      = "%s/typed" % self.project_name
+        un_dir      = "%s/untyped" % self.project_name
+        if not os.path.exists(benchmark_dir):
+            print("INFO: creating directory '%s'" % benchmark_dir)
+            os.mkdir(benchmark_dir)
+        if not os.path.exists(variation_dir):
+            print("INFO: creating and filling directory '%s'" % variation_dir)
+            os.mkdir(variation_dir)
+            if os.path.exists(both_dir):
+                shell.execute("cp %s/* %s" % (both_dir, variation_dir))
+            for i in range(len(config)):
+                char = config[i]
+                fname = self.module_names[i].rsplit("/", 1)[-1]
+                home = ty_dir if char == "1" else un_dir
+                shell.execute("cp %s/%s %s" % (home, fname, variation_dir))
+        return
 
