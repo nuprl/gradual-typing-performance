@@ -53,6 +53,28 @@ def count_files(dirname):
     return sum((1 for name in os.listdir(dirname)
                 if os.path.isfile(name)))
 
+def jarque_bera(vals):
+    s = skewness(vals)
+    k = kurtosis(vals)
+    return (len(vals) / 6.) * ((s ** 2) + (0.25 * ((k - 3) ** 2)))
+
+def skewness(vals):
+    xmean = statistics.mean(vals)
+    offset = (1. / len(vals))
+    num = offset * sum(((x - xmean) ** 3 for x in vals))
+    den = (offset * sum(((x - xmean) ** 2 for x in vals))) ** (3 / 2.)
+    return num / den
+
+def kurtosis(vals):
+    xmean = statistics.mean(vals)
+    offset = (1. / len(vals))
+    num = offset * sum(((x - xmean) ** 4 for x in vals))
+    den = (offset * sum(((x - xmean) ** 2 for x in vals))) ** 2
+    return num / den
+
+def stats_join(st1, st2):
+    return stats_of_row(st1["raw"] + st2["raw"])
+
 def stats_of_row(dataset):
     """ (-> (Listof Nat) (List Nat Nat Nat Nat)
         Compute basic statistics for list `dataset`
