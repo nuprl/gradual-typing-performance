@@ -26,6 +26,7 @@ import latex
 import util
 from AbstractSummary import AbstractSummary
 from ModuleGraph import ModuleGraph
+from statsmodels.stats.stattools import jarque_bera
 
 class SrsSummary(AbstractSummary):
     ### Fields ################################################################
@@ -91,7 +92,7 @@ class SrsSummary(AbstractSummary):
                ,round(statistics.mean(vals), 2)
                ,round(statistics.variance(vals), 2)
                ,round(statistics.stdev(vals) / math.sqrt(len(vals)), 2)
-               ,round(util.jarque_bera(vals), 2)]
+               ,round(jarque_bera(vals)[0], 2)]
 
     ### Helpers
 
