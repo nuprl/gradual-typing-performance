@@ -36,7 +36,7 @@ class TabfileSummary(AbstractSummary):
     def results_of_config(self, config):
         return util.fold_file(self.source
                               , None
-                              , lambda acc, row: acc or (util.stats_of_row(row[1:])
+                              , lambda acc, row: acc or (util.stats_of_row([int(x) for x in row[1:]])
                                                          if row[0] == config else None))
 
     def render(self, output_port):
