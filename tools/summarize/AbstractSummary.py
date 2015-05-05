@@ -23,6 +23,7 @@ class AbstractSummary(object):
     num_iters       = 50   ## Number of iterations for run.rkt
     project_name    = None ## Title of the project
     stats_by_config = {}   ## Map: bitstring -> {mean, median, min, max, ci95}
+    strategy        = constants.RECOMPUTE   ## Override when computing new stats
     output_dir      = constants.OUTPUT_DIR  ## Default directory to save outputs
 
     ### Abstract Methods (subclasses must implement) ###########################
@@ -227,21 +228,26 @@ class AbstractSummary(object):
         return [self.stats_of_predicate(lambda cfg: n == util.num_typed(cfg))
                 for n in range(self.num_modules)]
 
-    def stats_of_config(self, config, recompute=False):
+    def stats_of_config(self, config):
         """
             Return statistics from the experiment on configuration `config`.
             This is a low-level measure -- the results of one experiment.
         """
-        if (config not in self.stats_by_config) or recompute:
+        if not (config in self.stats_by_config):
             self.stats_by_config[config] = self.results_of_config(config)
+        elif self.strategy == constants.RECOMPUTE:
+            self.stats_by_config[config] = self.results_of_config(config)
+        elif self.strategy == constants.APPEND:
+            existing = self.stats_by_config[config]
+            self.stats_by_config[config] = util.stats_join(existing, self.results_of_config(config))
         return self.stats_by_config[config]
 
-    def stats_of_predicate(self, pred, recompute=False):
+    def stats_of_predicate(self, pred):
         """
             Return an array of the experimental results
             for each configuration matching `pred`.
         """
-        unflattened = [self.stats_of_config(cfg, recompute)
+        unflattened = [self.stats_of_config(cfg)
                       for cfg in self.all_configurations()
                       if pred(cfg)]
         return util.stats_of_row([x for st in unflattened for x in st["raw"]])
