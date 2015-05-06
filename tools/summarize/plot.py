@@ -56,6 +56,17 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     print("Saved bar chart to '%s'" % output)
     return output
 
+def histogram(values, title, xlabel, ylabel, num_bins, xmax, output, alpha=0.8, color='royalblue'):
+    # TODO use xmax to set figure width
+    minval = min(values)
+    maxval = max(values)
+    bkt_width = (maxval - minval) / num_bins
+    xvals = [(bkt_width * i) + minval for i in range(num_bins)]
+    yvals = [sum((1 for val in values if lo <= val <= (lo + bkt_width) ))
+             for lo in xvals]
+    # print("Plotting with vals %s" % yvals)
+    return bar(xvals, yvals, title, xlabel, ylabel, alpha=alpha, color=color, width=bkt_width, output=output)
+
 def module_graph(graph, project_name, cfg, title=None, alpha=1, edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange', output=None):
     """
         Show module-dependence graph.

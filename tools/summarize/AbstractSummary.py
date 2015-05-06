@@ -119,6 +119,27 @@ class AbstractSummary(object):
         # TODO figure out what graph to make & how
         raise NotImplementedError
 
+    def graph_histogram(self, values, output, title, xlabel, num_bins=20, xwidth=None):
+        """
+            Plot a histogram.
+
+            Args:
+            - values : The data to plot. An array of integers
+            - title : Figure title
+            - xlabel : Figure x label
+            Options:
+            - output : Location to save output
+            - num_bins : The number of histogram bins to divide the data among
+            - xwidth : Manually set x-axis width. (Using to standardize widths.)
+        """
+        return plot.histogram(values
+                              ,title
+                              ,xlabel
+                              ,"Count"
+                              ,num_bins
+                              ,xwidth or max(values)
+                              ,"%s/%s" % (self.output_dir, output))
+
     def graph_normalized_runtimes(self, preds, output, base_index=0, title=None, xlabels=[]):
         """
             Plot the normalized running times of the configurations picked

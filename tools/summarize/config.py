@@ -80,3 +80,19 @@ def basic_stats(cfg, time, graph):
            ,"boundaries" : boundaries(cfg, graph)
            ,"time"       : time
            }
+
+def previous_iter(cfg, fuel):
+    """
+        Generate all configurations with `fuel` or fewer typed modules
+        than the argument `cfg`.
+    """
+    if fuel > 0:
+        for i in range(0, len(cfg)):
+            if cfg[i] == "1":
+                # A little awkward because strings are immutable
+                prev_cfg = "".join((cfg[j] if j != i else '0' for j in range(0, len(cfg))))
+                yield prev_cfg
+                for prev2 in previous_iter(prev_cfg, (fuel - 1)):
+                    yield prev2
+
+                    
