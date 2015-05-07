@@ -71,7 +71,8 @@ class TabfileSummary(AbstractSummary):
                           ,best_cfgs
                           ,baseline
                           ,title="Top %s fastest gradually-typed configurations" % len(best_cfgs))
-        self.render_paths(output_port)
+        # self.render_all_paths(output_port, [1,2,3,4])
+        self.render_cutoff_paths(output_port)
         print(latex.end(), file=output_port)
 
     ### rendering
@@ -90,21 +91,18 @@ class TabfileSummary(AbstractSummary):
                              ,output="%s-graph-%s.png" % (self.project_name, cfg))
             print(latex.figure(g), file=output_port)
 
-    def render_paths(self, output_port):
-        DOC = "\n".join(["Histograms of the max-weight-edge along paths from untyped to typed."
-                         ,"For a project of N modules we show N-1 graphs."
-                         ,"A graph shows the worst bottleneck along each path from typed to untyped given the freedom to add types M modules at a time, where M is between 1 and N-1, inclusive."
-                         ,""
-                         ,"Goal: a large number of edges should have acceptable bottlenecks given a small degree of freedom."
-                         ,""
-                         ,"Edge weight is overhead over the fully-untyped configuration."
-                         ,"i.e. The edge from CFG1 to CFG2 is weighted by the runtime of CFG2 divided by the runtime of the fully-typed configuration."
-                         "Rationale: we are moving to typed, so the cost at the top is our zero point."
-                         ,"When taking an edge, we care about the overhead caused by the choice."
-                         ,""
-                     ])
-        print(latex.subsection("Experimental: Path Analysis"), file=output_port)
-        print(DOC, file=output_port)
+    def render_all_paths(self, output_port, transitivity=[1]):
+        """
+            Options:
+            - transitivity : How many transitive edges to include.
+                             By default, edges are only between consecutive levels.
+                             If argument is a list, analyzes one graph of each transitivity
+        """
+        print(latex.subsection("Experimental: Lattices+Freedom"), file=output_port)
+        raise NotImplementedError
+
+    def render_cutoff_paths(self, output_port):
+        print(latex.subsection("Experimental: Paths with cutoff"), file=output_port)
         # Build a lattice for each cluster size {1 .. num_modules-1}
         print("Building lattice for %s" % self.project_name)
         lattice = self.make_lattice(transitivity=self.get_num_modules())
@@ -121,7 +119,7 @@ class TabfileSummary(AbstractSummary):
             weights = [self.max_weight(lattice, path) for path in paths]
             print(latex.figure(self.graph_histogram(weights
                                               ,"%s-paths-%s-dof.png" % (self.project_name, group_size)
-                                              ,"Bottlenecks on all paths when typing up to %s modules at once" % group_size
+                                              ,"All %s-node paths\n(fully trans. lattice)" % group_size
                                               ,"Max Overhead (runtime / typed runtime)"
                                               ,xwidth=xmax
                                               )), file=output_port)
