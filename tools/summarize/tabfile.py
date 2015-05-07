@@ -118,6 +118,7 @@ def of_rktd(rktdfile):
     """
     # We have a Racket script to generate the .tab file,
     # make sure it exists.
+    print("Parsing a .tab file from the raw source '%s'" % rktdfile)
     find_command = " ".join(["find", ".", "-name", "'sexp-to-tab.rkt'"])
     sexp_to_tab = shell.execute(find_command)
     if not sexp_to_tab:
@@ -132,6 +133,7 @@ def main(tabfile, dgraph):
                of a project.
         Output: a Result object.
     """
+    print("Collecting results from ground truth data '%s'" % tabfile)
     fname = util.strip_suffix(tabfile).rsplit("/", 1)[-1]
     num_modules = count_modules(tabfile)
     num_configs = 2 ** num_modules

@@ -15,3 +15,6 @@ TMP_RESULTS = "summarize-tmp-results.txt"
 
 # Directory to save outputs
 OUTPUT_DIR = "output-summary"
+
+RECOMPUTE = 1
+APPEND = 2
