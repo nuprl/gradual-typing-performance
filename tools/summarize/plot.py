@@ -27,7 +27,7 @@ def remove_empty(d1, d2):
             posns.append(i)
     return xs, ys, posns
 
-def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8):
+def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None):
     """
         Create and save a bar plot.
         Args:
@@ -49,14 +49,14 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     ax1.set_title(title)
     ax1.set_xlabel(xlabel)
     ax1.set_ylabel(ylabel)
-    output = "%s/%s-bar.png" % (constants.OUTPUT_DIR, title)
+    output = output or "%s/%s-bar.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
     plt.close()
     print("Saved bar chart to '%s'" % output)
     return output
 
-def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange'):
+def module_graph(graph, project_name, cfg, title=None, alpha=1, edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange', output=None):
     """
         Show module-dependence graph.
         Args:
@@ -70,29 +70,31 @@ def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", unt
         - untypedcolor = Node color for untyped modules
         - typedcolor   = Node color for typed modules
     """
-    cfg = title.split(":", 1)[0].rsplit(" ", 1)[-1]
     ## Make networkx graph
     g = nx.DiGraph()
-    for (k,v) in graph.items():
-        g.add_node(k)
-        for req in v[1]:
-            g.add_edge(k, req)
+    for mn in graph.get_module_names():
+        g.add_node(mn)
+    for (src,dst) in graph.edges_iter():
+        g.add_edge(src,dst)
     ## Make pyplot
     pos = nx.circular_layout(g, scale=1)
     fig,ax1 = plt.subplots()
     # Untyped nodes, or the default
     nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
-                           ,nodelist=[k for (k,v) in graph.items() if config.untyped_at(cfg, v[0])]
+                           ,nodelist=[mn for mn in graph.get_module_names() if config.untyped_at(cfg, graph.index_of_module(mn))]
                            ,node_color=untypedcolor)
     # Typed nodes
     nx.draw_networkx_nodes(g, pos, node_size=1000, alpha=alpha
-                           ,nodelist=[k for (k,v) in graph.items() if config.typed_at(cfg, v[0])]
+                           ,nodelist=[mn for mn in graph.get_module_names() if config.typed_at(cfg, graph.index_of_module(mn))]
                            ,node_color=typedcolor)
-    nx.draw_networkx_labels(g, pos, dict([(k,k) for k in graph.keys()]))
+    nx.draw_networkx_labels(g, pos, dict([(k,k) for k in graph.get_module_names()]))
     nx.draw_networkx_edges(g, pos, edge_color=edgecolor, alpha=alpha)
     ## Draw boundaries
+    boundaries = [(src,dst) for (src,dst) in graph.edges_iter()
+                  if config.is_boundary(cfg, graph.index_of_module(src), graph.index_of_module(dst))]
     nx.draw_networkx_edges(g, pos, edgelist=boundaries, edge_color="r", width=4)
-    output = "%s/%s-module-graph-%s.png" % (constants.OUTPUT_DIR, fname, cfg)
+    output = output or "%s/%s-module-graph-%s.png" % (constants.OUTPUT_DIR, project_name, cfg)
+    title = title or "%s-modulegraph-%s.png" % (project_name, cfg)
     ax1.set_title(title)
     plt.axis("off")
     plt.savefig(output)
@@ -101,7 +103,7 @@ def module_graph(graph, fname, title, alpha=1, boundaries=[], edgecolor="k", unt
     print("Saved module graph to '%s'" % output)
     return output
 
-def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
+def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+", xlabels=None, output=None):
     """
         Create and save a boxplot from the list `dataset`.
         Args:
@@ -139,6 +141,11 @@ def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
         ## Draw avg. dot
         plt.plot([np.average(med.get_xdata())], [np.average(dataset[i])], color='w', marker='*', markeredgecolor='k')
     ## plot axis: runtime + num types
+    posns = range(len(dataset))
+    if xlabels:
+        plt.xticks(posns, xlabels)
+    else:
+        plt.xticks(posns)
     ax1.set_axisbelow(True)
     ax1.set_title(title)
     ax1.set_xlabel(xlabel)
@@ -150,7 +157,7 @@ def box(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', sym="+"):
     plt.figtext(0.80, 0.01, '*', color='white', backgroundcolor=color,weight='roman', size='medium')
     plt.figtext(0.82, 0.01, ' Average Value', color='black', weight='roman', size='x-small')
     ## Save & clear
-    output = "%s/%s-boxplot.png" % (constants.OUTPUT_DIR, title)
+    output = output or "%s/%s-boxplot.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
     plt.close()
@@ -170,18 +177,21 @@ def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
         v.set_edgecolors('k')
         v.set_facecolors(color)
         v.set_alpha(alpha)
-    ## Re-color median, min, max lines to be black
-    for field in ['cmaxes', 'cmins', 'cbars', 'cmedians']:
-        vp[field].set_color('k')
     ## Draw mean markers
     # Make original mean line invisible
     vp['cmeans'].set_alpha(0)
+    # Draw data points
+    for i in range(len(dataset)):
+        plt.plot([posns[i]] * len(dataset[i]), dataset[i], "r+")
+    ## Re-color median, min, max lines to be black
+    for field in ['cmaxes', 'cmins', 'cbars', 'cmedians']:
+        vp[field].set_color('k')
     # Draw the mean marker
     for i in range(len(dataset)):
         plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
     return
 
-def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None):
+def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None,output=None):
     """
         Create and save a violin plot representing the list `dataset`.
         Args:
@@ -214,15 +224,16 @@ def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarke
     # Reset y limit
     ymin,ymax = ax1.get_ylim()
     ax1.set_ylim(ymin-5, ymax)
+    plt.figtext(0.80, 0.043, "+", color='red', weight='roman', size='medium')
+    plt.figtext(0.82, 0.043, " Sampled Point", color='black', weight='roman', size='x-small')
     plt.figtext(0.80, 0.01, meanmarker, color='white', backgroundcolor=color, weight='roman', size='medium')
     plt.figtext(0.82, 0.01, ' Average Value', color='black', weight='roman', size='x-small')
-    output = "%s/%s-violin.png" % (constants.OUTPUT_DIR, title)
+    output = output or "%s/%s-violin.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
     plt.close()
     print("Saved violin plot to '%s'" % output)
     return output
-
 
 def double_violin(series, title, xlabel, ylabel, alpha=0.8, colors=['royalblue','darkorange'], markers=['*','o'], legend=False):
     """

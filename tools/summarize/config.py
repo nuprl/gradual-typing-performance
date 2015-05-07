@@ -6,19 +6,26 @@ Each index refers to a module in the project.
 A zero "0" indicates that module is untyped; a "1" means it is typed.
 """
 
-import graphdict
-
 def untyped_at(cfg, key):
     return cfg[key] == "0"
 
 def typed_at(cfg, key):
     return cfg[key] == "1"
 
+def has_typed_modules(n):
+    return (lambda cfg: num_typed_modules(cfg) == n)
+
 def is_untyped(cfg):
     """
         True if `cfg` is the fully-UNtyped configuration.
     """
     return all((c == "0" for c in cfg))
+
+def is_gradual(cfg):
+    """
+        True if `cfg` is neither fully typed or fully untyped.
+    """
+    return not(is_untyped(cfg) or is_typed(cfg))
 
 def is_typed(cfg):
     """
@@ -55,10 +62,10 @@ def modules_of_graph(cfg, graph):
 def boundaries(cfg, graph):
     """
         Return a list of boundary edges in the bitstring `cfg`.
-        Use GraphDict `graph` to identify edges.
+        Use ModuleGraph `graph` to identify edges.
     """
     bds = []
-    for (m1, m2) in graphdict.edges_iter(graph):
+    for (m1, m2) in graph.edges_iter():
         i1 = graph[m1][0]
         i2 = graph[m2][0]
         if is_boundary(cfg, i1, i2):

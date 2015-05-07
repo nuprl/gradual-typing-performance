@@ -1,3 +1,4 @@
 figures/
 output/
 __pycache__/
+*.pyc
