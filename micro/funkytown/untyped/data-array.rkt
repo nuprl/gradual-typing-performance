@@ -1,6 +1,8 @@
 #lang racket/base
 
-(provide (struct-out Array))
+(provide (struct-out Array)
+         (struct-out Settable-Array)
+         (struct-out Mutable-Array))
 
 ;; =============================================================================
 
@@ -9,3 +11,7 @@
                strict?
                strict!
                unsafe-proc))
+(struct Settable-Array Array
+        (set-proc))
+(struct Mutable-Array Settable-Array
+        (data))

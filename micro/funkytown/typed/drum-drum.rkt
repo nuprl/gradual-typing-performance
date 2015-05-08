@@ -11,7 +11,7 @@
   [array-append* (case-> ((Listof Array) -> Array)
                          ((Listof Array) Integer -> Array))])
 (require/typed/check "synth-constants.rkt"
-  [fs Integer])
+  [fs Natural])
 (require/typed/check "drum-snare.rkt"
   [snare Array])
 (require/typed/check "drum-bass-drum.rkt"

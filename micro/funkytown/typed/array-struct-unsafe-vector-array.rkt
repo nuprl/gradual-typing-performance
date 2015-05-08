@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require "type-aliases.rkt"
-         "data-mutable-array-adapted.rkt"
+         "data-array-adapted.rkt"
          benchmark-util)
 
 (require/typed/check "array-utils-unsafe-array-index-value-index.rkt"

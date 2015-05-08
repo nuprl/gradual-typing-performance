@@ -11,7 +11,7 @@
          "data-array-adapted.rkt"
          benchmark-util)
 (require/typed/check "synth-constants.rkt"
-  [bits-per-sample Integer])
+  [bits-per-sample Natural])
 (require/typed/check "array-utils-next-indexes.rkt"
   [next-indexes! (Indexes Integer Indexes -> Void)])
 

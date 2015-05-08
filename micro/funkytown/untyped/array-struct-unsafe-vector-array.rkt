@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-         "data-mutable-array.rkt"
+         "data-array.rkt"
 (only-in "array-utils-unsafe-array-index-value-index.rkt"
   unsafe-array-index->value-index))
 
