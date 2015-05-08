@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import networkx as nx
 import numpy as np
+import util
 
 def remove_empty(d1, d2):
     """
@@ -200,6 +201,10 @@ def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
     # Draw the mean marker
     for i in range(len(dataset)):
         plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
+    # Draw confidence interval (should be optional)
+    for i in range(len(dataset)):
+        stat = util.stats_of_row(dataset[i])
+        plt.errorbar(posns[i], stat["mean"], yerr=stat["ci"][1] - stat["mean"], ecolor="magenta", capthick=4)
     return
 
 def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None,output=None):
@@ -235,6 +240,8 @@ def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarke
     # Reset y limit
     ymin,ymax = ax1.get_ylim()
     ax1.set_ylim(ymin-5, ymax)
+    plt.figtext(0.70, 0.043, "x", color="magenta", weight='roman', backgroundcolor="magenta", size='medium')
+    plt.figtext(0.72, 0.043, " 95% CI", color='black', weight='roman', size='x-small')
     plt.figtext(0.80, 0.043, "+", color='red', weight='roman', size='medium')
     plt.figtext(0.82, 0.043, " Sampled Point", color='black', weight='roman', size='x-small')
     plt.figtext(0.80, 0.01, meanmarker, color='white', backgroundcolor=color, weight='roman', size='medium')
