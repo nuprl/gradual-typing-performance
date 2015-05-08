@@ -111,7 +111,7 @@ class TabfileSummary(AbstractSummary):
                                               ,"Paths in a %s-trans lattice" % trans
                                               ,"Max Overhead (runtime / typed runtime)"
                                               )), file=output_port)
-            
+
     def render_cutoff_paths(self, output_port):
         print(latex.subsection("Experimental: Paths with cutoff"), file=output_port)
         # Build a lattice for each cluster size {1 .. num_modules-1}
@@ -176,10 +176,11 @@ class TabfileSummary(AbstractSummary):
                 # SWAG networkx ignore duplicates SWAGSWAGS
                 g.add_edge(prev, cfg, weight=w)
         return g
-    
+
     def max_weight(self, lattice, path):
         """
             Return the max weight of edges along a networkx path.
+            2015-05-07: really, this could just be MAX of cached sample stats
         """
         acc = 0
         prev = None
