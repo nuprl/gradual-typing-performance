@@ -76,7 +76,7 @@ class SrsSummary(AbstractSummary):
         print(latex.subsection("Notes"), file=output_port)
         num_sampled = sum((1 for v in self.stats_by_config.values() if v))
         print("Sampled %s of %s configurations." % (num_sampled, self.get_num_configurations()), file=output_port)
-        print(latex.table(["Num. Typed", "Num. Configs", "Num. Samples", "Sample Mean", "Sample Variance", "Standard Error", "Jarque-Bera"]
+        print(latex.table(["\# Typed", "\# Configs", "\# Samples", "Sample Mean", "Sample Variance", "95\% CI", "Standard Error", "Jarque-Bera"]
                          ,[self.sample_stats((lambda cfg, nt=n: config.num_typed_modules(cfg) == n), n) for n in range(self.get_num_modules())]), file=output_port)
 
     def sample_stats(self, pred, tag):
@@ -86,12 +86,14 @@ class SrsSummary(AbstractSummary):
         all_samples = [(k,v['raw']) for (k,v) in self.stats_by_config.items() if pred(k)]
         configs = [k for (k,_) in all_samples]
         vals    = [v for (k,vs) in all_samples for v in vs]
+        stat = util.stats_of_row(vals)
         return [tag
                ,len(set(configs))
                ,len(vals)
-               ,round(statistics.mean(vals), 2)
-               ,round(statistics.variance(vals), 2)
-               ,round(statistics.stdev(vals) / math.sqrt(len(vals)), 2)
+               ,round(stat["mean"], 2)
+               ,round(stat["variance"], 2)
+               ,"%s~\\textendash~%s" % (round(stat["ci"][0], 2), round(stat["ci"][1], 2))
+               ,round(math.sqrt(stat["variance"]) / math.sqrt(len(vals)), 2)
                ,round(jarque_bera(vals)[0], 2)]
 
     ### Helpers
