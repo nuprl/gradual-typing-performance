@@ -10,7 +10,7 @@
 (require/typed/check "array-broadcast-array-broadcasting.rkt"
   [array-broadcasting (Parameterof (U #f #t 'permissive))])
 (require/typed/check "array-broadcast-shape-broadcast2.rkt"
-  [shape-broadcast (Indexes Indexes (-> Nothing) (U #f #t 'permissive) -> Indexes)])
+  [shape-broadcast2 (Indexes Indexes (-> Nothing) (U #f #t 'permissive) -> Indexes)])
 
 ;; =============================================================================
 
