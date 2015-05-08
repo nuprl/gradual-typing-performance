@@ -256,11 +256,12 @@ class AbstractSummary(object):
         """
         if not (config in self.stats_by_config):
             self.stats_by_config[config] = self.results_of_config(config)
-        elif self.strategy == constants.RECOMPUTE:
+        elif strat == constants.RECOMPUTE:
             self.stats_by_config[config] = self.results_of_config(config)
-        elif self.strategy == constants.APPEND:
+        elif strat == constants.APPEND:
             existing = self.stats_by_config[config]
             self.stats_by_config[config] = util.stats_join(existing, self.results_of_config(config))
+        # else strat == CACHE, so just look up
         return self.stats_by_config[config]
 
     def stats_of_predicate(self, pred):
