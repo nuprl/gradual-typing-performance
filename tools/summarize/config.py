@@ -1,3 +1,5 @@
+import random
+
 """
 Utilities for manipulating configuration bitstrings.
 
@@ -81,18 +83,52 @@ def basic_stats(cfg, time, graph):
            ,"time"       : time
            }
 
+def abstract_iter(cfg, fuel, elem_pred, swap_with):
+    """
+        Abstracts common structure from `previous_iter` and `next_iter`.
+        Sorry there's no better name right now.
+        Args:
+        - cfg : a configuration bitstring
+        - fuel : max recursion depth
+        - elem_pred : a test on elements of the configuration
+        - swap_with : replacement for config elements. Should be '1' or '0'.
+                      (If there's a use for something else, this whole file
+                       should generalize to suit)
+    """
+    if fuel > 0:
+        for i in range(0, len(cfg)):
+            if elem_pred(cfg[i]):
+                # A little awkward because strings are immutable
+                cfg_2 = "".join((cfg[j] if j != i else swap_with
+                                 for j in range(0, len(cfg))))
+                yield cfg_2
+                # Yield all recursive results
+                yield from abstract_iter(cfg_2, (fuel - 1), elem_pred, swap_with)
+
 def previous_iter(cfg, fuel):
     """
         Generate all configurations with `fuel` or fewer typed modules
         than the argument `cfg`.
     """
-    if fuel > 0:
-        for i in range(0, len(cfg)):
-            if cfg[i] == "1":
-                # A little awkward because strings are immutable
-                prev_cfg = "".join((cfg[j] if j != i else '0' for j in range(0, len(cfg))))
-                yield prev_cfg
-                for prev2 in previous_iter(prev_cfg, (fuel - 1)):
-                    yield prev2
+    return abstract_iter(cfg, fuel, (lambda x: x == "1"), "0")
 
-                    
+def next_iter(cfg, fuel):
+    """
+        Generate all configurations with `fuel` or MORE typed modules
+        than the argument.
+    """
+    return abstract_iter(cfg, fuel, (lambda x: x == "0"), "1")
+
+def random_walk(cfg, transitivity=1):
+    """
+        Generate a random walk from this configuration
+        to the fully-typed config.
+    """
+    path = [cfg]
+    while not(is_typed(cfg)):
+        # Convert to set to remove duplicates
+        next_list = list(set(next_iter(cfg, transitivity)))
+        cfg = next_list[random.randint(0, len(next_list)-1)]
+        path.append(cfg)
+    return path
+
