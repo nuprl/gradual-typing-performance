@@ -71,7 +71,7 @@ class TabfileSummary(AbstractSummary):
                           ,best_cfgs
                           ,baseline
                           ,title="Top %s fastest gradually-typed configurations" % len(best_cfgs))
-        # self.render_all_paths(output_port, [1,2,3,4])
+        self.render_all_paths(output_port, [1,2,3,4])
         self.render_cutoff_paths(output_port)
         print(latex.end(), file=output_port)
 
@@ -99,8 +99,19 @@ class TabfileSummary(AbstractSummary):
                              If argument is a list, analyzes one graph of each transitivity
         """
         print(latex.subsection("Experimental: Lattices+Freedom"), file=output_port)
-        raise NotImplementedError
-
+        for trans in transitivity:
+            print("Building lattice for %s with transitivity %s" % (self.project_name, trans))
+            lattice = self.make_lattice(transitivity=trans)
+            untyped_config = "0" * self.get_num_modules()
+            typed_config   = "1" * self.get_num_modules()
+            paths   = networkx.all_simple_paths(lattice, source=untyped_config, target=typed_config)
+            weights = [self.max_weight(lattice, path) for path in paths]
+            print(latex.figure(self.graph_histogram(weights
+                                              ,"%s-paths-trans-%s.png" % (self.project_name, trans)
+                                              ,"Paths in a %s-trans lattice" % trans
+                                              ,"Max Overhead (runtime / typed runtime)"
+                                              )), file=output_port)
+            
     def render_cutoff_paths(self, output_port):
         print(latex.subsection("Experimental: Paths with cutoff"), file=output_port)
         # Build a lattice for each cluster size {1 .. num_modules-1}
@@ -118,8 +129,8 @@ class TabfileSummary(AbstractSummary):
             paths   = networkx.all_simple_paths(lattice, source=untyped_config, target=typed_config, cutoff=cutoff)
             weights = [self.max_weight(lattice, path) for path in paths]
             print(latex.figure(self.graph_histogram(weights
-                                              ,"%s-paths-%s-dof.png" % (self.project_name, group_size)
-                                              ,"All %s-node paths\n(fully trans. lattice)" % group_size
+                                              ,"%s-paths-cutoff-%s.png" % (self.project_name, cutoff)
+                                              ,"All %s-node paths\n(fully trans. lattice)" % cutoff
                                               ,"Max Overhead (runtime / typed runtime)"
                                               ,xwidth=xmax
                                               )), file=output_port)
