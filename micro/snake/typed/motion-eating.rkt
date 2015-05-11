@@ -6,6 +6,7 @@
 
 (require benchmark-util
          "data-snake-adapted.rkt"
+         "data-posn-adapted.rkt"
          "data-world-adapted.rkt")
 (require/typed/check "data-posn-eq.rkt"
   [posn=? (-> Posn Posn Boolean)])

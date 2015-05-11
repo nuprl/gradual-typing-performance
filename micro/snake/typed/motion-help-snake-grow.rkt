@@ -5,6 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require benchmark-util
+         "data-posn-adapted.rkt"
          "data-snake-adapted.rkt")
 (require/typed/check "motion-help-next-head.rkt"
   [next-head (-> Posn Dir Posn)])

@@ -2,7 +2,8 @@
 
 ;; -----------------------------------------------------------------------------
 
-(require benchmark-util)
+(require benchmark-util
+         "data-world-adapted.rkt")
 (require/typed/check "const-world.rkt"
   [WORLD (-> World)])
 (require/typed/check "main-replay.rkt"

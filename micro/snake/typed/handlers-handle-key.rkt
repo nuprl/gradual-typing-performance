@@ -5,6 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require benchmark-util
+         "data-snake-adapted.rkt"
          "data-world-adapted.rkt")
 (require/typed/check "motion-world-change-dir.rkt"
   [world-change-dir (-> World Dir World)])

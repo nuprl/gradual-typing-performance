@@ -8,7 +8,7 @@
          "data-snake-adapted.rkt"
          "data-posn-adapted.rkt")
 (require/typed/check "collide-segs-self-collide.rkt"
-  [segs-self-collide? (-> Posn Boolean)])
+  [segs-self-collide? (-> Posn (Listof Posn) Boolean)])
 
 ;; =============================================================================
 

@@ -5,6 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require benchmark-util
+         "data-snake-adapted.rkt"
          "data-posn-adapted.rkt"
          "data-world-adapted.rkt")
 (require/typed/check "const-board-width.rkt"

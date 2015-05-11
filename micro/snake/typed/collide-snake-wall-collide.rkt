@@ -5,6 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require benchmark-util
+         "data-posn-adapted.rkt"
          "data-snake-adapted.rkt")
 (require/typed/check "collide-head-collide.rkt"
   [head-collide? (-> Posn Boolean)])
