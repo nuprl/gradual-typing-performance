@@ -256,9 +256,9 @@ class AbstractSummary(object):
         """
         if not (config in self.stats_by_config):
             self.stats_by_config[config] = self.results_of_config(config)
-        elif strat == constants.RECOMPUTE:
+        elif self.strategy == constants.RECOMPUTE:
             self.stats_by_config[config] = self.results_of_config(config)
-        elif strat == constants.APPEND:
+        elif self.strategy == constants.APPEND:
             existing = self.stats_by_config[config]
             self.stats_by_config[config] = util.stats_join(existing, self.results_of_config(config))
         # else strat == CACHE, so just look up
