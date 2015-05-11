@@ -11,7 +11,7 @@
 (require/typed/check "motion-help-snake-slither.rkt"
   [snake-slither (-> Snake Snake)])
 (require/typed/check "motion-snake-eat.rkt"
-  [snake-grow (-> World World)])
+  [snake-eat (-> World World)])
 (require/typed/check "motion-eating.rkt"
   [eating? (-> World Boolean)])
 

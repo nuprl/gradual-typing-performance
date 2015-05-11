@@ -1,12 +1,10 @@
-#lang typed/racket/base
+#lang racket/base
 
 ;; -----------------------------------------------------------------------------
 
-(require benchmark-util)
-(require/typed/check "const-world.rkt"
-  [WORLD (-> World)])
-(require/typed/check "main-replay.rkt"
-  [replay (-> World (Listof Any) Void)])
+(require
+(only-in "const-world.rkt" WORLD)
+(only-in "main-replay.rkt" replay))
 
 ;; =============================================================================
 
