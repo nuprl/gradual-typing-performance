@@ -4,7 +4,7 @@
 
 (require "data-block.rkt")
 (require benchmark-util)
-(require "consts.rkt")
+(require "consts-board-width.rkt")
 (require "bset-blocks-count.rkt")
 (require "bset-blocks-row.rkt")
 

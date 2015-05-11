@@ -8,7 +8,7 @@
          "data-tetra.rkt")
 (require "tetras-tetra-overlaps-blocks.rkt")
 (require "bset-blocks-max-y.rkt")
-(require "consts.rkt")
+(require "consts-board-height.rkt")
 
 ;; =============================================================================
 

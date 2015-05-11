@@ -4,7 +4,7 @@
 
 (require "data-block-adapted.rkt")
 (require benchmark-util)
-(require/typed/check "consts.rkt"
+(require/typed/check "consts-board-width.rkt"
   [board-width Integer])
 (require/typed/check "bset-blocks-count.rkt"
   [blocks-count (-> BSet Natural)])

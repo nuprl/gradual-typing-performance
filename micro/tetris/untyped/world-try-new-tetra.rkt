@@ -9,7 +9,7 @@
 (require "bset-blocks-max-x.rkt")
 (require "world-touchdown.rkt")
 (require "tetras-tetra-overlaps-blocks.rkt")
-(require "consts.rkt")
+(require "consts-board-width.rkt")
 
 ;; =============================================================================
 

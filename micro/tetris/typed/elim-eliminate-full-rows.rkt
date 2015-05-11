@@ -6,7 +6,7 @@
 (require benchmark-util)
 (require/typed/check "elim-elim-row.rkt"
   [elim-row (-> BSet Integer Integer BSet)])
-(require/typed/check "consts.rkt"
+(require/typed/check "consts-board-height.rkt"
   [board-height Integer])
 
 ;; =============================================================================

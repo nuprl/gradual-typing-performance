@@ -4,7 +4,7 @@
 
 (require benchmark-util
          "data-block.rkt")
-(require "consts.rkt")
+(require "consts-board-width.rkt")
 
 ;; =============================================================================
 

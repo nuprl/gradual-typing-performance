@@ -10,7 +10,7 @@
   [tetra-overlaps-blocks? (-> Tetra BSet Boolean)])
 (require/typed/check "bset-blocks-max-y.rkt"
   [blocks-max-y (-> BSet Real)])
-(require/typed/check "consts.rkt"
+(require/typed/check "consts-board-height.rkt"
   [board-height Integer])
 
 ;; =============================================================================

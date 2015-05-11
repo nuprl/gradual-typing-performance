@@ -14,7 +14,7 @@
   [touchdown (-> World World)])
 (require/typed/check "tetras-tetra-overlaps-blocks.rkt"
   [tetra-overlaps-blocks? (-> Tetra BSet Boolean)])
-(require/typed/check "consts.rkt"
+(require/typed/check "consts-board-width.rkt"
   [board-width Integer])
 
 ;; =============================================================================
