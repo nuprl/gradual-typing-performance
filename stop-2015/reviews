@@ -1,0 +1,151 @@
+Dear Asumu Takikawa, Daniel Feltey, Ben Greenman, Max S. New, Jan Vitek and Matthias Felleisen,
+
+Thank you for your submission to STOP 2015.
+The reviews on your paper are attached to this letter.
+
+----------------------- REVIEW 1 ---------------------
+PAPER: 4
+TITLE: Position Paper: Performance Evaluation for Gradual Typing
+AUTHORS: Asumu Takikawa, Daniel Feltey, Ben Greenman, Max S. New, Jan Vitek and Matthias Felleisen
+
+OVERALL EVALUATION: 3 (strong accept)
+REVIEWER'S CONFIDENCE: 4 (high)
+
+----------- REVIEW -----------
+This short paper only gets a short review, I'm afraid.
+
+This short paper describes a methodology for evaluating gradual typing. Gradual typing is an important current topic in contemporary programming language research (as languages slide ever further into the postmodern morass). This paper describes how typed racket programs (where gradual typing works on a per-module basis) could be evaluated by basically evaluating all combinations of typed and untyped modules, so 2^n combinators for n modules.  This seems idealistic but also somewhat extreme :-). For Bracha's Strongtalk-style "pluggable" typing, where types (philosophically) affect neither semantics nor the JIT, for example, why not just test two versions: one with all types removed (or ignored) and one with all types in place --- i.e. to top and bottom of the lattice?   Anyway, I expect this paper will spark an interesting discussion, which is the point of a workshop paper.
+
+To encourage accountability, I'm signing my reviews in 2015. For the record, I am James Noble, kjx@ecs.vuw.ac.nz.
+
+----------------------- REVIEW 2 ---------------------
+PAPER: 4
+TITLE: Position Paper: Performance Evaluation for Gradual Typing
+AUTHORS: Asumu Takikawa, Daniel Feltey, Ben Greenman, Max S. New, Jan Vitek and Matthias Felleisen
+
+OVERALL EVALUATION: 3 (strong accept)
+REVIEWER'S CONFIDENCE: 5 (expert)
+
+----------- REVIEW -----------
+I think this proposal to systematically evaluate the performance
+characteristics of gradually typed programs is definitely worth
+doing. The performance overhead of these languages is still
+prohibitively large for widespread use, so this kind of evaluation
+could really help to focus subsequent work on making run-time
+enforcement more practical.
+
+I have a few technical comments and questions:
+
+* For the macro-level approach in Typed Racket, are there cases
+  where multiple different (incomparable) typed APIs should be
+  evaluated? Given the lack of principal types (because of,
+  for example, union and intersection types), I wonder whether
+  there are often cases where function types are carefully chosen
+  based on knowledge about callers. Or is it usually the case that
+  just one type is the obvious one to assign?
+
+* For systematically evaluating programs using the micro-level approach
+  (e.g. in Reticulated Python), one idea may be to choose variations
+  based on profiles of running untyped code (or with code where Dyn is
+  annotated everywhere). For example, an expression whose run-time
+  values always have the same type T could be assigned T in all variations.
+  But an expression with different observed types at run-time could be
+  assigned different types, based on the relative frequency of each
+  observation in the initial profiling phase.
+
+* It might be worth systematically evaluating other "knobs". For example:
+
+  (a) the effect of duplicating certain functions with different types
+      for different callers; and
+
+  (b) the effect of confined gradual typing (Allende et al. OOPSLA 2014),
+      which refine type annotations with information about whether values
+      may or may not be wrapped.
+
+Overall, I think the workshop audience will be very interested
+to learn about the results from this project.
+
+----------------------- REVIEW 3 ---------------------
+PAPER: 4
+TITLE: Position Paper: Performance Evaluation for Gradual Typing
+AUTHORS: Asumu Takikawa, Daniel Feltey, Ben Greenman, Max S. New, Jan Vitek and Matthias Felleisen
+
+OVERALL EVALUATION: 2 (accept)
+REVIEWER'S CONFIDENCE: 5 (expert)
+
+----------- REVIEW -----------
+Summary:
+
+Gradual Typing research has not done enough to evaluate the
+performance of proposed systems or to use that information to make
+sound proposals sufficiently performant.  This position paper proposes
+a methodology evaluating gradual typing in the context of the Racket
+language platform.  Questions are raised about how to present and
+understand the data that would result from automatically constructing
+and performance testing a lattice of gradually typed programs
+
+
+Overall:
+
+The position paper isolates an open problem in gradual typing:  how to
+usefully evaluate the performance of gradually typed languages.
+
+It takes advantage of the module-level granularity of Racket's gradual
+typing support to suggest completely evaluating a multi-module program
+by generating every combination of typed and untyped modules.
+
+
+The lattice presentation provides an interesting first look at global
+performance issues when adding types to a program.  I imagine that
+ultimately more fine-grained information will be desired than the
+overall normalized run-time.  One of the key challenges with
+functional and object-oriented systems is the presence of higher-order
+wrapping, which may lead to more fine-grained run-time behaviour that
+is not evident in the static module structure of a program.  To
+investigate more deeply what is happening, I imagine that
+finer-grained profile information would help identify which routines
+are now slowing down, and this could be traced to wrappers around
+call-backs, etc.
+
+
+
+Comments:
+
+"As a result, Typed Racket does not need to instrument typed modules
+at all, which enables separate compilation within gradually typed
+programs."  I don't understand this statement: a micro-level gradually
+typed language is compatible with separate compilation as well.  My
+guess is that the text is making a forward reference to the idea of
+separately compiling modules as fully typed or not fully typed, and
+then combining them one at a time.  This too can be done in a
+micro-level gradual language, but doing so does not explore a presumed
+use-case where programmers do incrementally add types one at a time.
+I imagine that useful performance information could be gained from
+using this approach in a micro-language, but it would not be as
+thorough.  As such this work does contribute to evaluating both
+macro and micro approaches.
+
+
+With respect to scaling the approach, the challenge as stated is that the
+level of granularity for typing programs leads to an extremely large
+configuration space.  Most of that space, though, is likely to be
+unrealistic with respect to how programmers will use the approach
+(i.e. it's unlikely that programmers will manually shot-gun spray
+types throughout a program at each step of adding types).  A first
+hypothesis could be that in many cases programmers will in fact add types
+on a function by function or module by module basis, so exploring that
+alone could be very informative, and possibly the best that one can do
+without more empirical information about how these types are used in
+practice.  
+
+One source of empirical information for now might be repositories of
+code that has been migrated from Javascript to Typescript.  Despite
+the unsoundness of Typescript's type system, the sample migrated code
+could serve as a guide for how developers in practice utilize
+micro-gradual typing.
+
+------------------------------------------------------
+
+Best wishes,
+
+STOP 2015 Program Committee
