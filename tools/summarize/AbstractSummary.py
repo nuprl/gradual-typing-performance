@@ -119,7 +119,7 @@ class AbstractSummary(object):
         # TODO figure out what graph to make & how
         raise NotImplementedError
 
-    def graph_histogram(self, values, output, title, xlabel, num_bins=20, xwidth=None):
+    def graph_histogram(self, values, output, title, xlabel, num_bins=20, xmax=None, ymax=None):
         """
             Plot a histogram.
 
@@ -137,7 +137,8 @@ class AbstractSummary(object):
                               ,xlabel
                               ,"Count"
                               ,num_bins
-                              ,xwidth or max(values)
+                              ,xmax or  max(values)
+                              ,ymax or None
                               ,"%s/%s" % (self.output_dir, output))
 
     def graph_normalized_runtimes(self, preds, output, base_index=0, title=None, xlabels=[]):
