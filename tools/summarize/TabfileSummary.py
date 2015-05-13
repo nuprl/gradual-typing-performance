@@ -124,7 +124,7 @@ class TabfileSummary(AbstractSummary):
                                      , num_dev_u, num_x_u
                                      ,num_release_t
                                      ,num_dev_t,num_x_t]])
-        print(latex.table(["Deg. Freedom", "Total", "$<$ 2x untyped", "$<$ 4x untyped", "$<$ 15x untyped", "$<$ 2x typed", "$<$ 4x typed", "$<$ 15x typed"]
+        print(latex.table(["Fuel", "Total", "$<$ 2x untyped", "$<$ 4x untyped", "$<$ 15x untyped", "$<$ 2x typed", "$<$ 4x typed", "$<$ 15x typed"]
                           , rows), file=output_port)
 
     def render_cutoff_paths(self, output_port, xmax=None, ymax=None):
