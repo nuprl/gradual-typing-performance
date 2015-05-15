@@ -93,3 +93,14 @@ def sorted_buffer_insert(xs, val, metric, i):
             val = tmp
     return
 
+# for standard error of mean, use scipy.stats.sem
+def sample_size95(width_pct):
+    """
+        Assuming an infinitely large population,
+        return a sample size that will yield:
+          We are (`confidence_pct`%) confident that the true
+          mean is within (+/- [width_pct * sample_mean]) of the
+          sample mean.
+    """
+    return ((1.96 ** 2) * 0.5 * 0.5) / (width_pct ** 2)
+
