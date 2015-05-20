@@ -68,7 +68,8 @@
   (define/short fool "FOOL" (~a International Workshop "on Foundations of Object-Oriented Languages"))
   (define/short icse "ICSE" (~a International Conference "on Software Engineering"))
   (define/short icalp "ICALP" (string-append International "Colloquium on Automata, Languages, and Programming"))
-  (define/short sac "SAC" (string-append Symposium "on Applied Computing")))
+  (define/short sac "SAC" (string-append Symposium "on Applied Computing"))
+  (define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications")))
 
 (require 'util)
 
@@ -417,6 +418,13 @@
    #:location (proceedings-location ecoop)
    #:date 2015))
 
+(define rnv-ecoop-2015
+  (make-bib
+   #:author (authors "Gregor Richards" "Francesco Zappa Nardelli" "Jan Vitek")
+   #:title "Concrete Types for TypeScript"
+   #:location (proceedings-location ecoop)
+   #:date 2015))
+
 ;; ----------------------------------------
 ; Early Work on Interoperation
 
@@ -608,6 +616,12 @@
                #:degree "Honour's")
    #:date 2012))
 
+(define mmi-dyla-2014
+  (make-bib
+   #:title "Typed Lua: An Optional Type System for Lua"
+   #:author (authors "André Murbach Maidl" "Fabio Mascarenhas" "Roberto Ierusalimschy")
+   #:location (proceedings-location dyla #:pages '(1 10))
+   #:date 2014))
 
 (define vcgts-esop-2015
   (make-bib

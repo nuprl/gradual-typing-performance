@@ -46,6 +46,7 @@
 (define/short dls "DLS" "Dynamic Languages Symposium")
 (define/short flops "FLOPS" (string-append Symposium "Functional and Logic Programming"))
 (define/short esop "ESOP" (string-append "European " Symposium "on Programming"))
+(define/short cc "CC" (string-append International Conference "on Compiler Construction"))
 (define/short iclp "ICLP" (string-append  International Conference "on Logic Programming"))
 (define/short fse "FSE" (string-append International Symposium "on the Foundations of Software Engineering"))
 (define/short aosd "AOSD" (string-append International Conference "on Aspect-Oriented Software Development"))
@@ -58,6 +59,7 @@
 (define/short ml-workshop "ML Workshop")
 (define/short sac "SAC" (string-append Symposium "on Applied Computing"))
 (define/short gpce "GPCE" "Generative Programming: Concepts & Experiences")
+(define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications"))
 
 ;; ----------------------------------------
 
@@ -953,3 +955,29 @@
    #:location (proceedings-location icfp #:pages '(351 356))
    #:date 2013))
 
+(define saf-cc-2015
+  (make-bib
+   #:author (authors "Vincent St-Amour" "Leif Andersen" "Matthias Felleisen")
+   #:title "Feature-specific Profiling"
+   #:location (proceedings-location cc)
+   #:date 2015))
+
+;; ----------------------------------------
+; Pycket
+
+(define fbpsth-dyla-2014
+  (make-bib
+   #:author (authors "Carl Friedrich Bolz" "Tobias Pape"
+                     "Jeremy G. Siek" "Sam Tobin-Hochstadt")
+   #:title "Meta-tracing makes a fast Racket"
+   #:location (proceedings-location dyla)
+   #:date 2014))
+
+(define bauman-et-al-icfp-2015
+  (make-bib
+   #:author (authors "Spenser Bauman" "Carl Friedrich Bolz" "Robert Hirschfield"
+                     "Vasily Kirilichev" "Tobias Pape" "Jeremy G. Siek"
+                     "Sam Tobin-Hochstadt")
+   #:title "Pycket: A Tracing JIT For a Functional Language"
+   #:location "In submission"
+   #:date 2015))
