@@ -407,7 +407,6 @@
    #:location (proceedings-location popl)
    #:date 2015))
 
-;; FIXME: not yet accepted, fix this later
 (define tfdffthf-ecoop-2015
   (make-bib
    #:author (authors "Asumu Takikawa" "Daniel Feltey"

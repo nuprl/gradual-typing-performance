@@ -1,66 +1,10 @@
-%\usepackage{amssymb}
-%\newcommand{\mynra}[0]{$\nrightarrow$}
-
 % Better horizontal rules
 \usepackage{booktabs}
 
-% Checmark
-\usepackage{amssymb}
+% Override Scribble's default SecRef to numeric only
+\renewcommand{\SecRef}[2]{#1}
 
-% Tikz
-%\usepackage{pgf}
-%\usepackage{tikz}
-%\usetikzlibrary{patterns}
-%\usetikzlibrary{arrows,backgrounds,positioning,fit,shapes.misc,shapes.multipart,shapes.symbols}
-
-%% magic from tonyg
-%\usepackage[pdfpagescrop={92 62 523 728}]{hyperref}
-
-%\usepackage[hidelinks]{hyperref}
 \hypersetup{hidelinks} 
 
-\newenvironment{sidebyside}
-{\vspace{0.1em}\begin{minipage}[t]{0.4\textwidth}}
-{\end{minipage}\vspace{0.1em}}
-
-%%% smaller font
-%\renewenvironment{SCodeFlow}{\begin{small}\SCodePreSkip\begin{list}{}{\topsep=0pt\partopsep=0pt%
-%\listparindent=0pt\itemindent=0pt\labelwidth=0pt\leftmargin=2ex\rightmargin=2ex%
-%\itemsep=0pt\parsep=0pt}\item}{\end{list}\SCodePostSkip\end{small}}
-%\renewenvironment{RktBlk}{\begin{footnotesize}}{\end{footnotesize}}
-
-%% to set spacing
-%\newcommand{\SVInsetPreSkip}{\vskip\abovedisplayskip}
-%\newcommand{\SVInsetPostSkip}{\vskip\belowdisplayskip}
-
-%%% override these spacings
-%\renewcommand{\SCodePreSkip}{}
-%\renewcommand{\SCodePostSkip}{\vskip\belowdisplayskip}
-%
-%%% ugh
-%\newcommand{\ugh}[0]{\vspace{3pt}}
-
-%% bigtabular ugh
-%\renewenvironment{bigtabular}
-%{\begin{tabular}}
-%{\end{tabular}}
-
-%%%%%FINDME \setlength{\textwidth}{20pc}
-
-\definecolor{DarkGrey}{rgb}{0.20,0.20,0.20}
-%\renewcommand{\RktValLink}[1]{\textbf{\inColor{DarkGrey}{#1}}}
 \usepackage{inconsolata}
 \usepackage[T1]{fontenc}
-
-% Get rid of stupid hrules
-%\renewcommand{\Legend}[1]{~ \hsize height .33pt \vspace{4pt} \legend{#1}}
-%\newif\ifusehrule
-%\usehruletrue
-%\renewcommand{\Legend}[1]{\ifusehrule
-%                            ~ \hrule width \hsize height .33pt \vspace{4pt}
-%                          \fi
-%                          \legend{#1}}
-%
-%\newcommand{\sfstyle}[1]{{\small \textsf{#1}}}
-%
-%\newcommand{\Thyperref}[2]{\hyperref[#2]{#1}}

@@ -2,20 +2,78 @@
 
 @require["common.rkt"]
 
-@title{The State of Gradual Typing Performance}
+@title[#:tag "sec:intro"]{Gradual Typing and Performance}
 
-Gradually typed programming languages promise to simplify software maintenance
-by enabling programmers to selectively add type annotations to an existing
-untyped program. The promise also implies that as programmers add type annotations,
-their program will continue to function correctly. To maintain that promise, gradual type
-systems allow untyped and typed code to link together. At these linkage
-points, gradual type systems insert dynamic check in the form of
-@emph{casts} or @emph{contracts} to ensure sound interoperation.
+Over the past couple of decades dynamically-typed languages have become a
+ staple of the software engineering world. Programmers use these languages
+ to build all kinds of software systems. In many cases, the systems start
+ as innocent prototypes. Soon enough, though, they grow into complex,
+ multi-module programs, at which point the engineers realize that they are
+ facing a maintenance nightmare. The lack of type information makes it
+ expensive to reconstruct what the creators had in mind and to maintain the
+ implicit invariants of the code. 
 
-For successful software maintenance, programmers may also require that the
-program remains @emph{performant}. In this regard, existing gradual type systems
-may fail to live up to their promises. Gradual type systems in the literature
-report slowdowns of 72x@~cite[rsfbv-popl-2015], 10x@~cite[vksb-dls-2014],
-and 4x@~cite[tfdffthf-ecoop-2015] in programs due to the insertion of
-dynamic checks.
+Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-oriented
+ solution to this pressing software engineering problem. The basic idea is
+ to extend the language so that programmers can incrementally equip
+ programs with types. In contrast to languages with optional type systems,
+ gradual typing projects insist on type soundness, that is, the type
+ information should be meaningful and predict run-time behavior. 
 
+Realizing type soundness in this world requires run-time checks that
+ mediate impedance mismatches between the typed and untyped portions of the
+ programs. In recognition of the cost of these checks, macro-level gradual
+ typing forces programmers to annotate entire modules with types;
+ behavioral contracts@~cite[ff-icfp-2002] between typed and untyped
+ modules enforce type soundness. Micro-level gradual typing takes the
+ approach that an untyped program is typed with all types implicitly
+ equated with type @tt{Dyn}. When programmers add fine-grained type
+ annotations, the compiler inserts casts that coerce values from @tt{Dyn}
+ to these subtypes.
+
+Both approaches to gradual typing come with two implicit claims. First, the
+ type systems accommodate the programming idioms that evolved in the
+ untyped world. This accommodation allows programmers to add types without
+ touching the existing code. Second, the cost of soundness is tolerable,
+ meaning programs remain performant even as programmers add type
+ annotations. While almost every publication on practical gradual typing
+ validates some version of the first claim, no gradual typing project has
+ tackled the second claim. Most publications have subtle remarks about the
+ performance of partially typed programs; some plainly admit that such
+ mixed programs may suffer performance degradations of two orders of
+ magnitude. 
+
+This paper introduces a framework for the systematic performance evaluation
+ of gradual typing systems. In the context of macro-level gradual typing,
+ the basic idea is to simulate the software engineering process on
+ multi-module programs. All @exact{$n$} modules are annotated with types, and the
+ resulting collection of @exact{$2 \cdot n$} modules is then used to create all
+ @exact{$2^n$} configurations. The collection of these configurations forms a
+ complete lattice with the completely untyped one at the bottom and the
+ completely typed one at the top. In between, the lattice contains
+ configurations where some modules are typed and others are untyped. Adding
+ types to an untyped module in one of these configurations yields a
+ configuration of the next level in the lattice. In short, the lattice
+ mimics how a programmer picks one module of many and adds types when a
+ maintenance task comes up, how another programmer modifies the next
+ module, and so on.
+
+A performance measurement of a gradual typing system must run every
+ configuration for every benchmark and determine its average running time.
+ The performance evaluation inspects the results of this lattice to answer
+ some basic questions.  For the gradual typing system as a whole, we must
+ consider how it performs on all of the lattice benchmarks. We use our
+ framework to evaluate two implementations of gradual typing on a dozen
+ benchmark lattices: the original Typed Racket implementation and the new
+ Pycket-based version.
+
+Section@secref{sec:fwk} explains the performance framework in detail,
+ including the information we retrieve from the lattices and how we
+ parametrize these retrievals. Next, section@secref{sec:bm} presents our
+ specific Typed Racket benchmarks. Sections@secref{sec:tr} and@secref{sec:trp}
+ present the numeric results of evaluating Typed Racket's original
+ implementation and the Pycket variant,
+ respectively. Section@secref{sec:death} discusses these
+ results. Section@secref{sec:rel} reviews the literature on gradual typing
+ systems with respect to performance evaluation. Section@secref{sec:fut}
+ concludes with ideas for future work.

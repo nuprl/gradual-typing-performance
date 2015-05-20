@@ -2,6 +2,6 @@
 
 @require["common.rkt"]
 
-@title{Conclusion}
+@title[#:tag "sec:fut"]{Long Live Sound Gradual Typing}
 
-
+we are going home 
