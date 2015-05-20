@@ -1,0 +1,161 @@
+\documentclass[preprint,10pt,english]{sigplanconf}
+% authoryear    To obtain author/year citation style instead of numeric.
+
+\title{Is Sound Gradual Typing Dead?}
+
+%% -----------------------------------------------------------------------------
+\authorinfo{Asumu Takikawa} {PLT} {asumu @ ccs.neu.edu}
+
+\authorinfo{Daniel Feltey} {PLT} {dfeltey @ ccs.neu.edu}
+\authorinfo{Benjamin Greenman} {PLT} {types @ ccs.neu.edu}
+\authorinfo{Max S. New} {Northeastern University} {maxsnew @ ccs.neu.edu}
+\authorinfo{Sam Tobin-Hochstadt} {PLT} {samth @ cs.indiana.edu}
+\authorinfo{Jan Vitek} {Northeastern University} {j.vitek@ ccs.neu.edu}
+
+\authorinfo{Matthias Felleisen} {PLT} {matthias @ ccs.neu.edu}
+%% -----------------------------------------------------------------------------
+
+%% %% TODO: Remove the following block (page headers/footers useful during writing)
+\usepackage{fancyhdr}
+\usepackage[yyyymmdd,hhmmss]{datetime}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{\today, \currenttime}
+\cfoot{}
+\lfoot{Page \thepage}
+%% %% TODO: Remove the preceding block (page headers/footers useful during writing)
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+\usepackage{verbatim}
+\usepackage{babel}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{bussproofs}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{subfig} %% sigplan style apparently doesn't work with subcaption
+\usepackage{mathtools}
+
+\usepackage[shortcuts]{extdash} %% visible hyphens that permit breaking: \-/
+
+\usepackage[cmtip,all]{xy} %% for long squiggly arrows
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+
+\newcommand{\PRODUCTION}{::=}
+
+%% -----------------------------------------------------------------------------
+\begin{document}
+
+\special{papersize=8.5in,11in}
+\setlength{\pdfpageheight}{\paperheight}
+\setlength{\pdfpagewidth}{\paperwidth}
+
+\copyrightyear{2015}
+
+\maketitle
+
+\begin{abstract}
+stuff 
+\end{abstract}
+
+%% -----------------------------------------------------------------------------
+\section{Gradual Typing and Performance}
+
+Over the past couple of decades dynamically-typed languages have become a
+ staple of the software engineering world. Programmers use these languages
+ to build all kinds of software systems. In many cases, the systems start
+ as innocent prototypes. Soon enough, though, they grow into complex,
+ multi-module programs, at which point the engineers realize that they are
+ facing a maintenance nightmare. The lack of type information makes it
+ expensive to reconstruct what the creators had in mind and to maintain the
+ implicit invariants of the code. 
+
+Gradual typing~\cite{st:gradual06,thf:dls06} proposes a language-oriented
+ solution to this pressing software engineering problem. The basic idea is
+ to extend the language so that programmers can incrementally equip
+ programs with types. In contrast to languages with optional type systems,
+ gradual typing projects insist on type soundness, that is, the type
+ information should be meaningful and predict run-time behavior. 
+
+Realizing type soundness in this world requires run-time checks that
+ mediate impedance mismatches between the typed and untyped portions of the
+ programs. In recognition of the cost of these checks, macro-level gradual
+ typing forces programmers to annotate entire modules with types;
+ behavioral contracts~\cite{ff:ho-contracts} between typed and untyped
+ modules enforce type soundness. Micro-level gradual typing takes the
+ approach that an untyped program is typed with all types implicitly
+ equated with type {\tt Dyn}. When programmers add fine-grained type
+ annotations, the compiler inserts casts that coerce values from {\tt Dyn}
+ to these subtypes.
+
+Both approaches to gradual typing come with two implicit claims. First, the
+ type systems accommodate the programming idioms that evolved in the
+ untyped world. This accommodation allows programmers to add types without
+ touching the existing code. Second, the cost of soundness is tolerable,
+ meaning programs remain performant even as programmers add type
+ annotations. While almost every publication on practical gradual typing
+ validates some version of the first claim, no gradual typing project has
+ tackled the second claim. Most publications have subtle remarks about the
+ performance of partially typed programs; some plainly admit that such
+ mixed programs may suffer performance degradations of two orders of
+ magnitude. 
+
+This paper introduces a framework for systematic performance evaluation of
+ gradual typing systems. In the context of macro-level gradual typing, the
+ basic idea is to simulate the software engineering process on multi-module
+ programs. All $n$ modules are annotated with types, and the resulting
+ collection of $2 \cdot n$ modules is then used to create all $2^n$
+ configurations. The collection of these configurations forms a complete
+ lattice with the completely untyped one at the bottom and the completely
+ typed one at the top. In between, the lattice contains configurations
+ where some modules are typed and others are untyped. Adding types to an
+ untyped module in one of these configurations yields a configuration of
+ the next level in the lattice. In short, the lattice mimics how a
+ programmer picks one module of many and adds types when a maintenance task
+ comes up, how another programmer modifies the next module, and so on. 
+
+A performance evaluation of a gradual typing system must run every
+ configuration for every benchmark and determine its average running
+ time. If the lattice as a whole has mostly configurations whose
+ performance is only slight worse than the performance of the untyped
+ configuration, the gradual typing system lives up to the implicit
+ expectation of the second claim mentioned above.  We use our framework to
+ evaluate two implementations of gradual typing on a dozen benchmarks: the
+ original Typed Racket implementation and the new Pycket-based version.
+
+\vspace{2in}
+road map
+\vspace{2in}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%% \acks 
+%% x
+
+\bibliographystyle{abbrvnat}
+\bibliography{cs}
+
+\end{document}
+%% -----------------------------------------------------------------------------
