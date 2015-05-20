@@ -2,6 +2,7 @@
 
 (require "bib.rkt"
          "gradual-bib.rkt" ; copied from the github repo
+         racket/class
          racket/require
          scribble/core
          scribble/eval
@@ -11,15 +12,7 @@
          scriblib/footnote
          setup/main-collects
          scribble/html-properties
-         scribble/latex-properties
-         racket/class
-         (for-label ;; no predicates, just "forms"
-                    (except-in racket/base string? eq? displayln void?)
-                    (except-in (subtract-in typed/racket/base racket/base)
-                               Integer String Void Boolean Natural Any)
-                    ;; don't highlight object% because that
-                    ;; looks weird for random readers
-                    (except-in racket/class object%)))
+         scribble/latex-properties)
 
 (provide (all-from-out "bib.rkt")
          (all-from-out "gradual-bib.rkt")
@@ -27,8 +20,6 @@
          (all-from-out scriblib/figure)
          (all-from-out scribble/eval)
          (all-from-out scriblib/autobib)
-         (for-label Classof
-                    (all-from-out racket/base racket/class typed/racket/base))
          (except-out (all-from-out scribble/manual)
                      author)
          ~cite
@@ -38,18 +29,7 @@
          generate-bibliography
          nrightarrow
          parag
-         sf
-         toor)
-
-;; Just for syntax highlighting in Scribble
-(module dummy racket (define Classof #f) (provide Classof))
-(require (for-label (submod "." dummy)))
-
-;; module that just binds stuff for highlighting
-;; no longer needed in 6.0.0.3 with TR classes
-;(require (for-label "dummy.rkt"))
-;(provide (for-label (all-from-out "dummy.rkt")))
-
+         sf)
 
 (define autobib-style-extras
   (let ([abs (lambda (s)
@@ -137,5 +117,3 @@
 (define (exact . items)
   (make-element (make-style "relax" '(exact-chars))
                 items))
-
-(define (toor) (elem "TR"))
