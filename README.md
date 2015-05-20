@@ -6,6 +6,8 @@ Auxillary folders:
 - `thoughts/` our first folder, for gathering ideas
 - `tools/` scripts for creating, running, and visualizing the lattice
 - `threads/` experiments debugging MBTA
+- `paper/` contains the main performance evaluation paper
+- `stop-2015` our STOP 2015 position paper
 
 | Project name          | Responsible | Ported? | Benchmarked? | # Modules | Module structure |
 | --------------------- | ----------- | ------- | ------------ | --------- | ---------------- |
