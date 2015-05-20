@@ -123,7 +123,7 @@
 
 (define-cite ~cite citet generate-bibliography
   ;; change this to small-number-style if you want the other way
-  ;;#:style small-number-style
+  #:style small-number-style
   )
 
 (define etal (emph "et al."))
