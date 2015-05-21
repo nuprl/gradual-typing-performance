@@ -29,6 +29,6 @@ tetris                & 9          & diamond          & \nopycket \\
 snake                 & 12         & diamond          & \yespycket \\
 \bottomrule
 \end{tabular}
-\caption{The software characteristics of the benchmarks} \label{fig:bm}
+\nocaptionrule \caption{The software characteristics of the benchmarks} \label{fig:bm}
 \end{figure}
 }|
