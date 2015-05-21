@@ -42,16 +42,20 @@ intermediate states were not evaluated.
 
 @section{Optional Type Systems}
 
-@;; FIXME: need some additional citations here, e.g. pluggable types
-
 Optional typing is an old idea whose roots can be traced as far back as
-MACLISP, which allowed users to declare (unchecked) type specifications.  The
-flavor of these annotations, and those in Lisp descendants such as Common Lisp,
-differ from the contemporary view of optional types as statically-checked
+MACLISP, which allowed users to declare (unchecked) type
+specifications@~cite[(in-bib moon-maclisp-1974 ", §14.2")]
+in an otherwise untyped language.
+The flavor of these annotations, and those in Lisp descendants such as Common
+Lisp, differ from the contemporary view of optional types as statically-checked
 annotations for software maintenance. In Lisp systems, these annotations are
-used for compiler optimizations and dynamic checking.  Pluggable type systems
-(e.g., for Java) are a closely related idea but as implemented typically layer
-additional typed reasoning on top of an existing typed language.
+used for compiler optimizations and dynamic checking.
+
+Pluggable type systems are a closely related idea, exemplified by
+Strongtalk@~cite[bg-oopsla-1993], and also fit into the unsound camp.  Recent
+implementations, e.g. Papi @etal's work for Java@~cite[pacpe-issta-2008], layer
+additional typed reasoning on top of existing typed languages rather than
+untyped languages.
 
 Optional type systems in the contemporary sense exist for
 Clojure@~cite[bonnaire-sergeant-thesis-2012], Lua@~cite[mmi-dyla-2014],

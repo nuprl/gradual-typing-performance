@@ -60,6 +60,7 @@
 (define/short sac "SAC" (string-append Symposium "on Applied Computing"))
 (define/short gpce "GPCE" "Generative Programming: Concepts & Experiences")
 (define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications"))
+(define/short issta "ISSTA" (string-append International Symposium "Software Testing and Analysis"))
 
 ;; ----------------------------------------
 
@@ -979,5 +980,25 @@
                      "Vasily Kirilichev" "Tobias Pape" "Jeremy G. Siek"
                      "Sam Tobin-Hochstadt")
    #:title "Pycket: A Tracing JIT For a Functional Language"
-   #:location "In submission"
+   #:location (proceedings-location icfp)
    #:date 2015))
+
+;; ----------------------------------------
+; Pluggable types
+
+(define pacpe-issta-2008
+  (make-bib
+   #:author (authors "Matthew M. Papi" "Mahmood Ali" "Telmo Louis Correa, Jr."
+                     "Jeff H. Perkins" "Michael D. Ernst")
+   #:title "Practical Pluggable Types for Java"
+   #:location (proceedings-location issta)
+   #:date 2008))
+
+;; ----------------------------------------
+; Ancient history
+
+(define moon-maclisp-1974
+  (make-bib
+   #:author "David A. Moon"
+   #:title "MACLISP Reference Manual"
+   #:date 1974))
