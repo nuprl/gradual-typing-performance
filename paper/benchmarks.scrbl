@@ -9,6 +9,7 @@ the benchmarks: describe purpose, structure, SE attributes (keep short)
 @exact|{
 \begin{figure}
 \newcommand{\yespycket}{$\CIRCLE$}
+\newcommand{\maybepycket}{$\RIGHTcircle$}
 \newcommand{\nopycket}{$\Circle$}
 \begin{tabular}[t]{lrll}
 \toprule
@@ -18,7 +19,7 @@ gregor                & 13         & pyramidic        & \nopycket \\
 HTDP script           & 4          & triangle         & \nopycket \\
 echo                  & 4          & directed diamond & \nopycket \\
 funkytown             & 9          & vine-like        & \yespycket \\
-kcfa                  & 7          & line, or braid   & \nopycket \\
+kcfa                  & 7          & line, or braid   & \maybepycket \\
 morse-code            & 4          & vee              & \nopycket \\
 sieve                 & 2          & one chain        & \yespycket \\
 suffixtree            & 5          & line             & \yespycket \\
