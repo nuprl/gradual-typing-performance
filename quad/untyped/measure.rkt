@@ -17,7 +17,7 @@
   (make-font #:size max-size #:style style #:weight weight #:face font))
 
 (define (get-cache-file-path)
-  (build-path "font.cache"))
+  (build-path "./base/font.cache"))
 
 (define (update-text-cache-file)
   (void))

@@ -13,5 +13,5 @@
   (time
     (begin
       (define to (typeset (quick-sample)))
-      (send (new pdf-renderer%) render-to-file to "quick-test-typed.pdf")
+      (send (new pdf-renderer%) render-to-file to "../base/output.pdf")
       (void))))

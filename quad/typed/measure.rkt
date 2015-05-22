@@ -22,7 +22,7 @@
 
 (define/typed (get-cache-file-path)
   (-> Path)
-  (build-path "font.cache"))
+  (build-path "../base/font.cache"))
 
 
 (define/typed (update-text-cache-file)
