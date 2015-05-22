@@ -68,4 +68,4 @@ Python@note[@url{http://mypy-lang.org/}], PHP@note[@url{http://hacklang.org/}],
 and JavaScript@note[@url{http://flowtype.org}].  Since the type annotations in
 these systems are unsound for typed-untyped interoperation, they incur no
 runtime overhead from proxy wrapping or dynamic checks. As a result, our
-performance analysis is inapplicable.
+evaluation framework is inapplicable.
