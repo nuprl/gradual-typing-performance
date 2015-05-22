@@ -37,5 +37,5 @@
   (for ([a-k (in-range N)])
     (analyze ianj)))
 
-;; (time (main 1)) ;; 20 seconds
-(time (main 2)) ;; 40 seconds
+(time (main 1)) ;; 20 seconds
+;;(time (main 2)) ;; 40 seconds
