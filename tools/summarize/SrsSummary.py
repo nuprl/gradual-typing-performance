@@ -85,16 +85,16 @@ class SrsSummary(AbstractSummary):
         print(latex.subsection("Sampling paths"), file=output_port)
         untyped_cfg = "0" * self.get_num_modules()
         for trans in transitivity:
-            weights = [self.max_weight(config.random_walk(untyped_cfg, trans))
+            weights = [self.max_runtime_over_typed(config.random_walk(untyped_cfg, trans))
                        for _ in range(self.sample_size)]
             print(latex.figure(self.graph_histogram(weights
                                ,"%s-sample-paths-trans-%s.png" % (self.project_name, trans)
                                ,"Sampled Paths in a %s-trans lattice" % trans
                                ,"Max Overhead (runtime / typed runtime)")), file=output_port)
 
-    def max_weight(self, path):
+    def max_runtime_over_typed(self, path):
         """
-            TODO share this with TabfileSummary
+            TODO share this with TabfileSummary, or something
         """
         ty_cfg = "1" * self.get_num_modules()
         return max((self.stats_of_config(cfg)["mean"] / self.stats_of_config(ty_cfg)["mean"]

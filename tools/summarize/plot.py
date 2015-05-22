@@ -28,7 +28,7 @@ def remove_empty(d1, d2):
             posns.append(i)
     return xs, ys, posns
 
-def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None):
+def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None, xmax=None, ymax=None):
     """
         Create and save a bar plot.
         Args:
@@ -41,15 +41,29 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
         - alpha   = opacity of bars
         - color   = color of bars
         - xlabels = x-axis labels for each bar
+        - xmax    = max x-value
+        - ymax    = max y-value
         - width   = width of bars
     """
     fig,ax1 = plt.subplots()
+    # Size
+    if xmax:
+        xmin,_ = ax1.get_xlim()
+        ax1.set_xlim(xmin, xmax)
+    if ymax:
+        ymin,_ = ax1.get_ylim()
+        ax1.set_ylim(ymin, ymax)
+    # Add data
     bar = plt.bar(xvalues, yvalues, width=width, color=color, alpha=alpha)
+    # Add extra lines
+    # TODO
+    # Labels
     if xlabels:
         plt.xticks([x + width/2 for x in xvalues], xlabels)
     ax1.set_title(title)
     ax1.set_xlabel(xlabel)
     ax1.set_ylabel(ylabel)
+    # Save
     output = output or "%s/%s-bar.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
@@ -57,8 +71,7 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     print("Saved bar chart to '%s'" % output)
     return output
 
-def histogram(values, title, xlabel, ylabel, num_bins, xmax, output, alpha=0.8, color='royalblue'):
-    # TODO use xmax to set figure width
+def histogram(values, title, xlabel, ylabel, num_bins, xmax, ymax, output, alpha=0.8, color='royalblue'):
     minval = min(values)
     maxval = max(values)
     bkt_width = (maxval - minval) / num_bins
@@ -66,7 +79,7 @@ def histogram(values, title, xlabel, ylabel, num_bins, xmax, output, alpha=0.8, 
     yvals = [sum((1 for val in values if lo <= val <= (lo + bkt_width) ))
              for lo in xvals]
     # print("Plotting with vals %s" % yvals)
-    return bar(xvals, yvals, title, xlabel, ylabel, alpha=alpha, color=color, width=bkt_width, output=output)
+    return bar(xvals, yvals, title, xlabel, ylabel, xmax=xmax, ymax=ymax, alpha=alpha, color=color, width=bkt_width, output=output)
 
 def module_graph(graph, project_name, cfg, title=None, alpha=1, edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange', output=None):
     """
