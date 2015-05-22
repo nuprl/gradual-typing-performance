@@ -4,9 +4,9 @@
 
 (require
   "quad-main.rkt"
-  "world-typed.rkt"
-  "quick-sample-typed.rkt"
-  "render-typed.rkt"
+  "world.rkt"
+  "quick-sample.rkt"
+  "render.rkt"
   typed/racket/class)
 
 (parameterize ([world:quality-default world:draft-quality])

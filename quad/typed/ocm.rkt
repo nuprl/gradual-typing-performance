@@ -1,6 +1,6 @@
 #lang typed/racket/base
 (require (for-syntax racket/base racket/syntax))
-(require racket/list typed/sugar/debug typed/sugar/define racket/function racket/vector  "logger-typed.rkt")
+(require racket/list typed/sugar/debug typed/sugar/define racket/function racket/vector  "logger.rkt")
 (define-logger ocm)
 
 (provide minima-idx-key minima-payload-key smawky? Entry->Value-Type Value-Type No-Value-Type Entry-Type Index-Type Matrix-Proc-Type OCM-Type make-ocm reduce reduce2 concave-minima (prefix-out ocm- (combine-out min-entry min-value min-index)))

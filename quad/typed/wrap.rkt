@@ -3,7 +3,7 @@
 (require typed/sugar/list typed/sugar/define)
 (require math/flonum (except-in racket/list flatten) racket/vector math/statistics racket/bool)
 (require/typed racket/list [flatten (All (A) (Rec as (U Any (Listof as))) -> (Listof Any))])
-(require "ocm-typed.rkt" "quads-typed.rkt" "utils-typed.rkt" "measure-typed.rkt" "world-typed.rkt" "logger-typed.rkt" "../base/core-types.rkt" "utils-typed.rkt")
+(require "ocm.rkt" "quads.rkt" "utils.rkt" "measure.rkt" "world.rkt" "logger.rkt" "../base/core-types.rkt" "utils.rkt")
 
 ;; predicate for the soft hyphen
 (define/typed (soft-hyphen? x)

@@ -1,7 +1,7 @@
 #lang typed/racket/base
 (require "hyphenate.rkt")
 (require (for-syntax racket/syntax racket/base) racket/string racket/list typed/sugar/debug typed/sugar/define racket/bool racket/function math/flonum)
-(require "quads-typed.rkt" "world-typed.rkt" "measure-typed.rkt" "../base/core-types.rkt")
+(require "quads.rkt" "world.rkt" "measure.rkt" "../base/core-types.rkt")
 
 (define/typed+provide (quad-map proc q)
   ((QuadListItem -> QuadListItem) Quad -> Quad)

@@ -17,7 +17,7 @@
                                  [get-solution-iter (-> HashTableTop)]
                                  [set-solver (Any . -> . Void)]
                                  [get-solver (-> Any)])])
-(require "quads-typed.rkt" "utils-typed.rkt" "wrap-typed.rkt" "measure-typed.rkt" "world-typed.rkt" "logger-typed.rkt" "../base/core-types.rkt")
+(require "quads.rkt" "utils.rkt" "wrap.rkt" "measure.rkt" "world.rkt" "logger.rkt" "../base/core-types.rkt")
 
 (define-type Block-Type (Listof Quad))
 (define-type Multicolumn-Type (Listof Block-Type))
