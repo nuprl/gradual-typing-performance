@@ -1,7 +1,9 @@
 #lang racket/base
 
+;; AKA quick-test.rkt
+
 (require
-  "main-typed.rkt"
+  "quad-main.rkt"
   "world-typed.rkt"
   "quick-sample-typed.rkt"
   "render-typed.rkt"

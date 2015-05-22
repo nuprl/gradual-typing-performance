@@ -16,20 +16,6 @@
  (only-in "patterns-hashed.rkt" hashed-patterns)
  (only-in "exceptions.rkt" default-exceptions))
 
-(require/typed xml
-  [#:opaque Xexpr xexpr?])
-
-(require/typed "txexpr.rkt"
-  [#:opaque TxExpr txexpr?]
-  [txexpr-car (-> TxExpr Any)]
-  [txexpr-cdr (-> TxExpr (Listof Any))]
-  [txexpr-cons (-> Any Any String)]
-  [txexpr-map (-> (-> (U String Xexpr) (U String Xexpr)) (Listof Any) Any)]
-  [attr-ref (-> TxExpr Symbol Any)]
-  ;; --
-  [x->string (-> (U String TxExpr Xexpr) String)]
-  [list->xexpr (-> (Listof Any) Xexpr)])
-
 ;; =============================================================================
 ;; bg: utilities for working with type Index
 ;; maybe we could drop these and go with type Integer everywhere
@@ -252,18 +238,13 @@
   (if (char? joiner) (string joiner) joiner))
 
 (: apply-proc (->* ((-> String String) String)
-                   ((-> String Boolean)
-                    (-> TxExpr Boolean))
+                   ((-> String Boolean))
                    String))
-(define (apply-proc proc x [omit-string (λ([x : String]) #f)] [omit-txexpr (λ([x : TxExpr]) #f)])
-  ;  ((procedure? txexpr?) ((or/c null (listof txexpr-tag?))) . ->* . txexpr?)
+(define (apply-proc proc x [omit-string (λ([x : String]) #f)])
   (let loop ([x x])
     (cond
      [(and (string? x) (not (omit-string x)))
       (proc x)]
-     ;[(and (txexpr? x) (not (omit-txexpr x)))
-     ; (txexpr-cons (txexpr-car x)
-     ;              (txexpr-map loop (txexpr-cdr x)))]
      [else x])))
 
 (: hyphenate (->* (String) ;xexpr, from xml http://docs.racket-lang.org/xml/index.html?q=xexpr%3F#%28def._%28%28lib._xml%2Fprivate%2Fxexpr-core..rkt%29._xexpr~3f%29%29
@@ -273,8 +254,7 @@
                    #:min-left-length Index
                    #:min-right-length Index
                    #:omit-word (-> String Boolean)
-                   #:omit-string (-> String Boolean)
-                   #:omit-txexpr (-> TxExpr Boolean))
+                   #:omit-string (-> String Boolean))
                   String))
 (define (hyphenate x [joiner default-joiner]
                                #:exceptions [extra-exceptions '()]
@@ -282,8 +262,7 @@
                                #:min-left-length [min-left-length default-min-left-length]
                                #:min-right-length [min-right-length default-min-right-length]
                                #:omit-word [omit-word? (λ([x : String]) #f)]
-                               #:omit-string [omit-string? (λ([x : String]) #f)]
-                               #:omit-txexpr [omit-txexpr? (λ([x : TxExpr]) #f)])
+                               #:omit-string [omit-string? (λ([x : String]) #f)])
   (initialize-patterns) ; reset everything each time hyphenate is called
   (for ([sym : String extra-exceptions]) (add-exception sym))
 
@@ -301,18 +280,16 @@
     (regexp-replace* word-pattern
                      text
                      lam))
- (apply-proc insert-hyphens x omit-string? omit-txexpr?))
+ (apply-proc insert-hyphens x omit-string?))
 
 (: unhyphenate (->* (String)
                     ((U Char String)
                      #:omit-word (-> String Boolean)
-                     #:omit-string (-> String Boolean)
-                     #:omit-txexpr (-> TxExpr Boolean))
+                     #:omit-string (-> String Boolean))
                     String))
 (define (unhyphenate x [joiner default-joiner]
                      #:omit-word [omit-word? (λ([x : String]) #f)]
-                     #:omit-string [omit-string? (λ([x : String]) #f)]
-                     #:omit-txexpr [omit-txexpr? (λ([x : TxExpr]) #f)])
+                     #:omit-string [omit-string? (λ([x : String]) #f)])
   (define word-pattern (pregexp (format "[\\w~a]+" joiner)))
   (: remove-hyphens (-> String String))
   (define (remove-hyphens text)
@@ -322,5 +299,5 @@
           (string-replace word (joiner->string joiner) "")
           word))
     (regexp-replace* word-pattern text lam))
-  (apply-proc remove-hyphens x omit-string? omit-txexpr?))
+  (apply-proc remove-hyphens x omit-string?))
 

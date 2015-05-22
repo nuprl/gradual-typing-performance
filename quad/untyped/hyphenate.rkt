@@ -19,10 +19,6 @@
  (only-in "patterns-hashed.rkt" hashed-patterns)
  (only-in "exceptions.rkt" default-exceptions))
 
-(require xml)
-
-(require "txexpr.rkt")
-
 ;; =============================================================================
 ;; bg: utilities for working with type Index
 ;; maybe we could drop these and go with type Integer everywhere
@@ -220,15 +216,11 @@
 (define (joiner->string joiner)
   (if (char? joiner) (string joiner) joiner))
 
-(define (apply-proc proc x [omit-string (λ(x) #f)] [omit-txexpr (λ(x ) #f)])
-  ;  ((procedure? txexpr?) ((or/c null (listof txexpr-tag?))) . ->* . txexpr?)
+(define (apply-proc proc x [omit-string (λ(x) #f)])
   (let loop ([x x])
     (cond
      [(and (string? x) (not (omit-string x)))
       (proc x)]
-     [(and (txexpr? x) (not (omit-txexpr x)))
-      (txexpr-cons (txexpr-car x)
-                   (txexpr-map loop (txexpr-cdr x)))]
      [else x])))
 
 (define (hyphenate x [joiner default-joiner]
@@ -237,8 +229,7 @@
                                #:min-left-length [min-left-length default-min-left-length]
                                #:min-right-length [min-right-length default-min-right-length]
                                #:omit-word [omit-word? (λ(x) #f)]
-                               #:omit-string [omit-string? (λ(x ) #f)]
-                               #:omit-txexpr [omit-txexpr? (λ(x ) #f)])
+                               #:omit-string [omit-string? (λ(x ) #f)])
   (initialize-patterns) ; reset everything each time hyphenate is called
   (for ([sym  extra-exceptions]) (add-exception sym))
 
@@ -254,12 +245,11 @@
     (regexp-replace* word-pattern
                      text
                      lam))
- (apply-proc insert-hyphens x omit-string? omit-txexpr?))
+ (apply-proc insert-hyphens x omit-string?))
 
 (define (unhyphenate x [joiner default-joiner]
                      #:omit-word [omit-word? (λ(x ) #f)]
-                     #:omit-string [omit-string? (λ(x ) #f)]
-                     #:omit-txexpr [omit-txexpr? (λ(x ) #f)])
+                     #:omit-string [omit-string? (λ(x ) #f)])
   (define word-pattern (pregexp (format "[\\w~a]+" joiner)))
   (define (remove-hyphens text)
     (define (lam word . rest)
@@ -267,5 +257,5 @@
           (string-replace word (joiner->string joiner) "")
           word))
     (regexp-replace* word-pattern text lam))
-  (apply-proc remove-hyphens x omit-string? omit-txexpr?))
+  (apply-proc remove-hyphens x omit-string?))
 
