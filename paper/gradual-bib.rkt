@@ -400,6 +400,13 @@
    #:location (proceedings-location dls #:pages '(45 56))
    #:date 2014))
 
+(define afgt-oopsla-2014
+  (make-bib
+   #:author (authors "Esteban Allende" "Johan Fabry" "Ronald Garcia" "Éric Tanter")
+   #:title "Confined Gradual Typing"
+   #:location (proceedings-location oopsla #:pages '(251 270))
+   #:date 2014))
+
 (define rsfbv-popl-2015
   (make-bib
    #:author (authors "Aseem Rastogi" "Nikhil Swamy" "Cédric Fournet"

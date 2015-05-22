@@ -2,7 +2,7 @@
 
 @require["common.rkt"]
 
-@title[#:tag "sec:rel"]{The Sad State of Related Work}
+@title[#:tag "sec:rel"]{The State of the Related Work}
 
 Papers about practical type systems for dynamic languages fall into two
 categories: optional type systems that are unsound for typed-untyped
@@ -18,9 +18,13 @@ come with a comprehensive performance evaluation. However, Vitousek @etal
 do note that ``Reticulated programs perform far worse than their
 unchecked Python implementations'' and that their slowSHA program
 exhibits a ``10x slowdown'' compared to Python@~cite[(in-bib vksb-dls-2014 ", pg. 54")].
+
 Gradualtalk's evaluation is primarily qualitative, but Allende @etal
 have investigated the overhead of several cast-insertion strategies
-on Gradualtalk microbenchmarks@~cite[aft-dls-2013].
+on Gradualtalk microbenchmarks@~cite[aft-dls-2013]. In another instance,
+Allende @etal investigated the effect of confined gradual typing---an approach
+in which the programmer can instruct the type system to avoid higher-order
+wrapping where possible---in Gradualtalk on microbenchmarks@~cite[afgt-oopsla-2014].
 
 Safe TypeScript comes with an evaluation on the Octane benchmarks ported to
 TypeScript. Unlike our lattice-based approach, their evaluation essentially
