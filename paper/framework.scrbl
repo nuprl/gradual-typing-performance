@@ -5,7 +5,7 @@
 @title[#:tag "sec:fwk"]{Benchmarking Software Evolution}
 
 We take the inspiration for our performance-evaluation approach from
- Takikawa et al.@~cite[tfdffthf-ecoop-2015] present a formative evaluation of
+ Takikawa @|etal|@~cite[tfdffthf-ecoop-2015] present a formative evaluation of
  their gradual typing system for object-oriented Racket. 
 
 This is a summative version of this evaluation, enriched with a systematic

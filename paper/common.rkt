@@ -106,7 +106,7 @@
   #:style small-number-style
   )
 
-(define etal (emph "et al."))
+(define etal "et al.")
 
 (define nrightarrow (elem #:style "mynra"))
 
