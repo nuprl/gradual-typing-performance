@@ -4,6 +4,12 @@
 
 @title[#:tag "sec:rel"]{The State of the Related Work}
 
+Gradual typing is now a broad area with both theoretical and practical papers.
+In this section, however, we consider only the related work that apply to
+production languages rather than formal models or small research prototypes.
+Our evaluation framework requires a corpus of benchmarkable programs, which
+rules out models and prototypes for which few programs exist.
+
 Papers about practical type systems for dynamic languages fall into two
 categories: optional type systems that are unsound for typed-untyped
 interoperation or sound gradual type systems. Most sound gradual type systems
