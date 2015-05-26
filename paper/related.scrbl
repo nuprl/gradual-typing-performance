@@ -4,42 +4,40 @@
 
 @title[#:tag "sec:rel"]{The State of the Related Work}
 
-Gradual typing is now a broad area with both theoretical and practical papers.
-In this section, however, we consider only the related work that apply to
-production languages rather than formal models or small research prototypes.
-Our evaluation framework requires a corpus of benchmarkable programs, which
-rules out models and prototypes for which few programs exist.
+Gradual typing is a broad area teeming with both theoretical and practical
+results.  In this section, we inspect only related work on
+production systems rather than formal models or research
+prototypes.
 
-Papers about practical type systems for dynamic languages fall into two
+Publications about practical type systems for dynamic languages fall into two
 categories: optional type systems that are unsound for typed-untyped
-interoperation or sound gradual type systems. Most sound gradual type systems
-do not come with a performance evaluation.
+interoperation or sound gradual type systems.
 
 @section{Sound Gradual Type Systems}
 
+Few sound gradual type systems come with any performance evaluation efforts.
 Sound gradual typing has been applied to Python@~cite[vksb-dls-2014],
 Smalltalk@~cite[acftd-scp-2013], and TypeScript@~cite[rsfbv-popl-2015
 rnv-ecoop-2015]. Neither the Reticulated Python nor Gradualtalk systems
 come with a comprehensive performance evaluation. However, Vitousek @etal
 do note that ``Reticulated programs perform far worse than their
-unchecked Python implementations'' and that their slowSHA program
+unchecked Python implementations'' and that their @tt{slowSHA} program
 exhibits a ``10x slowdown'' compared to Python@~cite[(in-bib vksb-dls-2014 ", pg. 54")].
 
 Gradualtalk's evaluation is primarily qualitative, but Allende @etal
 have investigated the overhead of several cast-insertion strategies
-on Gradualtalk microbenchmarks@~cite[aft-dls-2013]. In another instance,
-Allende @etal investigated the effect of confined gradual typing---an approach
+on Gradualtalk microbenchmarks@~cite[aft-dls-2013]. In addition,
+Allende @|etal|@~cite[afgt-oopsla-2014] investigated the effect of confined gradual typing---an approach
 in which the programmer can instruct the type system to avoid higher-order
-wrapping where possible---in Gradualtalk on microbenchmarks@~cite[afgt-oopsla-2014].
+wrapping where possible---in Gradualtalk on microbenchmark results.
 
 Safe TypeScript comes with an evaluation on the Octane benchmarks ported to
-TypeScript. Unlike our lattice-based approach, their evaluation essentially
-only compares the performance of the fully untyped and fully typed programs.
-Additionally, their micro gradual typing approach introduces overhead even in
-``untyped'' programs. For Safe TypeScript, Rastogi @etal report slowdowns in
+TypeScript. Unlike our lattice-based approach, their evaluation
+compares only the performance of the fully untyped and fully typed programs.
+For Safe TypeScript, Rastogi @etal report slowdowns in
 unannotated programs in a ``range from a factor of 2.4x (splay) to 72x
 (crypto), with an average of 22x''@~cite[(in-bib rsfbv-popl-2015 ", pg. 178")].
-On typed programs, the overhead is ``on average only 6.5%"@~cite[(in-bib rsfbv-popl-2015 ", pg. 178")].
+On fully typed programs, the overhead is ``on average only 6.5%"@~cite[(in-bib rsfbv-popl-2015 ", pg. 178")].
 
 StrongScript adds a sound type system on TypeScript but without any blame
 tracking or higher-order wrappers for interoperation. Richards @etal use
@@ -63,7 +61,7 @@ annotations for software maintenance. In Lisp systems, these annotations are
 used for compiler optimizations and dynamic checking.
 
 Pluggable type systems are a closely related idea, exemplified by
-Strongtalk@~cite[bg-oopsla-1993], and also fit into the unsound camp.  Recent
+Strongtalk@~cite[bg-oopsla-1993], and also belong to the unsound camp.  Recent
 implementations, e.g. Papi @etal's work for Java@~cite[pacpe-issta-2008], layer
 additional typed reasoning on top of existing typed languages rather than
 untyped languages.
@@ -73,5 +71,5 @@ Clojure@~cite[bonnaire-sergeant-thesis-2012], Lua@~cite[mmi-dyla-2014],
 Python@note[@url{http://mypy-lang.org/}], PHP@note[@url{http://hacklang.org/}],
 and JavaScript@note[@url{http://flowtype.org}].  Since the type annotations in
 these systems are unsound for typed-untyped interoperation, they incur no
-runtime overhead from proxy wrapping or dynamic checks. As a result, our
-evaluation framework is inapplicable.
+runtime overhead from proxy wrapping or dynamic checks meaning there is no
+need for a comprehensive evaluation as suggested in this paper.
