@@ -1,7 +1,19 @@
 #lang typed/racket/base
-(require (for-syntax typed/racket/base))
-(require typed/racket/date racket/match "world.rkt")
-(provide (all-defined-out))
+
+(provide
+ )
+
+;; -----------------------------------------------------------------------------
+
+(require
+ benchmark-util
+ (for-syntax typed/racket/base)
+ )
+
+(require/typed/check "world.rkt"
+  [world:logging-level (Parameterof Log-Level)])
+
+;; =============================================================================
 
 (define-syntax-rule (define-orphan-logger name)
   (begin
@@ -17,7 +29,7 @@
 
 (define-syntax-rule (activate-logger logger)
   (begin
-    (define logger-receiver (make-log-receiver logger (world:logging-level))) 
+    (define logger-receiver (make-log-receiver logger (world:logging-level)))
     (define log-file (build-path (current-directory) (format "~a.txt" 'logger)))
     (with-output-to-file log-file #:exists 'truncate void)
     (void (thread
@@ -33,7 +45,7 @@
           (log-quad-info "started at ~a" (date->string (current-date) #t)))))
 
 (define-syntax-rule (log-quad-debug-report x)
-  (begin 
+  (begin
     (log-quad-debug "~a = ~a" 'x x)
     x))
 
@@ -41,4 +53,3 @@
 (define (log-quad-debug* xs)
   (when (equal? (world:logging-level) 'debug)
     ((inst for-each String) (λ(x) (log-quad-debug x)) xs)))
-

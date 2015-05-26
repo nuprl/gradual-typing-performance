@@ -1,7 +1,6 @@
 #lang typed/racket/base
 
-;; bg: not sure what to do about the XML, let's see how it comes up
-;; in practice
+;; bg: removed XML and TxExprs from the original; this only works on strings now
 
 (provide
  hyphenate
@@ -247,7 +246,7 @@
       (proc x)]
      [else x])))
 
-(: hyphenate (->* (String) ;xexpr, from xml http://docs.racket-lang.org/xml/index.html?q=xexpr%3F#%28def._%28%28lib._xml%2Fprivate%2Fxexpr-core..rkt%29._xexpr~3f%29%29
+(: hyphenate (->* (String)
                   ((U Char String)
                    #:exceptions (Listof String)
                    #:min-length Index
@@ -300,4 +299,3 @@
           word))
     (regexp-replace* word-pattern text lam))
   (apply-proc remove-hyphens x omit-string?))
-
