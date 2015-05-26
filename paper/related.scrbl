@@ -8,7 +8,6 @@ Gradual typing is a broad area teeming with both theoretical and practical
 results.  In this section, we inspect only related work on
 production systems rather than formal models or research
 prototypes.
-
 Publications about practical type systems for dynamic languages fall into two
 categories: optional type systems that are unsound for typed-untyped
 interoperation or sound gradual type systems.
@@ -29,7 +28,9 @@ have investigated the overhead of several cast-insertion strategies
 on Gradualtalk microbenchmarks@~cite[aft-dls-2013]. In addition,
 Allende @|etal|@~cite[afgt-oopsla-2014] investigated the effect of confined gradual typing---an approach
 in which the programmer can instruct the type system to avoid higher-order
-wrapping where possible---in Gradualtalk on microbenchmark results.
+wrapping where possible---in Gradualtalk on microbenchmarks. These efforts
+evaluate the cost of specific features, but do not represent the
+cost of the whole gradual typing process.
 
 Safe TypeScript comes with an evaluation on the Octane benchmarks ported to
 TypeScript. Unlike our lattice-based approach, their evaluation
@@ -72,4 +73,4 @@ Python@note[@url{http://mypy-lang.org/}], PHP@note[@url{http://hacklang.org/}],
 and JavaScript@note[@url{http://flowtype.org}].  Since the type annotations in
 these systems are unsound for typed-untyped interoperation, they incur no
 runtime overhead from proxy wrapping or dynamic checks meaning there is no
-need for a comprehensive evaluation as suggested in this paper.
+need for a comprehensive evaluation such as the one suggested in this paper.
