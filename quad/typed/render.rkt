@@ -7,6 +7,7 @@
 (require
  benchmark-util
  "../base/core-types.rkt"
+ "../base/quad-types.rkt"
  (only-in racket/list filter-not)
  (only-in typed/racket/draw Font% make-font current-ps-setup pdf-dc% the-color-database)
  (only-in typed/racket/class inherit define/override send* class new super-new send define/public object% this)
@@ -35,9 +36,8 @@
 (require/typed/check "utils.rkt"
   [flatten-quad (Quad -> (Listof Quad))])
 (require/typed/check "quads.rkt"
-  [quad-attr-ref (-> ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
-  [word? (-> Any Boolean)]
-  [word (->* ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
+  [quad-attr-ref (->* ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
+  [word (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem WordQuad)]
   (quad-car (-> Quad QuadListItem))
   [whitespace/nbsp? (-> Any Boolean)]
   [quad-name (-> Quad QuadName)])

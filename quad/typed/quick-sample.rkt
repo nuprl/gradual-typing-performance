@@ -8,13 +8,15 @@
   benchmark-util
   racket/file
   (only-in racket/include include)
+  "../base/core-types.rkt"
+  "../base/quad-types.rkt"
 )
 (require/typed/check "quads.rkt"
-  (page-break (->* ((U HashableList QuadAttrs)) () #:rest QuadListItem Page-BreakQuad))
-  (column-break (-> ColumnBreakQuad))
+  (page-break (-> Page-BreakQuad))
+  (column-break (-> Column-BreakQuad))
   [word (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem WordQuad)]
   [box (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem BoxQuad)]
-  (block (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem BlockQuad))
+  (block (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem BlockQuad))
  (block-break (->* ((U HashableList QuadAttrs)) () #:rest QuadListItem Block-BreakQuad)))
 
 ;; =============================================================================

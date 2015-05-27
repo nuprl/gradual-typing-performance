@@ -33,20 +33,15 @@
   [quads->line (-> (Listof Quad) LineQuad)]
   [quad-attrs (-> Quad QuadAttrs)]
   [quad-name (Quad -> QuadName)]
-  [line? (-> Any Boolean)]
   [quad-attr-ref (((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) . ->* . QuadAttrValue)]
-  [word? (-> Any Boolean)]
   [quad->string (-> Quad String)]
-  [optical-kern (->* ((U QuadAttrs HashableList)) () #:read QuadListItem Optical-KernQuad)]
-  [optical-kern? (-> Any Boolean)]
+  (optical-kern (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem Optical-KernQuad))
+  ;[optical-kern (->* ((U QuadAttrs HashableList)) () #:read QuadListItem Optical-KernQuad)]
   [word-break (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem Word-BreakQuad)]
   [piece (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PieceQuad)]
-  [line (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PieceQuad)]
+  [line (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem LineQuad)]
   [whitespace/nbsp? (-> Any Boolean)]
   [whitespace? (-> Any Boolean)]
-  [spacer? (-> Any Boolean)]
-  [run? (-> Any Boolean)]
-  [word-break? (-> Any Boolean)]
   [word-string (-> Quad String)]
   [group-quad-list
    (GroupQuad -> GroupQuadList)]
@@ -69,8 +64,8 @@
   [world:default-word-break-list (Parameterof JoinableType)]
   [world:no-break-key Symbol]
   [world:word-break-key Symbol]
-  [world:spaces (Listof Symbol)]
-  [world:empty-string Symbol]
+  [world:spaces (Listof String)]
+  [world:empty-string String]
   [world:hyphens-and-dashes (Listof String)]
   [world:soft-hyphen Char]
   [world:unbreakable-key QuadAttrKey]
@@ -113,9 +108,7 @@
   (ocm-min-index (OCM-Type Index-Type -> (U Index-Type No-Value-Type)))
   (ocm-min-entry (OCM-Type Index-Type -> Entry-Type)))
 (require/typed/check "sugar-list.rkt"
-  [shifts (All (A) (case-> ((Listof (Option A)) (Listof Integer) -> (Listof (Listof (Option A))))
-                   ((Listof (Option A)) (Listof Integer) (Option A) -> (Listof (Listof (Option A))))
-                   ((Listof (Option A)) (Listof Integer) (Option A) Boolean -> (Listof (Listof (Option A))))))]
+ (shifts (-> (Listof Quad) (Listof Integer) (Listof (Listof (Option Quad)))))
  [slicef-after (All (A) ((Listof A) (A -> Boolean) -> (Listof (Listof A))))]
  [break-at
   (All (A) ((Listof A) (U Nonnegative-Integer (Listof Nonnegative-Integer)) -> (Listof (Listof A))))])

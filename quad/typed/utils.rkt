@@ -26,6 +26,7 @@
 (require
   benchmark-util
   "../base/core-types.rkt"
+  "../base/quad-types.rkt"
   (only-in racket/list append-map empty? empty split-at-right first splitf-at)
   (only-in racket/string string-append*)
   (only-in math/flonum fl+)
@@ -53,7 +54,7 @@
    (GroupQuad -> GroupQuadList)]
   [box (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem BoxQuad)]
   [whitespace/nbsp? (-> Any Boolean)]
-  [quad-attr-ref (-> ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
+  [quad-attr-ref (->* ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
 )
 (require/typed/check "world.rkt"
   [world:font-size-key QuadAttrKey]

@@ -10,7 +10,7 @@
 
 (require/typed/check "penalty-struct.rkt"
   [#:struct $penalty ([hyphens : Nonnegative-Integer]
-                      [width : Value-Type]) #:transparent])
+                      [width : Value-Type])])
 
 ;; =============================================================================
 

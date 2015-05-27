@@ -6,7 +6,8 @@
   split-quad
   add-vert-positions
   compute-line-height
-  quad-attr-set ;; bg who uses this?
+  quad-attr-set
+  (rename-out (quad-attr-set group-quad-attr-set))
   quad-attr-set*
   group-quad-attr-set*
   quad-attr-remove*
