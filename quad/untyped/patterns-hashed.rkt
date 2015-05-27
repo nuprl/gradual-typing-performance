@@ -1,5 +1,8 @@
 #lang racket/base
+
 (provide hashed-patterns)
+
+;; =============================================================================
 
 (define hashed-patterns
   '#hash(("ripl" . (0 0 2 0 0))

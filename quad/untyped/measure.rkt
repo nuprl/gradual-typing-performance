@@ -1,56 +1,75 @@
 #lang racket/base
-(require math/flonum racket/draw racket/class sugar/debug sugar/list racket/list sugar/cache racket/serialize racket/file)
-(provide measure-text measure-ascent round-float update-text-cache-file load-text-cache-file)
+
+(provide
+  load-text-cache-file
+  update-text-cache-file
+  round-float
+  measure-text
+  measure-ascent
+ )
+
+;; -----------------------------------------------------------------------------
+
+(require
+ benchmark-util
+ "../base/core.rkt"
+ (only-in racket/class new send)
+ (only-in math/flonum fl)
+ (only-in racket/file write-to-file file->value)
+ (only-in racket/draw record-dc% font% make-font)
+(only-in racket/serialize serialize deserialize))
+
+;; =============================================================================
 
 (define precision 4.0)
-(define base (flexpt 10.0 precision))
-
-(define-syntax-rule (round-float x)
-  (fl/ (flround (fl* base (fl x))) base))
-
+(define base (expt 10.0 precision))
+(define max-size 1024.0)
 (define dc (new record-dc%))
+;(define-type Measurement-Result-Type (List Float Float Float Float))
+;(define mrt? (make-predicate Measurement-Result-Type))
+(define current-text-cache (make-parameter ( make-hash '())))
+(define current-font-cache (make-parameter ( make-hash '())))
 
-(define max-size 1024) ; use fixnum to trigger faster bitshift division
-;; changing max-size invalidates font cache (because it's based on max size, duh)
-
-(define/caching (make-font/caching font weight style)
-  (make-font #:size max-size #:style style #:weight weight #:face font))
+(define (round-float x)
+  (/ (round (* base x)) base))
 
 (define (get-cache-file-path)
-  (build-path "./base/font.cache"))
+  (build-path "../base/font.cache"))
 
 (define (update-text-cache-file)
-  (void))
+  (write-to-file (serialize (current-text-cache)) (get-cache-file-path) #:exists 'replace))
 
-(define (load-text-cache-file) 
-  (void))
+(define (load-text-cache-file)
+  (define cache-file-path (get-cache-file-path))
+  (current-text-cache (if (file-exists? cache-file-path)
+                          (deserialize (file->value cache-file-path))
+                          ( make-hash  '()))))
 
+(define (get-cached-font font weight style)
+  (hash-ref! (current-font-cache) (list font weight style) (λ() (make-font #:size max-size #:style style #:weight weight #:face font))))
 
-(define/caching (measure-max-size text font [weight 'normal] [style 'normal])
-  '(0 0 0 0))
+(define (measure-max-size text font [weight 'normal] [style 'normal])
+  (define (hash-updater)
+    #;(current-text-cache-changed? #t)
+    (define font-instance (get-cached-font font weight style))
+    ;; 'combine' boolean only makes a difference for two or more chars, so use (>= (string-length text) 1) for speed
+    (define-values (width height descent extra) (send dc get-text-extent text font-instance (>= (string-length text) 1)))
+    ;; avoid `map` here because it requires a cast to ensure the type
+    ;; this seems like a bug in TR: doesn't recognize (List Float Float Float Float) as subtype of (Listof Float)?
+    (list (fl width) (fl height) (fl descent) (fl extra)))
+  ( hash-ref! (current-text-cache) (list text font weight style) hash-updater))
 
-(define-syntax-rule (width x) (first x))
-(define-syntax-rule (height x) (second x))
-(define-syntax-rule (descent x) (third x))
-(define-syntax-rule (extra x) (fourth x)) 
+(define-syntax-rule (width x) (car x))
+(define-syntax-rule (height x) (cadr x))
+(define-syntax-rule (descent x) (caddr x))
 
-(define-syntax-rule (measure-text-max-size text font weight style)
-  (width (measure-max-size text font weight style)))
+;; works by taking max size and scaling it down. Allows caching of results.
+(define (measure-text text size font weight style)
+  (define raw-width (width (measure-max-size text font weight style)))
+  (round-float (/ (* raw-width size) max-size)))
 
-(define (measure-text text size font [weight 'normal] [style 'normal])
-  ;  ((string? flonum? string?) (symbol? symbol?) . ->* . flonum?)
-  ;; Native function only accepts integers, so get max-size and scale down to size needed.
-  (define raw-measure (measure-text-max-size text font weight style))
-  (round-float (/ (* (exact->inexact raw-measure) (exact->inexact size)) max-size)))
-
-
-(define-syntax-rule (measure-ascent-max-size text font weight style)
-  (let ([result-list (measure-max-size text font weight style)])
-    (- (height result-list) (descent result-list))))
-
-
+;; works by taking max size and scaling it down. Allows caching of results.
 (define (measure-ascent text size font [weight 'normal] [style 'normal])
-  ;  ((string? flonum? string?) (symbol? symbol?) . ->* . flonum?)
-  ;; Native function only accepts integers, so get max-size and scale down to size needed.
-  (define raw-baseline-distance (measure-ascent-max-size text font weight style))
-  (round-float (/ (* (exact->inexact raw-baseline-distance) (exact->inexact size)) max-size)))
+  (define result-list (measure-max-size text font weight style))
+  (define raw-baseline-distance (- (height result-list) (descent result-list)))
+  (round-float (/ (* raw-baseline-distance size) max-size)))

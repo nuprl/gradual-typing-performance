@@ -1,30 +1,28 @@
 #lang racket/base
 
-;; bg: not sure what to do about the XML, let's see how it comes up
-;; in practice
+;; bg: removed XML and TxExprs from the original; this only works on strings now
 
 (provide
  hyphenate
  unhyphenate
- ;; -- not supposed to provide
- word->hyphenation-points
- exception-word?
  )
 
 ;; -----------------------------------------------------------------------------
 
 (require
+ benchmark-util
  (only-in racket/string string-replace string-join)
  (only-in racket/list partition drop-right drop make-list filter-not take splitf-at)
- (only-in "patterns-hashed.rkt" hashed-patterns)
- (only-in "exceptions.rkt" default-exceptions))
+(only-in "patterns-hashed.rkt" hashed-patterns)
+(only-in "exceptions.rkt" default-exceptions))
 
 ;; =============================================================================
 ;; bg: utilities for working with type Index
 ;; maybe we could drop these and go with type Integer everywhere
 
 (define (index? x)
-  (and (exact-nonnegative-integer? x) (< x 999999999999999)))
+  (and (<= 0 x)
+       (< x 9999999999999)))
 
 (define (max-index a b)
   (if (<= a b) b a))
@@ -33,7 +31,7 @@
   (if (<= a b) a b))
 
 (define (max-indexes xs)
-  (for/fold ([init (car xs)]) ([next  (in-list (cdr xs))])
+  (for/fold  ([init (car xs)]) ([next  (in-list (cdr xs))])
             (max-index init next)))
 
 (define (assert-index i)
@@ -91,19 +89,19 @@
   (define new-pat
     (let* ([pat
                 (regexp-match* #rx"." pat)] ; convert to list
-           [pat 
+           [pat
                 (map (λ(i)
                        (or (and (string->number i) (index? i) i)
                            i)) pat)] ; convert numbers
-           [pat 
+           [pat
                    (if (string? (car pat))
                        (cons 0 pat) pat)] ; add zeroes to front where needed
-           [pat 
+           [pat
                    (if (string? (car (reverse pat)))
                        (reverse (cons 0 (reverse pat))) pat)]) ; and back
       ;; bg: not using flatten, made all if-branches in for loop return lists
       (apply append
-             (for/list 
+             (for/list
                        ([(current i) (in-indexed pat)])
                        (if (= i (sub1 (length pat)))
                            (list current)
@@ -138,7 +136,7 @@
       (define hd (make-list (assert-index (add1 (length word-as-list))) 0))
       ;; bg: typed racket can't handle filtering the Void from a (U Void (Listof Index)) list
       (define tl
-        (for*/fold 
+        (for*/fold
           ([init '()])
           ([len (in-range (length word-as-list))]
            [index (in-range (- (length word-as-list) len))])
@@ -165,8 +163,8 @@
 
 ;; Find hyphenation points in a word. This is not quite synonymous with syllables.
 (define (word->hyphenation-points word
-                                  [min-l default-min-length]
-                                  [min-ll default-min-left-length]
+                                  [min-l  default-min-length]
+                                  [min-ll  default-min-left-length]
                                   [min-rl  default-min-right-length])
   (define (add-no-hyphen-zone points)
     ; points is a list corresponding to the letters of the word.
@@ -185,16 +183,16 @@
     points-with-zeroes-on-left-and-right)
   (define (make-pieces word)
     (define tmp+word-dissected
-      (for/fold 
+      (for/fold
         ;; bg: Accumulator is a "temp-list" and a "final-list"
         ;;     The temp-list collects characters until we reach a syllable.
         ;;     At that point, the temp-list is cons'd to the final-list and
         ;;     we initialize a fresh temp-list.
-        ([acc   
+        ([acc
                 (cons '() '())])
-        ([char  
+        ([char
                 (in-string word)]
-         [point 
+         [point
                 (in-list (add-no-hyphen-zone (make-points word)))])
         (if (even? point)
             (cons (cons char (car acc))
@@ -229,10 +227,9 @@
                                #:min-left-length [min-left-length default-min-left-length]
                                #:min-right-length [min-right-length default-min-right-length]
                                #:omit-word [omit-word? (λ(x) #f)]
-                               #:omit-string [omit-string? (λ(x ) #f)])
+                               #:omit-string [omit-string? (λ(x) #f)])
   (initialize-patterns) ; reset everything each time hyphenate is called
-  (for ([sym  extra-exceptions]) (add-exception sym))
-
+  (for ([sym extra-exceptions]) (add-exception sym))
   (define joiner-string (joiner->string joiner))
   ;; todo?: connect this regexp pattern to the one used in word? predicate
   (define word-pattern #px"\\w+") ;; more restrictive than exception-word
@@ -248,8 +245,8 @@
  (apply-proc insert-hyphens x omit-string?))
 
 (define (unhyphenate x [joiner default-joiner]
-                     #:omit-word [omit-word? (λ(x ) #f)]
-                     #:omit-string [omit-string? (λ(x ) #f)])
+                     #:omit-word [omit-word? (λ(x) #f)]
+                     #:omit-string [omit-string? (λ(x) #f)])
   (define word-pattern (pregexp (format "[\\w~a]+" joiner)))
   (define (remove-hyphens text)
     (define (lam word . rest)
@@ -258,4 +255,3 @@
           word))
     (regexp-replace* word-pattern text lam))
   (apply-proc remove-hyphens x omit-string?))
-
