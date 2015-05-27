@@ -1,6 +1,17 @@
 #lang typed/racket/base
-(require (for-syntax typed/racket/base racket/syntax) (only-in typed/racket/draw Font-Weight Font-Style) typed/sugar/define)
-(provide (all-defined-out) (all-from-out typed/racket/draw))
+
+(provide
+ (all-defined-out)
+ (all-from-out typed/racket/draw))
+
+;; -----------------------------------------------------------------------------
+
+(require
+ (for-syntax typed/racket/base racket/syntax)
+ (only-in typed/racket/draw Font-Weight Font-Style)
+ typed/sugar/define)
+
+;; =============================================================================
 
 (define-type+predicate QuadName Symbol)
 (define-type+predicate QuadAttrKey Symbol)
@@ -18,7 +29,7 @@
 (define-type+predicate HashableList  HashableListKey)
 |#
 (define-type+predicate HashableList  (Rec duo (U Null (List* QuadAttrKey Any duo))))
-(define-type JoinableType (U Quad QuadAttrs HashableList)) 
+(define-type JoinableType (U Quad QuadAttrs HashableList))
 
 
 (define-type+predicate QuadListItem (U String Quad))
