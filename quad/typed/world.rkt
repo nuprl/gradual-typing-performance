@@ -143,23 +143,6 @@
 (: optical-overhang (Parameterof Float))
 (define optical-overhang (make-parameter 0.8))
 
-;; -----------------------------------------------------------------------------
-
-;; (define-syntax-rule (define-parameter-typed name val type)
-;;   (define name : (Parameterof type) (make-parameter val)))
-
-;; (define-syntax (define-key-and-parameter stx)
-;;   (syntax-case stx ()
-;;     [(_ name keyname val type)
-;;      (with-syntax ([name-key (format-id #'name "~a-key" #'name)]
-;;                    [name-default (format-id #'name "~a-default" #'name)])
-;;        #'(begin
-;;            (define name-key : QuadAttrKey keyname)
-;;            (define-parameter-typed name-default val type)))]))
-
-;; -----------------------------------------------------------------------------
-
-
 ;; (define-key-and-parameter column-count 'column-count 2 Index)
 (: column-count-key QuadAttrKey)
 (define column-count-key 'column-count)

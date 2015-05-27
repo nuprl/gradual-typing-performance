@@ -14,36 +14,27 @@
 (require
   benchmark-util
   "../base/core-types.rkt"
+  "../base/quad-types.rkt"
   "ocm-struct-adapted.rkt"
   (only-in math/flonum fl+ fl= fl fl/ fl- fl> fl* fllog flabs flmax flexpt)
   (only-in racket/list empty empty? partition second first last split-at-right append-map drop-right drop)
   (only-in racket/vector vector-map vector-copy vector-count)
   (only-in math/statistics stddev) ;;bg: cause for alarm?
-  ;; ---
-  ;(for-syntax racket/base racket/syntax)
-  ;typed/sugar/list
-  ;typed/sugar/define
-  ;(except-in racket/list flatten)
-  ;racket/vector
-  ;math/statistics
-  ;racket/bool
-)
+  (for-syntax
+    racket/base
+    (only-in racket/syntax format-id)
+    (only-in racket/string string-trim)))
 (require/typed/check "measure.rkt"
   (measure-ascent (->* (String Font-Size Font-Name) (Font-Weight Font-Style) Float))
   (measure-text (-> String Font-Size Font-Name Font-Weight Font-Style Float))
   [round-float (-> Float Float)])
 (require/typed/check "quads.rkt"
-  [#:opaque PieceQuad PieceQuad?] ;;bg TODO adapt
-  [#:opaque Word-BreakQuad Word-BreakQuad?] ;;bg TODO adapt
   [quad->string (-> Quad String)]
   [optical-kern (->* ((U QuadAttrs HashableList)) () #:read QuadListItem Optical-KernQuad)]
-  [#:opaque Optical-KernQuad optical-kern?]
   [optical-kern? (-> Any Boolean)]
   [word-break (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem Word-BreakQuad)]
   [piece (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PieceQuad)]
   [line (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PieceQuad)]
-  [#:opaque LineQuad LineQuad?]
-  [#:opaque Word-BreakQuad Word-BreakQuad?]
   [whitespace/nbsp? (-> Any Boolean)]
   [whitespace? (-> Any Boolean)]
   [spacer? (-> Any Boolean)]
@@ -114,16 +105,8 @@
  [slicef-after (All (A) ((Listof A) (A -> Boolean) -> (Listof (Listof A))))]
  [break-at
   (All (A) ((Listof A) (U Nonnegative-Integer (Listof Nonnegative-Integer)) -> (Listof (Listof A))))])
-;(require/typed racket/list
-;  [flatten (All (A) (Rec as (U Any (Listof as))) -> (Listof Any))])
 
 ;; =============================================================================
-
-(require
-  (for-syntax
-    racket/base
-    (only-in racket/syntax format-id)
-    (only-in racket/string string-trim)))
 
 ;; bg: from quads.rkt
 (define-syntax (quad-attr-ref/parameter stx)
@@ -449,23 +432,6 @@
        new-line)]
     [else (line '())]))
 
-
-;;; a faster line-measuring function used by the wrapping function to test lines.
-;(define/typed (measure-potential-line ps)
-;  ((Listof PieceQuad) -> Float)
-;  (foldl fl+ 0.0 (append-map (λ([rp : PieceQuad]) (map quad-width (quad-list rp))) (render-pieces ps))))
-;
-;
-;(define/typed (vector-break-at vec bps)
-;  ((Vectorof Any) (Listof Nonnegative-Integer) -> (Listof (Vectorof Any)))
-;  (define-values (vecs _) ;; loop backward
-;    (for/fold ([vecs : (Listof (Vectorof Any)) empty][end : Nonnegative-Integer (vector-length vec)])([start (in-list (reverse (cons 0 bps)))])
-;      (if (= start end)
-;          (values vecs start)
-;          (values (cons ((inst vector-copy Any) vec start end) vecs) start))))
-;  vecs)
-;
-;
 ;;; makes a wrap function by combining component functions.
 (define-type Wrap-Proc-Type (((Listof Quad)) (Float) . ->* . (Listof LineQuad)))
 (: make-wrap-proc ((Make-Pieces-Type Measure-Quad-Type Compose-Line-Type Find-Breakpoints-Type) () . ->* . Wrap-Proc-Type))
@@ -487,24 +453,6 @@
           (map (λ([broken-piece : (Listof PieceQuad)]) (compose-line-proc broken-piece measure-quad-proc)) broken-pieces))
         (list (line '())))))
 
-;(define width? flonum?)
-;(define measure? flonum?)
-;(define (breakpoints? x) (and (list? x) (andmap integer? x)))
-;
-;(define/typed (install-measurement-keys p)
-;  (GroupQuad -> Quad)
-;  (define basic-width (round-float
-;                       (foldl fl+ 0.0 (map quad-width (quad-list p)))))
-;  (define p-word-break (assert (quad-attr-ref p world:word-break-key #f) quad?))
-;  (define before-break-width (fl+ basic-width (if p-word-break
-;                                                  (quad-width (word (quad-attrs p-word-break) (assert (quad-attr-ref p-word-break world:before-break-key) QuadListItem?)))
-;                                                  0.0)))
-;  (define no-break-width (fl+ basic-width (if p-word-break
-;                                              (quad-width (word (quad-attrs p-word-break) (assert (quad-attr-ref p-word-break world:no-break-key) QuadListItem?)))
-;                                              0.0)))
-;  (quad-attr-set* p (list 'bb-width before-break-width 'nb-width no-break-width)))
-;
-;(require sugar/debug)
 (: make-piece-vectors ((Vectorof PieceQuad) -> (values (Vectorof Float) (Vectorof Float))))
 (define (make-piece-vectors pieces)
   (define pieces-measured
@@ -650,12 +598,6 @@
      result]))
 
 
-;;; wrap proc based on greedy proc
-;(define-syntax-rule (define+provide name expr ...)
-;  (begin
-;    (provide name)
-;    (define name expr ...)))
-
 (define wrap-first (make-wrap-proc
                             make-pieces
                             quad-width
@@ -674,12 +616,6 @@
                                quad-width
                                pieces->line
                                adaptive-fit-proc))
-
-
-;(define/typed (fixed-width? q)
-;  (Quad -> Boolean)
-;  (quad-has-attr? q world:width-key))
-
 
 ;; build quad out to a given width by distributing excess into spacers
 ;; todo: adjust this to work recursively, so that fill operation cascades down

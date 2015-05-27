@@ -3,12 +3,12 @@
 (provide quick-sample)
 
 ;; -----------------------------------------------------------------------------
+
 (require
   benchmark-util
   racket/file
   (only-in racket/include include)
 )
-;; TODO these types are shiiiity
 (require/typed/check "quads.rkt"
   (page-break (->* ((U HashableList QuadAttrs)) () #:rest QuadListItem Page-BreakQuad))
   (column-break (-> ColumnBreakQuad))
@@ -16,9 +16,9 @@
   [box (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem BoxQuad)]
   (block (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem BlockQuad))
  (block-break (->* ((U HashableList QuadAttrs)) () #:rest QuadListItem Block-BreakQuad)))
+
 ;; =============================================================================
 
-;; (include "../base/quick-sample.rktd")
 (define (quick-sample)
   (block '(measure 240.0 font "Times New Roman" leading 16.0 vmeasure 300.0 size 13.5 x-align justify x-align-last-line left)
          (box '(width 15.0))

@@ -1,8 +1,6 @@
 #lang typed/racket/base
 
-(provide
- pdf-renderer%
- )
+(provide pdf-renderer%)
 
 ;; -----------------------------------------------------------------------------
 
@@ -150,6 +148,4 @@
     (define/public (render-to-file doc-quad path)
       (define result-bytes (send this render doc-quad))
       (display-to-file result-bytes path #:exists 'replace #:mode 'binary))
-
-
     ))

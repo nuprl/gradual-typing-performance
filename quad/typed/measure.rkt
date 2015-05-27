@@ -1,6 +1,5 @@
 #lang typed/racket/base
 
-;; (provide measure-text measure-ascent round-float update-text-cache-file load-text-cache-file)
 (provide
   load-text-cache-file
   update-text-cache-file
@@ -73,7 +72,6 @@
 (define-syntax-rule (width x) (car x))
 (define-syntax-rule (height x) (cadr x))
 (define-syntax-rule (descent x) (caddr x))
-;; #;(define-syntax-rule (extra x) (fourth x))
 
 ;; works by taking max size and scaling it down. Allows caching of results.
 (: measure-text (-> String Font-Size Font-Name Font-Weight Font-Style Float))

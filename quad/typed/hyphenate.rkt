@@ -10,10 +10,13 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+ benchmark-util
  (only-in racket/string string-replace string-join)
- (only-in racket/list partition drop-right drop make-list filter-not take splitf-at)
- (only-in "patterns-hashed.rkt" hashed-patterns)
- (only-in "exceptions.rkt" default-exceptions))
+ (only-in racket/list partition drop-right drop make-list filter-not take splitf-at))
+(require/typed/check "patterns-hashed.rkt"
+ [hashed-patterns (HashTable String (Listof Index))])
+(require/typed/check "exceptions.rkt"
+  [default-exceptions (Listof Symbol)])
 
 ;; =============================================================================
 ;; bg: utilities for working with type Index
@@ -264,7 +267,6 @@
                                #:omit-string [omit-string? (λ([x : String]) #f)])
   (initialize-patterns) ; reset everything each time hyphenate is called
   (for ([sym : String extra-exceptions]) (add-exception sym))
-
   (define joiner-string (joiner->string joiner))
   ;; todo?: connect this regexp pattern to the one used in word? predicate
   (define word-pattern #px"\\w+") ;; more restrictive than exception-word

@@ -25,12 +25,6 @@
   "../base/core-types.rkt"
   (only-in racket/list append-map empty? empty split-at-right first splitf-at)
   (only-in racket/string string-append*)
-  ;(for-syntax racket/syntax racket/base)
-  ;racket/string
-  ;typed/sugar/debug
-  ;typed/sugar/define
-  ;racket/bool
-  ;racket/function
   (only-in math/flonum fl+)
 )
 (require/typed/check "hyphenate.rkt"
@@ -79,17 +73,6 @@
 (: quad-map ((QuadListItem -> QuadListItem) Quad -> Quad))
 (define (quad-map proc q)
   (quad (quad-name q) (quad-attrs q) (map proc (quad-list q))))
-
-
-;;; predicate for use below
-;(define/typed (list-of-mergeable-attrs? xs)
-;  (Any -> Boolean)
-;  (and (list? xs) (andmap (λ(x) (or (quad? x) (quad-attrs? x) (HashableList? x))) xs)))
-;
-;;; faster than (listof pair?
-;(define/typed (pairs? x)
-;  (Any -> Boolean)
-;  (and (list? x) (andmap pair? x)))
 
 ;; push together multiple attr sources into one list of pairs.
 ;; mostly a helper function for the two attr functions below.
@@ -223,25 +206,6 @@
               ;; otherwise move on to the next in line
               [else (loop (cdr qs) (cons base-q acc))]))))))
 
-
-;;; propagate x and y adjustments throughout the tree,
-;;; using parent x and y to adjust children, and so on.
-;(define/typed+provide (compute-absolute-positions qli)
-;  (Quad -> Quad)
-;  (define result
-;    (let loop : QuadListItem ([qli : QuadListItem qli][parent-x : Float 0.0][parent-y : Float 0.0])
-;      (cond
-;        [(quad? qli)
-;         (define adjusted-x (round-float (+ (assert (quad-attr-ref qli world:x-position-key 0.0) flonum?) parent-x)))
-;         (define adjusted-y (round-float (+ (assert (quad-attr-ref qli world:y-position-key 0.0) flonum?) parent-y)))
-;         (quad (quad-name qli) (merge-attrs qli (list world:x-position-key adjusted-x world:y-position-key adjusted-y)) (map (λ([qlii : QuadListItem]) (loop qlii adjusted-x adjusted-y)) (quad-list qli)))]
-;        [else ;; it's a string
-;         qli])))
-;  (if (string? result)
-;      (error 'compute-absolute-positions "got string as result: ~v" result)
-;      result))
-
-
 ;; these helper functions isolate the generic functionality.
 ;; problem with quad-attr-set and other Quad->Quad functions
 ;; is that they strip out type.
@@ -281,34 +245,6 @@
       (quad (quad-name q) (apply attr-delete (quad-attrs q) ks) (quad-list q))
       q))
 
-;;; functionally remove a quad attr. Similar to hash-remove
-;(provide quad-attr-remove)
-;(define quad-attr-remove quad-attr-remove*)
-;
-;
-;;; the last char of a quad
-;(define/typed+provide (quad-last-char q)
-;  (Quad -> (Option String))
-;  (define split-qs (split-quad q)) ; split makes it simple, but is it too expensive?
-;  (if (or (empty? split-qs) (empty? (quad-list (last split-qs))))
-;      #f
-;      (let ([result((inst car QuadListItem QuadListItem) (quad-list (last split-qs)))])
-;        (if (quad? result)
-;            (error 'quad-last-char "last element is not a string: ~v" result)
-;            result))))
-;
-;;; the first char of a quad
-;(define/typed+provide (quad-first-char q)
-;  (Quad -> (Option String))
-;  (define split-qs (split-quad q)) ; explosion makes it simple, but is it too expensive?
-;  (if (or (empty? split-qs) (empty? (quad-list (first split-qs))))
-;      #f
-;      (let ([result((inst car QuadListItem QuadListItem) (quad-list (first split-qs)))])
-;        (if (quad? result)
-;            (error 'quad-first-char "first element is not a string: ~v" result)
-;            result))))
-;
-;
 ;; todo: how to guarantee line has leading key?
 (: compute-line-height (Quad -> Quad))
 (define (compute-line-height line)
@@ -350,7 +286,3 @@
   (let-values ([(first-list last-list) ((inst split-at-right A) xs 1)])
     (values first-list (car last-list))))
 
-;;; like cons, but joins a list to an atom
-;(provide snoc)
-;(define-syntax-rule (snoc xs x)
-;  (append xs (list x)))

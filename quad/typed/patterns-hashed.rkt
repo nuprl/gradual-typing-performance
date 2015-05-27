@@ -1,5 +1,8 @@
 #lang typed/racket/base
+
 (provide hashed-patterns)
+
+;; =============================================================================
 
 (: hashed-patterns (HashTable String (Listof Index)))
 (define hashed-patterns

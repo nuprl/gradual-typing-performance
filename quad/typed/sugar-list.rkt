@@ -88,7 +88,7 @@
        [(positive? how-far)
         (define filler (if cycle
                            (take-right xs abs-how-far)
-                           (make-list abs-how-far fill-item)))            
+                           (make-list abs-how-far fill-item)))
         (append filler (drop-right xs abs-how-far))]
        [else ; how-far is negative
         (define filler (if cycle

@@ -13,16 +13,14 @@
   (only-in racket/sequence sequence->list)
   (only-in math/flonum fl+ fl fl>)
   "../base/core-types.rkt"
+  "../base/quad-types.rkt"
 )
 (require/typed/check "quads.rkt"
-  [#:opaque ColumnQuad ColumnQuad?]
-  [#:opaque PageQuad PageQuad?]
   [quad-car (-> Quad QuadListItem)]
   [quad-name (-> Quad QuadName)]
   [page-break? (-> Any Boolean)]
   [column-break? (-> Any Boolean)]
   [block-break? (-> Any Boolean)]
-  [#:opaque PageQuad PageQuad?]
   [page (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PageQuad)]
   [column (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PageQuad)]
   [LineQuad? (-> Any Boolean)]
@@ -51,7 +49,6 @@
   [world:min-last-lines Index]
   [world:minimum-lines-per-column Index]
   [world:default-lines-per-column QuadAttrKey])
-;  "logger.rkt"
 (require/typed/check "measure.rkt"
   [load-text-cache-file (-> Void)]
   [update-text-cache-file (-> Void)]
@@ -149,17 +146,6 @@
       0.0
       (let ([lines-to-measure (drop-right lines 1)]) ; exclude last line from looseness calculation
         (round-float (/ (foldl fl+ 0.0 ((inst map Float Quad) (λ(line) (cast (quad-attr-ref line world:line-looseness-key 0.0) Float)) lines-to-measure)) (- (fl (length lines)) 1.0))))))
-
-
-;(define/typed+provide (log-debug-lines lines)
-;  ((Listof Quad) . -> . (Listof String))
-;  (log-quad-debug "line report:")
-;  (for/list : (Listof String) ([(line idx) (in-indexed lines)])
-;    (format "~a/~a: ~v ~a" idx
-;            (length lines)
-;            (quad->string line)
-;            (quad-attr-ref line world:line-looseness-key))))
-
 
 ;; todo: introduce a Quad subtype where quad-list is guaranteed to be all Quads (no strings)
 (: block->lines (BlockQuad . -> . (Listof LineQuad)))

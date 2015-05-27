@@ -19,8 +19,6 @@
 
 ;; =============================================================================
 
-;; -----------------------------------------------------------------------------
-
 (define-logger ocm)
 
 (: select-elements ((Listof Any) (Listof Index-Type) -> (Listof Any)))
@@ -48,9 +46,6 @@
 ;; and that the matrix function is more expensive than the cache lookup.
 
 
-;; (define-syntax-rule (vector-append-item xs value)
-;;   ((inst vector-append Any) xs (vector value)))
-
 (define-syntax-rule (vector-append-entry xs value)
   ((inst vector-append Entry-Type) xs (vector value)))
 
@@ -66,42 +61,6 @@
 (define-syntax-rule (vector-cdr vec)
   (vector-drop vec 1))
 
-;; ;; Reduce phase: make number of rows at most equal to number of cols
-;; (define/typed (reduce row-indices col-indices matrix-proc entry->value)
-;;   ((Vectorof Index-Type) (Vectorof Index-Type) Matrix-Proc-Type Entry->Value-Type -> (Vectorof Index-Type))
-;;   ;(vector? vector? procedure? procedure? -> vector?)
-;;   (log-ocm-debug "starting reduce phase with")
-;;   (log-ocm-debug "row-indices = ~a" row-indices)
-;;   (log-ocm-debug "col-indices = ~a" col-indices)
-
-;;   (: process-stack ((Vectorof Index-Type) Index-Type -> (Vectorof Index-Type)))
-;;   (define (process-stack stack row-idx)
-;;     (log-ocm-debug "row stack = ~a" stack)
-;;     (let ([last-stack-idx (sub1 (vector-length stack))])
-;;       (cond
-;;         [(and (>= (vector-length stack) 1)
-;;               (log-ocm-debug "comparing row values at column ~a" (vector-ref col-indices last-stack-idx))
-;;               (log-ocm-debug "end of row stack (~a) value at column ~a = ~a" (vector-ref stack last-stack-idx) (vector-ref col-indices last-stack-idx) (entry->value (matrix-proc (vector-ref stack last-stack-idx) (vector-ref col-indices last-stack-idx))))
-;;               (log-ocm-debug "challenger row (~a) value at column ~a = ~a" row-idx (vector-ref col-indices last-stack-idx) (entry->value (matrix-proc row-idx (vector-ref col-indices last-stack-idx))))
-;;               (> (entry->value (matrix-proc (vector-ref stack last-stack-idx) (vector-ref col-indices last-stack-idx)))
-;;                  (entry->value (matrix-proc row-idx (vector-ref col-indices last-stack-idx)))))
-
-;;          (log-ocm-debug "challenger row (~a) wins with a new minimum ~a, so end of row stack (~a) is removed" row-idx (entry->value (matrix-proc row-idx (vector-ref col-indices last-stack-idx))) (vector-ref stack last-stack-idx))
-;;          (process-stack (vector-drop-right stack 1) row-idx)]
-;;         [else
-;;          (log-ocm-debug (if (< (vector-length stack) 1)
-;;                             (format "row stack too short for challenge, pushing row ~a" row-idx)
-;;                             (format "challenger row (~a) loses to end of row stack (~a), so ~a joins stack" row-idx (vector-ref stack last-stack-idx) row-idx)))
-;;          stack])))
-
-;;   (define reduced-row-indexes
-;;     (for/fold : (Vectorof Index-Type) ([stack (cast (vector) (Vectorof Index-Type))]) ([row-idx (in-vector row-indices)])
-;;       (let ([stack (process-stack stack row-idx)])
-;;         (if (= (vector-length stack) (vector-length col-indices))
-;;             stack
-;;             ((inst vector-append Index-Type) stack (vector row-idx))))))
-;;   (log-ocm-debug "finished reduce. row indexes = ~v" reduced-row-indexes)
-;;   reduced-row-indexes)
 
 (: reduce2 ((Vectorof Index-Type) (Vectorof Index-Type) Matrix-Proc-Type Entry->Value-Type -> (Vectorof Index-Type)))
 (define (reduce2 row-indices col-indices matrix-proc entry->value)
@@ -131,8 +90,8 @@
             ;; so add challenger to survivor stack
             [else (find-survivors (vector-cdr rows) (cons challenger-row survivors))])])])))
 
-;; ;; define a special type so it can be reused in `interpolate`
-;; ;; it is (cons value row-idx)
+;; define a special type so it can be reused in `interpolate`
+;; it is (cons value row-idx)
 
 (define minima-idx-key 'row-idx)
 (define minima-payload-key 'entry)
@@ -146,29 +105,10 @@
   ht)
 
 
-;; ;; Interpolate phase: in the minima hash, add results for even rows
+;; Interpolate phase: in the minima hash, add results for even rows
 
 (define-syntax-rule (vector-last v)
   (vector-ref v (sub1 (vector-length v))))
-
-;; (define/typed (interpolate minima row-indices col-indices matrix-proc entry->value)
-;;   ((HashTable Any Any) (Vectorof Index-Type) (Vectorof Index-Type) Matrix-Proc-Type Entry->Value-Type -> (HashTable Any Any))
-;;   ;(hash? vector? vector? procedure? procedure? -> hash?)
-;;   (for ([col-idx (in-range 0 (vector-length col-indices) 2)]) ;; even-col-indices
-;;     (define col (vector-ref col-indices col-idx))
-;;     (define idx-of-last-row
-;;       (cast (if (= col-idx (sub1 (vector-length col-indices)))
-;;                 (vector-last row-indices)
-;;                 (hash-ref (cast (hash-ref minima (vector-ref col-indices (add1 col-idx))) HashTableTop) minima-idx-key)) Index-Type))
-
-;;     (define smallest-value-entry
-;;       ((inst vector-argmin Make-Minimum-Input) (λ(x) (entry->value (car x)))
-;;                                                (for/vector : (Vectorof Make-Minimum-Input)
-;;                                                  ([row-idx (in-list ((inst dropf-right Index-Type) (vector->list row-indices) (λ(x) (not (= x idx-of-last-row)))))])
-;;                                                  (cons (matrix-proc row-idx col) row-idx))))
-
-;;     (! minima col (make-minimum smallest-value-entry)))
-;;   minima)
 
 (: interpolate2 ((HashTable Any Any) (Vectorof Index-Type) (Vectorof Index-Type) Matrix-Proc-Type Entry->Value-Type -> (HashTable Any Any)))
 (define (interpolate2 minima row-indices col-indices matrix-proc entry->value)
@@ -295,37 +235,3 @@
         (set-$ocm-base! ocm (sub1 next))
         (set-$ocm-tentative! ocm next)
         (set-$ocm-finished! ocm next)])]))
-
-;; (define/typed (print ocm)
-;;   (OCM-Type -> Void)
-;;   (displayln ($ocm-min-entrys ocm))
-;;   (displayln ($ocm-min-row-indices ocm)))
-
-;; (define/typed (smawky? m)
-;;   ((Listof (Listof Real)) -> Boolean)
-;;   (: position-of-minimum ((Listof Real) -> Index-Type))
-;;   (define (position-of-minimum xs)
-;;     ;; put each element together with its list index
-;;     (let ([xs : (Listof (Pairof Index-Type Real)) (map (inst cons Index-Type Real) (range (length xs)) xs)])
-;;       ;; find the first one with the min value, and grab the list index
-;;       (car ((inst argmin (Pairof Index-Type Real)) cdr (filter (λ([x : (Pairof Index-Type Real)]) (not (negative? (cdr x)))) xs)))))
-;;   ;; tests if penalty matrix is monotone for non-negative values.
-;;   (define increasing-minima? (apply <= (cast (map position-of-minimum m) (List* Real Real (Listof Real)))))
-
-;;   (define monotone? : Boolean
-;;     (for/and ([ridx (in-range 1 (length m))])
-;;       (for/and : Boolean ([cidx (in-range (sub1 (length (car m))))])
-;;         (cast (let* ([prev-row : (Listof Real) ((inst list-ref (Listof Real)) m (sub1 ridx))]
-;;                      [row : (Listof Real) (list-ref m ridx)]
-;;                      [a : Real (list-ref prev-row cidx)]
-;;                      [b : Real (list-ref prev-row (add1 cidx))]
-;;                      [c : Real (list-ref row cidx)]
-;;                      [d : Real (list-ref row (add1 cidx))])
-;;                 (if (andmap (λ([x : Real]) (not (negative? x))) (list a b c d)) ;; smawk disregards negative values
-;;                     (cond
-;;                       [(< c d) (if (< a b) #t (error (format "Submatrix ~a not monotone in ~a" (list (list a b) (list c d)) m)))]
-;;                       [(= c d) (if (<= a b) #t (error (format "Submatrix ~a not monotone in ~a" (list (list a b) (list c d)) m)))]
-;;                       [else #t])
-;;                     #t)) Boolean))))
-
-;;   (and increasing-minima? monotone?))
