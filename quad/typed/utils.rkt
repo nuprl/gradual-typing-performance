@@ -48,7 +48,7 @@
    (GroupQuad -> GroupQuadList)
    (Quad -> QuadList))]
   [box (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem BoxQuad)]
-  [#:opaque BoxQuad BoxQuad?] ;;bg: hmmmmmm
+  [whitespace/nbsp? (-> Any Boolean)]
   [quad-attr-ref (-> ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
 )
 (require/typed/check "world.rkt"
@@ -64,7 +64,7 @@
   [world:leading-key QuadAttrKey]
   [world:leading-key-default (Parameterof Float)]
   [world:height-key Symbol]
-  [world:spliy-quad-key Symbol]
+  [world:split-quad-key Symbol]
   [world:x-position-key Symbol]
   [world:y-position-key Symbol])
 
@@ -165,6 +165,7 @@
       [else ;; it's a string
        ((inst map (Treeof Quad) QuadListItem) (λ(xc) (quad world:split-quad-key (quad-attrs parent) (list xc))) (regexp-match* #px"." x))]))
   (flatten-quadtree (map do-explode (flatten-quad q))))
+
 
 
 ;; merge chars into words (and boxes), leave the rest

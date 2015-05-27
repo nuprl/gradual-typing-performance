@@ -29,6 +29,12 @@
   (measure-text (-> String Font-Size Font-Name Font-Weight Font-Style Float))
   [round-float (-> Float Float)])
 (require/typed/check "quads.rkt"
+  [quads->line (-> (Listof Quad) LineQuad)]
+  [quad-attrs (-> Quad QuadAttrs)]
+  [quad-name (Quad -> QuadName)]
+  [line? (-> Any Boolean)]
+  [quad-attr-ref (((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) . ->* . QuadAttrValue)]
+  [word? (-> Any Boolean)]
   [quad->string (-> Quad String)]
   [optical-kern (->* ((U QuadAttrs HashableList)) () #:read QuadListItem Optical-KernQuad)]
   [optical-kern? (-> Any Boolean)]
@@ -39,6 +45,7 @@
   [whitespace? (-> Any Boolean)]
   [spacer? (-> Any Boolean)]
   [run? (-> Any Boolean)]
+  [word-break? (-> Any Boolean)]
   [word-string (-> Quad String)]
   [quad-list  (case->
    (GroupQuad -> GroupQuadList)
@@ -85,6 +92,9 @@
   [world:x-position-key Symbol]
   [world:y-position-key Symbol])
 (require/typed/check "utils.rkt"
+ (attr-change (QuadAttrs HashableList -> QuadAttrs))
+ [join-quads ((Listof Quad) -> (Listof Quad))]
+ [attr-delete (QuadAttrs QuadAttrKey * -> QuadAttrs)]
  (split-last (All (A) ((Listof A) -> (values (Listof A) A))))
  (flatten-quadtree ((Treeof Quad) -> (Listof Quad)))
  (merge-attrs (JoinableType * -> QuadAttrs))
@@ -96,7 +106,7 @@
    (Quad QuadAttrKey QuadAttrValue -> Quad))))
 (require/typed/check "ocm.rkt"
   (make-ocm ((Matrix-Proc-Type Entry->Value-Type) (Entry-Type) . ->* . OCM-Type))
-  (min-index (OCM-Type Index-Type -> (U Index-Type No-Value-Type)))
+  (ocm-min-index (OCM-Type Index-Type -> (U Index-Type No-Value-Type)))
   (ocm-min-entry (OCM-Type Index-Type -> Entry-Type)))
 (require/typed/check "sugar-list.rkt"
   [shifts (All (A) (case-> ((Listof (Option A)) (Listof Integer) -> (Listof (Listof (Option A))))
@@ -224,7 +234,7 @@
     [(ormap (λ([pred : (Any -> Boolean)]) (pred q)) (list char? run? word? word-break?))
      (apply measure-text (word-string q)
             (font-attributes-with-defaults q))]
-    [(LineQuad? q) (foldl fl+ 0.0 (map quad-width (quad-list q)))]
+    [(line? q) (foldl fl+ 0.0 (map quad-width (quad-list q)))]
     [else 0.0]))
 
 ;; get the ascent (distance from top of text to baseline)

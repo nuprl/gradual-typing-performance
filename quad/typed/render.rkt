@@ -35,6 +35,11 @@
 (require/typed/check "utils.rkt"
   [flatten-quad (Quad -> (Listof Quad))])
 (require/typed/check "quads.rkt"
+  [quad-attr-ref (-> ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
+  [word? (-> Any Boolean)]
+  [word (->* ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
+  (quad-car (-> Quad QuadListItem))
+  [whitespace/nbsp? (-> Any Boolean)]
   [quad-name (-> Quad QuadName)])
 
 ;; =============================================================================

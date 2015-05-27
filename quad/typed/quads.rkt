@@ -4,6 +4,7 @@
   PageQuad?
   DocQuad?
   BlockQuad? block
+  column?
   quad-name
   quad-attrs
   quad-list
@@ -17,7 +18,7 @@
   quad-attr-ref
   ColumnQuad?
   column
-  LineQuad?
+  line? LineQuad?
   quad-has-attr?
   run?
   word?
@@ -234,6 +235,7 @@
   (apply page (gather-common-attrs qs) qs))
 
 (define-predicate ColumnQuad? ColumnQuad)
+(define column? ColumnQuad?)
 (: column (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem ColumnQuad))
 (define (column attrs . xs)
   (quad 'column (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
@@ -249,6 +251,7 @@
   (quad 'column-break (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
 
 (define-predicate LineQuad? LineQuad)
+(define line? LineQuad?)
 ;;bg: first argument should be optional, but type error
 (: line (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem LineQuad))
 (define (line attrs . xs)
