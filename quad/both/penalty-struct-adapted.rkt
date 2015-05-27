@@ -13,3 +13,5 @@
                       [width : Value-Type]) #:transparent])
 
 ;; =============================================================================
+
+(define-type Value-Type Float)

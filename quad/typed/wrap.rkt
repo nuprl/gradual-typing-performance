@@ -16,6 +16,7 @@
   "../base/core-types.rkt"
   "../base/quad-types.rkt"
   "ocm-struct-adapted.rkt"
+  "penalty-struct-adapted.rkt"
   (only-in math/flonum fl+ fl= fl fl/ fl- fl> fl* fllog flabs flmax flexpt)
   (only-in racket/list empty empty? partition second first last split-at-right append-map drop-right drop)
   (only-in racket/vector vector-map vector-copy vector-count)
@@ -492,10 +493,6 @@
 (: get-line-width  ((Vectorof Float) -> Float))
 (define (get-line-width line)
   (round-float (foldl + 0.0 (vector->list line))))
-
-;; bg: TODO need to pull this out for sure
-(struct $penalty
-  ([hyphens : Nonnegative-Integer][width : Value-Type]) #:transparent)
 
 ;; top-level adaptive wrap proc.
 ;; first-fit and best-fit are variants.

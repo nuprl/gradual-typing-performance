@@ -19,8 +19,16 @@
 (require/typed/check "quick-sample.rkt"
   [quick-sample (-> Quad)])
 (require/typed/check "render.rkt"
-  ;; TODO worried about this signature
-  [pdf-renderer% (Class [render-to-file (Quad Path-String -> Void)])])
+  [pdf-renderer%
+    (Class
+      [render-to-file (Quad Path-String -> Void)]
+      [render-element (Quad -> Any)]
+      [render-page ((Listof Quad) -> Void)]
+      [render-word (Quad -> Any)]
+      [render (-> Quad Any)]
+      [finalize (-> Any Any)]
+      [setup (-> Quad Quad)]
+  )])
 
 ;; =============================================================================
 
