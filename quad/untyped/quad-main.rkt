@@ -23,13 +23,14 @@
   quad-name
   quad-attr-ref
   quad-list
-  page-break?
   quad-attrs
-  column-break?
-  block-break?
   quads->doc
   page
   column
+  ;;
+  page-break?
+  column-break?
+  block-break?
 )
 (only-in "wrap.rkt"
   insert-spacers-in-line

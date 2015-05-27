@@ -8,7 +8,9 @@
   compute-line-height
   quad-attr-set ;; bg who uses this?
   quad-attr-set*
+  group-quad-attr-set*
   quad-attr-remove*
+  (rename-out (quad-attr-remove* group-quad-attr-remove*))
   merge-attrs
   flatten-quad
   flatten-quadtree
@@ -203,6 +205,9 @@
 
 ;; functionally update multiple quad attrs. Similar to hash-set*
 (define (quad-attr-set* q kvs)
+  (quad (quad-name q) (attr-change (quad-attrs q) kvs) (quad-list q)))
+
+(define (group-quad-attr-set* q kvs)
   (quad (quad-name q) (attr-change (quad-attrs q) kvs) (quad-list q)))
 
 

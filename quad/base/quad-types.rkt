@@ -16,6 +16,17 @@
   LineQuad
   BlockQuad
   Block-BreakQuad
+  ;; --
+  page-break?
+  column-break?
+  block-break?
+  word-break?
+  column?
+  line?
+  run?
+  word?
+  optical-kern?
+  spacer?
 )
 
 ;; -----------------------------------------------------------------------------
@@ -39,3 +50,14 @@
 (define-type LineQuad (List* 'line QuadAttrs GroupQuadList))
 (define-type BlockQuad (List* 'block QuadAttrs QuadList))
 (define-type Block-BreakQuad (List* 'block-break QuadAttrs QuadList))
+
+(define-predicate page-break? Page-BreakQuad)
+(define-predicate column-break? Column-BreakQuad)
+(define-predicate block-break? Block-BreakQuad)
+(define-predicate word-break? Word-BreakQuad)
+(define-predicate column? ColumnQuad)
+(define-predicate line? LineQuad)
+(define-predicate word? WordQuad)
+(define-predicate run? RunQuad)
+(define-predicate spacer? SpacerQuad)
+(define-predicate optical-kern? Optical-KernQuad)

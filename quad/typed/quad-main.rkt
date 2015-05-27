@@ -23,19 +23,13 @@
   [line (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem LineQuad)]
   [quad-car (-> Quad QuadListItem)]
   [quad-name (-> Quad QuadName)]
-  [quad-attr-ref (-> ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
-  [page-break? (-> Any Boolean)]
-  [column-break? (-> Any Boolean)]
-  [quad-list  (case->
-   (GroupQuad -> GroupQuadList)
-   (Quad -> QuadList))]
-  [column? (-> Any Boolean)]
-(quad-has-attr? (Quad QuadAttrKey -> Boolean))
+  [quad-attr-ref (->* ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
+  [group-quad-list (GroupQuad -> GroupQuadList)]
+  [quad-list (Quad -> QuadList)]
+  (quad-has-attr? (Quad QuadAttrKey -> Boolean))
   (quads->column (-> (Listof Quad) ColumnQuad))
-  [block-break? (-> Any Boolean)]
   [page (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PageQuad)]
-  [column (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PageQuad)]
-  [LineQuad? (-> Any Boolean)]
+  [column (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem ColumnQuad)]
 )
 (require/typed/check "wrap.rkt"
   (insert-spacers-in-line ((LineQuad) ((Option Symbol)) . ->* . LineQuad))
@@ -46,7 +40,7 @@
   [add-horiz-positions (-> GroupQuad GroupQuad)])
 (require/typed/check "world.rkt"
   [world:line-looseness-key Symbol]
-  [world:allow-hyphenated-last-word-in-paragraph Float]
+  [world:allow-hyphenated-last-word-in-paragraph Boolean]
   [world:line-looseness-tolerance Float]
   [world:line-index-key Symbol]
   [world:measure-key QuadAttrKey]
@@ -65,7 +59,7 @@
   [world:min-first-lines Index]
   [world:min-last-lines Index]
   [world:minimum-lines-per-column Index]
-  [world:default-lines-per-column QuadAttrKey])
+  [world:default-lines-per-column Index])
 (require/typed/check "measure.rkt"
   [round-float (-> Float Float)]
   [load-text-cache-file (-> Void)]
@@ -77,9 +71,10 @@
   (join-quads ((Listof Quad) -> (Listof Quad)))
   (hyphenate-quad (QuadListItem -> QuadListItem))
   (quad-map ((QuadListItem -> QuadListItem) Quad -> Quad))
-  (quad-attr-set*  (case->
-   (GroupQuad HashableList -> GroupQuad)
-   (Quad HashableList -> Quad)))
+  (group-quad-attr-set*
+   (GroupQuad HashableList -> GroupQuad))
+  (quad-attr-set*
+   (Quad HashableList -> Quad))
   [attr-change (-> QuadAttrs HashableList QuadAttrs)]
   [compute-line-height (-> Quad Quad)]
   [add-vert-positions (-> GroupQuad GroupQuad)]
@@ -197,13 +192,13 @@
   ;(log-quad-debug "final looseness = ~a" (average-looseness wrapped-lines))
   (map insert-spacers-in-line
        (for/list : (Listof LineQuad) ([line-idx (in-naturals)][the-line (in-list wrapped-lines)])
-         (apply line (attr-change (quad-attrs the-line) (list 'line-idx line-idx 'lines (length wrapped-lines))) (quad-list the-line)))))
+         (apply line (attr-change (quad-attrs the-line) (list 'line-idx line-idx 'lines (length wrapped-lines))) (group-quad-list the-line)))))
 
 
 (: number-pages ((Listof PageQuad) . -> . (Listof PageQuad)))
 (define (number-pages ps)
   (for/list ([i (in-naturals)][p (in-list ps)])
-    (apply page (merge-attrs (quad-attrs p) `(page ,i)) (quad-list p))))
+    (apply page (merge-attrs (quad-attrs p) `(page ,i)) (group-quad-list p))))
 
 (: pages->doc ((Listof PageQuad) . -> . DocQuad))
 (define (pages->doc ps)
@@ -214,7 +209,7 @@
     (apply page (quad-attrs page-in)
            (map add-vert-positions (for/list : (Listof ColumnQuad) ([col (in-list (quad-list page-in))])
              (assert col column?)
-             (apply column (quad-attrs col) (map (λ([ln : Quad]) (assert ln LineQuad?) (compute-line-height (add-horiz-positions (fill ln)))) (quad-list col)))))))
+             (apply column (quad-attrs col) (map (λ([ln : Quad]) (assert ln line?) (compute-line-height (add-horiz-positions (fill ln)))) (group-quad-list col)))))))
   (define mapped-pages (map columns-mapper (number-pages ps)))
   (define doc (quads->doc mapped-pages))
   doc)
@@ -281,7 +276,7 @@
       ;(map (λ([idx : Index] [line : LineQuad]) (log-quad-debug "~a:~a ~v" (add1 col-idx) (add1 idx) (quad->string line))) (range how-many-lines-to-take) lines-to-take)
       (send prob reset)
       (define new-column (quads->column lines-to-take))
-      (values (cons (apply column (attr-change (quad-attrs new-column) (list world:column-index-key col-idx)) (quad-list new-column)) columns) lines-to-leave)))
+      (values (cons (apply column (attr-change (quad-attrs new-column) (list world:column-index-key col-idx)) (group-quad-list new-column)) columns) lines-to-leave)))
   (reverse columns))
 
 

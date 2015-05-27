@@ -48,9 +48,10 @@
   [run? (-> Any Boolean)]
   [word-break? (-> Any Boolean)]
   [word-string (-> Quad String)]
-  [quad-list  (case->
-   (GroupQuad -> GroupQuadList)
-   (Quad -> QuadList))]
+  [group-quad-list
+   (GroupQuad -> GroupQuadList)]
+  [quad-list
+   (Quad -> QuadList)]
   [spacer (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem SpacerQuad)]
   [quad-has-attr? (-> Quad QuadAttrKey Boolean)])
 (require/typed/check "world.rkt"
@@ -74,8 +75,8 @@
   [world:soft-hyphen Char]
   [world:unbreakable-key QuadAttrKey]
   [world:minimum-last-line-chars Index]
-  [world:measure-default]
-  [world:measure-key]
+  [world:measure-default (Parameterof QuadAttrValue)]
+  [world:measure-key QuadAttrKey]
   [world:font-size-key QuadAttrKey]
   [world:font-size-default (Parameterof Float)]
   [world:font-name-key QuadAttrKey]
@@ -99,12 +100,14 @@
  (split-last (All (A) ((Listof A) -> (values (Listof A) A))))
  (flatten-quadtree ((Treeof Quad) -> (Listof Quad)))
  (merge-attrs (JoinableType * -> QuadAttrs))
- (quad-attr-remove* (case->
-   (GroupQuad QuadAttrKey * -> GroupQuad)
-   (Quad QuadAttrKey * -> Quad)))
- (quad-attr-set  (case->
-   (GroupQuad QuadAttrKey QuadAttrValue -> GroupQuad)
-   (Quad QuadAttrKey QuadAttrValue -> Quad))))
+ (group-quad-attr-remove*
+   (GroupQuad QuadAttrKey * -> GroupQuad))
+ (quad-attr-remove*
+   (Quad QuadAttrKey * -> Quad))
+ (quad-attr-set
+   (Quad QuadAttrKey QuadAttrValue -> Quad))
+ (group-quad-attr-set
+   (GroupQuad QuadAttrKey QuadAttrValue -> GroupQuad)))
 (require/typed/check "ocm.rkt"
   (make-ocm ((Matrix-Proc-Type Entry->Value-Type) (Entry-Type) . ->* . OCM-Type))
   (ocm-min-index (OCM-Type Index-Type -> (U Index-Type No-Value-Type)))
@@ -149,7 +152,7 @@
   (cond
     [(string? x) (or (visible-breakable? x) (invisible-breakable? x))]
     ;; word? should have a filter that returns a Quad type, then the Quad? check will be unnecessary
-    [(and (Quad? x) (word? x)) (breakable? (word-string x))]
+    [(and (quad? x) (word? x)) (breakable? (word-string x))]
     [else #f]))
 
 ;; used by insert-spacers to determine which characters
@@ -235,7 +238,7 @@
     [(ormap (λ([pred : (Any -> Boolean)]) (pred q)) (list char? run? word? word-break?))
      (apply measure-text (word-string q)
             (font-attributes-with-defaults q))]
-    [(line? q) (foldl fl+ 0.0 (map quad-width (quad-list q)))]
+    [(line? q) (foldl fl+ 0.0 (map quad-width (group-quad-list q)))]
     [else 0.0]))
 
 ;; get the ascent (distance from top of text to baseline)
@@ -265,11 +268,11 @@
   ;; only needs it if the appearance of the piece changes based on location.
   ;; so words are likely to have a word-break item; boxes not.
   ;; the word break item contains the different characters needed to finish the piece.
-  (define the-word-break (assert (quad-attr-ref p world:word-break-key #f) (λ(v) (or (eq? #f v) (Word-BreakQuad? v)))))
-  (let ([p (apply piece (attr-delete (quad-attrs p) world:word-break-key) (quad-list p))]) ; so it doesn't propagate into subquads
+  (define the-word-break (assert (quad-attr-ref p world:word-break-key #f) (λ(v) (or (eq? #f v) (word-break? v)))))
+  (let ([p (apply piece (attr-delete (quad-attrs p) world:word-break-key) (group-quad-list p))]) ; so it doesn't propagate into subquads
     (if the-word-break
         (apply piece (quad-attrs p)
-               (append (quad-list p) (let ([rendered-wb ((if before-break?
+               (append (group-quad-list p) (let ([rendered-wb ((if before-break?
                                                              word-break->before-break
                                                              word-break->no-break) the-word-break)])
                                        (if (> (string-length (word-string rendered-wb)) 0) ; if rendered-wb is "", don't append it
@@ -367,7 +370,7 @@
                                 (quad-attrs (apply quad-attr-remove* attr-source keys-to-ignore))))
     (quad (quad-name q) (merge-attrs (or filtered-attrs null) q) (quad-list q)))
   (apply line (quad-attrs line-in)
-         (flatten-quadtree (let ([qs (quad-list line-in)])
+         (flatten-quadtree (let ([qs (group-quad-list line-in)])
                              (if (not (empty? qs))
                                  (list (if before (copy-with-attrs before (first qs)) null)
                                        (map (λ([q : Quad]) (if (and middle (takes-justification-space? q))
@@ -413,7 +416,7 @@
   (cond
     [(not (empty? rendered-pieces))
      ;; handle optical kerns here to avoid resplitting and rejoining later.
-     (define line-quads (assert (append-map quad-list rendered-pieces) (λ(lqs) (not (empty? lqs)))))
+     (define line-quads (assert (append-map group-quad-list rendered-pieces) (λ(lqs) (not (empty? lqs)))))
      (define line-quads-maybe-with-opticals
        (if world:use-optical-kerns?
            (render-optical-kerns
@@ -439,7 +442,7 @@
      (let* ([new-line-quads (map embed-width merged-quads merged-quad-widths)]
             [new-line-quads (map record-ascent new-line-quads)]
             [new-line (quads->line new-line-quads)]
-            [new-line (apply line (attr-change (quad-attrs new-line) (list world:line-looseness-key looseness)) (quad-list new-line))])
+            [new-line (apply line (attr-change (quad-attrs new-line) (list world:line-looseness-key looseness)) (group-quad-list new-line))])
        new-line)]
     [else (line '())]))
 
@@ -471,7 +474,7 @@
       (define wb (assert (quad-attr-ref p world:word-break-key #f) (λ(wb) (or (eq? #f wb) (quad? wb)))))
       (vector
        ;; throw in 0.0 in case for/list returns empty
-       (foldl fl+ 0.0 (for/list : (Listof Float) ([q (in-list (quad-list p))])
+       (foldl fl+ 0.0 (for/list : (Listof Float) ([q (in-list (group-quad-list p))])
                         (define str (quad->string q))
                         (if (equal? str "")
                             (assert (quad-attr-ref q world:width-key 0.0) flonum?)
@@ -630,7 +633,7 @@
 (: fill ((LineQuad) ((Option Float)) . ->* . LineQuad))
 (define (fill starting-quad [target-width? #f])
   (define target-width (or target-width? (assert (quad-attr-ref starting-quad world:measure-key) flonum?)))
-  (define subquads (quad-list starting-quad))
+  (define subquads (group-quad-list starting-quad))
   (define-values (flexible-subquads fixed-subquads) (partition spacer? subquads)) ; only puts fill into spacers.
   (define width-used (foldl fl+ 0.0 (map quad-width fixed-subquads)))
   (define width-remaining (round-float (- target-width width-used)))
@@ -652,6 +655,6 @@
 (: add-horiz-positions (GroupQuad -> GroupQuad))
 (define (add-horiz-positions starting-quad)
   (define-values (new-quads final-width)
-    (for/fold ([new-quads : (Listof Quad) empty][width-so-far : Float 0.0])([q (in-list (quad-list starting-quad))])
+    (for/fold ([new-quads : (Listof Quad) empty][width-so-far : Float 0.0])([q (in-list (group-quad-list starting-quad))])
       (values (cons (quad-attr-set q world:x-position-key width-so-far) new-quads) (round-float (fl+ (quad-width q) width-so-far)))))
   (quad (quad-name starting-quad) (quad-attrs starting-quad) (reverse new-quads)))

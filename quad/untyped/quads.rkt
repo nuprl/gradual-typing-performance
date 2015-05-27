@@ -2,10 +2,12 @@
 
 (provide
   line?
+  column?
   block
   quad-name
   quad-attrs
   quad-list
+  group-quad-list
   make-quadattrs
   box
   page-break? page-break
@@ -68,6 +70,9 @@
       (map car qas)))
 
 (define (quad-list q)
+  (cdr (cdr q)))
+
+(define (group-quad-list q)
   (cdr (cdr q)))
 
 
@@ -193,6 +198,9 @@
 (define (page-break)
   (define attrs '()) (define xs '())
   (quad 'page-break (if (quad-attrs? attrs) attrs (make-quadattrs attrs)) xs))
+
+(define (column? x)
+  (and (quad? x) (equal? (quad-name x) 'column)))
 
 (define (column-break? x)
   (and (quad? x) (equal? (quad-name x) 'column-break)))

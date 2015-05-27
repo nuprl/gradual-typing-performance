@@ -1,49 +1,46 @@
 #lang typed/racket/base
 
 (provide
-  PageQuad?
-  DocQuad?
-  BlockQuad? block
-  column?
+  group-quad-list
+  block
   quad-name
   quad-attrs
   quad-list
   make-quadattrs
   box
-  BoxQuad?
-  page-break? page-break
-  column-break? column-break
-  block-break? block-break
+  page-break
+  column-break
+  block-break
   page
   quad-attr-ref
-  ColumnQuad?
   column
-  line? LineQuad?
   quad-has-attr?
-  run?
-  word?
-  word-break?
   word-string
-  spacer?
   spacer
   line
   whitespace/nbsp?
+  whitespace?
   quads->doc
   quads->column
   quad-car
   quads->page
   piece
   word-break
-  Word-BreakQuad?
-  whitespace?
-  optical-kern?
   optical-kern
   word
   quads->line
   quad->string
-  PieceQuad?
-  Word-BreakQuad?
   quads->block
+  ;; -- from quad-types.rkt
+  page-break?
+  column-break?
+  block-break?
+  optical-kern?
+  spacer?
+  run?
+  line?
+  word?
+  word-break?
  )
 
 ;; -----------------------------------------------------------------------------
@@ -57,11 +54,11 @@
 
 ;; =============================================================================
 
-(: quad-name (Quad -> QuadName))
+(: quad-name ((U GroupQuad Quad) -> QuadName))
 (define (quad-name q)
   (car q))
 
-(: quad-attrs (Quad -> QuadAttrs))
+(: quad-attrs ((U GroupQuad Quad) -> QuadAttrs))
 (define (quad-attrs q)
   (car (cdr q)))
 
@@ -79,12 +76,14 @@
       qas
       ((inst map QuadAttrKey QuadAttr) car qas)))
 
-(: quad-list  (case->
-   (GroupQuad -> GroupQuadList)
-   (Quad -> QuadList)))
+(: quad-list (Quad -> QuadList))
 (define (quad-list q)
   (cdr (cdr q)))
 
+;; Because quad-list case-lam cannot be converted to a contract; 2 arity-1 cases
+(: group-quad-list (GroupQuad -> GroupQuadList))
+(define (group-quad-list q)
+  (cdr (cdr q)))
 
 (: quad-attr-ref (((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) . ->* . QuadAttrValue))
 (define (quad-attr-ref q-or-qas key [default attr-missing])
@@ -167,21 +166,14 @@
 
 ;; -----------------------------------------------------------------------------
 
-(define-predicate BoxQuad? BoxQuad)
-(define box? BoxQuad?)
 (: box (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem BoxQuad))
 (define (box attrs . xs)
   (quad 'box (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
 
-(define-predicate RunQuad? RunQuad)
-(define run? RunQuad?)
-
-(define-predicate spacer? SpacerQuad)
 (: spacer (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem SpacerQuad))
 (define (spacer attrs . xs)
   (quad 'spacer (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
 
-(define-predicate DocQuad? DocQuad)
 (: doc (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem DocQuad))
 (define (doc attrs . xs)
   (quad 'doc (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
@@ -189,24 +181,18 @@
 (define (quads->doc qs)
   (apply doc (gather-common-attrs qs) qs))
 
-(define-predicate Optical-KernQuad? Optical-KernQuad)
-(define optical-kern? Optical-KernQuad?)
 (: optical-kern (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem Optical-KernQuad))
 (define (optical-kern attrs . xs)
   (quad 'optical-kern (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
 
-(define-predicate PieceQuad? PieceQuad)
-(define piece? PieceQuad?)
 (: piece (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PieceQuad))
 (define (piece attrs . xs)
   (quad 'piece (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
 
-(define-predicate word? WordQuad)
 (: word (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem WordQuad))
 (define (word attrs . xs)
   (quad 'word (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
-(define-predicate Word-BreakQuad? Word-BreakQuad)
-(define word-break? Word-BreakQuad?)
+
 (: word-break (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem Word-BreakQuad))
 (define (word-break attrs . xs)
   (quad 'word-break (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
@@ -218,13 +204,11 @@
       (car ql)
       ""))
 
-(define-predicate PageQuad? PageQuad)
 ;;bg: first argument should be optional, but type error
 (: page (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem PageQuad))
 (define (page attrs . xs)
   (quad 'page (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
-(define-predicate  Page-BreakQuad? Page-BreakQuad)
-(define page-break? Page-BreakQuad?)
+
 (: page-break (-> Page-BreakQuad))
 (define (page-break)
   (define attrs '()) (define xs '())
@@ -234,8 +218,6 @@
 (define (quads->page qs)
   (apply page (gather-common-attrs qs) qs))
 
-(define-predicate ColumnQuad? ColumnQuad)
-(define column? ColumnQuad?)
 (: column (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem ColumnQuad))
 (define (column attrs . xs)
   (quad 'column (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
@@ -243,15 +225,11 @@
 (define (quads->column qs)
   (apply column (gather-common-attrs qs) qs))
 
-(define-predicate Column-BreakQuad? Column-BreakQuad)
-(define column-break? Column-BreakQuad?)
 (: column-break (-> Column-BreakQuad))
 (define (column-break)
   (define attrs '()) (define xs '())
   (quad 'column-break (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
 
-(define-predicate LineQuad? LineQuad)
-(define line? LineQuad?)
 ;;bg: first argument should be optional, but type error
 (: line (->* ((U QuadAttrs HashableList)) () #:rest GroupQuadListItem LineQuad))
 (define (line attrs . xs)
@@ -260,7 +238,6 @@
 (define (quads->line qs)
   (apply line (gather-common-attrs qs) qs))
 
-(define-predicate BlockQuad? BlockQuad)
 (: block (->* ((U QuadAttrs HashableList)) () #:rest QuadListItem BlockQuad))
 (define (block attrs . xs)
   (quad 'block (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))
@@ -268,7 +245,6 @@
 (define (quads->block qs)
   (apply block (gather-common-attrs qs) qs))
 
-(define-predicate block-break? Block-BreakQuad)
 (: block-break (->* ((U HashableList QuadAttrs)) () #:rest QuadListItem Block-BreakQuad))
 (define (block-break attrs . xs)
   (quad 'block-break (if (QuadAttrs? attrs) attrs (make-quadattrs attrs)) xs))

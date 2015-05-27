@@ -6,9 +6,12 @@
   split-quad
   add-vert-positions
   compute-line-height
-  quad-attr-set ;; bg who uses this?
+  quad-attr-set
+  group-quad-attr-set
   quad-attr-set*
+  group-quad-attr-set*
   quad-attr-remove*
+  group-quad-attr-remove*
   merge-attrs
   flatten-quad
   flatten-quadtree
@@ -44,9 +47,10 @@
   [quad-name (-> Quad QuadName)]
   [quad-attrs (-> Quad QuadAttrs)]
   [make-quadattrs (-> (Listof Any) QuadAttrs)]
-  [quad-list  (case->
-   (GroupQuad -> GroupQuadList)
-   (Quad -> QuadList))]
+  [quad-list
+   (Quad -> QuadList)]
+  [group-quad-list
+   (GroupQuad -> GroupQuadList)]
   [box (->* ((U QuadAttrs HashableList))()  #:rest QuadListItem BoxQuad)]
   [whitespace/nbsp? (-> Any Boolean)]
   [quad-attr-ref (-> ((U Quad QuadAttrs) QuadAttrKey) (QuadAttrValue) QuadAttrValue)]
@@ -221,29 +225,43 @@
 
 
 ;; functionally update a quad attr. Similar to hash-set
-(: quad-attr-set  (case->
-   (GroupQuad QuadAttrKey QuadAttrValue -> GroupQuad)
-   (Quad QuadAttrKey QuadAttrValue -> Quad)))
+(: quad-attr-set
+   (Quad QuadAttrKey QuadAttrValue -> Quad))
 (define (quad-attr-set q k v)
   (quad-attr-set* q (list k v)))
+(: group-quad-attr-set
+   (GroupQuad QuadAttrKey QuadAttrValue -> GroupQuad))
+(define (group-quad-attr-set q k v)
+  (group-quad-attr-set* q (list k v)))
 
 
 ;; functionally update multiple quad attrs. Similar to hash-set*
-(: quad-attr-set*  (case->
-   (GroupQuad HashableList -> GroupQuad)
-   (Quad HashableList -> Quad)))
+(: quad-attr-set*
+   (Quad HashableList -> Quad))
 (define (quad-attr-set* q kvs)
   (quad (quad-name q) (attr-change (quad-attrs q) kvs) (quad-list q)))
-
+(: group-quad-attr-set*
+   (GroupQuad HashableList -> GroupQuad))
+(define (group-quad-attr-set* q kvs)
+  (quad
+    (quad-name q)
+    (attr-change (quad-attrs q) kvs)
+    (group-quad-list q)))
 
 ;; functionally remove multiple quad attrs. Similar to hash-remove*
-(: quad-attr-remove* (case->
-   (GroupQuad QuadAttrKey * -> GroupQuad)
-   (Quad QuadAttrKey * -> Quad)))
+(: quad-attr-remove*
+   (Quad QuadAttrKey * -> Quad))
 (define (quad-attr-remove* q . ks)
   (if (not (empty? (quad-attrs q)))
       ;; test all ks as a set so that iteration through attrs only happens once
       (quad (quad-name q) (apply attr-delete (quad-attrs q) ks) (quad-list q))
+      q))
+(: group-quad-attr-remove*
+   (GroupQuad QuadAttrKey * -> GroupQuad))
+(define (group-quad-attr-remove* q . ks)
+  (if (not (empty? (quad-attrs q)))
+      ;; test all ks as a set so that iteration through attrs only happens once
+      (quad (quad-name q) (apply attr-delete (quad-attrs q) ks) (group-quad-list q))
       q))
 
 ;; todo: how to guarantee line has leading key?
@@ -256,7 +274,7 @@
 ;  (Quad -> Boolean)
 ;  (quad-has-attr? q world:height-key))
 
-(: quad-height (-> Quad Float))
+(: quad-height (-> (U GroupQuad Quad) Float))
 (define (quad-height q)
   (assert (quad-attr-ref q world:height-key 0.0) flonum?))
 
@@ -264,8 +282,8 @@
 (: add-vert-positions (GroupQuad -> GroupQuad))
 (define (add-vert-positions starting-quad)
   (define-values (new-quads final-height)
-    (for/fold ([new-quads : (Listof Quad) empty][height-so-far : Float 0.0])
-              ([q (in-list (quad-list starting-quad))])
+    (for/fold ([new-quads : (Listof (U GroupQuad Quad)) empty][height-so-far : Float 0.0])
+              ([q (in-list (group-quad-list starting-quad))])
       (values (cons (quad-attr-set q world:y-position-key height-so-far) new-quads)
               (round-float (+ height-so-far (quad-height q))))))
   (quad (quad-name starting-quad) (quad-attrs starting-quad) (reverse new-quads)))
