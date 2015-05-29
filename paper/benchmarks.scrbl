@@ -15,18 +15,19 @@ the benchmarks: describe purpose, structure, SE attributes (keep short)
 \toprule
 Project name          & \# Modules & Module structure & Pycket \\
 \midrule
-gregor                & 13         & pyramidic        & \nopycket \\
+sieve                 & 2          & one chain        & \yespycket \\
 HTDP script           & 4          & triangle         & \nopycket \\
 echo                  & 4          & directed diamond & \nopycket \\
-funkytown             & 9          & vine-like        & \yespycket \\
-kcfa                  & 7          & line, or braid   & \maybepycket \\
 morse-code            & 4          & vee              & \nopycket \\
-sieve                 & 2          & one chain        & \yespycket \\
+mbta                  & 4          & one chain        & \nopycket \\
 suffixtree            & 5          & line             & \yespycket \\
 zo traversal          & 5          & almost diamond   & \nopycket \\
-mbta                  & 4          & one chain        & \nopycket \\
+kcfa                  & 7          & line, or braid   & \maybepycket \\
+funkytown             & 9          & vine-like        & \yespycket \\
 tetris                & 9          & diamond          & \nopycket \\
 snake                 & 12         & diamond          & \yespycket \\
+gregor                & 13         & pyramidic        & \nopycket \\
+quad                  & 16         &                  & \nopycket \\
 \bottomrule
 \end{tabular}
 \nocaptionrule \caption{The software characteristics of the benchmarks} \label{fig:bm}
