@@ -8,5 +8,5 @@ we are going home
 
 @section[#:style 'unnumbered]{Acknowledgments}
 
-We thank Matthew Butterick, John Clements, Matthew Might, and Danny Yoo for
-providing benchmark code bases.
+We thank Matthew Butterick, John Clements, Matthew Might, Danny Yoo,
+and Jon Zeppieri for providing benchmark code bases.
