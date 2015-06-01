@@ -563,6 +563,13 @@
    #:location (dissertation-location #:institution "Northeastern University")
    #:date 2012))
 
+(define nthvh-icfp-2014
+  (make-bib
+   #:author (authors "Phúc C. Nguyên" "Sam Tobin-Hochstadt" "David Van Horn")
+   #:title "Soft Contract Verification"
+   #:location (proceedings-location icfp #:pages '(139 152))
+   #:date 2014))
+
 ;; ----------------------------------------
 ; Proxies
 
@@ -960,7 +967,7 @@
   (make-bib
    #:author (authors "Vincent St-Amour" "Leif Andersen" "Matthias Felleisen")
    #:title "Feature-specific Profiling"
-   #:location (proceedings-location cc)
+   #:location (proceedings-location cc #:pages '(49 68))
    #:date 2015))
 
 ;; ----------------------------------------
