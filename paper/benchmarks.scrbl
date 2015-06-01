@@ -8,14 +8,15 @@ For our evaluation of Typed Racket, we strove to obtain benchmark
 programs that are representative of code that users actually write. To this end,
 most of the benchmarks are either based on third-party libraries or scripts sourced
 from the original developer or from the Racket package repository.
-A few benchmarks are taken from existing microbenchmark suites.
+A single benchmark is taken from an existing microbenchmark suite.
 @Figure-ref["fig:bm"] lists and characterizes the benchmarks by the
 number of modules in the program, the shape of the dependency structure
 of the modules, and whether the benchmark successfully runs using Pycket.
 
 The @tt{sieve} program finds prime numbers using the Sieve of Erastothones.
-The @tt{echo} server implements a simple network server and is taken from
-Racket's microbenchmark suite. The @tt{morse-code} script implements a
+The @tt{echo} server implements a simple network server and is a task
+originally used in the Computer Language Benchmarks Game@note{@url["http://benchmarksgame.alioth.debian.org/"]}.
+The @tt{morse-code} script implements a
 Morse Code training program. The @tt{mbta} program analyzes a graph
 representing a public transit route map. The @tt{suffixtree} library
 implements a longest-common-substring algorithm.
