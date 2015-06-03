@@ -1,19 +1,5 @@
 #lang racket/base
 
-(require "bib.rkt"
-         "gradual-bib.rkt" ; copied from the github repo
-         racket/class
-         racket/require
-         scribble/core
-         scribble/eval
-         scribble/manual
-         scriblib/autobib
-         scriblib/figure
-         scriblib/footnote
-         setup/main-collects
-         scribble/html-properties
-         scribble/latex-properties)
-
 (provide (all-from-out "bib.rkt")
          (all-from-out "gradual-bib.rkt")
          (all-from-out scriblib/footnote)
@@ -29,7 +15,22 @@
          generate-bibliography
          nrightarrow
          parag
+         def
          sf)
+
+(require "bib.rkt"
+         "gradual-bib.rkt" ; copied from the github repo
+         racket/class
+         racket/require
+         scribble/core
+         scribble/eval
+         scribble/manual
+         scriblib/autobib
+         scriblib/figure
+         scriblib/footnote
+         setup/main-collects
+         scribble/html-properties
+         scribble/latex-properties)
 
 (define autobib-style-extras
   (let ([abs (lambda (s)
@@ -117,3 +118,9 @@
 (define (exact . items)
   (make-element (make-style "relax" '(exact-chars))
                 items))
+
+(define (def #:term (term #false) . x)
+  (apply
+   nested
+   (bold "Definition")
+   (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)))

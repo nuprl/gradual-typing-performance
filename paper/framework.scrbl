@@ -35,3 +35,39 @@ M-@emph{evolutionary acceptable}.
 @bold{Question 3} how many of the unacceptable configuration are within L
 steps of delivery-ready or evolutionary-acceptable configuration? We call
 those L-step acceptable.
+
+
+@; this is horrible English: 
+
+@def{The @italic{performance lattice} of a @math{n} module system is the
+ collection of all @math{2^n} system configurations that result from
+ linking in typed and untyped variants of each module. The bottom of the
+ lattice is the completely untyped configuration; the top is the completely
+ typed one. Two configurations are one @italic{conversion step} apart if
+ they differ in one module. If two configurations are one conversion step
+ apart, the one with an additional typed module @italic{dominates} the
+ other one.}
+
+@def[#:term "typed/untyped ratio"]{The typed/untyped ratio of a performance
+ lattice is time needed to run the completely typed variant divided by the
+ completely untyped one.}
+
+@def[#:term @list{@math{N}-ready}]{A configuration in a performance lattice is
+ N-delivery-ready if its performance is no worse than a N% slowdown
+ compared to the completely untyped configuration.}
+
+@def[#:term @list{@math{(N,M)}-ready}]{A configuration in a performance
+ lattice is (N,M)-ready if its performance is worse than a
+ N% slowdown and no worse than an M% slowdown compared to
+ the completely untyped configuration.}
+
+@def[#:term @list{@math{L}-step @math{N}-ready, @math{L}-step
+ @math{(M,N)}-ready}]{A performance lattice is L-step N-ready if a
+ configuration that is not N-ready is at most L upward conversion steps
+ away from an N-ready configurations. Similarly, a lattice is L-step
+ (M,N)-ready if a configuration that is not (M,N)-ready is at most L upward
+ steps away from one that is.}
+
+                                                  
+
+                                    
