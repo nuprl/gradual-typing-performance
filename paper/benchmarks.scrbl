@@ -16,15 +16,16 @@ This subsection details each of the benchmark programs in our evaluation. Each
 description notes the number of modules, the shape of the module structure,
 external dependencies of the program, and whether the program needed additional
 tweaking to fit into the evaluation framework. The number of modules always
-indicates how many modules are toggled to be either typed or untyped. Adaptor
-modules---explained below---or additional helper or data files are not included
-in the count.
+indicates how many modules are included in the lattice---i.e., are either
+typed or untyped depending on the configuration. Adaptor
+modules---explained below---or additional helper or data files that are always
+untyped (or typed) are not included in the count.
 @Figure-ref["fig:bm"] lists and summarizes the benchmarks.
 
 Several of the projects need an ``adaptor module'' which sits
 between a data definition module in the original program and its clients. The
-adaptor is used in lieu of toggling the data definition module as typed or
-untyped and ensures that both typed and untyped modules in the program variations
+adaptor is used in lieu of including the data definition module in the performance
+lattice and ensures that both typed and untyped modules in the benchmark configurations
 can use the same data definitions. This is crucial since Racket structure types
 (record type definitions) are @emph{generative} in the sense that two distinct
 definitions of the same structure type will define incompatible structures.
