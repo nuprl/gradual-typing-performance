@@ -34,7 +34,7 @@ structures.
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Erastothones and is our
 smallest benchmark with only two modules. Due to its simplicity, however, the
-fully typed version of the program has only minimal dependencies on the core
+completely typed version of the program has only minimal dependencies on the core
 Racket language. The module structure is also simple and only has a single
 chain of dependencies.
 
@@ -55,7 +55,7 @@ shape (two chains of modules from a main module) and has minimal dependencies.
 The @tt{mbta} program analyzes a graph representing a public transit route map.
 It contains four modules in a single chain but also depends on a third-party
 graph library. Since the graph library is untyped, this introduces a typed-untyped
-boundary even in the ``fully typed'' case.
+boundary even in the ``completely typed'' case.
 
 @parag{Suffixtree}
 The @tt{suffixtree} library implements a longest-common-substring algorithm. The
@@ -68,7 +68,7 @@ The @tt{zo-traversal} script explores Racket bytecode structures and consists
 of five modules. These modules are arranged in an almost diamond shape. The
 script operates on the Racket compiler's untyped zo data structures. Since
 these data structures are not natively supported in Typed Racket, even the
-fully typed program incurs some dynamic overhead from using these structures.
+completely typed program incurs some dynamic overhead from using these structures.
 
 @parag{KCFA}
 The @tt{kfca} program is a small implementation of control flow analysis consisting

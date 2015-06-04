@@ -22,7 +22,7 @@ The inspiration for our performance-evaluation approach is due to Takikawa
 Before we proceed, we lay out Takikawa @|etal|'s landscape: 
 @itemlist[
 
-@item{A (@italic{software system}) @italic{configuration} is a sequence
+@item{A (@italic{software system}) @italic{configuration} is a sequence of
  @math{n} modules.}
 
 @item{Each module in a software system configuration is either typed or
