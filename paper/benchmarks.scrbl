@@ -39,7 +39,7 @@ Racket language. The module structure is also simple and only has a single
 chain of dependencies.
 
 @parag{Echo}
-The echo server implements a simple network server/client pair and is a task
+The echo server implements a simple network server/client pair and is a microbenchmark
 originally used in the Computer Language Benchmarks Game@note{@url["http://benchmarksgame.alioth.debian.org/"]}.
 It consists of four modules in a diamond shape in which the client and
 server modules both depend on a shared constants module. This program also
