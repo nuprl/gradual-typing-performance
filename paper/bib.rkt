@@ -255,6 +255,20 @@
                                 #:number 3
                                 #:pages '("12:1" "12:44"))))
 
+(define TypeDynamic
+  (make-bib
+    #:title "Dynamic typing in a statically typed language"
+    #:author (authors
+	       "Martin Abadi"
+	       "Luca Cardelli"
+	       "Benjamin C. Pierce"
+	       "Gordon D. Plotkin")
+    #:date 1991
+    #:location (journal-location toplas
+		 #:volume 13
+		 #:number 2
+		 #:pages '("237" "268"))))
+
 (define |Space Efficient Gradual Typing|
   (make-bib
    #:title "Space Efficient Gradual Typing"
@@ -1009,3 +1023,4 @@
    #:author "David A. Moon"
    #:title "MACLISP Reference Manual"
    #:date 1974))
+
