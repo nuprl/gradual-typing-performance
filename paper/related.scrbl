@@ -25,7 +25,7 @@ exhibits a ``10x slowdown'' compared to Python@~cite[(in-bib vksb-dls-2014 ", pg
 
 Gradualtalk's evaluation is primarily qualitative, but Allende @etal
 have investigated the overhead of several cast-insertion strategies
-on Gradualtalk microbenchmarks@~cite[aft-dls-2013]. In addition,
+on Gradualtalk microbenchmarks and on two macrobenchmarks@~cite[aft-dls-2013]. In addition,
 Allende @|etal|@~cite[afgt-oopsla-2014] investigated the effect of confined gradual typing---an approach
 in which the programmer can instruct the type system to avoid higher-order
 wrapping where possible---in Gradualtalk on microbenchmarks. These efforts
@@ -74,3 +74,9 @@ and JavaScript@note[@url{http://flowtype.org}].  Since the type annotations in
 these systems are unsound for typed-untyped interoperation, they incur no
 runtime overhead from proxy wrapping or dynamic checks meaning there is no
 need for a comprehensive evaluation such as the one suggested in this paper.
+
+Previous publications have, however, investigated the performance impact of
+optional typing with respect to compiler optimizations. For example, Chang
+@|etal|@~cite[cmscgbwf-dls-2011] investigate the impact of optional type
+annotations on JIT compilation.
+@;; FIXME: expand
