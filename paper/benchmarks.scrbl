@@ -115,7 +115,6 @@ of sixteen modules.
 Project name          & \# Modules & Module structure \\
 \midrule
 \tt{sieve}            & 2          & one chain        \\
-\tt{htdp}             & 4          & triangle         \\
 \tt{echo}             & 4          & directed diamond \\
 \tt{morse-code}       & 4          & vee              \\
 \tt{mbta}             & 4          & one chain        \\
