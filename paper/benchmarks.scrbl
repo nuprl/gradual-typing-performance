@@ -9,9 +9,9 @@ programs that are representative of code that users actually write. To this end,
 most of the benchmarks are either based on third-party libraries or scripts sourced
 from the original developer or from the Racket package repository.
 A single benchmark is taken from an existing microbenchmark suite.
-@Figure-ref["fig:bm"] lists and characterizes the benchmarks by the
-number of modules in the program, the shape of the dependency structure
-of the modules, and whether the benchmark successfully runs using Pycket.
+@Figure-ref["fig:bm"] lists and summarizes the benchmarks by the
+number of modules in the program and the shape of the dependency structure
+of the modules.
 
 The @tt{sieve} program finds prime numbers using the Sieve of Erastothones.
 The @tt{echo} server implements a simple network server and is a task
@@ -37,21 +37,21 @@ The @tt{quad} project is an experimental document processing library.
 \newcommand{\nopycket}{$\Circle$}
 \begin{tabular}[t]{lrll}
 \toprule
-Project name          & \# Modules & Module structure & Pycket \\
+Project name          & \# Modules & Module structure \\
 \midrule
-\tt{sieve}            & 2          & one chain        & \yespycket \\
-\tt{htdp}             & 4          & triangle         & \nopycket \\
-\tt{echo}             & 4          & directed diamond & \nopycket \\
-\tt{morse-code}       & 4          & vee              & \nopycket \\
-\tt{mbta}             & 4          & one chain        & \nopycket \\
-\tt{suffixtree}       & 5          & line             & \yespycket \\
-\tt{zo-traversal}     & 5          & almost diamond   & \nopycket \\
-\tt{kcfa}             & 7          & line, or braid   & \maybepycket \\
-\tt{synth}            & 9          & vine-like        & \yespycket \\
-\tt{tetris}           & 9          & diamond          & \nopycket \\
-\tt{snake}            & 12         & diamond          & \yespycket \\
-\tt{gregor}           & 13         & pyramidic        & \nopycket \\
-\tt{quad}             & 16         &                  & \nopycket \\
+\tt{sieve}            & 2          & one chain        \\
+\tt{htdp}             & 4          & triangle         \\
+\tt{echo}             & 4          & directed diamond \\
+\tt{morse-code}       & 4          & vee              \\
+\tt{mbta}             & 4          & one chain        \\
+\tt{suffixtree}       & 5          & line             \\
+\tt{zo-traversal}     & 5          & almost diamond   \\
+\tt{kcfa}             & 7          & line, or braid   \\
+\tt{synth}            & 9          & vine-like        \\
+\tt{tetris}           & 9          & diamond          \\
+\tt{snake}            & 12         & diamond          \\
+\tt{gregor}           & 13         & pyramidic        \\
+\tt{quad}             & 16         &                  \\
 \bottomrule
 \end{tabular}
 }|
