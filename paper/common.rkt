@@ -1,4 +1,4 @@
-#lang racket/base
+#lang at-exp racket/base
 
 (provide (all-from-out "bib.rkt")
          (all-from-out "gradual-bib.rkt")
@@ -15,8 +15,13 @@
          generate-bibliography
          nrightarrow
          parag
+         sf
+
+	 step
          def
-         sf)
+	 deliverable
+	 usable
+	 )
 
 (require "bib.rkt"
          "gradual-bib.rkt" ; copied from the github repo
@@ -119,8 +124,21 @@
   (make-element (make-style "relax" '(exact-chars))
                 items))
 
+(define (mt-line) (parag))
+
 (define (def #:term (term #false) . x)
-  (apply
-   nested
-   (bold "Definition")
-   (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)))
+  (make-paragraph plain
+    (list
+      (mt-line)
+      (bold "Definition")
+      (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
+      (mt-line))))
+
+(define (deliverable N)
+  (make-element plain @list{@math{@N}-deliverable}))
+
+(define (usable N M)
+  (make-element plain @list{@(math N"/"M)-usable}))
+
+(define (step L N M)
+  (make-element plain @list{@(math L)-step @(math N "/" M)-usable}))
