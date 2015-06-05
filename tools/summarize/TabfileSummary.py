@@ -52,6 +52,7 @@ class TabfileSummary(AbstractSummary):
                             ,("fastest(%s)" % best_cfgs[0], lambda x: x == best_cfgs[0])
                             ,("slowest(%s)" % worst_cfgs[0], lambda x: x == worst_cfgs[0])
                             ,("typed", config.is_typed))
+        print("Num. within 2x: %s" % len(self.stats_of_predicate(lambda x: self.stats_by_config[x]["mean"] < 2 * self.stats_by_config["0" * self.get_num_modules()]["mean"])), file=output_port)
         print(latex.subsection("Aggregate Figures"), file=output_port)
         self.render_normalized(output_port
                             ,("untyped", config.is_untyped)
