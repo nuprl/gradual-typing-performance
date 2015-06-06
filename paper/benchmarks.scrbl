@@ -35,8 +35,8 @@ structures.
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Erastothones and is our
 smallest benchmark with only two modules. Due to its simplicity, however, the
-completely typed version of the program has only minimal dependencies on the core
-Racket language. The module structure is also simple and only has a single
+completely typed version of the program has only minimal dependencies on the trusted
+core Racket libraries. The module structure is also simple and only has a single
 chain of dependencies.
 
 @parag{Echo}
@@ -44,7 +44,7 @@ The echo server implements a simple network server/client pair and is a microben
 originally used in the Computer Language Benchmarks Game@note{@url["http://benchmarksgame.alioth.debian.org/"]}.
 It consists of four modules in a diamond shape in which the client and
 server modules both depend on a shared constants module. This program also
-only depends on Racket's core libraries.
+only depends on Racket's trusted core libraries.
 
 @parag{Morse code}
 The @tt{morse-code} script implements a morse code training program. Running the
@@ -103,7 +103,9 @@ get around this limitation by monomorphizing the code.
 
 @parag{Quad}
 The @tt{quad} project is an experimental document processing library consisting
-of sixteen modules.
+of sixteen modules. It depends on two external libraries: one that provides
+syntax extensions and another that handles constraint satisfaction problems.
+In addition, it uses two adaptor modules.
 
 @;; FIXME: remove figure caption rule
 @figure["fig:bm" "The software characteristics of the benchmarks"
