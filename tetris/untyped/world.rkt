@@ -2,7 +2,6 @@
 
 (require "data.rkt"
          "bset.rkt"
-         "block.rkt"
          "tetras.rkt"
          "aux.rkt"
          "elim.rkt"

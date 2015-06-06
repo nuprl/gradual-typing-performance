@@ -46,6 +46,6 @@
 
 (time
  (define w0 (world0))
- (define raw (with-input-from-file "tetris-hist-3.txt" read))
+ (define raw (with-input-from-file "../base/tetris-hist-3.txt" read))
  (when (list? raw)
    (replay w0 (reverse raw))))
