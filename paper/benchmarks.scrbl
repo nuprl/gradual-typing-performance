@@ -22,15 +22,18 @@ modules---explained below---or additional helper or data files that are always
 untyped (or typed) are not included in the count.
 @Figure-ref["fig:bm"] lists and summarizes the benchmarks.
 
-Several of the projects need an ``adaptor module'' which sits
-between a data definition module in the original program and its clients. The
-adaptor is used in lieu of including the data definition module in the performance
-lattice and ensures that both typed and untyped modules in the benchmark configurations
-can use the same data definitions. This is crucial since Racket structure types
+Several of the projects need a typed ``adaptor module'' which sits
+between a data definition module in the original program and its typed clients.
+These adaptors create a uniform typed data definition for all variations in the
+lattice. This is crucial since Racket structure types
 (record type definitions) are @emph{generative} in the sense that two distinct
 definitions of the same structure type will define incompatible structures.
-Without the adaptor, the typed and untyped modules may define incompatible data
-structures.
+
+In our experiment, untyped modules directly import definition files and typed
+modules always import through an adaptor. Thus we incur a small, unnecessary
+overhead when a typed module uses data originally defined in a typed module,
+but overall this pattern made it feasible to test all variations with little
+change to a project's original design.
 
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Erastothones and is our
