@@ -34,10 +34,9 @@ structures.
 
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Erastothones and is our
-smallest benchmark with only two modules. Due to its simplicity, however, the
-completely typed version of the program has only minimal dependencies on the trusted
-core Racket libraries. The module structure is also simple and only has a single
-chain of dependencies.
+smallest benchmark. It consists of two modules---a streams library and a
+script implementing the Sieve using streams---and has minimal dependencies on
+trusted core Racket libraries.
 
 @parag{Echo}
 The echo server implements a simple network server/client pair and is a microbenchmark
