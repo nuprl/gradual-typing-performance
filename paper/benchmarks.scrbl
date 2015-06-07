@@ -107,10 +107,9 @@ string parsing component. The resulting benchmark has minimal dependencies and
 uses two adaptor modules.
 
 @parag{Quad}
-The @tt{quad} project is an experimental document processing library consisting
-of sixteen modules. It depends on two external libraries: one that provides light
-syntax extensions and another that handles constraint satisfaction problems.
-In addition, it uses two adaptor modules.
+The @tt{quad} project is an experimental typesetting library consisting
+of sixteen modules. It depends on an external constraint satisfaction solver
+library (to divide lines of text across multiple columns) and uses two adaptor modules.
 
 @;; FIXME: remove figure caption rule
 @figure["fig:bm" "The software characteristics of the benchmarks"
