@@ -7,7 +7,6 @@
 
 (require
   benchmark-util
-  "core-adapter.rkt"
   "gregor-adapter.rkt"
   "tzinfo-adapter.rkt"
 )
