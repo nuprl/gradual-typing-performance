@@ -1,0 +1,39 @@
+\documentclass{article}
+
+\usepackage{tikz}
+
+%% Import and print the pictures for a project
+%% Arguments are:
+%% - Name of the project
+\newcommand{\pict}[1]{{\bf #1}\hfill{}\input{#1-small}\hfill{}\input{#1-large}\\\vspace{1cm}\\}
+\newcommand{\largepict}[1]{\subsubsection*{#1}\input{#1-small}\\\input{#1-large}\\\vspace{1cm}\\}
+
+%% Format a module name, for the pictures.
+%% Arguments are:
+%% - Index of the module
+%% - Name of the module
+\newcommand{\rkt}[2]{\tt #1.$\,$#2}
+
+%% Dot used to represent modules.
+%% Using the module's index might be a better idea
+\newcommand{\rktdot}{$\bullet$}
+
+\begin{document}
+
+\subsection*{Module Graphs}
+
+\pict{echo}
+\pict{funkytown}
+\largepict{gregor}
+\pict{htdp}
+\pict{kcfa}
+\pict{mbta}
+\pict{morse-code}
+\pict{sieve}
+\largepict{quad}
+\pict{snake}
+\pict{suffixtree}
+\pict{tetris}
+\pict{zordoz}
+
+\end{document}

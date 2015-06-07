@@ -1,0 +1,16 @@
+\begin{tikzpicture}
+
+  \node (00) {\rkt{3}{morse-code-table}};
+  \node (01) [right of=00,xshift=3cm] {\rkt{0}{levenshtein}};
+
+  \node (10) [below of=00] {\rkt{2}{morse-code-strings}};
+  \node (11) [below of=01] {};
+
+  \node (21) [below of=11] {\rkt{1}{main}};
+       
+  %% -- edges
+  \draw[->] (10) -- (00);
+  \draw[->] (21) -- (10);
+  \draw[->] (21) -- (01);
+
+\end{tikzpicture}

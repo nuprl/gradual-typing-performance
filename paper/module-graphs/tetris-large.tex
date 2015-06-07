@@ -1,0 +1,61 @@
+\begin{tikzpicture}
+
+  \node (00)               {\rkt{3}{consts}};
+  \node (01) [right of=00,xshift=0.25cm] {};
+  \node (02) [right of=01,xshift=0.25cm] {\rkt{4}{data}};
+       
+  \node (10) [below of=00] {};
+  \node (11) [below of=01] {};
+  \node (12) [below of=02] {\rkt{1}{block}};
+
+  \node (20) [below of=10] {\rkt{2}{bset}};
+  \node (21) [below of=11] {};
+  \node (22) [below of=12] {};
+
+  \node (30) [below of=20] {\rkt{5}{elim}};
+  \node (31) [below of=21] {};
+  \node (32) [below of=22] {\rkt{7}{tetras}};
+
+  \node (40) [below of=30] {};
+  \node (41) [below of=31] {};
+  \node (42) [below of=32] {\rkt{0}{aux}};
+
+  \node (50) [below of=40] {\rkt{8}{world}};
+  \node (51) [below of=41] {};
+  \node (52) [below of=42] {};
+
+  \node (61) [below of=51] {\rkt{6}{main}};
+
+  %% -- edges
+  %% block
+  \draw[->] (12) -- (02);
+  %% bset
+  \draw[->] (20) -- (00);
+  \draw[->] (20) -- (02);
+  \draw[->] (20) -- (12);
+  %% elim
+  \draw[->] (30) edge[bend left=50] (00);
+  \draw[->] (30) -- (02);
+  \draw[->] (30) -- (20);
+  %% tetras
+  \draw[->] (32) -- (00);
+  \draw[->] (32) edge[bend right=50] (02);
+  \draw[->] (32) -- (12);
+  \draw[->] (32) -- (20);
+  %% aux
+  \draw[->] (42) edge[bend right=50] (02);
+  \draw[->] (42) -- (32);
+  %% world
+  \draw[->] (50) edge[bend left=50] (00);
+  \draw[->] (50) -- (02);
+  \draw[->] (50) edge[bend left=50] (20);
+  \draw[->] (50) -- (30);
+  \draw[->] (50) -- (32);
+  \draw[->] (50) -- (42);
+  %% main
+  \draw[->] (61) -- (02);
+  \draw[->] (61) -- (20);
+  \draw[->] (61) -- (42);
+  \draw[->] (61) -- (50);
+
+\end{tikzpicture}
