@@ -99,14 +99,16 @@ consists of twelve modules. Like @tt{tetris}, it also
 requires one adaptor module and runs a recorded history of game moves.
 
 @parag{Gregor}
-This benchmark contains thirteen modules in a pyramid shape and stress-tests a
+This benchmark contains thirteen modules and stress-tests a
 date and time library. The original library uses the @racketmodname[racket/generic]
 library for ad-hoc polymorphism that is not supported by Typed Racket. We
-get around this limitation by monomorphizing the code.
+get around this limitation by monomorphizing the code and removing the library's
+string parsing component. The resulting benchmark has minimal dependencies and
+uses two adaptor modules.
 
 @parag{Quad}
 The @tt{quad} project is an experimental document processing library consisting
-of sixteen modules. It depends on two external libraries: one that provides
+of sixteen modules. It depends on two external libraries: one that provides light
 syntax extensions and another that handles constraint satisfaction problems.
 In addition, it uses two adaptor modules.
 
