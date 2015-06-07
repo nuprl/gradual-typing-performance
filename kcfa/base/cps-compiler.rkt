@@ -1,5 +1,7 @@
 #lang racket
 
+;; NOTE: this file is not part of the experiment
+
 ;; Compile an expression for k-CFA analysis
 ;; Source terms are lambda terms.
 
