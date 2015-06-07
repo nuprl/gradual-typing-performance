@@ -19,6 +19,8 @@ In the base/ directory:
  red.dat 		data file 
  orange.dat 		data file 
 
+ graph	Stephen Chang's graph library. Frozen here, to increase portability.
+
 
 =============================================================================
 
