@@ -54,7 +54,8 @@ modules in a vee shape (two chains of modules from a main module) and has
 minimal dependencies.
 
 @parag{MBTA}
-The @tt{mbta} program analyzes a graph representing a public transit route map.
+The @tt{mbta} program implements a server that asynchronously responds to
+reachability queries about a public transit system.
 It contains four modules in a single chain but also depends on a third-party
 graph library. Since the graph library is untyped, this introduces a typed-untyped
 boundary even in the ``completely typed'' case.
