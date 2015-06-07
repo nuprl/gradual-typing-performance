@@ -82,9 +82,9 @@ four adaptor modules, but is otherwise self-contained.
 @parag{Synth}
 The @tt{synth} is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015]. The program consists of nine modules. The original
-example uses an external math library that we inline into this program
-(by extracting modules from the library into this one). In addition, the
-program also requires an adaptor module.
+example uses an array library that we inline into this program
+(by extracting modules from the library into the benchmark). As part of the
+inlining, we created an adaptor module for the core array data structure.
 
 @parag{Tetris}
 This benchmark program is based on a contract verification benchmark
