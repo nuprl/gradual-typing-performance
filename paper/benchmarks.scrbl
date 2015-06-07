@@ -46,10 +46,12 @@ server modules both depend on a shared constants module. This program also
 only depends on Racket's trusted core libraries.
 
 @parag{Morse code}
-The @tt{morse-code} script implements a morse code training program. Running the
-script generates random sequences of words, translates them to morse code, and
-computes the Levenshtein distance. The script contains four modules in a vee
-shape (two chains of modules from a main module) and has minimal dependencies.
+The @tt{morse-code} script was adapted from a morse code training program.
+Running the script repeatedly generates a random string, translates the string
+to morse code, then compares the Levenshtein distance of the original string
+with a second random string (simulating user input). The script contains four
+modules in a vee shape (two chains of modules from a main module) and has
+minimal dependencies.
 
 @parag{MBTA}
 The @tt{mbta} program analyzes a graph representing a public transit route map.
