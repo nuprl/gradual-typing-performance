@@ -89,13 +89,14 @@ inlining, we created an adaptor module for the core array data structure.
 @parag{Tetris}
 This benchmark program is based on a contract verification benchmark
 by Nguyên @|etal|@~cite[nthvh-icfp-2014]. It implements the eponymous game
-and consists of nine modules in a diamond shape. The addition of type annotations
-requires an adaptor module.
+and consists of nine modules. An adaptor module wraps the record structure
+used to represent the game board. Our benchmark runs a pre-recorded history
+of moves altering the game state; it does not include a GUI.
 
 @parag{Snake}
 This program is taken from the same benchmark suite as @tt{tetris} and
-consists of twelve modules in a diamond shape. Like @tt{tetris}, it also
-requires an adaptor module.
+consists of twelve modules. Like @tt{tetris}, it also
+requires one adaptor module and runs a recorded history of game moves.
 
 @parag{Gregor}
 This benchmark contains thirteen modules in a pyramid shape and stress-tests a
