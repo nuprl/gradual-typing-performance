@@ -76,9 +76,8 @@ completely typed program incurs some dynamic overhead from using these structure
 
 @parag{KCFA}
 The @tt{kfca} program is a small implementation of control flow analysis consisting
-of seven modules arranged in a line or braid shape. This program requires
-the use of four adaptor modules and contains one file which always
-remains untyped.
+of seven modules arranged in one chain. This program requires
+four adaptor modules, but is otherwise self-contained.
 
 @parag{Synth}
 The @tt{synth} is a sound synthesis example from St-Amour @|etal|'s work on
