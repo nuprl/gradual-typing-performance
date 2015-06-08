@@ -72,8 +72,8 @@ class TabfileSummary(AbstractSummary):
                           ,best_cfgs
                           ,baseline
                           ,title="Top %s fastest gradually-typed configurations" % len(best_cfgs))
-        self.render_all_paths(output_port, [1,2,3,4])
-        self.render_cutoff_paths(output_port)
+        # self.render_all_paths(output_port, [1,2,3,4])
+        # self.render_cutoff_paths(output_port)
         print(latex.end(), file=output_port)
 
     ### rendering

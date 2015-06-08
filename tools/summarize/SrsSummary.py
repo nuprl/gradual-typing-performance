@@ -71,7 +71,7 @@ class SrsSummary(AbstractSummary):
                               for n in range(self.get_num_modules())])
         self.render_sample_results(output_port)
         self.strategy = constants.CACHE
-        self.render_all_paths(output_port, [1,2,3,4])
+        # self.render_all_paths(output_port, [1,2,3,4])
         print(latex.end(), file=output_port)
 
     def render_sample_results(self, output_port):
