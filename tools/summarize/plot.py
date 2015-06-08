@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import networkx as nx
 import numpy as np
+import util
 
 def remove_empty(d1, d2):
     """
@@ -27,7 +28,7 @@ def remove_empty(d1, d2):
             posns.append(i)
     return xs, ys, posns
 
-def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None):
+def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None, xmax=None, ymax=None):
     """
         Create and save a bar plot.
         Args:
@@ -40,21 +41,45 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
         - alpha   = opacity of bars
         - color   = color of bars
         - xlabels = x-axis labels for each bar
+        - xmax    = max x-value
+        - ymax    = max y-value
         - width   = width of bars
     """
     fig,ax1 = plt.subplots()
+    # Size
+    if xmax:
+        xmin,_ = ax1.get_xlim()
+        ax1.set_xlim(xmin, xmax)
+    if ymax:
+        ymin,_ = ax1.get_ylim()
+        ax1.set_ylim(ymin, ymax)
+    # Add data
     bar = plt.bar(xvalues, yvalues, width=width, color=color, alpha=alpha)
+    # Add extra lines
+    # TODO
+    # Labels
     if xlabels:
         plt.xticks([x + width/2 for x in xvalues], xlabels)
     ax1.set_title(title)
     ax1.set_xlabel(xlabel)
     ax1.set_ylabel(ylabel)
+    # Save
     output = output or "%s/%s-bar.png" % (constants.OUTPUT_DIR, title)
     plt.savefig(output)
     plt.clf()
     plt.close()
     print("Saved bar chart to '%s'" % output)
     return output
+
+def histogram(values, title, xlabel, ylabel, num_bins, xmax, ymax, output, alpha=0.8, color='royalblue'):
+    minval = min(values)
+    maxval = max(values)
+    bkt_width = (maxval - minval) / num_bins
+    xvals = [(bkt_width * i) + minval for i in range(num_bins)]
+    yvals = [sum((1 for val in values if lo <= val <= (lo + bkt_width) ))
+             for lo in xvals]
+    # print("Plotting with vals %s" % yvals)
+    return bar(xvals, yvals, title, xlabel, ylabel, xmax=xmax, ymax=ymax, alpha=alpha, color=color, width=bkt_width, output=output)
 
 def module_graph(graph, project_name, cfg, title=None, alpha=1, edgecolor="k", untypedcolor='royalblue', typedcolor='darkorange', output=None):
     """
@@ -189,6 +214,10 @@ def draw_violin(dataset, posns, alpha=1, color='royalblue', meanmarker="*"):
     # Draw the mean marker
     for i in range(len(dataset)):
         plt.plot(posns[i], [np.average(dataset[i])], color='w', marker=meanmarker, markeredgecolor='k')
+    # Draw confidence interval (should be optional)
+    for i in range(len(dataset)):
+        stat = util.stats_of_row(dataset[i])
+        plt.errorbar(posns[i], stat["mean"], yerr=stat["ci"][1] - stat["mean"], ecolor="magenta", capthick=4)
     return
 
 def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarker='*', positions=None, xlabels=None,output=None):
@@ -224,6 +253,8 @@ def violin(dataset, title, xlabel, ylabel, alpha=1, color='royalblue', meanmarke
     # Reset y limit
     ymin,ymax = ax1.get_ylim()
     ax1.set_ylim(ymin-5, ymax)
+    plt.figtext(0.70, 0.043, "x", color="magenta", weight='roman', backgroundcolor="magenta", size='medium')
+    plt.figtext(0.72, 0.043, " 95% CI", color='black', weight='roman', size='x-small')
     plt.figtext(0.80, 0.043, "+", color='red', weight='roman', size='medium')
     plt.figtext(0.82, 0.043, " Sampled Point", color='black', weight='roman', size='x-small')
     plt.figtext(0.80, 0.01, meanmarker, color='white', backgroundcolor=color, weight='roman', size='medium')

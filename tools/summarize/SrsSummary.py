@@ -70,14 +70,35 @@ class SrsSummary(AbstractSummary):
                             ,*[(str(n), self.in_random_sample(num_typed=n))
                               for n in range(self.get_num_modules())])
         self.render_sample_results(output_port)
+        self.strategy = constants.CACHE
+        # self.render_all_paths(output_port, [1,2,3,4])
         print(latex.end(), file=output_port)
 
     def render_sample_results(self, output_port):
         print(latex.subsection("Notes"), file=output_port)
         num_sampled = sum((1 for v in self.stats_by_config.values() if v))
         print("Sampled %s of %s configurations." % (num_sampled, self.get_num_configurations()), file=output_port)
-        print(latex.table(["Num. Typed", "Num. Configs", "Num. Samples", "Sample Mean", "Sample Variance", "Standard Error", "Jarque-Bera"]
+        print(latex.table(["\# Typed", "\# Configs", "\# Samples", "Sample Mean", "Sample Variance", "95\% CI", "Standard Error", "Jarque-Bera"]
                          ,[self.sample_stats((lambda cfg, nt=n: config.num_typed_modules(cfg) == n), n) for n in range(self.get_num_modules())]), file=output_port)
+
+    def render_all_paths(self, output_port, transitivity=[1]):
+        print(latex.subsection("Sampling paths"), file=output_port)
+        untyped_cfg = "0" * self.get_num_modules()
+        for trans in transitivity:
+            weights = [self.max_runtime_over_typed(config.random_walk(untyped_cfg, trans))
+                       for _ in range(self.sample_size)]
+            print(latex.figure(self.graph_histogram(weights
+                               ,"%s-sample-paths-trans-%s.png" % (self.project_name, trans)
+                               ,"Sampled Paths in a %s-trans lattice" % trans
+                               ,"Max Overhead (runtime / typed runtime)")), file=output_port)
+
+    def max_runtime_over_typed(self, path):
+        """
+            TODO share this with TabfileSummary, or something
+        """
+        ty_cfg = "1" * self.get_num_modules()
+        return max((self.stats_of_config(cfg)["mean"] / self.stats_of_config(ty_cfg)["mean"]
+                    for cfg in path))
 
     def sample_stats(self, pred, tag):
         """
@@ -86,12 +107,14 @@ class SrsSummary(AbstractSummary):
         all_samples = [(k,v['raw']) for (k,v) in self.stats_by_config.items() if pred(k)]
         configs = [k for (k,_) in all_samples]
         vals    = [v for (k,vs) in all_samples for v in vs]
+        stat = util.stats_of_row(vals)
         return [tag
                ,len(set(configs))
                ,len(vals)
-               ,round(statistics.mean(vals), 2)
-               ,round(statistics.variance(vals), 2)
-               ,round(statistics.stdev(vals) / math.sqrt(len(vals)), 2)
+               ,round(stat["mean"], 2)
+               ,round(stat["variance"], 2)
+               ,"%s~\\textendash~%s" % (round(stat["ci"][0], 2), round(stat["ci"][1], 2))
+               ,round(math.sqrt(stat["variance"]) / math.sqrt(len(vals)), 2)
                ,round(jarque_bera(vals)[0], 2)]
 
     ### Helpers
@@ -152,6 +175,7 @@ class SrsSummary(AbstractSummary):
     def random_sample(self, num_typed=None):
         matches = [cfg for cfg in self.all_configurations()
                    if config.num_typed_modules(cfg) == num_typed]
+        # Randomly select `sample_size` items from the population of `matches`.
         return [matches[random.randint(0, len(matches)-1)]
                 for _ in range(self.sample_size)]
 

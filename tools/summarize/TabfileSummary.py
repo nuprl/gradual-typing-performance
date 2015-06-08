@@ -9,6 +9,7 @@ from AbstractSummary import AbstractSummary
 from ModuleGraph import ModuleGraph
 import config
 import constants
+import networkx
 import os
 import latex
 import shell
@@ -45,13 +46,14 @@ class TabfileSummary(AbstractSummary):
         self.render_summary(output_port)
         best_cfgs = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] > self.stats_by_config[y]["mean"])
         worst_cfgs = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] < self.stats_by_config[y]["mean"])
-        print(latex.subsection("Aggregate Figures"), file=output_port)
         self.render_overall(output_port
                             ,("untyped", config.is_untyped)
                             ,("gradual", config.is_gradual)
                             ,("fastest(%s)" % best_cfgs[0], lambda x: x == best_cfgs[0])
                             ,("slowest(%s)" % worst_cfgs[0], lambda x: x == worst_cfgs[0])
                             ,("typed", config.is_typed))
+        print("Num. within 2x: %s" % len(self.stats_of_predicate(lambda x: self.stats_by_config[x]["mean"] < 2 * self.stats_by_config["0" * self.get_num_modules()]["mean"])), file=output_port)
+        print(latex.subsection("Aggregate Figures"), file=output_port)
         self.render_normalized(output_port
                             ,("untyped", config.is_untyped)
                             ,("gradual", config.is_gradual)
@@ -70,8 +72,8 @@ class TabfileSummary(AbstractSummary):
                           ,best_cfgs
                           ,baseline
                           ,title="Top %s fastest gradually-typed configurations" % len(best_cfgs))
-        # self.render_best_configs(???)
-        # self.render_edge_violins(???)
+        # self.render_all_paths(output_port, [1,2,3,4])
+        # self.render_cutoff_paths(output_port)
         print(latex.end(), file=output_port)
 
     ### rendering
@@ -89,6 +91,80 @@ class TabfileSummary(AbstractSummary):
                              ,title="Config %s: %s %s than baseline" % (cfg, diff, txt)
                              ,output="%s-graph-%s.png" % (self.project_name, cfg))
             print(latex.figure(g), file=output_port)
+
+    def render_all_paths(self, output_port, transitivity=[1]):
+        """
+            Options:
+            - transitivity : How many transitive edges to include.
+                             By default, edges are only between consecutive levels.
+                             If argument is a list, analyzes one graph of each transitivity
+        """
+        print(latex.subsection("Lattices+Freedom"), file=output_port)
+        typed_mean   = self.stats_of_config("1" * self.get_num_modules())["mean"]
+        untyped_mean = self.stats_of_config("0" * self.get_num_modules())["mean"]
+        rows = []
+        for trans in transitivity:
+            print("Building lattice for %s with transitivity %s" % (self.project_name, trans))
+            lattice = self.make_lattice(transitivity=trans)
+            untyped_config = "0" * self.get_num_modules()
+            typed_config   = "1" * self.get_num_modules()
+            paths   = networkx.all_simple_paths(lattice, source=untyped_config, target=typed_config)
+            weights = [self.max_weight(lattice, path)
+                       for path in paths]
+            num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.RELEASE_OVERHEAD)))
+            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.DEV_OVERHEAD)))
+            num_x_u     = sum((1 for x in weights if x < (untyped_mean * 15)))
+            num_release_t = sum((1 for x in weights if x < (typed_mean * constants.RELEASE_OVERHEAD)))
+            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.DEV_OVERHEAD)))
+            num_x_t     = sum((1 for x in weights if x < (typed_mean * 15)))
+            num_paths     = len(weights)
+            rows.append([str(trans)
+                         ,str(num_paths)]
+                        + ["%s (%s\\%%)" % (x, round((x / num_paths) * 100, 2))
+                           for x in [num_release_u
+                                     , num_dev_u, num_x_u
+                                     ,num_release_t
+                                     ,num_dev_t,num_x_t]])
+        print(latex.table(["Fuel", "Total", "$<$ 2x untyped", "$<$ 4x untyped", "$<$ 15x untyped", "$<$ 2x typed", "$<$ 4x typed", "$<$ 15x typed"]
+                          , rows), file=output_port)
+
+    def render_cutoff_paths(self, output_port, xmax=None, ymax=None):
+        print(latex.subsection("Paths with cutoff"), file=output_port)
+        # Build a lattice for each cluster size {1 .. num_modules-1}
+        print("Building lattice for %s" % self.project_name)
+        lattice = self.make_lattice(transitivity=self.get_num_modules())
+        # xmax = max((e[2]["weight"] for e in lattice.edges_iter(data=True)))
+        untyped_config = "0" * self.get_num_modules()
+        untyped_mean   = self.stats_of_config(untyped_config)["mean"]
+        typed_config   = "1" * self.get_num_modules()
+        typed_mean     = self.stats_of_config(typed_config)["mean"]
+        rows = []
+        for group_size in range(1, self.get_num_modules()):
+            # For each group size (freedom to type exactly N modules at once)
+            # make a histogram of max overhead edges along each path
+            # (Shows the number of paths that have 'really bad' overhead)
+            print("Computing paths for group size '%s'" % group_size)
+            cutoff  = 1 + (self.get_num_modules() - group_size)
+            paths   = networkx.all_simple_paths(lattice, source=untyped_config, target=typed_config, cutoff=cutoff)
+            weights = [self.max_weight(lattice, path)
+                       for path in paths
+                       if len(path) == 1+cutoff]
+            num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.RELEASE_OVERHEAD)))
+            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.DEV_OVERHEAD)))
+            num_x_u     = sum((1 for x in weights if x < (untyped_mean * 15)))
+            num_release_t = sum((1 for x in weights if x < (typed_mean * constants.RELEASE_OVERHEAD)))
+            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.DEV_OVERHEAD)))
+            num_x_t     = sum((1 for x in weights if x < (typed_mean * 15)))
+            num_paths     = len(weights)
+            rows.append([str(cutoff)
+                         ,str(num_paths)]
+                        + ["%s (%s\\%%)" % (x, round((x / num_paths) * 100, 2))
+                           for x in [num_release_u
+                                     ,num_dev_u,num_x_u
+                                     ,num_release_t
+                                     ,num_dev_t,num_x_t]])
+        print(latex.table(["Path length", "Total", "$<$ 2x untyped", "$<$ 4x untyped", "$<$ 15x untyped", "$<$ 2x typed", "$<$ 4x typed", "$<$ 15x typed"]
+                          ,rows), file=output_port)
 
     ### Helpers ################################################################
 
@@ -113,4 +189,34 @@ class TabfileSummary(AbstractSummary):
         shell.execute("racket %s %s" % (sexp_to_tab, rktdfile))
         # Strip the suffix from the input file, replace with .tab
         return "%s.tab" % rktdfile.rsplit(".", 1)[0]
+
+    def make_lattice(self, transitivity=1):
+        """
+            Create a try-everything lattice showing all the ways of moving
+             from untyped to typed.
+            Args:
+            - configs : Iterable of all configurations (nodes) to include.
+                        Must include an untyped and a typed configuration.
+        """
+        g = networkx.DiGraph()
+        for cfg in self.all_configurations():
+            g.add_node(cfg)
+            w = self.stats_of_config(cfg)["mean"]
+            for prev in config.previous_iter(cfg, transitivity):
+                # SWAG networkx ignore duplicates SWAGSWAGS
+                g.add_edge(prev, cfg, weight=w)
+        return g
+
+    def max_weight(self, lattice, path):
+        """
+            Return the max weight of edges along a networkx path.
+            2015-05-07: really, this could just be MAX of cached sample stats
+        """
+        acc = 0
+        prev = None
+        for node in path:
+            if prev is not None:
+                acc = max(acc, lattice[prev][node]["weight"])
+            prev = node
+        return acc
 

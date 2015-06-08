@@ -119,6 +119,28 @@ class AbstractSummary(object):
         # TODO figure out what graph to make & how
         raise NotImplementedError
 
+    def graph_histogram(self, values, output, title, xlabel, num_bins=20, xmax=None, ymax=None):
+        """
+            Plot a histogram.
+
+            Args:
+            - values : The data to plot. An array of integers
+            - title : Figure title
+            - xlabel : Figure x label
+            Options:
+            - output : Location to save output
+            - num_bins : The number of histogram bins to divide the data among
+            - xwidth : Manually set x-axis width. (Using to standardize widths.)
+        """
+        return plot.histogram(values
+                              ,title
+                              ,xlabel
+                              ,"Count"
+                              ,num_bins
+                              ,xmax or  max(values)
+                              ,ymax or None
+                              ,"%s/%s" % (self.output_dir, output))
+
     def graph_normalized_runtimes(self, preds, output, base_index=0, title=None, xlabels=[]):
         """
             Plot the normalized running times of the configurations picked
@@ -240,6 +262,7 @@ class AbstractSummary(object):
         elif self.strategy == constants.APPEND:
             existing = self.stats_by_config[config]
             self.stats_by_config[config] = util.stats_join(existing, self.results_of_config(config))
+        # else strat == CACHE, so just look up
         return self.stats_by_config[config]
 
     def stats_of_predicate(self, pred):

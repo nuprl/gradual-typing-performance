@@ -46,9 +46,12 @@ def section(title):
 def subsection(title):
     return "\n\\subsection{%s}" % title
 
+def subsubsection(title):
+    return "\n\\subsubsection{%s}" % title
+
 def table(title, rows):
-    return "\n".join(["\n\\hspace{-4cm}\\begin{tabular}{%s}\\\\\\hline" % " | ".join(("c" for _ in range(len(title))))
-                     ," & ".join((str(x) for x in title)) + "\\\\"
+    return "\n".join(["\n\\hspace{-4cm}\\begin{tabular}{%s}\\\\\\hline" % " ".join(("r" for _ in range(len(title))))
+                     ," & ".join((str(x) for x in title)) + "\\\\\\hline"
                      ,"\\\\\n".join((" & ".join((str(x) for x in row)) for row in rows))
-                     ,"\\end{tabular}"
+                     ,"\\\\\\hline\\end{tabular}"
                      ])
