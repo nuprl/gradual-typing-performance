@@ -37,10 +37,9 @@ change to a project's original design.
 
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Erastothones and is our
-smallest benchmark with only two modules. Due to its simplicity, however, the
-completely typed version of the program has only minimal dependencies on the trusted
-core Racket libraries. The module structure is also simple and only has a single
-chain of dependencies.
+smallest benchmark. It consists of two modules---a streams library and a
+script implementing the Sieve using streams---and has minimal dependencies on
+trusted core Racket libraries.
 
 @parag{Echo}
 The echo server implements a simple network server/client pair and is a microbenchmark
@@ -50,13 +49,16 @@ server modules both depend on a shared constants module. This program also
 only depends on Racket's trusted core libraries.
 
 @parag{Morse code}
-The @tt{morse-code} script implements a morse code training program. Running the
-script generates random sequences of words, translates them to morse code, and
-computes the Levenshtein distance. The script contains four modules in a vee
-shape (two chains of modules from a main module) and has minimal dependencies.
+The @tt{morse-code} script was adapted from a morse code training program.
+Running the script repeatedly generates a random string, translates the string
+to morse code, then compares the Levenshtein distance of the original string
+with a second random string (simulating user input). The script contains four
+modules in a vee shape (two chains of modules from a main module) and has
+minimal dependencies.
 
 @parag{MBTA}
-The @tt{mbta} program analyzes a graph representing a public transit route map.
+The @tt{mbta} program implements a server that asynchronously responds to
+reachability queries about a public transit system.
 It contains four modules in a single chain but also depends on a third-party
 graph library. Since the graph library is untyped, this introduces a typed-untyped
 boundary even in the ``completely typed'' case.
@@ -69,46 +71,48 @@ data definition module.
 
 @parag{ZO Traversal}
 The @tt{zo-traversal} script explores Racket bytecode structures and consists
-of five modules. These modules are arranged in an almost diamond shape. The
+of five modules. The module structure is essentially one chain, but for two
+independent modules providing the core functionality. The
 script operates on the Racket compiler's untyped zo data structures. Since
 these data structures are not natively supported in Typed Racket, even the
 completely typed program incurs some dynamic overhead from using these structures.
 
-@parag{KCFA}
+@parag{K-CFA}
 The @tt{kfca} program is a small implementation of control flow analysis consisting
-of seven modules arranged in a line or braid shape. This program requires
-the use of four adaptor modules and contains one file which always
-remains untyped.
+of seven modules arranged in one chain. This program requires
+four adaptor modules, but is otherwise self-contained.
 
 @parag{Synth}
 The @tt{synth} is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015]. The program consists of nine modules. The original
-example uses an external math library that we inline into this program
-(by extracting modules from the library into this one). In addition, the
-program also requires an adaptor module.
+example uses an array library that we inline into this program
+(by extracting modules from the library into the benchmark). As part of the
+inlining, we created an adaptor module for the core array data structure.
 
 @parag{Tetris}
 This benchmark program is based on a contract verification benchmark
 by Nguyên @|etal|@~cite[nthvh-icfp-2014]. It implements the eponymous game
-and consists of nine modules in a diamond shape. The addition of type annotations
-requires an adaptor module.
+and consists of nine modules. An adaptor module wraps the record structure
+used to represent the game board. Our benchmark runs a pre-recorded history
+of moves altering the game state; it does not include a GUI.
 
 @parag{Snake}
 This program is taken from the same benchmark suite as @tt{tetris} and
-consists of twelve modules in a diamond shape. Like @tt{tetris}, it also
-requires an adaptor module.
+consists of twelve modules. Like @tt{tetris}, it also
+requires one adaptor module and runs a recorded history of game moves.
 
 @parag{Gregor}
-This benchmark contains thirteen modules in a pyramid shape and stress-tests a
+This benchmark contains thirteen modules and stress-tests a
 date and time library. The original library uses the @racketmodname[racket/generic]
 library for ad-hoc polymorphism that is not supported by Typed Racket. We
-get around this limitation by monomorphizing the code.
+get around this limitation by monomorphizing the code and removing the library's
+string parsing component. The resulting benchmark has minimal dependencies and
+uses two adaptor modules.
 
 @parag{Quad}
-The @tt{quad} project is an experimental document processing library consisting
-of sixteen modules. It depends on two external libraries: one that provides
-syntax extensions and another that handles constraint satisfaction problems.
-In addition, it uses two adaptor modules.
+The @tt{quad} project is an experimental typesetting library consisting
+of sixteen modules. It depends on an external constraint satisfaction solver
+library (to divide lines of text across multiple columns) and uses two adaptor modules.
 
 @;; FIXME: remove figure caption rule
 @figure["fig:bm" "The software characteristics of the benchmarks"
