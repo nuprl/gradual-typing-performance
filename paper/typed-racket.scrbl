@@ -2,6 +2,12 @@
 
 @require["common.rkt"]
 
+@require[pict
+         racket/file
+         racket/vector
+         math/statistics
+         "../tools/data-lattice.rkt"]
+
 @title[#:tag "sec:tr"]{Evaluating Typed Racket, Classical}
 
 Typed Racket as evaluated at NU 
@@ -41,3 +47,53 @@ this is rewritten to
 with a type annotation for each
 imported value. Finally, in the benchmark instrumented version we replace
 @racket[require/typed] with @racket[require/typed/check].
+
+@subsection{Performance of Suffixtree}
+
+Following the definitions in @secref{sec:fwk}, we can first determine the
+typed/untyped ratio from inspecting the performance lattice for @tt{suffixtree}.
+The fully typed configuration for @tt{suffixtree} has the good property that
+it is @emph{faster} than the fully untyped configuration by about 30%. This
+puts the ratio at about 0.7.
+
+The typed configuration is faster due to Typed Racket's optimizer, which is
+able to perform type-based specialization of arithmetic operations,
+optimization of record field access, and elimination of some bounds
+checking for vectors in @tt{suffixtree}. We determined that the optimizer
+is responsible for the speedup by comparing the runtime of the fully typed
+configuration with and without type-based optimization enabled.
+
+Despite the speedup on the fully typed configuration, in-between configurations
+have slowdowns that vary drastically from 1.02x to 100x. Inspecting
+the lattice, several conclusions can be drawn about adding types to this
+program. For example, adding type annotations to the @tt{main.rkt} module neither
+subtracts or adds much overhead since it is a driver module that is not tightly
+coupled to other modules. Comparatively, adding types to any of
+@tt{data.rkt}, @tt{label.rkt}, or @tt{structs.rkt} from the fully
+untyped configuration adds at least a 35x slowdown. This suggests that these
+modules are highly coupled.
+
+Inspecting @tt{data.rkt} and @tt{label.rkt} reveals, for example, that the
+latter depends on the former through an adaptor module. The adaptor introduces
+contract overheads when either of the two modules is untyped. When both
+modules are typed but all other remain untyped, the slowdown is reduced to
+about 12x.
+
+The @tt{structs.rkt} module depends on @tt{data.rkt} in the same fashion.
+However, since @tt{structs.rkt} also depends on @tt{label.rkt}, the configuration
+in which both @tt{structs.rkt} and @tt{data.rkt} are typed still has a large
+slowdown. When all three modules are typed, the slowdown is reduced to about
+5x.
+
+Another fact that the lattice shows is that the configurations whose
+slowdown is closest to the worst case are those in which the @tt{data.rkt} module
+is left untyped but several of the other modules are typed. This makes sense given
+the coupling we observed above; the contract boundaries induced between the
+untyped @tt{data.rkt} and other typed modules slow down the program.
+
+@;{
+@figure*["x" "x"
+  @(let* ([vec (file->value "suffixtree-2015-04-02.rktd")]
+          [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
+     (scale (make-performance-lattice vec*) 0.5))]
+}
