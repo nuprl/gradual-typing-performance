@@ -98,3 +98,17 @@
       (pin-arrow-line 2 pict from-pict ct-find target cb-find
                       #:line-width 0.5
                       #:under? #t))))
+
+;; Driver submodule for rapid visualization
+(module+ main
+  (require racket/file
+           racket/gui/base
+           racket/match
+           racket/vector
+           math/statistics)
+  (match (current-command-line-arguments)
+    [(vector path)
+     (define data (file->value path))
+     (define averaged-results
+       (vector-map (λ (times) (cons (mean times) (stddev times))) data))
+     (show-pict (make-performance-lattice averaged-results))]))
