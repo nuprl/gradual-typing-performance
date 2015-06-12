@@ -33,6 +33,7 @@
 (define lattice-path (make-parameter #f))
 (define entry-point-param (make-parameter #f))
 (define exclusive-config (make-parameter #f))
+(define min-max-config (make-parameter #f))
 
 ;; Get paths for all variation directories
 ;; Path Path -> Listof Path
@@ -45,11 +46,22 @@
 ;; Optional argument gives the exact variation to run.
 ;; Default is to run all variations (either run all, or exactly one)
 ;; (Listof Path) Path Nat Nat [(U (Listof String) #f)] -> Results
-(define (run-benchmarks basepath entry-point iters jobs #:config [cfg #f])
+(define (run-benchmarks basepath entry-point iters jobs
+                        #:config [cfg #f]
+                        #:min/max [min/max #f])
   (define variations
-    (if cfg
-      (list (build-path basepath "benchmark" (string-append "variation" cfg) entry-point))
-      (mk-variations basepath entry-point)))
+    (cond [cfg
+           (list (build-path basepath "benchmark" (string-append "variation" cfg) entry-point))]
+          [min/max
+           (match-define (list min max) min/max)
+           (define all-vars (mk-variations basepath entry-point))
+           (define (in-range? var)
+             (match-define (list _ bits) (regexp-match "variation([10]*)/" var))
+             (define n (string->number bits 2))
+             (and (>= n (string->number min))
+                  (<= n (string->number max))))
+           (filter in-range? all-vars)]
+          [else (mk-variations basepath entry-point)]))
   (define results (make-vector (length variations)))
   ;; allocate a slice of the variations per job
   (define slice-size (ceiling (/ (length variations) jobs)))
@@ -126,10 +138,14 @@
 (module+ main
   (define basepath
     (command-line #:program "benchmark-runner"
-                  #:once-each
+                  #:once-any
                   [("-x" "--exclusive")    x-p
                                            "Run the given configuration and no others"
                                            (exclusive-config x-p)]
+                  [("-m" "--min-max") min max
+                                      "Run the configurations between min and max inclusive"
+                                      (min-max-config (list min max))]
+                  #:once-each
                   [("-c" "--only-compile") "Only compile and don't run"
                                            (only-compile? #t)]
                   [("-o" "--output") o-p
@@ -180,7 +196,9 @@
   ;; using CPU1 and above.
   (system (format "taskset -pc 0 ~a" (getpid)))
 
-  (define results (run-benchmarks basepath entry-point iters jobs #:config (exclusive-config)))
+  (define results (run-benchmarks basepath entry-point iters jobs
+                                  #:config (exclusive-config)
+                                  #:min/max (min-max-config)))
 
   (when (output-path)
     (with-output-to-file (output-path)
