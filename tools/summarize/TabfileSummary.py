@@ -17,7 +17,7 @@ import util
 
 class TabfileSummary(AbstractSummary):
 
-    def __init__(self, fname):
+    def __init__(self, fname, out_dir=constants.OUTPUT_DIR):
         # Init data
         if fname.endswith(".rktd"):
             # Parse the .rktd file into a .tab file
@@ -33,6 +33,7 @@ class TabfileSummary(AbstractSummary):
         # Try to set module graph
         self.graph = ModuleGraph(fname)
         self.module_names = self.graph.get_module_names()
+        self.output_dir = out_dir
 
     def results_of_config(self, config):
         return util.fold_file(self.source

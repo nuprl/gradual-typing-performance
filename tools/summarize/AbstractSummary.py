@@ -239,6 +239,12 @@ class AbstractSummary(object):
 
     ## Compute experimental results
 
+    def configs_of_predicate(self, pred):
+        """
+            Return a list of configurations matching the predicate
+        """
+        return [cfg for cfg in self.all_configurations() if pred(cfg)]
+
     def set_stats(self, cfg, stats):
         self.stats_by_config[cfg] = stats
 
@@ -276,7 +282,7 @@ class AbstractSummary(object):
         return util.stats_of_row([x for st in unflattened for x in st["raw"]])
 
     def stats_of_typed(self):
-        return self.get_stats("1" * self.get_num_modules())
+        return self.stats_of_config("1" * self.get_num_modules())
 
     def stats_of_untyped(self):
-        return self.get_stats("0" * self.get_num_modules())
+        return self.stats_of_config("0" * self.get_num_modules())
