@@ -26,6 +26,9 @@ def difference(n1, n2):
         descr = "faster"
     return val, descr
 
+def newpage():
+    return "\n\\newpage\n"
+
 def list(items, numbers=False):
     tag = "enumerate" if numbers else "itemize"
     return "\\begin{%s}\n\\item %s\\end{%s}" % (tag, "\n\item ".join(items), tag)
