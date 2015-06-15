@@ -6,7 +6,7 @@
 ;; come lexically before their use
 (require
   benchmark-util
-  "core-adapter.rkt"
+  "../base/types.rkt"
   "gregor-adapter.rkt"
   racket/match
   (only-in racket/math exact-round)

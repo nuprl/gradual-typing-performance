@@ -1,0 +1,57 @@
+\documentclass{article}
+
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{tikz}
+
+\setcounter{totalnumber}{15}
+
+%% Import and print the pictures for a project
+%% Arguments are:
+%% - Name of the project
+\newcommand{\pict}[1]{\begin{tabular}{c}\resizebox{!}{3cm}{\input{#1}}\\\textbf{#1}\end{tabular}}
+%% \newcommand{\largepict}[1]{\subsubsection*{#1}\input{#1-small}\\\input{#1-large}\\\vspace{1cm}\\}
+
+%% Format a module name, for the pictures.
+%% Arguments are:
+%% - Index of the module
+%% - Name of the module
+\newcommand{\rkt}[2]{\texttt{#1}}
+
+%% Dot used to represent modules.
+%% Using the module's index might be a better idea
+\newcommand{\rktdot}{$\bullet$}
+
+\begin{document}
+
+%% \subsection*{Module Graphs}
+
+\pict{echo}
+\hfill
+\pict{funkytown}
+\hfill
+\pict{gregor}
+\hfill
+\pict{htdp}
+\vfill
+\pict{kcfa}
+\hfill
+\pict{mbta}
+\hfill
+\pict{morse-code}
+\hfill
+\pict{sieve}
+\vfill
+\pict{quad}
+\hfill
+\pict{snake}
+\hfill
+\pict{suffixtree}
+\vfill
+\hfill
+\pict{tetris}
+\hfill
+\pict{zordoz}
+\hfill{}
+
+\end{document}

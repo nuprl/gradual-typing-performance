@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+
+  \node (00)               {\rktdot};
+  \node (01) [right of=00] {};
+  \node (02) [right of=01] {\rktdot};
+       
+  \node (10) [below of=00] {};
+  \node (11) [below of=01] {\rktdot};
+  \node (12) [below of=02] {};
+
+  \node (20) [below of=10] {};
+  \node (21) [below of=11] {\rktdot};
+  \node (22) [below of=12] {};
+
+  \node (30) [below of=20] {};
+  \node (31) [below of=21] {\rktdot};
+  \node (32) [below of=22] {};
+
+  %% -- edges
+  \draw[->] (11) -- (00);
+  \draw[->] (11) -- (02);
+  \draw[->] (21) -- (00);
+  \draw[->] (21) -- (02);
+  \draw[->] (21) -- (11);
+  \draw[->] (31) -- (21);
+
+\end{tikzpicture}
