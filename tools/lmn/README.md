@@ -16,12 +16,13 @@ Parameters
 ----------
 Before using, be clear about:
 - type conversion step
-- 
+- TODO
 
 
 Install
 -------
 To run the scripts, install Python & Racket.
+TODO
 
 
 Usage
