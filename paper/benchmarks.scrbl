@@ -120,22 +120,23 @@ library (to divide lines of text across multiple columns) and uses two adaptor m
 \newcommand{\yespycket}{$\CIRCLE$}
 \newcommand{\maybepycket}{$\RIGHTcircle$}
 \newcommand{\nopycket}{$\Circle$}
-\begin{tabular}[t]{lrll}
+\begin{tabular}[t]{lrrrrll}
 \toprule
-Project name          & \# Modules & Module structure        \\
+Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Module structure        \\
 \midrule
-\tt{sieve}            & 2          & \pict{sieve-horiz}      \\
-\tt{echo}             & 4          & \pict{echo-horiz}       \\
-\tt{morse-code}       & 4          & \pict{morse-code-horiz} \\
-\tt{mbta}             & 4          & \pict{mbta-horiz}       \\
-\tt{suffixtree}       & 5          & \pict{suffixtree-horiz} \\
-\tt{zo-traversal}     & 5          & \pict{zordoz-horiz}     \\
-\tt{kcfa}             & 7          & \pict{kcfa-horiz}       \\
-\tt{synth}            & 9          & \pict{funkytown-horiz}  \\
-\tt{tetris}           & 9          & \pict{tetris-horiz}     \\
-\tt{snake}            & 12         & \pict{snake-horiz}      \\
-\tt{gregor}           & 13         & \pict{gregor-horiz}     \\
-\tt{quad}             & 16         & \pict{quad}       \\
+%% FIXME: for Sieve is the placeholder.rkt module really needed? (1 LOC)
+\tt{sieve}            & 2          & 87        & 69          & 1         & \pict{sieve-horiz}      \\
+\tt{echo}             & 4          & 89        & 70          & 0         & \pict{echo-horiz}       \\
+\tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morse-code-horiz} \\
+\tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta-horiz}       \\
+\tt{suffixtree}       & 5          & 945       & 866         & 40        & \pict{suffixtree-horiz} \\
+\tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz-horiz}     \\
+\tt{kcfa}             & 7          & 401       & 397         & 257       & \pict{kcfa-horiz}       \\
+\tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown-horiz}  \\
+\tt{tetris}           & 9          & 575       & 457         & 38        & \pict{tetris-horiz}     \\
+\tt{snake}            & 12         & 276       & 214         & 27        & \pict{snake-horiz}      \\
+\tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor-horiz}     \\
+\tt{quad}             & 16         & 7702      & 7406        & 241       & \pict{quad-small}       \\
 \bottomrule
 \end{tabular}
 }|

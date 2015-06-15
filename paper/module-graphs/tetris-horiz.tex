@@ -1,30 +1,30 @@
 \begin{tikzpicture}
 
-  \node (00)               {\rkt{3}{consts}};
+  \node (00)               {\rktdot};
   \node (01) [below of=00,xshift=0.25cm] {};
-  \node (02) [below of=01,xshift=0.25cm] {\rkt{4}{data}};
+  \node (02) [below of=01,xshift=0.25cm] {\rktdot};
        
   \node (10) [left of=00] {};
   \node (11) [left of=01] {};
-  \node (12) [left of=02] {\rkt{1}{block}};
+  \node (12) [left of=02] {\rktdot};
 
-  \node (20) [left of=10] {\rkt{2}{bset}};
+  \node (20) [left of=10] {\rktdot};
   \node (21) [left of=11] {};
   \node (22) [left of=12] {};
 
-  \node (30) [left of=20] {\rkt{5}{elim}};
+  \node (30) [left of=20] {\rktdot};
   \node (31) [left of=21] {};
-  \node (32) [left of=22] {\rkt{7}{tetras}};
+  \node (32) [left of=22] {\rktdot};
 
   \node (40) [left of=30] {};
   \node (41) [left of=31] {};
-  \node (42) [left of=32] {\rkt{0}{aux}};
+  \node (42) [left of=32] {\rktdot};
 
-  \node (50) [left of=40] {\rkt{8}{world}};
+  \node (50) [left of=40] {\rktdot};
   \node (51) [left of=41] {};
   \node (52) [left of=42] {};
 
-  \node (61) [left of=51] {\rkt{6}{main}};
+  \node (61) [left of=51] {\rktdot};
 
   %% -- edges
   %% block
