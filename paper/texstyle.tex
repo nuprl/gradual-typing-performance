@@ -1,6 +1,11 @@
 % Better horizontal rules
 \usepackage{booktabs}
 
+% Use Tikz (and other pkgs) for Ben's picture
+\usepackage{tikz}
+\usepackage{graphicx}
+\usepackage{multicol}
+
 % Override Scribble's default SecRef to numeric only
 \renewcommand{\SecRef}[2]{~#1}
 
@@ -11,3 +16,21 @@
 
 % For bib style
 \newcommand{\Thyperref}[2]{\hyperref[#2]{#1}}
+
+%%% From Ben's treepict work
+
+%% Import and print the pictures for a project
+%% Arguments are:
+%% - Name of the project
+\newcommand{\pict}[1]{\begin{tabular}{c}\scalebox{0.6}{\input{module-graphs/#1}}\end{tabular}}
+%% \newcommand{\largepict}[1]{\subsubsection*{#1}\input{#1-small}\\\input{#1-large}\\\vspace{1cm}\\}
+
+%% Format a module name, for the pictures.
+%% Arguments are:
+%% - Index of the module
+%% - Name of the module
+\newcommand{\rkt}[2]{\texttt{#1}}
+
+%% Dot used to represent modules.
+%% Using the module's index might be a better idea
+\newcommand{\rktdot}{$\bullet$}

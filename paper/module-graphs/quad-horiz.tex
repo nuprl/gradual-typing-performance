@@ -1,0 +1,78 @@
+\begin{tikzpicture}
+
+  \node (00)                            {\rkt{14}{world}};
+  \node (01) [below of=00] {\rkt{9}{quads}};
+  \node (02) [below of=01] {\rkt{12}{sugar}};
+  \node (03) [below of=02] {\rkt{7}{penalty}};
+  \node (04) [below of=03] {\rkt{5}{ocm-st}};
+  \node (05) [below of=04] {\rkt{3}{measure}};
+  \node (06) [below of=05] {\rkt{0}{exc}};
+  \node (07) [below of=06] {\rkt{6}{pats}};
+       
+  \node (10) [left of=00] {\rkt{10}{quick-sample}};
+  \node (11) [left of=01] {};
+  \node (12) [left of=02] {};
+  \node (13) [left of=03] {};
+  \node (14) [left of=04] {\rkt{4}{ocm}};
+  \node (15) [left of=05] {};
+  \node (16) [left of=06] {\rkt{1}{hyphenate}};
+
+  \node (20) [left of=10] {};
+  \node (21) [left of=11] {};
+  \node (22) [left of=12] {};
+  \node (23) [left of=13] {};
+  \node (24) [left of=14] {};
+  \node (25) [left of=15] {\rkt{13}{utils}};
+
+  \node (30) [left of=20] {};
+  \node (31) [left of=21] {\rkt{11}{render}};
+  \node (32) [left of=22] {};
+  \node (33) [left of=23] {\rkt{15}{wrap}};
+  \node (35) [left of=25] {};
+
+  \node (40) [left of=30] {};
+  \node (42) [left of=32] {\rkt{8}{quad-main}};
+  \node (45) [left of=35] {};
+
+  \node (50) [left of=40] {\rkt{2}{main}};
+
+  %% -- edges
+  %% hyphenate
+  \draw[->] (16) -- (06);
+  \draw[->] (16) -- (07);
+  %% quick-sample
+  \draw[->] (10) -- (01);
+  %% ocm
+  \draw[->] (14) -- (04);
+  %% utils
+  \draw[->] (25) -- (16);
+  \draw[->] (25) -- (05);
+  \draw[->] (25) -- (01);
+  \draw[->] (25) -- (00);
+  %% render
+  \draw[->] (31) -- (00);
+  \draw[->] (31) -- (01);
+  \draw[->] (31) -- (25);
+  %% wrap
+  \draw[->] (33) -- (00);
+  \draw[->] (33) -- (01);
+  \draw[->] (33) -- (02);
+  \draw[->] (33) -- (03);
+  \draw[->] (33) -- (04);
+  \draw[->] (33) -- (05);
+  \draw[->] (33) -- (14);
+  \draw[->] (33) -- (25);
+  %% quad-main
+  \draw[->] (42) -- (00);
+  \draw[->] (42) -- (01);
+  \draw[->] (42) -- (33);
+  \draw[->] (42) -- (05);
+  \draw[->] (42) -- (25);
+  \draw[->] (42) -- (02);
+  %% main
+  \draw[->] (50) edge[bend left=15] (00);
+  \draw[->] (50) -- (42);
+  \draw[->] (50) -- (10);
+  \draw[->] (50) -- (31);
+
+\end{tikzpicture}

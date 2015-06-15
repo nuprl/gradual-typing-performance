@@ -115,27 +115,27 @@ of sixteen modules. It depends on an external constraint satisfaction solver
 library (to divide lines of text across multiple columns) and uses two adaptor modules.
 
 @;; FIXME: remove figure caption rule
-@figure["fig:bm" "The software characteristics of the benchmarks"
+@figure*["fig:bm" "The software characteristics of the benchmarks"
 @exact|{
 \newcommand{\yespycket}{$\CIRCLE$}
 \newcommand{\maybepycket}{$\RIGHTcircle$}
 \newcommand{\nopycket}{$\Circle$}
 \begin{tabular}[t]{lrll}
 \toprule
-Project name          & \# Modules & Module structure \\
+Project name          & \# Modules & Module structure        \\
 \midrule
-\tt{sieve}            & 2          & one chain        \\
-\tt{echo}             & 4          & directed diamond \\
-\tt{morse-code}       & 4          & vee              \\
-\tt{mbta}             & 4          & one chain        \\
-\tt{suffixtree}       & 5          & line             \\
-\tt{zo-traversal}     & 5          & almost diamond   \\
-\tt{kcfa}             & 7          & line, or braid   \\
-\tt{synth}            & 9          & vine-like        \\
-\tt{tetris}           & 9          & diamond          \\
-\tt{snake}            & 12         & diamond          \\
-\tt{gregor}           & 13         & pyramidic        \\
-\tt{quad}             & 16         &                  \\
+\tt{sieve}            & 2          & \pict{sieve-horiz}      \\
+\tt{echo}             & 4          & \pict{echo-horiz}       \\
+\tt{morse-code}       & 4          & \pict{morse-code-horiz} \\
+\tt{mbta}             & 4          & \pict{mbta-horiz}       \\
+\tt{suffixtree}       & 5          & \pict{suffixtree-horiz} \\
+\tt{zo-traversal}     & 5          & \pict{zordoz-horiz}     \\
+\tt{kcfa}             & 7          & \pict{kcfa-horiz}       \\
+\tt{synth}            & 9          & \pict{funkytown-horiz}  \\
+\tt{tetris}           & 9          & \pict{tetris-horiz}     \\
+\tt{snake}            & 12         & \pict{snake-horiz}      \\
+\tt{gregor}           & 13         & \pict{gregor-horiz}     \\
+\tt{quad}             & 16         & \pict{quad}       \\
 \bottomrule
 \end{tabular}
 }|
