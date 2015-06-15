@@ -28,7 +28,7 @@ def remove_empty(d1, d2):
             posns.append(i)
     return xs, ys, posns
 
-def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None, xmax=None, ymax=None):
+def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None, xmax=None, ymax=None, vlines=None):
     """
         Create and save a bar plot.
         Args:
@@ -56,7 +56,8 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     # Add data
     bar = plt.bar(xvalues, yvalues, width=width, color=color, alpha=alpha)
     # Add extra lines
-    # TODO
+    for line in (vlines or []):
+        plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
     # Labels
     if xlabels:
         plt.xticks([x + width/2 for x in xvalues], xlabels)
