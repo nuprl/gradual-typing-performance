@@ -1,0 +1,41 @@
+******** 2013-08-15 ********
+- implement gen:custom-write for graph structs
+- write docs for gen:queue
+- make all generic algorithms methods? with the default the current impl
+  - seems like every function that only uses generic methods should be a
+    method with the current implementation as the fallback
+
+******** 2013-08-12 ********
+- some larger changes to investigate:
+  - gen:graph should use gen:vertex and gen:edge ?
+    THOUGHTS: 
+    - this is tricky since an "edge" can't always exist on its own outside
+      the context of a graph
+    - it seems like an "edge" is more of a concept rather than it's own "object"
+    - For example, many graph algorithms use the pattern (for* u \in graph, v
+      \in neighbors of u), where (u,v) is an edge but it wouldn't really make
+      sense for there to be an edge data structure. Would I have to re-create
+      the struct at this point from u and v? What about the weight? Does it get
+      stored with the edge or with the graph?
+    - it seems like an edge data structure is only useful in a graph
+      implementation that is a list of edges; but then this representation
+      would be less efficient for the above pattern
+  - add functional graph interface (look at Martin Erwig's FGL for Haskell)
+
+******** 2013-08-09 ********
+- use fallbacks to implement graph methods: vertex? edge? in-edges
+- implement bfs/generic as a syntax/parse macro to avoid keyword boilerplate?
+  - DONE 2013-08-12
+
+******** 2013-08-08 ********
+- either eliminate graph-matrix.rkt - DONE 2013-08-09
+      or
+  implement in-neighbors, etc properly
+- refactor fns-allpairs-shortestpaths so that the Ls store functions instead of
+  hashes --- enables better use of generics - DONE 2013-08-09
+- compute \Pi for floyd-warshall
+- state somewhere that floyd warshall requires all self-edges to be 0 and no
+  negative weight cycles - DONE 2013-08-09
+- implement max flow algorithms
+- refactor dfs and related fns to take a "visitor" function - DONE 2013-08-11
+- refactor bfs to take "visitor" fns - DONE 2013-08-09
