@@ -78,10 +78,8 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
 
 def dots(xs, yss, title, xlabel, ylabel, labels=None, skip=None, output=None, vlines=None):
     fig,ax1 = plt.subplots()
-    print("dots DATASET '%s'" % yss)
     # Add data
     for (ys,c,m) in zip(yss,cm.rainbow(np.linspace(0, 1, len(yss))), itertools.cycle(markers)):
-        print("dots plotting '%s' vs '%s'" % (xs, ys))
         plt.plot(xs, ys, color=c, linestyle="dashed", marker=m)
     # Legend
     plt.legend(['%s' % (labels[i] if labels else (skip * i)) for i in range(len(yss))], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)

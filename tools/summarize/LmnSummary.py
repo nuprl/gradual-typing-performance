@@ -37,13 +37,14 @@ class LmnSummary(TabfileSummary):
         self.render_title(output_port, title)
         self.render_summary(output_port)
         self.render_overall(output_port)
+        # TODO similar results at a higher granularity
+        # Nmap should probably keep an index row
         Nmap = self.make_Nmap()
-        small_Nmap = self.make_Nmap(skip=0.5)
-        print("NSMAP len is %s" % len(Nmap))
-        print("SMALLL NSMAP len is %s" % len(small_Nmap))
+        padded = util.pad(Nmap, list(self.all_configurations()), constants.ACCEPTABLE)
+        # small_Nmap = self.make_Nmap(skip=0.25)
         self.render_n(output_port, Nmap)
-        self.render_mn(output_port, small_Nmap, Nmax=10, Mskip=2)
-        self.render_lmn(output_port, Nmap, Nmax=constants.ACCEPTABLE)
+        self.render_mn(output_port, padded, Nmax=10, Mskip=2)
+        self.render_lmn(output_port, padded, Nmax=constants.ACCEPTABLE)
         self.render_lmn(output_port, Nmap)
         print(latex.end(), file=output_port)
 
@@ -112,6 +113,12 @@ class LmnSummary(TabfileSummary):
         """
             Zoom in on a range of the graph (acceptable)
             Draw multiple lines showing various M values
+        
+            Arguments:
+            Options:
+            - Nmax : largest N value to display
+            - Mskip : initial (M-N) value, increased until (M-N) = Nmax
+            - index : x-values for grid display
         """
         print(latex.newpage(), file=output_port)
         print(latex.subsection("MN-acceptable graphs"), file=output_port)
@@ -130,7 +137,6 @@ class LmnSummary(TabfileSummary):
                                     ,"width" : 2
                                     }])
         print(latex.figure(lines), file=output_port)
-        print("ON TO PERCENTS")
         percents = [x/self.num_configs for x in counts]
         pcts = plot.dots(range(0, Nmax)
                          ,[util.pad(percents[i:i+Nmax], 1, Nmax)
@@ -159,7 +165,7 @@ class LmnSummary(TabfileSummary):
                      ,xlabel="N"
                      ,ylabel="L"
                      ,zlabel="num. deliverable"
-                     ,output="%s/%s" % (self.output_dir, "ln-contour-%sn" % (len(LNmap)))
+                     ,output="%s/%s" % (self.output_dir, "ln-contour-%s" % (Nmax or "full"))
                      ,zlim=self.num_configs)
         print("\\hbox{\\hspace{-5.2cm}", file=output_port)
         print(latex.figure(figs[0], width_scale=0.9), file=output_port)
@@ -187,7 +193,7 @@ class LmnSummary(TabfileSummary):
             N += skip
             deliverable = self.configs_of_predicate(gen_Npred(N))
         Nmap.append(deliverable)
-        return util.pad(Nmap, list(self.all_configurations()), constants.ACCEPTABLE)
+        return Nmap
 
     def make_Lmap(self, Nmap):
         """
