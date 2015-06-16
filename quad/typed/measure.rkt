@@ -39,7 +39,7 @@
 
 (: get-cache-file-path (-> Path))
 (define (get-cache-file-path)
-  (build-path "../base/font.cache"))
+  (build-path "./font.cache"))
 
 (: update-text-cache-file (-> Void))
 (define (update-text-cache-file)

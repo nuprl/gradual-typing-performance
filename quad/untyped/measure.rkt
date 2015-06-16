@@ -34,7 +34,7 @@
   (/ (round (* base x)) base))
 
 (define (get-cache-file-path)
-  (build-path "../base/font.cache"))
+  (build-path "./font.cache"))
 
 (define (update-text-cache-file)
   (define ctc (current-text-cache))
