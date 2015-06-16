@@ -34,15 +34,20 @@
   (/ (round (* base x)) base))
 
 (define (get-cache-file-path)
-  (build-path "../base/font.cache"))
+  (build-path "./font.cache"))
 
 (define (update-text-cache-file)
-  (write-to-file (serialize (current-text-cache)) (get-cache-file-path) #:exists 'replace))
+  (define ctc (current-text-cache))
+  (unless (not (eof-object? ctc))
+    (write-to-file (serialize ctc) (get-cache-file-path) #:exists 'replace)))
 
 (define (load-text-cache-file)
   (define cache-file-path (get-cache-file-path))
   (current-text-cache (if (file-exists? cache-file-path)
-                          (deserialize (file->value cache-file-path))
+                          (let ([val (file->value cache-file-path)])
+                            (if (eof-object? val)
+                                "ERROR: deserializing"
+                                (deserialize val)))
                           ( make-hash  '()))))
 
 (define (get-cached-font font weight style)
