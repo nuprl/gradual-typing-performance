@@ -106,3 +106,7 @@ slowdown is closest to the worst case are those in which the @tt{data.rkt} modul
 is left untyped but several of the other modules are typed. This makes sense given
 the coupling we observed above; the contract boundaries induced between the
 untyped @tt{data.rkt} and other typed modules slow down the program.
+The module structure diagram for @tt{suffixtree} in @figure-ref{fig:bm}
+corroborates the presence of this coupling. The rightmost node in that
+diagram corresponds to the @tt{data.rkt} module, which has the most in-edges in
+that particular graph.
