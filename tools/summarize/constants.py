@@ -20,5 +20,6 @@ CACHE = 0
 RECOMPUTE = 1
 APPEND = 2
 
-RELEASE_OVERHEAD = 2
-DEV_OVERHEAD = 4
+# Rough constants, to help orient the graphs in a larger picture
+DELIVERABLE = 2
+ACCEPTABLE = 10
