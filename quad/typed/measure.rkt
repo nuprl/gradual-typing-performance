@@ -43,13 +43,19 @@
 
 (: update-text-cache-file (-> Void))
 (define (update-text-cache-file)
-  (write-to-file (serialize (current-text-cache)) (get-cache-file-path) #:exists 'replace))
+  (define ctc (current-text-cache))
+  (unless (not (eof-object? ctc))
+    (write-to-file (serialize ctc) (get-cache-file-path) #:exists 'replace)))
 
 (: load-text-cache-file (-> Void))
 (define (load-text-cache-file)
   (define cache-file-path (get-cache-file-path))
   (current-text-cache (if (file-exists? cache-file-path)
-                          (deserialize (file->value cache-file-path))
+                          (let ([val (file->value cache-file-path)])
+                            (if (eof-object? val)
+                                ;; Error deserializing!
+                                ((inst make-hash (List String String Symbol Symbol) Measurement-Result-Type) '())
+                                (deserialize val)))
                           ((inst make-hash (List String String Symbol Symbol) Measurement-Result-Type) '()))))
 
 (: get-cached-font (-> Font-Name Font-Weight Font-Style (Instance Font%)))
