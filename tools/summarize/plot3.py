@@ -6,6 +6,8 @@ import matplotlib
 matplotlib.use('Agg') # Disable the display, does not affect graph generation
 from mpl_toolkits.axes_grid1 import AxesGrid
 
+import constants
+
 # http://stackoverflow.com/questions/7404116/defining-the-midpoint-of-a-colormap-in-matplotlib
 def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     '''
@@ -60,26 +62,32 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
 
 # For info on colormaps, see
 # http://matplotlib.org/api/pyplot_summary.html?highlight=colormaps#matplotlib.pyplot.colormaps
-def contour(X_1d, Y_1d, Z_2d, title, xlabel=None, ylabel=None, zlabel=None, output=None, zlim=None):
+def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None, samples=constants.GRAPH_SAMPLES, output=None, zlim=None):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    X, Y = np.meshgrid(X_1d, Y_1d)
-    Z = np.array(Z_2d).reshape(Y.shape)
+    X,Y = np.meshgrid(np.linspace(xbounds[0], xbounds[1], num=samples)
+                      ,np.linspace(ybounds[0], ybounds[1], num=samples))
+    # Apply zfun to every point on the surface
+    Z = np.vectorize(zfun)(X, Y)
     # cm.coolwarm_r
     # cm.cubehelix
+    # cm.CMRmap
     cmap = shiftedColorMap(cm.CMRmap
                            ,start=0, midpoint=0.4, stop=.9, name='shiftedcmap')
     surf = ax.plot_surface(X, Y, Z
-                           ,rstride=1, cstride=1 ## TODO, probably
+                           ,rstride=1, cstride=1 ## TODO, not sure why we need these
                            ,cmap=cmap
+                           ,vmin=0, vmax=zlim
                            ,linewidth=0, antialiased=False)
-    ax.set_zlim(0, zlim+1)
+    ax.set_xlim(xbounds[0], xbounds[1])
+    ax.set_ylim(ybounds[0], ybounds[1])
+    ax.set_zlim(0, zlim)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.set_zlabel(zlabel)
     # Save
     figs = []
-    for e in [10, 40, 70]:
+    for e in [10, 70]:
       ax.view_init(elev=e, azim=240)
       out = "%s-%se.png" % (output, e)
       plt.savefig(out)
