@@ -32,7 +32,7 @@ done
 #####################################################
 
 ~/racket-6.2.0.3/bin/racket setup.rkt quad
-~/racket-6.2.0.3/bin/racket tools/run.rkt -m 0 10000 -o quad-results.rktd -i 10 -j 39 quad
+~/racket-6.2.0.3/bin/racket tools/run.rkt -m 10001 20000 -o quad-results.rktd -i 10 -j 39 quad
 
 cp quad-results.rktd ~/
 
