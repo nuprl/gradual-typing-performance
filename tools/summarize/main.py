@@ -10,6 +10,7 @@ Collects varied statistics on the data and outputs results to a .tex file
 import constants
 import os
 import sys
+import plot
 import util
 from LmnSummary import LmnSummary
 from TabfileSummary import TabfileSummary
@@ -55,10 +56,27 @@ def main(input_file, sample_size=50, iters=50, verbose=0):
     os.system("cd %s; xelatex %s; cd %s" % (out_dir, tag, cwd))
     os.system("cp %s/%s.pdf /home/ben/Downloads/%s.pdf" % (out_dir, tag, tag.split("-", 1)[0]))
     ## END HACKS
-    return
+    return summary
 
-def main_aggregate(argv):
-   raise NotImplementedError()
+def aggregate(summaries):
+    """
+        Plot all summaries
+    """
+    percents = [[len(row)/s.num_configs for row in s.make_Nmap()]
+             for s in summaries]
+    maxlen = max([len(x) for x in percents])
+    res = plot.dots(range(0, maxlen)
+                   ,[util.pad(p, 1, maxlen) for p in percents]
+                   ,"Percent acceptable vs N, all graphs"
+                   ,"N"
+                   ,"Percent acceptable"
+                   ,output="aggregate.png"
+                   ,labels=[x.project_name for x in summaries]
+                   ,vlines = [{"xpos" : constants.DELIVERABLE
+                              ,"color" : "r"
+                              ,"style" : "solid"
+                              ,"width" : 1
+                             }])
 
 def print_help():
     """ (-> Void)
@@ -74,6 +92,8 @@ if __name__ == "__main__":
     elif sys.argv[1] in ["-a", "--all", "--aggregate"]:
        main_aggregate(sys.argv[2::])
     else:
+       summs = []
        for fname in sys.argv[1::]:
-          main(fname)
-    
+          summs.append(main(fname))
+       # aggregate(summs)
+

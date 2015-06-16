@@ -39,6 +39,8 @@ class LmnSummary(TabfileSummary):
         self.render_overall(output_port)
         Nmap = self.make_Nmap()
         small_Nmap = self.make_Nmap(skip=0.5)
+        print("NSMAP len is %s" % len(Nmap))
+        print("SMALLL NSMAP len is %s" % len(small_Nmap))
         self.render_n(output_port, Nmap)
         self.render_mn(output_port, small_Nmap, Nmax=10, Mskip=2)
         self.render_lmn(output_port, Nmap, Nmax=constants.ACCEPTABLE)
@@ -115,7 +117,8 @@ class LmnSummary(TabfileSummary):
         print(latex.subsection("MN-acceptable graphs"), file=output_port)
         counts = [len(x) for x in Nmap]
         lines = plot.dots(range(0, Nmax)
-                         ,[counts[i:i+Nmax] for i in range(0, Nmax, Mskip)]
+                         ,[util.pad(counts[i:i+Nmax], self.num_configs, Nmax)
+                           for i in range(0, Nmax, Mskip)]
                          ,"Number acceptable as M increases (legend is N-M)"
                          ,"N"
                          ,"Num. acceptable"
@@ -127,9 +130,11 @@ class LmnSummary(TabfileSummary):
                                     ,"width" : 2
                                     }])
         print(latex.figure(lines), file=output_port)
+        print("ON TO PERCENTS")
         percents = [x/self.num_configs for x in counts]
         pcts = plot.dots(range(0, Nmax)
-                         ,[percents[i:i+Nmax] for i in range(0, Nmax, Mskip)]
+                         ,[util.pad(percents[i:i+Nmax], 1, Nmax)
+                           for i in range(0, Nmax, Mskip)]
                          ,"Percent acceptable as M increases (legend is N-M)"
                          ,"N"
                          ,"Percent acceptable"
@@ -174,7 +179,7 @@ class LmnSummary(TabfileSummary):
         N = 0
         gen_Npred = (lambda n:
                      (lambda cfg:
-                      self.stats_of_config(cfg)["mean"] < n * self.base_runtime))
+                      self.stats_of_config(cfg)["mean"] <= n * self.base_runtime))
         # add to Nmap until every configuration is deliverable
         deliverable = self.configs_of_predicate(gen_Npred(N))
         while (len(deliverable) < self.num_configs):
@@ -182,7 +187,7 @@ class LmnSummary(TabfileSummary):
             N += skip
             deliverable = self.configs_of_predicate(gen_Npred(N))
         Nmap.append(deliverable)
-        return Nmap
+        return util.pad(Nmap, list(self.all_configurations()), constants.ACCEPTABLE)
 
     def make_Lmap(self, Nmap):
         """

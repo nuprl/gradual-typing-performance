@@ -104,3 +104,6 @@ def sample_size95(width_pct):
     """
     return ((1.96 ** 2) * 0.5 * 0.5) / (width_pct ** 2)
 
+def pad(xs, default, length):
+    return xs + ([default] * (length - len(xs)))
+
