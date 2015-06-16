@@ -50,11 +50,27 @@ imported value. Finally, in the benchmark instrumented version we replace
 
 @subsection{Performance of Suffixtree}
 
+@figure*["fig:suffixtree" "Suffixtree performance lattice"
+  @(let* ([vec (file->value "../tools/data/suffixtree-2015-04-02.rktd")]
+          [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
+     (make-performance-lattice vec*))
+]
+
+To further understand the @tt{suffixtree} benchmark, we will look at its
+performance lattice, shown in @figure-ref{fig:suffixtree}. The lattice
+in the figure displays each of the modules in the program with a circle.
+A filled black circle means the module is typed, an open circle means the
+module is untyped. The circles are ordered from left to right and correspond
+to the modules of @tt{suffixtree} in alphabetical order: 
+@tt{data.rkt}, @tt{label.rkt}, @tt{lcs.rkt}, @tt{main.rkt}, @tt{structs.rkt},
+and @tt{ukkonen.rkt}. Each configuration lists the average (on top) and standard deviation
+(below) of the runtime of 30 iterations normalized to the untyped average.
+
 Following the definitions in @secref{sec:fwk}, we can first determine the
-typed/untyped ratio from inspecting the performance lattice for @tt{suffixtree}.
-The fully typed configuration for @tt{suffixtree} has the good property that
-it is @emph{faster} than the fully untyped configuration by about 30%. This
-puts the ratio at about 0.7.
+typed/untyped ratio. The fully typed configuration (the top one)
+for @tt{suffixtree} has the good property that
+it is @emph{faster} than the fully untyped (bottom)
+configuration by about 30%. This puts the ratio at about 0.7.
 
 The typed configuration is faster due to Typed Racket's optimizer, which is
 able to perform type-based specialization of arithmetic operations,
@@ -90,10 +106,3 @@ slowdown is closest to the worst case are those in which the @tt{data.rkt} modul
 is left untyped but several of the other modules are typed. This makes sense given
 the coupling we observed above; the contract boundaries induced between the
 untyped @tt{data.rkt} and other typed modules slow down the program.
-
-@;{
-@figure*["x" "x"
-  @(let* ([vec (file->value "suffixtree-2015-04-02.rktd")]
-          [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
-     (scale (make-performance-lattice vec*) 0.5))]
-}

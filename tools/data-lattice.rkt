@@ -36,7 +36,7 @@
   (define level-picts
     (for/list ([on-bits (in-range total-bits -1 -1)])
       (define perms (select (- total-bits on-bits) total-bits))
-      (apply hc-append 10
+      (apply hc-append 5
        (for/list ([perm (in-list perms)])
          (define bv (apply bit-vector perm))
          (define num (string->number (bit-vector->string bv) 2))
@@ -45,8 +45,8 @@
                                   (vector-ref data-vec 0)))
          (vector-set! pict-vec num pict)
          pict))))
-  (define no-lines-yet (apply vc-append 20 level-picts))
-  (add-all-lines no-lines-yet pict-vec total-bits))
+  (define no-lines-yet (apply vc-append 10 level-picts))
+  no-lines-yet)
 
 ;; taken from MF's version
 (define (select i L)
@@ -61,24 +61,20 @@
 (define (make-point bv data init-data)
   (define normalized-mean (/ (car data) (car init-data)))
   (define normalized-stdev (/ (cdr data) (car init-data)))
-  (define style (if (> normalized-mean 1.5) '(bold) null))
+  (define style "Liberation Serif")
   (define box-pict
     (apply hc-append
+           1
            (for/list ([bit (in-bit-vector bv)])
-             (rectangle/border 7 10
-                               #:border-width 1
-                               #:color (if bit "black" "white")
-                               #:border-color "dark gray"))))
+             (circle/border 3
+                            #:border-width 1
+                            #:color (if bit "black" "white")
+                            #:border-color "black"))))
   (vc-append (blank 1 2)
              box-pict
              (blank 1 5)
-             (text (~a (~r normalized-mean
-                           #:precision 2)
-                       "±"
-                       (~r normalized-stdev
-                           #:precision 2))
-                   style
-                   6)
+             (text (~r normalized-mean #:precision 2) style 9)
+             (text (~r normalized-stdev #:precision 2) style 9)
              (blank 1 2)))
 
 ;; adds lines between elements in levels
