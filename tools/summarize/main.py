@@ -12,6 +12,7 @@ import os
 import sys
 import plot
 import util
+from AggregateSummary import AggregateSummary
 from LmnSummary import LmnSummary
 from TabfileSummary import TabfileSummary
 from SrsSummary import SrsSummary
@@ -62,21 +63,13 @@ def aggregate(summaries):
     """
         Plot all summaries
     """
-    percents = [[len(row)/s.num_configs for row in s.make_Nmap()]
-             for s in summaries]
-    maxlen = max([len(x) for x in percents])
-    res = plot.dots(range(0, maxlen)
-                   ,[util.pad(p, 1, maxlen) for p in percents]
-                   ,"Percent acceptable vs N, all graphs"
-                   ,"N"
-                   ,"Percent acceptable"
-                   ,output="aggregate.png"
-                   ,labels=[x.project_name for x in summaries]
-                   ,vlines = [{"xpos" : constants.DELIVERABLE
-                              ,"color" : "r"
-                              ,"style" : "solid"
-                              ,"width" : 1
-                             }])
+    agg = AggregateSummary(summaries)
+    out_file = "aggregate.tex"
+    out_port = open(out_file, "w")
+    agg.render(out_port)
+    out_port.close()
+    print("Aggregate results saved as '%s'" % out_file)
+    return agg
 
 def print_help():
     """ (-> Void)
