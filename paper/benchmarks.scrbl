@@ -65,7 +65,7 @@ boundary even in the ``completely typed'' case.
 
 @parag{Suffixtree}
 The @tt{suffixtree} library implements a longest-common-substring algorithm. The
-implementation contains five modules in a single chain. While the library has
+implementation contains six modules in a single chain. While the library has
 minimal external dependencies, we need to add in an adapter module for the
 data definition module.
 
@@ -129,8 +129,8 @@ Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Modul
 \tt{echo}             & 4          & 89        & 70          & 0         & \pict{echo-horiz}       \\
 \tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morse-code-horiz} \\
 \tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta-horiz}       \\
-\tt{suffixtree}       & 5          & 945       & 866         & 40        & \pict{suffixtree-horiz} \\
 \tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz-horiz}     \\
+\tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree-horiz} \\
 \tt{kcfa}             & 7          & 401       & 397         & 257       & \pict{kcfa-horiz}       \\
 \tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown-horiz}  \\
 \tt{tetris}           & 9          & 575       & 457         & 38        & \pict{tetris-horiz}     \\

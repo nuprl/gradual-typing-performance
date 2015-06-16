@@ -19,7 +19,7 @@ Auxillary folders:
 | kcfa                  | Ben         | Yes     | No           | 7         | line, or braid   |
 | morse-code            | Ben         | Yes     | No           | 4         | vee              |
 | sieve                 | Ben         | Yes     | No           | 2         | one chain        |
-| suffixtree            | Ben         | Yes     | No           | 5         | line             |
+| suffixtree            | Ben         | Yes     | No           | 6         | line             |
 | quad                  | Ben         | No      | No           | 17        | ?                |
 | zo traversal          | Ben         | Yes     | No           | 5         | almost diamond   |
 | mbta                  | Matthias    | Yes     | No           | 4         | one chain        |

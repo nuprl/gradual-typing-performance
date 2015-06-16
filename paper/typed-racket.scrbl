@@ -17,7 +17,7 @@ Typed Racket as evaluated at NU
 In order to explain our experimental setup, we take a closer look at the
 @tt{suffixtree} benchmark and explain the pieces that are involved.
 
-The benchmark consists of five main modules which are each available with
+The benchmark consists of six main modules which are each available with
 and without type annotations:
 @tt{data.rkt}, @tt{label.rkt}, @tt{lcs.rkt}, @tt{main.rkt}, @tt{structs.rkt},
 and @tt{ukkonen.rkt}.
