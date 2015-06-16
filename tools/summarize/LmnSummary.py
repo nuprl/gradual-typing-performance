@@ -53,9 +53,12 @@ class LmnSummary(TabfileSummary):
         # Nmap = self.make_Nmap()
         # padded = util.pad(Nmap, list(self.all_configurations()), constants.ACCEPTABLE)
         # small_Nmap = self.make_Nmap(skip=0.25)
-        # self.render_n(output_port, Nmax=20)
-        self.render_mn(output_port, Nmax=10, Mvals=range(0, 10, 2))
-        # self.render_lmn(output_port, padded, Nmax=constants.ACCEPTABLE)
+        self.render_n(output_port, Nmax=20)
+        self.render_mn(output_port, Nmax=constants.ACCEPTABLE, Mskip=2)
+        self.render_lmn(output_port
+                        ,Nmax=constants.ACCEPTABLE
+                        ,Mmax=2*constants.ACCEPTABLE
+                        ,Lvals=np.linspace(0, self.num_modules-1, 4))
         # self.render_lmn(output_port, Nmap)
         print(latex.end(), file=output_port)
 
@@ -75,6 +78,8 @@ class LmnSummary(TabfileSummary):
                    ,("Worst Gradual (%s)" % worst_cfg, self.stats_of_config(worst_cfg))
                    ,("Typed", self.stats_of_typed())]]
         print(latex.table(title, rows), file=output_port)
+
+    ### -----------------------------------------------------------------------------
 
     def render_n(self, output_port, Nmax=10):
         """
@@ -107,11 +112,13 @@ class LmnSummary(TabfileSummary):
                           ,ymax=1)
         print(latex.figure(graph2), file=output_port)
 
-    def render_mn(self, output_port, Nmax=None, Mvals=None):
+    ### -----------------------------------------------------------------------------
+
+    def render_mn(self, output_port, Nmax=None, Mskip=None):
         """
             Zoom in on a range of the graph (acceptable)
             Draw multiple lines showing various M values
-        
+
             Arguments:
             Options:
             - Nmax : largest N value to display
@@ -120,9 +127,11 @@ class LmnSummary(TabfileSummary):
         print(latex.newpage(), file=output_port)
         print(latex.subsection("MN-acceptable graphs"), file=output_port)
         y_funs = []
+        y_funs2 = []
         lbls = []
-        for diff in Mvals:
+        for diff in range(0, Nmax, Mskip):
             y_funs.append(self.faster_offset(diff))
+            y_funs2.append(self.percent_offset(diff))
             lbls.append(diff)
         lines = plot.line([0, Nmax]
                           ,y_funs
@@ -133,6 +142,18 @@ class LmnSummary(TabfileSummary):
                           ,linelabels=lbls
                           ,vlines = [RED_LINE])
         print(latex.figure(lines), file=output_port)
+        lines2 = plot.line([0, Nmax]
+                          ,y_funs2
+                          ,title="Percent acceptable as M increases (legend is N-M)"
+                          ,xlabel="N"
+                          ,ylabel="Percent acceptable"
+                          ,output="%s/%s.png" % (self.output_dir, "percent-vs-NM")
+                          ,linelabels=lbls
+                          ,ymax=1
+                          ,vlines = [RED_LINE])
+        print(latex.figure(lines2), file=output_port)
+
+    ### -----------------------------------------------------------------------------
 
     def render_lmn(self, output_port, Nmap, Nmax=None):
         print(latex.newpage(), file=output_port)
@@ -152,12 +173,14 @@ class LmnSummary(TabfileSummary):
         print(latex.figure(figs[0], width_scale=0.9), file=output_port)
         print(latex.figure(figs[1], width_scale=0.9), file=output_port)
         print("}", file=output_port)
-        print(latex.figure(figs[2], width_scale=0.9), file=output_port)
 
     ### -------------------------------------------------------
 
+    # Dumb functions, to get scope for N
     def faster_offset(self, diff):
         return (lambda N: self.num_faster_than(N + diff))
+    def percent_offset(self, diff):
+        return (lambda N: self.percent_faster_than(N + diff))
 
     def num_faster_than(self, N):
         """

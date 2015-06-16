@@ -101,7 +101,7 @@ def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None,
     fig,ax1 = plt.subplots()
     # data
     X = np.linspace(xbounds[0], xbounds[1], num=samples)
-    for (y_fun, c) in zip(y_funs, cm.CMRmap(np.linspace(0, 0.7, len(y_funs)))):
+    for (y_fun, c) in zip(y_funs, cm.spectral(np.linspace(0.05, 0.6, len(y_funs)))):
         Y = [y_fun(val) for val in X]
         plt.plot(X, Y, color=c, alpha=alpha, linestyle="solid", linewidth=2)
     if linelabels:
