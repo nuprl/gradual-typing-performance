@@ -243,7 +243,7 @@ class AbstractSummary(object):
         """
             Return a list of configurations matching the predicate
         """
-        return [cfg for cfg in self.all_configurations() if pred(cfg)]
+        return (cfg for cfg in self.all_configurations() if pred(cfg))
 
     def set_stats(self, cfg, stats):
         self.stats_by_config[cfg] = stats
