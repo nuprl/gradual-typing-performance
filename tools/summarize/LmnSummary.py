@@ -19,6 +19,17 @@ import plot3
 import shell
 import util
 
+RED_LINE = {"xpos" : constants.DELIVERABLE
+            ,"color" : "r"
+            ,"style" : "solid"
+            ,"width" : 1
+}
+ORANGE_LINE = {"xpos" : constants.ACCEPTABLE
+               ,"color" : "tomato"
+               ,"style" : "dashed"
+               ,"width" : 4
+}
+
 class LmnSummary(TabfileSummary):
 
     def __init__(self, *args, **kwargs):
@@ -39,13 +50,13 @@ class LmnSummary(TabfileSummary):
         self.render_overall(output_port)
         # TODO similar results at a higher granularity
         # Nmap should probably keep an index row
-        Nmap = self.make_Nmap()
-        padded = util.pad(Nmap, list(self.all_configurations()), constants.ACCEPTABLE)
+        # Nmap = self.make_Nmap()
+        # padded = util.pad(Nmap, list(self.all_configurations()), constants.ACCEPTABLE)
         # small_Nmap = self.make_Nmap(skip=0.25)
-        self.render_n(output_port, Nmap)
-        self.render_mn(output_port, padded, Nmax=10, Mskip=2)
-        self.render_lmn(output_port, padded, Nmax=constants.ACCEPTABLE)
-        self.render_lmn(output_port, Nmap)
+        # self.render_n(output_port, Nmax=20)
+        self.render_mn(output_port, Nmax=10, Mvals=range(0, 10, 2))
+        # self.render_lmn(output_port, padded, Nmax=constants.ACCEPTABLE)
+        # self.render_lmn(output_port, Nmap)
         print(latex.end(), file=output_port)
 
     def render_overall(self, output_port):
@@ -65,7 +76,7 @@ class LmnSummary(TabfileSummary):
                    ,("Typed", self.stats_of_typed())]]
         print(latex.table(title, rows), file=output_port)
 
-    def render_n(self, output_port, Nmap):
+    def render_n(self, output_port, Nmax=10):
         """
             Visualize the N-deliverable configurations.
             - build a mapping (N -> good configs)
@@ -74,42 +85,29 @@ class LmnSummary(TabfileSummary):
         print(latex.newpage(), file=output_port)
         print(latex.subsection("N-deliverable graphs"), file=output_port)
         # x-axis lines, for all graphs
-        vlines = [{"xpos" : constants.DELIVERABLE + 0.5
-                   ,"color" : "r"
-                   ,"style" : "solid"
-                   ,"width" : 4
-                   }
-                  ,{"xpos" : constants.ACCEPTABLE + 0.5
-                    ,"color" : "tomato"
-                    ,"style" : "dashed"
-                    ,"width" : 5
-                }]
-        # graph histogram of counts
-        counts = [len(x) for x in Nmap]
-        hist_graph = plot.bar(range(0, len(Nmap)) # x-values
-                             ,counts # y-values
-                             ,"Number deliverable variations vs. N" # title
-                             ,"N" # x-label
-                             ,"Num. deliverable" # y-label
-                             ,alpha=0.8
-                             ,output="%s/%s.png" % (self.output_dir, "count-vs-N")
-                             ,vlines=vlines
-                             ,ymax=max(counts))
-        print(latex.figure(hist_graph), file=output_port)
-        # graph plot of percents
-        percents = [len(x) / self.num_configs for x in Nmap]
-        pct_graph = plot.bar(range(0, len(Nmap))
-                             ,percents
-                             ,"Percent deliverable vs. N"
-                             ,"N"
-                             ,"% deliverable"
-                             ,alpha=0.8
-                             ,output="%s/%s.png" % (self.output_dir, "percent-vs.N")
-                             ,vlines=vlines
-                             ,ymax=1)
-        print(latex.figure(pct_graph), file=output_port)
+        vlines = [RED_LINE, ORANGE_LINE]
+        # graph counts, continuously
+        y_fun = self.num_faster_than
+        graph = plot.line([0, Nmax]
+                          ,[y_fun]
+                          ,title="Number deliverable variations vs. N" # title
+                          ,xlabel="N"
+                          ,ylabel="Num. deliverable"
+                          ,output="%s/%s.png" % (self.output_dir, "count-vs-N")
+                          ,vlines=vlines)
+        print(latex.figure(graph), file=output_port)
+        y_fun2 = self.percent_faster_than
+        graph2 = plot.line([0, Nmax]
+                          ,[y_fun2]
+                          ,title="Percent deliverable variations vs. N" # title
+                          ,xlabel="N"
+                          ,ylabel="Percent deliverable"
+                          ,output="%s/%s.png" % (self.output_dir, "percent-vs-N")
+                          ,vlines=vlines
+                          ,ymax=1)
+        print(latex.figure(graph2), file=output_port)
 
-    def render_mn(self, output_port, Nmap, Nmax=None, Mskip=1):
+    def render_mn(self, output_port, Nmax=None, Mvals=None):
         """
             Zoom in on a range of the graph (acceptable)
             Draw multiple lines showing various M values
@@ -117,41 +115,24 @@ class LmnSummary(TabfileSummary):
             Arguments:
             Options:
             - Nmax : largest N value to display
-            - Mskip : initial (M-N) value, increased until (M-N) = Nmax
             - index : x-values for grid display
         """
         print(latex.newpage(), file=output_port)
         print(latex.subsection("MN-acceptable graphs"), file=output_port)
-        counts = [len(x) for x in Nmap]
-        lines = plot.dots(range(0, Nmax)
-                         ,[util.pad(counts[i:i+Nmax], self.num_configs, Nmax)
-                           for i in range(0, Nmax, Mskip)]
-                         ,"Number acceptable as M increases (legend is N-M)"
-                         ,"N"
-                         ,"Num. acceptable"
-                         ,skip=Mskip
-                         ,output="%s/%s.png" % (self.output_dir, "count-vs-NM")
-                         ,vlines = [{"xpos" : constants.DELIVERABLE
-                                    ,"color" : "r"
-                                    ,"style" : "solid"
-                                    ,"width" : 2
-                                    }])
+        y_funs = []
+        lbls = []
+        for diff in Mvals:
+            y_funs.append(self.faster_offset(diff))
+            lbls.append(diff)
+        lines = plot.line([0, Nmax]
+                          ,y_funs
+                          ,title="Number acceptable as M increases (legend is N-M)"
+                          ,xlabel="N"
+                          ,ylabel="Num. acceptable"
+                          ,output="%s/%s.png" % (self.output_dir, "count-vs-NM")
+                          ,linelabels=lbls
+                          ,vlines = [RED_LINE])
         print(latex.figure(lines), file=output_port)
-        percents = [x/self.num_configs for x in counts]
-        pcts = plot.dots(range(0, Nmax)
-                         ,[util.pad(percents[i:i+Nmax], 1, Nmax)
-                           for i in range(0, Nmax, Mskip)]
-                         ,"Percent acceptable as M increases (legend is N-M)"
-                         ,"N"
-                         ,"Percent acceptable"
-                         ,output="%s/%s.png" % (self.output_dir, "percent-vs-NM")
-                         ,skip=Mskip
-                         ,vlines = [{"xpos" : constants.DELIVERABLE
-                                    ,"color" : "r"
-                                    ,"style" : "solid"
-                                    ,"width" : 1
-                                    }])
-        print(latex.figure(pcts), file=output_port)
 
     def render_lmn(self, output_port, Nmap, Nmax=None):
         print(latex.newpage(), file=output_port)
@@ -174,6 +155,20 @@ class LmnSummary(TabfileSummary):
         print(latex.figure(figs[2], width_scale=0.9), file=output_port)
 
     ### -------------------------------------------------------
+
+    def faster_offset(self, diff):
+        return (lambda N: self.num_faster_than(N + diff))
+
+    def num_faster_than(self, N):
+        """
+            Count the number of configurations with performance
+            less than N times the untyped baseline
+        """
+        return sum((1 for cfg in self.all_configurations()
+                    if self.stats_of_config(cfg)["mean"] < N * self.base_runtime))
+
+    def percent_faster_than(self, N):
+        return self.num_faster_than(N) / self.num_configs
 
     def make_Nmap(self, skip=1):
         """
