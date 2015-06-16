@@ -97,7 +97,7 @@ def dots(xs, yss, title, xlabel, ylabel, labels=None, skip=None, output=None, vl
     print("Saved dots chart to '%s'" % output)
     return output
 
-def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=70, alpha=1, output=None, vlines=None, ymax=None):
+def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=constants.GRAPH_SAMPLES, alpha=1, output=None, vlines=None, ymax=None):
     fig,ax1 = plt.subplots()
     # data
     X = np.linspace(xbounds[0], xbounds[1], num=samples)

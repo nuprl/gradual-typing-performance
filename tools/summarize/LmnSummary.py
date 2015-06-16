@@ -18,6 +18,7 @@ import plot
 import plot3
 import shell
 import util
+import numpy as np
 
 RED_LINE = {"xpos" : constants.DELIVERABLE
             ,"color" : "r"
@@ -48,18 +49,13 @@ class LmnSummary(TabfileSummary):
         self.render_title(output_port, title)
         self.render_summary(output_port)
         self.render_overall(output_port)
-        # TODO similar results at a higher granularity
-        # Nmap should probably keep an index row
-        # Nmap = self.make_Nmap()
-        # padded = util.pad(Nmap, list(self.all_configurations()), constants.ACCEPTABLE)
-        # small_Nmap = self.make_Nmap(skip=0.25)
+        # 
         self.render_n(output_port, Nmax=20)
         self.render_mn(output_port, Nmax=constants.ACCEPTABLE, Mskip=2)
         self.render_lmn(output_port
                         ,Nmax=constants.ACCEPTABLE
                         ,Mmax=2*constants.ACCEPTABLE
-                        ,Lvals=np.linspace(0, self.num_modules-1, 4))
-        # self.render_lmn(output_port, Nmap)
+                        ,Lvals=[int(x) for x in np.linspace(0, self.num_modules-1, 4)])
         print(latex.end(), file=output_port)
 
     def render_overall(self, output_port):
@@ -95,22 +91,14 @@ class LmnSummary(TabfileSummary):
         y_fun = self.num_faster_than
         graph = plot.line([0, Nmax]
                           ,[y_fun]
-                          ,title="Number deliverable variations vs. N" # title
-                          ,xlabel="N"
+                          ,title="Num. variations with runtime less than N-times untyped" # title
+                          ,xlabel="N (overhead factor)"
                           ,ylabel="Num. deliverable"
+                          ,samples=100
                           ,output="%s/%s.png" % (self.output_dir, "count-vs-N")
+                          ,ymax=self.num_configs
                           ,vlines=vlines)
         print(latex.figure(graph), file=output_port)
-        y_fun2 = self.percent_faster_than
-        graph2 = plot.line([0, Nmax]
-                          ,[y_fun2]
-                          ,title="Percent deliverable variations vs. N" # title
-                          ,xlabel="N"
-                          ,ylabel="Percent deliverable"
-                          ,output="%s/%s.png" % (self.output_dir, "percent-vs-N")
-                          ,vlines=vlines
-                          ,ymax=1)
-        print(latex.figure(graph2), file=output_port)
 
     ### -----------------------------------------------------------------------------
 
@@ -126,55 +114,61 @@ class LmnSummary(TabfileSummary):
         """
         print(latex.newpage(), file=output_port)
         print(latex.subsection("MN-acceptable graphs"), file=output_port)
+        print("The acceptable variations for an N/M pair lie between the lowest line (N-deliverable) and one of the higher lines.\n", file=output_port)
         y_funs = []
-        y_funs2 = []
         lbls = []
         for diff in range(0, Nmax, Mskip):
             y_funs.append(self.faster_offset(diff))
-            y_funs2.append(self.percent_offset(diff))
             lbls.append(diff)
         lines = plot.line([0, Nmax]
                           ,y_funs
-                          ,title="Number acceptable as M increases (legend is N-M)"
-                          ,xlabel="N"
+                          ,title="Num. variations with runtime less than M-times untyped\n(legend is the difference M-N)"
+                          ,xlabel="Overhead over untyped"
                           ,ylabel="Num. acceptable"
+                          ,samples=100
                           ,output="%s/%s.png" % (self.output_dir, "count-vs-NM")
                           ,linelabels=lbls
-                          ,vlines = [RED_LINE])
+                          ,ymax=self.num_configs)
         print(latex.figure(lines), file=output_port)
-        lines2 = plot.line([0, Nmax]
-                          ,y_funs2
-                          ,title="Percent acceptable as M increases (legend is N-M)"
-                          ,xlabel="N"
-                          ,ylabel="Percent acceptable"
-                          ,output="%s/%s.png" % (self.output_dir, "percent-vs-NM")
-                          ,linelabels=lbls
-                          ,ymax=1
-                          ,vlines = [RED_LINE])
-        print(latex.figure(lines2), file=output_port)
 
     ### -----------------------------------------------------------------------------
 
-    def render_lmn(self, output_port, Nmap, Nmax=None):
+    def render_lmn(self, output_port, Nmax=None, Mmax=None, Lvals=None):
         print(latex.newpage(), file=output_port)
         print(latex.subsection("L-M-N graphs"), file=output_port)
-        LNmap = self.make_Lmap(Nmap)
-        figs = plot3.contour(range(0, (Nmax or len(LNmap[0])))
-                     ,range(0, len(LNmap))
-                     ,[[len(ds) for ds in Nmap][:(Nmax or len(Nmap))]
-                       for Nmap in LNmap]
-                     ,"L-N contour" # title
-                     ,xlabel="N"
-                     ,ylabel="L"
-                     ,zlabel="num. deliverable"
-                     ,output="%s/%s" % (self.output_dir, "ln-contour-%s" % (Nmax or "full"))
-                     ,zlim=self.num_configs)
-        print("\\hbox{\\hspace{-5.2cm}", file=output_port)
-        print(latex.figure(figs[0], width_scale=0.9), file=output_port)
-        print(latex.figure(figs[1], width_scale=0.9), file=output_port)
-        print("}", file=output_port)
+        print("Dark is BAD, implies a low percentage of all variations are practical\n", file=output_port)
+        for L in Lvals:
+            print(latex.subsubsection("L = %s" % L), file=output_port)
+            figs = plot3.contour([0, Nmax]
+                                 ,[0, Mmax]
+                                 ,self.faster_path(L)
+                                 ,title="L-N-M contour"
+                                 ,xlabel="N (overhead factor)"
+                                 ,ylabel="M (>= N)"
+                                 ,zlabel="Num. variations"
+                                 ,output="%s/%s" % (self.output_dir, "lmn-contour-%sstep" % L)
+                                 ,zlim=self.num_configs)
+            print("\\hbox{\\hspace{-5.2cm}", file=output_port)
+            print(latex.figure(figs[0], width_scale=0.9), file=output_port)
+            print(latex.figure(figs[1], width_scale=0.9), file=output_port)
+            print("}", file=output_port)
 
     ### -------------------------------------------------------
+
+    def faster_path(self, num_steps):
+        """
+            Count the number of variations better than,
+            or within `num_steps` to a better-than variation.
+        """
+        # TODO we ignore N, except as a filter for invalids?
+        return (lambda N,M:
+                0 if (N > M)
+                else sum((1 for cfg in self.all_configurations()
+                          # Current is better, or can reach a better
+                          if ((self.stats_of_config(cfg)["mean"] < M * self.base_runtime)
+                              or
+                              any((self.stats_of_config(cfg2)["mean"] < M * self.base_runtime
+                                   for cfg2 in config.next_iter(cfg, num_steps)))))))
 
     # Dumb functions, to get scope for N
     def faster_offset(self, diff):
@@ -192,47 +186,3 @@ class LmnSummary(TabfileSummary):
 
     def percent_faster_than(self, N):
         return self.num_faster_than(N) / self.num_configs
-
-    def make_Nmap(self, skip=1):
-        """
-            Create a vector,
-            - indices are values of N,
-            - values are N-deliverable configurations
-        """
-        Nmap = []
-        N = 0
-        gen_Npred = (lambda n:
-                     (lambda cfg:
-                      self.stats_of_config(cfg)["mean"] <= n * self.base_runtime))
-        # add to Nmap until every configuration is deliverable
-        deliverable = self.configs_of_predicate(gen_Npred(N))
-        while (len(deliverable) < self.num_configs):
-            Nmap.append(deliverable)
-            N += skip
-            deliverable = self.configs_of_predicate(gen_Npred(N))
-        Nmap.append(deliverable)
-        return Nmap
-
-    def make_Lmap(self, Nmap):
-        """
-            Create a 2D vector
-            - indices are L-values
-            - values are Nmaps (indices N-values, values N-deliverable configurations)
-        """
-        Lmap = [Nmap]
-        prev_nmap = Nmap
-        for L in range(1, self.num_modules):
-            N = 0
-            new_nmap = []
-            # Create a new Nmap by adding entries to the old one
-            for i in range(0, len(Nmap)):
-                dvs = []
-                # Add the entries that are within L from any GOOD config
-                for cfg in self.all_configurations():
-                    if any((0 <= config.minus(cfg, cfg2) <= L
-                           for cfg2 in prev_nmap[i])):
-                        dvs.append(cfg)
-                new_nmap.append(dvs)
-            Lmap.append(new_nmap)
-            prev_nmap = new_nmap
-        return Lmap
