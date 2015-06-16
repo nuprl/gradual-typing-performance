@@ -17,13 +17,13 @@ General Advice
 - __Unit tests supercede types__.
   Adding types may subtly change the code's behavior, or require changes to the code
   itself. It is important to remember that the untyped code's behavior is the true
-  spec for correctness, and this behavior is only captured in unit tests and comments.
+  spec for correctness, and this behavior is only captured in unit tests\* and comments.
 
   A small example of necessary code changes was due to Typed Racket's weak type for `partition`.
   Calling `partition` separates a list into two sub-lists, one with elements satisfying
   a given predicate and the other with all the rest.
   The types of both result lists should be refined through occurrence typing,
-  but the list of negatives currently is not refined.
+  but the list of negatives is currently not refined (Typed Racket issue [#138](https://github.com/racket/typed-racket/issues/138)).
   So we had to change the code to use two calls to `filter`, or else add a run-time assertion.
 - __Use the typechecker to refine types.__
   If the type of a value is not clear from context, using a restrictive type like
@@ -32,20 +32,22 @@ General Advice
 - __Favor assertions over strong types.__
   While porting, we generally did better using more permissive types like `Integer` or `(U #f Foo)` and using assertions to refine use-sites
   rather than trying to give a more specific type based on local observations.
-  File this under "premature optimization"!
-  Along the same lines:
+  By "better", we mean we were less likely to encounter dead ends forcing us to change previous type annotations.
+  Although, some dead ends were unavoidable, so:
 - __Be wary of dead ends__.
   Especially with complex data structures, it's possible that a type works for
   a single file but not across files.
   A simple example is optimizing a vector library to only accept `Index` arguments.
   The file will typecheck, but its users may break because they passed `Integer` values
   (even though, these `Integer` values may be valid `Index` values!)
-- __Sensible patterns fail to typecheck__.
+- __Some untyped designs will fail to typecheck__.
   Goes without saying. One memorable example was where a polymorphic function
   `(All (A) (-> (-> Void A) A))` was instantiated with a `(Values ...)` type.
-  The untyped program ran, but the typechecker was overly conservative.
+  The untyped program ran, but the typechecker was overly conservative and rejected it.
 - Lastly, asynchronous programming is hard.
   You never think it'll happen to you, but the issue we saw in MBTA taught us otherwise.
+
+\* But beware _typed_ unit tests! (Typed Racket issue [#54](https://github.com/racket/typed-racket/issues/54))
 
 
 Porting Strategies
@@ -68,6 +70,7 @@ This is not always present, or easy to reconstruct.
 In practice we could easily start with independent files and then move to their dependents, but the process was overall too manual.
 Second is the issue of dead ends.
 We occasionally needed to edit a previously-typed modules with different types to accomodate a later use-case.
+It was difficult to predict where such dead-ends might occur when working bottom-up.
 
 
 #### Most-dependencies first
@@ -87,6 +90,8 @@ Step 2 worked well if the project was runnable and gradual typing did not add un
 We could start by completely removing the import statement to get the set of names, and then refining overly-strict contracts to correct ones using run-time errors as a guide.
 The feedback loop was definitely slow, but at least there was a feedback loop with the compiler to catch errors---just like in the bottom-up case---and also guide the search.
 
+Realistically there will _always_ be a question of later users, but we found the feedback loop and better locality of this approach more tuned to the strengths of gradual typing.
+
 
 Racket-Specific
 ---------------
@@ -100,3 +105,7 @@ Racket-Specific
   Typed Racket allows importing a struct opaquely, rather than exposing its internal fields.
   Opaque names lead to significantly faster contracts, but are also generative.
   This means that each opaque name technically requires an adaptor, and furthermore the operations on opaque data must be imported and exported explicitly.
+- __Follow the Racket Style Guide__.
+  The Racket style guide ([here](http://www.ccs.neu.edu/home/matthias/Style/style/Units_of_Code.html)) says that `provide` statements should be at the top of a file, and `require` statements similarly clustered.
+  Additionally, each _module_ and each _function_ should have at least a purpose statement, and ideally tests.
+  Unless the lead developer is the one adding types, it is much harder to recover type information without these small human artifacts.
