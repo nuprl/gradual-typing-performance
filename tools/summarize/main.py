@@ -53,7 +53,7 @@ def main(input_file, sample_size=50, iters=50, verbose=0):
     ## BEGIN HACKS
     cwd = os.getcwd()
     os.system("cd %s; xelatex %s; cd %s" % (out_dir, tag, cwd))
-    os.system("cp %s/%s.pdf /home/ben/Downloads/%s.pdf" % (out_dir, tag.split("-", 1)[0]))
+    os.system("cp %s/%s.pdf /home/ben/Downloads/%s.pdf" % (out_dir, tag, tag.split("-", 1)[0]))
     ## END HACKS
     return
 

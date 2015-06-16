@@ -7,11 +7,15 @@ import config
 import constants
 import matplotlib
 matplotlib.use('Agg') # Disable the display, does not affect graph generation
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import networkx as nx
 import numpy as np
 import util
+import itertools
+
+markers = ["o", "^", "s", "*", "h", "D"]
 
 def remove_empty(d1, d2):
     """
@@ -70,6 +74,27 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     plt.clf()
     plt.close()
     print("Saved bar chart to '%s'" % output)
+    return output
+
+def dots(xs, yss, title, xlabel, ylabel, skip=None, output=None, vlines=None):
+    fig,ax1 = plt.subplots()
+    # Add data
+    for (ys,c,m) in zip(yss,cm.rainbow(np.linspace(0, 1, len(yss))), itertools.cycle(markers)):
+        plt.plot(xs, ys, color=c, linestyle="dashed", marker=m)
+    # Legend
+    plt.legend(['c{}'.format(skip * i) for i in range(len(ys))], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)
+    # Add extra lines
+    for line in (vlines or []):
+        plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
+    ax1.set_title(title)
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(ylabel)
+    # Save
+    output = output
+    plt.savefig(output)
+    plt.clf()
+    plt.close()
+    print("Saved dots chart to '%s'" % output)
     return output
 
 def histogram(values, title, xlabel, ylabel, num_bins, xmax, ymax, output, alpha=0.8, color='royalblue'):

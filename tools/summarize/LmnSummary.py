@@ -20,8 +20,13 @@ import shell
 import util
 
 class LmnSummary(TabfileSummary):
-    ## __init__ inherited from superclass,
-    # sets fields, parses .rktd and .tab files.
+
+    def __init__(self, *args, **kwargs):
+        TabfileSummary.__init__(self, *args, **kwargs)
+        # Commonly-used state
+        self.num_configs = self.get_num_configurations()
+        self.num_modules = self.get_num_modules()
+        self.base_runtime = self.stats_of_untyped()["mean"]
 
     def render(self, output_port):
         """
@@ -32,15 +37,17 @@ class LmnSummary(TabfileSummary):
         self.render_title(output_port, title)
         self.render_summary(output_port)
         self.render_overall(output_port)
-        self.render_n(output_port)
-        # self.render_mn(output_port) # TODO
-        self.render_lmn(output_port)
+        Nmap = self.make_Nmap()
+        small_Nmap = self.make_Nmap(skip=0.5)
+        self.render_n(output_port, Nmap)
+        self.render_mn(output_port, small_Nmap, Nmax=10, Mskip=2)
+        self.render_lmn(output_port, Nmap, Nmax=constants.ACCEPTABLE)
+        self.render_lmn(output_port, Nmap)
         print(latex.end(), file=output_port)
-
 
     def render_overall(self, output_port):
         """
-            Show overall results
+            Show overall results in a table
         """
         print(latex.subsection("Summary Results"), file=output_port)
         best_cfg = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] > self.stats_by_config[y]["mean"], limit=1)[0]
@@ -55,7 +62,7 @@ class LmnSummary(TabfileSummary):
                    ,("Typed", self.stats_of_typed())]]
         print(latex.table(title, rows), file=output_port)
 
-    def render_n(self, output_port):
+    def render_n(self, output_port, Nmap):
         """
             Visualize the N-deliverable configurations.
             - build a mapping (N -> good configs)
@@ -63,7 +70,6 @@ class LmnSummary(TabfileSummary):
         """
         print(latex.newpage(), file=output_port)
         print(latex.subsection("N-deliverable graphs"), file=output_port)
-        Nmap = self.make_Nmap()
         # x-axis lines, for all graphs
         vlines = [{"xpos" : constants.DELIVERABLE + 0.5
                    ,"color" : "r"
@@ -88,8 +94,7 @@ class LmnSummary(TabfileSummary):
                              ,ymax=max(counts))
         print(latex.figure(hist_graph), file=output_port)
         # graph plot of percents
-        num_configs = self.get_num_configurations()
-        percents = [len(x) / num_configs for x in Nmap]
+        percents = [len(x) / self.num_configs for x in Nmap]
         pct_graph = plot.bar(range(0, len(Nmap))
                              ,percents
                              ,"Percent deliverable vs. N"
@@ -101,28 +106,65 @@ class LmnSummary(TabfileSummary):
                              ,ymax=1)
         print(latex.figure(pct_graph), file=output_port)
 
-    def render_mn(self, output_port):
+    def render_mn(self, output_port, Nmap, Nmax=None, Mskip=1):
+        """
+            Zoom in on a range of the graph (acceptable)
+            Draw multiple lines showing various M values
+        """
         print(latex.newpage(), file=output_port)
         print(latex.subsection("MN-acceptable graphs"), file=output_port)
-        Nmap = self.make_Nmap()
-        raise NotImplementedError()
+        counts = [len(x) for x in Nmap]
+        lines = plot.dots(range(0, Nmax)
+                         ,[counts[i:i+Nmax] for i in range(0, Nmax, Mskip)]
+                         ,"Number acceptable as M increases (legend is N-M)"
+                         ,"N"
+                         ,"Num. acceptable"
+                         ,skip=Mskip
+                         ,output="%s/%s.png" % (self.output_dir, "count-vs-NM")
+                         ,vlines = [{"xpos" : constants.DELIVERABLE
+                                    ,"color" : "r"
+                                    ,"style" : "solid"
+                                    ,"width" : 2
+                                    }])
+        print(latex.figure(lines), file=output_port)
+        percents = [x/self.num_configs for x in counts]
+        pcts = plot.dots(range(0, Nmax)
+                         ,[percents[i:i+Nmax] for i in range(0, Nmax, Mskip)]
+                         ,"Percent acceptable as M increases (legend is N-M)"
+                         ,"N"
+                         ,"Percent acceptable"
+                         ,output="%s/%s.png" % (self.output_dir, "percent-vs-NM")
+                         ,skip=Mskip
+                         ,vlines = [{"xpos" : constants.DELIVERABLE
+                                    ,"color" : "r"
+                                    ,"style" : "solid"
+                                    ,"width" : 1
+                                    }])
+        print(latex.figure(pcts), file=output_port)
 
-    def render_lmn(self, output_port):
+    def render_lmn(self, output_port, Nmap, Nmax=None):
         print(latex.newpage(), file=output_port)
         print(latex.subsection("L-M-N graphs"), file=output_port)
-        LNmap = self.make_Lmap()
-        cgraph = plot3.contour(LNmap
+        LNmap = self.make_Lmap(Nmap)
+        figs = plot3.contour(range(0, (Nmax or len(LNmap[0])))
+                     ,range(0, len(LNmap))
+                     ,[[len(ds) for ds in Nmap][:(Nmax or len(Nmap))]
+                       for Nmap in LNmap]
                      ,"L-N contour" # title
                      ,xlabel="N"
                      ,ylabel="L"
                      ,zlabel="num. deliverable"
-                     ,output="%s/%s.png" % (self.output_dir, "ln-contour")
-                     ,zlim=self.get_num_configurations())
-        print(latex.figure(cgraph), file=output_port)
+                     ,output="%s/%s" % (self.output_dir, "ln-contour-%sn" % (len(LNmap)))
+                     ,zlim=self.num_configs)
+        print("\\hbox{\\hspace{-5.2cm}", file=output_port)
+        print(latex.figure(figs[0], width_scale=0.9), file=output_port)
+        print(latex.figure(figs[1], width_scale=0.9), file=output_port)
+        print("}", file=output_port)
+        print(latex.figure(figs[2], width_scale=0.9), file=output_port)
 
     ### -------------------------------------------------------
 
-    def make_Nmap(self):
+    def make_Nmap(self, skip=1):
         """
             Create a vector,
             - indices are values of N,
@@ -130,74 +172,38 @@ class LmnSummary(TabfileSummary):
         """
         Nmap = []
         N = 0
-        num_configs = self.get_num_configurations()
-        base_runtime = self.stats_of_untyped()["mean"]
         gen_Npred = (lambda n:
                      (lambda cfg:
-                      self.stats_of_config(cfg)["mean"] < n * base_runtime))
+                      self.stats_of_config(cfg)["mean"] < n * self.base_runtime))
         # add to Nmap until every configuration is deliverable
         deliverable = self.configs_of_predicate(gen_Npred(N))
-        while len(deliverable) < num_configs:
+        while (len(deliverable) < self.num_configs):
             Nmap.append(deliverable)
-            N += 1
+            N += skip
             deliverable = self.configs_of_predicate(gen_Npred(N))
         Nmap.append(deliverable)
         return Nmap
 
-    def make_Lmap(self):
+    def make_Lmap(self, Nmap):
         """
             Create a 2D vector
             - indices are L-values
             - values are Nmaps (indices N-values, values N-deliverable configurations)
         """
-        Lmap = []
-        num_configs = self.get_num_configurations()
-        base_runtime = self.stats_of_untyped()["mean"]
-        graph = self.make_lattice()
-        gen_LNpred = (lambda l,n:
-                      (lambda cfg:
-                       self.stats_of_config(self.best_reachable(graph, cfg, l))["mean"] < n * base_runtime))
-        longest_nmap = 0
-        for L in range(0, self.get_num_modules()):
-            Nmap = []
+        Lmap = [Nmap]
+        prev_nmap = Nmap
+        for L in range(1, self.num_modules):
             N = 0
-            deliverable = self.configs_of_predicate(gen_LNpred(L, N))
-            while (len(deliverable) < num_configs):
-                Nmap.append(len(deliverable)) # could generalize to `deliverable`, but whatever we only want to plot the count
-                N += 1
-                deliverable = self.configs_of_predicate(gen_LNpred(L, N))
-            Nmap.append(len(deliverable))
-            longest_nmap = max(longest_nmap, len(Nmap))
-            Lmap.append(Nmap)
-        # Return a padded array. Makes for a better surface.
-        print("LMAP = %s" % Lmap)
-        return [self.pad(Nmap, longest_nmap, num_configs)
-                for Nmap in Lmap]
-
-    def pad(self, row, length, default):
-        return row + ([default] * (length - len(row)))
-
-    def best_reachable(self, graph, start_cfg, num_steps):
-        """
-            Return the config with the best performance
-            out of all configs within `num_steps` of `start_cfg`.
-        """
-        best_mean = self.stats_of_config(start_cfg)["mean"]
-        best_cfg = start_cfg
-        curr_neighbors = graph[start_cfg].keys()
-        next_neighbors = []
-        steps_left = num_steps - 1
-        while curr_neighbors:
-            for cfg in curr_neighbors:
-                if config.num_typed_modules(cfg) < config.num_typed_modules(start_cfg):
-                    raise ValueError("graph went backwards from '%s' to '%s'" % (start_cfg, cfg))
-                mean = self.stats_of_config(cfg)["mean"]
-                if mean < best_mean:
-                    best_mean = mean
-                    best_cfg = cfg
-                if num_steps > 0:
-                    next_neighbors.extend(graph[cfg].keys())
-            curr_neighbors = next_neighbors
-            next_neighbors = []
-            steps_left -= 1
-        return best_cfg
+            new_nmap = []
+            # Create a new Nmap by adding entries to the old one
+            for i in range(0, len(Nmap)):
+                dvs = []
+                # Add the entries that are within L from any GOOD config
+                for cfg in self.all_configurations():
+                    if any((0 <= config.minus(cfg, cfg2) <= L
+                           for cfg2 in prev_nmap[i])):
+                        dvs.append(cfg)
+                new_nmap.append(dvs)
+            Lmap.append(new_nmap)
+            prev_nmap = new_nmap
+        return Lmap
