@@ -97,6 +97,31 @@ def dots(xs, yss, title, xlabel, ylabel, labels=None, skip=None, output=None, vl
     print("Saved dots chart to '%s'" % output)
     return output
 
+def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=70, alpha=1, output=None, vlines=None, ymax=None):
+    fig,ax1 = plt.subplots()
+    # data
+    X = np.linspace(xbounds[0], xbounds[1], num=samples)
+    for (y_fun, c) in zip(y_funs, cm.CMRmap(np.linspace(0, 0.7, len(y_funs)))):
+        Y = [y_fun(val) for val in X]
+        plt.plot(X, Y, color=c, alpha=alpha, linestyle="solid", linewidth=2)
+    if linelabels:
+        plt.legend(['%s' % lbl for lbl in linelabels], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)
+    # Add extra lines
+    for line in (vlines or []):
+        plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
+    if ymax:
+        ymin,_ = ax1.get_ylim()
+        ax1.set_ylim(ymin, ymax)
+    ax1.set_title(title)
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(ylabel)
+    # Save
+    plt.savefig(output)
+    plt.clf()
+    plt.close()
+    print("Saved line to '%s'" % output)
+    return output
+
 def histogram(values, title, xlabel, ylabel, num_bins, xmax, ymax, output, alpha=0.8, color='royalblue'):
     minval = min(values)
     maxval = max(values)
