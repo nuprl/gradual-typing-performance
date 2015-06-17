@@ -8,6 +8,23 @@ from mpl_toolkits.axes_grid1 import AxesGrid
 
 import constants
 
+# Set font, globally
+default_font = {
+    #'family': 'normal',
+    'weight' : 'semibold',
+    'size' : 20,
+    #'linespacing' : 0.4,
+}
+title_font = {
+    #'family': 'normal',
+    'weight' : 'semibold',
+    'size' : 24,
+    #'linespacing' : 0.4,
+}
+matplotlib.rc('font', **default_font)
+
+#############################################################################
+
 # http://stackoverflow.com/questions/7404116/defining-the-midpoint-of-a-colormap-in-matplotlib
 def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
     '''
@@ -72,28 +89,45 @@ def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None
     # cm.coolwarm_r
     # cm.cubehelix
     # cm.CMRmap
-    cmap = shiftedColorMap(cm.CMRmap
+    cmap = shiftedColorMap(cm.cubehelix#CMRmap
                            ,start=0, midpoint=0.4, stop=.9, name='shiftedcmap')
     surf = ax.plot_surface(X, Y, Z
                            ,rstride=1, cstride=1 ## TODO, not sure why we need these
                            ,cmap=cmap
                            ,vmin=0, vmax=zlim
                            ,linewidth=0, antialiased=False)
+    # Override the x and y ticks
+    xposns = list(range(xbounds[0], xbounds[1]+1))
+    yposns = list(range(ybounds[0]+2, ybounds[1]+1, 2))
+    plt.xticks(xposns, ["%sx" % n for n in xposns])
+    plt.yticks(yposns)#, ["%sx" % m for m in yposns])
+    # Set the title and z-axis label (z label is a hack)
+    plt.suptitle(title, fontdict=title_font, y=0.88)
+    plt.title(zlabel, fontdict=default_font, x=0.1, y=0.87)
+    #
     ax.set_xlim(xbounds[0], xbounds[1])
     ax.set_ylim(ybounds[0], ybounds[1])
     ax.set_zlim(0, zlim)
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_zlabel(zlabel)
+    ax.set_xlabel(xlabel, fontdict=default_font)
+    ax.set_ylabel(ylabel, fontdict=default_font)
     # Save
-    figs = []
-    for e in [10, 70]:
-      ax.view_init(elev=e, azim=240)
-      out = "%s-%se.png" % (output, e)
-      plt.savefig(out)
-      figs.append(out)
+    ax.view_init(elev=10, azim=240)
+    plt.savefig(output)
     plt.clf()
     plt.close()
     print("Saved contour to '%s'" % output)
-    return figs
+    return output
 
+def make_figs(output):
+    """
+        Produce a ton of views of the same graph,
+        Return a list of all views
+    """
+    figs = []
+    for e in range(10, 90, 30):
+        for r in range(0, 360, 20):
+            out = "%s-%se-%sr.png" % (output, e, r)
+            ax.view_init(elev=e, azim=r)
+            plt.savefig(out)
+            figs.append(out)
+    return figs
