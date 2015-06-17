@@ -77,22 +77,40 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
 
     return newcmap
 
+def make_mesh(xbounds, ybounds, zfun, samples):
+    """
+        Create a mesh from:
+        - the implicit 2d array delimited by xbounds
+        - the implicit 2d array delimited by ybounds
+        and call the function `zfun` on each point in the mesh.
+     
+        Return 3 matrices, each indexed along the Y axis first (then the X)
+        - X : matrix of x positions
+        - Y : matrix of y positions
+        - Z : matrix of z positions
+    """
+    xs = np.linspace(xbounds[0], xbounds[1], num=samples)
+    ys = np.linspace(ybounds[0], ybounds[1], num=samples)
+    X, Y, Z = [], [], []
+    for y in ys:
+        X.append(xs)
+        Y.append([y] * len(xs))
+        Z.append([zfun(x, y) for x in xs])
+    return X, Y, np.ma.array(Z)
+
 # For info on colormaps, see
 # http://matplotlib.org/api/pyplot_summary.html?highlight=colormaps#matplotlib.pyplot.colormaps
 def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None, samples=constants.GRAPH_SAMPLES, output=None, zlim=None):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
-    X,Y = np.meshgrid(np.linspace(xbounds[0], xbounds[1], num=samples)
-                      ,np.linspace(ybounds[0], ybounds[1], num=samples))
-    # Apply zfun to every point on the surface
-    Z = np.vectorize(zfun)(X, Y)
+    X, Y, Z = make_mesh(xbounds, ybounds, zfun, samples)
     # cm.coolwarm_r
     # cm.cubehelix
     # cm.CMRmap
     cmap = shiftedColorMap(cm.cubehelix#CMRmap
                            ,start=0, midpoint=0.4, stop=.9, name='shiftedcmap')
     surf = ax.plot_surface(X, Y, Z
-                           ,rstride=1, cstride=1 ## TODO, not sure why we need these
+                           ,rstride=1, cstride=1 # row/column step size (int, default=10)
                            ,cmap=cmap
                            ,vmin=0, vmax=zlim
                            ,linewidth=0, antialiased=False)
@@ -100,7 +118,8 @@ def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None
     xposns = list(range(xbounds[0], xbounds[1]+1))
     yposns = list(range(ybounds[0]+2, ybounds[1]+1, 2))
     plt.xticks(xposns, ["%sx" % n for n in xposns])
-    plt.yticks(yposns)#, ["%sx" % m for m in yposns])
+    plt.yticks(yposns, ["%sx" % m for m in yposns])
+    ax.zaxis.get_major_ticks()[0].label1.set_visible(False)
     # Set the title and z-axis label (z label is a hack)
     plt.suptitle(title, fontdict=title_font, y=0.88)
     plt.title(zlabel, fontdict=default_font, x=0.1, y=0.87)

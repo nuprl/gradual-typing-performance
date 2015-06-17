@@ -48,14 +48,6 @@ class LmnSummary(TabfileSummary):
         self.num_samples = 60
         # Table, to precompute M -> num.good
         self.configs_within_overhead = self._precompute_counts()
-        self.show_table()
-
-    def show_table(self):
-        print("HEY HERE IS THE CONFIGS WITHIN OVERHEAD TABLE")
-        for l in [0, 1, 2]:
-            print("L = %s" % l)
-            print(self.configs_within_overhead[l])
-        
 
     def render(self, output_port):
         """
@@ -104,7 +96,7 @@ class LmnSummary(TabfileSummary):
                                  ,samples=self.num_samples
                                  ,output="%s/%s" % (self.output_dir, "lmn-contour-%sstep" % L)
                                  ,zlim=self.num_configs))
-        print("\\hspace{-5.5cm}\\hbox{", file=output_port)
+        print("\\hspace{-4cm}\\hbox{", file=output_port)
         print(latex.figure(figs[0], width_scale=0.5), file=output_port)
         print(latex.figure(figs[1], width_scale=0.5), file=output_port)
         print(latex.figure(figs[2], width_scale=0.5), file=output_port)
@@ -114,24 +106,24 @@ class LmnSummary(TabfileSummary):
 
     def countLNM_continuous(self, L):
         """
-            Count the number of variations better than,
-            or within `num_steps` to a better-than variation.
-        TODO 0 should be None
+            Return a function to compute counts for a contour plot,
+             the counts are modulo a path length L.
+            Function uses `np.nan` as a placeholder for undefined values.
+            These are masked in the result
         """
-        return (lambda N,M:
-                0 if (N > M) else self.countLM_continuous(L, M))
+        return (lambda N,M: np.nan if (N > M) else self.countLM_continuous(L, M))
 
     def countLM_continuous(self, L, M_float):
         """
-            Return the number of configurations with performance
-             within (M * untyped).
+            Return the number of configurations that can reach in
+             at most L steps, a config with runtime less than (M * untyped).
             M can be a float.
         """
         M_lo = math.floor(M_float)
         M_hi = math.ceil(M_float)
         cached = self.configs_within_overhead[L]
         # Easy part: all configs in a lower-overhead bucket are OK
-        total = sum((len(cached[i]) for i in range(0, M_lo+1)))
+        total = sum((len(configs) for configs in cached[:M_lo+1]))
         if M_lo != M_hi:
             # Harder part: check all configs in the next bucket,
             # see if they have acceptable overhead
@@ -139,13 +131,13 @@ class LmnSummary(TabfileSummary):
             max_mean = M_float * self.base_runtime
             extras = sum((1 for cfg in maybe_ok_cfgs
                           if self.stats_of_config(cfg)["mean"] <= max_mean))
-            print("counting found '%s' EXTRA configs after baseline '%s' for LM=(%s, %s)" % (extras, total, L, M_float))
             total += extras
         return total
 
     def _precompute_counts(self):
         """
-            Precompute a few mappings from (L/M) to (L/M-good configs)
+            Precompute mappings from (L/M) to (L/M-good configs)
+             for discrete L and M.
 
             Returns:
              A table TBL such that TBL[L][M] returns the list of configurations
@@ -153,11 +145,11 @@ class LmnSummary(TabfileSummary):
              i.e. you get the _names_ of all configurations worse than (M-1)
               but still within M times untyped.
 
-            Runtime:
+            Running time:
             - L passes over all configurations, so L*(2**N) where N = num modules
-            - each pass does
-              [factorial(L) multiplications] and
-              [up to M increments] per configuration
+            Space:
+            - stores at most all configurations in each row of the table,
+              L * (2**N)
         """
         LM_table = []
         for L in self.Lvals:
