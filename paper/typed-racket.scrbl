@@ -50,7 +50,7 @@ imported value. Finally, in the benchmark instrumented version we replace
 
 @subsection{Performance of Suffixtree}
 
-@figure*["fig:suffixtree" "Suffixtree performance lattice"
+@figure*["fig:suffixtree" "Suffixtree performance lattice. Nodes labeled with normalized mean (top) and standard deviation (bottom)."
   @(let* ([vec (file->value "../tools/data/suffixtree-2015-04-02.rktd")]
           [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
      (make-performance-lattice vec*))
