@@ -1,8 +1,11 @@
 Lessons
 =======
 
-Gradual typing lessons and experiences
+Gradual typing lessons and experiences: how to have the best possible gradual typing experience.
 
+Note: the most important thing to remember about performance is that overheads come from typed/untyped boundaries.
+Many of the recommendations here are about catching high-overhead boundaries, but these generalizations are not a great substitute for project-specific knowledge.
+If you know the structure of your project, keep highly-connected modules together!
 
 General Advice
 --------------
@@ -25,6 +28,13 @@ General Advice
   The types of both result lists should be refined through occurrence typing,
   but the list of negatives is currently not refined (Typed Racket issue [#138](https://github.com/racket/typed-racket/issues/138)).
   So we had to change the code to use two calls to `filter`, or else add a run-time assertion.
+- __Type the Data First__.
+  Try to assign, or at least identify, types for the core data structures in the project before anything else.
+  For one, this tends to be easy to do because the data definition does not rely on other parts of the project.
+  Second, even a vague type signature for the core data will help in solving the puzzle of which types belong elsewhere.
+
+  Be sure to add types to functions tightly connected to the data as well.
+  There should never be a boundary between a data structure and functions used often to manipulate it.
 - __Use the typechecker to refine types.__
   If the type of a value is not clear from context, using a restrictive type like
   `(Void -> Void)` can give a helpful type error.
@@ -101,6 +111,9 @@ Racket-Specific
   We recommend using a specific adaptor module for this purpose.
   It is simpler and more straightforward than making one typed module the primary
   importer and having that typed module re-export the shared functions and data.
+
+  This is NOT an excuse to put a typed/untyped boundary between a struct and closely-related functions.
+  Those should all be typed (or untyped) as a single unit to avoid high overhead.
 - __Consider opaque structs__.
   Typed Racket allows importing a struct opaquely, rather than exposing its internal fields.
   Opaque names lead to significantly faster contracts, but are also generative.
