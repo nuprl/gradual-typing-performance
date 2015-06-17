@@ -23,7 +23,7 @@ class AbstractSummary(object):
     num_iters       = 50   ## Number of iterations for run.rkt
     project_name    = None ## Title of the project
     stats_by_config = {}   ## Map: bitstring -> {mean, median, min, max, ci95}
-    strategy        = constants.RECOMPUTE   ## Override when computing new stats
+    strategy        = constants.CACHE       ## Override when computing new stats
     output_dir      = constants.OUTPUT_DIR  ## Default directory to save outputs
 
     ### Abstract Methods (subclasses must implement) ###########################

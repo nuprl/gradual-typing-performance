@@ -47,6 +47,7 @@ def main(input_file, sample_size=50, iters=50, verbose=0):
     else:
         print("Cannot read input file '%s'" % input_file)
         return
+    print("Rendering output for '%s'" % summary.project_name)
     out_file = "%s/%s.tex" % (out_dir, tag)
     out_port = open(out_file, "w")
     summary.render(out_port)
