@@ -6,6 +6,7 @@ import constants
 import math
 import os
 import statistics
+import itertools
 
 def fold_file(fname, acc, fn, ignore_first_line=True):
     """
@@ -107,3 +108,9 @@ def sample_size95(width_pct):
 def pad(xs, default, length):
     return xs + ([default] * (length - len(xs)))
 
+def partition(xs, f):
+    """
+        Partition the iterable `xs` into  lists matching and failing the predicate f.
+    """
+    t1, t2 = itertools.tee(xs)
+    return filter(f, t1), itertools.filterfalse(f, t2)
