@@ -131,9 +131,12 @@ def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None,
     if ymax:
         ymin,_ = ax1.get_ylim()
         ax1.set_ylim(ymin, ymax)
-    ax1.set_title(title)
-    ax1.set_xlabel(xlabel, fontdict=default_font)
-    ax1.set_ylabel(ylabel, fontdict=default_font)
+    if title:
+        plt.suptitle(title)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.xlabel(xlabel, fontdict=default_font)
+    # y-label
+    plt.title(ylabel, fontdict=default_font, x=0.001, y=1)
     # TODO ax1.set_yticks()
     # Save
     plt.savefig(output)

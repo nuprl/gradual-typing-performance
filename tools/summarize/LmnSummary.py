@@ -42,8 +42,8 @@ class LmnSummary(TabfileSummary):
         self.num_modules = self.get_num_modules()
         self.base_runtime = self.stats_of_untyped()["mean"]
         # Graph parameters
-        self.Nmax = 50
-        self.Mmax = 50
+        self.Nmax = 20
+        self.Mmax = 20
         self.Lvals = [0, 1, 2]
         self.num_samples = 60
         # Table, to precompute M -> num.good
@@ -97,9 +97,9 @@ class LmnSummary(TabfileSummary):
         for L in Lvals:
             figs.append(plot.line([1, Nmax]
                                  ,[lambda N_float: self.countLM_continuous(L, N_float)]
-                                 ,title="L = %s" % L
-                                 ,xlabel="N (× untyped)"
-                                 ,ylabel="Num. Good"
+                                  # no title
+                                 ,xlabel="N  (× untyped)"
+                                 ,ylabel="Count"
                                  ,samples=self.num_samples
                                  ,output="%s/%s" % (self.output_dir, "%s-n-%sstep" % (self.project_name, L))
                                  ,hlines=[self.RED_HLINE]
@@ -118,7 +118,7 @@ class LmnSummary(TabfileSummary):
             figs.append(plot3.contour([0, Nmax]
                                  ,[0, Mmax]
                                  ,self.countLNM_continuous(L)
-                                 ,title="L=%s %s" % (L, "steps" if L==0 else "")
+                                 # ,title="L=%s %s" % (L, "steps" if L==0 else "")
                                  ,xlabel="\n\nN (overhead factor)"
                                  ,ylabel="\n\nM (≥ N)"
                                  ,zlabel="Count"
