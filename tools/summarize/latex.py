@@ -9,12 +9,24 @@ PREAMBLE = "\n".join(["\\documentclass{article}"
                      ,"\\usepackage{graphicx,enumitem,subcaption}"
                      ,"\\usepackage[margin=1in]{geometry}"
                      ,"\\newcommand{\\imgwidth}{0.25\\textwidth}"
-                     ,"\\newcommand{\\imgkern}{-0.2\\textwidth}"
-                     ,"\\newcommand{\\magicvoffset}{-4.1cm}"
+                     ,"\\newcommand{\\imgkern}{0.01\\textwidth}"
+                     ,"\\newcommand{\\magicvoffset}{-4.1cm}" # TODO less magic, more relative positioning
                      ,"\\newcommand{\\gtoverhead}{{\\tt\\bf$\\times$}}"
                      ,"\\begin{document}"
                      ,"\\setlist[enumerate,1]{start=0}"
                      ])
+
+# Magic header for graphs' L-values
+L_HEADER = "\n".join(["\\hbox{"
+                      ,"\\parbox{\\imgwidth}{~}"
+                      ,"\\hspace{\\imgkern}"
+                      ,"\\parbox{\\imgwidth}{\\centering\\bf L = 0}"
+                      ,"\\hspace{\\imgkern}"
+                      ,"\\parbox{\\imgwidth}{\\centering\\bf 1}"
+                      ,"\\hspace{\\imgkern}"
+                      ,"\\parbox{\\imgwidth}{\\centering\\bf 2 (steps)}"
+                      ,"}"
+                      ])
 
 def difference(n1, n2):
     """ (-> Nat Nat (List Nat String))

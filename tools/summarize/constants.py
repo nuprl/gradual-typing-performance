@@ -25,3 +25,6 @@ DELIVERABLE = 2
 ACCEPTABLE = 10
 
 GRAPH_SAMPLES = 50
+
+# Largest number of typing steps allowed between runs
+MAX_L = 2
