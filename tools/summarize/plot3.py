@@ -22,6 +22,9 @@ title_font = {
     #'linespacing' : 0.4,
 }
 matplotlib.rc('font', **default_font)
+# Darken grid. For more options, see
+# http://stackoverflow.com/questions/17925545/adjusting-gridlines-on-a-3d-matplotlib-figure
+matplotlib.rc('lines', linewidth=3)
 
 # reasonable colormaps
 COLORMAPS = [
@@ -113,7 +116,7 @@ def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None
     ax = fig.gca(projection='3d')
     X, Y, Z = make_mesh(xbounds, ybounds, zfun, samples)
     cmap = shiftedColorMap(colormap
-                           ,start=0, midpoint=0.4, stop=.9, name='shifted%s' % colormap.name)
+                           ,start=0, midpoint=0.4, stop=.85, name='shifted%s' % colormap.name)
     surf = ax.plot_surface(X, Y, Z
                            ,rstride=1, cstride=1 # row/column step size (int, default=10)
                            ,cmap=cmap
