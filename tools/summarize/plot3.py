@@ -23,6 +23,20 @@ title_font = {
 }
 matplotlib.rc('font', **default_font)
 
+# reasonable colormaps
+COLORMAPS = [
+    cm.cubehelix,
+    cm.CMRmap,
+    cm.coolwarm_r,
+    cm.gnuplot2,
+    cm.nipy_spectral,
+    cm.gist_rainbow,
+    cm.gist_ncar,
+    cm.gist_heat,
+    cm.gist_earth,
+    cm.gist_stern,
+]
+
 #############################################################################
 
 # http://stackoverflow.com/questions/7404116/defining-the-midpoint-of-a-colormap-in-matplotlib
@@ -54,27 +68,21 @@ def shiftedColorMap(cmap, start=0, midpoint=0.5, stop=1.0, name='shiftedcmap'):
         'blue': [],
         'alpha': []
     }
-
     # regular index to compute the colors
     reg_index = np.linspace(start, stop, 257)
-
     # shifted index to match the data
     shift_index = np.hstack([
         np.linspace(0.0, midpoint, 128, endpoint=False), 
         np.linspace(midpoint, 1.0, 129, endpoint=True)
     ])
-
     for ri, si in zip(reg_index, shift_index):
         r, g, b, a = cmap(ri)
-
         cdict['red'].append((si, r, r))
         cdict['green'].append((si, g, g))
         cdict['blue'].append((si, b, b))
         cdict['alpha'].append((si, a, a))
-
     newcmap = matplotlib.colors.LinearSegmentedColormap(name, cdict)
     plt.register_cmap(cmap=newcmap)
-
     return newcmap
 
 def make_mesh(xbounds, ybounds, zfun, samples):
@@ -83,7 +91,7 @@ def make_mesh(xbounds, ybounds, zfun, samples):
         - the implicit 2d array delimited by xbounds
         - the implicit 2d array delimited by ybounds
         and call the function `zfun` on each point in the mesh.
-     
+
         Return 3 matrices, each indexed along the Y axis first (then the X)
         - X : matrix of x positions
         - Y : matrix of y positions
@@ -100,15 +108,12 @@ def make_mesh(xbounds, ybounds, zfun, samples):
 
 # For info on colormaps, see
 # http://matplotlib.org/api/pyplot_summary.html?highlight=colormaps#matplotlib.pyplot.colormaps
-def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None, samples=constants.GRAPH_SAMPLES, output=None, zlim=None):
+def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None, samples=constants.GRAPH_SAMPLES, output=None, zlim=None, colormap=cm.cubehelix):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     X, Y, Z = make_mesh(xbounds, ybounds, zfun, samples)
-    # cm.coolwarm_r
-    # cm.cubehelix
-    # cm.CMRmap
-    cmap = shiftedColorMap(cm.cubehelix#CMRmap
-                           ,start=0, midpoint=0.4, stop=.9, name='shiftedcmap')
+    cmap = shiftedColorMap(colormap
+                           ,start=0, midpoint=0.4, stop=.9, name='shifted%s' % colormap.name)
     surf = ax.plot_surface(X, Y, Z
                            ,rstride=1, cstride=1 # row/column step size (int, default=10)
                            ,cmap=cmap
@@ -131,11 +136,12 @@ def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None
     ax.set_ylabel(ylabel, fontdict=default_font)
     # Save
     ax.view_init(elev=10, azim=240)
-    plt.savefig(output)
+    out = "%s-%s.png" % (output, colormap.name)
+    plt.savefig(out)
     plt.clf()
-    plt.close()
     print("Saved contour to '%s'" % output)
-    return output
+    plt.close()
+    return out
 
 def make_figs(output):
     """
