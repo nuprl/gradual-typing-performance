@@ -87,10 +87,13 @@ if __name__ == "__main__":
        output_port = open(results, "w")
        print(latex.PREAMBLE, file=output_port)
        print("\\begin{figure}", file=output_port)
+       print(latex.L_HEADER, file=output_port)
        summs = []
        for fname in sys.argv[1::]:
+          print("\\hbox{", file=output_port)
           summs.append(main(fname, default_out=constants.OUTPUT_DIR, default_port=output_port))
-       print("\\caption{\\emph{L-step N/M-usable} results for selected benchmarks. The brightness of each contour indicates the proportion of variations that are usable or deliverable for the given L, M, and N. Reported overheads are relative to the fully-untyped version of each benchmark.}", file=output_port)
+          print("}", file=output_port)
+       print("\\caption{\\emph{L-step N-usable} results for selected benchmarks.}", file=output_port)
        print("\\end{figure}", file=output_port)
        print(latex.end(), file=output_port)
        output_port.close()

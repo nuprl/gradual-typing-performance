@@ -2,6 +2,7 @@
     Simple wrappers for outputting LaTeX
 """
 
+import constants
 import util
 
 # TeX preamble / header
@@ -17,15 +18,21 @@ PREAMBLE = "\n".join(["\\documentclass{article}"
                      ])
 
 # Magic header for graphs' L-values
+FIGSKIP = "\\hspace{\\imgkern}"
+def titlebox(message):
+    # Hacking, to put titles over the $$$ graphs
+    message = message or "~"
+    return "\\parbox{\\imgwidth}{\\centering\\textbf{%s}}" % message
 L_HEADER = "\n".join(["\\hbox{"
-                      ,"\\parbox{\\imgwidth}{~}"
-                      ,"\\hspace{\\imgkern}"
-                      ,"\\parbox{\\imgwidth}{\\centering\\bf L = 0}"
-                      ,"\\hspace{\\imgkern}"
-                      ,"\\parbox{\\imgwidth}{\\centering\\bf 1}"
-                      ,"\\hspace{\\imgkern}"
-                      ,"\\parbox{\\imgwidth}{\\centering\\bf 2 (steps)}"
+                      ,"\\hspace{\\imgwidth}"
+                      , FIGSKIP
+                      ,titlebox("L = 0")
+                      , FIGSKIP
+                      , FIGSKIP.join([titlebox(L) for L in range(1, constants.MAX_L)])
+                      , FIGSKIP
+                      ,titlebox("%s (steps)" % constants.MAX_L)
                       ,"}"
+                      ,"\\vspace{0.5ex}"
                       ])
 
 def difference(n1, n2):
@@ -50,7 +57,7 @@ def magicparbox(title, lines):
     body = "\n".join([title,
                       "\\\\[1ex]",
                       "\\\\\n".join(lines)])
-    return "\\parbox{\\imgwidth}{\\vspace{\\magicvoffset}%s}" % body
+    return "\\parbox{\\imgwidth}{\\vspace{\\magicvoffset}%s}\n%s" % (body, FIGSKIP)
 
 def newpage():
     return "\n\\newpage\n"

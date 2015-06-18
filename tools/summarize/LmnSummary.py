@@ -44,7 +44,7 @@ class LmnSummary(TabfileSummary):
         # Graph parameters
         self.Nmax = 20
         self.Mmax = 20
-        self.Lvals = [0, 1, 2]
+        self.Lvals = list(range(0, 1 + constants.MAX_L))
         self.num_samples = 60
         # Table, to precompute M -> num.good
         self.configs_within_overhead = self._precompute_counts()
@@ -62,12 +62,8 @@ class LmnSummary(TabfileSummary):
             Print experimental L-N/M graphs,
             save everything to a .tex file for easy reading.
         """
-        print("\\begin{subfigure}{\\textwidth}", file=output_port)
-        print("\\hbox{", file=output_port)
         print(latex.magicparbox(*self.quick_stats()), file=output_port)
         self.render_ln(output_port)
-        print("}", file=output_port)
-        print("\\end{subfigure}", file=output_port)
 
     def quick_stats(self):
         """
@@ -77,12 +73,12 @@ class LmnSummary(TabfileSummary):
         title = "\\textbf{%s}~\\hfill{}(%s modules)" % (self.project_name.split("-", 1)[0], self.num_modules)
         lines = ["%s overhead \\hfill{} %s\\gtoverhead{}" % (tag, round(val / self.base_runtime, 2))
                  for (tag, val)
-                 in [("$\\tau$", self.stats_of_typed()["mean"])
+                 in [("$\\tau\,$", self.stats_of_typed()["mean"])
                     ,("max."  , gt_stat["max"])
                     ,("avg."  , gt_stat["mean"])
                     # ,("med."  , gt_stat["median"])
                  ]]
-        lines.append("(std. dev \\hfill{} %s\\gtoverhead{})" % round(math.sqrt(gt_stat["variance"]) / self.base_runtime, 2))
+        # lines.append("(std. dev \\hfill{} %s\\gtoverhead{})" % round(math.sqrt(gt_stat["variance"]) / self.base_runtime, 2))
         return title, lines
 
     def render_ln(self, output_port, Nmax=None, Lvals=None):
@@ -94,17 +90,27 @@ class LmnSummary(TabfileSummary):
         Nmax = Nmax or self.Nmax
         Lvals = Lvals or self.Lvals
         figs = []
+        yspace = np.linspace(0, self.num_configs, 6)
+        yround = 0 if self.num_configs < 1000 else -2
+        yticks = [int(yspace[0]),
+                  int(round(yspace[1], yround)),
+                  int(round(yspace[2], yround)),
+                  int(yspace[3]),
+                  int(round(yspace[4], yround)),
+                  int(yspace[5])]
         for L in Lvals:
             figs.append(plot.line([1, Nmax]
                                  ,[lambda N_float: self.countLM_continuous(L, N_float)]
                                   # no title
                                  ,xlabel="N  (× untyped)"
                                  ,ylabel="Count"
+                                  ,xticks=[1] + list(range(5, 1+Nmax, 5))
+                                 ,yticks=yticks
                                  ,samples=self.num_samples
                                  ,output="%s/%s" % (self.output_dir, "%s-n-%sstep" % (self.project_name, L))
                                  ,hlines=[self.RED_HLINE]
                                  ,ymax=self.num_configs))
-        print("\n\\hfill{}".join([latex.figure(fg) for fg in figs]), file=output_port)
+        print(("\n%s" % latex.FIGSKIP).join([latex.figure(fg) for fg in figs]), file=output_port)
 
     def render_lnm(self, output_port, Nmax=None, Mmax=None, Lvals=None):
         """
