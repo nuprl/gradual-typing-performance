@@ -21,12 +21,12 @@ import itertools
 import math
 import numpy as np
 
-RED_LINE = {"xpos" : constants.DELIVERABLE
+RED_VLINE = {"ypos" : constants.DELIVERABLE
             ,"color" : "r"
             ,"style" : "solid"
             ,"width" : 1
 }
-ORANGE_LINE = {"xpos" : constants.ACCEPTABLE
+ORANGE_VLINE = {"xpos" : constants.ACCEPTABLE
                ,"color" : "tomato"
                ,"style" : "dashed"
                ,"width" : 4
@@ -42,40 +42,77 @@ class LmnSummary(TabfileSummary):
         self.num_modules = self.get_num_modules()
         self.base_runtime = self.stats_of_untyped()["mean"]
         # Graph parameters
-        self.Nmax = 3
-        self.Mmax = 8
+        self.Nmax = 50
+        self.Mmax = 50
         self.Lvals = [0, 1, 2]
         self.num_samples = 60
         # Table, to precompute M -> num.good
         self.configs_within_overhead = self._precompute_counts()
+        # A cutoff line
+        self.CUTOFF_PROPORTION = 0.6
+        self.RED_HLINE = {
+            "ypos" : self.CUTOFF_PROPORTION *  self.num_configs,
+            "color" : "r",
+            "style" : "dashed",
+            "width" : 6
+        }
 
     def render(self, output_port):
         """
-            Print experimental L-M-N graphs,
+            Print experimental L-N/M graphs,
             save everything to a .tex file for easy reading.
         """
         print("\\begin{subfigure}{\\textwidth}", file=output_port)
         print("\\hbox{", file=output_port)
-        self.render_lmn(output_port
-                        ,Nmax=self.Nmax
-                        ,Mmax=self.Mmax
-                        ,Lvals=self.Lvals)
+        print(latex.magicparbox(*self.quick_stats()), file=output_port)
+        self.render_ln(output_port)
         print("}", file=output_port)
-        print("\\caption{%s}" % self.quick_stats(), file=output_port)
         print("\\end{subfigure}", file=output_port)
 
     def quick_stats(self):
+        """
+            Return a string of summary stats to accompany a series of L-N/M figures
+        """
         gt_stat = self.stats_of_predicate(config.is_gradual)
-        return " ".join(["\\textbf{%s}" % self.project_name
-                        ,":"
-                        ,"%s modules," % self.num_modules
-                        ,"~~"
-                        ,"max. overhead %s{\\tt $\\times$}," % round(gt_stat["max"] / self.base_runtime, 2)
-                        ,"~~"
-                        ,"average overhead %s{\\tt $\\times$}" % round(gt_stat["mean"] / self.base_runtime, 2)
-                        ])
+        title = "\\textbf{%s}~\\hfill{}(%s modules)" % (self.project_name.split("-", 1)[0], self.num_modules)
+        lines = ["%s overhead \\hfill{} %s\\gtoverhead{}" % (tag, round(val / self.base_runtime, 2))
+                 for (tag, val)
+                 in [("$\\tau$", self.stats_of_typed()["mean"])
+                    ,("max."  , gt_stat["max"])
+                    ,("avg."  , gt_stat["mean"])
+                    # ,("med."  , gt_stat["median"])
+                 ]]
+        lines.append("(std. dev \\hfill{} %s\\gtoverhead{})" % round(math.sqrt(gt_stat["variance"]) / self.base_runtime, 2))
+        return title, lines
 
-    def render_lmn(self, output_port, Nmax=None, Mmax=None, Lvals=None):
+    def render_ln(self, output_port, Nmax=None, Lvals=None):
+        """
+            Create and print L-N figures
+            (for fixed L, how many configurations are L-close to an N-good,
+             as N increases?)
+        """
+        Nmax = Nmax or self.Nmax
+        Lvals = Lvals or self.Lvals
+        figs = []
+        for L in Lvals:
+            figs.append(plot.line([1, Nmax]
+                                 ,[lambda N_float: self.countLM_continuous(L, N_float)]
+                                 ,title="L = %s" % L
+                                 ,xlabel="N (× untyped)"
+                                 ,ylabel="Num. Good"
+                                 ,samples=self.num_samples
+                                 ,output="%s/%s" % (self.output_dir, "%s-n-%sstep" % (self.project_name, L))
+                                 ,hlines=[self.RED_HLINE]
+                                 ,ymax=self.num_configs))
+        print("\n\\hfill{}".join([latex.figure(fg) for fg in figs]), file=output_port)
+
+    def render_lnm(self, output_port, Nmax=None, Mmax=None, Lvals=None):
+        """
+            Create and print L-N/M figures
+        """
+        Nmax = Nmax or self.Nmax
+        Mmax = Mmax or self.Mmax
+        Lvals = Lvals or self.Lvals
         figs = []
         for L in Lvals:
             figs.append(plot3.contour([0, Nmax]
