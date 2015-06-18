@@ -69,7 +69,9 @@ class LmnSummary(TabfileSummary):
         return " ".join(["\\textbf{%s}" % self.project_name
                         ,":"
                         ,"%s modules," % self.num_modules
+                        ,"~~"
                         ,"max. overhead %s{\\tt $\\times$}," % round(gt_stat["max"] / self.base_runtime, 2)
+                        ,"~~"
                         ,"average overhead %s{\\tt $\\times$}" % round(gt_stat["mean"] / self.base_runtime, 2)
                         ])
 
@@ -84,7 +86,7 @@ class LmnSummary(TabfileSummary):
                                  ,ylabel="\n\nM (≥ N)"
                                  ,zlabel="Count"
                                  ,samples=self.num_samples
-                                 ,output="%s/%s" % (self.output_dir, "lmn-contour-%sstep" % L)
+                                 ,output="%s/%s" % (self.output_dir, "%s-lmn-%sstep" % (self.project_name, L))
                                  ,zlim=self.num_configs))
         print("\n\\hspace{-.02\\textwidth}".join([latex.figure(fg, width_scale=0.35) for fg in figs]), file=output_port)
 
