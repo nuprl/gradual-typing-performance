@@ -54,53 +54,44 @@ class LmnSummary(TabfileSummary):
             Print experimental L-M-N graphs,
             save everything to a .tex file for easy reading.
         """
-        title = "L-M-N Results: %s" % self.project_name
-        self.render_title(output_port, title)
-        self.render_summary(output_port)
-        self.render_overall(output_port)
+        print(latex.PREAMBLE, file=output_port)
+        print("\\begin{figure}", file=output_port)
+        print("\\begin{subfigure}{\\textwidth}", file=output_port)
+        print("\\hbox{", file=output_port)
         self.render_lmn(output_port
                         ,Nmax=self.Nmax
                         ,Mmax=self.Mmax
                         ,Lvals=self.Lvals)
+        print("}", file=output_port)
+        print("\\caption{%s}" % self.quick_stats(), file=output_port)
+        print("\\end{subfigure}", file=output_port)
+        print("\\caption{Yes}", file=output_port)
+        print("\\end{figure}", file=output_port)
         print(latex.end(), file=output_port)
 
-    def render_overall(self, output_port):
-        """
-            Show overall results in a table
-            TODO improve this
-        """
-        print(latex.subsection("Summary Results"), file=output_port)
-        best_cfg = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] > self.stats_by_config[y]["mean"], limit=1)[0]
-        worst_cfg = self.best_rows(config.is_gradual, lambda x,y: self.stats_by_config[x]["mean"] < self.stats_by_config[y]["mean"], limit=1)[0]
-        title = ["---", "mean (ms)", "95-confidence"]
-        rows = [[label, stat["mean"], "%s--%s" % (stat["ci"][0], stat["ci"][1])]
-                for (label, stat)
-                in [("Untyped", self.stats_of_untyped())
-                   ,("Avg. Gradual", self.stats_of_predicate(config.is_gradual))
-                   ,("Best Gradual (%s)" % best_cfg, self.stats_of_config(best_cfg))
-                   ,("Worst Gradual (%s)" % worst_cfg, self.stats_of_config(worst_cfg))
-                   ,("Typed", self.stats_of_typed())]]
-        print(latex.table(title, rows), file=output_port)
+    def quick_stats(self):
+        gt_stat = self.stats_of_predicate(config.is_gradual)
+        return " ".join(["\\textbf{%s}" % self.project_name
+                        ,":"
+                        ,"%s modules," % self.num_modules
+                        ,"max. overhead %s{\\tt $\\times$}," % round(gt_stat["max"] / self.base_runtime, 2)
+                        ,"average overhead %s{\\tt $\\times$}" % round(gt_stat["mean"] / self.base_runtime, 2)
+                        ])
 
     def render_lmn(self, output_port, Nmax=None, Mmax=None, Lvals=None):
-        print(latex.subsection("L-M-N graphs"), file=output_port)
         figs = []
         for L in Lvals:
             figs.append(plot3.contour([0, Nmax]
                                  ,[0, Mmax]
                                  ,self.countLNM_continuous(L)
-                                 ,title="L=%s step%s" % (L, "" if L==1 else "s")
-                                 ,xlabel="\nN (overhead factor)"
-                                 ,ylabel="\nM (≥ N)"
+                                 ,title="L=%s %s" % (L, "steps" if L==0 else "")
+                                 ,xlabel="\n\nN (overhead factor)"
+                                 ,ylabel="\n\nM (≥ N)"
                                  ,zlabel="Count"
                                  ,samples=self.num_samples
                                  ,output="%s/%s" % (self.output_dir, "lmn-contour-%sstep" % L)
                                  ,zlim=self.num_configs))
-        print("\\hspace{-4cm}\\hbox{", file=output_port)
-        print(latex.figure(figs[0], width_scale=0.5), file=output_port)
-        print(latex.figure(figs[1], width_scale=0.5), file=output_port)
-        print(latex.figure(figs[2], width_scale=0.5), file=output_port)
-        print("}", file=output_port)
+        print("\n\\hspace{-.02\\textwidth}".join([latex.figure(fg, width_scale=0.35) for fg in figs]), file=output_port)
 
     ### -----------------------------------------------------------------------------
 
@@ -153,7 +144,6 @@ class LmnSummary(TabfileSummary):
         """
         LM_table = []
         for L in self.Lvals:
-            print("precomputing M-acceptables for L=%s" % L)
             row = [[]] # Skip the 0 step
             unsorted_configs = self.all_configurations()
             for M in range(1, self.Mmax+1):

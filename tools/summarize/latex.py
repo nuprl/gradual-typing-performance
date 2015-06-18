@@ -6,8 +6,9 @@ import util
 
 # TeX preamble / header
 PREAMBLE = "\n".join(["\\documentclass{article}"
-                     ,"\\usepackage{graphicx,enumitem}"
-                     ,"\\newcommand{\\mono}[1]{\\texttt{#1}}"
+                     ,"\\usepackage{graphicx,enumitem,subcaption}"
+                     ,"\\usepackage[margin=1in]{geometry}"
+                     ,"\\newcommand{\\x}{$\\mathbf{\\times}$}"
                      ,"\\begin{document}"
                      ,"\\setlist[enumerate,1]{start=0}"
                      ])
@@ -53,8 +54,8 @@ def subsubsection(title):
     return "\n\\subsubsection{%s}" % title
 
 def table(title, rows):
-    return "\n".join(["\n\\begin{center}\\begin{tabular}{|%s|}\\hline" % " ".join(("r" for _ in range(len(title))))
-                     ," & ".join((str(x) for x in title)) + "\\\\\\hline"
-                     ,"\\\\\n".join((" & ".join((str(x) for x in row)) for row in rows))
-                     ,"\\\\\\hline\\end{tabular}\\end{center}"
+    return "\n".join(["\n\\begin{tabular}{|@{}l@{} %s|}\\hline" % " ".join(("r" for _ in range(1, len(title))))
+                     ," & ".join(("%s" % x for x in title)) + "\\\\\\hline"
+                     ,"\\\\\n".join((" & \\hfill{}".join((str(x) for x in row)) for row in rows))
+                     ,"\\\\\\hline\\end{tabular}"
                      ])

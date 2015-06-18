@@ -12,13 +12,13 @@ import constants
 default_font = {
     #'family': 'normal',
     'weight' : 'semibold',
-    'size' : 20,
+    'size' : 24,
     #'linespacing' : 0.4,
 }
 title_font = {
     #'family': 'normal',
     'weight' : 'semibold',
-    'size' : 24,
+    'size' : 30,
     #'linespacing' : 0.4,
 }
 matplotlib.rc('font', **default_font)
@@ -121,7 +121,7 @@ def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None
                            ,linewidth=0, antialiased=False)
     # Override the x and y ticks
     xposns = list(range(xbounds[0], xbounds[1]+1))
-    yposns = list(range(ybounds[0]+2, ybounds[1]+1, 2))
+    yposns = [(ybounds[1] - ybounds[0]) // 2, ybounds[1]]
     plt.xticks(xposns, ["%sx" % n for n in xposns])
     plt.yticks(yposns, ["%sx" % m for m in yposns])
     ax.zaxis.get_major_ticks()[0].label1.set_visible(False)
