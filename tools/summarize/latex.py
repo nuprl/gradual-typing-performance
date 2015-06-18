@@ -8,7 +8,8 @@ import util
 PREAMBLE = "\n".join(["\\documentclass{article}"
                      ,"\\usepackage{graphicx,enumitem,subcaption}"
                      ,"\\usepackage[margin=1in]{geometry}"
-                     ,"\\newcommand{\\x}{$\\mathbf{\\times}$}"
+                     ,"\\newcommand{\\imgwidth}{0.25\\textwidth}"
+                     ,"\\newcommand{\\imgkern}{-0.2\\textwidth}"
                      ,"\\begin{document}"
                      ,"\\setlist[enumerate,1]{start=0}"
                      ])
@@ -42,7 +43,7 @@ def figure(fname, width_scale=1):
         Splice the filename `fname` into an imported figure
         for the final .tex
     """
-    return "\\includegraphics[width=%s\\textwidth]{%s}" % (width_scale, util.strip_directory(fname))
+    return "\\includegraphics[width=\\imgwidth]{%s}" % util.strip_directory(fname)
 
 def section(title):
     return "\n\n\\section{%s}" % title

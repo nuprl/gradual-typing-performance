@@ -88,7 +88,7 @@ class LmnSummary(TabfileSummary):
                                  ,samples=self.num_samples
                                  ,output="%s/%s" % (self.output_dir, "%s-lmn-%sstep" % (self.project_name, L))
                                  ,zlim=self.num_configs))
-        print("\n\\hspace{-.02\\textwidth}".join([latex.figure(fg, width_scale=0.35) for fg in figs]), file=output_port)
+        print("\n\\hfill{}".join([latex.figure(fg) for fg in figs]), file=output_port)
 
     ### -----------------------------------------------------------------------------
 
