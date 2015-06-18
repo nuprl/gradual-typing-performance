@@ -114,7 +114,7 @@ def dots(xs, yss, title, xlabel, ylabel, labels=None, skip=None, output=None, vl
     print("Saved dots chart to '%s'" % output)
     return output
 
-def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=constants.GRAPH_SAMPLES, alpha=1, output=None, vlines=None, hlines=None, ymax=None):
+def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=constants.GRAPH_SAMPLES, alpha=1, output=None, vlines=None, hlines=None, ymax=None, yticks=None, xticks=None):
     fig,ax1 = plt.subplots()
     # data
     X = np.linspace(xbounds[0], xbounds[1], num=samples)
@@ -130,14 +130,19 @@ def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None,
         plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
     if ymax:
         ymin,_ = ax1.get_ylim()
-        ax1.set_ylim(ymin, ymax)
+        ax1.set_ylim(ymin, ymax+2)
+    ax1.set_xlim(xbounds[0] - 0.5, xbounds[1])
     if title:
         plt.suptitle(title)
     plt.gcf().subplots_adjust(bottom=0.15)
     plt.xlabel(xlabel, fontdict=default_font)
-    # y-label
-    plt.title(ylabel, fontdict=default_font, x=0.001, y=1)
-    # TODO ax1.set_yticks()
+    # y-label & yticks
+    plt.title(ylabel, fontdict=default_font, x=0.001, y=1.05)
+    if yticks:
+        ax1.set_yticks(yticks)
+    if xticks:
+        ax1.set_xticks(xticks)
+    # ax1.set_xticks([1] + ax1.get_xticks()[1:])
     # Save
     plt.savefig(output)
     plt.clf()
