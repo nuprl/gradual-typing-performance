@@ -10,6 +10,8 @@ PREAMBLE = "\n".join(["\\documentclass{article}"
                      ,"\\usepackage[margin=1in]{geometry}"
                      ,"\\newcommand{\\imgwidth}{0.25\\textwidth}"
                      ,"\\newcommand{\\imgkern}{-0.2\\textwidth}"
+                     ,"\\newcommand{\\magicvoffset}{-4.1cm}"
+                     ,"\\newcommand{\\gtoverhead}{{\\tt\\bf$\\times$}}"
                      ,"\\begin{document}"
                      ,"\\setlist[enumerate,1]{start=0}"
                      ])
@@ -27,6 +29,16 @@ def difference(n1, n2):
     else:
         descr = "faster"
     return val, descr
+
+def magicparbox(title, lines):
+    """
+        Arrange the lines of text into a parbox
+        that magically aligns with our specific 3D plot figures
+    """
+    body = "\n".join([title,
+                      "\\\\[1ex]",
+                      "\\\\\n".join(lines)])
+    return "\\parbox{\\imgwidth}{\\vspace{\\magicvoffset}%s}" % body
 
 def newpage():
     return "\n\\newpage\n"
