@@ -15,7 +15,24 @@ import numpy as np
 import util
 import itertools
 
+# Set font, globally
+default_font = {
+    #'family': 'normal',
+    'weight' : 'semibold',
+    'size' : 24,
+    #'linespacing' : 0.4,
+}
+title_font = {
+    #'family': 'normal',
+    'weight' : 'semibold',
+    'size' : 30,
+    #'linespacing' : 0.4,
+}
+matplotlib.rc('font', **default_font)
+
 markers = ["o", "^", "s", "*", "h", "D"]
+
+################################################################################
 
 def remove_empty(d1, d2):
     """
@@ -97,24 +114,27 @@ def dots(xs, yss, title, xlabel, ylabel, labels=None, skip=None, output=None, vl
     print("Saved dots chart to '%s'" % output)
     return output
 
-def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=constants.GRAPH_SAMPLES, alpha=1, output=None, vlines=None, ymax=None):
+def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=constants.GRAPH_SAMPLES, alpha=1, output=None, vlines=None, hlines=None, ymax=None):
     fig,ax1 = plt.subplots()
     # data
     X = np.linspace(xbounds[0], xbounds[1], num=samples)
     for (y_fun, c) in zip(y_funs, cm.spectral(np.linspace(0.05, 0.6, len(y_funs)))):
         Y = [y_fun(val) for val in X]
-        plt.plot(X, Y, color=c, alpha=alpha, linestyle="solid", linewidth=2)
+        plt.plot(X, Y, color='b', alpha=alpha, linestyle="solid", linewidth=6)
     if linelabels:
         plt.legend(['%s' % lbl for lbl in linelabels], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)
     # Add extra lines
+    for line in (hlines or []):
+        plt.axhline(line["ypos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
     for line in (vlines or []):
         plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
     if ymax:
         ymin,_ = ax1.get_ylim()
         ax1.set_ylim(ymin, ymax)
     ax1.set_title(title)
-    ax1.set_xlabel(xlabel)
-    ax1.set_ylabel(ylabel)
+    ax1.set_xlabel(xlabel, fontdict=default_font)
+    ax1.set_ylabel(ylabel, fontdict=default_font)
+    # TODO ax1.set_yticks()
     # Save
     plt.savefig(output)
     plt.clf()
