@@ -27,7 +27,7 @@ def init(out_dir):
        os.mkdir(out_dir)
    return
 
-def main(input_file, sample_size=50, iters=50, verbose=0):
+def main(input_file, sample_size=50, iters=50, verbose=0, default_out=None, default_port=None):
     """ (-> Path-String (Dictof String Any) Void)
         Collect summary information from the input args by dispatching to the
         appropriate helper function.
@@ -36,8 +36,8 @@ def main(input_file, sample_size=50, iters=50, verbose=0):
     print("Processing '%s'" % input_file)
     summary = None
     tag = util.strip_suffix(input_file).rsplit("/", 1)[-1]
-    out_dir = "%s-%s" % (constants.OUTPUT_DIR, tag)
-    init(out_dir)
+    out_dir = default_out or "%s-%s" % (constants.OUTPUT_DIR, tag)
+    #init(out_dir)
     if input_file.endswith(".rktd") or input_file.endswith(".tab"):
         # summary = TabfileSummary(input_file)
         summary = LmnSummary(input_file, out_dir=out_dir)
@@ -49,15 +49,11 @@ def main(input_file, sample_size=50, iters=50, verbose=0):
         return
     print("Rendering output for '%s'" % summary.project_name)
     out_file = "%s/%s.tex" % (out_dir, tag)
-    out_port = open(out_file, "w")
+    out_port = default_port or open(out_file, "w")
     summary.render(out_port)
-    out_port.close()
-    print("Results saved as '%s'" % out_file)
-    ## BEGIN HACKS
-    cwd = os.getcwd()
-    os.system("cd %s; xelatex %s; cd %s" % (out_dir, tag, cwd))
-    os.system("cp %s/%s.pdf /home/ben/Downloads/%s.pdf" % (out_dir, tag, tag.split("-", 1)[0]))
-    ## END HACKS
+    if default_port is None:
+        out_port.close()
+    # print("Results saved as '%s'" % out_file)
     return summary
 
 def aggregate(summaries):
@@ -86,8 +82,20 @@ if __name__ == "__main__":
     elif sys.argv[1] in ["-a", "--all", "--aggregate"]:
        main_aggregate(sys.argv[2::])
     else:
+       init(constants.OUTPUT_DIR)
+       results = "%s/results.tex" % constants.OUTPUT_DIR
+       output_port = open(results, "w")
+       print(latex.PREAMBLE, file=output_port)
+       print("\\begin{figure}", file=output_port)
        summs = []
        for fname in sys.argv[1::]:
-          summs.append(main(fname))
-       # aggregate(summs)
+          summs.append(main(fname, default_out=constants.OUTPUT_DIR, default_port=output_port))
+       print("\\caption{L-step N/M-usable results for selected benchmarks.}", file=output_port)
+       print("\\end{figure}", file=output_port)
+       print(latex.end(), file=output_port)
+       output_port.close()
+       ## BEGIN HACKS
+       os.system("cd output-summary; xelatex results.tex; cd ..;")
+       os.system("cp output-summary/results.pdf /home/ben/Downloads/results.pdf")
+       ## END HACKS
 

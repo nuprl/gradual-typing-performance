@@ -54,8 +54,6 @@ class LmnSummary(TabfileSummary):
             Print experimental L-M-N graphs,
             save everything to a .tex file for easy reading.
         """
-        print(latex.PREAMBLE, file=output_port)
-        print("\\begin{figure}", file=output_port)
         print("\\begin{subfigure}{\\textwidth}", file=output_port)
         print("\\hbox{", file=output_port)
         self.render_lmn(output_port
@@ -65,9 +63,6 @@ class LmnSummary(TabfileSummary):
         print("}", file=output_port)
         print("\\caption{%s}" % self.quick_stats(), file=output_port)
         print("\\end{subfigure}", file=output_port)
-        print("\\caption{Yes}", file=output_port)
-        print("\\end{figure}", file=output_port)
-        print(latex.end(), file=output_port)
 
     def quick_stats(self):
         gt_stat = self.stats_of_predicate(config.is_gradual)
