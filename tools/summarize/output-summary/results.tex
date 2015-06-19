@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{graphicx,enumitem,subcaption}
+\usepackage[margin=1in]{geometry}
+\newcommand{\imgwidth}{0.25\textwidth}
+\newcommand{\imgkern}{0.01\textwidth}
+\newcommand{\magicvoffset}{-4.1cm}
+\newcommand{\gtoverhead}{{\tt\bf$\times$}}
+\begin{document}
+\setlist[enumerate,1]{start=0}
+\begin{figure}
+\hbox{
+\hspace{\imgwidth}
+\hspace{\imgkern}
+\parbox{\imgwidth}{\centering\textbf{L = 0}}
+\hspace{\imgkern}
+\parbox{\imgwidth}{\centering\textbf{1}}
+\hspace{\imgkern}
+\parbox{\imgwidth}{\centering\textbf{2 (steps)}}
+}
+\vspace{0.5ex}
+\hbox{
+\parbox{\imgwidth}{\vspace{\magicvoffset}\textbf{morse}~\hfill{}(4 modules)
+\\[1ex]
+$\tau\,$ overhead \hfill{} 1.74\gtoverhead{}\\
+max. overhead \hfill{} 1.8\gtoverhead{}\\
+avg. overhead \hfill{} 1.57\gtoverhead{}}
+\hspace{\imgkern}
+\includegraphics[width=\imgwidth]{morse0}
+\hspace{\imgkern}\includegraphics[width=\imgwidth]{morse1}
+\hspace{\imgkern}\includegraphics[width=\imgwidth]{morse2}
+}
+\caption{\emph{L-step, M/N-usable} results for selected benchmarks.}
+\end{figure}
+\end{document}

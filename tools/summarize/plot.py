@@ -143,9 +143,10 @@ def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None,
     # y-label & yticks
     plt.title(ylabel, fontdict=default_font, x=0.001, y=1.05)
     if yticks:
-        ax1.set_yticks(yticks)
+        plt.yticks(*yticks)
     if xticks:
-        ax1.set_xticks(xticks)
+        xposns, xlbls = xticks
+        plt.xticks(*xticks)
     # ax1.set_xticks([1] + ax1.get_xticks()[1:])
     # Save
     plt.savefig(output)

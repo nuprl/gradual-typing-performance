@@ -99,16 +99,18 @@ class LmnSummary(TabfileSummary):
                   int(yspace[3]),
                   int(round(yspace[4], yround)),
                   int(yspace[5])]
+        xposns = [1] + list(range(5, 1+Nmax, 5))
+        xlbls  = ["%sx" % n for n in xposns]
         for L in Lvals:
             figs.append(plot.line([1, Nmax]
                                  ,[lambda N_float: self.countLM_continuous(L, N_float)]
                                  ,title=title # no title by default
-                                 ,xlabel="N  (× untyped)"
+                                 ,xlabel="Overhead  (vs. untyped)"
                                  ,ylabel="Count"
-                                  ,xticks=[1] + list(range(5, 1+Nmax, 5))
-                                 ,yticks=yticks
+                                  ,xticks=(xposns, xlbls)
+                                 ,yticks=(yticks, yticks)
                                  ,samples=self.num_samples
-                                 ,output="%s/%s" % (self.output_dir, "%s-n-%sstep" % (self.project_name, L))
+                                 ,output="%s/%s" % (self.output_dir, "%s%s" % (self.project_name.split("-", 1)[0], L))
                                  ,hlines=[self.RED_HLINE]
                                  ,vlines=[self.DELIVERABLE_VLINE, self.USABLE_VLINE]
                                  ,ymax=self.num_configs))
