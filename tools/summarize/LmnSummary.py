@@ -43,7 +43,7 @@ class LmnSummary(TabfileSummary):
         self.base_runtime = self.stats_of_untyped()["mean"]
         # Graph parameters
         self.Nmax = 20
-        self.Mmax = 20
+        self.Mmax = 110 # TODO
         self.Lvals = list(range(0, 1 + constants.MAX_L))
         self.num_samples = 60
         # Table, to precompute M -> num.good
@@ -100,7 +100,9 @@ class LmnSummary(TabfileSummary):
                   int(yspace[5])]
         for L in Lvals:
             figs.append(plot.line([1, Nmax]
-                                 ,[lambda N_float: self.countLM_continuous(L, N_float)]
+                                 ,[lambda N_float: self.countLM_continuous(L, N_float)
+                                   ,lambda N: self.countLM_continuous(L, N * 2)
+                                   ,lambda N: self.countLM_continuous(L, N * 5)]
                                  ,title=title # no title by default
                                  ,xlabel="N  (× untyped)"
                                  ,ylabel="Count"
