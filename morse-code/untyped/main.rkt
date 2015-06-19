@@ -3,59 +3,40 @@
 ;; Copyright 2014 John Clements (clements@racket-lang.org)
 ;; Code licensed under the Mozilla Public License 2.0
 
-;;bg
-;; Randomly generate some english words,
-;; convert them to morse code,
-;; compare the levenshtein distance between the words and a simulated user guess
-(define (run-test)
-  ;; Pick random word
-  (define w1 (text))
-  ;; Convert word to morse code (in 'real life', we'd play the sound)
-  (string->morse w1)
-  ;; Simulate user input (pick another random word)
-  (define w2 (text))
-  ;; Compare the expected and actual words
-  (string-levenshtein w1 w2)
-  (void))
-
-;; --- test parameters
-
-(define MAX-WORD-LEN 10)
-(define NUM-WORDS-CHOSEN 100)
-(define NUM-TESTS 10)
 
 ;; -----------------------------------------------------------------------------
 
 (require
-  "levenshtein.rkt"
-  "morse-code-strings.rkt"
-  racket/runtime-path
+  benchmark-util
   (only-in racket/file file->value))
 
-(define-runtime-path common-words-list "./../base/Lemmatized-NGSL-ezi1.txt")
-(define-runtime-path word-frequency-list "./../base/frequency.rktd")
+(require (only-in "morse-code-strings.rkt"
+  string->morse))
 
-(define allwords
-   (file->value word-frequency-list))
+(require (only-in "levenshtein.rkt"
+               string-levenshtein))
 
-;; read all words matching the given regexp
-(define (regexp->wordlist rx maxlen)
-  (filter (lambda (w) (and (not (eq? #f (regexp-match rx w)))
-                                       (<= (string-length w) maxlen)))
-          (map car allwords)))
+;(define-runtime-path common-words-list "./../base/Lemmatized-NGSL-ezi1.txt")
+(define word-frequency-list "./../base/frequency.rktd")
+(define word-frequency-list-small "./../base/frequency-small.rktd")
 
-;; Word bank, to choose from
-(define wordlist (regexp->wordlist #px"^[qwertyuiopasdfghjklzxcvbnm]*$" MAX-WORD-LEN))
+(define (file->words filename)
+  (define words+freqs (file->value (string->path filename)))
+  (for/list ([word+freq  words+freqs])
+    (car word+freq)))
 
-;; Randomly pick some words from the wordlist
-(define (rand-words)
-  (for/list ([i NUM-WORDS-CHOSEN]) (list-ref wordlist (random (length wordlist)))))
+(define allwords (file->words word-frequency-list))
 
-;; Convert a list of words to a string, for levenshtein
-(define (text) (apply string-append (rand-words)))
+(define words-small (file->words word-frequency-list-small))
 
-(define (main)
-  (for ([_ (in-range NUM-TESTS)])
-    (run-test)))
+(define (main words)
+  (for* ([w1 (in-list words)]
+         [w2 (in-list words)])
+    (string->morse w1)
+    (string->morse w2)
+    (string-levenshtein w1 w2)
+    (string-levenshtein w2 w1)
+    (void)))
 
-(time (main))
+;(time (main allwords)) ;; 68,000ms
+(time (main words-small)) ;; 200ms
