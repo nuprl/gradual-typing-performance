@@ -81,7 +81,7 @@ class LmnSummary(TabfileSummary):
         # lines.append("(std. dev \\hfill{} %s\\gtoverhead{})" % round(math.sqrt(gt_stat["variance"]) / self.base_runtime, 2))
         return title, lines
 
-    def render_ln(self, output_port, Nmax=None, Lvals=None):
+    def render_ln(self, output_port, Nmax=None, Lvals=None, title=None):
         """
             Create and print L-N figures
             (for fixed L, how many configurations are L-close to an N-good,
@@ -101,7 +101,7 @@ class LmnSummary(TabfileSummary):
         for L in Lvals:
             figs.append(plot.line([1, Nmax]
                                  ,[lambda N_float: self.countLM_continuous(L, N_float)]
-                                  # no title
+                                 ,title=title # no title by default
                                  ,xlabel="N  (× untyped)"
                                  ,ylabel="Count"
                                   ,xticks=[1] + list(range(5, 1+Nmax, 5))
@@ -132,6 +132,15 @@ class LmnSummary(TabfileSummary):
                                  ,output="%s/%s" % (self.output_dir, "%s-lmn-%sstep" % (self.project_name, L))
                                  ,zlim=self.num_configs))
         print("\n\\hfill{}".join([latex.figure(fg) for fg in figs]), file=output_port)
+
+    def render_thumbnail(self, output_port):
+        """
+            Create and save a graph suitable for thumbnail sizes
+        """
+        lvals = self.Lvals
+        self.Lvals = [0]
+        self.render_ln(output_port, title=self.project_name)
+        self.Lvals = lvals
 
     ### -----------------------------------------------------------------------------
 

@@ -25,7 +25,7 @@ default_font = {
 title_font = {
     #'family': 'normal',
     'weight' : 'semibold',
-    'size' : 30,
+    'size' : 40,
     #'linespacing' : 0.4,
 }
 matplotlib.rc('font', **default_font)
@@ -133,7 +133,7 @@ def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None,
         ax1.set_ylim(ymin, ymax+2)
     ax1.set_xlim(xbounds[0] - 0.5, xbounds[1])
     if title:
-        plt.suptitle(title)
+        plt.suptitle(title, fontdict=title_font, y=1.0)
     plt.gcf().subplots_adjust(bottom=0.15)
     plt.xlabel(xlabel, fontdict=default_font)
     # y-label & yticks
