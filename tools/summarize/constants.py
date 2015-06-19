@@ -28,3 +28,7 @@ GRAPH_SAMPLES = 50
 
 # Largest number of typing steps allowed between runs
 MAX_L = 2
+
+# When this proportion configurations are OK, things are "good".
+# (A binary judgment for the pictures)
+CUTOFF_PROPORTION = 0.6
