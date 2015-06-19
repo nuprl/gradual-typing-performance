@@ -50,11 +50,12 @@ only depends on Racket's trusted core libraries.
 
 @parag{Morse code}
 The @tt{morse-code} script was adapted from a morse code training program.
-Running the script repeatedly generates a random string, translates the string
-to morse code, then compares the Levenshtein distance of the original string
-with a second random string (simulating user input). The script contains four
-modules in a vee shape (two chains of modules from a main module) and has
-minimal dependencies.
+The original program would play a morse code audio clip, read the keyboard for
+user input, and score the input based on its Levenshtein distance from the
+correct answer. Our benchmark tests generating morse code strings and the
+Levenshtein algorithm on a list of frequently-used English words.
+The script contains four modules in a vee shape (two chains of modules from a
+main module) and has minimal dependencies.
 
 @parag{MBTA}
 The @tt{mbta} program implements a server that asynchronously responds to
