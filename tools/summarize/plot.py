@@ -31,6 +31,8 @@ title_font = {
 matplotlib.rc('font', **default_font)
 
 markers = ["o", "^", "s", "*", "h", "D"]
+COLORS = ["b", "darkgreen", "darkmagenta", "cyan", "darkorange", "magenta", "lime", "darkviolet", "chartreuse"]
+LINE_STYLES = ["-", "-.", ":", "--"]
 
 ################################################################################
 
@@ -118,9 +120,11 @@ def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None,
     fig,ax1 = plt.subplots()
     # data
     X = np.linspace(xbounds[0], xbounds[1], num=samples)
-    for (y_fun, c) in zip(y_funs, cm.spectral(np.linspace(0.05, 0.6, len(y_funs)))):
+    for (y_fun, c, i) in zip(y_funs, itertools.cycle(COLORS), range(0, 10, 2)):
         Y = [y_fun(val) for val in X]
-        plt.plot(X, Y, color='b', alpha=alpha, linestyle="solid", linewidth=6)
+        style = 'solid'
+        wd = 6 if i == 0 else 4
+        plt.plot(X, Y, color=c, alpha=alpha - (0.1 * i), linestyle=style, linewidth=wd)
     if linelabels:
         plt.legend(['%s' % lbl for lbl in linelabels], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)
     # Add extra lines
