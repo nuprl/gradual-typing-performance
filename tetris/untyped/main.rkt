@@ -25,4 +25,4 @@
   (replay w0 (reverse raw)))
 
 ;(time (main SMALL_TEST)) ; 0ms
-(time (main LARGE_TEST)) ; 163ms
+(time (main LARGE_TEST)) ; 480ms
