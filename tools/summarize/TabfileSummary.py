@@ -113,10 +113,10 @@ class TabfileSummary(AbstractSummary):
             weights = [self.max_weight(lattice, path)
                        for path in paths]
             num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.DELIVERABLE)))
-            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.ACCEPTABLE)))
+            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.USABLE)))
             num_x_u     = sum((1 for x in weights if x < (untyped_mean * 15)))
             num_release_t = sum((1 for x in weights if x < (typed_mean * constants.DELIVERABLE)))
-            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.ACCEPTABLE)))
+            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.USABLE)))
             num_x_t     = sum((1 for x in weights if x < (typed_mean * 15)))
             num_paths     = len(weights)
             rows.append([str(trans)
@@ -151,10 +151,10 @@ class TabfileSummary(AbstractSummary):
                        for path in paths
                        if len(path) == 1+cutoff]
             num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.DELIVERABLE)))
-            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.ACCEPTABLE)))
+            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.USABLE)))
             num_x_u     = sum((1 for x in weights if x < (untyped_mean * 15)))
             num_release_t = sum((1 for x in weights if x < (typed_mean * constants.DELIVERABLE)))
-            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.ACCEPTABLE)))
+            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.USABLE)))
             num_x_t     = sum((1 for x in weights if x < (typed_mean * 15)))
             num_paths     = len(weights)
             rows.append([str(cutoff)

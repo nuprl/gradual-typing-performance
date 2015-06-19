@@ -21,8 +21,8 @@ RECOMPUTE = 1
 APPEND = 2
 
 # Rough constants, to help orient the graphs in a larger picture
-DELIVERABLE = 2
-ACCEPTABLE = 10
+DELIVERABLE = 3
+USABLE = 10
 
 GRAPH_SAMPLES = 50
 
