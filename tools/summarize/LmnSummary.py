@@ -21,17 +21,6 @@ import itertools
 import math
 import numpy as np
 
-RED_VLINE = {"ypos" : constants.DELIVERABLE
-            ,"color" : "r"
-            ,"style" : "solid"
-            ,"width" : 1
-}
-ORANGE_VLINE = {"xpos" : constants.ACCEPTABLE
-               ,"color" : "tomato"
-               ,"style" : "dashed"
-               ,"width" : 4
-}
-
 class LmnSummary(TabfileSummary):
 
     def __init__(self, *args, **kwargs):
@@ -43,19 +32,31 @@ class LmnSummary(TabfileSummary):
         self.base_runtime = self.stats_of_untyped()["mean"]
         # Graph parameters
         self.Nmax = 20
-        self.Mmax = 110 # TODO
+        self.Mmax = 30
         self.Lvals = list(range(0, 1 + constants.MAX_L))
         self.num_samples = 60
         # Table, to precompute M -> num.good
         self.configs_within_overhead = self._precompute_counts()
         # A cutoff line
-        self.CUTOFF_PROPORTION = 0.6
         self.RED_HLINE = {
-            "ypos" : self.CUTOFF_PROPORTION *  self.num_configs,
+            "ypos" : constants.CUTOFF_PROPORTION *  self.num_configs,
             "color" : "r",
             "style" : "dashed",
             "width" : 6
         }
+        self.DELIVERABLE_VLINE = {
+            "xpos" : constants.DELIVERABLE,
+            "color" : "forestgreen",
+            "style" : "solid",
+            "width" : 2,
+        }
+        self.USABLE_VLINE = {
+            "xpos" : constants.USABLE,
+            "color" : "goldenrod",
+            "style" : "solid",
+            "width" : 2,
+        }
+
 
     def render(self, output_port):
         """
@@ -100,9 +101,7 @@ class LmnSummary(TabfileSummary):
                   int(yspace[5])]
         for L in Lvals:
             figs.append(plot.line([1, Nmax]
-                                 ,[lambda N_float: self.countLM_continuous(L, N_float)
-                                   ,lambda N: self.countLM_continuous(L, N * 2)
-                                   ,lambda N: self.countLM_continuous(L, N * 5)]
+                                 ,[lambda N_float: self.countLM_continuous(L, N_float)]
                                  ,title=title # no title by default
                                  ,xlabel="N  (× untyped)"
                                  ,ylabel="Count"
@@ -111,6 +110,7 @@ class LmnSummary(TabfileSummary):
                                  ,samples=self.num_samples
                                  ,output="%s/%s" % (self.output_dir, "%s-n-%sstep" % (self.project_name, L))
                                  ,hlines=[self.RED_HLINE]
+                                 ,vlines=[self.DELIVERABLE_VLINE, self.USABLE_VLINE]
                                  ,ymax=self.num_configs))
         print(("\n%s" % latex.FIGSKIP).join([latex.figure(fg) for fg in figs]), file=output_port)
 
