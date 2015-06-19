@@ -22,12 +22,18 @@
               w])
            (cdr h))))))
 
-(define w0 (WORLD))
-(define raw-hist (with-input-from-file "../base/snake-hist-4.txt" read))
+(define SMALL_TEST "../base/snake-hist-small.rktd")
+(define LARGE_TEST "../base/snake-hist-large.rktd")
 
-(cond [(list? raw-hist)
-       (define hist (reverse raw-hist))
-       (for ([i (in-range 100)])
-         (replay w0 hist))]
-      [else
-       (error "THIS BENCHMARK IS BROKEN")])
+(define (main filename)
+  (define w0 (WORLD))
+  (define raw-hist (with-input-from-file filename read))
+  (cond [(list? raw-hist)
+         (define hist (reverse raw-hist))
+         (for ([i (in-range 100)])
+           (replay w0 hist))]
+        [else
+         (error "bad input")]))
+
+;; (time (main SMALL_TEST)) ; 100ms
+(time (main LARGE_TEST)) ; 390ms
