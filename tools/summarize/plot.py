@@ -129,9 +129,9 @@ def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None,
         plt.legend(['%s' % lbl for lbl in linelabels], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)
     # Add extra lines
     for line in (hlines or []):
-        plt.axhline(line["ypos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
+        plt.axhline(line["ypos"], alpha=line.get("alpha", 1), color=line["color"], linestyle=line["style"], linewidth=line["width"])
     for line in (vlines or []):
-        plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
+        plt.axvline(line["xpos"], alpha=line.get("alpha", 1), color=line["color"], linestyle=line["style"], linewidth=line["width"])
     if ymax:
         ymin,_ = ax1.get_ylim()
         ax1.set_ylim(ymin, ymax+2)
