@@ -7,11 +7,32 @@ import config
 import constants
 import matplotlib
 matplotlib.use('Agg') # Disable the display, does not affect graph generation
+import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 import networkx as nx
 import numpy as np
 import util
+import itertools
+
+# Set font, globally
+default_font = {
+    #'family': 'normal',
+    'weight' : 'semibold',
+    'size' : 24,
+    #'linespacing' : 0.4,
+}
+title_font = {
+    #'family': 'normal',
+    'weight' : 'semibold',
+    'size' : 40,
+    #'linespacing' : 0.4,
+}
+matplotlib.rc('font', **default_font)
+
+markers = ["o", "^", "s", "*", "h", "D"]
+
+################################################################################
 
 def remove_empty(d1, d2):
     """
@@ -28,7 +49,7 @@ def remove_empty(d1, d2):
             posns.append(i)
     return xs, ys, posns
 
-def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None, xmax=None, ymax=None):
+def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xlabels=None, width=0.8,output=None, xmax=None, ymax=None, vlines=None):
     """
         Create and save a bar plot.
         Args:
@@ -56,7 +77,8 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     # Add data
     bar = plt.bar(xvalues, yvalues, width=width, color=color, alpha=alpha)
     # Add extra lines
-    # TODO
+    for line in (vlines or []):
+        plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
     # Labels
     if xlabels:
         plt.xticks([x + width/2 for x in xvalues], xlabels)
@@ -69,6 +91,63 @@ def bar(xvalues, yvalues, title, xlabel, ylabel, alpha=1, color='royalblue', xla
     plt.clf()
     plt.close()
     print("Saved bar chart to '%s'" % output)
+    return output
+
+def dots(xs, yss, title, xlabel, ylabel, labels=None, skip=None, output=None, vlines=None):
+    fig,ax1 = plt.subplots()
+    # Add data
+    for (ys,c,m) in zip(yss,cm.rainbow(np.linspace(0, 1, len(yss))), itertools.cycle(markers)):
+        plt.plot(xs, ys, color=c, linestyle="dashed", marker=m)
+    # Legend
+    plt.legend(['%s' % (labels[i] if labels else (skip * i)) for i in range(len(yss))], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)
+    # Add extra lines
+    for line in (vlines or []):
+        plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
+    ax1.set_title(title)
+    ax1.set_xlabel(xlabel)
+    ax1.set_ylabel(ylabel)
+    # Save
+    output = output
+    plt.savefig(output)
+    plt.clf()
+    plt.close()
+    print("Saved dots chart to '%s'" % output)
+    return output
+
+def line(xbounds, y_funs, title=None, xlabel=None, ylabel=None, linelabels=None, samples=constants.GRAPH_SAMPLES, alpha=1, output=None, vlines=None, hlines=None, ymax=None, yticks=None, xticks=None):
+    fig,ax1 = plt.subplots()
+    # data
+    X = np.linspace(xbounds[0], xbounds[1], num=samples)
+    for (y_fun, c) in zip(y_funs, cm.spectral(np.linspace(0.05, 0.6, len(y_funs)))):
+        Y = [y_fun(val) for val in X]
+        plt.plot(X, Y, color='b', alpha=alpha, linestyle="solid", linewidth=6)
+    if linelabels:
+        plt.legend(['%s' % lbl for lbl in linelabels], loc=2, bbox_to_anchor=(1, 1), borderaxespad=0., fontsize=11)
+    # Add extra lines
+    for line in (hlines or []):
+        plt.axhline(line["ypos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
+    for line in (vlines or []):
+        plt.axvline(line["xpos"], color=line["color"], linestyle=line["style"], linewidth=line["width"])
+    if ymax:
+        ymin,_ = ax1.get_ylim()
+        ax1.set_ylim(ymin, ymax+2)
+    ax1.set_xlim(xbounds[0] - 0.5, xbounds[1])
+    if title:
+        plt.suptitle(title, fontdict=title_font, y=1.0)
+    plt.gcf().subplots_adjust(bottom=0.15)
+    plt.xlabel(xlabel, fontdict=default_font)
+    # y-label & yticks
+    plt.title(ylabel, fontdict=default_font, x=0.001, y=1.05)
+    if yticks:
+        ax1.set_yticks(yticks)
+    if xticks:
+        ax1.set_xticks(xticks)
+    # ax1.set_xticks([1] + ax1.get_xticks()[1:])
+    # Save
+    plt.savefig(output)
+    plt.clf()
+    plt.close()
+    print("Saved line to '%s'" % output)
     return output
 
 def histogram(values, title, xlabel, ylabel, num_bins, xmax, ymax, output, alpha=0.8, color='royalblue'):

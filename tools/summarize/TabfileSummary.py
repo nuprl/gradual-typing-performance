@@ -17,7 +17,7 @@ import util
 
 class TabfileSummary(AbstractSummary):
 
-    def __init__(self, fname):
+    def __init__(self, fname, out_dir=constants.OUTPUT_DIR):
         # Init data
         if fname.endswith(".rktd"):
             # Parse the .rktd file into a .tab file
@@ -33,6 +33,7 @@ class TabfileSummary(AbstractSummary):
         # Try to set module graph
         self.graph = ModuleGraph(fname)
         self.module_names = self.graph.get_module_names()
+        self.output_dir = out_dir
 
     def results_of_config(self, config):
         return util.fold_file(self.source
@@ -111,11 +112,11 @@ class TabfileSummary(AbstractSummary):
             paths   = networkx.all_simple_paths(lattice, source=untyped_config, target=typed_config)
             weights = [self.max_weight(lattice, path)
                        for path in paths]
-            num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.RELEASE_OVERHEAD)))
-            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.DEV_OVERHEAD)))
+            num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.DELIVERABLE)))
+            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.ACCEPTABLE)))
             num_x_u     = sum((1 for x in weights if x < (untyped_mean * 15)))
-            num_release_t = sum((1 for x in weights if x < (typed_mean * constants.RELEASE_OVERHEAD)))
-            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.DEV_OVERHEAD)))
+            num_release_t = sum((1 for x in weights if x < (typed_mean * constants.DELIVERABLE)))
+            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.ACCEPTABLE)))
             num_x_t     = sum((1 for x in weights if x < (typed_mean * 15)))
             num_paths     = len(weights)
             rows.append([str(trans)
@@ -149,11 +150,11 @@ class TabfileSummary(AbstractSummary):
             weights = [self.max_weight(lattice, path)
                        for path in paths
                        if len(path) == 1+cutoff]
-            num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.RELEASE_OVERHEAD)))
-            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.DEV_OVERHEAD)))
+            num_release_u = sum((1 for x in weights if x < (untyped_mean * constants.DELIVERABLE)))
+            num_dev_u     = sum((1 for x in weights if x < (untyped_mean * constants.ACCEPTABLE)))
             num_x_u     = sum((1 for x in weights if x < (untyped_mean * 15)))
-            num_release_t = sum((1 for x in weights if x < (typed_mean * constants.RELEASE_OVERHEAD)))
-            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.DEV_OVERHEAD)))
+            num_release_t = sum((1 for x in weights if x < (typed_mean * constants.DELIVERABLE)))
+            num_dev_t     = sum((1 for x in weights if x < (typed_mean * constants.ACCEPTABLE)))
             num_x_t     = sum((1 for x in weights if x < (typed_mean * 15)))
             num_paths     = len(weights)
             rows.append([str(cutoff)

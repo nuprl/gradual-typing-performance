@@ -132,3 +132,26 @@ def random_walk(cfg, transitivity=1):
         path.append(cfg)
     return path
 
+def minus(cfg1, cfg2):
+    """
+        Subtract the second config from the first, pointwise.
+        Return -1 in case subtraction is invalid
+         and the sum of the remaining bits otherwise
+
+        Examples!
+          1111 - 1100 = 2
+          0100 - 0100 = 0
+          1010 - 0101 = -1
+          0000 - 1000 = -1
+    """
+    total = 0
+    for i in range(0, len(cfg1)):
+        if cfg1[i] == "1":
+            # Do nothing if cfg2[i] == 1
+            if cfg2[i] == "0":
+                total += 1
+        # cfg1[i] == 0, do nothing if cfg2[i] is also 0
+        elif cfg2[i] == "1":
+            return -1
+    return total
+

@@ -54,7 +54,7 @@ class SrsSummary(AbstractSummary):
         self.module_names = glob.glob("%s/untyped/*.rkt" % self.project_name)
         self.num_iters    = kwargs.get("num_iters", self.num_iters)
         self.sample_size  = kwargs.get("sample_size", self.sample_size)
-        self.strategy     = constants.APPEND
+        self.strategy     = constants.APPEND # or, recompute?
 
     def results_of_config(self, config):
         # Execute the config for a pre-set number of iterations
