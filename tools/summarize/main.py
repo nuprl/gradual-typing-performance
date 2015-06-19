@@ -93,7 +93,7 @@ if __name__ == "__main__":
           print("\\hbox{", file=output_port)
           summs.append(main(fname, default_out=constants.OUTPUT_DIR, default_port=output_port))
           print("}", file=output_port)
-       print("\\caption{\\emph{L-step N-usable} results for selected benchmarks.}", file=output_port)
+       print("\\caption{\\emph{L-step, M/N-usable} results for selected benchmarks.}", file=output_port)
        print("\\end{figure}", file=output_port)
        print(latex.end(), file=output_port)
        output_port.close()
