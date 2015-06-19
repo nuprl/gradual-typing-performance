@@ -7,12 +7,9 @@
 
 (define LARGE_TEST "../base/prufock.txt")
 (define SMALL_TEST "../base/hunt.txt")
+(define KCFA_TYPED "../base/kcfa-typed.rkt")
 
-(define (self-test)
-  (define txt (file->string "../base/code-sample.rkt"))
-  (longest-common-substring txt txt)
-  (void))
-
+;; LCS on all pairs of lines in a file
 (define (main testfile)
   (define lines (file->lines testfile))
   (for* ([a lines] [b lines])
@@ -20,5 +17,5 @@
   (void))
 
 ;(time (main SMALL_TEST)) ;150ms
-(time (main LARGE_TEST)) ; 2500ms
-;(time (self-test)) ; 440ms
+;(time (main LARGE_TEST)) ; 2500ms
+(time (main KCFA_TYPED)) ; 22567ms
