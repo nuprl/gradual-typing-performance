@@ -45,15 +45,16 @@
   (void))
 
 
-(define SMALL_TEST "../base/tetris-hist-small.txt")
-(define LARGE_TEST "../base/tetris-hist-large.txt")
+(define SMALL_TEST "../base/tetris-hist-small.rktd")
+(define LARGE_TEST "../base/tetris-hist-large.rktd")
 
 (: main (-> String Void))
 (define (main filename)
   (define w0 (world0))
   (define raw (with-input-from-file filename read))
-  (when (list? raw)
-    (replay w0 (reverse raw))))
+  (if (list? raw)
+    (replay w0 (reverse raw))
+    (error "bad input")))
 
 ;; (time (main SMALL_TEST)) ; 0ms
 (time (main LARGE_TEST)) ; 147ms
