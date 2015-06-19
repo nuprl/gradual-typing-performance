@@ -1,10 +1,5 @@
 #lang racket/base
 
-;; Benchmark entry point
-;; - requires important functions
-;; - creates some time data
-;; - test!
-
 (require
   benchmark-util
   "gregor-structs.rkt"
@@ -154,4 +149,5 @@
     (test-iso dates)
     (test-difference dates)))
 
-(time (main 10))
+(time (main 10)) ; 90ms
+;(time (main 100)) ; 900ms

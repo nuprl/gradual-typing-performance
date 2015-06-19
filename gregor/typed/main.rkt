@@ -1,12 +1,8 @@
 #lang typed/racket/base
 
-;; Benchmark entry point
-;; - requires important functions
-;; - creates some time data
-;; - test!
-
 (require
   benchmark-util
+  "../base/types.rkt"
   "gregor-adapter.rkt"
   "tzinfo-adapter.rkt"
 )
@@ -154,4 +150,5 @@
     (test-iso dates)
     (test-difference dates)))
 
-(time (main 10))
+(time (main 10)) ;;134ms
+;(time (main 100)) ;;1137ms
