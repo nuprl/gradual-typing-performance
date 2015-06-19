@@ -111,7 +111,7 @@ def make_mesh(xbounds, ybounds, zfun, samples):
 
 # For info on colormaps, see
 # http://matplotlib.org/api/pyplot_summary.html?highlight=colormaps#matplotlib.pyplot.colormaps
-def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None, samples=constants.GRAPH_SAMPLES, output=None, zlim=None, colormap=cm.cubehelix):
+def contour(xbounds, ybounds, zfun, title=None, xlabel=None, ylabel=None, zlabel=None, samples=constants.GRAPH_SAMPLES, output=None, zlim=None, colormap=cm.cubehelix):
     fig = plt.figure()
     ax = fig.gca(projection='3d')
     X, Y, Z = make_mesh(xbounds, ybounds, zfun, samples)
@@ -129,7 +129,8 @@ def contour(xbounds, ybounds, zfun, title, xlabel=None, ylabel=None, zlabel=None
     plt.yticks(yposns, ["%sx" % m for m in yposns])
     ax.zaxis.get_major_ticks()[0].label1.set_visible(False)
     # Set the title and z-axis label (z label is a hack)
-    plt.suptitle(title, fontdict=title_font, y=0.88)
+    if title:
+        plt.suptitle(title, fontdict=title_font, y=0.88)
     plt.title(zlabel, fontdict=default_font, x=0.1, y=0.87)
     #
     ax.set_xlim(xbounds[0], xbounds[1])
