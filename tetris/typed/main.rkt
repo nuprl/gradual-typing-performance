@@ -39,13 +39,21 @@
     (match e
       [`(on-key ,(? string? ke)) (world-key-move w ke)]
       [`(on-tick) (next-world w)]
-      [`(stop-when) 
+      [`(stop-when)
        (λ ([w : World]) (blocks-overflow? (world-blocks w)))
        w]))
   (void))
 
-(time
- (define w0 (world0))
- (define raw (with-input-from-file "../base/tetris-hist-3.txt" read))
- (when (list? raw)
-   (replay w0 (reverse raw))))
+
+(define SMALL_TEST "../base/tetris-hist-small.txt")
+(define LARGE_TEST "../base/tetris-hist-large.txt")
+
+(: main (-> String Void))
+(define (main filename)
+  (define w0 (world0))
+  (define raw (with-input-from-file filename read))
+  (when (list? raw)
+    (replay w0 (reverse raw))))
+
+;; (time (main SMALL_TEST)) ; 0ms
+(time (main LARGE_TEST)) ; 147ms
