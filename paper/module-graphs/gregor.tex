@@ -1,38 +1,38 @@
 \begin{tikzpicture}
 
   \node (00)              {};
-  \node (01) [right of=00,xshift=1.2cm] {\rkt{1}{core-structs}};
-  \node (02) [right of=01,xshift=1.2cm] {};
-       
-  \node (10) [below of=00] {\rkt{5}{gregor-structs}};
-  \node (11) [below of=01] {\rkt{6}{hmsn}};
-  \node (12) [below of=02] {\rkt{12}{ymd}};
+  \node (01) [below of=00,xshift=1.2cm] {\rkt{1}{core-structs}};
+  \node (02) [below of=01,xshift=1.2cm] {};
 
-  \node (20) [below of=10] {\rkt{11}{time}};
-  \node (21) [below of=11] {};
-  \node (22) [below of=12] {\rkt{2}{date}};
+  \node (10) [left of=00] {\rkt{5}{gregor-structs}};
+  \node (11) [left of=01] {\rkt{6}{hmsn}};
+  \node (12) [left of=02] {\rkt{12}{ymd}};
 
-  \node (30) [below of=20] {};
-  \node (31) [below of=21] {\rkt{3}{datetime}};
-  \node (32) [below of=22] {};
+  \node (20) [left of=10] {\rkt{11}{time}};
+  \node (21) [left of=11] {};
+  \node (22) [left of=12] {\rkt{2}{date}};
 
-  \node (40) [below of=30] {\rkt{8}{moment-base}};
-  \node (41) [below of=31] {};
-  \node (42) [below of=32] {\rkt{4}{difference}};
+  \node (30) [left of=20] {};
+  \node (31) [left of=21] {\rkt{3}{datetime}};
+  \node (32) [left of=22] {};
 
-  \node (50) [below of=40] {\rkt{10}{offset-resolvers}};
-  \node (51) [below of=41] {};
-  \node (52) [below of=42] {};
+  \node (40) [left of=30] {\rkt{8}{moment-base}};
+  \node (41) [left of=31] {};
+  \node (42) [left of=32] {\rkt{4}{difference}};
 
-  \node (60) [below of=50] {\rkt{9}{moment}};
-  \node (61) [below of=51] {};
-  \node (62) [below of=52] {};
+  \node (50) [left of=40] {\rkt{10}{offset-resolvers}};
+  \node (51) [left of=41] {};
+  \node (52) [left of=42] {};
 
-  \node (70) [below of=60] {\rkt{0}{clock}};
-  \node (71) [below of=61] {};
-  \node (72) [below of=62] {};
+  \node (60) [left of=50] {\rkt{9}{moment}};
+  \node (61) [left of=51] {};
+  \node (62) [left of=52] {};
 
-  \node (81) [below of=71] {\rkt{7}{main}};
+  \node (70) [left of=60] {\rkt{0}{clock}};
+  \node (71) [left of=61] {};
+  \node (72) [left of=62] {};
+
+  \node (81) [left of=71] {\rkt{7}{main}};
 
   %% -- edges
   %% gregor-structs
