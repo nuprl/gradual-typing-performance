@@ -635,6 +635,7 @@
 
 (define bonnaire-sergeant-thesis-2012
   (make-bib
+   #:author "Ambrose Bonnaire-Sergeant"
    #:title "A Practical Optional Type System for Clojure"
    #:location (dissertation-location
                #:institution "University of Western Australia"
