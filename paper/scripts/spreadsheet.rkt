@@ -16,10 +16,10 @@
 )
 ;; ----------------------------------------------------------------------------
 
-(require racket/file
-         racket/string
-         racket/format
-         racket/math)
+(require
+  (only-in racket/file file->value)
+  "bitstring.rkt"
+)
 
 ;; =============================================================================
 
@@ -41,16 +41,6 @@
     [(csv) ","]
     [(tab) "\t"]
     [else (spreadsheet-error sym)]))
-
-;; log, base 2
-;; (: log2 (-> Integer Flonum))
-(define (log2 n)
-  (exact-ceiling (/ (log n) (log 2))))
-
-;; Convert a natural number to a binary string, padded to the supplied width
-;; (: natural->binary (-> Index Index String))
-(define (natural->binary n pad-width)
-  (~r n #:base 2 #:min-width pad-width #:pad-string "0"))
 
 ;; -----------------------------------------------------------------------------
 
