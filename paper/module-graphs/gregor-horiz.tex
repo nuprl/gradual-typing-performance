@@ -1,38 +1,38 @@
 \begin{tikzpicture}
 
   \node (00)              {};
-  \node (01) [below of=00,xshift=1.2cm] {\rktdot};
+  \node (01) [below of=00,xshift=1.2cm] {\rkt{1}{core-structs}};
   \node (02) [below of=01,xshift=1.2cm] {};
-       
-  \node (10) [left of=00] {\rktdot};
-  \node (11) [left of=01] {\rktdot};
-  \node (12) [left of=02] {\rktdot};
 
-  \node (20) [left of=10] {\rktdot};
+  \node (10) [left of=00] {\rkt{5}{gregor-structs}};
+  \node (11) [left of=01] {\rkt{6}{hmsn}};
+  \node (12) [left of=02] {\rkt{12}{ymd}};
+
+  \node (20) [left of=10] {\rkt{11}{time}};
   \node (21) [left of=11] {};
-  \node (22) [left of=12] {\rktdot};
+  \node (22) [left of=12] {\rkt{2}{date}};
 
   \node (30) [left of=20] {};
-  \node (31) [left of=21] {\rktdot};
+  \node (31) [left of=21] {\rkt{3}{datetime}};
   \node (32) [left of=22] {};
 
-  \node (40) [left of=30] {\rktdot};
+  \node (40) [left of=30] {\rkt{8}{moment-base}};
   \node (41) [left of=31] {};
-  \node (42) [left of=32] {\rktdot};
+  \node (42) [left of=32] {\rkt{4}{difference}};
 
-  \node (50) [left of=40] {\rktdot};
+  \node (50) [left of=40] {\rkt{10}{offset-resolvers}};
   \node (51) [left of=41] {};
   \node (52) [left of=42] {};
 
-  \node (60) [left of=50] {\rktdot};
+  \node (60) [left of=50] {\rkt{9}{moment}};
   \node (61) [left of=51] {};
   \node (62) [left of=52] {};
 
-  \node (70) [left of=60] {\rktdot};
+  \node (70) [left of=60] {\rkt{0}{clock}};
   \node (71) [left of=61] {};
   \node (72) [left of=62] {};
 
-  \node (81) [left of=71] {\rktdot};
+  \node (81) [left of=71] {\rkt{7}{main}};
 
   %% -- edges
   %% gregor-structs
