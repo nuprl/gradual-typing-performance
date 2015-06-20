@@ -1,7 +1,6 @@
 #lang racket/base
 
-;; Convert a .rktd file from the data folder to a .tab file.
-;; (The data must follow the format described in that folder's README)
+;; Convert a dataset to a spreadsheet.
 
 ;; Printed spreadsheets have:
 ;; - A title row, counting the number of runs for each variation
@@ -10,6 +9,8 @@
 ;;   columns are experimental results.
 
 (provide
+  ;; Convert a vector of experimental data.
+  ;; Vector must follow the format specified in the `data/` directory
   ;; (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String)
   vector->spreadsheet
 )
