@@ -17,7 +17,10 @@
   name->index
   ;; (-> ModuleGraph String (Listof String))
   requires
-  ;; (-> Path-String ModuleGraph)
+  ;; --
+  ;; (-> Path String)
+  path->project-name
+  ;; (-> (U Path Path-String) ModuleGraph)
   from-tex
 )
 
@@ -90,17 +93,18 @@
 
 ;; Verify that `filename` is a tex file, return the name of
 ;; the project it describes.
-;; (: ensure-tex (-> Path-String String))
+;; (: ensure-tex (-> (U Path-String Path) String))
 (define (ensure-tex filename)
-  (define path (string->path filename))
-  (define ext (filename-extension path))
-  (unless (bytes=? #"tex" ext)
+  (define path (or (and (path? filename) filename)
+                   (string->path filename)))
+  (unless (bytes=? #"tex" (filename-extension path))
     (parse-error "Cannot parse module graph from non-tex file '~a'" filename))
   ;; Remove anything past the first hyphen in the project name
   (define project-name (path->project-name path))
   (values path project-name))
 
 ;; Parse the project's name from a path
+;; (: path->project-name (-> Path String))
 (define (path->project-name path)
   (define without-ext
     (car (string-split (path->string (file-name-from-path path)) ".")))
