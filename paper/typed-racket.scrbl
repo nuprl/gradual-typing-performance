@@ -115,9 +115,15 @@ that particular graph.
 @section{Results}
 
 
-@figure*["fig:lmn1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
+@figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
 @exact|{
-\input{lnm-figures}
+\input{lnm/part1}
+}|
+]
+
+@figure*["fig:lnm2" @list{@emph{L-step N/M-usable} results for the rest of the benchmarks}
+@exact|{
+\input{lnm/part2}
 }|
 ]
 
