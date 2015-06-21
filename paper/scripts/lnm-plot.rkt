@@ -20,6 +20,7 @@
   "bitstring.rkt"
   "summary.rkt"
   plot/pict
+  (only-in racket/math exact-floor)
   (only-in plot/utils linear-seq)
   ;(only-in racket/stream stream-length)
   racket/stream
@@ -51,31 +52,37 @@
   (define num-vars (get-num-variations summary))
   (define cutoff-point (* cutoff-proportion num-vars))
   ;; Make renderers for the lines
-  (define N-line (vertical-line N #:ymax num-vars
+  (define N-line (vertical-line N #:y-max num-vars
                                   #:color 'green
                                   #:width THIN))
-  (define M-line (vertical-line M #:ymax num-vars
+  (define M-line (vertical-line M #:y-max num-vars
                                   #:color 'yellow
                                   #:width THIN))
-  (define cutoff-line (horizontal-line cutoff-point #:xmax xmax
+  (define cutoff-line (horizontal-line cutoff-point #:x-max xmax
                                                     #:color 'red
                                                     #:style 'short-dash
                                                     #:width THICK))
   ;; Get yticks
   (define yticks (compute-yticks num-vars 6 #:exact (list cutoff-point)))
   ;; Create 1 pict for each value of L
-  (for/list ([L (in-list L-list)])
-    (define F (function (count-variations summary L) 0 xmax
-                        #:samples num-samples
-                        #:color 'blue
-                        #:width THICK))
-    (plot-pict (list N-line M-line cutoff-line F)
-               #:x-min 0
-               #:x-max xmax
-               #:y-min 0
-               #:y-max num-vars
-               #:x-label "Overhead (vs. untyped)"
-               #:y-label "Count")))
+  (parameterize (
+    [plot-x-ticks (compute-xticks 5)]
+    [plot-y-ticks (compute-yticks num-vars 6 #:exact cutoff-point)]
+    [plot-x-far-ticks no-ticks]
+    [plot-y-far-ticks no-ticks]
+    )
+    (for/list ([L (in-list L-list)])
+      (define F (function (count-variations summary L) 0 xmax
+                          #:samples num-samples
+                          #:color 'blue
+                          #:width THICK))
+      (plot-pict (list N-line M-line cutoff-line F)
+                 #:x-min 0
+                 #:x-max xmax
+                 #:y-min 0
+                 #:y-max num-vars
+                 #:x-label "Overhead (vs. untyped)"
+                 #:y-label "Count"))))
 
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of variations
@@ -96,33 +103,38 @@
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
-;; (: compute-yticks (->* [Index Index] [#:exact (Listof Index)] (Listof Index)))
-(define (compute-yticks max-y num-ticks #:exact [other-exact '()])
-  (linear-ticks #:number num-ticks))
-;  (define exact (cons 0 (cons max-y other-exact)))
-;  (define round-to
-;  ;; From docs: determines num.ticks and where placed
-;  ;; (-> real real (listof pre-tick))
-;  (define (layout-fun ax-min ax-max)
-;    ;; TODO remove assertion
-;    (unless (= ax-max max-y) (internal-error "expected ymax '~a' does not match arg '~a'" max-y ax-max))
-;    (for/list ([i (linear-seq ax-min ax-max num-ticks)])
-;      (if (member i exact)
-;          i
-;          (round i rount-to)))))
-;  ;; Formatter is the identity (may want to add boldface, but whatevs)
-;  ;; (-> real real (listof pre-tick) (listof string))
-;  (define (format-fun ax-min ax-max pre-ticks)
-;    (for/list ([pt (in-list pre-ticks)])
-;      (number->string (pre-tick value pt))))
-;  (ticks layout-fun format-fun))
+;; TODO
+(define (compute-yticks max-y num-ticks #:exact [exact '()])
+  (define exact-list (or (and (list? exact) exact) (list exact)))
+  (define round-y (if (< max-y 1000)
+                      round
+                      (lambda (n) (* 100 (exact-floor (/ n 100))))))
+  (ticks (lambda (ax-min ax-max)
+           (for/list ([y (in-list (linear-seq ax-min ax-max num-ticks))])
+             (define rounded (round-y y))
+             (define ex (findf (lambda (n) (= rounded (round-y n)))
+                               exact-list))
+             (pre-tick (or (and ex (round ex))
+                           rounded)
+                       #t)))
+         (lambda (ax-min ax-max pre-ticks)
+                 (for/list ([pt (in-list pre-ticks)])
+                   (number->string (pre-tick-value pt))))))
+
+(define (compute-xticks num-ticks)
+  (ticks (lambda (ax-min ax-max)
+           (for/list ([i (in-list (linear-seq 1 ax-max num-ticks))])
+             (pre-tick (round i) #t)))
+         (lambda (ax-min ax-max pre-ticks)
+           (for/list ([pt (in-list pre-ticks)])
+             (format "~ax" (pre-tick-value pt))))))
 
 ;; -----------------------------------------------------------------------------
 ;; --- other
 
 (define (horizontal-line y-val
-                         #:xmin [x-min 0]
-                         #:xmax [x-max 1]
+                         #:x-min [x-min 0]
+                         #:x-max [x-max 1]
                          #:color [c 'black]
                          #:width [w (line-width)]
                          #:style [s 'solid])
@@ -133,8 +145,8 @@
          #:style s))
 
 (define (vertical-line x-val
-                       #:ymin [y-min 0]
-                       #:ymax [y-max 1]
+                       #:y-min [y-min 0]
+                       #:y-max [y-max 1]
                        #:color [c 'black]
                        #:width [w (line-width)]
                        #:style [s 'solid])
@@ -144,6 +156,9 @@
          #:width w
          #:style s))
 
+;(define (no-ticks)
+;  (ticks (lambda (ax-min ax-max) '())
+;         (lambda (ax-min ax-max pre-ticks) '())))
 
 ;; =============================================================================
 
