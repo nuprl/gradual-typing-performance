@@ -6,6 +6,11 @@
 (provide
   ;; (->* [Path-String] [#:graph Path-String] Summary)
   from-rktd
+  get-num-variations
+  untyped-mean
+  variation->mean-runtime
+  predicate->variations
+  all-variations
 )
 
 ;; -----------------------------------------------------------------------------
@@ -13,17 +18,21 @@
 (require
   racket/path
   racket/stream
+  math/statistics
   (only-in racket/file file->value)
+  (only-in racket/vector vector-append)
   (prefix-in mg- "modulegraph.rkt")
   "bitstring.rkt"
 )
+
+(define (TODO) (error "not implemented"))
 
 ;; =============================================================================
 ;; -- data definition: summary
 
 (struct summary (
   source      ;; : Path-String, the data's origin
-  dataset     ;; : (Vectorof (Vectorof Index)), the underlying experimental data
+  dataset     ;; : (Vectorof (Listof Index)), the underlying experimental data
   modulegraph ;; : ModuleGraph, the adjacency list of the represented project
 ))
 
@@ -50,7 +59,7 @@
   (summary path dataset mg))
 
 ;; Parse a dataset from a filepath.
-;; (: rktd->dataset (-> Path (Vectorof (Vectorof Index))))
+;; (: rktd->dataset (-> Path (Vectorof (Listof Index))))
 (define (rktd->dataset path)
   ;; Check .rktd
   (unless (bytes=? #"rktd" (filename-extension path))
@@ -61,28 +70,28 @@
   (validate-dataset vec))
 
 ;; Confirm that the dataset `vec` is a well-formed vector of experiment results.
-;; (: validate-dataset (-> Any (Vectorof (Vectorof Index))))
+;; (: validate-dataset (-> Any (Vectorof (Listof Index))))
 (define (validate-dataset vec)
   (unless (vector? vec) (parse-error "Dataset is not a vector"))
   (unless (< 0 (vector-length vec)) (parse-error "Dataset is an empty vector, does not contain any entries"))
   ;; Record the number of runs in the first vector, match against other lengths
   (define num-runs (box #f))
   (for ([row-index (in-range (vector-length vec))])
-    (define inner (vector-ref (vec row-index)))
-    (unless (vector? inner) (parse-error "Dataset is not a vector of vectors, found non-vector entry '~a'" inner))
+    (define inner (vector-ref vec row-index))
+    (unless (list? inner) (parse-error "Dataset is not a vector of lists found non-list entry '~a'" inner))
     (if (not (unbox num-runs))
-        (set-box! num-runs (vector-length inner))
-        (unless (= num-runs (vector-length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths; all variations must describe the same number of runs" row-index)))
-    (for ([val (in-vector inner)])
+        (set-box! num-runs (length inner))
+        (unless (= (unbox num-runs) (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths; all variations must describe the same number of runs" row-index)))
+    (for ([val (in-list inner)])
       (unless (exact-positive-integer? val)
-        (parse-error "Row vector contains non-integer entry '~a'" val))))
+        (parse-error "Row ~a contains non-integer entry '~a'" row-index val))))
     vec)
 
 ;; Check that the dataset and module graph match
-;; (: validate-modulegraph (-> (Vectorof (Vectorof Index)) ModuleGraph Void))
+;; (: validate-modulegraph (-> (Vectorof (Listof Index)) ModuleGraph Void))
 (define (validate-modulegraph dataset mg)
   (define ds-num-modules (log2 (vector-length dataset)))
-  (define mg-num-modules (length mg-module-names mg))
+  (define mg-num-modules (length (mg-module-names mg)))
   (unless (= ds-num-modules mg-num-modules)
     (parse-error "Dataset and module graph represent different numbers of modules. The dataset says '~a' but the module graph says '~a'" ds-num-modules mg-num-modules)))
 
@@ -101,7 +110,7 @@
 
 (define (all-variations sm)
   (define M (get-num-modules sm))
-  (stream-map natural->binary
+  (stream-map (lambda (n) (natural->bitstring n #:pad M))
               (in-range (get-num-variations sm))))
 
 (define (get-module-names sm)
@@ -116,8 +125,34 @@
 (define (get-project-name sm)
   (mg-project-name (summary-modulegraph sm)))
 
-(define (predicate->variations p sm)
+(define (predicate->variations sm p)
   (stream-filter p (all-variations sm)))
+
+;; Return all data for the untyped variation
+(define (untyped-runtimes sm)
+  (vector-ref (summary-dataset sm) 0))
+
+(define (untyped-mean sm)
+  (mean (untyped-runtimes sm)))
+
+;; Return all data for the typed variation
+(define (typed-runtimes sm)
+  (define vec (summary-dataset sm))
+  (vector-ref vec (sub1 (vector-length vec))))
+
+;; Return all data for all gradually-typed variations
+(define (gradual-runtimes sm)
+  (define vec (summary-dataset sm))
+  ;; Efficient enough?
+  (apply append
+         (for/list ([i (in-range 1 (sub1 (vector-length vec)))])
+           (vector-ref vec i))))
+
+(define (variation->mean-runtime sm var)
+  (index->mean-runtime sm (bitstring->natural var)))
+
+(define (index->mean-runtime sm i)
+  (mean (vector-ref (summary-dataset sm) i)))
 
 ;; =============================================================================
 
@@ -130,4 +165,10 @@
   (check-equal? "foo/bar/../module-graphs/baz.tex"
                 (path->string (infer-graph (string->path "foo/bar/baz-and-other-ignored-stuff.rktd"))))
 
+  ;; -- all variations
+
+  ;; -- from rktd
+  (define sm (from-rktd "../data/echo.rktd"))
+  (check-equal? (stream->list (all-variations sm))
+                '("0000" "0001" "0010" "0011" "0100" "0101" "0110" "0111" "1000" "1001" "1010" "1011" "1100" "1101" "1110" "1111"))
 )

@@ -48,21 +48,20 @@
 ;; (: module-names (-> ModuleGraph (Listof String)))
 (define (module-names mg)
   (for/list ([node+neighbors (in-list (modulegraph-adjlist mg))])
-    (cdar node+neighbors)))
+    (car node+neighbors)))
 
 ;; Get the index matching the module name
 ;; (: name->index (-> ModuleGraph String Index))
 (define (name->index mg name)
-  (for/or ([node+neighbors (in-list (modulegraph-adjlist mg))])
-    (and (string=? name (cdar node+neighbors))
-         (caar node+neighbors))))
+  (for/or ([node+neighbors (in-list (modulegraph-adjlist mg))]
+           [i (in-range 0 (length (modulegraph-adjlist mg)))])
+    (and (string=? name (car node+neighbors))
+         i)))
 
 ;; Get the name of the module with index `i`
 ;; (: index->name (-> ModuleGraph Index String))
 (define (index->name mg i)
-  (for/or ([node+neighbors (in-list (modulegraph-adjlist mg))])
-    (and (= i (caar node+neighbors))
-         (cdar node+neighbors))))
+  (car (list-ref (modulegraph-adjlist mg) i)))
 
 ;; Get the names of modules required by `name`.
 ;; (: require (-> ModuleGraph String (Listof String)))
