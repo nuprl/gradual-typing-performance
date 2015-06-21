@@ -60,11 +60,19 @@ A performance measurement of a gradual typing system must run every
  configuration for every benchmark and extract information from the
  resulting lattices of performance measurements.  The latter may ask such
  basic questions as how many of these configurations could easily be
- deployed without affecting performance too much.  We use our framework to
- evaluate the Typed Racket variant of gradual typing on a dozen benchmark
- lattices. Typed Racket is a natural choice because its macro-level
- approach to gradual typing may impose the lowest cost for boundaries
- between typed and untyped modules.
+ deployed without affecting performance too much.  
+
+We use our framework to evaluate Typed Racket, the gradual typed sister
+ language of Racket.  Typed Racket is the oldest (developed since 2006) and
+ probably most sophisticated implementation of gradual typing, but it is
+ also a natural choice because its macro-level approach to gradual typing
+ appears to impose the lowest cost for boundaries between typed and untyped
+ modules. Furthermore, since Racket is a widely used programming language,
+ Typed Racket has also rapidly acquired a fair number of users in the
+ commercial and open source community, which suggests at least adequate
+ performance.@margin-note{Personal communication with the implementors, who
+ claim some 100,000 unique downloads per year.}
+@: the above should be a footnote
 
 @;  We use our framework to evaluate two
 @;  implementations of gradual typing on a dozen benchmark lattices: the
