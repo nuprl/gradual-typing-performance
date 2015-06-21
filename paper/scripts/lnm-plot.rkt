@@ -35,8 +35,8 @@
 (define DEFAULT_CUTOFF 0.6)
 (define DEFAULT_SAMPLES 20)
 
-(define THIN (* 1 (line-width)))
-(define THICK (* 1.5 (line-width)))
+(define THIN (* 1.2 (line-width)))
+(define THICK (* 1.8 (line-width)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
@@ -73,7 +73,7 @@
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     [plot-font-face "bold"]
-    [plot-font-size 20]
+    [plot-font-size 16]
     )
     ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
@@ -163,11 +163,32 @@
          #:width w
          #:style s))
 
-;(define (no-ticks)
-;  (ticks (lambda (ax-min ax-max) '())
-;         (lambda (ax-min ax-max pre-ticks) '())))
-
 ;; =============================================================================
+
+(module+ main
+  (require
+    racket/cmdline
+    (only-in pict pict->bitmap)
+    (only-in racket/class send)
+  )
+  (define l-param (box 2))
+  (command-line #:program "l-n/m plotter"
+                #:once-each
+                [("-l") l-value
+                        "Set max value of L"
+                        (set-box! l-param l-value)]
+                #:args (filename)
+    (define summary (from-rktd filename))
+    (define name (get-project-name summary))
+    (define l-list (for/list ([i (in-range (add1 (unbox l-param)))]) i))
+    (define picts (lnm-plot summary #:L l-list
+                                    #:plot-height 300
+                                    #:plot-width 400))
+    (for/list ([pic (in-list picts)]
+               [i (in-list l-list)])
+      (define fname (format "output/~a~a.png" name i))
+      (send (pict->bitmap pic) save-file fname 'png)))
+)
 
 (module+ test
   (require rackunit)
