@@ -35,8 +35,8 @@
 (define DEFAULT_CUTOFF 0.6)
 (define DEFAULT_SAMPLES 20)
 
-(define THIN (* 2 (line-width)))
-(define THICK (* 5 (line-width)))
+(define THIN (* 1 (line-width)))
+(define THICK (* 1.5 (line-width)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
@@ -53,28 +53,29 @@
   (define cutoff-point (* cutoff-proportion num-vars))
   ;; Make renderers for the lines
   (define N-line (vertical-line N #:y-max num-vars
-                                  #:color 'green
+                                  #:color 'forestgreen
                                   #:width THIN))
   (define M-line (vertical-line M #:y-max num-vars
-                                  #:color 'yellow
+                                  #:color 'goldenrod
                                   #:width THIN))
   (define cutoff-line (horizontal-line cutoff-point #:x-max xmax
-                                                    #:color 'red
+                                                    #:color 'orangered
                                                     #:style 'short-dash
                                                     #:width THICK))
   ;; Get yticks
   (define yticks (compute-yticks num-vars 6 #:exact (list cutoff-point)))
-  ;; Create 1 pict for each value of L
+  ;; Set plot parameters (globally, for all picts)
   (parameterize (
     [plot-x-ticks (compute-xticks 5)]
     [plot-y-ticks (compute-yticks num-vars 6 #:exact cutoff-point)]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     )
+    ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
       (define F (function (count-variations summary L) 0 xmax
                           #:samples num-samples
-                          #:color 'blue
+                          #:color 'navy
                           #:width THICK))
       (plot-pict (list N-line M-line cutoff-line F)
                  #:x-min 0
