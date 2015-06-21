@@ -60,7 +60,7 @@
       (newline)
       ;; For each row, print the config ID and all the values
       (for ([(row n) (in-indexed vec)])
-        (display (natural->binary n (log2 num-configs)))
+        (display (natural->bitstring n #:pad (log2 num-configs)))
         (for ([v row]) (printf "~a~a" sep v))
         (newline)))))
 
