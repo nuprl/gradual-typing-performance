@@ -47,7 +47,9 @@
                   #:M [M DEFAULT_M] ;; Index, recommended M limit
                   #:max-overhead [xmax DEFAULT_XLIMIT]
                   #:num-samples [num-samples DEFAULT_SAMPLES]
-                  #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF])
+                  #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF]
+                  #:plot-width [width (plot-width)]
+                  #:plot-height [height (plot-height)])
   (define L-list (or (and (list? L) L) (list L)))
   (define num-vars (get-num-variations summary))
   (define cutoff-point (* cutoff-proportion num-vars))
@@ -70,6 +72,8 @@
     [plot-y-ticks (compute-yticks num-vars 6 #:exact cutoff-point)]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
+    [plot-font-face "bold"]
+    [plot-font-size 20]
     )
     ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
@@ -83,7 +87,9 @@
                  #:y-min 0
                  #:y-max num-vars
                  #:x-label "Overhead (vs. untyped)"
-                 #:y-label "Count"))))
+                 #:y-label "Count"
+                 #:width width
+                 #:height height))))
 
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of variations
