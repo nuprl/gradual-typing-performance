@@ -10,7 +10,7 @@ In the context of current implementation technology, sound gradual typing
  benchmarks of various sizes and complexities. Even under rather liberal
  considerations, few of these scenarios end up in deliverable or usable
  system configurations. Even allowing for additional conversions of untyped
- portions of the program, does not yield much of an improvement. 
+ portions of the program does not yield much of an improvement. 
 
 Our result calls for three orthogonal research efforts. First, Typed Racket
  is only one implementation of sound gradual typing, and it supports only
@@ -30,13 +30,13 @@ Second, Typed Racket's implementation may not support run-time checks as
  well as modern JIT compilers. Typed Racket elaborates into plain Racket,
  type-checks the result, inserts contracts between typed and untyped
  modules, and then uses Racket to compile the
- result@~cite[thscff-pldi-2011]. The latter is essential a conventional
+ result@~cite[thscff-pldi-2011]. The latter is essentially a conventional
  ahead-of-time compiler that compiles a function when it is used the first
  time. One implication is that code from contracts does not get eliminated
- even if it is re-evaluate for the same value in a plain loop. Clearly, a
+ even if it is re-evaluated for the same value in a plain loop. Clearly, a
  tracing JIT compiler may eliminate some of the contract overhead in such
  situations. The Typed Racket team at Indiana University is developing such
- a tracing compiler end for Racket@~cite[fbpsth-dyla-2014], dubbed Pycket,
+ a tracing compiler backend for Racket@~cite[fbpsth-dyla-2014], dubbed Pycket,
  and we are looking forward to applying our evaluation framework to this
  implementation of Typed Racket. Doing so will allow us to validate both
  the usefulness of the benchmarking framework and the potential of tracing
@@ -54,7 +54,7 @@ Third, the acceptance of Typed Racket in the commercial and open-source
  performance bottlenecks in our measurements. 
 
 In sum, while we accept that the current implementation technology for
- gradually typed programming languages fall short of its promises, we also
+ gradually typed programming languages falls short of its promises, we also
  conjecture that a rigorous performance evaluation framework will provide
  guidance for future research. Above we have spelled out practical
  directions but even theoretical ideas---such as Henglein's optimal

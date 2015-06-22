@@ -70,9 +70,8 @@ We use our framework to evaluate Typed Racket, the gradually typed sister
  modules. Furthermore, since Racket is a widely used programming language,
  Typed Racket has also rapidly acquired a fair number of users in the
  commercial and open source community, which suggests at least adequate
- performance.@margin-note{Personal communication with the implementors, who
+ performance.@note{Personal communication with the implementors, who
  claim some 100,000 unique downloads per year.}
-@; the above should be a footnote
 
 @;  We use our framework to evaluate two
 @;  implementations of gradual typing on a dozen benchmark lattices: the
