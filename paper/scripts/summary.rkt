@@ -25,6 +25,9 @@
   ;; Return a stream of all variations in the Summary
   ;; (-> Summary (Streamof String))
   all-variations
+  ;; Return a pict representation of the summary. A kind of TLDR.
+  ;; (-> Summary Pict)
+  summary->pict
 )
 
 ;; -----------------------------------------------------------------------------
@@ -35,8 +38,10 @@
   math/statistics
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
+  (only-in racket/format ~r)
   (prefix-in mg- "modulegraph.rkt")
   "bitstring.rkt"
+  pict
 )
 
 (define (TODO) (error "not implemented"))
@@ -133,6 +138,11 @@
 (define (get-num-variations sm)
   (vector-length (summary-dataset sm)))
 
+(define (get-num-runs sm)
+  ;; All rows should have the same length, else `from-rktd` screwed up.
+  (define arbitrary-row (vector-ref (summary-dataset sm) 0))
+  (length arbitrary-row))
+
 (define (get-num-modules sm)
   (length (get-module-names sm)))
 
@@ -154,19 +164,65 @@
   (define vec (summary-dataset sm))
   (vector-ref vec (sub1 (vector-length vec))))
 
-;; Return all data for all gradually-typed variations
-(define (gradual-runtimes sm)
-  (define vec (summary-dataset sm))
-  ;; Efficient enough?
-  (apply append
-         (for/list ([i (in-range 1 (sub1 (vector-length vec)))])
-           (vector-ref vec i))))
+(define (typed-mean sm)
+  (mean (typed-runtimes sm)))
 
 (define (variation->mean-runtime sm var)
   (index->mean-runtime sm (bitstring->natural var)))
 
 (define (index->mean-runtime sm i)
   (mean (vector-ref (summary-dataset sm) i)))
+
+;; Get the worst of all GRADUALLY typed running times (excludes typed & untyped)
+(define (max-runtime sm)
+  (define data (summary-dataset sm))
+  (for/fold ([prev-max #f])
+            ([i (in-range 1 (vector-length data))])
+    (define new-max (mean (vector-ref data i)))
+    (if prev-max
+        (max prev-max new-max)
+        new-max)))
+
+;; Get the average over all gradually typed running times (exludes typed & untyped)
+;; Takes into account every single measured data point.
+(define (avg-runtime sm)
+  (define data (summary-dataset sm))
+  (define len (* (get-num-runs sm)
+                 (- (get-num-variations sm) 2)))
+  (for/sum ([i (in-range 1 (vector-length data))])
+    (for/sum ([val (in-list (vector-ref data i))])
+      (/ i len))))
+
+;; -----------------------------------------------------------------------------
+;; --- viewing
+
+(define (summary->pict sm
+                       #:font-face face
+                       #:font-size size
+                       #:height height
+                       #:width width)
+  (define vspace (/ size 3))
+  (define hspace (/ width 3))
+  (define vpad (/ height 4))
+  (define baseline (untyped-mean sm))
+  (define (round2 n) (~r n #:precision (list '= 2)))
+  (define (overhead n) (round2 (/ n baseline)))
+  (define (text->pict message) (text message face size))
+  (define left-column
+    (vr-append vspace
+               (text->pict (get-project-name sm)) ;; BOLDER
+               (text->pict "τ overhead")
+               (text->pict "max. overhead")
+               (text->pict "avg. overhead")))
+  (define right-column
+    (vr-append vspace
+               (text->pict (format "(~a modules)" (get-num-modules sm)))
+               (text->pict (overhead (typed-mean sm)))
+               (text->pict (overhead (max-runtime sm)))
+               (text->pict (overhead (avg-runtime sm)))))
+  (vl-append vpad
+             (hc-append hspace left-column right-column)
+             (blank 1 vpad)))
 
 ;; =============================================================================
 
