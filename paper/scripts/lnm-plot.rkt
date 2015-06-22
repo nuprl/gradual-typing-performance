@@ -36,10 +36,13 @@
 (define DEFAULT_M 10)
 (define DEFAULT_XLIMIT 20)
 (define DEFAULT_CUTOFF 0.6)
-(define DEFAULT_SAMPLES 20)
+(define DEFAULT_SAMPLES 60)
 
 (define THIN (* 1.2 (line-width)))
 (define THICK (* 1.8 (line-width)))
+
+(define DEFAULT_FACE "bold")
+(define DEFAULT_SIZE 20)
 
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
@@ -50,6 +53,9 @@
                   #:M [M DEFAULT_M] ;; Index, recommended M limit
                   #:max-overhead [xmax DEFAULT_XLIMIT] ;; Index, max. x-value
                   #:num-samples [num-samples DEFAULT_SAMPLES] ;; Index
+                  #:font-face [font-face DEFAULT_FACE]
+                  #:font-size [font-size DEFAULT_SIZE]
+                  #:labels? [labels? #t]
                   #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF] ;; Flonum, between 0 and 1.
                   #:plot-width [width (plot-width)] ;; Index
                   #:plot-height [height (plot-height)]) ;; Index
@@ -75,8 +81,8 @@
     [plot-y-ticks (compute-yticks num-vars 6 #:exact cutoff-point)]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
-    [plot-font-face "bold"]
-    [plot-font-size 16])
+    [plot-font-face font-face]
+    [plot-font-size font-size])
     ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
       (define F (function (count-variations summary L #:cache-up-to xmax) 0 xmax
@@ -88,8 +94,8 @@
                  #:x-max xmax
                  #:y-min 0
                  #:y-max num-vars
-                 #:x-label "Overhead (vs. untyped)"
-                 #:y-label "Count"
+                 #:x-label (and labels? "Overhead (vs. untyped)")
+                 #:y-label (and labels? "Count")
                  #:width width
                  #:height height))))
 
@@ -244,4 +250,3 @@
 (module+ test
   (require rackunit)
 )
-
