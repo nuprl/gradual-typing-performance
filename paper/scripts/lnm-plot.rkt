@@ -23,8 +23,7 @@
   (only-in racket/math exact-floor)
   (only-in plot/utils linear-seq)
   (only-in racket/math exact-floor exact-ceiling)
-  ;(only-in racket/stream stream-length)
-  racket/stream
+  (only-in racket/stream stream-length stream->list stream-filter)
 )
 
 ;; =============================================================================
@@ -43,14 +42,14 @@
 ;; --- plotting
 
 (define (lnm-plot summary
-                  #:L L      ;; (U Index (Listof Index)), L-values to plot
+                  #:L L ;; (U Index (Listof Index)), L-values to plot
                   #:N [N DEFAULT_N]  ;; Index, recommened N limit
                   #:M [M DEFAULT_M] ;; Index, recommended M limit
-                  #:max-overhead [xmax DEFAULT_XLIMIT]
-                  #:num-samples [num-samples DEFAULT_SAMPLES]
-                  #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF]
-                  #:plot-width [width (plot-width)]
-                  #:plot-height [height (plot-height)])
+                  #:max-overhead [xmax DEFAULT_XLIMIT] ;; Index, max. x-value
+                  #:num-samples [num-samples DEFAULT_SAMPLES] ;; Index
+                  #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF] ;; Flonum, between 0 and 1.
+                  #:plot-width [width (plot-width)] ;; Index
+                  #:plot-height [height (plot-height)]) ;; Index
   (define L-list (or (and (list? L) L) (list L)))
   (define num-vars (get-num-variations summary))
   (define cutoff-point (* cutoff-proportion num-vars))
@@ -67,15 +66,14 @@
                                                     #:width THICK))
   ;; Get yticks
   (define yticks (compute-yticks num-vars 6 #:exact (list cutoff-point)))
-  ;; Set plot parameters (globally, for all picts)
+  ;; Set plot parameters ('globally', for all picts)
   (parameterize (
     [plot-x-ticks (compute-xticks 5)]
     [plot-y-ticks (compute-yticks num-vars 6 #:exact cutoff-point)]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     [plot-font-face "bold"]
-    [plot-font-size 16]
-    )
+    [plot-font-size 16])
     ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
       (define F (function (count-variations summary L #:cache-up-to xmax) 0 xmax
@@ -107,8 +105,7 @@
         ;; in the next bucket
         (cache-lookup cache N good?)
         ;; No cache, need to test all variations
-        (stream-length
-          (predicate->variations sm good?)))))
+        (stream-length (predicate->variations sm good?)))))
 
 ;; Make a predicate checking whether a variation is good.
 ;; Good = no more than `L` steps away from a variation
@@ -126,8 +123,8 @@
 (define (cache-init summary max-overhead #:L [L 0])
   (define base-overhead (untyped-mean summary))
   (define unsorted-variations (box (all-variations summary)))
-  ;; For each integer overhead range [0, 1], [1, 2] ... [max-1, max]
-  ;; save the variations within that overhead
+  ;; For each integer-overhead-range [0, 1] [1, 2] ... [max-1, max]
+  ;; save the variations within that overhead to a cache entry
   (for/vector ([i (in-range (add1 max-overhead))])
     (define good? (make-variation->good? summary (* i base-overhead) #:L L))
     (define-values (good-vars rest)
@@ -141,7 +138,7 @@
   (define lo-overhead (exact-floor overhead))
   (define hi-overhead (exact-ceiling overhead))
   (define num-known
-    (for/sum ([i (in-range 0 (add1 lo-overhead))])
+    (for/sum ([i (in-range (add1 lo-overhead))])
       (length (vector-ref $$$ i))))
   (if (= hi-overhead lo-overhead)
       ;; Short circuit, because original overhead was an integer
@@ -149,8 +146,7 @@
       ;; Else test all the variations in the "next" bucket
       (+ num-known
          (for/sum ([var (in-list (vector-ref $$$ hi-overhead))]
-                   #:when (test-fun var))
-           1))))
+                   #:when (test-fun var)) 1))))
 
 (define (stream-partition f stream)
   (define not-f (lambda (x) (not (f x))))

@@ -7,10 +7,13 @@
   ;; (->* [Path-String] [#:graph Path-String] Summary)
   from-rktd
   get-num-variations
+  get-project-name
   untyped-mean
   variation->mean-runtime
   predicate->variations
   all-variations
+  ;; 
+  summary-dataset
 )
 
 ;; -----------------------------------------------------------------------------
@@ -31,9 +34,9 @@
 ;; -- data definition: summary
 
 (struct summary (
-  source      ;; : Path-String, the data's origin
-  dataset     ;; : (Vectorof (Listof Index)), the underlying experimental data
-  modulegraph ;; : ModuleGraph, the adjacency list of the represented project
+  source      ;; Path-String, the data's origin
+  dataset     ;; (Vectorof (Listof Index)), the underlying experimental data
+  modulegraph ;; ModuleGraph, the adjacency list of the represented project
 ))
 
 ;; -----------------------------------------------------------------------------
@@ -81,13 +84,13 @@
     (unless (list? inner) (parse-error "Dataset is not a vector of lists found non-list entry '~a'" inner))
     (if (not (unbox num-runs))
         (set-box! num-runs (length inner))
-        (unless (= (unbox num-runs) (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths; all variations must describe the same number of runs" row-index)))
+        (unless (= (unbox num-runs) (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths; all variations must describe the same number of runs.\n  Bad row: ~a" row-index inner)))
     (for ([val (in-list inner)])
       (unless (exact-positive-integer? val)
         (parse-error "Row ~a contains non-integer entry '~a'" row-index val))))
     vec)
 
-;; Check that the dataset and module graph match
+;; Check that the dataset and module graph agree
 ;; (: validate-modulegraph (-> (Vectorof (Listof Index)) ModuleGraph Void))
 (define (validate-modulegraph dataset mg)
   (define ds-num-modules (log2 (vector-length dataset)))
