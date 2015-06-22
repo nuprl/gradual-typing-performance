@@ -43,3 +43,6 @@ proof:
 	echo
 	echo "duplicates: "
 	perl scripts/duplicates.pl *.scrbl
+
+clean:
+	rm -r compiled
