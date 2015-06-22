@@ -9,9 +9,12 @@
 ;;   columns are experimental results.
 
 (provide
-  ;; Convert a vector of experimental data.
+  ;; Convert a data file containing a vector to a spreadsheet
   ;; Vector must follow the format specified in the `data/` directory
   ;; (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String)
+  rktd->spreadsheet
+  ;; Convert a data vector (probably from a data file) to a spreadsheet
+  ;; (-> (Vectorof (Listof Index)) Path-String String Void)
   vector->spreadsheet
 )
 ;; ----------------------------------------------------------------------------
@@ -44,11 +47,11 @@
 
 ;; -----------------------------------------------------------------------------
 
-;; (copy-data rktd-vector out-file sep)
+;; (vector->spreadsheet rktd-vector out-file sep)
 ;; Copy the data from `rktd-vector` to the file `out-file`.
 ;; Format the data to a human-readable spreadsheet using `sep` to separate rows
-;; (: copy-data (-> (Vectorof (Vectorof Index)) Path-String String Void))
-(define (copy-data vec out-file sep)
+;; (: vector->spreadsheet (-> (Vectorof (Listof Index)) Path-String String Void))
+(define (vector->spreadsheet vec out-file sep)
   (with-output-to-file out-file #:exists 'replace
     (lambda ()
       ;; First print the index
@@ -65,20 +68,20 @@
         (newline)))))
 
 ;; Print the rktd data stored in file `input-filename` to a spreadsheet.
-;; (: vector->spreadsheet (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String))
-(define (vector->spreadsheet input-filename
+;; (: rktd->spreadsheet (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String))
+(define (rktd->spreadsheet input-filename
                              #:output [output #f]
                              #:format [format 'tab])
   (define vec (file->value input-filename))
   (define suffix (symbol->extension format))
   (define out (or output (path-replace-suffix input-filename suffix)))
   (define sep (symbol->separator format))
-  (copy-data vec out sep))
+  (vector->spreadsheet vec out sep))
 
 ;; -----------------------------------------------------------------------------
 
 (module+ main
   (require racket/cmdline)
   (command-line #:args (filename)
-    (vector->spreadsheet filename))
+    (rktd->spreadsheet filename))
 )
