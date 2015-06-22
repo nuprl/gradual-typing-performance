@@ -4,16 +4,14 @@
 ;; Handles queries for raw data and statistical summary data.
 
 (provide
+  all-variations
   from-rktd
   get-num-variations
   get-project-name
+  predicate->variations
+  summary
   untyped-mean
   variation->mean-runtime
-  predicate->variations
-  all-variations
-  ;; ---
-  summary-dataset
-  summary
 )
 
 ;; -----------------------------------------------------------------------------

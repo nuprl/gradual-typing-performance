@@ -16,22 +16,22 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
- "summary-adapted.rkt"
+  benchmark-util
+  "summary-adapted.rkt"
   plot/typed/pict
   (only-in racket/math exact-floor)
   (only-in plot/typed/utils linear-seq)
   (only-in racket/math exact-floor exact-ceiling)
-  )
+)
 (require/typed racket/stream
   [stream-length (-> (Sequenceof String) Index)]
   [stream->list (-> (Sequenceof String) (Listof String))]
   [stream-filter (-> (-> String Boolean) (Sequenceof String) (Sequenceof String))]
-  )
+)
 (require/typed/check "bitstring.rkt"
   [in-reach (-> String Index (Listof String))]
   [log2 (-> Index Index)]
-  )
+)
 
 ;; =============================================================================
 ;; --- constants

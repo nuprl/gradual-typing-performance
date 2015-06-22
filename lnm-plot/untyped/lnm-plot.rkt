@@ -10,7 +10,6 @@
 ;;   (Or, a list of such plots)
 
 (provide
-  ;; (->* [Summary] [TODO] Pict)
   lnm-plot
 )
 

@@ -7,13 +7,11 @@
 ;; so this file provides a (brittle) parser.
 
 (provide
-  project-name
-  module-names
-  path->project-name
   from-tex
-  ;; -- struct things
+  module-names
   modulegraph
-  ;modulegraph?
+  path->project-name
+  project-name
 )
 
 ;; -----------------------------------------------------------------------------
