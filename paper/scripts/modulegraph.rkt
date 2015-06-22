@@ -38,9 +38,13 @@
 
 ;; A module graph is represented as an adjacency list (all graphs are DAGs)
 ;; Invariant: names in the adjlist are kept in alphabetical order.
-(struct modulegraph (project-name adjlist) #:transparent)
+(struct modulegraph (
+  project-name ;; String
+  adjlist ;; (Listof (Listof String))
+) #:transparent)
 
 ;; Get the name of the project represented by a module graph
+;; (: project-name (-> ModuleGraph String))
 (define (project-name mg)
   (modulegraph-project-name mg))
 
@@ -92,7 +96,7 @@
 
 ;; Verify that `filename` is a tex file, return the name of
 ;; the project it describes.
-;; (: ensure-tex (-> (U Path-String Path) String))
+;; (: ensure-tex (-> (U Path-String Path) (Values Path String)))
 (define (ensure-tex filename)
   (define path (or (and (path? filename) filename)
                    (string->path filename)))
@@ -128,7 +132,7 @@
 
 ;; Parse consecutive `\node` declarations in a TiKZ file,
 ;; ignoring blank spaces and comments.
-;; (: parse-nodes (->* [Port] [(Listof texnode)] (Listof texnode)))
+;; (: parse-nodes (->* [Port] [(Listof texnode)] (Values texedge (Listof texnode))))
 (define (parse-nodes port [nodes-acc '()])
   (define raw-line (read-line port))
   (when (eof-object? raw-line)
@@ -204,8 +208,9 @@
   (define m (regexp-match NODE_REGEXP str))
   (match m
     [(list _ id _ index name)
-     (texnode (string->number id)
-              (string->number index)
+     #:when (and id index name)
+     (texnode (or (string->number id) (parse-error "Could not parse integer from node id '~a'" id))
+              (or (string->number index) (parse-error "Could not parse integer from node index '~a'" index))
               name)]
     [else
      (parse-error "Cannot parse node declaration '~a'" str)]))
@@ -224,7 +229,7 @@
      (parse-error "Cannot parse edge declaration '~a'" str)]))
 
 ;; Convert nodes & edges parsed from a .tex file to a modulegraph struct
-;; (: tex->modulegraph (-> (Listof texnode) (Listof texedge) ModuleGraph))
+;; (: tex->modulegraph (-> String (Listof texnode) (Listof texedge) ModuleGraph))
 (define (tex->modulegraph project-name nodes edges)
   ;; Convert a TiKZ node id to a module name
   (define (id->name id)

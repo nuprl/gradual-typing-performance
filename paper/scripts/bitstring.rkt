@@ -29,6 +29,7 @@
        (~r n #:base 2 #:min-width pad-width #:pad-string "0")))
 
 ;; Convert a binary string to a natural number
+;; (: bitstring->natural (-> String Index))
 (define (bitstring->natural str)
   (define N (string-length str))
   (for/sum ([i (in-range N)])
@@ -37,9 +38,19 @@
         (expt 2 i)
         0)))
 
+;; Return a copy of `str` where the `i`-th bit is flipped.
+;; (Flipped => 0 goes to 1 and 1 goes to 0)
+;; (: bitstring-flip (-> String Index String))
+(define (bitstring-flip str i)
+  (define new (if (equal? #\0 (string-ref str i)) "1" "0"))
+  (string-append (substring str 0 i)
+                 new
+                 (substring str (add1 i) (string-length str))))
+
 ;; Return all bitstrings reachable from `str`
 ;;  after incrementing at most `L` bits.
 ;; Result does NOT include the argument bitstring.
+;; (: in-reach (-> String Index (Listof String)))
 (define (in-reach str L)
   (cond [(zero? L) '()]
         [else
@@ -49,14 +60,6 @@
              (define str+ (bitstring-flip str i))
              (cons str+ (in-reach str+ (sub1 L)))))
          (remove-duplicates (apply append res*) string=?)]))
-
-;; Return a copy of `str` where the `i`-th bit is flipped.
-;; (Flipped => 0 goes to 1 and 1 goes to 0)
-(define (bitstring-flip str i)
-  (define new (if (equal? #\0 (string-ref str i)) "1" "0"))
-  (string-append (substring str 0 i)
-                 new
-                 (substring str (add1 i) (string-length str))))
 
 ;; =============================================================================
 

@@ -68,7 +68,7 @@
         (newline)))))
 
 ;; Print the rktd data stored in file `input-filename` to a spreadsheet.
-;; (: rktd->spreadsheet (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String))
+;; (: rktd->spreadsheet (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) Void))
 (define (rktd->spreadsheet input-filename
                              #:output [output #f]
                              #:format [format 'tab])
