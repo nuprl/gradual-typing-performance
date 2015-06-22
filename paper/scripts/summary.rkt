@@ -100,10 +100,10 @@
     (unless (list? inner) (parse-error "Dataset is not a vector of lists found non-list entry '~a'" inner))
     (if (not (unbox num-runs))
         (set-box! num-runs (length inner))
-        (unless (= (unbox num-runs) (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths; all variations must describe the same number of runs.\n  Bad row: ~a" row-index inner)))
+        (unless (= (unbox num-runs) (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths (~a vs. ~a); all variations must describe the same number of runs.\n  Bad row: ~a" row-index (unbox num-runs) (length inner) inner)))
     (for ([val (in-list inner)])
       (unless (exact-positive-integer? val)
-        (parse-error "Row ~a contains non-integer entry '~a'" row-index val))))
+        (parse-error "Row ~a contains nonsense entry '~a'" row-index val))))
     vec)
 
 ;; Check that the dataset and module graph agree
