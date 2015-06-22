@@ -25,7 +25,7 @@
 While most research on gradually typed programming languages has remained
  theoretical, the few emerging implementations seem to suffer from the cost
  of these run-time checks. Indeed, none of the publications on gradual
- typing comes with a comprehensive evaluation; a few report disastrous
+ typing come with a comprehensive evaluation; a few report disastrous
  numbers. In response, this paper proposes a framework for evaluating the
  performance of gradually typed programming languages. The framework takes
  the idea of a gradual conversion seriously and calls for measuring the
