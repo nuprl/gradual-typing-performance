@@ -110,3 +110,21 @@ The module structure diagram for @tt{suffixtree} in @figure-ref{fig:bm}
 corroborates the presence of this coupling. The rightmost node in that
 diagram corresponds to the @tt{data.rkt} module, which has the most in-edges in
 that particular graph.
+
+
+@section{Results}
+
+
+@figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
+@exact|{
+\input{lnm/part1}
+}|
+]
+
+@figure*["fig:lnm2" @list{@emph{L-step N/M-usable} results for the rest of the benchmarks}
+@exact|{
+\input{lnm/part2}
+}|
+]
+
+

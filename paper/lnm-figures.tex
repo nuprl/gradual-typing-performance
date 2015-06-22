@@ -1,0 +1,31 @@
+\documentclass{article}
+
+%% Example document for L-N/M figures
+%% I'd like to include the macro definitions
+%% and the 2 figures in scribble, but the \input
+%% command isn't able for find `lnm/part1.tex`
+%% and even using \includegraphics is raising pages of errors :(
+
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+
+\newcommand{\imgwidth}{0.25\textwidth}
+\newcommand{\imgkern}{0.01\textwidth}
+\newcommand{\magicvoffset}{-4.1cm}
+\newcommand{\gtoverhead}{{\tt\bf$\times$}}
+
+\begin{document}
+
+\begin{figure}
+\input{lnm/part1}
+\caption{\emph{L-step N/M-usable} results for selected benchmarks.}
+\end{figure}
+
+\newpage
+
+\begin{figure}
+\input{lnm/part2}
+\caption{\emph{L-step N/M-usable} results for the rest of the benchmarks.}
+\end{figure}
+
+\end{document}
