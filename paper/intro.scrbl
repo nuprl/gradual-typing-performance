@@ -62,7 +62,7 @@ A performance measurement of a gradual typing system must run every
  basic questions as how many of these configurations could easily be
  deployed without affecting performance too much.  
 
-We use our framework to evaluate Typed Racket, the gradual typed sister
+We use our framework to evaluate Typed Racket, the gradually typed sister
  language of Racket.  Typed Racket is the oldest (developed since 2006) and
  probably most sophisticated implementation of gradual typing, but it is
  also a natural choice because its macro-level approach to gradual typing
