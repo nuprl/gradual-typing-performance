@@ -22,6 +22,7 @@
   plot/pict
   (only-in racket/math exact-floor)
   (only-in plot/utils linear-seq)
+  (only-in racket/math exact-floor exact-ceiling)
   ;(only-in racket/stream stream-length)
   racket/stream
 )
@@ -77,7 +78,7 @@
     )
     ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
-      (define F (function (count-variations summary L) 0 xmax
+      (define F (function (count-variations summary L #:cache-up-to xmax) 0 xmax
                           #:samples num-samples
                           #:color 'navy
                           #:width THICK))
@@ -96,16 +97,68 @@
 ;;  which can reach, in L or fewer steps,
 ;;  a variation with overhead no more than `N`
 ;; (: count-variations (-> Summary Index (-> Real Index)))
-(define (count-variations sm L)
-  ;; TODO add cache?
+(define (count-variations sm L #:cache-up-to [lim #f])
   (define baseline (untyped-mean sm))
+  (define cache (and lim (cache-init sm lim #:L L)))
   (lambda (N)
-    (define (good? var)
-      (for/or ([var2 (cons var (in-reach var L))])
-        (< (variation->mean-runtime sm var2)
-           (* N baseline))))
-    (define good-variations (predicate->variations sm good?))
-    (length (stream->list good-variations))))
+    (define good? (make-variation->good? sm (* N baseline) #:L L))
+    (if (and cache (<= N lim))
+        ;; Use cache to save some work, only test the variations
+        ;; in the next bucket
+        (cache-lookup cache N good?)
+        ;; No cache, need to test all variations
+        (stream-length
+          (predicate->variations sm good?)))))
+
+;; Make a predicate checking whether a variation is good.
+;; Good = no more than `L` steps away from a variation
+;;        with average runtime less than `good-threshold`.
+(define (make-variation->good? summary good-threshold #:L [L 0])
+  (lambda (var)
+    (for/or ([var2 (cons var (in-reach var L))])
+      (< (variation->mean-runtime summary var2)
+         good-threshold))))
+
+;; -----------------------------------------------------------------------------
+;; -- cache
+
+;; Create a cache that saves the configurations between discrete overhead values
+(define (cache-init summary max-overhead #:L [L 0])
+  (define base-overhead (untyped-mean summary))
+  (define unsorted-variations (box (all-variations summary)))
+  ;; For each integer overhead range [0, 1], [1, 2] ... [max-1, max]
+  ;; save the variations within that overhead
+  (for/vector ([i (in-range (add1 max-overhead))])
+    (define good? (make-variation->good? summary (* i base-overhead) #:L L))
+    (define-values (good-vars rest)
+      (stream-partition good? (unbox unsorted-variations)))
+    (set-box! unsorted-variations rest)
+    (stream->list good-vars)))
+
+;; Count the number of variations with running time less than `overhead`.
+;; Use `test-fun` to manually check variations we aren't sure about
+(define (cache-lookup $$$ overhead test-fun)
+  (define lo-overhead (exact-floor overhead))
+  (define hi-overhead (exact-ceiling overhead))
+  (define num-known
+    (for/sum ([i (in-range 0 (add1 lo-overhead))])
+      (length (vector-ref $$$ i))))
+  (if (= hi-overhead lo-overhead)
+      ;; Short circuit, because original overhead was an integer
+      num-known
+      ;; Else test all the variations in the "next" bucket
+      (+ num-known
+         (for/sum ([var (in-list (vector-ref $$$ hi-overhead))]
+                   #:when (test-fun var))
+           1))))
+
+(define (stream-partition f stream)
+  (define not-f (lambda (x) (not (f x))))
+  (values (stream-filter f stream)
+          (stream-filter not-f stream)))
+
+;; -----------------------------------------------------------------------------
+;; --- plotting utils
 
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
@@ -135,9 +188,6 @@
          (lambda (ax-min ax-max pre-ticks)
            (for/list ([pt (in-list pre-ticks)])
              (format "~ax" (pre-tick-value pt))))))
-
-;; -----------------------------------------------------------------------------
-;; --- other
 
 (define (horizontal-line y-val
                          #:x-min [x-min 0]
