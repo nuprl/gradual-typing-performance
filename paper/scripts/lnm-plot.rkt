@@ -90,7 +90,7 @@
                           #:color 'navy
                           #:width THICK))
       (plot-pict (list N-line M-line cutoff-line F)
-                 #:x-min 0
+                 #:x-min 1
                  #:x-max xmax
                  #:y-min 0
                  #:y-max num-vars
