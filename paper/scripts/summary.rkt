@@ -4,16 +4,27 @@
 ;; Handles queries for raw data and statistical summary data.
 
 (provide
+  ;; Convert a filepath to a summary object
   ;; (->* [Path-String] [#:graph Path-String] Summary)
   from-rktd
+  ;; Get the number of variations from a Summary
+  ;; (-> Summary Index)
   get-num-variations
+  ;; Get the project name from a Summary
+  ;; (-> Summary String)
   get-project-name
+  ;; Get the mean runtime of the Summary's untyped variation
+  ;; (-> Summary Real)
   untyped-mean
+  ;; Get the mean runtime of a variation, represented as a bitstring
+  ;; (-> Summary String Real)
   variation->mean-runtime
+  ;; Return a stream of variations satisfying the predicate
+  ;; (-> Summary (-> String Boolean) (Streamof String))
   predicate->variations
+  ;; Return a stream of all variations in the Summary
+  ;; (-> Summary (Streamof String))
   all-variations
-  ;; 
-  summary-dataset
 )
 
 ;; -----------------------------------------------------------------------------

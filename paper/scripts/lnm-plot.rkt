@@ -1,7 +1,8 @@
 #lang racket/base
 
 ;; Create L-N/M plots for .rktd files
-
+;;
+;; At a high level:
 ;; Input:
 ;; - Raw experimental data (.rktd)
 ;;   (Optionally a list)
@@ -10,7 +11,9 @@
 ;;   (Or, a list of such plots)
 
 (provide
-  ;; (->* [Summary] [TODO] Pict)
+  ;; Create an L-NM plot based on the given parameters (see function for params)
+  ;; Builds one plot for each given value of L.
+  ;; (-> Summary #:L (Listof Index) <OPTIONS> (Listof Pict))
   lnm-plot
 )
 
@@ -98,7 +101,7 @@
 (define (count-variations sm L #:cache-up-to [lim #f])
   (define baseline (untyped-mean sm))
   (define cache (and lim (cache-init sm lim #:L L)))
-  (lambda (N)
+  (lambda (N) ;; Real, but we assume non-negative
     (define good? (make-variation->good? sm (* N baseline) #:L L))
     (if (and cache (<= N lim))
         ;; Use cache to save some work, only test the variations
@@ -235,6 +238,8 @@
       (define fname (format "output/~a~a.png" name i))
       (send (pict->bitmap pic) save-file fname 'png)))
 )
+
+;; -----------------------------------------------------------------------------
 
 (module+ test
   (require rackunit)

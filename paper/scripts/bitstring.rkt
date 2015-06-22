@@ -1,9 +1,19 @@
 #lang racket/base
 
 (provide
+  ;; Base 2 log, on naturals
+  ;; (-> Natural Natural)
   log2
+  ;; Convert a natural number to a binary string representation
+  ;; Keyword argument #:pad sets the width of the result string
+  ;; (-> Index #:pad Index String)
   natural->bitstring
+  ;; Convert a string representation of a binary number to a natural.
+  ;; (-> String Index)
   bitstring->natural
+  ;; (in-reach s l)
+  ;; List all bitstrings reachable from `s` by flipping at most `l` bits
+  ;; (-> String Index (Listof String))
   in-reach
 )
 
@@ -17,8 +27,7 @@
 
 ;; =============================================================================
 
-;; log, base 2
-;; (: log2 (-> Integer Flonum))
+;; (: log2 (-> Natural Natural))
 (define (log2 n)
   (exact-ceiling (/ (log n) (log 2))))
 

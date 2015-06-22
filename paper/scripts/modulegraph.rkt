@@ -17,7 +17,6 @@
   name->index
   ;; (-> ModuleGraph String (Listof String))
   requires
-  ;; --
   ;; (-> Path String)
   path->project-name
   ;; (-> (U Path Path-String) ModuleGraph)
