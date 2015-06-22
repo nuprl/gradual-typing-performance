@@ -9,7 +9,7 @@
   get-num-variations
   get-project-name
   predicate->variations
-  summary
+  (struct-out summary)
   untyped-mean
   variation->mean-runtime
 )
@@ -31,7 +31,7 @@
 (require/typed/check "bitstring.rkt"
   [bitstring->natural (-> String Index)]
   [log2 (-> Index Index)]
-  [natural->bitstring (-> Index String)]
+  [natural->bitstring (-> Index #:pad Index String)]
 )
 
 ;; =============================================================================

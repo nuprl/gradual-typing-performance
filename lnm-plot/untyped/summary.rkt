@@ -9,7 +9,7 @@
   get-num-variations
   get-project-name
   predicate->variations
-  summary
+  (struct-out summary)
   untyped-mean
   variation->mean-runtime
 )

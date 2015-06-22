@@ -17,9 +17,12 @@
 ;; ----------------------------------------------------------------------------
 
 (require
+  benchmark-util
   (only-in racket/file file->value)
-  (only-in "bitstring.rkt" log2 natural->bitstring)
 )
+(require/typed/check "bitstring.rkt"
+  [log2 (-> Index Index)]
+  [natural->bitstring (-> Index #:pad Index String)])
 
 ;; =============================================================================
 

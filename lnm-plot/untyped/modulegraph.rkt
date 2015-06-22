@@ -7,21 +7,11 @@
 ;; so this file provides a (brittle) parser.
 
 (provide
-  ;; (-> ModuleGraph String)
-  project-name
-  ;; (-> ModuleGraph (Listof String))
-  module-names
-  ;; (-> ModuleGraph Index String)
-  index->name
-  ;; (-> ModuleGraph String Index)
-  name->index
-  ;; (-> ModuleGraph String (Listof String))
-  requires
-  ;; --
-  ;; (-> Path String)
-  path->project-name
-  ;; (-> (U Path Path-String) ModuleGraph)
   from-tex
+  module-names
+  (struct-out modulegraph)
+  path->project-name
+  project-name
 )
 
 ;; -----------------------------------------------------------------------------

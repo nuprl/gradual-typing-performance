@@ -17,6 +17,7 @@
 
 (require
   benchmark-util
+  "pict-adapted.rkt"
   "summary-adapted.rkt"
   plot/typed/pict
   (only-in racket/math exact-floor)
@@ -58,7 +59,7 @@
                   #:plot-width Positive-Integer
                   #:plot-height Positive-Integer
                   ]
-                  (Listof Any))) ;; type Pict is unbound
+                  (Listof Pict)))
 (define (lnm-plot summary
                   #:L L ;; (U Index (Listof Index)), L-values to plot
                   #:N [N DEFAULT_N]  ;; Index, recommened N limit
@@ -98,7 +99,7 @@
                           #:samples num-samples
                           #:color 'navy
                           #:width THICK))
-      (plot-pict (list N-line M-line cutoff-line F)
+      (define res (plot-pict (list N-line M-line cutoff-line F)
                  #:x-min 0
                  #:x-max xmax
                  #:y-min 0
@@ -106,7 +107,8 @@
                  #:x-label "Overhead (vs. untyped)"
                  #:y-label "Count"
                  #:width width
-                 #:height height))))
+                 #:height height))
+      (if (pict? res) res (error 'lnm)))))
 
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of variations

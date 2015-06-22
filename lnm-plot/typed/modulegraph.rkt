@@ -9,7 +9,7 @@
 (provide
   from-tex
   module-names
-  modulegraph
+  (struct-out modulegraph)
   path->project-name
   project-name
 )
