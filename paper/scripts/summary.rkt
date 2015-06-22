@@ -173,25 +173,23 @@
 (define (index->mean-runtime sm i)
   (mean (vector-ref (summary-dataset sm) i)))
 
+;; Efficient enough?
+(define (all-gt-runtimes sm)
+  (define data (summary-dataset sm))
+  (apply append
+         (for/list ([i (in-range 1 (vector-length data))])
+           (vector-ref data i))))
+
 ;; Get the worst of all GRADUALLY typed running times (excludes typed & untyped)
 (define (max-runtime sm)
-  (define data (summary-dataset sm))
   (for/fold ([prev-max #f])
-            ([i (in-range 1 (vector-length data))])
-    (define new-max (mean (vector-ref data i)))
-    (if prev-max
-        (max prev-max new-max)
-        new-max)))
+            ([val (in-list (all-gt-runtimes sm))])
+    (or (and prev-max (max prev-max val)) val)))
 
 ;; Get the average over all gradually typed running times (exludes typed & untyped)
 ;; Takes into account every single measured data point.
 (define (avg-runtime sm)
-  (define data (summary-dataset sm))
-  (define len (* (get-num-runs sm)
-                 (- (get-num-variations sm) 2)))
-  (for/sum ([i (in-range 1 (vector-length data))])
-    (for/sum ([val (in-list (vector-ref data i))])
-      (/ i len))))
+  (mean (all-gt-runtimes sm)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- viewing
@@ -203,14 +201,15 @@
                        #:width width)
   (define vspace (/ size 3))
   (define hspace (/ width 3))
-  (define vpad (/ height 4))
+  (define vpad (/ height 5))
   (define baseline (untyped-mean sm))
-  (define (round2 n) (~r n #:precision (list '= 2)))
+  (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
   (define (overhead n) (round2 (/ n baseline)))
   (define (text->pict message) (text message face size))
+  (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
   (define left-column
     (vr-append vspace
-               (text->pict (get-project-name sm)) ;; BOLDER
+               (text->title (get-project-name sm)) ;; BOLDER
                (text->pict "τ overhead")
                (text->pict "max. overhead")
                (text->pict "avg. overhead")))
