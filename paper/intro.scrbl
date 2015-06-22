@@ -72,7 +72,7 @@ We use our framework to evaluate Typed Racket, the gradual typed sister
  commercial and open source community, which suggests at least adequate
  performance.@margin-note{Personal communication with the implementors, who
  claim some 100,000 unique downloads per year.}
-@: the above should be a footnote
+@; the above should be a footnote
 
 @;  We use our framework to evaluate two
 @;  implementations of gradual typing on a dozen benchmark lattices: the
