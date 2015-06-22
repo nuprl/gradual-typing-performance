@@ -26,7 +26,7 @@
                                   #:plot-height 300
                                   #:plot-width 400))
   ;; Make a spreadsheet, just to test that too
-  (rktd->spreadsheet filename #:output "/tmp/lnm.tab" #:format 'tab)
+  (rktd->spreadsheet filename #:output "./test-case-output.out" #:format 'tab)
   (void)
 )
 
