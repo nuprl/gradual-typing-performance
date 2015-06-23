@@ -119,28 +119,28 @@ that particular graph.
 Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a row of figures.
 
 @figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
-  @(let* ([rktd* '(
-                   "./data/funkytown.rktd"
-                   "./data/gregor-05-11.rktd"
-                   "./data/kcfa-small-06-20.rktd" ;; TODO needs re-run, row 111 of data is malformed
-                   "./data/quad-placeholder.rktd"
-                   "./data/snake-04-10.rktd"
-                   "./data/suffixtree-06-10.rktd"
+  @(let* ([data '(
+                   ("synth"      "./data/funkytown.rktd")
+                   ("gregor"     "./data/gregor-05-11.rktd")
+                   ("kcfa"       "./data/kcfa-06-01.rktd") ;; TODO need to re-run the LARGE one, row 111 of data is malformed
+                   ("quad"       "./data/quad-placeholder.rktd")
+                   ("snake"      "./data/snake-04-10.rktd")
+                   ("suffixtree" "./data/suffixtree-06-10.rktd")
                   )])
-     (rktd*->pict rktd* #:tag "1"))
+     (data->pict data #:tag "1"))
 ]
 
 @figure*["fig:lnm2" @list{@emph{L-step N/M-usable} results for the rest of the benchmarks}
-  @(let* ([rktd* '(
-                   "./data/echo.rktd"
-                   "./data/mbta-04-20.rktd"
-                   "./data/morsecode-06-19.rktd"
-                   ;"./data/sieve-04-06.rktd"
-                   "./data/lnm-06-22.rktd"
-                   "./data/tetris-large-06-20.rktd"
-                   "./data/zordoz-04-09.rktd"
+  @(let* ([data '(
+                   ("echo"         "./data/echo.rktd")
+                   ("morse-code"   "./data/morsecode-06-19.rktd")
+                   ("mbta"         "./data/mbta-04-25.rktd")
+                   ("sieve"        "./data/sieve-04-06.rktd")
+                   ;; ("lnm" "./data/lnm-06-22.rktd")
+                   ("tetris"       "./data/tetris-large-06-20.rktd")
+                   ("zo-traversal" "./data/zordoz-04-09.rktd")
                   )])
-     (rktd*->pict rktd* #:tag "2"))
+     (data->pict data #:tag "2"))
 ]
 
 @subsection{Reading the Figures}
@@ -151,9 +151,8 @@ Each line is the result of sampling @id[PARAM-NUM-SAMPLES] values linearly space
 
 Overhead factors range from 1x, indicating a speedup relative to the untyped program, to a generous @id[PARAM-MAX-OVERHEAD]x slowdown compared to the untyped variation.
 @; TODO color "green" and "yellow"
-@; TODO figure out the scribble @- to insert Racket parameters
-To put these slowdown factors in perspective, we draw a @todo{green} vertical line at @id[PARAM-N]x overhead and a @todo{yellow} vertical line at @id[PARAM-M]x as suggested cutoffs for @emph{N} and @emph{M}.
-That is, we consider anything to the left of the line at @id[PARAM-N]x to be usable and anything between that green line and the yellow line at @id[PARAM-M]x to be usable.
+To put these slowdown factors in perspective, we draw a @todo{green} vertical line at @id[PARAM-N]x overhead and a @todo{yellow} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @emph{N} and @emph{M}.
+Realistic choices for @exact{$N$} and @exact{$M$} should be much lower, but we generally label anything to the left of the line at @id[PARAM-N]x to be deliverable and anything between that green line and the yellow line at @id[PARAM-M]x to be usable.
 
 On each y-axis, we count the absolute number of variations in the program.
 The y-axis labels range from 0 variations to @exact{$2^n$} variations, where @exact{$n$} is the number of modules in that row's benchmark program.
@@ -176,17 +175,109 @@ The graphs help answer three high-level performance questions:
 @itemlist[
 @item{How many variations are deliverable for a fixed overhead @exact{$N$}?}
 @item{How many variations become usable for an @exact{$M > N$}?}
-@item{How does increasing the unit of work from 1 conversion step to 2 or 3 change the performance picture?}
+@item{How does increasing the unit of work from one conversion step to 2 or 3 change the performance picture?}
 ]
 The red dashed line represents our bottom line:
 That is, supposing a developer has decided on fixed bounds for @exact{$N$}, @exact{$M$}, and @exact{$L$}, are at least 60% of the variations deliverable or at least usable?
 
 
 We did not expect these graphs to be interesting---they should all look like @bold{gregor} or @bold{echo}.
-
+@; shape we would hope for, given these X and Y
 
 @subsection{All Benchmarks, in some depth}
 @; Due dilligence for each benchmark,
 @; TODO we should re-title and compress this section before submitting
+@; TODO maybe add:
+@; - reasons why, for performance
+@; - porting story, how difficult is 2 paths
 
+Brief descriptions of the graphs for each benchmark.
+
+
+@;; First L-N/M figure
+@parag{Synth}
+The @tt{synth} benchmark performs well at the top and bottom of the lattice, but is significantly worse when gradually typed.
+Over half the gradually typed variations suffer an overhead of more than 20x.
+Increasing @exact{$L$} does increase the slopes of the lines, meaning a larger number of variations become usable for an @exact{$N/M$} pair, but gradual typing still introduces a large overhead.
+Even at @exact{$L$}=2 only 30% of all variations lie in reach of a point with at most 3x slowdown.
+
+
+@parag{Gregor}
+Despite being a large benchmark, @tt{gregor} performs reasonably well even when gradually typed.
+The worst-case slowdown of 6x is quite good compared to the other large benchmarks, and the steep vertical slope is also promising.
+@; Contracts mostly simple types, I bet pycket or soft contracts could do great here
+
+
+@parag{K-CFA}
+@; Control-flow analyses typically run slowly, and the implementation in our benchmark is poor even in comparison.
+@; Without typed/untyped boundaries, our benchmark takes almost a minute to analyze a small arithmetic expression for @exact{$k$}=2 evaluation steps.
+@; k-CFA is not a good application for gradual typing! Then again it's not much of a real program either
+
+The @tt{kcfa} benchmark has a very jagged shape, implying that @exact{$N/M$}-usability is not a helpful tradeoff for this program.
+At @exact{$L$}=0, selecting an @exact{$N$} determines the proportion of usable variations for small values of @exact{$M$}.
+This is expecially true for @exact{$N$} between 1x and 6x overhead, and remains true even after increasing @exact{$L$} to 1; however at @exact{$L$}=2 the performance problem is apparently solved (assuming a method of finding the performant variations).
+
+
+@parag{Quad}
+TBA
+
+
+@parag{Snake}
+The @tt{snake} benchmark has similar performance characteristics to @tt{synth}.
+Most gradually-typed variations suffer more than 20x overhead and increasing @exact{$L$} helps somewhat, but still one must accept at least a 6x overhead before 60% of variations may be considered usable.
+
+@; because of a tightly-coupled module structure?
+@; anywy, it's interesting that synth was not an isolated problem
+
+
+@parag{Suffixtree}
+At @exact{$L$}=0, @tt{suffixtree} shows the worst performance characteristics of all our benchmarks.
+The slope is nearly a plateau, implying that over half the gradually-typed variations hit a performance wall and are not usable at any realistic value of @exact{$M$}.
+Increasing @exact{$L$}, however, drastically improves this picture.
+Although most variations suffer large performance overhead, they are in theory close to a variation with much better performance.
+
+
+@;; Second L-N/M figure
+@parag{Echo}
+The shape of the @tt{echo} graphs is ideal.
+The sharp vertical line at @exact{$L$}=0 indicates that all variations are deliverable for a small value of @exact{$N$}.
+Naturally, the same shape is repeated for larger @exact{$L$}.
+
+@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
+@; Even at @exact{$L$}=2, we could shift focus to identifying the good variations rather than finding a new implementation strategy.
+
+
+@parag{Morse code}
+The @tt{morse-code} benchmark also has excellent performance.
+Moreover, it is an example of a real program with such performance, as opposed to the toy @tt{echo} example.
+
+
+@parag{MBTA} @;fixed version
+The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat area.
+This implies that some boundary between a few modules accounts for a 3x slowdown (after which, every variation is considered usable).
+
+
+@parag{Sieve}
+At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water.
+Half of the 4 variations suffer extremely large overhead.
+Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
+
+@; This benchmark is admittedly contrived, but proves an interesting point: pathologically-bad variations can be avoided if the programmer is able to identify tightly-connected modules and ensure there is no boundary between them.
+
+
+
+@parag{Tetris}
+Like @tt{suffixtree}, the @tt{tetris} benchmark is a success story for increasing @exact{$L$}.
+When @exact{$L$}=0 we see that half of all modules are within 6x overhead, but the rest are more than 20x worse than the untyped program.
+The "good half", however, is apparently spread throughout the lattice and reachable in few steps from all other variations.
+Interestingly a plateau remains at @exact{$L$}=1, presumably because there are some very heavy boundaries.
+
+
+@parag{ZO Traversal}
+The lines for @tt{zo-traversal} are fairly steep, but not as drastic as the lines for @tt{morse-code} or even @tt{mbta}.
+More interestingly, half the variations suffer a 2x overhead even as @exact{$L$} increases.
+This behavior is explained by the summary numbers: because the fully-typed variation incurs some overhead, the ability to convert additional modules does not often help reach a more performant variation.
+
+@; core problem: the data is always untyped
+@; The @tt{zo-traversal} benchmark unfortunately performs worse as more modules are typed.
 
