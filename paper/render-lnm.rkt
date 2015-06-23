@@ -3,11 +3,12 @@
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
 (provide
-  rktd*->pict
-  PARAM-N
-  PARAM-M
-  PARAM-MAX-OVERHEAD
-  PARAM-NUM-SAMPLES
+ rktd*->pict
+ PARAM-N
+ PARAM-M
+ PARAM-L
+ PARAM-MAX-OVERHEAD
+ PARAM-NUM-SAMPLES
 )
 
 ;; -----------------------------------------------------------------------------
@@ -30,10 +31,11 @@
 ;; Experiment parameters
 (define PARAM-N 3)
 (define PARAM-M 10)
+(define PARAM-L 2)
 (define PARAM-MAX-OVERHEAD 20)
 (define PARAM-NUM-SAMPLES 60)
 
-(define L* '(0 1 2))
+(define L* (for/list ([i (in-range (add1 PARAM-L))]) i))
 (define FONT-FACE "Liberation Serif")
 
 ;; TODO make sizes as large as possible
