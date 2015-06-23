@@ -75,7 +75,7 @@
                                                     #:style 'short-dash
                                                     #:width THICK))
   ;; Get yticks
-  (define yticks (compute-yticks num-vars 6 #:exact (list cutoff-point)))
+  (define yticks (compute-yticks num-vars 6 #:exact (list cutoff-point num-vars)))
   ;; Set plot parameters ('globally', for all picts)
   (parameterize (
     [plot-x-ticks (compute-xticks 5)]
@@ -169,14 +169,13 @@
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
-;; TODO
 (define (compute-yticks max-y num-ticks #:exact [exact '()])
   (define exact-list (or (and (list? exact) exact) (list exact)))
   (define round-y (if (< max-y 1000)
                       round
                       (lambda (n) (* 100 (exact-floor (/ n 100))))))
   (ticks (lambda (ax-min ax-max)
-           (for/list ([y (in-list (linear-seq ax-min ax-max num-ticks))])
+           (for/list ([y (in-list (linear-seq ax-min ax-max num-ticks #:end? #t))])
              (define rounded (round-y y))
              (define ex (findf (lambda (n) (= rounded (round-y n)))
                                exact-list))

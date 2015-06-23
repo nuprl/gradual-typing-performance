@@ -116,7 +116,7 @@ that particular graph.
 
 @section{Experimental Results}
 @(Figure-ref "fig:lnm1" "fig:lnm2") summarize the results of creating a performance lattice for each benchmark program.
-Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a series of three figures.
+Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a row of figures.
 
 @figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
   @(let* ([rktd* '(
@@ -145,10 +145,35 @@ Rather than displaying the entire lattice for each of the 12 programs, we summar
 
 @subsection{Reading the Figures}
 @; Describe the lines & units on the figures
+The line graphs show the number of variations that are @emph{L-step} usable for a particular @emph{L} and overhead factor.
+Each line is the result of sampling @todo{PARAM-NUM-SAMPLES} overhead factors linearly spaced along the x-axis.
+
+Overhead factors range from 1x, indicating a speedup relative to the untyped program, to a generous @todo{PARAM-MAX-OVERHEAD}x slowdown compared to the untyped variation.
+@; TODO color "green" and "yellow"
+@; TODO figure out the scribble @- to insert Racket parameters
+To put these slowdown factors in perspective, we draw a @todo{green} vertical line at @todo{PARAM-N}x overhead and a @todo{yellow} vertical line at @todo{PARAM-M}x as suggested cutoffs for @emph{N} and @emph{M}.
+That is, we consider anything to the left of the line at @todo{PARAM-N}x to be usable and anything between that green line and the yellow line at @todo{PARAM-M}x to be usable.
+
+On each y-axis, we count the absolute number of variations in the program.
+The y-axis labels range from 0 variations to @exact{$2^n$} variations, where @exact{$n$} is the number of modules in that row's benchmark program.
+@; TODO color the word "red"
+The axes themselves are scaled to be the same height for all figures; in particular, we draw a @todo{red} dashed line at the number corresponding to 60% of all variations in the program.
+
+Each column of figures shows results for a fixed value of @emph{L}.
+Thus the leftmost column simply counts the number of variations with performance below a given overhead factor.
+In contrast, the graphs in the rightmost column count all variations that are at most two type-annotation steps away from a usable variation.
+
+Lastly, each row of figures is accompanied by a brief summary of the performance statistics we measured.
+These statistics include the number of modules in the program, the overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
+Note that the worst and average case numbers do not include the typed and untyped variation.
 
 
 @subsection{Interpreting the Figures}
-@; Judgments to-be-made from the figures
+@; Judgments to make from the figures
+
+The bounds are very generous
+We did not expect these graphs to be interesting
+
 
 @subsection{All Benchmarks, in some depth}
 @; Due dilligence for each benchmark,

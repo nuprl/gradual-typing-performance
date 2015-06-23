@@ -17,11 +17,13 @@
          parag
          sf
 
-	 step
+         step
          def
-	 deliverable
-	 usable
-	 )
+         deliverable
+         usable
+
+         todo
+         )
 
 (require "bib.rkt"
          "gradual-bib.rkt" ; copied from the github repo
@@ -62,8 +64,8 @@
      (define/public (get-cite-close) "]")
      (define/public (get-group-sep) ", ")
      (define/public (get-item-sep) ", ")
-     (define/public (render-citation date-cite i) 
-       (make-element 
+     (define/public (render-citation date-cite i)
+       (make-element
         (make-style "Thyperref" (list (command-extras (list (make-label i)))))
         (list (number->string i))))
      (define/public (render-author+dates author dates) dates)
@@ -71,7 +73,7 @@
        (string-append "autobiblab:" (number->string i)))
      (define/public (bibliography-line i e)
        (list (make-paragraph plain
-                             (make-element colbibnumber-style 
+                             (make-element colbibnumber-style
                                            (list
                                             (make-element (make-style "label" null)
                                                           (make-label i))
@@ -90,15 +92,15 @@
      (define/public (get-cite-close) ")")
      (define/public (get-group-sep) "; ")
      (define/public (get-item-sep) ", ")
-     (define/public (render-citation date-cite i) 
-       (make-element 
+     (define/public (render-citation date-cite i)
+       (make-element
         (make-style "Thyperref" (list (command-extras (list (make-label i)))))
         date-cite))
      (define/public (render-author+dates author dates)
         (list* author " " dates))
      (define (make-label i)
        (string-append "autobiblab:" (number->string i)))
-     (define/public (bibliography-line i e) 
+     (define/public (bibliography-line i e)
        (list (make-compound-paragraph
               plain
               (list (make-paragraph plain (list (make-element (make-style "label" null)
@@ -142,3 +144,20 @@
 
 (define (step L N M)
   (make-element plain @list{@(math L)-step @(math N "/" M)-usable}))
+
+(define (todo x)
+  (make-element plain @x))
+
+;; TODO
+;; (define (colored c txt)
+;;   (make-element (make-style #f (list (color-property c)))
+;;                 txt))
+
+;; (define (red-text txt)
+;;   (colored "orangered" txt))
+
+;; (define (green-text txt)
+;;   (colored "forestgreen" txt))
+
+;; (define (yellow-text txt)
+;;   (colored "goldenrod" txt))

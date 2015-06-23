@@ -2,7 +2,13 @@
 
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
-(provide rktd*->pict)
+(provide
+  rktd*->pict
+  PARAM-N
+  PARAM-M
+  PARAM-MAX-OVERHEAD
+  PARAM-NUM-SAMPLES
+)
 
 ;; -----------------------------------------------------------------------------
 
@@ -20,6 +26,12 @@
 (define DEBUG #t)
 (define-syntax-rule (debug msg arg* ...)
   (when DEBUG (printf msg arg* ...) (newline)))
+
+;; Experiment parameters
+(define PARAM-N 3)
+(define PARAM-M 10)
+(define PARAM-MAX-OVERHEAD 20)
+(define PARAM-NUM-SAMPLES 60)
 
 (define L* '(0 1 2))
 (define FONT-FACE "Liberation Serif")
@@ -59,6 +71,10 @@
   (define L-pict*
     (let ([pict*
            (lnm-plot S #:L L*
+                     #:N PARAM-N
+                     #:M PARAM-M
+                     #:max-overhead PARAM-MAX-OVERHEAD
+                     #:num-samples PARAM-NUM-SAMPLES
                      #:font-face FONT-FACE
                      #:font-size GRAPH-FONT-SIZE
                      #:labels? #f
