@@ -198,7 +198,8 @@
                        #:font-face face
                        #:font-size size
                        #:height height
-                       #:width width)
+                       #:width width
+                       #:title [user-title #f])
   (define vspace (/ size 3))
   (define hspace (/ width 3))
   (define vpad (/ height 5))
@@ -209,7 +210,7 @@
   (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
   (define left-column
     (vr-append vspace
-               (text->title (get-project-name sm)) ;; BOLDER
+               (text->title (or user-title (get-project-name sm))) ;; BOLDER
                (text->pict "τ overhead")
                (text->pict "max. overhead")
                (text->pict "avg. overhead")))

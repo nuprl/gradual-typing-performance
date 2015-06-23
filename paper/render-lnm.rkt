@@ -3,7 +3,7 @@
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
 (provide
- rktd*->pict
+ data->pict
  PARAM-N
  PARAM-M
  PARAM-L
@@ -63,9 +63,10 @@
 ;;  to the previous pict.
 ;; If the previous is #f, append a title above this pict
 ;; (-> (U Pict #f) Path-String Pict)
-(define (render-lnm-pict prev-pict data-file)
+(define (render-lnm-pict prev-pict data-file #:title [title #f])
   (define S (from-rktd data-file))
   (define S-pict (summary->pict S
+                                #:title title
                                 #:font-face FONT-FACE
                                 #:font-size TEXT-FONT-SIZE
                                 #:width W
@@ -117,16 +118,18 @@
        (deserialize (cdr tag+pict))))
 
 ;; Create a pict, cache it for later use
-(define (get-new-lnm-pict rktd* #:tag [tag ""])
-  (debug "Generating new picture from data files ~a" rktd*)
+(define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [title* #f])
   (define pict
     (for/fold ([prev-pict #f])
-              ([data-file (in-list rktd*)])
-      (render-lnm-pict prev-pict data-file)))
+              ([data-file (in-list rktd*)]
+               [title     (in-list (or title* (map (lambda (x) #f) rktd*)))])
+      (render-lnm-pict prev-pict data-file #:title title)))
   (cache-pict pict rktd* tag)
   pict)
 
 ;; Try to read a cached pict, fall back to making a new one.
-(define (rktd*->pict rktd* #:tag [tag ""])
+(define (data->pict data* #:tag [tag ""])
+  (define title* (map car data*))
+  (define rktd* (map cadr data*))
   (or (get-cached rktd* #:tag tag)
-      (get-new-lnm-pict rktd* #:tag tag)))
+      (get-new-lnm-pict rktd* #:tag tag #:titles title*)))
