@@ -128,7 +128,7 @@ Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Modul
 %% FIXME: for Sieve is the placeholder.rkt module really needed? (1 LOC)
 \tt{sieve}            & 2          & 87        & 69          & 1         & \pict{sieve}      \\
 \tt{echo}             & 4          & 89        & 70          & 0         & \pict{echo}       \\
-\tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode} \\
+\tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode}  \\
 \tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta}       \\
 \tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
 \tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
