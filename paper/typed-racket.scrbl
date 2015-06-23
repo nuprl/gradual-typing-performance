@@ -7,8 +7,7 @@
          racket/vector
          math/statistics
          (only-in racket/match match-define)
-         (only-in "scripts/summary.rkt" from-rktd summary->pict)
-         (only-in "scripts/lnm-plot.rkt" lnm-plot)
+         "render-lnm.rkt"
          "../tools/data-lattice.rkt"]
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket, Classical}
@@ -116,58 +115,25 @@ that particular graph.
 
 @figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
   @(let* ([rktd* '(
+                   "./data/funkytown.rktd"
+                   "./data/gregor-05-11.rktd"
+                   "./data/kcfa-06-01.rktd" ;; TODO needs re-run, row 111 of data is malformed
+                   "./data/quad-placeholder.rktd"
                    "./data/snake-04-10.rktd"
                    "./data/suffixtree-06-10.rktd"
+                  )])
+     (rktd*->pict rktd* #:tag "1"))
+]
+
+@figure*["fig:lnm2" @list{@emph{L-step N/M-usable} results for the rest of the benchmarks}
+  @(let* ([rktd* '(
+                   "./data/echo.rktd"
+                   "./data/mbta-04-20.rktd"
+                   "./data/morsecode-06-19.rktd"
+                   "./data/sieve-04-06.rktd"
+                   ;"./data/tetris.rktd" ;; TODO needs re-run, data includes an extra module
                    "./data/zordoz-04-09.rktd"
-                  )]
-          [L* '(0 1 2)]
-          [H 100] ;; TODO make bigger
-          [W 130]
-          [FONT-FACE "Liberation Serif"]
-          [GRAPH-FONT-SIZE 7]
-          [TEXT-FONT-SIZE 11]
-          [GRAPH-HSPACE 30] ;; TODO
-          [GRAPH-VSPACE 30] ;; TODO
-          [TITLE-STYLE FONT-FACE]
-          [TITLE-SIZE (+ 3 TEXT-FONT-SIZE)]
-          [TITLE-VSPACE (/ GRAPH-VSPACE 2)]
-          ;; (-> (Listof Pict) (Listof Pict))
-          ;; Put titles for the L-values above each pict
-          ;; works for `pict*` with exactly 3 members
-          [add-titles
-            (lambda (pict*)
-              (for/list ([p (in-list pict*)]
-                         [title (in-list '("L = 0" "1" "2  (steps)"))])
-                (vc-append TITLE-VSPACE (text title TITLE-STYLE TITLE-SIZE) p)))]
-          ;; (-> (U Pict #f) Summary Pict)
-          ;; Attach a new pict, representing the summary object,
-          ;;  to the previous pict.
-          ;; If the previous is #f, append a title above this pict
-          [make-lnm-pict
-            (lambda (prev-pict S)
-              (define S-pict (summary->pict S
-                                            #:font-face FONT-FACE
-                                            #:font-size TEXT-FONT-SIZE
-                                            #:width W
-                                            #:height H))
-              (define L-pict*
-                (let ([pict* 
-                (lnm-plot S #:L L*
-                            #:font-face FONT-FACE
-                            #:font-size GRAPH-FONT-SIZE
-                            #:labels? #f
-                            #:plot-height H
-                            #:plot-width W)])
-                ;; Add L labels if there is no previous pict
-                (if prev-pict pict* (add-titles pict*))))
-              (define row
-                (for/fold ([pict S-pict])
-                          ([L-pict (in-list L-pict*)])
-                  (hb-append GRAPH-HSPACE pict L-pict)))
-              (if prev-pict (vc-append GRAPH-VSPACE prev-pict row) row))])
-    ;; Make a picture for each summary object, glue them together
-    (for/fold ([prev-pict #f])
-              ([data-file (in-list rktd*)])
-      (make-lnm-pict prev-pict (from-rktd data-file))))
+                  )])
+     (rktd*->pict rktd* #:tag "2"))
 ]
 
