@@ -123,7 +123,7 @@
 (define (make-variation->good? summary good-threshold #:L [L 0])
   (lambda (var)
     (for/or ([var2 (cons var (in-reach var L))])
-      (< (variation->mean-runtime summary var2)
+      (<= (variation->mean-runtime summary var2)
          good-threshold))))
 
 ;; -----------------------------------------------------------------------------
@@ -171,7 +171,7 @@
 ;;  list `exact`.
 (define (compute-yticks max-y num-ticks #:exact [exact '()])
   (define exact-list (or (and (list? exact) exact) (list exact)))
-  (define round-y (if (< max-y 1000)
+  (define round-y (if (< max-y 1000) ;;TODO
                       round
                       (lambda (n) (* 100 (exact-floor (/ n 100))))))
   (ticks (lambda (ax-min ax-max)
