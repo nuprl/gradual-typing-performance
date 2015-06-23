@@ -22,6 +22,7 @@
          deliverable
          usable
 
+         id
          todo
          )
 
@@ -144,6 +145,11 @@
 
 (define (step L N M)
   (make-element plain @list{@(math L)-step @(math N "/" M)-usable}))
+
+;; Format an identifier
+;; Usage: @id[x]
+(define (id x)
+  (make-element plain @format["~a" x]))
 
 (define (todo x)
   (make-element plain @x))
