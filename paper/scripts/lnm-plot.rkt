@@ -27,6 +27,7 @@
   (only-in plot/utils linear-seq)
   (only-in racket/math exact-floor exact-ceiling)
   (only-in racket/stream stream-length stream->list stream-filter)
+  (only-in racket/format ~r)
 )
 
 ;; =============================================================================
@@ -184,7 +185,7 @@
                        #t)))
          (lambda (ax-min ax-max pre-ticks)
                  (for/list ([pt (in-list pre-ticks)])
-                   (number->string (pre-tick-value pt))))))
+                   (~r (pre-tick-value pt) #:min-width 5 #:pad-string " ")))))
 
 (define (compute-xticks num-ticks)
   (ticks (lambda (ax-min ax-max)
