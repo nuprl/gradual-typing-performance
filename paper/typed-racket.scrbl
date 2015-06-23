@@ -113,11 +113,16 @@ corroborates the presence of this coupling. The rightmost node in that
 diagram corresponds to the @tt{data.rkt} module, which has the most in-edges in
 that particular graph.
 
+
+@section{Experimental Results}
+@(Figure-ref "fig:lnm1" "fig:lnm2") summarize the results of creating a performance lattice for each benchmark program.
+Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a series of three figures.
+
 @figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
   @(let* ([rktd* '(
                    "./data/funkytown.rktd"
                    "./data/gregor-05-11.rktd"
-                   "./data/kcfa-06-01.rktd" ;; TODO needs re-run, row 111 of data is malformed
+                   "./data/kcfa-small-06-20.rktd" ;; TODO needs re-run, row 111 of data is malformed
                    "./data/quad-placeholder.rktd"
                    "./data/snake-04-10.rktd"
                    "./data/suffixtree-06-10.rktd"
@@ -130,10 +135,23 @@ that particular graph.
                    "./data/echo.rktd"
                    "./data/mbta-04-20.rktd"
                    "./data/morsecode-06-19.rktd"
-                   "./data/sieve-04-06.rktd"
-                   ;"./data/tetris.rktd" ;; TODO needs re-run, data includes an extra module
+                   ;"./data/sieve-04-06.rktd"
+                   "./data/lnm-06-22.rktd"
+                   "./data/tetris-large-06-20.rktd"
                    "./data/zordoz-04-09.rktd"
                   )])
      (rktd*->pict rktd* #:tag "2"))
 ]
+
+@subsection{Reading the Figures}
+@; Describe the lines & units on the figures
+
+
+@subsection{Interpreting the Figures}
+@; Judgments to-be-made from the figures
+
+@subsection{All Benchmarks, in some depth}
+@; Due dilligence for each benchmark,
+@; TODO we should re-title and compress this section before submitting
+
 
