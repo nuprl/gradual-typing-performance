@@ -150,14 +150,12 @@ The line graphs show the number of variations that are @emph{L-step} acceptable 
 Each line is the result of sampling @id[PARAM-NUM-SAMPLES] values linearly spaced along the x-axis.
 
 Overhead factors range from 1x, indicating performance no worse than the untyped program, to a generous @id[PARAM-MAX-OVERHEAD]x slowdown compared to the untyped variation.
-@; TODO color "green" and "yellow"
-To put these slowdown factors in perspective, we draw a @todo{green} vertical line at @id[PARAM-N]x overhead and a @todo{yellow} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @emph{N} and @emph{M}.
-Realistic choices for @exact{$N$} and @exact{$M$} would be much lower, but for the purposes of this evaluation we consider anything below 3x acceptable and anything below 10x to be usable.
+To put these slowdown factors in perspective, we draw a @exact{\color{ForestGreen}{green}} vertical line at @id[PARAM-N]x overhead and a @exact{\color{Goldenrod}{yellow}} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @emph{N} and @emph{M}.
+Realistic choices for @exact{$N$} and @exact{$M$} would be much lower, but for the purposes of this evaluation we consider variations at or below 3x acceptable and variations between 3x and 10x to be usable.
 
 On each y-axis, we count the absolute number of variations in the program.
 The labels range from 0 variations to @exact{$2^n$} variations, where @exact{$n$} is the number of modules in that row's benchmark program.
-@; TODO color the word "red"
-The axes themselves are scaled to be the same height for all figures; in particular, we draw a @todo{red} dashed line at the number corresponding to 60% of all variations in the program.
+The axes themselves are scaled to be the same height for all figures; in particular, we draw a @exact{\color{red}{red}} dashed line at the number corresponding to 60% of all variations in the program.
 
 Each column of figures shows results for a fixed value of @emph{L} ranging between 0 and @id[PARAM-L], inclusive.
 Thus the leftmost column simply counts the number of variations with performance below a given overhead factor.
