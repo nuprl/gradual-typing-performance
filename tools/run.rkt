@@ -8,6 +8,7 @@
          pict
          racket/class
          racket/cmdline
+         racket/date
          racket/draw
          racket/match
          racket/port
@@ -191,6 +192,11 @@
   (define jobs (string->number (num-jobs)))
   (unless (number? jobs)
     (raise-user-error (format "expected a number, given ~a" (num-jobs))))
+
+  ;; Set a default output path based on the "basepath" if one is not provided
+  (unless (output-path)
+    (date-display-format 'iso-8601)
+    (output-path (string-append basepath "-" (date->string (current-date) #t))))
 
   ;; Set the CPU affinity for this script to CPU0. Jobs spawned by this script run
   ;; using CPU1 and above.
