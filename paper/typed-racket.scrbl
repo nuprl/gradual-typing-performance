@@ -115,10 +115,10 @@ that particular graph.
 
 
 @section{Experimental Results}
-@(Figure-ref "fig:lnm1" "fig:lnm2") summarize the results of creating a performance lattice for each benchmark program.
+@(Figure-ref "fig:lnm1" "fig:lnm2") summarize our findings after testing the performance lattice for each benchmark program.
 Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a row of figures.
 
-@figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks}
+@figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks. The x-axes measure overhead and the y-axes count variations.}
   @(let* ([data '(
                    ("synth"      "./data/funkytown.rktd")
                    ("gregor"     "./data/gregor-05-11.rktd")
