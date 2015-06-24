@@ -71,7 +71,7 @@
                    #:title title
                    #:font-face FONT-FACE
                    #:font-size TEXT-FONT-SIZE
-                   #:width W
+                   #:width (* 0.6 W)
                    #:height H)])
       (vc-append p (blank 0 (- H (pict-height p))))))
   (define L-pict*
