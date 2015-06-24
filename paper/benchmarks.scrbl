@@ -80,6 +80,11 @@ The @tt{kfca} program is a simple implementation of control flow analysis consis
 of seven modules arranged in one chain.
 This program requires four adaptor modules, but is otherwise self-contained.
 
+@parag{Snake}
+This program is based on a contract verification benchmark by Nguyên @|etal|@~cite[nthvh-icfp-2014].
+It implements a game where a growing snake tries to eat apples while avoiding walls and its own tail.
+Like @tt{tetris}, it also requires one adaptor module and runs a recorded history of game moves.
+
 @parag{Synth}
 The @tt{synth} benchmark is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
@@ -88,16 +93,10 @@ In order to run these ex-library modules in all typed-untyped variations we crea
 for the underlying array data structure.
 
 @parag{Tetris}
-This program is based on a contract verification benchmark
-by Nguyên @|etal|@~cite[nthvh-icfp-2014]. It implements the eponymous game
-and consists of nine modules. An adaptor module wraps the record structure
-used to represent the game board. Our benchmark runs a pre-recorded history
+This program is taken from the same benchmark suite as @tt{snake} and implements the eponymous game.
+An adaptor module wraps the record structure used to represent the game board.
+Our benchmark runs a pre-recorded history
 of moves altering the game state; it does not display a GUI.
-
-@parag{Snake}
-This program is taken from the same benchmark suite as @tt{tetris} and implements
-a game where a growing snake tries to eat apples while avoiding walls and its own tail.
-Like @tt{tetris}, it also requires one adaptor module and runs a recorded history of game moves.
 
 @parag{Gregor}
 This benchmark contains thirteen modules and stress-tests a date and time library.
@@ -133,9 +132,9 @@ Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Modul
 \tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
 \tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
 \tt{kcfa}             & 7          & 401       & 397         & 257       & \pict{kcfa}       \\
+\tt{snake}            & 8          & 276       & 214         & 27        & \pict{snake}      \\
 \tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
 \tt{tetris}           & 9          & 575       & 457         & 38        & \pict{tetris}     \\
-\tt{snake}            & 12         & 276       & 214         & 27        & \pict{snake}      \\
 \tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor}     \\
 \tt{quad}             & 16         & 7702      & 7406        & 241       & \pict{quad}       \\
 \bottomrule
