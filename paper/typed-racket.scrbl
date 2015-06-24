@@ -151,7 +151,7 @@ Each line is the result of sampling @id[PARAM-NUM-SAMPLES] values linearly space
 
 Overhead factors range from 1x, indicating performance no worse than the untyped program, to a generous @id[PARAM-MAX-OVERHEAD]x slowdown compared to the untyped variation.
 To put these slowdown factors in perspective, we draw a @exact{\color{ForestGreen}{green}} vertical line at @id[PARAM-N]x overhead and a @exact{\color{Goldenrod}{yellow}} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @emph{N} and @emph{M}.
-Realistic choices for @exact{$N$} and @exact{$M$} would be much lower, but for the purposes of this evaluation we consider variations at or below 3x acceptable and variations between 3x and 10x to be usable.
+Realistic choices for @exact{$N$} and @exact{$M$} would be much lower, but for the purposes of the figures we consider variations at or below 3x acceptable and variations between 3x and 10x to be usable.
 
 On each y-axis, we count the absolute number of variations in the program.
 The labels range from 0 variations to @exact{$2^n$} variations, where @exact{$n$} is the number of modules in that row's benchmark program.
@@ -161,8 +161,8 @@ Each column of figures shows results for a fixed value of @emph{L} ranging betwe
 Thus the leftmost column simply counts the number of variations with performance below a given overhead factor.
 In contrast, the graphs in the rightmost column count all variations that are at most @id[PARAM-L] type-annotation steps away from a usable variation.
 
-Lastly, each row of figures is accompanied by a brief summary of the performance statistics we measured.
-These statistics include the number of modules in the program, the overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
+Lastly, each row of figures is accompanied by a brief table of summary statistics.
+These statistics include the number of modules in the program, the average overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
 Note that the worst and average case numbers do not include the fully-typed and untyped variations.
 
 
@@ -216,7 +216,8 @@ This is expecially true for @exact{$N$} between 1x and 6x overhead, and remains 
 
 
 @parag{Quad}
-TBA
+@; TODO
+PROBABLY BAD
 
 
 @parag{Snake}
@@ -251,23 +252,22 @@ Moreover, it is an example of a real program with such performance, as opposed t
 
 @parag{MBTA} @;fixed version
 The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat area.
-This implies that some boundary between a few modules accounts for a 3x slowdown (after which, every variation is considered usable).
+This implies that a boundary (or group of boundaries) accounts for a 3x slowdown.
 
 
 @parag{Sieve}
-At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water.
-Half of the 4 variations suffer extremely large overhead.
+At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water, as
+half of the 4 variations suffer extremely large overhead.
 Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
 
 @; This benchmark is admittedly contrived, but proves an interesting point: pathologically-bad variations can be avoided if the programmer is able to identify tightly-connected modules and ensure there is no boundary between them.
 
 
-
 @parag{Tetris}
 Like @tt{suffixtree}, the @tt{tetris} benchmark is a success story for increasing @exact{$L$}.
 When @exact{$L$}=0 we see that half of all modules are within 6x overhead, but the rest are more than 20x worse than the untyped program.
-The ``good half'', however, is apparently spread throughout the lattice and reachable in few steps from all other variations.
-Interestingly a plateau remains at @exact{$L$}=1, presumably because there are some very heavy boundaries.
+The ``good half'', however, is apparently spread throughout the lattice and reachable in few steps from many other variations.
+Interestingly a high plateau remains at @exact{$L$}=1, presumably because there is a set of high-cost boundaries that dominate the performance of some variations.
 
 
 @parag{ZO Traversal}
