@@ -5,17 +5,14 @@ all: paper.pdf
 compiled/paper_scrbl.zo: *.rkt *.scrbl
 	raco make -v $(PAPER).scrbl
 
-
-paper.pdf: compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex scripts/*.rkt
+paper.pdf: pkg compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex scripts/*.rkt
 	scribble ++extra lnm ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
 
-paper.tex: compiled/paper_scrbl.zo texstyle.tex
+paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 	scribble ++style texstyle.tex --latex $(PAPER).scrbl
 
-asumu:
-	raco make -v $(PAPER).scrbl
-	scribble --latex ++style texstyle.tex $(PAPER).scrbl
-	pdflatex $(PAPER).tex
+pkg:
+	raco pkg install --skip-installed glob
 
 mf: compiled/paper_scrbl.zo texstyle.tex
 	sed -f onecolumn.sed $(PAPER).scrbl > $(PAPER)1.scrbl
