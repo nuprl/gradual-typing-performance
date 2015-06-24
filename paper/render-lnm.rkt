@@ -40,16 +40,17 @@
 
 ;; TODO make sizes as large as possible
 (define H 100)
-(define W 130)
+(define W 140)
 (define GRAPH-FONT-SIZE 7)
 (define TEXT-FONT-SIZE 11)
-(define GRAPH-HSPACE 30)
-(define GRAPH-VSPACE 30)
+(define GRAPH-HSPACE 20)
+(define GRAPH-VSPACE 20)
 (define TITLE-STYLE FONT-FACE)
 (define TITLE-SIZE (+ 3 TEXT-FONT-SIZE))
 (define TITLE-VSPACE (/ GRAPH-VSPACE 2))
 
 (define CACHE-PREFIX "./compiled/lnm-cache-")
+
 
 ;; Put titles for the L-values above each pict
 ;; NOTE: works only for args with exactly 3 members
