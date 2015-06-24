@@ -169,5 +169,5 @@
     (test-iso dates)
     (test-difference dates)))
 
-(time (main 10 #f)) ;;134ms
-;(time (main 10 #t)) ;;347ms
+;(time (main 10 #f)) ;;134ms
+(time (main 10 #t)) ;;347ms
