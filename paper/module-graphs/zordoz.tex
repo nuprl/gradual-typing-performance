@@ -1,20 +1,20 @@
 \begin{tikzpicture}
 
   \node (00)               {\rkt{3}{zo-string}};
-  \node (01) [right of=00] {};
-  \node (02) [right of=01] {\rkt{4}{zo-transition}};
-       
-  \node (10) [below of=00] {};
-  \node (11) [below of=01] {\rkt{1}{zo-find}};
-  \node (12) [below of=02] {};
+  \node (01) [below of=00] {};
+  \node (02) [below of=01] {\rkt{4}{zo-transition}};
 
-  \node (20) [below of=10] {};
-  \node (21) [below of=11] {\rkt{2}{zo-shell}};
-  \node (22) [below of=12] {};
+  \node (10) [left of=00] {};
+  \node (11) [left of=01] {\rkt{1}{zo-find}};
+  \node (12) [left of=02] {};
 
-  \node (30) [below of=20] {};
-  \node (31) [below of=21] {\rkt{0}{main}};
-  \node (32) [below of=22] {};
+  \node (20) [left of=10] {};
+  \node (21) [left of=11] {\rkt{2}{zo-shell}};
+  \node (22) [left of=12] {};
+
+  \node (30) [left of=20] {};
+  \node (31) [left of=21] {\rkt{0}{main}};
+  \node (32) [left of=22] {};
 
   %% -- edges
   \draw[->] (11) -- (00);

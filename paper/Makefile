@@ -6,7 +6,7 @@ compiled/paper_scrbl.zo: *.rkt *.scrbl
 	raco make -v $(PAPER).scrbl
 
 
-paper.pdf: compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex
+paper.pdf: compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex scripts/*.rkt
 	scribble ++extra lnm ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
 
 paper.tex: compiled/paper_scrbl.zo texstyle.tex
@@ -43,3 +43,6 @@ proof:
 	echo
 	echo "duplicates: "
 	perl scripts/duplicates.pl *.scrbl
+
+clean:
+	rm -r compiled

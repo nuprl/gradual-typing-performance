@@ -1,15 +1,22 @@
 Module Graphs
 =============
 
-Module dependence graphs for experiment projects.
+Module dependence graphs for experiment projects, represented as TiKZ pictures.
 
-- Running `make` generates `all-graphs.pdf`, 
-- Each project has a "small" and "large" representation.
-  The large one uses module names and the small uses dots.
+These files are expected to follow a specific grammar:
+```
+\begin{tikzpicture}
+NODE-DECLS
+EDGE-DECLS
+\end{tikzpicture}
+```
 
-The `-small` and `-large` tex files are just TiKZ pictures.
-These pictures are all organized similarly:
-- Nodes are declared in a matrix pattern. Read `00` as "row zero, column zero".
-  - The first row of nodes define the spacing between columns.
-  - Later rows of nodes are positioned directly below a parent in the previous row.
-- Edges are declared below rows. The edges for one module are on consecutive lines.
+- `NODE-DECLS ::= \node (NAT) POSN {\rkt{NAT}{NAME}};`
+- `EDGE-DECLS ::= \draw STYLE (NAT) EDGE (NAT);`
+- `INT ::= <natural-number>`
+- `POSN ::= <null> | [???]`, where the `???` is valid TiKZ
+- `NAME ::= <sequence of non-space characters>`
+- `STYLE ::= <null> | [???]`, where the `???` is valid TiKZ
+- `EDGE ::= ???`, valid TiKZ
+
+Whitespace and LaTeX comments don't matter.
