@@ -169,7 +169,7 @@
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
-(define INVISIBLE "\u00A0") ;; Unicode for non-breaking space
+(define INVISIBLE "\u00A0") ;; Unicode for non-breaking space (this is not working)
 (define (compute-yticks max-y num-ticks #:exact [exact '()])
   (define exact-list (or (and (list? exact) exact) (list exact)))
   (define round-y (if (< max-y 1000) ;;TODO
