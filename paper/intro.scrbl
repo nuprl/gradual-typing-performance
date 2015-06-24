@@ -15,7 +15,7 @@ Over the past couple of decades dynamically-typed languages have become a
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
  solution to this pressing software engineering problem. The idea is to
  extend the language so that programmers can incrementally equip programs
- with types. In contrast optional type systems, gradual type systems insist
+ with types. In contrast to optional type systems, gradual type systems insist
  on type soundness, that is, the type information should be meaningful and
  predict run-time behavior.
 
@@ -81,7 +81,7 @@ Section@secref{sec:fwk} explains the performance framework in detail,
  including the information we retrieve from the lattices and how we
  parametrize these retrievals. Next, section@secref{sec:bm} presents our
  specific Typed Racket benchmarks. Section@secref{sec:tr} @; and@secref{sec:trp}
- presents the numeric results
+ presents the numeric results.
 @;  of evaluating Typed Racket's original
 @;  implementation and the Pycket variant,
 @; respectively. 

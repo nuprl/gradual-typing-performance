@@ -94,7 +94,7 @@ modules are highly coupled.
 Inspecting @tt{data.rkt} and @tt{label.rkt} reveals, for example, that the
 latter depends on the former through an adaptor module. The adaptor introduces
 contract overheads when either of the two modules is untyped. When both
-modules are typed but all other remain untyped, the slowdown is reduced to
+modules are typed but all others remain untyped, the slowdown is reduced to
 about 12x.
 
 The @tt{structs.rkt} module depends on @tt{data.rkt} in the same fashion.
@@ -146,26 +146,26 @@ Rather than displaying the entire lattice for each of the 12 programs, we summar
 @subsection{Reading the Figures}
 @; Describe the lines & units on the figures
 
-The line graphs show the number of variations that are @emph{L-step} usable for a particular @emph{L} and overhead factor.
+The line graphs show the number of variations that are @emph{L-step} acceptable for a particular @emph{L} and overhead factor.
 Each line is the result of sampling @id[PARAM-NUM-SAMPLES] values linearly spaced along the x-axis.
 
-Overhead factors range from 1x, indicating a speedup relative to the untyped program, to a generous @id[PARAM-MAX-OVERHEAD]x slowdown compared to the untyped variation.
+Overhead factors range from 1x, indicating performance no worse than the untyped program, to a generous @id[PARAM-MAX-OVERHEAD]x slowdown compared to the untyped variation.
 @; TODO color "green" and "yellow"
 To put these slowdown factors in perspective, we draw a @todo{green} vertical line at @id[PARAM-N]x overhead and a @todo{yellow} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @emph{N} and @emph{M}.
-Realistic choices for @exact{$N$} and @exact{$M$} should be much lower, but we generally label anything to the left of the line at @id[PARAM-N]x to be deliverable and anything between that green line and the yellow line at @id[PARAM-M]x to be usable.
+Realistic choices for @exact{$N$} and @exact{$M$} would be much lower, but for the purposes of this evaluation we consider anything below 3x acceptable and anything below 10x to be usable.
 
 On each y-axis, we count the absolute number of variations in the program.
-The y-axis labels range from 0 variations to @exact{$2^n$} variations, where @exact{$n$} is the number of modules in that row's benchmark program.
+The labels range from 0 variations to @exact{$2^n$} variations, where @exact{$n$} is the number of modules in that row's benchmark program.
 @; TODO color the word "red"
 The axes themselves are scaled to be the same height for all figures; in particular, we draw a @todo{red} dashed line at the number corresponding to 60% of all variations in the program.
 
-Each column of figures shows results for a fixed value of @emph{L}, ranging between 0 and @id[PARAM-L], inclusive.
+Each column of figures shows results for a fixed value of @emph{L} ranging between 0 and @id[PARAM-L], inclusive.
 Thus the leftmost column simply counts the number of variations with performance below a given overhead factor.
 In contrast, the graphs in the rightmost column count all variations that are at most @id[PARAM-L] type-annotation steps away from a usable variation.
 
 Lastly, each row of figures is accompanied by a brief summary of the performance statistics we measured.
 These statistics include the number of modules in the program, the overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
-Note that the worst and average case numbers do not include the typed and untyped variation.
+Note that the worst and average case numbers do not include the fully-typed and untyped variations.
 
 
 @subsection{Interpreting the Figures}
@@ -177,8 +177,7 @@ The graphs help answer three high-level performance questions:
 @item{How many variations become usable for an @exact{$M > N$}?}
 @item{How does increasing the unit of work from one conversion step to 2 or 3 change the performance picture?}
 ]
-The red dashed line represents our bottom line:
-That is, supposing a developer has decided on fixed bounds for @exact{$N$}, @exact{$M$}, and @exact{$L$}, are at least 60% of the variations deliverable or at least usable?
+The red dashed line represents our bottom line: supposing a developer has chosen appropriate values for @exact{$N$}, @exact{$M$}, and @exact{$L$}, we consider gradual typing @emph{impractical} unless at least 60% of variations are @emph{L-N/M}-acceptable.
 
 
 We did not expect these graphs to be interesting---they should all look like @bold{gregor} or @bold{echo}.
@@ -269,7 +268,7 @@ Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
 @parag{Tetris}
 Like @tt{suffixtree}, the @tt{tetris} benchmark is a success story for increasing @exact{$L$}.
 When @exact{$L$}=0 we see that half of all modules are within 6x overhead, but the rest are more than 20x worse than the untyped program.
-The "good half", however, is apparently spread throughout the lattice and reachable in few steps from all other variations.
+The ``good half'', however, is apparently spread throughout the lattice and reachable in few steps from all other variations.
 Interestingly a plateau remains at @exact{$L$}=1, presumably because there are some very heavy boundaries.
 
 

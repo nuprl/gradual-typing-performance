@@ -39,7 +39,7 @@ Before we proceed, we lay out Takikawa @|etal|'s landscape:
 ]
 
 Our contribution is to exploit the lattice-oriented approach to benchmark
- evaluation for a @emph{summative} evaluation. To this end, we start we
+ evaluation for a @emph{summative} evaluation. To this end, we
  imagine software engineers who are considering the use of gradual typing
  for some system and consider what kind of question may influence their
  decision.  Based on this first step, we next formulate a small number of
