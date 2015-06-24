@@ -42,7 +42,8 @@ Files
 - `mbta-04-20.rktd` Original MBTA, run on Galicia.
 - `mbta-04-25.rktd` Fixed MBTA, run on Galicia.
 - `morsecode.rktd` Small benchmark, unknown origin
-- `morsecode-06-19.rktd` Larger benchmark, run on Desktop.
+- `morsecode-06-19.rktd` Small benchmark, run on Ben's Desktop
+- `morsecode-06-20.rktd` Medium benchmark, run on Galicia
 - `sieve-04-06.rktd` Run on Galicia
 - `snake-04-10.rktd` Run on Galicia
 - `suffixtree-06-10.rktd` Run on Galicia
