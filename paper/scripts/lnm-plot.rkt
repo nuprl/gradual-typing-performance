@@ -39,8 +39,8 @@
 (define DEFAULT_CUTOFF 0.6)
 (define DEFAULT_SAMPLES 60)
 
-(define THIN (* 1.2 (line-width)))
-(define THICK (* 1.8 (line-width)))
+(define THIN (* 0.8 (line-width)))
+(define THICK (* 1.4 (line-width)))
 
 (define DEFAULT_FACE "bold")
 (define DEFAULT_SIZE 20)
