@@ -40,7 +40,7 @@
 (define DEFAULT_SAMPLES 60)
 
 (define THIN (* 0.8 (line-width)))
-(define THICK (* 1.4 (line-width)))
+(define THICK (* 1.25 (line-width)))
 
 (define DEFAULT_FACE "bold")
 (define DEFAULT_SIZE 20)
@@ -81,6 +81,7 @@
     [plot-y-ticks (compute-yticks num-vars 6 #:exact (list cutoff-point num-vars))]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
+    [plot-tick-size 4]
     [plot-font-face font-face]
     [plot-font-size font-size])
     ;; Create 1 pict for each value of L
