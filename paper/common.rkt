@@ -23,7 +23,6 @@
          usable
 
          id
-         todo
          )
 
 (require "bib.rkt"
@@ -151,19 +150,3 @@
 (define (id x)
   (make-element plain @format["~a" x]))
 
-(define (todo x)
-  (make-element plain @x))
-
-;; TODO
-;; (define (colored c txt)
-;;   (make-element (make-style #f (list (color-property c)))
-;;                 txt))
-
-;; (define (red-text txt)
-;;   (colored "orangered" txt))
-
-;; (define (green-text txt)
-;;   (colored "forestgreen" txt))
-
-;; (define (yellow-text txt)
-;;   (colored "goldenrod" txt))

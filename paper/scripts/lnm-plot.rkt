@@ -75,11 +75,10 @@
                                                     #:style 'short-dash
                                                     #:width THICK))
   ;; Get yticks
-  (define yticks (compute-yticks num-vars 6 #:exact (list cutoff-point num-vars)))
   ;; Set plot parameters ('globally', for all picts)
   (parameterize (
     [plot-x-ticks (compute-xticks 5)]
-    [plot-y-ticks (compute-yticks num-vars 6 #:exact cutoff-point)]
+    [plot-y-ticks (compute-yticks num-vars 6 #:exact (list cutoff-point num-vars))]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     [plot-font-face font-face]
