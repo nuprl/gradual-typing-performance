@@ -70,7 +70,8 @@ minimal external dependencies, we need to add in an adapter module for the
 data definition module.
 
 @parag{ZO Traversal}
-The @tt{zo-traversal} script explores Racket bytecode structures and counts the frequency of AST nodes.
+The @tt{zo-traversal} script explores Racket bytecode structures (@tt{.zo} files)
+and counts the frequency of AST nodes.
 The script operates on the Racket compiler's untyped zo data structures.
 Since these data structures are not natively supported in Typed Racket, even the
 completely typed program incurs some dynamic overhead from using these structures.
