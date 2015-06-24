@@ -15,3 +15,8 @@ We test lcs on all pairs of lines in a file in `base/`:
 This version uses an adapter module.
 So, typed files can use typed data and untyped files can use untyped data.
 
+base files
+----------
+- `hunt.txt` small text file, for running LCS on lines
+- `prufock.txt` larger text file, same purpose
+- `code-sample.rkt` source for the untyped suffixtree, run LCS on itself

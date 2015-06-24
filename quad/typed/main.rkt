@@ -32,9 +32,11 @@
 
 ;; =============================================================================
 
+;; 2400ms
 (parameterize ([world:quality-default world:draft-quality])
   (time
     (begin
       (define to (typeset (quick-sample)))
       (send (new pdf-renderer%) render-to-file to "../base/output.pdf")
       (void))))
+;; 65,000 on heart-of-darkness

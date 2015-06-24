@@ -1,17 +1,21 @@
 #lang racket/base
 
 (require benchmark-util
-         (only-in racket/file file->lines))
+         (only-in racket/file file->lines file->string))
 
 (require "lcs.rkt")
 
 (define LARGE_TEST "../base/prufock.txt")
 (define SMALL_TEST "../base/hunt.txt")
+(define KCFA_TYPED "../base/kcfa-typed.rkt")
 
-(define (main)
-  (define lines (file->lines LARGE_TEST))
+;; LCS on all pairs of lines in a file
+(define (main testfile)
+  (define lines (file->lines testfile))
   (for* ([a lines] [b lines])
     (longest-common-substring a b))
   (void))
 
-(time (main))
+;(time (main SMALL_TEST)) ;150ms
+;(time (main LARGE_TEST)) ; 2500ms
+(time (main KCFA_TYPED)) ; 22567ms
