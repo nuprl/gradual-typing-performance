@@ -177,7 +177,12 @@ Note that the worst and average case numbers do not include the fully-typed and 
 The ideal shape for these curves is a flat line at the top of the y-axis, indicating that all variations of gradual typing performed no worse than the original untyped program.
 Of course the dynamic checks inserted by gradual type systems make this ideal difficult to achieve even with type-driven optimizations, so the next-best shape is a steep vertical line reaching the y-axis at a low x-value.
 A steep slope from the 1x point means that a large proportion of all variations run within a small constant overhead.
+For lines with lower gradients this small constant must be replaced with a larger overhead factor for the same proportion of variations to qualify as acceptable.
 
+Given the wide range of overhead factors, we would expect that only the leftmost quarter of each graph shows any interesting vertical slope.
+Under the assumption that sound gradual typing is reasonably practical, but just requires tuning and optimization, the lines right of the 10x point should be nearly horizontal and well above the red dashed line for @math{L}=0.
+
+We now describe the shape of the results for each benchmark.
 
 
 @parag{Sieve}
