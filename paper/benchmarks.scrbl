@@ -10,32 +10,48 @@ most of the benchmarks are either based on third-party libraries or scripts sour
 from the original developer or from the Racket package repository.
 A single benchmark is taken from an existing microbenchmark suite.
 
-@section{Program descriptions}
-@; bg: I think this prose should just describe the table, and the adaptor
-@;     then the parags would just give context and what the code does
+@section{Technical Overview}
 
-This subsection details each of the benchmark programs in our evaluation. Each
-description notes the number of modules, the shape of the module structure,
-external dependencies of the program, and whether the program needed additional
-tweaking to fit into the evaluation framework. The number of modules always
-indicates how many modules are included in the lattice---i.e., are either
-typed or untyped depending on the configuration. Adaptor
-modules---explained below---or additional helper or data files that are always
-untyped (or typed) are not included in the count.
-@Figure-ref["fig:bm"] lists and summarizes the benchmarks.
+The table in @figure-ref{"fig:bm"} lists and summarizes our 12 benchmark programs.
+For each, we give an approximate measure of the program's size and a picture of
+its module structure.
 
-Several of the projects need a typed ``adaptor module'' which sits
-between a data definition module in the original program and its typed clients.
-These adaptors create a uniform typed data definition for all variations in the
-lattice. This is crucial since Racket structure types
+Size is measured by the number of modules and lines of code (LOC) in a program.
+Crucially, the number of modules also determines the number of gradually-typed
+variations we ran when testing the benchmark, as a program with @math{n} modules
+can be gradually typed in @exact{$2^n$} possible variations.
+Lines of code is less important for evaluating macro gradual typing,
+but gives a sense of the overall complexity of each benchmark.
+Moreover, the Typed LOC numbers are an upper bound on the annotations required
+at any stage of gradual typing because each typed module in our experiment
+fully annotates its import statements. In practice, only imports from untyped
+modules require annotation.
+
+The column labeled ``Other LOC'' measures the additional structure required to
+run each project for all typed-untyped variations. This count includes project-wide
+type definitions, typed interfaces to untyped libraries, and any @emph{typed adaptor
+modules} we needed to add.
+
+A typed adaptor module sits
+between an untyped data definition module and the data's typed clients.
+These adaptors create a uniform type signature for all typed modules to access
+and reference.
+This is crucial since Racket structure types
 (record type definitions) are @emph{generative} in the sense that two distinct
 definitions of the same structure type will define incompatible structures.
 
-In our experiment, untyped modules directly import definition files and typed
-modules always import through an adaptor. Thus we incur a small, unnecessary
-overhead when a typed module uses data originally defined in a typed module,
-but overall this pattern made it feasible to test all variations with little
-change to a project's original design.
+Finally, the module structure graphs show a dot for each module in the program
+and draw an arrow from one module to another when the module at the arrow tail
+imports definitions from the module at the arrow head.
+The performance cost of gradual typing originates at boundaries between typed
+and untyped modules, so it is interesting to compare the complexity of these
+graphs with our experimental results in section@secref{sec:tr}.
+This correlation, however, is a weak one because the module graphs only show
+@emph{static} dependencies, whereas the runtime cost of each boundary depends
+heavily on the frequency at which values flow across it.
+@;;; to address this, we TODO
+
+@section{Program Descriptions}
 
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Erastothones and is our
