@@ -262,6 +262,8 @@ Thus although most variations suffer large performance overhead, they are in the
 
 
 @; @parag{L-NM}
+@; Our script for processing and plotting experimental data is a Typed Racket success story.
+@; The fully-typed version performs much better than the untyped one, and gradual typing only introduces modest overheads in the worst case.
 
 
 @parag{K-CFA}
