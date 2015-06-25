@@ -118,27 +118,27 @@ that particular graph.
 @(Figure-ref "fig:lnm1" "fig:lnm2") summarize our findings after testing the performance lattice for each benchmark program.
 Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a row of figures.
 
-@figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks. The x-axes measure overhead and the y-axes count variations.}
+@figure*["fig:lnm1" @list{@step["L" "N" "M"] results for the first 6 benchmarks. The x-axes measure overhead and the y-axes count variations.}
   @(let* ([data '(
-                   ("synth"      "./data/funkytown.rktd")
-                   ("gregor"     "./data/gregor-05-11.rktd")
-                   ("kcfa"       "./data/kcfa-06-01.rktd") ;; TODO need to re-run the LARGE one, row 111 of data is malformed
-                   ("quad"       "./data/quad-placeholder.rktd")
-                   ("snake"      "./data/snake-04-10.rktd")
+                   ("sieve"        "./data/sieve-04-06.rktd")
+                   ("echo"         "./data/echo.rktd")
+                   ("morse-code"   "./data/morsecode-06-20.rktd") ;; Medium-sized morecode case
+                   ("mbta"         "./data/mbta-04-25.rktd")
+                   ("zo-traversal" "./data/zordoz-04-09.rktd")
                    ("suffixtree" "./data/suffixtree-06-10.rktd")
+                   ;; ("lnm" "./data/lnm-06-22.rktd")
                   )])
      (data->pict data #:tag "1"))
 ]
 
-@figure*["fig:lnm2" @list{@emph{L-step N/M-usable} results for the rest of the benchmarks}
+@figure*["fig:lnm2" @list{@step["L" "N" "M"] results for the remaining benchmarks}
   @(let* ([data '(
-                   ("echo"         "./data/echo.rktd")
-                   ("morse-code"   "./data/morsecode-06-20.rktd") ;; Medium-sized morecode case
-                   ("mbta"         "./data/mbta-04-25.rktd")
-                   ("sieve"        "./data/sieve-04-06.rktd")
-                   ;; ("lnm" "./data/lnm-06-22.rktd")
+                   ("kcfa"       "./data/kcfa-06-01.rktd") ;; TODO need to re-run the LARGE one, row 111 of data is malformed
+                   ("synth"      "./data/funkytown.rktd")
                    ("tetris"       "./data/tetris-large-06-20.rktd")
-                   ("zo-traversal" "./data/zordoz-04-09.rktd")
+                   ("snake"      "./data/snake-04-10.rktd")
+                   ("gregor"     "./data/gregor-05-11.rktd")
+                   ("quad"       "./data/quad-placeholder.rktd")
                   )])
      (data->pict data #:tag "2"))
 ]
@@ -154,39 +154,22 @@ To put these slowdown factors in perspective, we draw a @exact{\color{ForestGree
 Realistic choices for @math{N} and @math{M} would be much lower, perhaps 1.1x and 1.5x.
 
 On each y-axis, we count the absolute number of variations in the program.
-These labels range from 0 @math{2^n} variations, where @math{n} is the number of modules in that row's benchmark program.
-The axes themselves are scaled to be the same height for all figures; in particular, we draw a @exact{\color{red}{red}} dashed line at the number corresponding to 60% of all variations in the program.
+These labels range from 0 to @math{2^n} variations, where @math{n} is the number of modules in that row's benchmark.
+The y-axes themselves are scaled to be the same height for all figures; in particular, we draw a @exact{\color{red}{red}} dashed line at the number corresponding to 60% of all variations in the program.
+Below these red lines we consider gradual typing @emph{impractical}, in the sense that more than half of all variations have unacceptable performance.
 
-Each column of figures shows results for a fixed value of @emph{L} ranging between 0 and @id[PARAM-L], inclusive.
+Each column of figures shows results for a fixed value of @math{L} ranging between 0 and @id[PARAM-L], inclusive.
 Thus the figures in the leftmost column simply count the number of variations with performance below a given overhead factor.
 In contrast, the graphs in the rightmost column count all variations that are at most @id[PARAM-L] type-annotation steps away from a usable variation.
+These counts are optimistic; for nonzero @math{L} and @math{n} modules, we search the entire space of @math{O(n!-(n-L)!)} reachable variations to find a neighbor with usable runtime.
 
 Lastly, each row of figures is accompanied by a brief table of summary statistics.
 These statistics include the number of modules in the program, the average overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
-Note that the worst and average case numbers do not include the fully-typed and untyped variations.
+Note that the worst and average case numbers do not include the fully-typed and untyped variations, and are calculated over all runtimes we observed rather than just the mean runtime for each variation.
 
-
-@subsection{Interpreting the Figures}
-@; Judgments to make from the figures
-
-The graphs help answer three high-level performance questions:
-@itemlist[
-@item{How many variations are deliverable for a fixed overhead @math{N}?}
-@item{How many variations become usable for an @math{M > N}?}
-@item{How does increasing the unit of work from one conversion step to 2 or 3 change the performance picture?}
-]
-The red dashed line represents our bottom line: supposing a developer has chosen appropriate values for @math{N}, @math{M}, and @math{L}, we consider gradual typing @emph{impractical} unless at least 60% of variations are @emph{L-N/M}-acceptable.
-
-
-We did not expect these graphs to be interesting---they should all look like @bold{gregor} or @bold{echo}.
-@; shape we would hope for, given these X and Y
 
 @subsection{All Benchmarks, in some depth}
 @; Due dilligence for each benchmark,
-@; TODO we should re-title and compress this section before submitting
-@; TODO maybe add:
-@; - reasons why, for performance (marked WHY, below... belongs in separate discussion section)
-@; - porting story, how difficult is 2 paths (marked PATH below)
 
 Brief descriptions of the graphs for each benchmark.
 
