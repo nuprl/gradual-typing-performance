@@ -53,8 +53,12 @@ heavily on the frequency at which values flow across it.
 
 @section{Program Descriptions}
 
+@; TODO a gentler intro
+Here we briefly describe the functionality of each benchmark and note the dependencies
+and adaptor modules required to run it.
+
 @parag{Sieve}
-This program finds prime numbers using the Sieve of Erastothones and is our
+This program finds prime numbers using the Sieve of Eratosthenes and is our
 smallest benchmark. It consists of two modules---a tiny streams library and a
 script implementing the Sieve using streams---and has minimal dependencies on
 trusted core Racket libraries.
@@ -62,7 +66,7 @@ trusted core Racket libraries.
 @parag{Echo}
 The echo server implements a simple network server/client pair and is a microbenchmark
 originally used in the Computer Language Benchmarks Game@note{@url["http://benchmarksgame.alioth.debian.org/"]}.
-Our adaptation divides the single-module program into four parts: client, server, shared constants, and main endpoint.
+Our adaptation divides the single-module program into four parts: client, server, shared constants, and main module.
 This program also only depends on Racket's trusted core libraries.
 
 @parag{Morse code}
@@ -81,39 +85,41 @@ This introduces a typed-untyped boundary even in the ``completely typed'' case.
 
 @parag{Suffixtree}
 The @tt{suffixtree} library implements a longest-common-substring algorithm
-using suffix trees. While the library has
-minimal external dependencies, we need to add in an adapter module for the
-data definition module.
+using Ukkonen's suffix tree algorithm. While the library has
+minimal external dependencies, we need to add one adapter module for the
+algorithm's internal data structures.
 
 @parag{ZO Traversal}
-The @tt{zo-traversal} script explores Racket bytecode structures (@tt{.zo} files)
+The @tt{zo-traversal} script explores Racket bytecode structures (parsed from @tt{.zo} bytecode files)
 and counts the frequency of AST nodes.
 The script operates on the Racket compiler's untyped zo data structures.
 Since these data structures are not natively supported in Typed Racket, even the
-completely typed program incurs some dynamic overhead from using these structures.
+completely typed program incurs some dynamic overhead.
 
 @parag{K-CFA}
-The @tt{kfca} program is a simple implementation of control flow analysis consisting
-of seven modules arranged in one chain.
-This program requires four adaptor modules, but is otherwise self-contained.
+The @tt{kfca} program is a simple implementation of control flow analysis for a
+lambda calculus.
+The language definitions and analysis are spread across seven modules, four of
+which require adaptors because they introduce new datatypes.
+This script depends only on trusted core libraries.
 
 @parag{Snake}
 This program is based on a contract verification benchmark by Nguyên @|etal|@~cite[nthvh-icfp-2014].
 It implements a game where a growing snake tries to eat apples while avoiding walls and its own tail.
-Like @tt{tetris}, it also requires one adaptor module and runs a recorded history of game moves.
+Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering the game state and does not display a GUI.
+We use one adaptor module to represent the game data types, but otherwise the program is self-contained.
 
 @parag{Synth}
 The @tt{synth} benchmark is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
 The program consists of nine modules, half of which are from Typed Racket's array library.
-In order to run these ex-library modules in all typed-untyped variations we created an adaptor module
+In order to run these library modules in all typed-untyped variations we created an adaptor module
 for the underlying array data structure.
 
 @parag{Tetris}
 This program is taken from the same benchmark suite as @tt{snake} and implements the eponymous game.
-An adaptor module wraps the record structure used to represent the game board.
-Our benchmark runs a pre-recorded history
-of moves altering the game state; it does not display a GUI.
+Like @tt{snake}, the benchmark runs a pre-recorded set of moves and required one
+adaptor module.
 
 @parag{Gregor}
 This benchmark contains thirteen modules and stress-tests a date and time library.
