@@ -170,33 +170,86 @@ Note that the worst and average case numbers do not include the fully-typed and 
 
 @subsection{All Benchmarks, in some depth}
 @; Due dilligence for each benchmark,
+@; The "WHY" try to explain the performance.
+@; The "PATH" comment on how difficult porting was
 
 Brief descriptions of the graphs for each benchmark.
 
 
-@;; First L-N/M figure
-@parag{Synth}
-The @tt{synth} benchmark performs well at the top and bottom of the lattice, but is significantly worse when gradually typed.
-Over half the gradually typed variations suffer an overhead of more than 20x.
-Increasing @math{L} does increase the slopes of the lines, meaning a larger number of variations become usable for a fixed @math{N}/@math{M} pair, but gradual typing still introduces a large overhead.
-Even at @math{L}=2 only 30% of all variations lie in reach of a point with at most 3x slowdown.
+@parag{Sieve}
+At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water, as
+half of the 4 variations suffer extremely large overhead.
+Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
+This is our only ``perfect'' graph, in the sense that every variation can reach a variation that performs at least as well as the untyped program.
+
+@; This benchmark is admittedly contrived, but proves an interesting point: pathologically-bad variations can be avoided if the programmer is able to identify tightly-connected modules and ensure there is no boundary between them.
+@; WHY:
+@; - tons of higher-order interaction because streams are lambdas
+@; PATH: (easy)
+@; - but in practice might be hard -- depending on the untyped library your untyped script maybe isn't safe
+
+
+@parag{Echo}
+The shape of the @tt{echo} graphs is ideal.
+The sharp vertical line at @exact{$L$}=0 indicates that all variations are deliverable for a small value of @exact{$N$}.
+Naturally, the same shape is repeated for larger @exact{$L$}.
+
+@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
+@; Even at @exact{$L$}=2, we could shift focus to identifying the good variations rather than finding a new implementation strategy.
 
 @; WHY
-@; original had poor typed/untyped performance,
-@; math library is documented to be bad for untyped interaction
-@; - (probably, not confirmed) tightly coupled module structure
-@; - complex array type : function with rect. domain
-@;   - there's a vector and a function in there
- 
-@parag{Gregor}
-Despite being a large benchmark, @tt{gregor} performs reasonably well even when gradually typed.
-The worst-case slowdown of 6x is quite good compared to the other large benchmarks, and the steep vertical slope is also promising.
+@; - little goes across the boundary. client/server communicate over ports
+@; PATH (easy)
+@; - very small program
+
+
+@parag{Morse code}
+The @tt{morse-code} benchmark also has excellent performance.
+Moreover, it is an example of a real program with such performance, as opposed to the toy @tt{echo} example.
 
 @; WHY
-@; Contracts are all on simple types, pycket or soft contracts could do great things here
-@; - structures all contain simple types (may as well be tuples)
-@; - no higher-order functions, just simple -> simple contracts
-@; - fanciest: optional args
+@; - Very little inter-module communication
+@; PATH (easy)
+@; - small APIs (levenshtein was 300 lines for 1 export)
+@; - only 2 modules really did things, the others were data(+parser) & main
+
+
+@parag{MBTA} @;fixed version
+The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat area.
+This implies that a boundary (or group of boundaries) accounts for a 3x slowdown, such that the set of variations where these boundaries connect typed and untyped boundaries all run approximately 3x slower.
+
+@; WHY
+@; - run-t and t-graph are tightly coupled
+@; PATH (easy)
+@; - small API, even with objects
+
+
+@parag{ZO Traversal}
+The lines for @tt{zo-traversal} are fairly steep, but not as drastic as the lines for @tt{morse-code} or even @tt{mbta}.
+More interestingly, half the variations suffer a 2x overhead even as @exact{$L$} increases.
+This behavior is explained by the summary numbers: because the fully-typed variation incurs some overhead, the ability to convert additional modules rarely helps reach a more performant variation.
+
+@; WHY
+@; - the data is untyped, and this script is just an interface to that data
+@; - funny consequence: adding types just makes things worse
+@; PATH (easy)
+@; - HUGE bottleneck typing the zo structs
+@;   lots to do (62 structs, two zo-traversal functions for each)
+@; - afterwards, straightforward (at least for the author)
+
+
+@parag{Suffixtree}
+At @exact{$L$}=0, @tt{suffixtree} shows the worst performance characteristics of all our benchmarks.
+The slope is nearly a plateau, implying that over half the gradually-typed variations hit a performance wall and are not usable at any realistic value of @exact{$M$}.
+Increasing @exact{$L$}, however, drastically improves this picture.
+Although most variations suffer large performance overhead, they are in theory close to a variation with much better performance.
+
+@; WHY
+@; - explained in the in-depth, below
+@; PATH (hard)
+@; - lots of continuations and letrec, (one cont. instatiated with Values was rejected by TR)
+@; - module structure not bad
+
 
 @parag{K-CFA}
 @; Control-flow analyses typically run slowly, and the implementation in our benchmark is poor even in comparison.
@@ -212,78 +265,28 @@ This is expecially true for @exact{$N$} between 1x and 6x overhead, and remains 
 @; recursive struct hierarchy (though underlying types are simple)
 @; - later structs contain lists and hashtables
 @; - opaques might make it all better
+@; PATH (easy)
+@; - organized & simple project
+@; - code was originally 1 module and educational
 
 
-@parag{Quad}
-@; TODO
-PROBABLY BAD
-
-@; WHY
-@; the ocm struct has vector & functions
-@; many quad types, often recursive
-
-
-@parag{Snake}
-The @tt{snake} benchmark has similar performance characteristics to @tt{synth}.
-Most gradually-typed variations suffer more than 20x overhead and increasing @exact{$L$} helps somewhat, but still one must accept at least a 6x overhead before 60% of variations may be considered usable.
+@parag{Synth}
+The @tt{synth} benchmark performs well at the top and bottom of the lattice, but is significantly worse when gradually typed.
+Over half the gradually typed variations suffer an overhead of more than 20x.
+Increasing @math{L} does increase the slopes of the lines, meaning a larger number of variations become usable for a fixed @math{N}/@math{M} pair, but gradual typing still introduces a large overhead.
+Even at @math{L}=2 only 30% of all variations lie in reach of a point with at most 3x slowdown.
 
 @; WHY
-@; (probably) tightly-coupled module structure?
-@; anyway, it's interesting that synth was not an isolated problem
-@; ... not sure why this would differ from tetris
+@; - original had poor typed/untyped performance,
+@; - math library is documented to be bad for untyped interaction
+@;   - (probably, not confirmed) tightly coupled module structure
+@;   - complex array type : function with rectangular domain
+@; PATH (hard)
+@; - had to re-type files often, was easier to bottom-up
+@;   (may have just been Ben's inexperience)
+@; - array functions were all polymorphic, made for difficult boundaries
+@; heavy use/export of macros
 
-
-@parag{Suffixtree}
-At @exact{$L$}=0, @tt{suffixtree} shows the worst performance characteristics of all our benchmarks.
-The slope is nearly a plateau, implying that over half the gradually-typed variations hit a performance wall and are not usable at any realistic value of @exact{$M$}.
-Increasing @exact{$L$}, however, drastically improves this picture.
-Although most variations suffer large performance overhead, they are in theory close to a variation with much better performance.
-
-
-@;; Second L-N/M figure
-@parag{Echo}
-The shape of the @tt{echo} graphs is ideal.
-The sharp vertical line at @exact{$L$}=0 indicates that all variations are deliverable for a small value of @exact{$N$}.
-Naturally, the same shape is repeated for larger @exact{$L$}.
-
-@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
-@; Even at @exact{$L$}=2, we could shift focus to identifying the good variations rather than finding a new implementation strategy.
-
-@; WHY
-@; little goes across the boundary. client/server communicate over ports
-
-
-@parag{Morse code}
-The @tt{morse-code} benchmark also has excellent performance.
-Moreover, it is an example of a real program with such performance, as opposed to the toy @tt{echo} example.
-
-@; WHY
-@; Very little inter-module communication
-@; levenshtein does it's own thing, so does that string->morse
-@; 
-@; typed overhead is very small,
-@; but comes from
-@; - regexp?
-@; TODO typed should be faster, given suffixtree's performance
-
-
-@parag{MBTA} @;fixed version
-The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat area.
-This implies that a boundary (or group of boundaries) accounts for a 3x slowdown, such that the set of variations where these boundaries connect typed and untyped boundaries all run approximately 3x slower.
-
-
-@; WHY
-@; run-t and t-graph are tightly coupled
-
-
-@parag{Sieve}
-At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water, as
-half of the 4 variations suffer extremely large overhead.
-Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
-This is our only ``perfect'' graph, in the sense that every variation can reach a variation that performs at least as well as the untyped program.
-
-@; This benchmark is admittedly contrived, but proves an interesting point: pathologically-bad variations can be avoided if the programmer is able to identify tightly-connected modules and ensure there is no boundary between them.
-@; WHY: tons of higher-order interaction because streams are lambdas
 
 @parag{Tetris}
 Like @tt{suffixtree}, the @tt{tetris} benchmark is a success story for increasing @exact{$L$}.
@@ -292,16 +295,47 @@ The ``good half'', however, is apparently spread throughout the lattice and reac
 Interestingly a high plateau remains at @exact{$L$}=1, presumably because there is a set of high-cost boundaries that dominate the performance of some variations.
 
 @; WHY
-@; - where is the heavy boundary
+@; - where is the heavy boundary?
 @; - why is this different from snake?
+@; PATH (easy)
+@; - like snake, simple types + small + full contracts
 
 
-@parag{ZO Traversal}
-The lines for @tt{zo-traversal} are fairly steep, but not as drastic as the lines for @tt{morse-code} or even @tt{mbta}.
-More interestingly, half the variations suffer a 2x overhead even as @exact{$L$} increases.
-This behavior is explained by the summary numbers: because the fully-typed variation incurs some overhead, the ability to convert additional modules rarely helps reach a more performant variation.
+@parag{Snake}
+The @tt{snake} benchmark has similar performance characteristics to @tt{synth}.
+Most gradually-typed variations suffer more than 20x overhead and increasing @exact{$L$} helps somewhat, but still one must accept at least a 6x overhead before 60% of variations may be considered usable.
 
 @; WHY
-@; the data is untyped, and this script is just an interface to that data
-@; funny consequence: adding types just makes things worse
+@; - (probably) tightly-coupled module structure?
+@; - anyway, it's interesting that synth was not an isolated problem
+@; - also interesting that it's not exactly tetris
+@; PATH (easy)
+@; - simple types, small project, fully contracted (it was already a contract benchmark)
 
+ 
+@parag{Gregor}
+Despite being a large benchmark, @tt{gregor} performs reasonably well even when gradually typed.
+The worst-case slowdown of 6x is quite good compared to the other large benchmarks, and the steep vertical slope is also promising.
+
+@; WHY
+@; Contracts are all on simple types, pycket or soft contracts could do great things here
+@; - structures all contain simple types (may as well be tuples)
+@; - no higher-order functions, just simple -> simple contracts
+@; - fanciest: optional args
+@; PATH (easy)
+@; - not bad. Library already had contracts
+@; - intricate module structure, but again most things had an api
+
+
+
+@parag{Quad}
+@; TODO
+PROBABLY BAD
+
+@; WHY
+@; - the ocm struct has vector & functions
+@; - many quad types, often recursive
+@; PATH (hard?)
+@; - hard to tell, was already typed
+@; - recovering API was VERY HARD; macros often generated definitions
+@; - typing hyphenate (one untyped module) was tricky -- had to replace 'parititon' with 2 filters
