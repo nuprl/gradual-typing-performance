@@ -34,6 +34,9 @@ Machines
 
 Files
 -----
+__NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
+We need to update them all.
+
 - `echo.rktd` Unknown origin.
 - `funkytown.rktd`
 - `gregor-05-11.rktd` Run on Galicia
