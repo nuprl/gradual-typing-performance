@@ -147,22 +147,22 @@ Rather than displaying the entire lattice for each of the 12 programs, we summar
 @; Describe the lines & units on the figures
 
 The line graphs show the number of variations that are @emph{L-step} acceptable for a particular @math{L} and overhead factor.
-Each line is the result of sampling @id[PARAM-NUM-SAMPLES] values linearly spaced along the x-axis.
+Each line is the result of sampling @id[PARAM-NUM-SAMPLES] overheads linearly spaced along the x-axis.
 
 Overhead factors range from 1x, indicating performance no worse than the untyped program, to a @id[PARAM-MAX-OVERHEAD]x slowdown compared to the untyped variation.
 To put these slowdown factors in perspective, we draw a @exact{\color{ForestGreen}{green}} vertical line at @id[PARAM-N]x overhead and a @exact{\color{Goldenrod}{yellow}} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @math{N} and @math{M}.
-Realistic choices for @math{N} and @math{M} would be much lower, but for the purposes of the figures we consider variations at or below 3x acceptable and variations between 3x and 10x to be usable.
+Realistic choices for @math{N} and @math{M} would be much lower, perhaps 1.1x and 1.5x.
 
 On each y-axis, we count the absolute number of variations in the program.
-The labels range from 0 variations to @math{2^n} variations, where @math{n} is the number of modules in that row's benchmark program.
+These labels range from 0 @math{2^n} variations, where @math{n} is the number of modules in that row's benchmark program.
 The axes themselves are scaled to be the same height for all figures; in particular, we draw a @exact{\color{red}{red}} dashed line at the number corresponding to 60% of all variations in the program.
 
 Each column of figures shows results for a fixed value of @emph{L} ranging between 0 and @id[PARAM-L], inclusive.
-Thus the leftmost column simply counts the number of variations with performance below a given overhead factor.
+Thus the figures in the leftmost column simply count the number of variations with performance below a given overhead factor.
 In contrast, the graphs in the rightmost column count all variations that are at most @id[PARAM-L] type-annotation steps away from a usable variation.
 
 Lastly, each row of figures is accompanied by a brief table of summary statistics.
-These statistics include the number of modules in the program, the average overhead of the fully-typed variation (@math{\tau}), and the overhead of the worst-case and average-case gradually typed variations.
+These statistics include the number of modules in the program, the average overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
 Note that the worst and average case numbers do not include the fully-typed and untyped variations.
 
 
@@ -195,7 +195,7 @@ Brief descriptions of the graphs for each benchmark.
 @parag{Synth}
 The @tt{synth} benchmark performs well at the top and bottom of the lattice, but is significantly worse when gradually typed.
 Over half the gradually typed variations suffer an overhead of more than 20x.
-Increasing @math{L} does increase the slopes of the lines, meaning a larger number of variations become usable for an @math{N}/@math{M} pair, but gradual typing still introduces a large overhead.
+Increasing @math{L} does increase the slopes of the lines, meaning a larger number of variations become usable for a fixed @math{N}/@math{M} pair, but gradual typing still introduces a large overhead.
 Even at @math{L}=2 only 30% of all variations lie in reach of a point with at most 3x slowdown.
 
 @; WHY
@@ -221,7 +221,7 @@ The worst-case slowdown of 6x is quite good compared to the other large benchmar
 @; k-CFA is not a good application for gradual typing! Then again it's not much of a real program either
 
 The @tt{kcfa} benchmark has a very jagged shape, implying that @exact{$N/M$}-usability is not a helpful tradeoff for this program.
-At @exact{$L$}=0, selecting an @exact{$N$} determines the proportion of usable variations for small values of @exact{$M$}.
+At @exact{$L$}=0, selecting an @exact{$N$} strongly influences the proportion of acceptable variations for small values of @exact{$M$}.
 This is expecially true for @exact{$N$} between 1x and 6x overhead, and remains true even after increasing @exact{$L$} to 1; however at @exact{$L$}=2 the performance problem is apparently solved (assuming a method of finding the performant variations).
 
 @; WHY
@@ -286,7 +286,8 @@ Moreover, it is an example of a real program with such performance, as opposed t
 
 @parag{MBTA} @;fixed version
 The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat area.
-This implies that a boundary (or group of boundaries) accounts for a 3x slowdown.
+This implies that a boundary (or group of boundaries) accounts for a 3x slowdown, such that the set of variations where these boundaries connect typed and untyped boundaries all run approximately 3x slower.
+
 
 @; WHY
 @; run-t and t-graph are tightly coupled
@@ -296,6 +297,7 @@ This implies that a boundary (or group of boundaries) accounts for a 3x slowdown
 At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water, as
 half of the 4 variations suffer extremely large overhead.
 Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
+This is our only ``perfect'' graph, in the sense that every variation can reach a variation that performs at least as well as the untyped program.
 
 @; This benchmark is admittedly contrived, but proves an interesting point: pathologically-bad variations can be avoided if the programmer is able to identify tightly-connected modules and ensure there is no boundary between them.
 @; WHY: tons of higher-order interaction because streams are lambdas
@@ -314,7 +316,7 @@ Interestingly a high plateau remains at @exact{$L$}=1, presumably because there 
 @parag{ZO Traversal}
 The lines for @tt{zo-traversal} are fairly steep, but not as drastic as the lines for @tt{morse-code} or even @tt{mbta}.
 More interestingly, half the variations suffer a 2x overhead even as @exact{$L$} increases.
-This behavior is explained by the summary numbers: because the fully-typed variation incurs some overhead, the ability to convert additional modules does not often help reach a more performant variation.
+This behavior is explained by the summary numbers: because the fully-typed variation incurs some overhead, the ability to convert additional modules rarely helps reach a more performant variation.
 
 @; WHY
 @; the data is untyped, and this script is just an interface to that data
