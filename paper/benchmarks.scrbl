@@ -56,18 +56,18 @@ heavily on the frequency at which values flow across it.
 @; TODO a gentler intro
 Here we briefly describe the functionality of each benchmark and note the dependencies
 and adaptor modules required to run it.
+Unless otherwise noted, the benchmarks rely only on core Racket libraries and
+use no adaptor modules.
 
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Eratosthenes and is our
-smallest benchmark. It consists of two modules---a tiny streams library and a
-script implementing the Sieve using streams---and has minimal dependencies on
-trusted core Racket libraries.
+smallest benchmark. It consists of two modules: a tiny streams library and a
+script implementing the Sieve using streams.
 
 @parag{Echo}
 The echo server implements a simple network server/client pair and is a microbenchmark
 originally used in the Computer Language Benchmarks Game@note{@url["http://benchmarksgame.alioth.debian.org/"]}.
 Our adaptation divides the single-module program into four parts: client, server, shared constants, and main module.
-This program also only depends on Racket's trusted core libraries.
 
 @parag{Morse code}
 The @tt{morse-code} script was adapted from a morse code training program.@note{@url["https://github.com/jbclements/morse-code-trainer"]}.
@@ -75,7 +75,6 @@ The original program would play a morse code audio clip, read the keyboard for
 user input, and score the input based on its Levenshtein distance from the
 correct answer. Our benchmark tests generating morse code strings and running the
 Levenshtein algorithm on a list of frequently-used English words.
-This program also has minimal dependencies.
 
 @parag{MBTA}
 The @tt{mbta} program implements a server that asynchronously responds to
@@ -101,7 +100,6 @@ The @tt{kfca} program is a simple implementation of control flow analysis for a
 lambda calculus.
 The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
-This script depends only on trusted core libraries.
 
 @parag{Snake}
 This program is based on a contract verification benchmark by Nguyên @|etal|@~cite[nthvh-icfp-2014].
