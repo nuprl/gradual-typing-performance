@@ -146,6 +146,7 @@ Rather than displaying the entire lattice for each of the 12 programs, we summar
 @subsection{Reading the Figures}
 @; Describe the lines & units on the figures
 
+@; line graphs are essentially histograms
 The line graphs show the number of variations that are @emph{L-step} acceptable for a particular @math{L} and overhead factor.
 Each line is the result of sampling @id[PARAM-NUM-SAMPLES] overheads linearly spaced along the x-axis.
 
@@ -168,12 +169,15 @@ These statistics include the number of modules in the program, the average overh
 Note that the worst and average case numbers do not include the fully-typed and untyped variations, and are calculated over all runtimes we observed rather than just the mean runtime for each variation.
 
 
-@subsection{All Benchmarks, in some depth}
+@subsection{Discussion}
 @; Due dilligence for each benchmark,
 @; The "WHY" try to explain the performance.
 @; The "PATH" comment on how difficult porting was
 
-Brief descriptions of the graphs for each benchmark.
+The ideal shape for these curves is a flat line at the top of the y-axis, indicating that all variations of gradual typing performed no worse than the original untyped program.
+Of course the dynamic checks inserted by gradual type systems make this ideal difficult to achieve even with type-driven optimizations, so the next-best shape is a steep vertical line reaching the y-axis at a low x-value.
+A steep slope from the 1x point means that a large proportion of all variations run within a small constant overhead.
+
 
 
 @parag{Sieve}
