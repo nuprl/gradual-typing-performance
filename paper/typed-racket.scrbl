@@ -16,8 +16,8 @@ Typed Racket as evaluated at NU
 
 @section{A Benchmark in Depth}
 
-In order to explain our experimental setup, we take a closer look at the
-@tt{suffixtree} benchmark and explain the pieces that are involved.
+In order to explain our experimental setup, we take a closer look at
+one benchmark, @tt{suffixtree}, and explain the pieces that are involved.
 
 The benchmark consists of six main modules which are each available with
 and without type annotations:
@@ -30,7 +30,8 @@ that the user write down a type annotations using the @racket[require/typed]
 form. This form explicitly adds a dynamic check to ensure that the imported
 value truly satisfies that type. When the type is higher-order (e.g.,
 function or class types), the dynamic check is delayed by wrapping the
-imported value with a contract wrapper.
+imported value with a contract wrapper and checked each time the wrapped
+function is called.
 
 Since modules in our benchmark setup may be either typed or untyped depending
 on the configuration, we modify all @racket[require/typed] imports to use a
@@ -82,7 +83,7 @@ is responsible for the speedup by comparing the runtime of the fully typed
 configuration with and without type-based optimization enabled.
 
 Despite the speedup on the fully typed configuration, in-between configurations
-have slowdowns that vary drastically from 1.02x to 100x. Inspecting
+have slowdowns that range drastically from 1.02x to 100x. Inspecting
 the lattice, several conclusions can be drawn about adding types to this
 program. For example, adding type annotations to the @tt{main.rkt} module neither
 subtracts or adds much overhead since it is a driver module that is not tightly
@@ -115,8 +116,12 @@ that particular graph.
 
 
 @section{Experimental Results}
-@(Figure-ref "fig:lnm1" "fig:lnm2") summarize our findings after testing the performance lattice for each benchmark program.
-Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a row of figures.
+The @tt{suffixtree} example demonstrates that adding type annotations may improve performance, by means of type-driven optimizations, but the dynamic checks inserted at typed-untyped boundaries can result in dramatic runtime overhead.
+The net result depends heavily on the structure of the program and the set of modules with type annotations.
+Thus it remains to be seen whether the gradual typing promise---that any variation of typed and untyped modules will run---tends to yield programs that are indeed practical to run.
+
+@(Figure-ref "fig:lnm1" "fig:lnm2") summarize our findings after testing all gradually-typed variations for each of 12 our benchmark programs.
+Rather than displaying the lattice of results, we summarize the each benchmark's @step["L" "N" "M"] characteristics with a row of figures.
 
 @figure*["fig:lnm1" @list{@step["L" "N" "M"] results for the first 6 benchmarks. The x-axes measure overhead and the y-axes count variations.}
   @(let* ([data '(
@@ -180,7 +185,7 @@ A steep slope from the 1x point means that a large proportion of all variations 
 For lines with lower gradients this small constant must be replaced with a larger overhead factor for the same proportion of variations to qualify as acceptable.
 
 Given the wide x-axis range of overhead factors, we would expect that only the leftmost quarter of each graph shows any interesting vertical slope.
-Under the assumption that sound gradual typing is reasonably practical, but requires tuning and optimization, the lines right of the 10x point should be nearly horizontal and well above the red dashed line for @math{L}=0.
+Under the assumption that sound gradual typing is reasonably practical, but requires tuning and optimization, the data right of the 10x point should be nearly horizontal and well above the red dashed line for @math{L}=0.@note{Increasing @math{L} should remove pathologically-bad cases.}
 That is, a small percentage of variations may suffer an order of magnitude slowdown, but the performance of most gradually-typed variations is within a (large) constant factor.
 
 We now describe the shape of the results for each benchmark.
