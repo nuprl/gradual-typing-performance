@@ -16,8 +16,8 @@ Typed Racket as evaluated at NU
 
 @section{A Benchmark in Depth}
 
-In order to explain our experimental setup, we take a closer look at the
-@tt{suffixtree} benchmark and explain the pieces that are involved.
+In order to explain our experimental setup, we take a closer look at
+one benchmark, @tt{suffixtree}, and explain the pieces that are involved.
 
 The benchmark consists of six main modules which are each available with
 and without type annotations:
@@ -30,7 +30,8 @@ that the user write down a type annotations using the @racket[require/typed]
 form. This form explicitly adds a dynamic check to ensure that the imported
 value truly satisfies that type. When the type is higher-order (e.g.,
 function or class types), the dynamic check is delayed by wrapping the
-imported value with a contract wrapper.
+imported value with a contract wrapper and checked each time the wrapped
+function is called.
 
 Since modules in our benchmark setup may be either typed or untyped depending
 on the configuration, we modify all @racket[require/typed] imports to use a
@@ -82,7 +83,7 @@ is responsible for the speedup by comparing the runtime of the fully typed
 configuration with and without type-based optimization enabled.
 
 Despite the speedup on the fully typed configuration, in-between configurations
-have slowdowns that vary drastically from 1.02x to 100x. Inspecting
+have slowdowns that range drastically from 1.02x to 100x. Inspecting
 the lattice, several conclusions can be drawn about adding types to this
 program. For example, adding type annotations to the @tt{main.rkt} module neither
 subtracts or adds much overhead since it is a driver module that is not tightly
@@ -115,30 +116,34 @@ that particular graph.
 
 
 @section{Experimental Results}
-@(Figure-ref "fig:lnm1" "fig:lnm2") summarize our findings after testing the performance lattice for each benchmark program.
-Rather than displaying the entire lattice for each of the 12 programs, we summarize the @emph{L-N/M} characteristics of each program with a row of figures.
+The @tt{suffixtree} example demonstrates that adding type annotations may improve performance, by means of type-driven optimizations, but the dynamic checks inserted at typed-untyped boundaries can result in dramatic runtime overhead.
+The net result depends heavily on the structure of the program and the set of modules with type annotations.
+Thus it remains to be seen whether the gradual typing promise---that any variation of typed and untyped modules will run---tends to yield programs that are indeed practical to run.
 
-@figure*["fig:lnm1" @list{@emph{L-step N/M-usable} results for selected benchmarks. The x-axes measure overhead and the y-axes count variations.}
+@(Figure-ref "fig:lnm1" "fig:lnm2") summarize our findings after testing all gradually-typed variations for each of 12 our benchmark programs.
+Rather than displaying the lattice of results, we summarize the each benchmark's @step["L" "N" "M"] characteristics with a row of figures.
+
+@figure*["fig:lnm1" @list{@step["L" "N" "M"] results for the first 6 benchmarks. The x-axes measure overhead and the y-axes count variations.}
   @(let* ([data '(
-                   ("synth"      "./data/funkytown.rktd")
-                   ("gregor"     "./data/gregor-05-11.rktd")
-                   ("kcfa"       "./data/kcfa-06-01.rktd") ;; TODO need to re-run the LARGE one, row 111 of data is malformed
-                   ("quad"       "./data/quad-placeholder.rktd")
-                   ("snake"      "./data/snake-04-10.rktd")
+                   ("sieve"        "./data/sieve-04-06.rktd")
+                   ("echo"         "./data/echo.rktd")
+                   ("morse-code"   "./data/morsecode-large-06-24.rktd") ;; Medium-sized morecode case
+                   ("mbta"         "./data/mbta-04-25.rktd")
+                   ("zo-traversal" "./data/zordoz-04-09.rktd")
                    ("suffixtree" "./data/suffixtree-06-10.rktd")
+                   ;; ("lnm" "./data/lnm-06-22.rktd")
                   )])
      (data->pict data #:tag "1"))
 ]
 
-@figure*["fig:lnm2" @list{@emph{L-step N/M-usable} results for the rest of the benchmarks}
+@figure*["fig:lnm2" @list{@step["L" "N" "M"] results for the remaining benchmarks}
   @(let* ([data '(
-                   ("echo"         "./data/echo.rktd")
-                   ("morse-code"   "./data/morsecode-06-20.rktd") ;; Medium-sized morecode case
-                   ("mbta"         "./data/mbta-04-25.rktd")
-                   ("sieve"        "./data/sieve-04-06.rktd")
-                   ;; ("lnm" "./data/lnm-06-22.rktd")
+                   ("kcfa"       "./data/kcfa-06-01.rktd") ;; TODO need to re-run the LARGE one, row 111 of data is malformed
+                   ("synth"      "./data/funkytown.rktd")
                    ("tetris"       "./data/tetris-large-06-20.rktd")
-                   ("zo-traversal" "./data/zordoz-04-09.rktd")
+                   ("snake"      "./data/snake-large-06-20.rktd")
+                   ("gregor"     "./data/gregor-05-11.rktd")
+                   ("quad"       "./data/quad-placeholder.rktd")
                   )])
      (data->pict data #:tag "2"))
 ]
@@ -146,6 +151,7 @@ Rather than displaying the entire lattice for each of the 12 programs, we summar
 @subsection{Reading the Figures}
 @; Describe the lines & units on the figures
 
+@; line graphs are essentially histograms
 The line graphs show the number of variations that are @emph{L-step} acceptable for a particular @math{L} and overhead factor.
 Each line is the result of sampling @id[PARAM-NUM-SAMPLES] overheads linearly spaced along the x-axis.
 
@@ -154,66 +160,116 @@ To put these slowdown factors in perspective, we draw a @exact{\color{ForestGree
 Realistic choices for @math{N} and @math{M} would be much lower, perhaps 1.1x and 1.5x.
 
 On each y-axis, we count the absolute number of variations in the program.
-These labels range from 0 @math{2^n} variations, where @math{n} is the number of modules in that row's benchmark program.
-The axes themselves are scaled to be the same height for all figures; in particular, we draw a @exact{\color{red}{red}} dashed line at the number corresponding to 60% of all variations in the program.
+These labels range from 0 to @math{2^n} variations, where @math{n} is the number of modules in that row's benchmark.
+The y-axes themselves are scaled to be the same height for all figures; in particular, we draw a @exact{\color{red}{red}} dashed line at the number corresponding to 60% of all variations in the program.
+Below these red lines we consider gradual typing @emph{impractical}, in the sense that more than half of all variations have unacceptable performance.
 
-Each column of figures shows results for a fixed value of @emph{L} ranging between 0 and @id[PARAM-L], inclusive.
+Each column of figures shows results for a fixed value of @math{L} ranging between 0 and @id[PARAM-L], inclusive.
 Thus the figures in the leftmost column simply count the number of variations with performance below a given overhead factor.
 In contrast, the graphs in the rightmost column count all variations that are at most @id[PARAM-L] type-annotation steps away from a usable variation.
+These counts are optimistic; for nonzero @math{L} and @math{n} modules, we search the entire space of @math{O(n!-(n-L)!)} reachable variations to find a neighbor with usable runtime.
 
 Lastly, each row of figures is accompanied by a brief table of summary statistics.
 These statistics include the number of modules in the program, the average overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
-Note that the worst and average case numbers do not include the fully-typed and untyped variations.
+Note that the worst and average case numbers do not include the fully-typed and untyped variations, and are calculated over all runtimes we observed rather than just the mean runtime for each variation.
 
 
-@subsection{Interpreting the Figures}
-@; Judgments to make from the figures
-
-The graphs help answer three high-level performance questions:
-@itemlist[
-@item{How many variations are deliverable for a fixed overhead @math{N}?}
-@item{How many variations become usable for an @math{M > N}?}
-@item{How does increasing the unit of work from one conversion step to 2 or 3 change the performance picture?}
-]
-The red dashed line represents our bottom line: supposing a developer has chosen appropriate values for @math{N}, @math{M}, and @math{L}, we consider gradual typing @emph{impractical} unless at least 60% of variations are @emph{L-N/M}-acceptable.
-
-
-We did not expect these graphs to be interesting---they should all look like @bold{gregor} or @bold{echo}.
-@; shape we would hope for, given these X and Y
-
-@subsection{All Benchmarks, in some depth}
+@subsection{Discussion}
 @; Due dilligence for each benchmark,
-@; TODO we should re-title and compress this section before submitting
-@; TODO maybe add:
-@; - reasons why, for performance (marked WHY, below... belongs in separate discussion section)
-@; - porting story, how difficult is 2 paths (marked PATH below)
+@; The "WHY" try to explain the performance.
+@; The "PATH" comment on how difficult porting was
 
-Brief descriptions of the graphs for each benchmark.
+The ideal shape for these curves is a flat line at the top of the y-axis, indicating that all variations of gradual typing performed no worse than the original untyped program.
+Of course the dynamic checks inserted by gradual type systems make this ideal difficult to achieve even with type-driven optimizations, so the next-best shape is a steep vertical line reaching the y-axis at a low x-value.
+A steep slope from the 1x point means that a large proportion of all variations run within a small constant overhead.
+For lines with lower gradients this small constant must be replaced with a larger overhead factor for the same proportion of variations to qualify as acceptable.
+
+Given the wide x-axis range of overhead factors, we would expect that only the leftmost quarter of each graph shows any interesting vertical slope.
+Under the assumption that sound gradual typing is reasonably practical, but requires tuning and optimization, the data right of the 10x point should be nearly horizontal and well above the red dashed line for @math{L}=0.@note{Increasing @math{L} should remove pathologically-bad cases.}
+That is, a small percentage of variations may suffer an order of magnitude slowdown, but the performance of most gradually-typed variations is within a (large) constant factor.
+
+We now describe the shape of the results for each benchmark.
 
 
-@;; First L-N/M figure
-@parag{Synth}
-The @tt{synth} benchmark performs well at the top and bottom of the lattice, but is significantly worse when gradually typed.
-Over half the gradually typed variations suffer an overhead of more than 20x.
-Increasing @math{L} does increase the slopes of the lines, meaning a larger number of variations become usable for a fixed @math{N}/@math{M} pair, but gradual typing still introduces a large overhead.
-Even at @math{L}=2 only 30% of all variations lie in reach of a point with at most 3x slowdown.
+@parag{Sieve}
+At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water, as half of the 4 variations suffer extremely large overhead.
+Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
+This is our only ``perfect'' graph, in which every variation is within short reach of a variation that performs at least as well as the untyped program.
+
+@; This benchmark is admittedly contrived, but proves an interesting point: pathologically-bad variations can be avoided if the programmer is able to identify tightly-connected modules and ensure there is no boundary between them.
+@; WHY:
+@; - tons of higher-order interaction because streams are lambdas
+@; PATH: (easy)
+@; - but in practice might be hard -- depending on the untyped library your untyped script maybe isn't safe
+
+
+@parag{Echo}
+The shape of the @tt{echo} graphs is ideal.
+The sharp vertical line at @exact{$L$}=0 indicates that gradual typing introduces only a small overhead compared to the untyped program.
+Indeed, the summary statistics for @tt{echo} confirm that the overall slowest running time we observed was within a 20% slowdown over the untyped baseline.
+
+@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
+@; Even at @exact{$L$}=2, we could shift focus to identifying the good variations rather than finding a new implementation strategy.
 
 @; WHY
-@; original had poor typed/untyped performance,
-@; math library is documented to be bad for untyped interaction
-@; - (probably, not confirmed) tightly coupled module structure
-@; - complex array type : function with rect. domain
-@;   - there's a vector and a function in there
- 
-@parag{Gregor}
-Despite being a large benchmark, @tt{gregor} performs reasonably well even when gradually typed.
-The worst-case slowdown of 6x is quite good compared to the other large benchmarks, and the steep vertical slope is also promising.
+@; - little goes across the boundary. client/server communicate over ports
+@; PATH (easy)
+@; - very small program
+
+
+@parag{Morse code}
+The @tt{morse-code} benchmark also shows excellent performance.
+At @math{L}=0 three variations perform at least as well as the untyped program, and the worst-case overhead is below 3x.
+Increasing @math{L} raises the y-intercept of the lines, which makes sense given that the fully-typed @tt{morse-code} runs faster than the original program.
 
 @; WHY
-@; Contracts are all on simple types, pycket or soft contracts could do great things here
-@; - structures all contain simple types (may as well be tuples)
-@; - no higher-order functions, just simple -> simple contracts
-@; - fanciest: optional args
+@; - Very little inter-module communication
+@; PATH (easy)
+@; - small APIs (levenshtein was 300 lines for 1 export)
+@; - only 2 modules really did things, the others were data(+parser) & main
+
+
+@parag{MBTA} @;fixed version
+The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat area.
+This implies that a boundary (or group of boundaries) accounts for a 3x slowdown, such that the set of variations where these boundaries connect typed and untyped modules all experience similar overhead.
+
+@; WHY
+@; - run-t and t-graph are tightly coupled
+@; PATH (easy)
+@; - small API, even with objects
+
+
+@parag{ZO Traversal}
+The lines for @tt{zo-traversal} are fairly steep, but not as drastic as the lines for @tt{morse-code} or even @tt{mbta}.
+More interestingly, half the variations suffer a 2x overhead even as @exact{$L$} increases.
+This behavior is explained by the summary numbers: because the fully-typed variation incurs some overhead, the ability to convert additional modules rarely helps reach a more performant variation.
+
+@; WHY
+@; - the data is untyped, and this script is just an interface to that data
+@; - funny consequence: adding types just makes things worse
+@; PATH (easy)
+@; - HUGE bottleneck typing the zo structs
+@;   lots to do (62 structs, two zo-traversal functions for each)
+@; - afterwards, straightforward (at least for the author)
+
+
+@parag{Suffixtree}
+At @exact{$L$}=0, @tt{suffixtree} shows the worst performance characteristics of all our benchmarks.
+Over half the gradually-typed variations hit a performance wall and are not usable at any realistic value of @exact{$M$}.
+Increasing @exact{$L$}, however, drastically improves this picture.
+Thus although most variations suffer large performance overhead, they are in theory close to a variation with much better performance.
+
+@; WHY
+@; - explained in the in-depth, below
+@; PATH (hard)
+@; - lots of continuations and letrec, (one cont. instatiated with Values was rejected by TR)
+@; - module structure not bad
+
+
+@; @parag{L-NM}
+@; Our script for processing and plotting experimental data is a Typed Racket success story.
+@; The fully-typed version performs much better than the untyped one, and gradual typing only introduces modest overheads in the worst case.
+
 
 @parag{K-CFA}
 @; Control-flow analyses typically run slowly, and the implementation in our benchmark is poor even in comparison.
@@ -229,6 +285,66 @@ This is expecially true for @exact{$N$} between 1x and 6x overhead, and remains 
 @; recursive struct hierarchy (though underlying types are simple)
 @; - later structs contain lists and hashtables
 @; - opaques might make it all better
+@; PATH (easy)
+@; - organized & simple project
+@; - code was originally 1 module and educational
+
+
+@parag{Synth}
+The @tt{synth} benchmark performs well at the top and bottom of the lattice, but is significantly worse when gradually typed.
+Over half the gradually typed variations suffer an overhead of more than 20x.
+Increasing @math{L} does increase the slopes of the lines, meaning a larger number of variations become usable for a fixed @math{N}/@math{M} pair, but gradual typing still introduces a large overhead.
+Even at @math{L}=2 only 30% of all variations lie in reach of a point with at most 3x slowdown.
+
+@; WHY
+@; - original had poor typed/untyped performance,
+@; - math library is documented to be bad for untyped interaction
+@;   - (probably, not confirmed) tightly coupled module structure
+@;   - complex array type : function with rectangular domain
+@; PATH (hard)
+@; - had to re-type files often, was easier to bottom-up
+@;   (may have just been Ben's inexperience)
+@; - array functions were all polymorphic, made for difficult boundaries
+@; heavy use/export of macros
+
+
+@parag{Tetris}
+Like @tt{suffixtree}, the @tt{tetris} benchmark is a success story for increasing @exact{$L$}.
+When @exact{$L$}=0 we see that half of all modules are within 6x overhead, but the rest are more than 20x worse than the untyped program.
+The ``good half'', however, is apparently spread throughout the lattice and reachable in few steps from many other variations.
+
+@; WHY
+@; - where is the heavy boundary?
+@; - why is this different from snake?
+@; PATH (easy)
+@; - like snake, simple types + small + full contracts
+
+
+@parag{Snake}
+The @tt{snake} benchmark has similar performance characteristics to @tt{synth}.
+Most gradually-typed variations suffer more than 20x overhead and increasing @exact{$L$} helps somewhat, but still one must accept approximately 6x overhead before the majority of variations are considered useful.
+
+@; WHY
+@; - (probably) tightly-coupled module structure?
+@; - anyway, it's interesting that synth was not an isolated problem
+@; - also interesting that it's not exactly tetris
+@; PATH (easy)
+@; - simple types, small project, fully contracted (it was already a contract benchmark)
+
+ 
+@parag{Gregor}
+Despite being a large benchmark, @tt{gregor} performs reasonably well even when gradually typed.
+The worst-case slowdown of 6x is quite good compared to the other large benchmarks, and the steep vertical slope is close to ideal.
+
+@; WHY
+@; Contracts are all on simple types, pycket or soft contracts could do great things here
+@; - structures all contain simple types (may as well be tuples)
+@; - no higher-order functions, just simple -> simple contracts
+@; - fanciest: optional args
+@; PATH (easy)
+@; - not bad. Library already had contracts
+@; - intricate module structure, but again most things had an api
+
 
 
 @parag{Quad}
@@ -236,89 +352,9 @@ This is expecially true for @exact{$N$} between 1x and 6x overhead, and remains 
 PROBABLY BAD
 
 @; WHY
-@; the ocm struct has vector & functions
-@; many quad types, often recursive
-
-
-@parag{Snake}
-The @tt{snake} benchmark has similar performance characteristics to @tt{synth}.
-Most gradually-typed variations suffer more than 20x overhead and increasing @exact{$L$} helps somewhat, but still one must accept at least a 6x overhead before 60% of variations may be considered usable.
-
-@; WHY
-@; (probably) tightly-coupled module structure?
-@; anyway, it's interesting that synth was not an isolated problem
-@; ... not sure why this would differ from tetris
-
-
-@parag{Suffixtree}
-At @exact{$L$}=0, @tt{suffixtree} shows the worst performance characteristics of all our benchmarks.
-The slope is nearly a plateau, implying that over half the gradually-typed variations hit a performance wall and are not usable at any realistic value of @exact{$M$}.
-Increasing @exact{$L$}, however, drastically improves this picture.
-Although most variations suffer large performance overhead, they are in theory close to a variation with much better performance.
-
-
-@;; Second L-N/M figure
-@parag{Echo}
-The shape of the @tt{echo} graphs is ideal.
-The sharp vertical line at @exact{$L$}=0 indicates that all variations are deliverable for a small value of @exact{$N$}.
-Naturally, the same shape is repeated for larger @exact{$L$}.
-
-@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
-@; Even at @exact{$L$}=2, we could shift focus to identifying the good variations rather than finding a new implementation strategy.
-
-@; WHY
-@; little goes across the boundary. client/server communicate over ports
-
-
-@parag{Morse code}
-The @tt{morse-code} benchmark also has excellent performance.
-Moreover, it is an example of a real program with such performance, as opposed to the toy @tt{echo} example.
-
-@; WHY
-@; Very little inter-module communication
-@; levenshtein does it's own thing, so does that string->morse
-@; 
-@; typed overhead is very small,
-@; but comes from
-@; - regexp?
-@; TODO typed should be faster, given suffixtree's performance
-
-
-@parag{MBTA} @;fixed version
-The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat area.
-This implies that a boundary (or group of boundaries) accounts for a 3x slowdown, such that the set of variations where these boundaries connect typed and untyped boundaries all run approximately 3x slower.
-
-
-@; WHY
-@; run-t and t-graph are tightly coupled
-
-
-@parag{Sieve}
-At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in the water, as
-half of the 4 variations suffer extremely large overhead.
-Increasing @exact{$L$}, however, makes all variations usable at @exact{$N$}=1.
-This is our only ``perfect'' graph, in the sense that every variation can reach a variation that performs at least as well as the untyped program.
-
-@; This benchmark is admittedly contrived, but proves an interesting point: pathologically-bad variations can be avoided if the programmer is able to identify tightly-connected modules and ensure there is no boundary between them.
-@; WHY: tons of higher-order interaction because streams are lambdas
-
-@parag{Tetris}
-Like @tt{suffixtree}, the @tt{tetris} benchmark is a success story for increasing @exact{$L$}.
-When @exact{$L$}=0 we see that half of all modules are within 6x overhead, but the rest are more than 20x worse than the untyped program.
-The ``good half'', however, is apparently spread throughout the lattice and reachable in few steps from many other variations.
-Interestingly a high plateau remains at @exact{$L$}=1, presumably because there is a set of high-cost boundaries that dominate the performance of some variations.
-
-@; WHY
-@; - where is the heavy boundary
-@; - why is this different from snake?
-
-
-@parag{ZO Traversal}
-The lines for @tt{zo-traversal} are fairly steep, but not as drastic as the lines for @tt{morse-code} or even @tt{mbta}.
-More interestingly, half the variations suffer a 2x overhead even as @exact{$L$} increases.
-This behavior is explained by the summary numbers: because the fully-typed variation incurs some overhead, the ability to convert additional modules rarely helps reach a more performant variation.
-
-@; WHY
-@; the data is untyped, and this script is just an interface to that data
-@; funny consequence: adding types just makes things worse
-
+@; - the ocm struct has vector & functions
+@; - many quad types, often recursive
+@; PATH (hard?)
+@; - hard to tell, was already typed
+@; - recovering API was VERY HARD; macros often generated definitions
+@; - typing hyphenate (one untyped module) was tricky -- had to replace 'parititon' with 2 filters
