@@ -117,11 +117,11 @@ that particular graph.
 
 @section{Experimental Results}
 The @tt{suffixtree} example demonstrates that although type information can enable certain optimizations, these improvements may be offset by the dynamic checks inserted at typed-untyped boundaries.
-The net result of this tradeoff depends heavily on the structure of the program and the set of modules with type annotations.
+The net result of this tradeoff depends heavily on the structure of the program and the set of modules given type annotations.
 Thus it remains to be seen whether the gradual typing promise---that any variation of typed and untyped modules will run---tends to yield programs that are indeed practical to run.
 
 @(Figure-ref "fig:lnm1" "fig:lnm2") summarize our findings after testing all gradually-typed variations for each of our 12 benchmark programs.
-Rather than displaying the lattice of results, we summarize the each benchmark's @step["L" "N" "M"] characteristics with a row of figures.
+Rather than displaying the lattice of results, we summarize the each benchmark's @step["L" "N" "M"] characteristics with a row of figures showing the proportion of variations that are acceptable for particular choices of @math{L}, @math{N}, and @math{M}.
 
 @figure*["fig:lnm1" @list{@step["L" "N" "M"] results for the first 6 benchmarks. The x-axes measure overhead and the y-axes count variations.}
   @(let* ([data '(
@@ -170,7 +170,7 @@ These counts are optimistic; for nonzero @math{L} and @math{n} modules, we searc
 
 Lastly, each row of figures is accompanied by a brief table of summary statistics.
 These statistics include the number of modules in the program, the average overhead of the fully-typed variation (@exact{$\tau$}), and the overhead of the worst-case and average-case gradually typed variations.
-Note that the worst and average case numbers do not include the fully-typed and untyped variations, and are calculated over all runtimes we observed.
+Note that the worst and average case numbers do not include the fully-typed and untyped variations, and are calculated over all runtimes we observed rather than, say, the mean runtime for each variation.
 
 
 @subsection{Discussion}
@@ -178,16 +178,17 @@ Note that the worst and average case numbers do not include the fully-typed and 
 @; The "WHY" try to explain the performance.
 @; The "PATH" comment on how difficult porting was
 
-The ideal shape for these curves is a flat line at the top of the y-axis, indicating that all variations of gradual typing performed no worse than the original untyped program.
-Of course the dynamic checks inserted by gradual type systems make this ideal difficult to achieve even with type-driven optimizations, so the next-best shape is a steep vertical line reaching the y-axis at a low x-value.
+The ideal shape for these curves is a flat line at the top of the y-axis, indicating that all variations performed no worse than the original untyped program.
+Of course the dynamic checks inserted by gradual type systems make this ideal difficult to achieve even with type-driven optimizations, so the next-best shape is a steep vertical line reaching the 100% count at a low x-value.
 A steep slope from the 1x point means that a large proportion of all variations run within a small constant overhead.
 For lines with lower gradients this small constant must be replaced with a larger overhead factor for the same proportion of variations to qualify as acceptable.
 
 Given the wide x-axis range of overhead factors, we would expect that only the leftmost quarter of each graph shows any interesting vertical slope.
-Under the assumption that sound gradual typing is reasonably practical, but requires tuning and optimization, the data right of the 10x point should be nearly horizontal and well above the red dashed line for @math{L}=0.@note{Increasing @math{L} should remove pathologically-bad cases.}
-That is, a small percentage of variations may suffer an order of magnitude slowdown, but the performance of most gradually-typed variations is within a (large) constant factor.
+Put another way, if it were true that Typed Racket's sound gradual typing is reasonably practical but requires tuning and optimization, the data right of the 10x point should be nearly horizontal and well above the red dashed line for @math{L}=0.@note{Increasing @math{L} should remove pathologically-bad cases.}
+This shape would suggest that although a small percentage of variations suffer an order of magnitude slowdown, the performance of most gradually-typed variations is within a (large) constant factor.
 
 We now describe the shape of the results for each benchmark.
+Our procedure is to focus on the left column, where @math{L}=0, and to consider the center and right column as rather drastic countermeasures to recover performance.
 
 
 @parag{Sieve}
