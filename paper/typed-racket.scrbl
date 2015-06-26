@@ -156,7 +156,7 @@ The line graphs show the number of variations that are @emph{L-step} acceptable 
 Each line is the result of sampling @id[PARAM-NUM-SAMPLES] overheads linearly spaced along the x-axis.
 
 Overhead factors range from 1x, indicating performance no worse than the untyped program, to a @id[PARAM-MAX-OVERHEAD]x slowdown compared to the untyped variation.
-To put these slowdown factors in perspective, we draw a @exact{\color{ForestGreen}{green}} vertical line at @id[PARAM-N]x overhead and a @exact{\color{Goldenrod}{yellow}} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @math{N} and @math{M}.
+To put these slowdown factors in perspective, we draw a @exact{\color{ForestGreen!90!black}{green}} vertical line at @id[PARAM-N]x overhead and a @exact{\color{Goldenrod!65!black}{yellow}} vertical line at @id[PARAM-M]x as hypothetical upper-bounds for @math{N} and @math{M}.
 Realistic choices for @math{N} and @math{M} would be much lower, perhaps 1.1x and 1.5x.
 
 On each y-axis, we count the number of variations from 0 to @math{2^n}, where @math{n} is the number of modules in that row's benchmark.
