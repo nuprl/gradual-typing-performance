@@ -39,8 +39,8 @@
 (define DEFAULT_CUTOFF 0.6)
 (define DEFAULT_SAMPLES 60)
 
-(define THIN (* 1.2 (line-width)))
-(define THICK (* 1.8 (line-width)))
+(define THIN (* 0.8 (line-width)))
+(define THICK (* 1.25 (line-width)))
 
 (define DEFAULT_FACE "bold")
 (define DEFAULT_SIZE 20)
@@ -81,6 +81,7 @@
     [plot-y-ticks (compute-yticks num-vars 6 #:exact (list cutoff-point num-vars))]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
+    [plot-tick-size 4]
     [plot-font-face font-face]
     [plot-font-size font-size])
     ;; Create 1 pict for each value of L
@@ -168,6 +169,7 @@
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
+(define INVISIBLE "\u00A0") ;; Unicode for non-breaking space (this is not working)
 (define (compute-yticks max-y num-ticks #:exact [exact '()])
   (define exact-list (or (and (list? exact) exact) (list exact)))
   (define round-y (if (< max-y 1000) ;;TODO
@@ -183,7 +185,7 @@
                        #t)))
          (lambda (ax-min ax-max pre-ticks)
                  (for/list ([pt (in-list pre-ticks)])
-                   (~r (pre-tick-value pt) #:min-width 5 #:pad-string " ")))))
+                   (~r (pre-tick-value pt) #:min-width 5 #:pad-string INVISIBLE)))))
 
 (define (compute-xticks num-ticks)
   (ticks (lambda (ax-min ax-max)
