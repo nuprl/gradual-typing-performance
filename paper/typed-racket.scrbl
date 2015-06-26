@@ -69,7 +69,7 @@ to the modules of @tt{suffixtree} in alphabetical order:
 and @tt{ukkonen.rkt}. Each configuration lists the average (on top) and standard deviation
 (below) of the runtime of 30 iterations normalized to the untyped average.
 
-Following the definitions in @secref{sec:fwk}, we can first determine the
+Following the definitions in section@secref{sec:fwk}, we can first determine the
 typed/untyped ratio. The fully typed configuration (the top one)
 for @tt{suffixtree} has the good property that
 it is @emph{faster} than the fully untyped (bottom)
