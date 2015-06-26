@@ -12,7 +12,7 @@ A single benchmark is taken from an existing microbenchmark suite.
 
 @section{Technical Overview}
 
-The table in @figure-ref{"fig:bm"} lists and summarizes our 12 benchmark programs.
+The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark programs.
 For each, we give an approximate measure of the program's size and a picture of
 its module structure.
 
