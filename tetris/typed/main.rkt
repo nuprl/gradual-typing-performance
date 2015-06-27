@@ -5,29 +5,11 @@
 (require/typed/check "aux.rkt"
   [list-pick-random (-> (Listof Tetra) Tetra)]
   [tetras (Listof Tetra)])
-(require/typed/check "data.rkt"
-  [posn=? (-> Posn Posn Boolean)])
 (require/typed/check "bset.rkt"
-   [blocks-contains? (-> BSet Block Boolean)]
-   [blocks=? (-> BSet BSet Boolean)]
-   [blocks-subset? (-> BSet BSet Boolean)]
-   [blocks-intersect (-> BSet BSet BSet)]
-   [blocks-count (-> BSet Natural)]
-   [blocks-overflow? (-> BSet Boolean)]
-   [blocks-move (-> Real Real BSet BSet)]
-   [blocks-rotate-cw (-> Posn BSet BSet)]
-   [blocks-rotate-ccw (-> Posn BSet BSet)]
-   [blocks-change-color (-> BSet Color BSet)]
-   [blocks-row (-> BSet Real BSet)]
-   [full-row? (-> BSet Natural Boolean)]
-   [blocks-union (-> BSet BSet BSet)]
-   [blocks-max-x (-> BSet Real)]
-   [blocks-min-x (-> BSet Real)]
-   [blocks-max-y (-> BSet Real)])
+   [blocks-overflow? (-> BSet Boolean)])
 (require/typed/check "world.rkt"
   [world-key-move (-> World String World)]
-  [next-world (-> World World)]
-  [ghost-blocks (-> World BSet)])
+  [next-world (-> World World)])
 
 (define (world0)
   (world (list-pick-random tetras) empty))

@@ -3,30 +3,16 @@
 (require "base-types.rkt")
 (require benchmark-util)
 (require/typed/check "bset.rkt"
-   [blocks-contains? (-> BSet Block Boolean)]
-   [blocks=? (-> BSet BSet Boolean)]
-   [blocks-subset? (-> BSet BSet Boolean)]
-   [blocks-intersect (-> BSet BSet BSet)]
-   [blocks-count (-> BSet Natural)]
-   [blocks-overflow? (-> BSet Boolean)]
-   [blocks-move (-> Real Real BSet BSet)]
-   [blocks-rotate-cw (-> Posn BSet BSet)]
-   [blocks-rotate-ccw (-> Posn BSet BSet)]
-   [blocks-change-color (-> BSet Color BSet)]
-   [blocks-row (-> BSet Real BSet)]
-   [full-row? (-> BSet Natural Boolean)]
    [blocks-union (-> BSet BSet BSet)]
    [blocks-max-x (-> BSet Real)]
    [blocks-min-x (-> BSet Real)]
-   [blocks-max-y (-> BSet Real)]
-  )
+   [blocks-max-y (-> BSet Real)])
 (require/typed/check "tetras.rkt"
   [tetra-move (-> Real Real Tetra Tetra)]
   [tetra-rotate-ccw (-> Tetra Tetra)]
   [tetra-rotate-cw (-> Tetra Tetra)]
   [tetra-overlaps-blocks? (-> Tetra BSet Boolean)]
-  [tetra-change-color (-> Tetra Color Tetra)]
-  [build-tetra-blocks (-> Color Real Real Real Real Real Real Real Real Real Real Tetra)])
+  [tetra-change-color (-> Tetra Color Tetra)])
 (require/typed/check "aux.rkt"
   [list-pick-random (-> (Listof Tetra) Tetra)]
   [neg-1  Negative-Fixnum]
@@ -34,7 +20,6 @@
 (require/typed/check "elim.rkt"
   [eliminate-full-rows (-> BSet BSet)])
 (require/typed/check "consts.rkt"
-  [block-size Integer]
   [board-height Integer]
   [board-width Integer])
 

@@ -2,35 +2,12 @@
 
 (require "base-types.rkt")
 (require benchmark-util)
-(require/typed/check "data.rkt"
-  [posn=? (-> Posn Posn Boolean)])
 (require/typed/check "bset.rkt"
-   [blocks-contains? (-> BSet Block Boolean)]
-   [blocks=? (-> BSet BSet Boolean)]
-   [blocks-subset? (-> BSet BSet Boolean)]
    [blocks-intersect (-> BSet BSet BSet)]
-   [blocks-count (-> BSet Natural)]
-   [blocks-overflow? (-> BSet Boolean)]
    [blocks-move (-> Real Real BSet BSet)]
    [blocks-rotate-cw (-> Posn BSet BSet)]
    [blocks-rotate-ccw (-> Posn BSet BSet)]
-   [blocks-change-color (-> BSet Color BSet)]
-   [blocks-row (-> BSet Real BSet)]
-   [full-row? (-> BSet Natural Boolean)]
-   [blocks-union (-> BSet BSet BSet)]
-   [blocks-max-x (-> BSet Real)]
-   [blocks-min-x (-> BSet Real)]
-   [blocks-max-y (-> BSet Real)]
-  )
-(require/typed/check "consts.rkt"
-  [block-size Integer]
-  [board-height Integer]
-  [board-width Integer])
-(require/typed/check "block.rkt"
-  [block-rotate-ccw (-> Posn Block Block)]
-  [block-rotate-cw (-> Posn Block Block)]
-  [block=? (-> Block Block Boolean)]
-  [block-move (-> Real Real Block Block)])
+   [blocks-change-color (-> BSet Color BSet)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tetras

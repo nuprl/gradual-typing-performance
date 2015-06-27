@@ -153,7 +153,7 @@ Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Modul
 \tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
 \tt{snake}            & 8          & 276       & 214         & 27        & \pict{snake}      \\
 \tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
-\tt{tetris}           & 9          & 575       & 457         & 38        & \pict{tetris}     \\
+\tt{tetris}           & 9          & 500       & 457         & 38        & \pict{tetris}     \\
 \tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor}     \\
 \tt{quad}             & 16         & 7702      & 7406        & 241       & \pict{quad}       \\
 \bottomrule
