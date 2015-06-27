@@ -143,16 +143,14 @@ library (to divide lines of text across multiple columns) and uses two adaptor m
 \toprule
 Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Module structure        \\
 \midrule
-%% FIXME: for Sieve is the placeholder.rkt module really needed? (1 LOC)
-%% No, definitely not. It was only there to commit the base/ folder to git
-%% (without it, you'd have to manually create the directory after cloning git to run sieve)
 \tt{sieve}            & 2          & 87        & 69          & 0         & \pict{sieve}      \\
 \tt{echo}             & 4          & 89        & 70          & 0         & \pict{echo}       \\
 \tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode}  \\
 \tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta}       \\
 \tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
+%% \tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
 \tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
-\tt{kcfa}             & 7          & 401       & 397         & 257       & \pict{kcfa}       \\
+\tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
 \tt{snake}            & 8          & 276       & 214         & 27        & \pict{snake}      \\
 \tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
 \tt{tetris}           & 9          & 575       & 457         & 38        & \pict{tetris}     \\
