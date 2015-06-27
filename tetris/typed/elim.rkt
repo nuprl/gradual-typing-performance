@@ -6,7 +6,7 @@
    [blocks-move (-> Real Real BSet BSet)]
    [full-row? (-> BSet Natural Boolean)]
    [blocks-union (-> BSet BSet BSet)]
-  )
+   [blocks-row (-> BSet Real BSet)])
 (require/typed/check "consts.rkt"
   [board-height Integer])
 
