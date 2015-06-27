@@ -3,9 +3,6 @@
 (require benchmark-util
          "data-adaptor.rkt")
 (require/typed/check "const.rkt"
-                     [WORLD (-> World)]
-                     [GRID-SIZE Integer]
-                     [BOARD-HEIGHT-PIXELS (-> Positive-Index)]
                      [BOARD-WIDTH Integer]
                      [BOARD-HEIGHT Integer])
 (require/typed/check "data.rkt"

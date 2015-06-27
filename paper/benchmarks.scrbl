@@ -151,7 +151,7 @@ Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Modul
 %% \tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
 \tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
 \tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
-\tt{snake}            & 8          & 276       & 214         & 27        & \pict{snake}      \\
+\tt{snake}            & 8          & 271       & 214         & 27        & \pict{snake}      \\
 \tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
 \tt{tetris}           & 9          & 500       & 457         & 38        & \pict{tetris}     \\
 \tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor}     \\

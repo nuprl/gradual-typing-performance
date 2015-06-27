@@ -7,8 +7,7 @@
                      [snake-wall-collide? (Snake . -> . Boolean)]
                      [snake-self-collide? (Snake . -> . Boolean)])
 (require/typed/check "motion.rkt"
-                     [world-change-dir (World Dir . -> . World)]
-                     [world->world     (World . -> . World)])
+                     [world-change-dir (World Dir . -> . World)])
 
 (: handle-key : (World String . -> . World) )
 (define (handle-key w ke)

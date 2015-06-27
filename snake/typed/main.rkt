@@ -3,14 +3,9 @@
 (require benchmark-util
          "data-adaptor.rkt")
 (require/typed/check "const.rkt"
-                     [WORLD (-> World)]
-                     [GRID-SIZE Integer]
-                     [BOARD-HEIGHT-PIXELS (-> Positive-Index)]
-                     [BOARD-WIDTH Integer]
-                     [BOARD-HEIGHT Integer])
+                     [WORLD (-> World)])
 (require/typed/check "motion.rkt"
                      [reset!           (-> Void)]
-                     [world-change-dir (World Dir . -> . World)]
                      [world->world     (World . -> . World)])
 (require/typed/check "handlers.rkt"
                      [handle-key (World String . -> . World)]
