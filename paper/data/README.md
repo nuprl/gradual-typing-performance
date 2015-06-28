@@ -27,13 +27,20 @@ We track that here.
 
 Machines
 --------
-- Galicia
-- "The cluster"
+- Galicia (4 phys. cores, Core i7-3770K 3.50GHz)
+- "The cluster" (40 phys. cores)
 - Desktop
+- Lambda (12 phys. cores, Xeon E5-2630 2.30GHz)
+- Sapporo (2 phys. cores, PPC970MP)
 
 
 Files
 -----
+
+Run on Racket 6.2.
+
+- `kcfa-2015-06-25T13:48:52.rktd` Run on Lambda with `-j 11`
+
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
 We need to update them all.
 

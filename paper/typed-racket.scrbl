@@ -138,7 +138,7 @@ Rather than displaying the lattice of results, we summarize the each benchmark's
 
 @figure*["fig:lnm2" @list{@step["L" "N" "M"] results for the remaining benchmarks}
   @(let* ([data '(
-                   ("kcfa"       "./data/kcfa-06-01.rktd") ;; TODO need to re-run the LARGE one, row 111 of data is malformed
+                   ("kcfa"       "./data/kcfa-2015-06-25T13:48:52.rktd") ;; TODO need to re-run the LARGE one, row 111 of data is malformed
                    ("synth"      "./data/funkytown.rktd")
                    ("tetris"       "./data/tetris-large-06-20.rktd")
                    ("snake"      "./data/snake-large-06-20.rktd")
