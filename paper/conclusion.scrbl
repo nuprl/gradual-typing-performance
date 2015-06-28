@@ -64,5 +64,6 @@ In sum, while we accept that the current implementation technology for
 
 @section[#:style 'unnumbered]{Acknowledgments}
 
-We thank Matthew Butterick, John Clements, Matthew Might, Danny Yoo,
+We thank Matthew Butterick, John Clements, Matthew Might,
+ Phúc C. Nguyễn, Vincent St-Amour, Danny Yoo,
  and Jon Zeppieri for providing benchmark code bases.
