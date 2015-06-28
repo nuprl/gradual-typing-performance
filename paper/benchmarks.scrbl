@@ -102,13 +102,15 @@ The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
 
 @parag{Snake}
-This program is based on a contract verification benchmark by Nguyên @|etal|@~cite[nthvh-icfp-2014].
+This program is based on a contract verification benchmark@note{@url["https://github.com/philnguyen/soft-contract"]}
+by Nguyên @|etal|@~cite[nthvh-icfp-2014].
 It implements a game where a growing snake tries to eat apples while avoiding walls and its own tail.
 Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering the game state and does not display a GUI.
 We use one adaptor module to represent the game data types, but otherwise the program is self-contained.
 
 @parag{Synth}
-The @tt{synth} benchmark is a sound synthesis example from St-Amour @|etal|'s work on
+The @tt{synth} benchmark@note{@url["https://github.com/stamourv/synth"]}
+is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
 The program consists of nine modules, half of which are from Typed Racket's array library.
 In order to run these library modules in all typed-untyped variations we created an adaptor module
