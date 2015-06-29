@@ -40,6 +40,7 @@ Files
 Run on Racket 6.2.
 
 - `kcfa-2015-06-25T13:48:52.rktd` Run on Lambda with `-j 11`
+- `sieve-2015-06-28T14:08:15.rktd` Run on Lambda, single core
 
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
 We need to update them all.
