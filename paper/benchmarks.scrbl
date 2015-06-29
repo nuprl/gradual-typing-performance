@@ -70,7 +70,7 @@ originally used in the Computer Language Benchmarks Game@note{@url["http://bench
 Our adaptation divides the single-module program into four parts: client, server, shared constants, and main module.
 
 @parag{Morse code}
-The @tt{morse-code} script was adapted from a morse code training program.@note{@url["https://github.com/jbclements/morse-code-trainer"]}.
+The @tt{morse-code} script was adapted from a morse code training program@note{@url["https://github.com/jbclements/morse-code-trainer"]}.
 The original program would play a morse code audio clip, read the keyboard for
 user input, and score the input based on its Levenshtein distance from the
 correct answer. Our benchmark tests generating morse code strings and running the
