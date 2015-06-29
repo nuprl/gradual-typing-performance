@@ -125,7 +125,7 @@ Rather than displaying the lattice of results, we summarize the each benchmark's
 
 @figure*["fig:lnm1" @list{@step["L" "N" "M"] results for the first 6 benchmarks. The x-axes measure overhead and the y-axes count variations.}
   @(let* ([data '(
-                   ("sieve"        "./data/sieve-2015-06-28T14:08:15.rktd")
+                   ("sieve"        "./data/sieve-2015-06-28T14:08:55.rktd")
                    ("echo"         "./data/echo.rktd")
                    ("morse-code"   "./data/morsecode-large-06-24.rktd") ;; Medium-sized morecode case
                    ("mbta"         "./data/mbta-04-25.rktd")
