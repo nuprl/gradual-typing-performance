@@ -4,16 +4,16 @@
 
 @title[#:tag "sec:bm"]{The Benchmark Programs}
 
-For our evaluation of Typed Racket, we strove to obtain benchmark
-programs that are representative of code that users actually write. To this end,
-most of the benchmarks are either based on third-party libraries or scripts sourced
+For our evaluation of Typed Racket, we use benchmark
+programs that are representative of actual user code and
+small enough so that the performance lattice remains reasonable.
+Most of the benchmarks are either based on third-party libraries or scripts sourced
 from the original developer or from the Racket package repository.
-A single benchmark is taken from an existing microbenchmark suite.
 
 @section{Technical Overview}
 
 The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark programs.
-For each, we give an approximate measure of the program's size and a picture of
+For each, we give an approximate measure of the program's size and a diagram of
 its module structure.
 
 Size is measured by the number of modules and lines of code (LOC) in a program.
@@ -38,23 +38,23 @@ These adaptors create a uniform type signature for all typed modules to access
 and reference.
 This is crucial since Racket structure types
 (record type definitions) are @emph{generative} in the sense that two distinct
-definitions of the same structure type will define incompatible structures.
+definitions of the same structure type give rise to incompatible instances.
 
 Finally, the module structure graphs show a dot for each module in the program
-and draw an arrow from one module to another when the module at the arrow tail
+and an arrow from one module to another when the module at the arrow tail
 imports definitions from the module at the arrow head.
 The performance cost of gradual typing originates at boundaries between typed
 and untyped modules, so it is interesting to compare the complexity of these
 graphs with our experimental results in section@secref{sec:tr}.
-This correlation, however, is a weak one because the module graphs only show
+This correlation, however, is a weak one because the module graphs show only
 @emph{static} dependencies, whereas the runtime cost of each boundary depends
-heavily on the frequency at which values flow across it.
+heavily on the frequency at which values flow across.
 @;;; to address this, we TODO
 
 @section{Program Descriptions}
 
 @; TODO a gentler intro
-Here we briefly describe the functionality of each benchmark and note the dependencies
+Here we briefly describe each benchmark and note the dependencies
 and adaptor modules required to run it.
 Unless otherwise noted, the benchmarks rely only on core Racket libraries and
 use no adaptor modules.
@@ -78,7 +78,7 @@ Levenshtein algorithm on a list of frequently-used English words.
 
 @parag{MBTA}
 The @tt{mbta} program implements a server that asynchronously responds to
-reachability queries about a model of Boston's public transit system.
+path queries about a model of Boston's public transit system.
 The model is implemented using a third-party, untyped graph library.
 This introduces a typed-untyped boundary even in the ``completely typed'' case.
 
@@ -96,7 +96,7 @@ Since these data structures are not natively supported in Typed Racket, even the
 completely typed program incurs some dynamic overhead.
 
 @parag{K-CFA}
-The @tt{kfca} program is a simple implementation of control flow analysis for a
+The @tt{kcfa} program is a simple implementation of control flow analysis for a
 lambda calculus.
 The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
@@ -104,7 +104,7 @@ which require adaptors because they introduce new datatypes.
 @parag{Snake}
 This program is based on a contract verification benchmark@note{@url["https://github.com/philnguyen/soft-contract"]}
 by Nguyên @|etal|@~cite[nthvh-icfp-2014].
-It implements a game where a growing snake tries to eat apples while avoiding walls and its own tail.
+It implements a game where a growing and moving snake tries to eat apples while avoiding walls and its own tail.
 Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering the game state and does not display a GUI.
 We use one adaptor module to represent the game data types, but otherwise the program is self-contained.
 
@@ -117,13 +117,14 @@ In order to run these library modules in all typed-untyped variations we created
 for the underlying array data structure.
 
 @parag{Tetris}
-This program is taken from the same benchmark suite as @tt{snake} and implements the eponymous game.
-Like @tt{snake}, the benchmark runs a pre-recorded set of moves and required one
-adaptor module.
+This program is taken from the same benchmark suite as @tt{snake}@~cite[nthvh-icfp-2014]
+and implements the eponymous game.
+Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here requires
+one adaptor module.
 
 @parag{Gregor}
 This benchmark contains thirteen modules and stress-tests a date and time library.
-The original library uses the @racketmodname[racket/generic]
+The original library uses a
 library for ad-hoc polymorphism that is not supported by Typed Racket. We
 get around this limitation by monomorphizing the code and removing @tt{gregor}'s
 string parsing component.
