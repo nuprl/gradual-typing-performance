@@ -17,8 +17,8 @@ Our result calls for three orthogonal research efforts. First, Typed Racket
  macro-level gradual typing. Before we declare gradual typing dead, we must
  evaluate other implementations. In other words, the question is whether
  our evaluation framework yields equally negative results for other
- implementations of macro-level gradual typing. Safe Typed
- Script@~cite[rsfbv-popl-2015] appears to be one natural candidate for such
+ implementations of macro-level gradual typing. Safe TypeScript@~cite[rsfbv-popl-2015]
+ appears to be one natural candidate for such
  an effort. At the same time, we are also challenged to explore how our
  evaluation framework can be adapted to the world of micro-level gradual
  typing, where programmers can equip even the smallest expression with a
