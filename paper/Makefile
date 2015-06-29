@@ -14,13 +14,6 @@ paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 pkg:
 	raco pkg install --skip-installed glob
 
-mf: compiled/paper_scrbl.zo texstyle.tex
-	sed -f onecolumn.sed $(PAPER).scrbl > $(PAPER)1.scrbl
-	sed -f onecolumn-2.sed texstyle.tex > texstyle1.tex
-	cp sigplanconf.cls ~/plt/pkgs/scribble-pkgs/scribble-lib/scribble/sigplan/sigplanconf.cls 
-	scribble ++style texstyle1.tex --pdf $(PAPER)1.scrbl
-	mv $(PAPER)1.pdf $(PAPER).pdf
-
 one: compiled/paper_scrbl.zo texstyle.tex
 	sed -f onecolumn.sed $(PAPER).scrbl > $(PAPER)1.scrbl
 	sed -f onecolumn-2.sed texstyle.tex > texstyle1.tex

@@ -62,6 +62,13 @@
 
 (define CACHE-PREFIX "./compiled/lnm-cache-")
 
+;; Try to read a cached pict, fall back to making a new one.
+(define (data->pict data* #:tag [tag ""])
+  (define title* (map car data*))
+  (define rktd* (map cadr data*))
+  (or (get-cached rktd* #:tag tag)
+      (get-new-lnm-pict rktd* #:tag tag #:titles title*)))
+
 ;; Create a summary and L-N/M picts for a data file.
 ;; (-> Path-String (Listof Pict))
 (define (file->pict* data-file #:title title)
@@ -144,9 +151,4 @@
   (cache-pict pict rktd* tag)
   pict)
 
-;; Try to read a cached pict, fall back to making a new one.
-(define (data->pict data* #:tag [tag ""])
-  (define title* (map car data*))
-  (define rktd* (map cadr data*))
-  (or (get-cached rktd* #:tag tag)
-      (get-new-lnm-pict rktd* #:tag tag #:titles title*)))
+

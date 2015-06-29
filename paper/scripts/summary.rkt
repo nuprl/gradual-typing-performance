@@ -211,7 +211,7 @@
   (define left-column
     (vr-append vspace
                (text->title (or user-title (get-project-name sm))) ;; BOLDER
-               (text->pict "τ overhead")
+               (text->pict "typed/untyped ratio")
                (text->pict "max. overhead")
                (text->pict "avg. overhead")))
   (define right-column

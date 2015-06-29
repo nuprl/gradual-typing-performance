@@ -1,16 +1,29 @@
-#lang scribble/sigplan
+#lang scribble/sigplan @;onecolumn 
 
 @(require "common.rkt")
 
-@authorinfo["Omitted for Double-Blind Reviewing" "Anonymous University" "anonymous@anon.edu"]
-@;@authorinfo["Asumu Takikawa" "Northeastern University" "asumu@ccs.neu.edu"]
-@;authorinfo["Spenser Bauman" "Indiana University" "sabauma@cs.indiana.edu"]
-@;@authorinfo["Daniel Feltey" "Northeastern University" "dfeltey@ccs.neu.edu"]
-@;@authorinfo["Ben Greenman" "Northeastern University" "types@ccs.neu.edu"]
-@;@authorinfo["Max S. New" "Northeastern University" "maxsnew@ccs.neu.edu"]
-@;authorinfo["Sam Tobin-Hochstadt" "Indiana University" "samth@cs.indiana.edu"]
-@;@authorinfo["Jan Vitek" "Northeastern University" "j.vitek@ccs.neu.edu"]
-@;@authorinfo["Matthias Felleisen" "Northeastern University" "matthias@ccs.neu.edu"]
+@(define numerals '(I II III IV V VI VII VIII))
+@(define (authorinfo* name institution email)
+   @authorinfo[
+     (string-append "Dr. Double B. Reviewing, " 
+       (begin0
+          (symbol->string (car numerals))
+          (set! numerals (cdr numerals))))
+     (string-append (famous) " " "Famous University")
+     "turing@award.com"])
+
+@(define (famous)
+   (define famous '("Very" "Somewhat" "Less" "In"))
+   (list-ref famous (random (length famous))))
+
+@authorinfo*["Asumu Takikawa" "Northeastern University" "asumu@ccs.neu.edu"]
+@;authorinfo*["Spenser Bauman" "Indiana University" "sabauma@cs.indiana.edu"]
+@authorinfo*["Daniel Feltey" "Northeastern University" "dfeltey@ccs.neu.edu"]
+@authorinfo*["Ben Greenman" "Northeastern University" "types@ccs.neu.edu"]
+@authorinfo*["Max S. New" "Northeastern University" "maxsnew@ccs.neu.edu"]
+@;authorinfo*["Sam Tobin-Hochstadt" "Indiana University" "samth@cs.indiana.edu"]
+@authorinfo*["Jan Vitek" "Northeastern University" "j.vitek@ccs.neu.edu"]
+@authorinfo*["Matthias Felleisen" "Northeastern University" "matthias@ccs.neu.edu"]
 
 @title{Is Sound Gradual Typing Dead?}
 
