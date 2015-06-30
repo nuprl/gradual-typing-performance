@@ -94,6 +94,7 @@ algorithm's internal data structures.
 While writing this paper, we developed a small collection of scripts to analyze and present our experimental results.
 These scripts are included as the @tt{lnm} benchmark.
 Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticably less performant on large datasets.
+Additionally this benchmark relies on an untyped image rendering library and uses two adaptor modules.
 
 @parag{K-CFA}
 The @tt{kcfa} program is a simple implementation of control flow analysis for a
