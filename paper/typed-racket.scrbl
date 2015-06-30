@@ -264,7 +264,8 @@ Almost all partially typed configurations between the untyped configuration
  for @tt{suffixtree} in @figure-ref{fig:bm} corroborates the presence of
  this coupling. The rightmost node in that diagram corresponds to the
  @tt{data.rkt} module, which has the most in-edges in that particular
- graph.}
+ graph. We observe a similar kind of coupling in the simpler @tt{sieve}
+ example, which consists of just a data module and its client.}
 
 ]
 
@@ -320,11 +321,15 @@ well as the untyped program.
 @; PATH: (easy)
 @; - but in practice might be hard -- depending on the untyped library your untyped script maybe isn't safe
 
-@parag{Echo} The shape of the @tt{echo} graphs is ideal.  The sharp
+@parag{LNM} The shape of the @tt{lnm} graphs is ideal.  The sharp
 vertical line at @exact{$L$}=0 indicates that gradual typing introduces
 only a small overhead compared to the untyped program.  Indeed, the summary
-statistics for @tt{echo} confirm that the overall slowest running time we
-observed was within a 20% slowdown over the untyped baseline.
+statistics for @tt{lnm} confirm that the overall slowest running time we
+observed was within a 25% slowdown over the untyped baseline. Furthermore,
+the fully typed performance is very good. Most likely the typed performance
+is due to the fact that @tt{lnm} relies heavily on Racket's plotting library,
+which is a typed library. This implies that the original untyped program
+likely suffers from a performance @emph{penalty} due to contracts.
 
 @; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
 @; Even at @exact{$L$}=2, we could shift focus to identifying the good
