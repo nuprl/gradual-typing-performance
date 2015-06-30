@@ -44,8 +44,6 @@
   pict
 )
 
-(define (TODO) (error "not implemented"))
-
 ;; =============================================================================
 ;; -- data definition: summary
 
@@ -180,11 +178,19 @@
          (for/list ([i (in-range 1 (vector-length data))])
            (vector-ref data i))))
 
-;; Get the worst of all GRADUALLY typed running times (excludes typed & untyped)
-(define (max-runtime sm)
-  (for/fold ([prev-max #f])
-            ([val (in-list (all-gt-runtimes sm))])
-    (or (and prev-max (max prev-max val)) val)))
+;; Fold over lattice points
+(define (fold-lattice sm f #:init [init #f])
+  (define vec (summary-dataset sm))
+  (for/fold ([prev init])
+            ([i    (in-range 1 (vector-length vec))])
+    (define val (mean (vector-ref vec i)))
+    (or (and prev (f prev val)) val)))
+
+(define (max-lattice-point sm)
+  (fold-lattice sm max))
+
+(define (min-lattice-point sm)
+  (fold-lattice sm min))
 
 ;; Get the average over all gradually typed running times (exludes typed & untyped)
 ;; Takes into account every single measured data point.
@@ -201,7 +207,7 @@
                        #:width width
                        #:title [user-title #f])
   (define vspace (/ size 3))
-  (define hspace (/ width 3))
+  (define hspace (/ width 4))
   (define vpad (/ height 5))
   (define baseline (untyped-mean sm))
   (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
@@ -212,13 +218,13 @@
     (vr-append vspace
                (text->title (or user-title (get-project-name sm))) ;; BOLDER
                (text->pict "typed/untyped ratio")
-               (text->pict "max. overhead")
-               (text->pict "avg. overhead")))
+               (text->pict "worst/best overhead.")
+               (text->pict "mean overhead")))
   (define right-column
     (vr-append vspace
                (text->pict (format "(~a modules)" (get-num-modules sm)))
                (text->pict (overhead (typed-mean sm)))
-               (text->pict (overhead (max-runtime sm)))
+               (text->pict (format "~a / ~a" (overhead (min-lattice-point sm)) (overhead (max-lattice-point sm))))
                (text->pict (overhead (avg-runtime sm)))))
   (vl-append vpad
              (hc-append hspace left-column right-column)
