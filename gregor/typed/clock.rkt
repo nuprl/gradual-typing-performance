@@ -21,6 +21,7 @@
 (require
   benchmark-util
   (only-in racket/math exact-round)
+  "../base/types.rkt"
   "tzinfo-adapter.rkt"
   "gregor-adapter.rkt"
 )
