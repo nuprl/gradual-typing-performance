@@ -35,8 +35,8 @@ In general, the graphs in @figure-ref["fig:lnm1" "fig:lnm2"] clarify how
  @math{N/M}-acceptable configurations remains small with liberal choices
  for the parameters. 
 
-Like Brutus, we come here to bury sound gradual typing, not to praise
- it. Sound gradual typing is dead. 
+Like Marc Antony, we come here to bury sound gradual typing, not to praise
+ it. Sound gradual typing is dead.
 
 @; -----------------------------------------------------------------------------
 @section{Threats to Validity of Conclusion}
