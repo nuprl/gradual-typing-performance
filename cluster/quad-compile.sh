@@ -1,16 +1,16 @@
 #!/bin/sh
-#BSUB -J QUAD-PART2-BENCHMARK
-#BSUB -o quad_part2_output_file
-#BSUB -e quad_part2_error_file
+#BSUB -J QUAD-COMPILE
+#BSUB -o quad_compile-output_file
+#BSUB -e quad_compile-error_file
 #BSUB -n 40
 #BSUB -R "span[ptile=40]"
 #BSUB -q ser-par-10g-2
 #BSUB -cwd /scratch/takikawa.a
 
 # file staging
-cp -R ~/gradual-typing-performance /tmp/gradual-typing-performance
+#cp -R ~/gradual-typing-performanace /scratch/takikawa.a/gradual-typing-performance
 
-work=/tmp/gradual-typing-performance
+work=/scratch/takikawa.a/gradual-typing-performance
 
 #####################################################
 ########DO NOT EDIT ANYTHING BELOW THIS LINE#########
@@ -31,10 +31,7 @@ done
 ########DO NOT EDIT ANYTHING ABOVE THIS LINE#########
 #####################################################
 
-~/racket-6.2.0.3/bin/racket setup.rkt quad
-~/racket-6.2.0.3/bin/racket tools/run.rkt -m 10001 20000 -o quad-results.rktd -i 10 -j 39 quad
-
-cp quad-results.rktd ~/
+~/racket-6.2/bin/racket tools/run.rkt -c -j 39 quad
 
 #####################################################
 ########DO NOT EDIT ANYTHING BELOW THIS LINE#########
@@ -44,5 +41,3 @@ rm $work/$tempfile2
 #####################################################
 ########DO NOT EDIT ANYTHING ABOVE THIS LINE#########
 #####################################################
-
-rm -r /tmp/gradual-typing-performance
