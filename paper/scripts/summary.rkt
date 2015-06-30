@@ -218,14 +218,16 @@
     (vr-append vspace
                (text->title (or user-title (get-project-name sm))) ;; BOLDER
                (text->pict "typed/untyped ratio")
-               (text->pict "worst/best overhead.")
-               (text->pict "mean overhead")))
+               (text->pict "min. overhead")
+               (text->pict "mean overhead")
+               (text->pict "max. overhead")))
   (define right-column
     (vr-append vspace
                (text->pict (format "(~a modules)" (get-num-modules sm)))
                (text->pict (overhead (typed-mean sm)))
-               (text->pict (format "~a / ~a" (overhead (min-lattice-point sm)) (overhead (max-lattice-point sm))))
-               (text->pict (overhead (avg-runtime sm)))))
+               (text->pict (overhead (min-lattice-point sm)))
+               (text->pict (overhead (avg-runtime sm)))
+               (text->pict (overhead (max-lattice-point sm)))))
   (vl-append vpad
              (hc-append hspace left-column right-column)
              (blank 1 vpad)))
