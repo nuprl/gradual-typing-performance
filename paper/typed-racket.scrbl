@@ -67,7 +67,7 @@ ratio, a value for @math{N} and @math{M} to check on @math{N}-deliverable
 and @math{N/M}-usable configurations, and three values for @math{L} to
 determine how much extra work affects deliverability and usability.
 
-On the left side left in each row, a table spells out the typed/untyped
+On the left side in each row, a table spells out the typed/untyped
 ratio, the maximal overhead that any configuration imposes over the running
 time of the untyped version, and the average over all
 configurations.@note{The worst and average case numbers do not include the
@@ -113,7 +113,7 @@ reachable configurations to find a neighbor with usable running time.
 In sum, the graphs report the number of configurations that impose at most
 a certain overhead. They are, by definition, monotonically increasing
 because the more overhead is allowed, the more configurations satisfy the
-condition. Hence, the key is shape of the curve and how slowly or quickly
+condition. Hence, the key takeaway is the shape of the curve and how slowly or quickly
 it climbs, and where it crosses the vertical @math{N} and @math{M} lines
 and the horizontal 60% line. 
 
