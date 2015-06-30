@@ -45,7 +45,7 @@ tracking or higher-order wrappers for interoperation. Richards @etal use
 the same microbenchmark suite as Safe TypeScript and compare the runtimes
 of type-erased and fully-typed versions using their optimizing compiler.
 They report that ``no benchmarks demonstrated slowdown outside of noise''
-on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 ", pg. XXX")].
+on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 "")]. @;; FIXME: cite page number when it's known
 In our lattice terminology, the StrongScript comparison is essentially
 between the top and bottom of the lattice. The performance of
 intermediate states were not evaluated.
