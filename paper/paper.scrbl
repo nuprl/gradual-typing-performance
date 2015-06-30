@@ -29,7 +29,7 @@
 
 @abstract{Programmers have come to embrace dynamically typed languages for
  prototyping and delivering complex systems. When it comes to maintaining
- and evolving these systems, the lack of explicit static typing turns into
+ and evolving these systems, the lack of explicit static typing becomes a
  a bottleneck. In response, researchers have explored the idea of gradually
  typed programming languages, which allow the post-hoc addition of types to
  software written in these ``untyped'' languages. These hybrid languages
@@ -37,19 +37,19 @@
  establish type soundness for the overall system. 
 
 While most research on gradually typed programming languages has remained
- theoretical, the few emerging implementations seem to suffer from the cost
+ theoretical, the few emerging implementations suffer from the cost
  of these run-time checks. Indeed, none of the publications on gradual
- typing come with a comprehensive evaluation; a few report disastrous
+ typing come with a comprehensive performance evaluation; a few report disastrous
  numbers. In response, this paper proposes a framework for evaluating the
  performance of gradually typed programming languages. The framework takes
  the idea of a gradual conversion seriously and calls for measuring the
- performance of all possible conversions of some untyped benchmark. Finally
- the paper reports on the application of the framework to Typed Racket, the
- most advanced and sophisticated implementation of gradual typing. Based on
+ performance of all possible conversions of untyped benchmarks. Finally
+ the paper reports on the application of the framework to Typed Racket,
+ a mature implementation of gradual typing. Based on
  these results, the paper concludes that, given current implementation
  technology, sound gradual typing is dead. Conversely, it raises the
  question of how to overcome this performance bottleneck or how to produce
- tools that help programmers avoid them.
+ tools that help programmers avoid it.
 }
 
 @include-section{intro.scrbl}
