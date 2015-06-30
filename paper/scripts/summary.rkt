@@ -182,7 +182,7 @@
 (define (fold-lattice sm f #:init [init #f])
   (define vec (summary-dataset sm))
   (for/fold ([prev init])
-            ([i    (in-range 1 (vector-length vec))])
+            ([i    (in-range 1 (sub1 (vector-length vec)))])
     (define val (mean (vector-ref vec i)))
     (or (and prev (f prev val)) val)))
 
