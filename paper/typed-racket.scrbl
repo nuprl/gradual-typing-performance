@@ -39,7 +39,7 @@ results for all remaining benchmarks.
                   ("mbta"         "./data/mbta-04-25.rktd")
                   ("zo-traversal" "./data/zordoz-04-09.rktd")
                   ("suffixtree" "./data/suffixtree-06-10.rktd")
-                  ("lnm" "./data/lnm-mid-06-22.rktd")
+                  ("lnm" "./data/lnm-large-06-28.rktd")
                   )])
      (data->pict data #:tag "1"))
 ]
