@@ -52,7 +52,7 @@ results for all remaining benchmarks.
                   ("synth"      "./data/funkytown.rktd")
                   ("tetris"       "./data/tetris-large-06-20.rktd")
                   ("snake"      "./data/snake-large-06-20.rktd")
-                  ("gregor"     "./data/gregor-05-11.rktd")
+                  ("gregor"     "./data/gregor-2015-06-30.rktd")
                   ("quad"       "./data/quad-placeholder.rktd"))])
      (data->pict data #:tag "2"))
 ]
