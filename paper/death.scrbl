@@ -44,7 +44,16 @@ Like Marc Antony, we come here to bury sound gradual typing, not to praise
 Our judgment is harsh and fails to acknowledge three potential weaknesses
  in our evaluation framework and in our results. 
 
-First, many of our benchmarks import some modules from Racket's suite of
+First, our benchmarks are relatively small. The two largest ones consist of
+ 13 and 16 modules, respectively. Even these benchmarks pose serious
+ challenges to our computing infrastructure because they require timing
+ @math{2^13} and @math{2^16} configurations @math{30} times each (to rule
+ out random effects). Running experiments with modules that consist of many
+ more modules would probably prove impossible. At the same time, our
+ experience suggests that the results get worse as programs get larger (in
+ terms of number of modules). 
+
+Second, many of our benchmarks import some modules from Racket's suite of
  libraries that remain untyped throughout the process, including for the
  fully typed configuration. While some of these run-time libraries come in
  the trusted code base---meaning Typed Racket knows their types and the
@@ -55,7 +64,7 @@ First, many of our benchmarks import some modules from Racket's suite of
  reasonable typed-untyped ratios, we consider the effect of these libraries
  minor. 
 
-Second, our framework images a particularly @emph{free} approach to
+Third, our framework images a particularly @emph{free} approach to
  annotating programs with types. With ``free'' we mean that we do not
  expect software engineers to add types to modules in any particular
  order. Although this freedom is representative of some kind of maintenance
@@ -72,7 +81,7 @@ As the @tt{sieve} and @tt{suffixtree} examples demonstrate, a path-based
  therefore conjecture that some of the ideas offered in the conclusion
  section may help such planned, path-based approaches.
 
-Third, we state our judgment with respect to the current implementation
+Fourth, we state our judgment with respect to the current implementation
  technology. Typed Racket compiles to Racket, which uses rather
  conventional compilation technology. It makes no attempt to reduce the
  overhead of contracts or to exploit contracts for optimizations. It
