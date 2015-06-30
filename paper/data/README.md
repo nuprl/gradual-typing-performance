@@ -29,7 +29,7 @@ Machines
 --------
 - Galicia (4 phys. cores, Core i7-3770K 3.50GHz)
 - "The cluster" (40 phys. cores)
-- Desktop
+- Desktop (4 phys. cores, Core i7-4790 3.60GHz)
 - Lambda (12 phys. cores, Xeon E5-2630 2.30GHz)
 - Sapporo (2 phys. cores, PPC970MP)
 
@@ -39,9 +39,16 @@ Files
 
 Run on Racket 6.2.
 
-- `kcfa-2015-06-25T13:48:52.rktd` Run on Lambda with `-j 11`
-- `sieve-2015-06-28T14:08:55.rktd` Run on Lambda, single core
 - `gregor-2015-06-30.rktd` Run on cluster, `-j 39`
+- `kcfa-2015-06-25T13:48:52.rktd` Run on Lambda with `-j 11`
+- `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.
+- `morsecode-06-27.rktd` Run on Desktop, single core. Benchmarked on the entire list of frequently used words.
+- `sieve-2015-06-28T14:08:55.rktd` Run on Lambda, single core
+
+Benchmarks run on different-sized inputs
+- `funkytown-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
+- `kcfa-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a very small "standard example" test.
+- `moresecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
 
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
 We need to update them all.
