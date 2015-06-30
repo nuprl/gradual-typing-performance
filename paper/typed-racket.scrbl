@@ -494,7 +494,10 @@ vertical slope is close to ideal.
 
 @parag{Quad}
 @; TODO
-PROBABLY BAD
+Due to the massive size of this performance lattice (65536 configurations), this benchmark
+takes an extraordinary amount of time to run to completion. As a result, we are missing
+the final numbers for this benchmark except for the fully typed runtime. We will add the
+remaining data in the final version of this paper.
 
 @; WHY
 @; - the ocm struct has vector & functions
