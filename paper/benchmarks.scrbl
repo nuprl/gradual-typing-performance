@@ -77,18 +77,18 @@ path queries about a model of Boston's public transit system.
 The model is implemented using a third-party, untyped graph library.
 This introduces a typed-untyped boundary even in the ``completely typed'' case.
 
-@parag{Suffixtree}
-The @tt{suffixtree} library implements a longest-common-substring algorithm
-using Ukkonen's suffix tree algorithm. While the library has
-minimal external dependencies, we need to add one adapter module for the
-algorithm's internal data structures.
-
 @parag{ZO Traversal}
 The @tt{zo-traversal} script explores Racket bytecode structures (parsed from @tt{.zo} bytecode files)
 and counts the frequency of AST nodes.
 The script operates on the Racket compiler's untyped zo data structures.
 Since these data structures are not natively supported in Typed Racket, even the
 completely typed program incurs some dynamic overhead.
+
+@parag{Suffixtree}
+The @tt{suffixtree} library implements a longest-common-substring algorithm
+using Ukkonen's suffix tree algorithm. While the library has
+minimal external dependencies, we need to add one adapter module for the
+algorithm's internal data structures.
 
 @parag{L-NM}
 While writing this paper, we developed a small collection of scripts to analyze and present our experimental results.
