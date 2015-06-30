@@ -14,17 +14,17 @@ In the context of current implementation technology, sound gradual typing
 
 Our result calls for three orthogonal research efforts. First, Typed Racket
  is only one implementation of sound gradual typing, and it supports only
- macro-level gradual typing. Before we declare gradual typing dead, we must
- evaluate other implementations. In other words, the question is whether
- our evaluation framework yields equally negative results for other
- implementations of macro-level gradual typing. Safe TypeScript@~cite[rsfbv-popl-2015]
- appears to be one natural candidate for such
- an effort. At the same time, we are also challenged to explore how our
- evaluation framework can be adapted to the world of micro-level gradual
- typing, where programmers can equip even the smallest expression with a
- type annotation and leave the surrounding context untyped.  We conjecture
- that annotating complete functions or classes (and their methods) is an
- appropriate starting point for an adaptation.
+ macro-level gradual typing. Before we declare gradual typing completely
+ dead, we must apply our framework to other implementations. The question
+ is whether doing so yields equally negative results for other
+ implementations of macro-level gradual typing. Safe
+ TypeScript@~cite[rsfbv-popl-2015] appears to be one natural candidate for
+ such an effort. At the same time, we are also challenged to explore how
+ our evaluation framework can be adapted to the world of micro-level
+ gradual typing, where programmers can equip even the smallest expression
+ with a type annotation and leave the surrounding context untyped.  We
+ conjecture that annotating complete functions or classes (and their
+ methods) is an appropriate starting point for an adaptation.
 
 Second, Typed Racket's implementation may not support run-time checks as
  well as modern JIT compilers. Typed Racket elaborates into plain Racket,
@@ -45,13 +45,14 @@ Second, Typed Racket's implementation may not support run-time checks as
 Third, the acceptance of Typed Racket in the commercial and open-source
  Racket community suggests that (some) programmers find a way around the
  performance bottlenecks of sound gradual typing. To expand this community
- will take the development of performance measurement tools that help
- programmers discover how to identify those components of a gradually typed
+ will take the development of both guidelines on how to go about annotating
+ a large system and performance measurement tools that help programmers
+ discover how to identify those components of a gradually typed
  configuration that yield the most benefit (per time
  investment). St-Amour's feature-specific profiler@~cite[saf-cc-2015] and
  optimization coaches@~cite[stf-optimization-coaching] look promising; we
  used both kinds of tools to find the reason for some of the most curious
- performance bottlenecks in our measurements. 
+ performance bottlenecks in our measurements.
 
 In sum, while we accept that the current implementation technology for
  gradually typed programming languages falls short of its promises, we also
