@@ -35,13 +35,11 @@ results for all remaining benchmarks.
   @list{@step["L" "N" "M"] results for the first 6
   benchmarks. The x-axes measure overhead and the y-axes count variations.} 
   @(let* ([data '(("sieve"        "./data/sieve-2015-06-28T14:08:55.rktd")
-                  ("echo"         "./data/echo.rktd")
-		  ;; Medium-sized morecode case
-                  ("morse-code"   "./data/morsecode-large-06-24.rktd")
+                  ("morse-code"   "./data/morsecode-large-06-27.rktd")
                   ("mbta"         "./data/mbta-04-25.rktd")
                   ("zo-traversal" "./data/zordoz-04-09.rktd")
                   ("suffixtree" "./data/suffixtree-06-10.rktd")
-                  ;; ("lnm" "./data/lnm-06-22.rktd")
+                  ("lnm" "./data/lnm-mid-06-22.rktd")
                   )])
      (data->pict data #:tag "1"))
 ]
