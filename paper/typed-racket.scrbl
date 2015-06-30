@@ -34,24 +34,23 @@ results for all remaining benchmarks.
 @figure*["fig:lnm1" 
   @list{@step["L" "N" "M"] results for the first 6
   benchmarks. The x-axes measure overhead and the y-axes count variations.} 
-  @(let* ([data '(("sieve"        "./data/sieve-2015-06-28T14:08:55.rktd")
-                  ("morse-code"   "./data/morsecode-large-06-27.rktd")
-                  ("mbta"         "./data/mbta-04-25.rktd")
-                  ("zo-traversal" "./data/zordoz-04-09.rktd")
-                  ("suffixtree" "./data/suffixtree-06-10.rktd")
-                  ("lnm" "./data/lnm-large-06-28.rktd")
+  @(let* ([data `(("sieve"        ,SIEVE-DATA)
+                  ("morse-code"   ,MORSECODE-DATA)
+                  ("mbta"         ,MBTA-DATA)
+                  ("zo-traversal" ,ZORDOZ-DATA)
+                  ("suffixtree"   ,SUFFIXTREE-DATA)
+                  ("lnm"          ,LNM-DATA)
                   )])
      (data->pict data #:tag "1"))
 ]
 
 @figure*["fig:lnm2" @list{@step["L" "N" "M"] results for the remaining benchmarks}
-  @(let* ([data '(;; TODO need to re-run the LARGE one, row 111 of data is malformed
-                  ("kcfa"       "./data/kcfa-2015-06-25T13:48:52.rktd")
-                  ("synth"      "./data/funkytown.rktd")
-                  ("tetris"       "./data/tetris-large-06-20.rktd")
-                  ("snake"      "./data/snake-large-06-20.rktd")
-                  ("gregor"     "./data/gregor-2015-06-30.rktd")
-                  ("quad"       "./data/quad-placeholder.rktd"))])
+  @(let* ([data `(("kcfa"       ,KCFA-DATA)
+                  ("synth"      ,SYNTH-DATA)
+                  ("tetris"     ,TETRIS-DATA)
+                  ("snake"      ,SNAKE-DATA)
+                  ("gregor"     ,GREGOR-DATA)
+                  ("quad"       ,QUAD-DATA))])
      (data->pict data #:tag "2"))
 ]
 
@@ -197,7 +196,7 @@ modules in a configuration.
           @list{Suffixtree performance lattice. 
                Nodes are labeled with their normalized mean (top) and 
 	       standard deviation (bottom)}
-  @(let* ([vec (file->value "../tools/data/suffixtree-2015-04-02.rktd")]
+  @(let* ([vec (file->value SUFFIXTREE-DATA)]
           [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
      (make-performance-lattice vec*))
 ]
