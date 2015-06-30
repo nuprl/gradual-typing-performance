@@ -37,6 +37,6 @@
   (time
     (begin
       (define to (typeset (quick-sample)))
-      (send (new pdf-renderer%) render-to-file to "../base/output.pdf")
+      (send (new pdf-renderer%) render-to-file to "./output.pdf")
       (void))))
 ;; 65,000 on heart-of-darkness
