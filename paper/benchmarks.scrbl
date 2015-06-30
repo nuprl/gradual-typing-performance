@@ -64,11 +64,6 @@ This program finds prime numbers using the Sieve of Eratosthenes and is our
 smallest benchmark. It consists of two modules: a tiny streams library and a
 script implementing the Sieve using streams.
 
-@parag{Echo}
-The echo server implements a simple network server/client pair and is a microbenchmark
-originally used in the Computer Language Benchmarks Game@note{@url["http://benchmarksgame.alioth.debian.org/"]}.
-Our adaptation divides the single-module program into four parts: client, server, shared constants, and main module.
-
 @parag{Morse code}
 The @tt{morse-code} script was adapted from a morse code training program@note{@url["https://github.com/jbclements/morse-code-trainer"]}.
 The original program would play a morse code audio clip, read the keyboard for
@@ -94,6 +89,11 @@ and counts the frequency of AST nodes.
 The script operates on the Racket compiler's untyped zo data structures.
 Since these data structures are not natively supported in Typed Racket, even the
 completely typed program incurs some dynamic overhead.
+
+@parag{L-NM}
+While writing this paper, we developed a small collection of scripts to analyze and present our experimental results.
+These scripts are included as the @tt{lnm} benchmark.
+Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticably less performant on large datasets.
 
 @parag{K-CFA}
 The @tt{kcfa} program is a simple implementation of control flow analysis for a
@@ -147,12 +147,11 @@ library (to divide lines of text across multiple columns) and uses two adaptor m
 Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Module structure        \\
 \midrule
 \tt{sieve}            & 2          & 87        & 69          & 0         & \pict{sieve}      \\
-\tt{echo}             & 4          & 89        & 70          & 0         & \pict{echo}       \\
 \tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode}  \\
 \tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta}       \\
 \tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
-%% \tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
 \tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
+\tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
 \tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
 \tt{snake}            & 8          & 271       & 214         & 27        & \pict{snake}      \\
 \tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
