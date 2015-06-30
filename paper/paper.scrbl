@@ -1,4 +1,4 @@
-#lang scribble/sigplan @;onecolumn 
+#lang scribble/sigplan @onecolumn 
 
 @(require "common.rkt")
 
