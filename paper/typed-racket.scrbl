@@ -29,7 +29,7 @@ with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, machine
 B with 4 physical Core i7-4790 3.60GHz cores, and a set of machines C
 from the Northeastern University Discovery Cluster
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
-with 64GB of RAM.
+with 64GB of RAM. All machines run a variant of Linux.
 
 The first
 subsection explains at a high level how we present the data in terms of the
