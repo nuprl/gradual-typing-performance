@@ -146,7 +146,6 @@ modules, linking a typed or an untyped version of @tt{data}, @tt{label},
  (list @tt{main.rkt}    "Apply lcs to benchmark data")
  (list @tt{structs.rkt} "Create and traverse suffix tree nodes")
  (list @tt{ukkonen.rkt} "Build whole suffix trees via Ukkonen's algorithm"))]]
-]
 
 For the annotation process, a programmer equips each structure, function,
 and class with types. Modules provide their exports together with types, so
