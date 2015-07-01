@@ -57,9 +57,9 @@ Untyped clients still use the untyped data file.
 
 @figure["fig:adaptor" "Inserting a typed adaptor"
 @exact|{
-\includegraphics[scale=0.65]{lnm/adaptor1.png}
+\includegraphics[scale=0.25]{module-graphs/adaptor1.png}
 \hspace{1cm}
-\includegraphics[scale=0.65]{lnm/adaptor2.png}
+\includegraphics[scale=0.25]{module-graphs/adaptor2.png}
 }|
 ]
 
