@@ -119,17 +119,28 @@ and the horizontal 60% line.
 
 In order to explain our experimental setup, we take a close look at one
 benchmark, @tt{suffixtree}, and explain the setup and the timing results in
-detail. 
+detail.
 
-@margin-note{we should consider a sentence on each module} 
 
 @subsection{Setting up the Benchmark}
 
-Our chosen benchmark consists of six modules: @tt{data}, @tt{label},
-@tt{lcs}, @tt{main}, @tt{structs}, and @tt{ukkonen}. Each is available with
-and without type annotations. Each configuration thus consists of six
+Our chosen benchmark consists of six modules, summarized in @figure-ref{fig:purpose-statements}.
+Each module is available with and without type annotations.
+Each configuration thus consists of six
 modules, linking a typed or an untyped version of @tt{data}, @tt{label},
 @tt{lcs}, @tt{main}, @tt{structs}, and @tt{ukkonen}.
+
+@; TODO Why does this look so bad? Too much space at end of table
+@figure["fig:purpose-statements" "Suffixtree Modules"
+@tabular[#:sep @hspace[2]
+(list (list @bold{Module} @bold{Purpose})
+ (list @tt{data.rkt}    "Label and tree node data definitions")
+ (list @tt{label.rkt}   "Functions on suffixtree node labels")
+ (list @tt{lcs.rkt}     "Longest-Common-Subsequence implementation")
+ (list @tt{main.rkt}    "Apply lcs to benchmark data")
+ (list @tt{structs.rkt} "Create and traverse suffix tree nodes")
+ (list @tt{ukkonen.rkt} "Build whole suffix trees via Ukkonen's algorithm"))]]
+]
 
 For the annotation process, a programmer equips each structure, function,
 and class with types. Modules provide their exports together with types, so
