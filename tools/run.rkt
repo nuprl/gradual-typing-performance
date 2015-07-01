@@ -209,7 +209,7 @@
                                   #:config (exclusive-config)
                                   #:min/max (min-max-config)))
 
-  (when (output-path)
+  (when (and (not (only-compile?)) (output-path))
     (with-output-to-file (output-path)
       (λ () (write results))
       #:mode 'text
