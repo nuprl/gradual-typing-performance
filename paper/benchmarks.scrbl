@@ -4,17 +4,19 @@
 
 @title[#:tag "sec:bm"]{The Benchmark Programs}
 
-For our evaluation of Typed Racket, we use benchmark
-programs that are representative of actual user code and
-small enough so that the performance lattice remains reasonable.
-Most of the benchmarks are either based on third-party libraries or scripts sourced
-from the original developer or from the Racket package repository.
+For our evaluation of Typed Racket, we curated a suite of twelve programs
+that are representative of actual user code and small enough so that
+exhaustive exploration of the performance lattice remains tractable.  The
+benchmarks are either based on third-party libraries or scripts sourced from
+the original developer or from the Racket package repository. For each
+program, a fully typed version was either available or had to be written by
+the authors.
 
-@section{Technical Overview}
+@section{Overview}
 
-The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark programs.
-For each, we give an approximate measure of the program's size and a diagram of
-its module structure.
+The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark
+programs.  For each, we give an approximate measure of the program's size
+and a diagram of its module structure.
 
 Size is measured by the number of modules and lines of code (LOC) in a program.
 Crucially, the number of modules also determines the number of gradually-typed
@@ -25,12 +27,12 @@ but gives a sense of the overall complexity of each benchmark.
 Moreover, the Typed LOC numbers are an upper bound on the annotations required
 at any stage of gradual typing because each typed module in our experiment
 fully annotates its import statements. In practice, only imports from untyped
-modules require annotation.
+modules require annotations.
 
-The column labeled ``Other LOC'' measures the additional structure required to
-run each project for all typed-untyped variations. This count includes project-wide
-type definitions, typed interfaces to untyped libraries, and any so-called
-typed adaptor modules (see below) we needed to add.
+The column labeled ``Other LOC'' measures the additional structure required
+to run each project for all typed-untyped variations. This count includes
+project-wide type definitions, typed interfaces to untyped libraries, and
+any so-called typed adaptor modules (see below) we needed to add.
 
 Finally, the module structure graphs show a dot for each module in the program
 and an arrow from one module to another when the module at the arrow tail
@@ -41,10 +43,40 @@ graphs with our experimental results in section@secref{sec:tr}.
 This correlation, however, is a weak one because the module graphs show only
 @emph{static} dependencies, whereas the runtime cost of each boundary depends
 heavily on the frequency at which values flow across.
+
 @;;; to address this, we TODO added a counter to each contract and ran the prog.
 
 
-@subsection{Typed Adaptor Modules}
+
+@;; FIXME: remove figure caption rule
+@figure*["fig:bm" "Characteristics of the benchmarks programs."
+@exact|{
+\newcommand{\yespycket}{$\CIRCLE$}
+\newcommand{\maybepycket}{$\RIGHTcircle$}
+\newcommand{\nopycket}{$\Circle$}
+\begin{tabular}[t]{lrrrrll}
+\toprule
+Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Module structure        \\
+\midrule
+\tt{sieve}            & 2          & 87        & 69          & 0         & \pict{sieve}      \\
+\tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode}  \\
+\tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta}       \\
+\tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
+\tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
+\tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
+\tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
+\tt{snake}            & 8          & 271       & 214         & 27        & \pict{snake}      \\
+\tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
+\tt{tetris}           & 9          & 500       & 457         & 38        & \pict{tetris}     \\
+\tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor}     \\
+\tt{quad}             & 16         & 7702      & 7406        & 241       & \pict{quad}       \\
+\bottomrule
+\end{tabular}
+}|
+]
+
+
+@subsection{Adaptor Modules}
 
 Typed adaptor modules are a special case of typed interfaces to untyped code,
 inserted when an untyped data definition and the data's typed clients are
@@ -63,21 +95,21 @@ Untyped clients still use the untyped data file.
 }|
 ]
 
-@Figure-ref{fig:adaptor} illustrates the basic problem that typed adaptors solve.
-The issue is that Racket structure types (record type definitions) are
-@emph{generative}; each assignment of a type annotation to an untyped structure
-creates a new ``black box'' definition.
-This means that two syntactically-identical type assignments to
-the same structure are incompatible.
-Using an adaptor ensures that only one canonical type is generated for each
-structure, as illustrated in the right half of @figure-ref{fig:adaptor}.
+@Figure-ref{fig:adaptor} illustrates the basic problem that typed adaptors
+solve.  The issue is that Racket structure types (record type definitions)
+are @emph{generative}; each assignment of a type annotation to an untyped
+structure creates a new ``black box'' definition.  This means that two
+syntactically-identical type assignments to the same structure are
+incompatible.  Using an adaptor ensures that only one canonical type is
+generated for each structure, as illustrated in the right half of
+@figure-ref{fig:adaptor}.
 
 Strictly speaking, typed adaptor modules are not necessary.
 It is possible to modify the design of imports for any given configuration so
 that a single typed module declares and re-exports type annotations for untyped
 data.
-This necessary redesign, however, often presents a non-trivial challenge and
-made it impossible for us to synthesize the @math{2^n} gradually-typed variations from
+This necessary redesign, however, presents a non-trivial challenge 
+when trying  to synthesize the @math{2^n} gradually-typed variations from
 a fully-untyped and fully-typed version of each benchmark.
 
 The layer of indirection provided by adaptors solved this issue and overall
@@ -85,16 +117,14 @@ reduced the number of type annotations needed at boundaries because all typed
 clients could reference a single point of control.@note{In our experimental
 framework, typed adaptors are available to all configurations as library files.}
 Therefore we expect typed adaptor modules to be of independent use to
-practictioners.
+practitioners.
 
 
 @section{Program Descriptions}
 
-@; TODO a gentler intro
-Here we briefly describe each benchmark and note the dependencies
-and adaptor modules required to run it.
-Unless otherwise noted, the benchmarks rely only on core Racket libraries and
-use no adaptor modules.
+We briefly describe each benchmark and note the dependencies and adaptor
+modules required to run it.  Unless otherwise noted, the benchmarks rely
+only on core Racket libraries and use no adaptor modules.
 
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Eratosthenes and is our
@@ -131,7 +161,7 @@ algorithm's internal data structures.
 While writing this paper, we developed a small collection of scripts to analyze and present our experimental results.
 These scripts are included as the @tt{lnm} benchmark.
 Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticably less performant on large datasets.
-Additionally this benchmark relies on an untyped image rendering library and uses two adaptor modules.
+This program relies on an untyped image rendering library and uses two adaptor modules.
 
 @parag{K-CFA}
 The @tt{kcfa} program is a simple implementation of control flow analysis for a
@@ -139,12 +169,13 @@ lambda calculus.
 The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
 
-@parag{Snake}
-This program is based on a contract verification benchmark@note{@url["https://github.com/philnguyen/soft-contract"]}
-by Nguyên @|etal|@~cite[nthvh-icfp-2014].
-It implements a game where a growing and moving snake tries to eat apples while avoiding walls and its own tail.
-Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering the game state and does not display a GUI.
-We use one adaptor module to represent the game data types, but otherwise the program is self-contained.
+@parag{Snake} This program is based on a contract verification
+benchmark@note{@url["https://github.com/philnguyen/soft-contract"]} by
+Nguyên @|etal|@~cite[nthvh-icfp-2014].  It implements a game where a growing
+and moving snake tries to eat apples while avoiding walls and its own tail.
+Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering
+the game state and does not display a GUI.  We use one adaptor module to
+represent the game data types, but otherwise the program is self-contained.
 
 @parag{Synth}
 The @tt{synth} benchmark@note{@url["https://github.com/stamourv/synth"]}
@@ -173,30 +204,3 @@ acquiring data on local times.
 The @tt{quad} project is an experimental typesetting library.
 It depends on an external constraint satisfaction solver
 library (to divide lines of text across multiple columns) and uses two adaptor modules.
-
-@;; FIXME: remove figure caption rule
-@figure*["fig:bm" "The software characteristics of the benchmarks"
-@exact|{
-\newcommand{\yespycket}{$\CIRCLE$}
-\newcommand{\maybepycket}{$\RIGHTcircle$}
-\newcommand{\nopycket}{$\Circle$}
-\begin{tabular}[t]{lrrrrll}
-\toprule
-Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Module structure        \\
-\midrule
-\tt{sieve}            & 2          & 87        & 69          & 0         & \pict{sieve}      \\
-\tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode}  \\
-\tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta}       \\
-\tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
-\tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
-\tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
-\tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
-\tt{snake}            & 8          & 271       & 214         & 27        & \pict{snake}      \\
-\tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
-\tt{tetris}           & 9          & 500       & 457         & 38        & \pict{tetris}     \\
-\tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor}     \\
-\tt{quad}             & 16         & 7702      & 7406        & 241       & \pict{quad}       \\
-\bottomrule
-\end{tabular}
-}|
-]
