@@ -78,12 +78,9 @@ configurations impose an overhead between 1x and 20x for three values of
 The units on the x-axis are overhead factors. An overhead factor of 1x
 means the performance is no worse than the untyped program. It goes all the
 way to an overhead factor of @id[PARAM-MAX-OVERHEAD]x, which is that much
-of a slowdown compared to the untyped configuration. Each graph is the
-@;
-@margin-note*{what does sampling mean here?}
-@;
-result of sampling @id[PARAM-NUM-SAMPLES] overheads linearly spaced along
-the x-axis. 
+of a slowdown compared to the untyped configuration. Each line was obtained
+by measuring @id[PARAM-NUM-SAMPLES] overheads linearly spaced along
+the x-axis.
 
 We put these overhead factors in perspective with two vertical lines: (a
 @exact{\color{ForestGreen!90!black}{green}}) one for @math{N} at
