@@ -83,10 +83,10 @@ Now, when the software system configuration consists of a reasonably large
  in a state where some modules are typed and some others are untyped. As a
  result, the configuration is likely to suffer from the software contracts
  that the gradual type system injects at the boundary between the typed and
- the untyped portion. If the cost is tolerable, the configuration is
- releasable and can replace the currently deployed version. Especially the
+ the untyped portion. If the cost is tolerable, the configuration can be
+ released and can replace the currently deployed version. The
  projects working on macro-level approaches to gradual typing seem to
- assume this kind of mode of operation. The cost may not be tolerable,
+ assume this kind of mode of operation. The run-time costs may not be tolerable,
  however, as Takikawa @|etal| observe. In that case, the question is how
  much more work the software engineers have to invest to reach a releasable
  configuration. That is, how many more modules must be converted before the
@@ -109,7 +109,7 @@ To capture this idea, we formulate the following definition of
 
 Even if a configuration is not deliverable, it might be suitably fast to
  run the test suites and the stress tests. A software engineering team can
- use such a configuration for developmental purposes, but it may not
+ use such a configuration for development purposes, but it may not
  deliver it. The question is how many configurations of a performance
  lattice are usable in that sense. In order to formulate this criteria
  properly, we introduce the following definition of usable configurations. 
