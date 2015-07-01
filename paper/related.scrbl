@@ -15,7 +15,7 @@ Thorn@~cite[bfnorsvw-oopsla-2009] and TypeScript@~cite[rsfbv-popl-2015
 rnv-ecoop-2015], yet there are no conclusive studies of gradual typing's
 impact on performance.
 
-The authors of Reticulated Python recognized the performance issue of
+The authors of Reticulated Python recognized the performance issues of
 gradual typing and designed the language to allow them to explore efficient
 casts mechanisms. However, Vitousek @etal note that ``Reticulated programs
 perform far worse than their unchecked Python implementations'' and that
