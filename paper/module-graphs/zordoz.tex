@@ -1,8 +1,8 @@
 \begin{tikzpicture}
 
   \node (00)               {\rkt{3}{zo-string}};
-  \node (01) [below of=00] {};
-  \node (02) [below of=01] {\rkt{4}{zo-transition}};
+  \node (01) [below of=00,yshift=0.3cm] {};
+  \node (02) [below of=01,yshift=0.3cm] {\rkt{4}{zo-transition}};
 
   \node (10) [left of=00] {};
   \node (11) [left of=01] {\rkt{1}{zo-find}};
@@ -19,8 +19,8 @@
   %% -- edges
   \draw[->] (11) -- (00);
   \draw[->] (11) -- (02);
-  \draw[->] (21) edge[bend left=30] (00);
-  \draw[->] (21) edge[bend right=30] (02);
+  \draw[->] (21) edge[bend left=35] (00);
+  \draw[->] (21) edge[bend right=35] (02);
   \draw[->] (21) -- (11);
   \draw[->] (31) -- (21);
 
