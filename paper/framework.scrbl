@@ -145,6 +145,10 @@ Finally, we can also ask the question how much work a team has to invest to
 Again, the performance reports below varies the @math{L} parameter for
  several choices of @math{N} and @math{M}. 
 
+This paper thus proposes a methodology based on exhaustive exploration of
+the performance lattice. The benefit of parametrized definitions is that
+they allow the same methodology to be used in different contexts each with
+its own acceptable performance envelope.
 
                                                   
 
