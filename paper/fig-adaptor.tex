@@ -1,0 +1,41 @@
+%% TODO does not compile in an @exact in Scribble
+\begin{center}
+  \begin{tikzpicture}
+    %% Untyped world
+    \node (0) {$\star$};
+    \node (1) [below of=0] {\footnotesize Untyped};
+    %% Typed/Untyped boundary
+    \node (2) [right of=1,xshift=-0.15cm] {};
+    \node (3) [above of=2,yshift=1cm] {};
+    \draw[dashed] (2) -- (3);
+    %% Typed world
+    \node (4) [right of=1,xshift=0.7cm] {\footnotesize Typed};
+    \node (5) [above of=4,yshift=-0.5cm] {$\blacksquare$};
+    \node (6) [above of=5,yshift=-0.5cm] {$\nparallel$};
+    \node (7) [above of=6,yshift=-0.5cm] {$\blacksquare$};
+    %% Connecting untyped to typed
+    \draw[->] (0) -- (5);
+    \draw[->] (0) -- (7);
+  \end{tikzpicture}
+  \hfill{}
+  \begin{tikzpicture}
+    %% Untyped world
+    \node (0) {\FiveStarOpen};
+    \node (1) [below of=0] {\footnotesize Untyped};
+    %% Typed/Untyped boundary
+    \node (2) [right of=1,xshift=-0.15cm] {};
+    \node (3) [above of=2,yshift=1cm] {};
+    \draw[dashed] (2) -- (3);
+    %% Typed world
+    \node (4) [right of=1,xshift=0.7cm] {\footnotesize Typed};
+    \node (5) [above of=4,yshift=-0.5cm,xshift=0.2cm] {$\blacksquare$};
+    \node (6) [above of=5,yshift=-0.5cm] {$\parallel$};
+    \node (7) [above of=6,yshift=-0.5cm] {$\blacksquare$};
+    \node (8) [left of=6,xshift=0.14cm] {$\blacksquare$};
+    %% Connecting untyped to typed
+    \draw[->] (0) -- (8);
+    \draw[->] (8) -- (5);
+    \draw[->] (8) -- (7);
+  \end{tikzpicture}
+\end{center}
+
