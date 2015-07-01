@@ -5,32 +5,32 @@
 @title[#:tag "sec:rel"]{The State of the Related Work}
 
 Gradual typing is a broad area teeming with both theoretical and practical
-results.  In this section, we inspect only related work on
-production systems rather than formal models or research
-prototypes.
-Publications about practical type systems for dynamic languages fall into two
-categories: optional type systems that are unsound for typed-untyped
-interoperation or sound gradual type systems.
+results.  This section focuses on implementations rather than formal models.
 
 @section{Sound Gradual Type Systems}
 
-Few sound gradual type systems come with any performance evaluation efforts.
-Sound gradual typing has been applied to Python@~cite[vksb-dls-2014],
-Smalltalk@~cite[acftd-scp-2013], Thorn@~cite[bfnorsvw-oopsla-2009] and TypeScript@~cite[rsfbv-popl-2015
-rnv-ecoop-2015]. Neither the Reticulated Python nor Gradualtalk systems
-come with a comprehensive performance evaluation. However, Vitousek @etal
-do note that ``Reticulated programs perform far worse than their
-unchecked Python implementations'' and that their @tt{slowSHA} program
-exhibits a ``10x slowdown'' compared to Python@~cite[(in-bib vksb-dls-2014 ", pg. 54")].
+Gradual typing has already been applied to a number of languages,
+Python@~cite[vksb-dls-2014], Smalltalk@~cite[acftd-scp-2013],
+Thorn@~cite[bfnorsvw-oopsla-2009] and TypeScript@~cite[rsfbv-popl-2015
+rnv-ecoop-2015], yet there are no conclusive studies of gradual typing's
+impact on performance.
 
-Gradualtalk's evaluation is primarily qualitative, but Allende @etal
-have investigated the overhead of several cast-insertion strategies
-on Gradualtalk microbenchmarks and on two macrobenchmarks@~cite[aft-dls-2013]. In addition,
-Allende @|etal|@~cite[afgt-oopsla-2014] investigated the effect of confined gradual typing---an approach
-in which the programmer can instruct the type system to avoid higher-order
-wrapping where possible---in Gradualtalk on microbenchmarks. These efforts
-evaluate the cost of specific features, but do not represent the
-cost of the whole gradual typing process.
+The authors of Reticulated Python recognized the performance issue of
+gradual typing and designed the language to allow them to explore efficient
+casts mechanisms. However, Vitousek @etal note that ``Reticulated programs
+perform far worse than their unchecked Python implementations'' and that
+their @tt{slowSHA} program exhibits a ``10x slowdown'' compared to
+Python@~cite[(in-bib vksb-dls-2014 ", pg. 54")].
+
+Gradualtalk's evaluation is primarily qualitative, but Allende @etal have
+investigated the overhead of several cast-insertion strategies on
+Gradualtalk microbenchmarks and on two
+macrobenchmarks@~cite[aft-dls-2013]. In addition, Allende
+@|etal|@~cite[afgt-oopsla-2014] investigated the effect of confined gradual
+typing---an approach in which the programmer can instruct the type system to
+avoid higher-order wrapping where possible---in Gradualtalk on
+microbenchmarks. These efforts evaluate the cost of specific features, but
+do not represent the cost of the whole gradual typing process.
 
 Safe TypeScript comes with an evaluation on the Octane benchmarks ported to
 TypeScript. Unlike our lattice-based approach, their evaluation
@@ -42,13 +42,12 @@ On fully typed programs, the overhead is ``on average only 6.5%"@~cite[(in-bib r
 
 Thorn combines a sound type system with an optional type system, allowing
 programmers to choose between so-called concrete types and like
-types@~cite[bfnorsvw-oopsla-2009].  StrongScript follows Thorn's
-lead by adding a sound type system to TypeScript but without any blame
-tracking and very limited use of higher-order wrappers. Thorn had a minimal
-performance evaluation which showed that by sprinkling a few type
-annotations over toy benchmarks speed ups between 3x and 6x could be
-obtained@~cite[wnlov-popl-2010].  Richards @etal use the same
-microbenchmark suite as Safe TypeScript and compare the runtimes of
+types@~cite[bfnorsvw-oopsla-2009].  StrongScript follows Thorn's lead by
+adding a sound type system (with a limited form of higher-order wrappers) to
+TypeScript. Thorn had a minimal performance evaluation which showed that by
+sprinkling a few type annotations over toy benchmarks speed ups between 3x
+and 6x could be obtained@~cite[wnlov-popl-2010].  Richards @etal use the
+same microbenchmark suite as Safe TypeScript and compare the runtimes of
 type-erased and fully-typed versions using their optimizing compiler.  They
 report ``no benchmarks demonstrated slowdown outside of noise'' (and up 20%
 speed ups) on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 ",
