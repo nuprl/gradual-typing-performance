@@ -16,3 +16,5 @@ compiled/
 benchmark/
 
 output/
+
+paper/.#paper.scrbl
