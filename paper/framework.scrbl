@@ -19,7 +19,8 @@ The inspiration for our performance-evaluation approach is due to Takikawa
  attempt to use the lattice of their two benchmarks for any summative
  evaluation.
 
-Before we proceed, we lay out Takikawa @|etal|'s landscape: 
+Before we proceed, we articulate Takikawa @|etal|'s landscape from our
+perspective: 
 @itemlist[
 
 @item{A (@italic{software system}) @italic{configuration} is a sequence of
@@ -28,15 +29,17 @@ Before we proceed, we lay out Takikawa @|etal|'s landscape:
 @item{Each module in a software system configuration is either typed or
  untyped.}
 
-@item{A configuration @math{c_u} is below a configuration @math{c_t} if
- @math{c_t} uses a typed module wherever @math{c_u} uses a typed module.}
+@item{A configuration @math{c_t} is greater than a configuration @math{c_u}
+ (or equal) if @math{c_t} uses a typed module for every position in the
+ sequence for which @math{c_u} (already) uses a typed module.}
 
-@item{@bold{Proposition} The collection of all configurations forms a
- complete lattice. The bottom element is the completely untyped
- configuration; the top element is the completely typed one.}
-
-@item{We call this lattice a @italic{performance lattice}.}
+@item{@bold{Proposition} The collection of all configurations of length
+ @math{n} forms a complete lattice of size @math{2^n}. The bottom element
+ is the completely untyped configuration; the top element is the completely
+ typed one.}
 ]
+ We speak of a @italic{performance lattice} to describe this idea. 
+ 
 
 Our contribution is to exploit the lattice-oriented approach to benchmark
  evaluation for a @emph{summative} evaluation. To this end, we
