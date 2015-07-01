@@ -44,6 +44,8 @@ Run on Racket 6.2.
 - `lnm-large-06-28.rktd` Run on Desktop, single core. Benchmarked on data for gregor.
 - `morsecode-06-27.rktd` Run on Desktop, single core. Benchmarked on the entire list of frequently used words.
 - `sieve-2015-06-28T14:08:55.rktd` Run on Lambda, single core
+- `funkytown-2015-06-30T15:34:39.rktd` Run on cluster, `-j 39`
+- `snake-2015-06-30T14:55:40.rktd` Run on cluster, `-j 39`
 
 Benchmarks run on different-sized inputs
 - `funkytown-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
