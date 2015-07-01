@@ -28,7 +28,7 @@ We track that here.
 Machines
 --------
 - Galicia (4 phys. cores, Core i7-3770K 3.50GHz)
-- "The cluster" (40 phys. cores)
+- "The cluster" (40 phys. cores, Xeon CPU E5-2680 2.8GHz)
 - Desktop (4 phys. cores, Core i7-4790 3.60GHz)
 - Lambda (12 phys. cores, Xeon E5-2630 2.30GHz)
 - Sapporo (2 phys. cores, PPC970MP)

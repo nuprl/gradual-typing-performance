@@ -22,7 +22,16 @@ timing is not affected by random factors; some configurations take minutes
 to run. Presenting and analyzing this huge wealth of data poses a separate
 challenge all by itself. 
 
-This section presents the data from our timing experiments. The first
+This section presents the data from our timing experiments. Due to the
+very long runtime of the benchmarks, we were unable to run them all on the
+same machine. The benchmarks are run on three machines: machine A
+with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, machine
+B with 4 physical Core i7-4790 3.60GHz cores, and a set of machines C
+from the Northeastern University Discovery Cluster
+with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
+with 64GB of RAM.
+
+The first
 subsection explains at a high level how we present the data in terms of the
 definitions of section@secref{sec:fwk}. In the second one, we discuss one
 benchmark in depth, @tt{suffixtree}, demonstrating how we create the
@@ -214,13 +223,13 @@ modules in a configuration.
 
 @Figure-ref{fig:suffixtree} shows the performance lattice annotated with
  the results of our timing measurements. The lattice displays each of the
- modules in the program with a circle.  A filled black circle means the
- module is typed, an open circle means the module is untyped. The circles
+ modules in the program with a rectangle.  A filled black rectangle means the
+ module is typed, an open rectangle means the module is untyped. The rectangles
  are ordered from left to right and correspond to the modules of
  @tt{suffixtree} in alphabetical order: @tt{data}, @tt{label}, @tt{lcs},
  @tt{main}, @tt{structs}, and @tt{ukkonen}. Each configuration lists the
- average (on top) and standard deviation (below) of the runtime of 30
- iterations normalized to the untyped average.
+ average of the runtime of 30 iterations normalized to the untyped average.
+ @;; TODO: talk about standard deviation here
 
 Following section@secref{sec:fwk}, we start by considering the
  typed/untyped ratio. The fully typed configuration (top) for
