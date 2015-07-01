@@ -73,6 +73,16 @@
 
 (require 'util)
 
+;;; -- added by jan
+(define bat-ecoop-2014
+  (make-bib
+    #:title "Understanding TypeScript"
+    #:author (authors "Gavin Bierman" "Martin Abadi" "Mads Torgersen")
+    #:location (proceedings-location ecoop)
+    #:url "http://dx.doi.org/10.1007/978-3-662-44202-9_11"
+    #:date 2014))
+
+
 ;; ----------------------------------------
 ;; The original papers
 

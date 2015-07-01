@@ -74,14 +74,25 @@ untyped languages.
 
 Optional type systems in the contemporary sense exist for
 Clojure@~cite[bonnaire-sergeant-thesis-2012], Lua@~cite[mmi-dyla-2014],
-Python@note[@url{http://mypy-lang.org/}], PHP@note[@url{http://hacklang.org/}],
-and JavaScript@note[@url{http://flowtype.org}].  Since the type annotations in
-these systems are unsound for typed-untyped interoperation, they incur no
-runtime overhead from proxy wrapping or dynamic checks meaning there is no
-need for a comprehensive evaluation such as the one suggested in this paper.
+Python@note[@url{http://mypy-lang.org/}],
+PHP@note[@url{http://hacklang.org/}],
+ActionScript@note[@url{http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7ec7.html}],
+Dart@note[@url{https://www.dartlang.org}], and
+JavaScript@note[@url{http://flowtype.org}]@~cite[bat-ecoop-2014].  Since the
+type annotations in these systems are unsound for typed-untyped
+interoperation, they incur no runtime overhead from proxy wrapping or
+dynamic checks meaning there is no need for a comprehensive evaluation such
+as the one suggested in this paper.
 
 Previous publications have, however, investigated the performance impact of
-optional typing with respect to compiler optimizations. For example, Chang
-@|etal|@~cite[cmscgbwf-dls-2011] investigate the impact of optional type
-annotations on JIT compilation.
-@;; FIXME: expand
+optional typing with respect to compiler optimizations. Intuitively one
+would expect that a compiler could use these annotations as hints for
+generating more preformant code. This intuition is borne out by Chang
+@|etal|@~cite[cmscgbwf-dls-2011] who reported significant speed up for
+partially and fully typed ActionScript code over untyped code. But one
+should take such results with a pinch of salt as they are highly dependent
+on the quality of the virtual machine used as baseline.  Richards
+@|etal|@~cite[rnv-ecoop-2015] report at most 20% speed up for fully typed
+JavaScript. They ascribe this unimpressive result to the quality of the
+optimizations implemented in V8. In other words, V8 is able to guess types
+well enough that providing it with annotations does not help much.
