@@ -1,8 +1,8 @@
 \begin{tikzpicture}
 
   \node (00)               {\rkt{3}{array-utils}};
-  \node (01) [below of=00,xshift=0.5cm] {};
-  \node (02) [below of=01,xshift=0.5cm] {\rkt{4}{data}};
+  \node (01) [below of=00,yshift=0.3cm] {};
+  \node (02) [below of=01,yshift=0.3cm] {\rkt{4}{data}};
 
   \node (10) [left of=00] {};
   \node (11) [left of=01] {\rkt{1}{array-struct}};
@@ -26,21 +26,21 @@
   %% array broadcast
   \draw[->] (20) -- (11);
   \draw[->] (20) -- (00);
-  \draw[->] (20) -- (02);
+  \draw[->] (20) edge[bend left=15] (02);
   %% array-struct
   \draw[->] (11) -- (00);
   \draw[->] (11) -- (02);
   %% array-transform
   \draw[->] (30) -- (20);
   \draw[->] (30) -- (11);
-  \draw[->] (30) edge[bend left=15] (00);
+  \draw[->] (30) edge[bend left=35] (00);
   \draw[->] (30) -- (02);
   %% drum
   \draw[->] (42) -- (11);
   \draw[->] (42) -- (30);
   \draw[->] (42) -- (00);
-  \draw[->] (42) edge[bend right=15] (02);
-  \draw[->] (42) edge[bend right=15] (22);
+  \draw[->] (42) edge[bend right=35] (02);
+  \draw[->] (42) edge[bend right=35] (22);
   %% main
   \draw[->] (51) -- (42);
   \draw[->] (51) -- (32);
