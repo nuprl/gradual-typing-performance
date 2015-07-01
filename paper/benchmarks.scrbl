@@ -19,7 +19,7 @@ its module structure.
 Size is measured by the number of modules and lines of code (LOC) in a program.
 Crucially, the number of modules also determines the number of gradually-typed
 variations we ran when testing the benchmark, as a program with @math{n} modules
-can be gradually typed in @exact{$2^n$} possible variations.
+can be gradually typed in @math{2^n} possible variations.
 Lines of code is less important for evaluating macro gradual typing,
 but gives a sense of the overall complexity of each benchmark.
 Moreover, the Typed LOC numbers are an upper bound on the annotations required
@@ -29,16 +29,8 @@ modules require annotation.
 
 The column labeled ``Other LOC'' measures the additional structure required to
 run each project for all typed-untyped variations. This count includes project-wide
-type definitions, typed interfaces to untyped libraries, and any @emph{typed adaptor
-modules} we needed to add.
-
-A typed adaptor module sits
-between an untyped data definition module and the data's typed clients.
-These adaptors create a uniform type signature for all typed modules to access
-and reference.
-This is crucial since Racket structure types
-(record type definitions) are @emph{generative} in the sense that two distinct
-definitions of the same structure type give rise to incompatible instances.
+type definitions, typed interfaces to untyped libraries, and any so-called
+typed adaptor modules (see below) we needed to add.
 
 Finally, the module structure graphs show a dot for each module in the program
 and an arrow from one module to another when the module at the arrow tail
@@ -49,7 +41,52 @@ graphs with our experimental results in section@secref{sec:tr}.
 This correlation, however, is a weak one because the module graphs show only
 @emph{static} dependencies, whereas the runtime cost of each boundary depends
 heavily on the frequency at which values flow across.
-@;;; to address this, we TODO
+@;;; to address this, we TODO added a counter to each contract and ran the prog.
+
+
+@subsection{Typed Adaptor Modules}
+
+Typed adaptor modules are a special case of typed interfaces to untyped code,
+inserted when an untyped data definition and the data's typed clients are
+part of the same configuration.
+The adaptor is a typed module that exports annotated versions of all
+bindings in the untyped data definition.
+Typed clients then import exclusively from the typed adaptor, bypassing the
+original data definition.
+Untyped clients still use the untyped data file.
+
+@figure["fig:adaptor" "Inserting a typed adaptor"
+@exact|{
+\includegraphics[scale=0.65]{lnm/adaptor1.png}
+\hspace{1cm}
+\includegraphics[scale=0.65]{lnm/adaptor2.png}
+}|
+]
+
+@Figure-ref{fig:adaptor} illustrates the basic problem that typed adaptors solve.
+The issue is that Racket structure types (record type definitions) are
+@emph{generative}; each assignment of a type annotation to an untyped structure
+creates a new ``black box'' definition.
+This means that two syntactically-identical type assignments to
+the same structure are incompatible.
+Using an adaptor ensures that only one canonical type is generated for each
+structure, as illustrated in the right half of @figure-ref{fig:adaptor}.
+
+Strictly speaking, typed adaptor modules are not necessary.
+It is possible to modify the design of imports for any given configuration so
+that a single typed module declares and re-exports type annotations for untyped
+data.
+This necessary redesign, however, often presents a non-trivial challenge and
+made it impossible for us to synthesize the @math{2^n} gradually-typed variations from
+a fully-untyped and fully-typed version of each benchmark.
+
+The layer of indirection provided by adaptors solved this issue and overall
+reduced the number of type annotations needed at boundaries because all typed
+clients could reference a single point of control.@note{In our experimental
+framework, typed adaptors are available to all configurations as library files.}
+Therefore we expect typed adaptor modules to be of independent use to
+practictioners.
+
 
 @section{Program Descriptions}
 
