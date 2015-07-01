@@ -88,3 +88,11 @@ Fourth, we state our judgment with respect to the current implementation
  remains to be seen whether contract-aware compilers or less-expressive
  gradual typing systems can reduce the significant overhead that our
  evaluation shows. 
+
+Fifth, running all configurations of the benchmarks can take a very long
+wall-clock time. To make the experiment feasible, we run the larger
+benchmarks using multiple cores and divide up the configurations
+amongst the cores. Each configuration is run in a single process running
+a separate instance of the Racket VM pinned to a single core. However,
+this parallelism may introduce confounding variables due to, for
+example, shared caches or main memory.
