@@ -87,7 +87,7 @@ completely typed program incurs some dynamic overhead.
 @parag{Suffixtree}
 The @tt{suffixtree} library implements a longest-common-substring algorithm
 using Ukkonen's suffix tree algorithm. While the library has
-minimal external dependencies, we need to add one adapter module for the
+minimal external dependencies, we need to add one adaptor module for the
 algorithm's internal data structures.
 
 @parag{L-NM}
