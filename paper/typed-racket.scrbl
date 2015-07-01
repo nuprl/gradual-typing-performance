@@ -32,8 +32,7 @@ experiment. Finally, subsection@secref{sec:all-results} describes the
 results for all remaining benchmarks. 
 
 @figure*["fig:lnm1" 
-  @list{@step["L" "N" "M"] results for the first 6
-  benchmarks. The x-axes measure overhead and the y-axes count variations.} 
+  @list{@step["L" "N" "M"] results for the first 6 benchmarks}
   @(let* ([data `(("sieve"        ,SIEVE-DATA)
                   ("morse-code"   ,MORSECODE-DATA)
                   ("mbta"         ,MBTA-DATA)
@@ -68,8 +67,8 @@ On the left side in each row, a table spells out the typed/untyped
 ratio, the maximal overhead that any configuration imposes over the running
 time of the untyped version, and the average over all
 configurations.@note{The worst and average case numbers do not include the
-fully-typed and untyped variations, and are calculated over all runtimes we
-observed rather than, say, the mean runtime for each variation.}
+fully-typed and untyped configurations, and are calculated over all runtimes we
+observed rather than, say, the mean runtime for each configuration.}
 
 On the right side in each row, three line graphs show how many
 configurations impose an overhead between 1x and 20x for three values of
@@ -100,10 +99,10 @@ dashed (@exact{\color{red}{red}}) horizontal to mark the 60% line of all
 program configurations. 
 
 Each @math{L}-step @math{N/M}-usable figure stands for itself. The leftmost
-graphs column simply count the number of variations with performance below
+graphs column simply count the number of configurations with performance below
 a given overhead factor.  In contrast, the rightmost graphs count all
-variations that are at most @id[PARAM-L] type-annotation steps away from a
-usable variation. These counts are optimistic; for nonzero @math{L} and
+configurations that are at most @id[PARAM-L] type-annotation steps away from a
+usable configuration. These counts are optimistic; for nonzero @math{L} and
 @math{n} modules, we search the entire space of @math{O(n!-(n-L)!)}
 reachable configurations to find a neighbor with usable running time.
 
