@@ -18,3 +18,5 @@ benchmark/
 output/
 
 paper/.#paper.scrbl
+
+paper/.#intro.scrbl

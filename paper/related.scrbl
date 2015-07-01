@@ -16,7 +16,7 @@ interoperation or sound gradual type systems.
 
 Few sound gradual type systems come with any performance evaluation efforts.
 Sound gradual typing has been applied to Python@~cite[vksb-dls-2014],
-Smalltalk@~cite[acftd-scp-2013], and TypeScript@~cite[rsfbv-popl-2015
+Smalltalk@~cite[acftd-scp-2013], Thorn@~cite[bfnorsvw-oopsla-2009] and TypeScript@~cite[rsfbv-popl-2015
 rnv-ecoop-2015]. Neither the Reticulated Python nor Gradualtalk systems
 come with a comprehensive performance evaluation. However, Vitousek @etal
 do note that ``Reticulated programs perform far worse than their
@@ -40,14 +40,20 @@ unannotated programs in a ``range from a factor of 2.4x (splay) to 72x
 (crypto), with an average of 22x''@~cite[(in-bib rsfbv-popl-2015 ", pg. 178")].
 On fully typed programs, the overhead is ``on average only 6.5%"@~cite[(in-bib rsfbv-popl-2015 ", pg. 178")].
 
-StrongScript adds a sound type system on TypeScript but without any blame
-tracking or higher-order wrappers for interoperation. Richards @etal use
-the same microbenchmark suite as Safe TypeScript and compare the runtimes
-of type-erased and fully-typed versions using their optimizing compiler.
-They report that ``no benchmarks demonstrated slowdown outside of noise''
-on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 "")]. @;; FIXME: cite page number when it's known
-In our lattice terminology, the StrongScript comparison is essentially
-between the top and bottom of the lattice. The performance of
+Thorn combines a sound type system with an optional type system, allowing
+programmers to choose between so-called concrete types and like
+types@~cite[bfnorsvw-oopsla-2009].  StrongScript follows Thorn's
+lead by adding a sound type system to TypeScript but without any blame
+tracking and very limited use of higher-order wrappers. Thorn had a minimal
+performance evaluation which showed that by sprinkling a few type
+annotations over toy benchmarks speed ups between 3x and 6x could be
+obtained@~cite[wnlov-popl-2010].  Richards @etal use the same
+microbenchmark suite as Safe TypeScript and compare the runtimes of
+type-erased and fully-typed versions using their optimizing compiler.  They
+report ``no benchmarks demonstrated slowdown outside of noise'' (and up 20%
+speed ups) on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 ",
+pg. 97")]. In our lattice terminology, the StrongScript comparison is
+essentially between the top and bottom of the lattice. The performance of
 intermediate states were not evaluated.
 
 @section{Optional Type Systems}
