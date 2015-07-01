@@ -66,16 +66,14 @@
     (apply hc-append
            1
            (for/list ([bit (in-bit-vector bv)])
-             (circle/border 3
-                            #:border-width 1
-                            #:color (if bit "black" "white")
-                            #:border-color "black"))))
+             (ellipse/border 3 5
+                             #:border-width 1
+                             #:color (if bit "black" "white")
+                             #:border-color "black"))))
   (vc-append (blank 1 2)
              box-pict
-             (blank 1 5)
-             (text (~r normalized-mean #:precision 2) style 9)
-             (text (~r normalized-stdev #:precision 2) style 9)
-             (blank 1 2)))
+             (blank 1 4)
+             (text (~r normalized-mean #:precision 1) style 9)))
 
 ;; adds lines between elements in levels
 (define (add-all-lines base vec bits)

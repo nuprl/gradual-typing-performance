@@ -215,8 +215,7 @@ modules in a configuration.
 
 @figure*["fig:suffixtree" 
           @list{Suffixtree performance lattice. 
-               Nodes are labeled with their normalized mean (top) and 
-	       standard deviation (bottom)}
+               Nodes are labeled with their normalized mean.}
   @(let* ([vec (file->value SUFFIXTREE-DATA)]
           [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
      (make-performance-lattice vec*))
