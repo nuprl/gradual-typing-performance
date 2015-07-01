@@ -26,10 +26,10 @@ This section presents the data from our timing experiments. Due to the
 very long runtime of the benchmarks, we were unable to run them all on the
 same machine. The benchmarks are run on three machines: machine A
 with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, machine
-B with 4 physical Core i7-4790 3.60GHz cores, and a set of machines C
+B with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of machines C
 from the Northeastern University Discovery Cluster@note{@url{http://nuweb12.neu.edu/rc/?page_id=27}}
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
-with 64GB of RAM. All machines run a variant of Linux.
+with 64GB RAM. All machines run a variant of Linux.
 
 The first
 subsection explains at a high level how we present the data in terms of the
