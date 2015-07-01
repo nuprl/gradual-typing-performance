@@ -11,7 +11,7 @@
 (provide (all-defined-out))
 
 ;; shortens names
-(abbreviate-given-names #t)
+(abbreviate-given-names #f)
 
 ;; ----------------------------------------
 
@@ -21,7 +21,7 @@
   (require racket/format)
   (provide (all-defined-out))
 
-  (define short? #t)
+  (define short? #f)
   (define-syntax define/short
     (syntax-rules ()
       [(_ i e e*) (define i (if short? e e*))]
