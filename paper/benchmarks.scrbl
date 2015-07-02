@@ -58,18 +58,18 @@ heavily on the frequency at which values flow across.
 \toprule
 Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Module structure        \\
 \midrule
-\tt{sieve}            & 2          & 87        & 69          & 0         & \pict{sieve}      \\
-\tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode}  \\
-\tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta}       \\
-\tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
-\tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
-\tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
-\tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
-\tt{snake}            & 8          & 271       & 214         & 27        & \pict{snake}      \\
-\tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
-\tt{tetris}           & 9          & 500       & 457         & 38        & \pict{tetris}     \\
-\tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor}     \\
-\tt{quad}             & 16         & 7702      & 7406        & 241       & \pict{quad}       \\
+\tt{sieve}            & 2          & 52        & 35          & 0         & \pict{sieve}      \\
+\tt{morse-code}       & 4          & 245       & 216         & 0         & \pict{morsecode}  \\
+\tt{mbta}             & 4          & 446       & 369         & 89        & \pict{mbta}       \\
+\tt{zo-traversal}     & 5          & 1689      & 1404        & 214       & \pict{zordoz}     \\
+\tt{suffixtree}       & 6          & 670       & 545         & 40        & \pict{suffixtree} \\
+\tt{lnm}              & 6          & 621       & 501         & 62        & \pict{lnm}        \\
+\tt{kcfa}             & 7          & 248       & 295         & 141       & \pict{kcfa}       \\
+\tt{snake}            & 8          & 161       & 211         & 27        & \pict{snake}      \\
+\tt{synth}            & 9          & 979       & 837         & 33        & \pict{funkytown}  \\
+\tt{tetris}           & 9          & 376       & 305         & 38        & \pict{tetris}     \\
+\tt{gregor}           & 13         & 1160      & 996         & 103       & \pict{gregor}     \\
+\tt{quad}             & 16         & 7022      & 6722        & 241       & \pict{quad}       \\
 \bottomrule
 \end{tabular}
 }|
