@@ -20,8 +20,8 @@ and a diagram of its module structure.
 
 Size is measured by the number of modules and lines of code (LOC) in a program.@note{We measured lines of code using the @hyperlink["http://www.dwheeler.com/sloccount/" "sloccount"] utility.}
 Crucially, the number of modules also determines the number of gradually-typed
-variations we ran when testing the benchmark, as a program with @math{n} modules
-can be gradually typed in @math{2^n} possible variations.
+configurations we ran when testing the benchmark, as a program with @math{n} modules
+can be gradually typed in @exact{$2^n$} possible configurations.
 Lines of code is less important for evaluating macro gradual typing,
 but gives a sense of the overall complexity of each benchmark.
 Moreover, the Type Annotations LOC numbers are an upper bound on the annotations required
@@ -30,7 +30,7 @@ fully annotates its import statements. In practice, only imports from untyped
 modules require annotations.
 
 The column labeled ``Other LOC'' measures the additional structure required
-to run each project for all typed-untyped variations. This count includes
+to run each project for all typed-untyped configurations. This count includes
 project-wide type definitions, typed interfaces to untyped libraries, and
 any so-called typed adaptor modules (see below) we needed to add.
 
@@ -181,7 +181,7 @@ The @tt{synth} benchmark@note{@url["https://github.com/stamourv/synth"]}
 is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
 The program consists of nine modules, half of which are from Typed Racket's array library.
-In order to run these library modules in all typed-untyped variations we created an adaptor module
+In order to run these library modules in all typed-untyped configurations we created an adaptor module
 for the underlying array data structure.
 
 @parag{Tetris}
