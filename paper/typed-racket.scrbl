@@ -316,16 +316,14 @@ in one step.
 @; The "WHY" try to explain the performance.
 @; The "PATH" comment on how difficult porting was
 
-The ideal shape for these curves is a flat line at the top of the y-axis,
-indicating that all configurations performed no worse than the original untyped
-program.  Of course the dynamic checks inserted by gradual type systems
-make this ideal difficult to achieve even with type-driven optimizations,
-so the next-best shape is a steep vertical line reaching the 100% count at
-a low x-value.  A steep slope from the 1x point means that a large
-proportion of all configurations run within a small constant overhead.  For
-lines with lower gradients this small constant must be replaced with a
-larger overhead factor for the same proportion of configurations to qualify as
-acceptable.
+The ideal shape for these curves is a flat line at the top of the y-axis.
+Of course the dynamic checks inserted by gradual type systems make this
+ideal difficult to achieve even with type-driven optimizations, so the
+next-best shape is a steep vertical line reaching the 100% count at a low
+x-value.  A steep slope from the 1x point means that a large proportion of
+all configurations run within a small constant overhead.  For lines with
+lower gradients this small constant must be replaced with a larger overhead
+factor for the same proportion of configurations to qualify as acceptable.
 
 Given the wide x-axis range of overhead factors, we would expect that only
 the leftmost quarter of each graph shows any interesting vertical slope.
@@ -344,13 +342,12 @@ center and right column as rather drastic countermeasures to recover
 performance.
 
 
-@parag{Sieve} At @exact{$L$}=0, the @tt{sieve} benchmark appears dead in
-the water, as half of the 4 configurations suffer extremely large overhead.
-Increasing @exact{$L$}, however, shows that augmenting the two
-gradually-typed configurations with one additional typed module solves the
-performance issue.  This is our only ``perfect'' graph, in which every
-configuration is within short reach of a configuration that performs at least as
-well as the untyped program.
+@parag{Sieve} At @exact{$L$}=0, the @tt{sieve} benchmark is dead in the
+water, as both partially typed configuration have more than 20x overhead.
+Increasing @exact{$L$}, however, shows, unsurprisingly that the fully typed
+configuration is one step away.  This is our only ``perfect'' graph, in
+which every configuration is within reach of a configuration that performs
+at least as well as the untyped program.
 
 @; This benchmark is admittedly contrived, but proves an interesting point:
 @; pathologically-bad configurations can be avoided if the programmer is able
