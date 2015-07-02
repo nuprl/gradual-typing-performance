@@ -22,13 +22,15 @@ timing is not affected by random factors; some configurations take minutes
 to run. Presenting and analyzing this wealth of data poses a separate
 challenge all by itself. This section present our results.
 
-The first subsection explains at a high level how we present the data in
-terms of the definitions of section@secref{sec:fwk}. In the second one, we
-discuss one benchmark in depth, @tt{suffixtree}, demonstrating how we create
-the configurations, how the boundaries affect the performance of various
-configurations, and how the Typed Racket code base limits the
-experiment. Finally, subsection@secref{sec:all-results} describes the
-results for all remaining benchmarks.
+
+@; TODO - rewrite when stable
+@;The first subsection explains at a high level how we present the data in
+@;terms of the definitions of section@secref{sec:fwk}. In the second one, we
+@;discuss one benchmark in depth, @tt{suffixtree}, demonstrating how we create
+@;the configurations, how the boundaries affect the performance of various
+@;configurations, and how the Typed Racket code base limits the
+@;experiment. Finally, subsection@secref{sec:all-results} describes the
+@;results for all remaining benchmarks.
 
 @parag{Experimental setup}
 Due to the high resource requirements of evaluating 
@@ -43,7 +45,10 @@ The following are run on machine B: @tt{sieve} and @tt{kcfa}.
 The following are run on machine C: @tt{suffixtree}, @tt{snake},
 @tt{synth}, @tt{tetris}, and @tt{gregor}.
 @;; FIXME edit this when all are run
-All of our programs are single threaded.
+For each configuration we report the average of 30 runs.
+@; TODO: talk about warm up?  
+@; TODO:Compilation v. interpreteration v. jitting?
+All of our programs are using a single core with green threads.
 We did some sanity checks and were able to validate that performance differentials reported
 in the paper were not affected by the choice of machine.
 
@@ -239,70 +244,70 @@ Sadly, the performance improvement of the fully typed configuration is the
 @section{Experimental Results}
 
 We summarize the results from exhaustively exploring the performance lattice
-of of our twelve benchmarks in @Figure-ref["fig:lnm1" "fig:lnm2"]. Each row
+of our twelve benchmarks in @Figure-ref["fig:lnm1" "fig:lnm2"]. Each row
 reports the results for one program.  On the left, a table spells out the
-typed/untyped ratio, the maximum overhead and the average overhead. This is
-follow by three graphs that show how many configurations impose an ovehead
+typed/untyped ratio, the maximum overhead, and the average overhead. This is
+followed by three graphs that show how many configurations impose an ovehead
 between 1x and 20x for three values of @math{L}: @math{0}, @math{1}, and
 @math{2}.
 
 The typed/untyped ratio is the slowdown or speed up of fully typed code over
 untyped code. Values smaller than 1 indicate a speedup due to some of the
 Typed Racket optimizations. Values larger than 1 are slowdowns caused by
-interaction with parts of the underlying Racket runtime system that are
-untyped. The ratio ranges between 0.28x (@tt{lnm}) and 3.22x
-(@tt{zo-traversal}).
+interaction with untyped parts of the underlying Racket runtime.  The ratios
+ranges between 0.28x (@tt{lnm}) and 3.22x (@tt{zo-traversal}).
 
-The maximum overhead is computed by finding the slowest configuration (in
-the average of 30 runs) and dividing by the untyped version. The average
-overhead is obtained by computing the average over all configurations
-(excluding the top and bottom ones) and dividing it be the average of the
-untyped configuration. Maximum overheads range from 1.25x (@tt{lmn}) to 168x
-(@tt{tetris}).  Average overheads range from 0.6x (@tt{lmn}) to 68x
-(@tt{tetris}). The slowdowns reported in the partially typed configurations
-come from the additional contracts and checks that have to be performed as
-the boundaries of typed modules are crossed by untyped values.
+The maximum overhead is computed by finding the slowest configuration and
+dividing it by the untyped version. The average overhead is obtained by
+computing the average over all configurations (excluding the top and bottom
+ones) and dividing it by the untyped configuration. Maximum overheads range
+from 1.25x (@tt{lmn}) to 168x (@tt{tetris}).  Average overheads range from
+0.6x (@tt{lmn}) to 68x (@tt{tetris}). The slowdowns reported in the
+partially typed configurations come from contracts and checks performed as
+untyped code interacts with typed code.
 
 Here is how to read the three cumulative performance graphs. The x-axis
-represents the slowdown ratio over the untyped program (from 1x to
-@id[PARAM-MAX-OVERHEAD]x).  The y-axis is a count of the number of of
+represents the slowdown over the untyped program (from 1x to
+@id[PARAM-MAX-OVERHEAD]x).  The y-axis is a count of the number of
 configurations (from @math{0} to @math{2^n}) scaled so all graphs are the
-same height. The blue lines summarize the number of configurations that have
-less than some slowdown ratio.  They are, by definition, monotonically
-increasing because the more overhead is allowed, the more configurations
-satisfy the condition. The ``ideal'' result would be to have a straight line
-at the top of the figure, this would mean that all configuration are as fast
-(or faster) as the untyped one.  The ``worst'' case scenario, is a straight
-line a the bottom of the figure indicating that all configuration are more
-than 20x slower than the untyped one. For ease of comparison between graphs,
-a dashed (@exact{\color{red}{red}}) horizontal line indicates the 60% of all
-program configurations.  As a rule of thumb, line that climb faster are
-better than lines that with a smaller slope.
+same height. The blue curves show how many configurations have less than a
+given slowdown.  They are, by definition, monotonically increasing because
+the more overhead is allowed, the more configurations satisfy the
+condition. The ``ideal'' result would be a flat line at a graph's top, this
+would mean that all configuration are as fast (or faster) as the untyped
+one.  The ``worst'' case scenario is a flat line a the graph's bottom,
+indicating that all configuration are more than 20x slower than the untyped
+one. For ease of comparison between graphs, a dashed
+(@exact{\color{red}{red}}) horizontal line indicates 60% point of all
+configurations.  As a rule of thumb, curves that climb faster are better than
+curves with a smaller slope.
 
 @;Each line was obtained by measuring @id[PARAM-NUM-SAMPLES] overheads 
 @;linearly spaced along the x-axis.
 
 Our methodology defines @deliverable{N} and @usable["N" "M"] as to key
-functions for measuring the quality of a gradual type system implemenation.
-The cumulative perofrmance graphs display the values of parameters @math{N}
-and @math{M} as, respectively, a @exact{\color{ForestGreen!90!black}{green}}
-and a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
-experiment we have chosen values of 3x and 10x. These are rather liberal
-values, many production contexts will likely not tolerate more than 2x for
-either. Thus for any program the value of @deliverable{3} is the value of
-the y-axis where the blue line intersects the green one.  This tells us how
-many configuration are deliverable.  Similarly for @usable["3" "10"], its
-value is the difference in y-axis values.  Higher values for both of these
-measures are better.
+functions for measuring the quality of a gradual type system.  The
+cumulative performance graphs display the values of parameters @math{N} and
+@math{M} as, respectively, a @exact{\color{ForestGreen!90!black}{green}} and
+a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
+experiment we have chosen values of 3x and 10x. They are rather liberal,
+most production contexts would not tolerate anything higher than 2x (and
+some would object to any slowdown). Thus, for any program, the value of
+@deliverable{3} is the value of the y-axis where the blue line intersects
+the green one.  This is how many configurations are deliverable.  Similarly
+for @usable["3" "10"], its value is the difference of the intercepts.
+Higher values for both of these measures are better.
 
-
-Lastly, the figures show three cumulative performance graphs, for different
-values of @math{L} from 0 to 2.  The interpretation of @math{L} = 1 and 2
-are as follows. For each configuration, we search the entire space of
+Lastly, the figures show cumulative performance graphs for different values
+of @math{L} (from 0 to 2).  The interpretation of @math{L} = 1 and 2 are as
+follows. For each configuration, we search the entire space of
 @math{O(n!-(n-L)!)}  reachable configurations to find a neighbor with usable
 running time.  This models how the number of steps of typing that a software
-engineer may have to take before getting an acceptable performance. Clearly
-this number is bounded by the height of the performance lattice.
+engineer may have to take before getting an acceptable performance. If the
+top element (fully typed) is reachable, it will be returned. Clearly the
+number of steps is bounded by the height of the performance lattice. Thus,
+for example, @tt{sieve} which has only two modules can get an ideal result
+in one step.
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:all-results"]{Discussion}
