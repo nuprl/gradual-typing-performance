@@ -16,18 +16,26 @@ Measuring the running time for the performance lattices of our chosen dozen
 of benchmarks means compiling, running, and timing hundreds of thousands of
 configurations. Each configuration is run 30 times to ensure that the
 @;
-@margin-note*{cite the random number paper?}
+@;@margin-note*{cite the random number paper?}
 @;
 timing is not affected by random factors; some configurations take minutes
-to run. Presenting and analyzing this huge wealth of data poses a separate
-challenge all by itself. 
+to run. Presenting and analyzing this wealth of data poses a separate
+challenge all by itself. This section present our results.
 
-This section presents the data from our timing experiments. Due to the
-very long runtime of the benchmarks, we are unable to run them all on the
-same machine. The benchmarks are therefore run on three kinds of machines: machine A
-with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, machine
-B with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of machines C
-from the Northeastern University Discovery Cluster@note{@url{http://nuweb12.neu.edu/rc/?page_id=27}}
+The first subsection explains at a high level how we present the data in
+terms of the definitions of section@secref{sec:fwk}. In the second one, we
+discuss one benchmark in depth, @tt{suffixtree}, demonstrating how we create
+the configurations, how the boundaries affect the performance of various
+configurations, and how the Typed Racket code base limits the
+experiment. Finally, subsection@secref{sec:all-results} describes the
+results for all remaining benchmarks.
+
+@parag{Experimental setup}
+Due to the high resource requirements of evaluating 
+the performance lattice, experiments were on a cluster consisting of a
+Machine A with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, Machine B
+with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of Machines C
+@;from the Northeastern University Discovery Cluster@note{@url{http://nuweb12.neu.edu/rc/?page_id=27}}
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
 with 64GB RAM. All machines run a variant of Linux. The following
 benchmarks are run on machine A: @tt{morse-code} and @tt{lnm}.
@@ -35,15 +43,9 @@ The following are run on machine B: @tt{sieve} and @tt{kcfa}.
 The following are run on machine C: @tt{suffixtree}, @tt{snake},
 @tt{synth}, @tt{tetris}, and @tt{gregor}.
 @;; FIXME edit this when all are run
-
-The first
-subsection explains at a high level how we present the data in terms of the
-definitions of section@secref{sec:fwk}. In the second one, we discuss one
-benchmark in depth, @tt{suffixtree}, demonstrating how we create the
-configurations, how the boundaries affect the performance of various
-configurations, and how the Typed Racket code base limits the
-experiment. Finally, subsection@secref{sec:all-results} describes the
-results for all remaining benchmarks. 
+All of our programs are single threaded.
+We did some sanity checks and were able to validate that performance differentials reported
+in the paper were not affected by the choice of machine.
 
 @figure*["fig:lnm1" 
   @list{@step["L" "N" "M"] results for the first 6
