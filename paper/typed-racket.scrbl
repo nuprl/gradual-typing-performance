@@ -240,59 +240,72 @@ Sadly, the performance improvement of the fully typed configuration is the
 @; -----------------------------------------------------------------------------
 @section{Experimental Results}
 
-@Figure-ref["fig:lnm1" "fig:lnm2"] summarize our findings for each of our
-twelve benchmark programs.  Each row reports the results for one benchmark,
-expressed in the terminology of section@secref{sec:fwk}: the typed-untyped
-ratio, a value for @math{N} and @math{M} to check on @math{N}-deliverable
-and @math{N/M}-usable configurations, and three values for @math{L} to
-determine how much extra work affects deliverability and usability.
+We summarize the results from exhaustively exploring the performance lattice
+of of our twelve benchmarks in @Figure-ref["fig:lnm1" "fig:lnm2"]. Each row
+reports the results for one program.  On the left, a table spells out the
+typed/untyped ratio, the maximum overhead and the average overhead. This is
+follow by three graphs that show how many configurations impose an ovehead
+between 1x and 20x for three values of @math{L}: @math{0}, @math{1}, and
+@math{2}.
 
-On the left side in each row, a table spells out the typed/untyped
-ratio, the maximal overhead that any configuration imposes over the running
-time of the untyped version, and the average over all
-configurations.@note{The worst and average case numbers do not include the
-fully-typed and untyped variations, and are calculated over all runtimes we
-observed rather than, say, the mean runtime for each variation.}
+The typed/untyped ratio is the slowdown or speed up of fully typed code over
+untyped code. Values smaller than 1 indicate a speedup due to some of the
+Typed Racket optimizations. Values larger than 1 are slowdowns caused by
+interaction with parts of the underlying Racket runtime system that are
+untyped. The ratio ranges between 0.28x (@tt{lnm}) and 3.22x
+(@tt{zo-traversal}).
 
-On the right side in each row, three line graphs show how many
-configurations impose an overhead between 1x and 20x for three values of
-@math{L}: @math{0}, @math{1}, and @math{2}.
+The maximum overhead is computed by finding the slowest configuration (in
+the average of 30 runs) and dividing by the untyped version. The average
+overhead is obtained by computing the average over all configurations
+(excluding the top and bottom ones) and dividing it be the average of the
+untyped configuration. Maximum overheads range from 1.25x (@tt{lmn}) to 168x
+(@tt{tetris}).  Average overheads range from 0.6x (@tt{lmn}) to 68x
+(@tt{tetris}). The slowdowns reported in the partially typed configurations
+come from the additional contracts and checks that have to be performed as
+the boundaries of typed modules are crossed by untyped values.
 
-The units on the x-axis are overhead factors. An overhead factor of 1x
-means the performance is no worse than the untyped program. It goes all the
-way to an overhead factor of @id[PARAM-MAX-OVERHEAD]x, which is that much
-of a slowdown compared to the untyped configuration. Each line was obtained
-by measuring @id[PARAM-NUM-SAMPLES] overheads linearly spaced along
-the x-axis.
+Here is how to read the three cumulative performance graphs. The x-axis
+represents the slowdown ratio over the untyped program (from 1x to
+@id[PARAM-MAX-OVERHEAD]x).  The y-axis is a count of the number of of
+configurations (from @math{0} to @math{2^n}) scaled so all graphs are the
+same height. The blue lines summarize the number of configurations that have
+less than some slowdown ratio.  They are, by definition, monotonically
+increasing because the more overhead is allowed, the more configurations
+satisfy the condition. The ``ideal'' result would be to have a straight line
+at the top of the figure, this would mean that all configuration are as fast
+(or faster) as the untyped one.  The ``worst'' case scenario, is a straight
+line a the bottom of the figure indicating that all configuration are more
+than 20x slower than the untyped one. For ease of comparison between graphs,
+a dashed (@exact{\color{red}{red}}) horizontal line indicates the 60% of all
+program configurations.  As a rule of thumb, line that climb faster are
+better than lines that with a smaller slope.
 
-We put these overhead factors in perspective with two vertical lines: (a
-@exact{\color{ForestGreen!90!black}{green}}) one for @math{N} at
-@id[PARAM-N]x and (a @exact{\color{Goldenrod!65!black}{yellow}}) one for
-@math{M} at @id[PARAM-M]x. These lines are extremely liberal upper-bounds
-for @math{N} and @math{M};  realistic choices for @math{N} and @math{M}
-would be much lower, perhaps 1.1x and 2x.
+@;Each line was obtained by measuring @id[PARAM-NUM-SAMPLES] overheads 
+@;linearly spaced along the x-axis.
 
-The units on the y-axis are plain counts from @math{0} to @math{2^n}, where
-@math{n} is the number of modules in the benchmark. To simplify the table
-layout, all the y-axes themselves are scaled to be the same height for all
-figures. To make the y-dimensions comparable, the line graphs come with a
-dashed (@exact{\color{red}{red}}) horizontal to mark the 60% line of all
-program configurations. 
+Our methodology defines @deliverable{N} and @usable["N" "M"] as to key
+functions for measuring the quality of a gradual type system implemenation.
+The cumulative perofrmance graphs display the values of parameters @math{N}
+and @math{M} as, respectively, a @exact{\color{ForestGreen!90!black}{green}}
+and a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
+experiment we have chosen values of 3x and 10x. These are rather liberal
+values, many production contexts will likely not tolerate more than 2x for
+either. Thus for any program the value of @deliverable{3} is the value of
+the y-axis where the blue line intersects the green one.  This tells us how
+many configuration are deliverable.  Similarly for @usable["3" "10"], its
+value is the difference in y-axis values.  Higher values for both of these
+measures are better.
 
-Each @math{L}-step @math{N/M}-usable figure stands for itself. The leftmost
-graphs column simply count the number of variations with performance below
-a given overhead factor.  In contrast, the rightmost graphs count all
-variations that are at most @id[PARAM-L] type-annotation steps away from a
-usable variation. These counts are optimistic; for nonzero @math{L} and
-@math{n} modules, we search the entire space of @math{O(n!-(n-L)!)}
-reachable configurations to find a neighbor with usable running time.
 
-In sum, the graphs report the number of configurations that impose at most
-a certain overhead. They are, by definition, monotonically increasing
-because the more overhead is allowed, the more configurations satisfy the
-condition. Hence, the key takeaway is the shape of the curve and how slowly or quickly
-it climbs, and where it crosses the vertical @math{N} and @math{M} lines
-and the horizontal 60% line. 
+Lastly, the figures show three cumulative performance graphs, for different
+values of @math{L} from 0 to 2.  The interpretation of @math{L} = 1 and 2
+are as follows. For each configuration, we search the entire space of
+@math{O(n!-(n-L)!)}  reachable configurations to find a neighbor with usable
+running time.  This models how the number of steps of typing that a software
+engineer may have to take before getting an acceptable performance. Clearly
+this number is bounded by the height of the performance lattice.
+
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:all-results"]{Discussion}
