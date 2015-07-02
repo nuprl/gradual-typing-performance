@@ -46,6 +46,7 @@ Run on Racket 6.2.
 - `sieve-2015-06-28T14:08:55.rktd` Run on Lambda, single core
 - `funkytown-2015-06-30T15:34:39.rktd` Run on cluster, `-j 39`
 - `snake-2015-06-30T14:55:40.rktd` Run on cluster, `-j 39`
+- `snake-2015-07-01T16:35:34.rktd` Run on cluster, `-j 19`
 - `tetris-2015-06-30T14:53:37.rktd` Run on cluster, `-j 39`
 
 Benchmarks run on different-sized inputs
