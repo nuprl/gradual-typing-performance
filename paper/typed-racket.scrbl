@@ -22,15 +22,12 @@ timing is not affected by random factors; some configurations take minutes
 to run. Presenting and analyzing this wealth of data poses a separate
 challenge all by itself. This section present our results.
 
-
-@; TODO - rewrite when stable
-@;The first subsection explains at a high level how we present the data in
-@;terms of the definitions of section@secref{sec:fwk}. In the second one, we
-@;discuss one benchmark in depth, @tt{suffixtree}, demonstrating how we create
-@;the configurations, how the boundaries affect the performance of various
-@;configurations, and how the Typed Racket code base limits the
-@;experiment. Finally, subsection@secref{sec:all-results} describes the
-@;results for all remaining benchmarks.
+The first subsection discusses one benchmark in detail, demonstrating how we
+ create the configurations, how the boundaries affect the performance of
+ various configurations, and how the Typed Racket code base limits the
+ experiment.  The second subsection explains how we present the data in
+ terms of the definitions of section@secref{sec:fwk}.  The last subsection
+ discuss the results for all benchmarks.
 
 @parag{Experimental setup}
 Due to the high resource requirements of evaluating 
@@ -59,11 +56,11 @@ To illustrate the key points of the experiments, it is helpful to look
 closely at one of the benchmarks, @tt{suffixtree}, and explain the setup and
 the timing results in detail.
 
-@tt{Suffixtree} consists of six modules (@tt{data.rkt} to define label and
-tree nodes, @tt{label.rkt} with functions on suffixtree node labels,
-@tt{lcs.rkt} to compute Longest-Common-Subsequences, @tt{main.rkt} to apply
-lcs to data, @tt{structs.rkt} to create and traverse suffix tree nodes,
-@tt{ukkonen.rkt} to build suffix trees via Ukkonen's algorithm).  Each
+@tt{Suffixtree} consists of six modules (@tt{data} to define label and
+tree nodes, @tt{label} with functions on suffixtree node labels,
+@tt{lcs} to compute Longest-Common-Subsequences, @tt{main} to apply
+lcs to data, @tt{structs} to create and traverse suffix tree nodes,
+@tt{ukkonen} to build suffix trees via Ukkonen's algorithm).  Each
 module is available with and without type annotations.  Each configuration
 thus links six modules, some of them typed and others untyped.
 
@@ -211,10 +208,19 @@ Sadly, the performance improvement of the fully typed configuration is the
  other typed modules slow down the program.  The module structure diagram
  for @tt{suffixtree} in @figure-ref{fig:bm} corroborates the presence of
  this coupling. The rightmost node in that diagram corresponds to the
- @tt{data.rkt} module, which has the most in-edges in that particular
+ @tt{data} module, which has the most in-edges in that particular
  graph. We observe a similar kind of coupling in the simpler @tt{sieve}
  example, which consists of just a data module and its client.}
 ]
+
+The reason @tt{suffixtree} is bad news for gradual typing is because of
+performance ``valleys'' in which a maintenance programmer can get stuck.
+Consider that we start with the untyped program, and for some reason choose
+to add types to @tt{label}. The program slows down by 45x. Without any
+guidance, a developer may choose to then type @tt{structs} and see the
+program slow down to 55x.  After that typing @tt{main} (53x), @tt{ukkonen}
+(52.9x), and @tt{lcs} (53x) do little to improve performance. It is only
+when all the modules are typed that performance improves (0.7x).
 
 
 @figure*["fig:lnm1" 
@@ -356,16 +362,15 @@ at least as well as the untyped program.
 @; WHY:
 @; - tons of higher-order interaction because streams are lambdas
 @; PATH: (easy)
-@; - but in practice might be hard -- depending on the untyped library your untyped script maybe isn't safe
+@; - but in practice might be hard -- depending on the untyped library your 
+@;   untyped script maybe isn't safe
 
-
-@parag{Morse code} The @tt{morse-code} benchmark also shows excellent
+@parag{Morse code} The @tt{morse-code} benchmark shows acceptable
 performance.  At @math{L}=0 three configurations perform at least as well as
-the untyped program, and the worst-case overhead is below 3x.  Increasing
+the untyped program, and the maximum overhead is below 2x.  Increasing
 @math{L} raises the y-intercept of the lines, which matches the observation
 given that the fully-typed @tt{morse-code} runs faster than the original
-program.  Adding more type annotations helps improve this benchmark's
-performance.
+program. 
 
 @; WHY
 @; - Very little inter-module communication
@@ -373,14 +378,16 @@ performance.
 @; - small APIs (levenshtein was 300 lines for 1 export)
 @; - only 2 modules really did things, the others were data(+parser) & main
 
-
 @;FIXED VERSION:
 
-@parag{MBTA} 
-The @tt{mbta} benchmark is nearly a steep vertical line, but for one flat
-area.  This implies that a boundary (or group of boundaries) accounts for a
-3x slowdown, such that the set of configurations where these boundaries connect
-typed and untyped modules all experience similar overhead.
+@parag{MBTA} The @tt{mbta} benchmark is nearly a steep vertical line, but
+for one flat area.  This implies that a boundary (or group of boundaries)
+accounts for a 3x slowdown, such that the set of configurations where these
+boundaries connect typed and untyped modules all experience similar
+overhead. Many configurations are @deliverable{2}, but, interestingly, not
+the fully typed one. This explains why @math{L} values of 1 and 2 do not 
+help much.
+@;TODO Strange no? <jan>
 
 @; WHY
 @; - run-t and t-graph are tightly coupled
@@ -388,12 +395,13 @@ typed and untyped modules all experience similar overhead.
 @; - small API, even with objects
 
 
-@parag{ZO Traversal} The lines for @tt{zo-traversal} are fairly steep, but
-not as drastic as the lines for @tt{morse-code} or even @tt{mbta}.  More
-interestingly, half the configurations suffer a 2x overhead even as @exact{$L$}
-increases.  This behavior is explained by the summary numbers: because the
-fully-typed configuration incurs a 4x overhead, the ability to convert
-additional modules rarely helps reach a more performant configuration.
+@parag{ZO Traversal} The curves for @tt{zo-traversal} are fairly steep, but
+not as drastic as @tt{morse-code} or @tt{mbta}.  Half the configurations
+suffer a 2x overhead, even when @exact{$L$} increases.  This behavior is
+again explained by the summary data: as the fully-typed configuration incurs
+a 4x overhead, the ability to convert additional modules rarely helps reach
+a more performant configuration. This is case, where programmers may have
+undo some of the type annotations to recover  performance.
 
 @; WHY
 @; - the data is untyped, and this script is just an interface to that data
@@ -404,13 +412,13 @@ additional modules rarely helps reach a more performant configuration.
 @; - afterwards, straightforward (at least for the author)
 
 
-@parag{Suffixtree} At @exact{$L$}=0, @tt{suffixtree} shows the worst
-performance characteristics of all our benchmarks.  Over half the
-gradually-typed configurations hit a performance wall and are not usable at any
-realistic overhead.  Increasing @exact{$L$}, however, drastically improves
-this picture.  Thus although most configurations suffer large performance
-overhead, they are in theory close to a configuration with much better
-performance.
+@parag{Suffixtree} At @exact{$L$}=0, @tt{suffixtree} is the worst of our
+benchmarks.  Over half the gradually-typed configurations hit a performance
+wall and are not usable at any realistic overhead.  Increasing @exact{$L$},
+however, improves this picture.  Thus although most configurations suffer
+large performance overhead, they are, in theory, close to a configuration
+with better performance. Nevertheless there are still too many bad
+configurations for comfort.
 
 @; WHY
 @; - explained in the in-depth, below
@@ -419,15 +427,14 @@ performance.
 @; - module structure not bad
 
 
-@parag{LNM} The shape of the @tt{lnm} graphs is ideal.  The sharp
-vertical line at @exact{$L$}=0 indicates that gradual typing introduces
-only a small overhead compared to the untyped program.  Indeed, the summary
-statistics for @tt{lnm} confirm that the overall slowest running time we
-observed was within a 25% slowdown over the untyped baseline. Furthermore,
-the fully typed performance is very good. Most likely the typed performance
-is due to the fact that @tt{lnm} relies heavily on Racket's plotting library,
-which is a typed library. This implies that the original untyped program
-likely suffers from a performance @emph{penalty} due to contracts.
+@parag{LNM} The shape of the @tt{lnm} graphs is ideal.  The sharp vertical
+line at @exact{$L$}=0 indicates that gradual typing introduces only a small
+overhead compared to the untyped program.  Indeed, the summary for @tt{lnm}
+confirm that the maximum overhead is 1.14x slower than the untyped
+baseline. Furthermore, the fully typed performance is very good. Likely,
+this is due to the heavy use of Racket's plotting library, which is typed.
+This also suggest that the untyped program suffers from a performance
+penalty due to contracts.
 
 @; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
 @; Even at @exact{$L$}=2, we could shift focus to identifying the good
@@ -439,15 +446,13 @@ likely suffers from a performance @emph{penalty} due to contracts.
 @; - very small program
 
 
-@parag{K-CFA} The @tt{kcfa} benchmark has a very jagged shape, implying
+@parag{K-CFA} The @tt{kcfa} benchmark has a jagged shape, implying
 that @exact{$N/M$}-usability is not a helpful tradeoff for this program.
 At @exact{$L$}=0, selecting an @exact{$N$} strongly influences the
 proportion of acceptable configurations for small values of @exact{$M$}.  This
-is expecially true for @exact{$N$} between 1x and 6x overhead, and remains
-true even after increasing @exact{$L$} to 1; however at @exact{$L$}=2 the
-performance problem is apparently solved (assuming a method of finding the
-performant configurations).
-
+is especially true for @exact{$N$} between 1x and 6x, and remains
+true even after increasing @exact{$L$} to 1; however at @exact{$L$}=2 it
+is possible to find @deliverable{N} configurations from any configuration.
 
 @; Control-flow analyses typically run slowly, and the implementation in
 @; our benchmark is poor even in comparison. 
@@ -466,12 +471,10 @@ performant configurations).
 @; - organized & simple project
 @; - code was originally 1 module and educational
 
-
-@parag{Snake} The @tt{snake} benchmark has similar performance
-characteristics to @tt{synth}.  Most gradually-typed configurations suffer more
-than 20x overhead and increasing @exact{$L$} helps somewhat, but still one
-must accept approximately 6x overhead before the majority of configurations
-qualify as usable.
+@parag{Snake} The @tt{snake} benchmark performs well when fully typed, but
+most partially typed configurations suffer more than 20x
+overhead. Increasing @exact{$L$} helps somewhat, but still one must accept
+6x overhead before the majority of configurations qualify as usable.
 
 @; WHY
 @; - (probably) tightly-coupled module structure?
@@ -482,11 +485,10 @@ qualify as usable.
 
 
 @parag{Tetris} Like @tt{suffixtree}, the @tt{tetris} benchmark is a success
-story for increasing @exact{$L$}.  When @exact{$L$}=0 we see that half of
-all modules are within 6x overhead, but the rest are more than 20x worse
-than the untyped program.  The ``good half'', however, is apparently spread
-throughout the lattice and reachable in few steps from many other
-configurations.
+story for increasing @exact{$L$}.  When @exact{$L$}=0 we see that most of
+the modules are more than 20x worse than the untyped program.  The good configurations
+are apparently spread  throughout the lattice so that they are easily
+reachable in two steps of typing.
 
 @; WHY
 @; - where is the heavy boundary?
@@ -494,14 +496,12 @@ configurations.
 @; PATH (easy)
 @; - like snake, simple types + small + full contracts
 
-
-@parag{Synth} The @tt{synth} benchmark performs well when fully-typed, but
-is significantly worse when gradually typed.  Over half the configurations
-suffer an overhead of more than 20x.  Increasing @math{L} does increase the
-slopes of the lines, meaning a larger number of configurations become usable
-for a fixed @math{N}/@math{M} pair, but gradual typing still introduces a
-large overhead.  Even at @math{L}=2 only 30% of all configurations lie in reach
-of a point with at most 3x slowdown.
+@parag{Synth} The @tt{synth} benchmark is similar to @tt{snake}. Over half
+the configurations suffer an overhead of more than 20x.  Increasing @math{L}
+does increase the slopes of the lines, meaning a larger number of
+configurations become usable for a fixed @math{N}/@math{M} pair, but gradual
+typing still introduces a large overhead.  Even at @math{L}=2 only 30% of
+all configurations lie in reach of a point with at most 3x slowdown.
 
 @; WHY
 @; - original had poor typed/untyped performance,
@@ -514,11 +514,10 @@ of a point with at most 3x slowdown.
 @; - array functions were all polymorphic, made for difficult boundaries
 @; heavy use/export of macros
 
-
 @parag{Gregor} Despite being a large benchmark, @tt{gregor} performs
-reasonably well even when gradually typed.  The worst-case slowdown of 6x
+reasonably well even when gradually typed.  The worst-case slowdown of 5.2x
 is quite good compared to the other large benchmarks, and the steep
-vertical slope is close to ideal.
+vertical slope is encouraging.
 
 @; WHY
 @; Contracts are all on simple types, pycket or soft contracts could do great things here
