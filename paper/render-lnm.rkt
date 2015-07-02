@@ -51,10 +51,10 @@
 (define FONT-FACE "Liberation Serif")
 
 (define H 100)
-(define W 140)
+(define W 130)
 (define GRAPH-FONT-SIZE 7)
 (define TEXT-FONT-SIZE 11)
-(define GRAPH-HSPACE 20)
+(define GRAPH-HSPACE 10)
 (define GRAPH-VSPACE 20)
 (define TITLE-STYLE FONT-FACE)
 (define TITLE-SIZE (+ 3 TEXT-FONT-SIZE))
