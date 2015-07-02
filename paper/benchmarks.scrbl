@@ -18,7 +18,7 @@ The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark
 programs.  For each, we give an approximate measure of the program's size
 and a diagram of its module structure.
 
-Size is measured by the number of modules and lines of code (LOC) in a program.
+Size is measured by the number of modules and lines of code (LOC) in a program.@note{We measured lines of code using the @hyperlink["http://www.dwheeler.com/sloccount/" "sloccount"] utility.}
 Crucially, the number of modules also determines the number of gradually-typed
 variations we ran when testing the benchmark, as a program with @math{n} modules
 can be gradually typed in @math{2^n} possible variations.
@@ -47,7 +47,6 @@ heavily on the frequency at which values flow across.
 @;;; to address this, we TODO added a counter to each contract and ran the prog.
 
 
-
 @;; FIXME: remove figure caption rule
 @figure*["fig:bm" "The software characteristics of the benchmarks"
 @exact|{
@@ -58,18 +57,18 @@ heavily on the frequency at which values flow across.
 \toprule
 Project name          & \# Modules & Untyped LOC & Type Ann. LOC & Other LOC & Module structure        \\
 \midrule
-\tt{sieve}            & 2          & 35          & 17        & 0         & \pict{sieve}      \\
-\tt{morse-code}       & 4          & 216         & 29        & 0         & \pict{morsecode}  \\
-\tt{mbta}             & 4          & 369         & 77        & 89        & \pict{mbta}       \\
-\tt{zo-traversal}     & 5          & 1404        & 285       & 214       & \pict{zordoz}     \\
-\tt{suffixtree}       & 6          & 545         & 125       & 40        & \pict{suffixtree} \\
-\tt{lnm}              & 6          & 501         & 120       & 62        & \pict{lnm}        \\
-\tt{kcfa}             & 7          & 248         & 47        & 141       & \pict{kcfa}       \\
-\tt{snake}            & 8          & 161         & 50        & 27        & \pict{snake}      \\
-\tt{synth}            & 9          & 837         & 142       & 33        & \pict{funkytown}  \\
-\tt{tetris}           & 9          & 305         & 71        & 38        & \pict{tetris}     \\
-\tt{gregor}           & 13         & 996         & 164       & 103       & \pict{gregor}     \\
-\tt{quad}             & 16         & 6722        & 300       & 241       & \pict{quad}       \\
+\tt{sieve}            & 2          & 35          & 17            & 0         & \pict{sieve}      \\
+\tt{morse-code}       & 4          & 216         & 29            & 0         & \pict{morsecode}  \\
+\tt{mbta}             & 4          & 369         & 77            & 89        & \pict{mbta}       \\
+\tt{zo-traversal}     & 5          & 1404        & 285           & 214       & \pict{zordoz}     \\
+\tt{suffixtree}       & 6          & 545         & 125           & 40        & \pict{suffixtree} \\
+\tt{lnm}              & 6          & 501         & 120           & 62        & \pict{lnm}        \\
+\tt{kcfa}             & 7          & 248         & 47            & 141       & \pict{kcfa}       \\
+\tt{snake}            & 8          & 161         & 50            & 27        & \pict{snake}      \\
+\tt{synth}            & 9          & 837         & 142           & 33        & \pict{funkytown}  \\
+\tt{tetris}           & 9          & 305         & 71            & 38        & \pict{tetris}     \\
+\tt{gregor}           & 13         & 996         & 164           & 103       & \pict{gregor}     \\
+\tt{quad}             & 16         & 6722        & 300           & 241       & \pict{quad}       \\
 \bottomrule
 \end{tabular}
 }|
