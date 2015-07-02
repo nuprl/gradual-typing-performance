@@ -18,19 +18,19 @@ The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark
 programs.  For each, we give an approximate measure of the program's size
 and a diagram of its module structure.
 
-Size is measured by the number of modules and lines of code (LOC) in a program.
+Size is measured by the number of modules and lines of code (LOC) in a program.@note{We measured lines of code using the @hyperlink["http://www.dwheeler.com/sloccount/" "sloccount"] utility.}
 Crucially, the number of modules also determines the number of gradually-typed
-variations we ran when testing the benchmark, as a program with @math{n} modules
-can be gradually typed in @math{2^n} possible variations.
+configurations we ran when testing the benchmark, as a program with @math{n} modules
+can be gradually typed in @exact{$2^n$} possible configurations.
 Lines of code is less important for evaluating macro gradual typing,
 but gives a sense of the overall complexity of each benchmark.
-Moreover, the Typed LOC numbers are an upper bound on the annotations required
+Moreover, the Type Annotations LOC numbers are an upper bound on the annotations required
 at any stage of gradual typing because each typed module in our experiment
 fully annotates its import statements. In practice, only imports from untyped
 modules require annotations.
 
 The column labeled ``Other LOC'' measures the additional structure required
-to run each project for all typed-untyped variations. This count includes
+to run each project for all typed-untyped configurations. This count includes
 project-wide type definitions, typed interfaces to untyped libraries, and
 any so-called typed adaptor modules (see below) we needed to add.
 
@@ -47,29 +47,28 @@ heavily on the frequency at which values flow across.
 @;;; to address this, we TODO added a counter to each contract and ran the prog.
 
 
-
 @;; FIXME: remove figure caption rule
-@figure*["fig:bm" "Characteristics of the benchmarks programs."
+@figure*["fig:bm" "The software characteristics of the benchmarks"
 @exact|{
 \newcommand{\yespycket}{$\CIRCLE$}
 \newcommand{\maybepycket}{$\RIGHTcircle$}
 \newcommand{\nopycket}{$\Circle$}
 \begin{tabular}[t]{lrrrrll}
 \toprule
-Project name          & \# Modules & Typed LOC & Untyped LOC & Other LOC & Module structure        \\
+Project name          & \# Modules & Untyped LOC & Type Ann. LOC & Other LOC & Module structure        \\
 \midrule
-\tt{sieve}            & 2          & 87        & 69          & 0         & \pict{sieve}      \\
-\tt{morse-code}       & 4          & 587       & 532         & 0         & \pict{morsecode}  \\
-\tt{mbta}             & 4          & 578       & 532         & 89        & \pict{mbta}       \\
-\tt{zo-traversal}     & 5          & 2121      & 1901        & 214       & \pict{zordoz}     \\
-\tt{suffixtree}       & 6          & 945       & 866         & 40        & \pict{suffixtree} \\
-\tt{lnm}              & 6          & 893       & 791         & 62        & \pict{lnm}        \\
-\tt{kcfa}             & 7          & 401       & 397         & 141       & \pict{kcfa}       \\
-\tt{snake}            & 8          & 271       & 214         & 27        & \pict{snake}      \\
-\tt{synth}            & 9          & 1112      & 964         & 33        & \pict{funkytown}  \\
-\tt{tetris}           & 9          & 500       & 457         & 38        & \pict{tetris}     \\
-\tt{gregor}           & 13         & 1574      & 1455        & 103       & \pict{gregor}     \\
-\tt{quad}             & 16         & 7702      & 7406        & 241       & \pict{quad}       \\
+\tt{sieve}            & 2          & 35          & 17            & 0         & \pict{sieve}      \\
+\tt{morse-code}       & 4          & 216         & 29            & 0         & \pict{morsecode}  \\
+\tt{mbta}             & 4          & 369         & 77            & 89        & \pict{mbta}       \\
+\tt{zo-traversal}     & 5          & 1404        & 285           & 214       & \pict{zordoz}     \\
+\tt{suffixtree}       & 6          & 545         & 125           & 40        & \pict{suffixtree} \\
+\tt{lnm}              & 6          & 501         & 120           & 62        & \pict{lnm}        \\
+\tt{kcfa}             & 7          & 248         & 47            & 141       & \pict{kcfa}       \\
+\tt{snake}            & 8          & 161         & 50            & 27        & \pict{snake}      \\
+\tt{tetris}           & 9          & 305         & 71            & 38        & \pict{tetris}     \\
+\tt{synth}            & 10         & 837         & 142           & 33        & \pict{funkytown}  \\
+\tt{gregor}           & 13         & 996         & 164           & 103       & \pict{gregor}     \\
+\tt{quad}             & 16         & 6722        & 300           & 241       & \pict{quad}       \\
 \bottomrule
 \end{tabular}
 }|
@@ -177,19 +176,19 @@ Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering
 the game state and does not display a GUI.  We use one adaptor module to
 represent the game data types, but otherwise the program is self-contained.
 
-@parag{Synth}
-The @tt{synth} benchmark@note{@url["https://github.com/stamourv/synth"]}
-is a sound synthesis example from St-Amour @|etal|'s work on
-feature-specific profiling@~cite[saf-cc-2015].
-The program consists of nine modules, half of which are from Typed Racket's array library.
-In order to run these library modules in all typed-untyped variations we created an adaptor module
-for the underlying array data structure.
-
 @parag{Tetris}
 This program is taken from the same benchmark suite as @tt{snake}@~cite[nthvh-icfp-2014]
 and implements the eponymous game.
 Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here requires
 one adaptor module.
+
+@parag{Synth}
+The @tt{synth} benchmark@note{@url["https://github.com/stamourv/synth"]}
+is a sound synthesis example from St-Amour @|etal|'s work on
+feature-specific profiling@~cite[saf-cc-2015].
+The program consists of nine modules, half of which are from Typed Racket's array library.
+In order to run these library modules in all typed-untyped configurations we created an adaptor module
+for the underlying array data structure.
 
 @parag{Gregor}
 This benchmark contains thirteen modules and stress-tests a date and time library.
