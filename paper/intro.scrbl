@@ -75,7 +75,7 @@ A performance measurement of a gradual typing system must run every
 
 We validate our methodology by evaluating Typed Racket, the gradually typed
  sister language of Racket, on a collection of programs ranging from 150 to
- 15K lines of code.  Typed Racket is the oldest (developed since 2006) and
+ 7.5K lines of code.  Typed Racket is the oldest (developed since 2006) and
  probably most sophisticated implementation of gradual typing, but it is
  also a natural choice because its macro-level approach to gradual typing
  appears to impose the lowest cost for boundaries between typed and untyped
