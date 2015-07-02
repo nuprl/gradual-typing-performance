@@ -52,12 +52,12 @@
 
 (define H 100)
 (define W 130)
-(define GRAPH-FONT-SIZE 7)
-(define TEXT-FONT-SIZE 11)
+(define GRAPH-FONT-SIZE 6)
+(define TEXT-FONT-SIZE 10)
 (define GRAPH-HSPACE 10)
 (define GRAPH-VSPACE 20)
 (define TITLE-STYLE FONT-FACE)
-(define TITLE-SIZE (+ 3 TEXT-FONT-SIZE))
+(define TITLE-SIZE (+ 2 TEXT-FONT-SIZE))
 (define TITLE-VSPACE (/ GRAPH-VSPACE 2))
 
 (define CACHE-PREFIX "./compiled/lnm-cache-")
