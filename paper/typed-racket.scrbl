@@ -47,6 +47,173 @@ All of our programs are single threaded.
 We did some sanity checks and were able to validate that performance differentials reported
 in the paper were not affected by the choice of machine.
 
+
+
+@; -----------------------------------------------------------------------------
+@section{Suffixtree in Depth}
+
+To illustrate the key points of the experiments, it is helpful to look
+closely at one of the benchmarks, @tt{suffixtree}, and explain the setup and
+the timing results in detail.
+
+@tt{Suffixtree} consists of six modules (@tt{data.rkt} to define label and
+tree nodes, @tt{label.rkt} with functions on suffixtree node labels,
+@tt{lcs.rkt} to compute Longest-Common-Subsequences, @tt{main.rkt} to apply
+lcs to data, @tt{structs.rkt} to create and traverse suffix tree nodes,
+@tt{ukkonen.rkt} to build suffix trees via Ukkonen's algorithm).  Each
+module is available with and without type annotations.  Each configuration
+thus links six modules, some of them typed and others untyped.
+
+@; TODO Why does this look so bad? Too much space at end of table
+@; TODO <jan>Can this figure go to the bottom of the column? </jan>
+@; @figure["fig:purpose-statements" "Suffixtree Modules"
+@; @tabular[#:sep @hspace[2]
+@; (list (list @bold{Module} @bold{Purpose})
+@; (list @tt{data.rkt}    "Label and tree node data definitions")
+@; (list @tt{label.rkt}   "Functions on suffixtree node labels")
+@; (list @tt{lcs.rkt}     "Longest-Common-Subsequence implementation")
+@; (list @tt{main.rkt}    "Apply lcs to benchmark data")
+@; (list @tt{structs.rkt} "Create and traverse suffix tree nodes")
+@; (list @tt{ukkonen.rkt} "Build whole suffix trees via Ukkonen's algorithm"))]]
+
+
+@figure*["fig:suffixtree" 
+          @list{Performance lattice (labels are slowdowns).}
+  @(let* ([vec (file->value SUFFIXTREE-DATA)]
+          [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
+     (make-performance-lattice vec*))
+]
+
+For typed modules, a programmer equips each structure, function, and class
+with types. Modules provide their exports together with types, so that the
+type checker can cross-check modules. A @defterm{client} module may import
+values from an untyped @defterm{server} module, which means that the
+corresponding @racket[require] specifications must be equipped with
+types. Consider this example:
+@;%
+@(begin
+#reader scribble/comment-reader
+(racketblock
+(require 
+  (only-in "label.rkt" 
+            make-label 
+            sublabel 
+            ... 
+            vector->label/s))
+))
+@;%
+The server module is called @tt{label.rkt}, and the client imports specific
+ values (e.g. @tt{make-label}).  This specification is replaced with a
+ @racket[require/typed] specification where each imported identifier is
+ typed:
+@;%
+@(begin
+#reader scribble/comment-reader
+(racketblock
+(require/typed/check "label.rkt" 
+ [make-label
+  (-> (U String (Vectorof (U Char Symbol))) Label)]
+ [sublabel 
+  (case-> 
+    (-> Label Index Label)
+    (-> Label Index Index Label))]
+ ...
+ [vector->label/s
+  (-> (Vectorof (U Char Symbol)) Label)])
+))
+@; 
+
+When a module imports values from an untyped source, the types in a
+@racket[require/typed] specification are compiled into run-time checks and
+contracts for the values that flow into the module. For example, if some
+imported variable is declared to be a @tt{Char}, the check @racket[char?]
+is performed as the value flows across the module boundary. Higher-order
+types (functions, objects, or classes) become contracts which are wrapped
+around the imported value and which check each future interaction of this
+value with its context.
+
+The performance costs of gradual typing thus consist of allocation of
+wrapper and run-time checks. Moreover, the compiler has to assume that
+any value could be wrapped, so cannot generate direct field access code
+as would be done in a statically typed language.
+
+Since our evaluation setup calls for linking typed modules to both typed
+and untyped server modules, depending on the configuration, we replace
+@racket[require/typed] specifications with @racket[require/typed/check]
+versions. This new syntax can determine whether the server module is typed
+or untyped. It installs dynamic checks and contracts if the server module
+is untyped, and it ignores the annotation if the server module is typed.
+As a result, typed modules function independently of the rest of the
+modules in a configuration.
+
+
+@; -----------------------------------------------------------------------------
+@parag{Performance Lattice.}
+
+@Figure-ref{fig:suffixtree} shows the performance lattice annotated with the
+  timing measurements. The lattice displays each of the modules in the
+  program with a shape.  A filled black shape means the module is typed, an
+  open shape means the module is untyped. The shapes are ordered from left
+  to right and correspond to the modules of @tt{suffixtree} in alphabetical
+  order: @tt{data}, @tt{label}, @tt{lcs}, @tt{main}, @tt{structs}, and
+  @tt{ukkonen}.
+
+Following the methodology outlined in section@secref{sec:fwk}, we start by
+ considering the typed/untyped ratio. For each configuration, the ratio is
+ computed by dividing the average of 30 iterations of the typed program by
+ the average of 30 untyped iterations.  The figure omits standard deviations
+ as they small enough to not affect the discusion.
+
+The fully typed configuration (top) is @emph{faster} than the fully untyped
+ (bottom) configuration by around 30%, which puts the ratio at 0.7. This is
+ easily explained by Typed Racket's optimizations such as specialization of
+ arithmetic operations, improved field accesses, and elimination of some
+ bounds checks@~cite[thscff-pldi-2011]. When the optimizer is turned off,
+ the ratio goes back up to 1. 
+
+
+Sadly, the performance improvement of the fully typed configuration is the
+ only good part of this benchmark. Almost all partially typed configurations
+ exhibit slowdowns ranging from 2% to 66x. Inspection of the lattice
+ clarifies several points about these slowdowns: @itemlist[
+
+@item{Adding type annotations to the @tt{main} module neither subtracts or
+ adds much overhead because it is a driver module that is not coupled to
+ other modules.}
+
+
+@item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
+@; TODO -- check if 35x is correct
+ or @tt{structs}---causes slowdown of at least 35x. These modules make up
+ tightly coupled clique. Laying down a type-untyped boundary to separate
+ this clique causes many crossings of values across these contract
+ boundaries.}
+
+@item{Inspecting @tt{data} and @tt{label} further reveals that the latter
+ depends on the former through an adaptor module. The latter introduces a
+ contract boundary when either of the two modules is untyped. When both
+ modules are typed but all others remain untyped, the slowdown is reduced
+ to about 12x.
+@;  TODO - check 12x
+
+ The @tt{structs} module depends on @tt{data} in the same fashion.  Because
+ @tt{structs} also depends on @tt{label}, the configuration in which both
+ @tt{structs} and @tt{data} are typed still has a large slowdown. When all
+ three modules are typed, the slowdown is reduced to about 5x.}
+
+@item{Finally, the configurations close to the worst slowdown case are
+ those in which the @tt{data} module is left untyped but several of the
+ other modules are typed. This makes sense given the coupling we observed
+ above; the contract boundaries induced between the untyped @tt{data} and
+ other typed modules slow down the program.  The module structure diagram
+ for @tt{suffixtree} in @figure-ref{fig:bm} corroborates the presence of
+ this coupling. The rightmost node in that diagram corresponds to the
+ @tt{data.rkt} module, which has the most in-edges in that particular
+ graph. We observe a similar kind of coupling in the simpler @tt{sieve}
+ example, which consists of just a data module and its client.}
+]
+
+
 @figure*["fig:lnm1" 
   @list{@step["L" "N" "M"] results for the first 6
   benchmarks. The x-axes measure overhead and the y-axes count variations.} 
@@ -71,7 +238,7 @@ in the paper were not affected by the choice of machine.
 ]
 
 @; -----------------------------------------------------------------------------
-@section{Presenting the Data} 
+@section{Experimental Results}
 
 @Figure-ref["fig:lnm1" "fig:lnm2"] summarize our findings for each of our
 twelve benchmark programs.  Each row reports the results for one benchmark,
@@ -128,170 +295,7 @@ it climbs, and where it crosses the vertical @math{N} and @math{M} lines
 and the horizontal 60% line. 
 
 @; -----------------------------------------------------------------------------
-@section{One Benchmark in Depth}
-
-In order to explain our experimental setup, we take a close look at one
-benchmark, @tt{suffixtree}, and explain the setup and the timing results in
-detail.
-
-
-@subsection{Setting up the Benchmark}
-
-Our chosen benchmark consists of six modules, summarized in @figure-ref{fig:purpose-statements}.
-Each module is available with and without type annotations.
-Each configuration thus consists of six
-modules, linking a typed or an untyped version of @tt{data}, @tt{label},
-@tt{lcs}, @tt{main}, @tt{structs}, and @tt{ukkonen}.
-
-@; TODO Why does this look so bad? Too much space at end of table
-@figure["fig:purpose-statements" "Suffixtree Modules"
-@tabular[#:sep @hspace[2]
-(list (list @bold{Module} @bold{Purpose})
- (list @tt{data.rkt}    "Label and tree node data definitions")
- (list @tt{label.rkt}   "Functions on suffixtree node labels")
- (list @tt{lcs.rkt}     "Longest-Common-Subsequence implementation")
- (list @tt{main.rkt}    "Apply lcs to benchmark data")
- (list @tt{structs.rkt} "Create and traverse suffix tree nodes")
- (list @tt{ukkonen.rkt} "Build whole suffix trees via Ukkonen's algorithm"))]]
-
-For the annotation process, a programmer equips each structure, function,
-and class with types. Modules provide their exports together with types, so
-that the type checker can cross-check modules. In a gradually typed
-context, a @defterm{client} module may import values from an untyped
-@defterm{server} module, which means that the corresponding
-@racket[require] specifications must be equipped with types. Consider this
-example from @tt{suffixtree}: 
-@;%
-@(begin
-#reader scribble/comment-reader
-(racketblock
-(require 
-  (only-in "label.rkt" 
-            make-label 
-            ... 
-            sublabel 
-            ... 
-            vector->label/s))
-))
-@;%
- It says that the server module is called @tt{label.rkt} and that the
- client imports specific values. This specification must be replaced with a
- @racket[require/typed] specification where each imported identifier is
- equipped with the expected types. For our running example, we get
- something like this: 
-@;%
-@(begin
-#reader scribble/comment-reader
-(racketblock
-(require/typed/check "label.rkt" 
- [make-label
-  (-> (U String (Vectorof (U Char Symbol))) Label)]
- ....
- [sublabel 
-  (case-> 
-    (-> Label Index Label)
-    (-> Label Index Index Label))]
- ...
- [vector->label/s
-  (-> (Vectorof (U Char Symbol)) Label)])
-))
-@; 
-
-When a module imports values from an untyped source, Typed Racket compiles
-the specified types in a @racket[require/typed] specification into run-time
-checks and contracts for the values that flow into the module. For example,
-if some imported variable is expected to be of type @tt{Char}, the check is
-@racket[char?] and is performed as the value flows across the module
-boundary. In contrast, higher-order types for, e.g., functions, objects, or
-classes become contracts, which are wrapped around the imported value and
-which check each future interaction of this value with its context.
-
-Since our evaluation setup calls for linking typed modules to both typed
-and untyped server modules, depending on the configuration, we replace
-@racket[require/typed] specifications with @racket[require/typed/check]
-versions. This new syntax can determine whether the server module is typed
-or untyped. It installs dynamic checks and contracts if the server module
-is untyped, and it ignores the annotation if the server module is typed.
-As a result, typed modules function independently of the rest of the
-modules in a configuration.
-
-@figure*["fig:suffixtree" 
-          @list{Suffixtree performance lattice. 
-               Nodes are labeled with their normalized mean.}
-  @(let* ([vec (file->value SUFFIXTREE-DATA)]
-          [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
-     (make-performance-lattice vec*))
-]
-
-@; -----------------------------------------------------------------------------
-@subsection{Timing the Benchmark}
-
-@Figure-ref{fig:suffixtree} shows the performance lattice annotated with
- the results of our timing measurements. The lattice displays each of the
- modules in the program with a rectangle.  A filled black rectangle means the
- module is typed, an open rectangle means the module is untyped. The rectangles
- are ordered from left to right and correspond to the modules of
- @tt{suffixtree} in alphabetical order: @tt{data}, @tt{label}, @tt{lcs},
- @tt{main}, @tt{structs}, and @tt{ukkonen}. Each configuration lists the
- average of the runtime of 30 iterations normalized to the untyped average.
- @;; TODO: talk about standard deviation here
-
-Following section@secref{sec:fwk}, we start by considering the
- typed/untyped ratio. The fully typed configuration (top) for
- @tt{suffixtree} is @emph{faster} than the fully untyped (bottom)
- configuration. Concretely, the typed variant runs around 30% faster than
- the untyped one, which puts the ratio at about 0.7.
-
-The fully typed configuration is faster than the untyped one because Typed
- Racket's optimizer is able to specialize arithmetic operations, improve
- field access to records, and eliminate some vector-bounds
- checking@~cite[thscff-pldi-2011]. When the optimizer is turned off,
- performance of the fully typed configuration reverts to the one of the
- untyped one. Unfortunately, the performance improvement of the fully typed
- configuration is the only good part of this benchmark. 
-
-Almost all partially typed configurations between the untyped configuration
- and the fully typed one exhibit slowdowns. Roughly, these slowdowns range
- from 2% to 100x. An inspection of the performance lattice clarifies
- several points about these slowdowns:
-@itemlist[
-
-@item{Adding type annotations to the @tt{main} module neither subtracts or
- adds much overhead because it is a driver module that is not coupled to
- any other modules.}
-
-@item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
- or @tt{structs}---causes slowdown of at least 35x. These modules make up
- tightly coupled clique. Laying down a type-untyped boundary to separate
- this clique causes many crossings of values across these contract
- boundaries.}
-
-@item{Inspecting @tt{data} and @tt{label} further reveals that the latter
- depends on the former through an adaptor module. The latter introduces a
- contract boundary when either of the two modules is untyped. When both
- modules are typed but all others remain untyped, the slowdown is reduced
- to about 12x.
-
- The @tt{structs} module depends on @tt{data} in the same fashion.  Because
- @tt{structs} also depends on @tt{label}, the configuration in which both
- @tt{structs} and @tt{data} are typed still has a large slowdown. When all
- three modules are typed, the slowdown is reduced to about 5x.}
-
-@item{Finally, the configurations close to the worst slowdown case are
- those in which the @tt{data} module is left untyped but several of the
- other modules are typed. This makes sense given the coupling we observed
- above; the contract boundaries induced between the untyped @tt{data} and
- other typed modules slow down the program.  The module structure diagram
- for @tt{suffixtree} in @figure-ref{fig:bm} corroborates the presence of
- this coupling. The rightmost node in that diagram corresponds to the
- @tt{data.rkt} module, which has the most in-edges in that particular
- graph. We observe a similar kind of coupling in the simpler @tt{sieve}
- example, which consists of just a data module and its client.}
-
-]
-
-@; -----------------------------------------------------------------------------
-@section[#:tag "sec:all-results"]{Experimental Results}
+@section[#:tag "sec:all-results"]{Discussion}
 
 @; Due dilligence for each benchmark,
 @; The "WHY" try to explain the performance.
