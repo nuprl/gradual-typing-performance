@@ -344,25 +344,6 @@ well as the untyped program.
 @; PATH: (easy)
 @; - but in practice might be hard -- depending on the untyped library your untyped script maybe isn't safe
 
-@parag{LNM} The shape of the @tt{lnm} graphs is ideal.  The sharp
-vertical line at @exact{$L$}=0 indicates that gradual typing introduces
-only a small overhead compared to the untyped program.  Indeed, the summary
-statistics for @tt{lnm} confirm that the overall slowest running time we
-observed was within a 25% slowdown over the untyped baseline. Furthermore,
-the fully typed performance is very good. Most likely the typed performance
-is due to the fact that @tt{lnm} relies heavily on Racket's plotting library,
-which is a typed library. This implies that the original untyped program
-likely suffers from a performance @emph{penalty} due to contracts.
-
-@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
-@; Even at @exact{$L$}=2, we could shift focus to identifying the good
-@; configurations rather than finding a new implementation strategy. 
-
-@; WHY
-@; - little goes across the boundary. client/server communicate over ports
-@; PATH (easy)
-@; - very small program
-
 
 @parag{Morse code} The @tt{morse-code} benchmark also shows excellent
 performance.  At @math{L}=0 three configurations perform at least as well as
@@ -424,9 +405,25 @@ performance.
 @; - module structure not bad
 
 
-@; @parag{L-NM}
-@; Our script for processing and plotting experimental data is a Typed Racket success story.
-@; The fully-typed version performs much better than the untyped one, and gradual typing at worst introduces modest overhead.
+@parag{LNM} The shape of the @tt{lnm} graphs is ideal.  The sharp
+vertical line at @exact{$L$}=0 indicates that gradual typing introduces
+only a small overhead compared to the untyped program.  Indeed, the summary
+statistics for @tt{lnm} confirm that the overall slowest running time we
+observed was within a 25% slowdown over the untyped baseline. Furthermore,
+the fully typed performance is very good. Most likely the typed performance
+is due to the fact that @tt{lnm} relies heavily on Racket's plotting library,
+which is a typed library. This implies that the original untyped program
+likely suffers from a performance @emph{penalty} due to contracts.
+
+@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
+@; Even at @exact{$L$}=2, we could shift focus to identifying the good
+@; configurations rather than finding a new implementation strategy. 
+
+@; WHY
+@; - little goes across the boundary. client/server communicate over ports
+@; PATH (easy)
+@; - very small program
+
 
 @parag{K-CFA} The @tt{kcfa} benchmark has a very jagged shape, implying
 that @exact{$N/M$}-usability is not a helpful tradeoff for this program.
@@ -454,6 +451,20 @@ performant configurations).
 @; PATH (easy)
 @; - organized & simple project
 @; - code was originally 1 module and educational
+
+
+@parag{Snake} The @tt{snake} benchmark has similar performance
+characteristics to @tt{synth}.  Most gradually-typed configurations suffer more
+than 20x overhead and increasing @exact{$L$} helps somewhat, but still one
+must accept approximately 6x overhead before the majority of configurations
+qualify as usable.
+
+@; WHY
+@; - (probably) tightly-coupled module structure?
+@; - anyway, it's interesting that synth was not an isolated problem
+@; - also interesting that it's not exactly tetris
+@; PATH (easy)
+@; - simple types, small project, fully contracted (it was already a contract benchmark)
 
 
 @parag{Synth} The @tt{synth} benchmark performs well when fully-typed, but
@@ -488,20 +499,6 @@ configurations.
 @; - why is this different from snake?
 @; PATH (easy)
 @; - like snake, simple types + small + full contracts
-
-
-@parag{Snake} The @tt{snake} benchmark has similar performance
-characteristics to @tt{synth}.  Most gradually-typed configurations suffer more
-than 20x overhead and increasing @exact{$L$} helps somewhat, but still one
-must accept approximately 6x overhead before the majority of configurations
-qualify as usable.
-
-@; WHY
-@; - (probably) tightly-coupled module structure?
-@; - anyway, it's interesting that synth was not an isolated problem
-@; - also interesting that it's not exactly tetris
-@; PATH (easy)
-@; - simple types, small project, fully contracted (it was already a contract benchmark)
 
 
 @parag{Gregor} Despite being a large benchmark, @tt{gregor} performs
