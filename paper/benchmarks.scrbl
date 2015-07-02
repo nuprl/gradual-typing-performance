@@ -65,8 +65,8 @@ Project name          & \# Modules & Untyped LOC & Type Ann. LOC & Other LOC & M
 \tt{lnm}              & 6          & 501         & 120           & 62        & \pict{lnm}        \\
 \tt{kcfa}             & 7          & 248         & 47            & 141       & \pict{kcfa}       \\
 \tt{snake}            & 8          & 161         & 50            & 27        & \pict{snake}      \\
-\tt{synth}            & 9          & 837         & 142           & 33        & \pict{funkytown}  \\
 \tt{tetris}           & 9          & 305         & 71            & 38        & \pict{tetris}     \\
+\tt{synth}            & 10         & 837         & 142           & 33        & \pict{funkytown}  \\
 \tt{gregor}           & 13         & 996         & 164           & 103       & \pict{gregor}     \\
 \tt{quad}             & 16         & 6722        & 300           & 241       & \pict{quad}       \\
 \bottomrule
@@ -176,6 +176,12 @@ Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering
 the game state and does not display a GUI.  We use one adaptor module to
 represent the game data types, but otherwise the program is self-contained.
 
+@parag{Tetris}
+This program is taken from the same benchmark suite as @tt{snake}@~cite[nthvh-icfp-2014]
+and implements the eponymous game.
+Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here requires
+one adaptor module.
+
 @parag{Synth}
 The @tt{synth} benchmark@note{@url["https://github.com/stamourv/synth"]}
 is a sound synthesis example from St-Amour @|etal|'s work on
@@ -183,12 +189,6 @@ feature-specific profiling@~cite[saf-cc-2015].
 The program consists of nine modules, half of which are from Typed Racket's array library.
 In order to run these library modules in all typed-untyped configurations we created an adaptor module
 for the underlying array data structure.
-
-@parag{Tetris}
-This program is taken from the same benchmark suite as @tt{snake}@~cite[nthvh-icfp-2014]
-and implements the eponymous game.
-Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here requires
-one adaptor module.
 
 @parag{Gregor}
 This benchmark contains thirteen modules and stress-tests a date and time library.

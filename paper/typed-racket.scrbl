@@ -227,9 +227,9 @@ Sadly, the performance improvement of the fully typed configuration is the
 
 @figure*["fig:lnm2" @list{@step["L" "N" "M"] results for the remaining benchmarks}
   @(let* ([data `(("kcfa"       ,KCFA-DATA)
-                  ("synth"      ,SYNTH-DATA)
-                  ("tetris"     ,TETRIS-DATA)
                   ("snake"      ,SNAKE-DATA)
+                  ("tetris"     ,TETRIS-DATA)
+                  ("synth"      ,SYNTH-DATA)
                   ("gregor"     ,GREGOR-DATA)
                   ("quad"       ,QUAD-DATA))])
      (data->pict data #:tag "2"))
@@ -467,6 +467,20 @@ qualify as usable.
 @; - simple types, small project, fully contracted (it was already a contract benchmark)
 
 
+@parag{Tetris} Like @tt{suffixtree}, the @tt{tetris} benchmark is a success
+story for increasing @exact{$L$}.  When @exact{$L$}=0 we see that half of
+all modules are within 6x overhead, but the rest are more than 20x worse
+than the untyped program.  The ``good half'', however, is apparently spread
+throughout the lattice and reachable in few steps from many other
+configurations.
+
+@; WHY
+@; - where is the heavy boundary?
+@; - why is this different from snake?
+@; PATH (easy)
+@; - like snake, simple types + small + full contracts
+
+
 @parag{Synth} The @tt{synth} benchmark performs well when fully-typed, but
 is significantly worse when gradually typed.  Over half the configurations
 suffer an overhead of more than 20x.  Increasing @math{L} does increase the
@@ -485,20 +499,6 @@ of a point with at most 3x slowdown.
 @;   (may have just been Ben's inexperience)
 @; - array functions were all polymorphic, made for difficult boundaries
 @; heavy use/export of macros
-
-
-@parag{Tetris} Like @tt{suffixtree}, the @tt{tetris} benchmark is a success
-story for increasing @exact{$L$}.  When @exact{$L$}=0 we see that half of
-all modules are within 6x overhead, but the rest are more than 20x worse
-than the untyped program.  The ``good half'', however, is apparently spread
-throughout the lattice and reachable in few steps from many other
-configurations.
-
-@; WHY
-@; - where is the heavy boundary?
-@; - why is this different from snake?
-@; PATH (easy)
-@; - like snake, simple types + small + full contracts
 
 
 @parag{Gregor} Despite being a large benchmark, @tt{gregor} performs
