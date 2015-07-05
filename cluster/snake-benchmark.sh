@@ -33,7 +33,7 @@ done
 
 ~/racket-6.2/bin/racket setup.rkt snake
 ~/racket-6.2/bin/racket tools/run.rkt -c -j 39 snake
-~/racket-6.2/bin/racket tools/run.rkt -i 30 -j 39 snake
+~/racket-6.2/bin/racket tools/run.rkt -i 30 -j 19 snake
 
 cp snake*.rktd ~/
 

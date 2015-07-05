@@ -33,7 +33,7 @@ done
 
 ~/racket-6.2/bin/racket setup.rkt tetris
 ~/racket-6.2/bin/racket tools/run.rkt -c -j 39 tetris
-~/racket-6.2/bin/racket tools/run.rkt -i 30 -j 39 tetris
+~/racket-6.2/bin/racket tools/run.rkt -i 30 -j 19 tetris
 
 cp tetris*.rktd ~/
 

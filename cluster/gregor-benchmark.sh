@@ -33,7 +33,7 @@ done
 
 ~/racket-6.2/bin/racket setup.rkt gregor
 ~/racket-6.2/bin/racket tools/run.rkt -c -j 39 gregor
-~/racket-6.2/bin/racket tools/run.rkt -o gregor-results.rktd -i 30 -j 39 gregor
+~/racket-6.2/bin/racket tools/run.rkt -o gregor-results.rktd -i 30 -j 19 gregor
 
 cp gregor-results.rktd ~/
 
