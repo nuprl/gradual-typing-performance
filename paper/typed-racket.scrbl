@@ -20,8 +20,9 @@ configurations. Each configuration is run 30 times to ensure that the
 @;
 timing is not affected by random factors; some configurations take minutes
 to run. Presenting and analyzing this wealth of data poses a separate
-challenge all by itself. This section present our results.
+challenge all by itself.
 
+This section present our measurements.
 The first subsection discusses one benchmark in detail, demonstrating how we
  create the configurations, how the boundaries affect the performance of
  various configurations, and how the Typed Racket code base limits the
@@ -31,36 +32,36 @@ The first subsection discusses one benchmark in detail, demonstrating how we
 
 @parag{Experimental setup}
 Due to the high resource requirements of evaluating 
-the performance lattice, experiments were on a cluster consisting of a
+the performance lattices, experiments were run on a cluster consisting of a
 Machine A with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, Machine B
 with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of Machines C
 @;from the Northeastern University Discovery Cluster@note{@url{http://nuweb12.neu.edu/rc/?page_id=27}}
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
 with 64GB RAM. All machines run a variant of Linux. The following
-benchmarks are run on machine A: @tt{morse-code} and @tt{lnm}.
-The following are run on machine B: @tt{sieve} and @tt{kcfa}.
-The following are run on machine C: @tt{suffixtree}, @tt{snake},
+benchmarks were run on machine A: @tt{morse-code} and @tt{lnm}.
+The following were run on machine B: @tt{sieve} and @tt{kcfa}.
+The following were run on machine C: @tt{suffixtree}, @tt{snake},
 @tt{synth}, @tt{tetris}, and @tt{gregor}.
 @;; FIXME edit this when all are run
 For each configuration we report the average of 30 runs.
 @; TODO: talk about warm up?  
 @; TODO:Compilation v. interpreteration v. jitting?
-All of our programs are using a single core with green threads.
+All of our runs use a single core with green threads where applicable.
 We did some sanity checks and were able to validate that performance differentials reported
 in the paper were not affected by the choice of machine.
 
 @; -----------------------------------------------------------------------------
 @section{Suffixtree in Depth}
 
-To illustrate the key points of the experiments, it is helpful to look
-closely at one of the benchmarks, @tt{suffixtree}, and explain the setup and
-the timing results in detail.
+To illustrate the key points of the experiments, this section describes
+one of the benchmarks, @tt{suffixtree}, and explains the setup and
+its timing results in detail.
 
-@tt{Suffixtree} consists of six modules (@tt{data} to define label and
+@tt{Suffixtree} consists of six modules: @tt{data} to define label and
 tree nodes, @tt{label} with functions on suffixtree node labels,
 @tt{lcs} to compute Longest-Common-Subsequences, @tt{main} to apply
 lcs to data, @tt{structs} to create and traverse suffix tree nodes,
-@tt{ukkonen} to build suffix trees via Ukkonen's algorithm).  Each
+@tt{ukkonen} to build suffix trees via Ukkonen's algorithm. Each
 module is available with and without type annotations.  Each configuration
 thus links six modules, some of them typed and others untyped.
 
@@ -86,7 +87,7 @@ thus links six modules, some of them typed and others untyped.
 
 For typed modules, a programmer equips each structure, function, and class
 with types. Modules provide their exports together with types, so that the
-type checker can cross-check modules. A @defterm{client} module may import
+type checker can cross-check modules. A typed @defterm{client} module may import
 values from an untyped @defterm{server} module, which means that the
 corresponding @racket[require] specifications must be equipped with
 types. Consider this example:
@@ -103,7 +104,7 @@ types. Consider this example:
 ))
 @;%
 The server module is called @tt{label.rkt}, and the client imports specific
- values (e.g. @tt{make-label}).  This specification is replaced with a
+ values, e.g., @tt{make-label}.  This specification is replaced with a
  @racket[require/typed] specification where each imported identifier is
  typed:
 @;%
@@ -123,12 +124,12 @@ The server module is called @tt{label.rkt}, and the client imports specific
 ))
 @; 
 
-When a module imports values from an untyped source, the types in a
+The types in a
 @racket[require/typed] specification are compiled into run-time checks and
 contracts for the values that flow into the module. For example, if some
 imported variable is declared to be a @tt{Char}, the check @racket[char?]
 is performed as the value flows across the module boundary. Higher-order
-types (functions, objects, or classes) become contracts which are wrapped
+types (functions, objects, or classes) become contracts that are wrapped
 around the imported value and which check each future interaction of this
 value with its context.
 
@@ -158,14 +159,13 @@ modules in a configuration.
   order: @tt{data}, @tt{label}, @tt{lcs}, @tt{main}, @tt{structs}, and
   @tt{ukkonen}.
 
-Following the method outlined in section@secref{sec:fwk}, we start by
- considering the typed/untyped ratio. For each configuration, the ratio is
- computed by dividing the average of 30 iterations of the typed program by
- the average of 30 untyped iterations.  The figure omits standard deviations
+ For each configuration in the lattice, the ratio is
+ computed by dividing the average timing of the typed program by
+ the untyped average. The figure omits standard deviations
  as they small enough to not affect the discusion.
 
 The fully typed configuration (top) is @emph{faster} than the fully untyped
- (bottom) configuration by around 30%, which puts the ratio at 0.7. This is
+ (bottom) configuration by around 30%, which puts the typed/untyped ratio at 0.7. This is
  easily explained by Typed Racket's optimizations such as specialization of
  arithmetic operations, improved field accesses, and elimination of some
  bounds checks@~cite[thscff-pldi-2011]. When the optimizer is turned off,
@@ -175,7 +175,7 @@ The fully typed configuration (top) is @emph{faster} than the fully untyped
 Sadly, the performance improvement of the fully typed configuration is the
  only good part of this benchmark. Almost all partially typed configurations
  exhibit slowdowns ranging from 2% to 66x. Inspection of the lattice
- clarifies several points about these slowdowns: @itemlist[
+ suggests several points about these slowdowns: @itemlist[
 
 @item{Adding type annotations to the @tt{main} module neither subtracts or
  adds much overhead because it is a driver module that is not coupled to
@@ -184,13 +184,13 @@ Sadly, the performance improvement of the fully typed configuration is the
 
 @item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
 @; TODO -- check if 35x is correct
- or @tt{structs}---causes slowdown of at least 35x. These modules make up
+ or @tt{structs}---causes slowdown of at least 35x. These modules make up a
  tightly coupled clique. Laying down a type-untyped boundary to separate
- this clique causes many crossings of values across these contract
- boundaries.}
+ this clique causes many crossings of values, with associated
+ contract-checking cost.}
 
 @item{Inspecting @tt{data} and @tt{label} further reveals that the latter
- depends on the former through an adaptor module. The latter introduces a
+ depends on the former through an adaptor module. This adaptor introduces a
  contract boundary when either of the two modules is untyped. When both
  modules are typed but all others remain untyped, the slowdown is reduced
  to about 12x.
@@ -203,7 +203,7 @@ Sadly, the performance improvement of the fully typed configuration is the
 
 @item{Finally, the configurations close to the worst slowdown case are
  those in which the @tt{data} module is left untyped but several of the
- other modules are typed. This makes sense given the coupling we observed
+ other modules are typed. This makes sense given the coupling noted
  above; the contract boundaries induced between the untyped @tt{data} and
  other typed modules slow down the program.  The module structure diagram
  for @tt{suffixtree} in @figure-ref{fig:bm} corroborates the presence of
@@ -213,9 +213,9 @@ Sadly, the performance improvement of the fully typed configuration is the
  example, which consists of just a data module and its client.}
 ]
 
-The reason @tt{suffixtree} is bad news for gradual typing is because of
-performance ``valleys'' in which a maintenance programmer can get stuck.
-Consider that we start with the untyped program, and for some reason choose
+The performance lattice for @tt{suffixtree} is bad news for gradual typing.
+It exhibits performance ``valleys'' in which a maintenance programmer can get stuck.
+Consider starting with the untyped program, and for some reason choosing
 to add types to @tt{label}. The program slows down by 45x. Without any
 guidance, a developer may choose to then type @tt{structs} and see the
 program slow down to 55x.  After that typing @tt{main} (53x), @tt{ukkonen}
@@ -249,11 +249,12 @@ when all the modules are typed that performance improves (0.7x).
 @; -----------------------------------------------------------------------------
 @section{Experimental Results}
 
-We summarize the results from exhaustively exploring the performance lattice
-of our twelve benchmarks in @Figure-ref["fig:lnm1" "fig:lnm2"]. Each row
+@Figure-ref["fig:lnm1" "fig:lnm2"]
+summarize the results from exhaustively exploring the performance lattice
+of our twelve benchmarks. Each row
 reports the results for one program.  On the left, a table spells out the
 typed/untyped ratio, the maximum overhead, and the average overhead. This is
-followed by three graphs that show how many configurations impose an ovehead
+followed by three graphs that show how many configurations impose an overhead
 between 1x and 20x for three values of @math{L}: @math{0}, @math{1}, and
 @math{2}.
 
@@ -263,10 +264,10 @@ Typed Racket optimizations. Values larger than 1 are slowdowns caused by
 interaction with untyped parts of the underlying Racket runtime.  The ratios
 ranges between 0.28x (@tt{lnm}) and 3.22x (@tt{zo-traversal}).
 
-The maximum overhead is computed by finding the slowest configuration and
-dividing it by the untyped version. The average overhead is obtained by
+The maximum overhead is computed by finding the running time of the slowest configuration and
+dividing it by the running time of the untyped version. The average overhead is obtained by
 computing the average over all configurations (excluding the top and bottom
-ones) and dividing it by the untyped configuration. Maximum overheads range
+ones) and dividing it by the running time of the untyped configuration. Maximum overheads range
 from 1.25x (@tt{lmn}) to 168x (@tt{tetris}).  Average overheads range from
 0.6x (@tt{lmn}) to 68x (@tt{tetris}). The slowdowns reported in the
 partially typed configurations come from contracts and checks performed as
@@ -281,7 +282,7 @@ given slowdown.  They are, by definition, monotonically increasing because
 the more overhead is allowed, the more configurations satisfy the
 condition. The ``ideal'' result would be a flat line at a graph's top, this
 would mean that all configuration are as fast (or faster) as the untyped
-one.  The ``worst'' case scenario is a flat line a the graph's bottom,
+one.  The ``worst'' case scenario is a flat line at the graph's bottom,
 indicating that all configuration are more than 20x slower than the untyped
 one. For ease of comparison between graphs, a dashed
 (@exact{\color{red}{red}}) horizontal line indicates 60% point of all
@@ -291,7 +292,7 @@ curves with a smaller slope.
 @;Each line was obtained by measuring @id[PARAM-NUM-SAMPLES] overheads 
 @;linearly spaced along the x-axis.
 
-Our method defines @deliverable{N} and @usable["N" "M"] as to key
+Our method defines @deliverable{N} and @usable["N" "M"] as key
 functions for measuring the quality of a gradual type system.  The
 cumulative performance graphs display the values of parameters @math{N} and
 @math{M} as, respectively, a @exact{\color{ForestGreen!90!black}{green}} and
@@ -308,21 +309,20 @@ Lastly, the figures show cumulative performance graphs for different values
 of @math{L} (from 0 to 2).  The interpretation of @math{L} = 1 and 2 are as
 follows. For each configuration, we search the entire space of
 @math{O(n!-(n-L)!)}  reachable configurations to find a neighbor with usable
-running time.  This models how the number of steps of typing that a software
-engineer may have to take before getting an acceptable performance. If the
-top element (fully typed) is reachable, it will be returned. Clearly the
+running time.  If the
+top configuration (fully typed) is reachable, it is included in the set. Clearly the
 number of steps is bounded by the height of the performance lattice. Thus,
 for example, @tt{sieve} which has only two modules can get an ideal result
 in one step.
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:all-results"]{Discussion}
+@section[#:tag "sec:all-results"]{Interpretation}
 
 @; Due dilligence for each benchmark,
 @; The "WHY" try to explain the performance.
 @; The "PATH" comment on how difficult porting was
 
-The ideal shape for these curves is a flat line at the top of the y-axis.
+As mentioned, the ideal shape for these curves is a flat line at the top of the y-axis.
 Of course the dynamic checks inserted by gradual type systems make this
 ideal difficult to achieve even with type-driven optimizations, so the
 next-best shape is a steep vertical line reaching the 100% count at a low
@@ -350,7 +350,7 @@ performance.
 
 @parag{Sieve} At @exact{$L$}=0, the @tt{sieve} benchmark is dead in the
 water, as both partially typed configuration have more than 20x overhead.
-Increasing @exact{$L$}, however, shows, unsurprisingly that the fully typed
+Increasing @exact{$L$}, however, shows unsurprisingly that the fully typed
 configuration is one step away.  This is our only ``perfect'' graph, in
 which every configuration is within reach of a configuration that performs
 at least as well as the untyped program.
@@ -385,7 +385,7 @@ for one flat area.  This implies that a boundary (or group of boundaries)
 accounts for a 3x slowdown, such that the set of configurations where these
 boundaries connect typed and untyped modules all experience similar
 overhead. Many configurations are @deliverable{2}, but, interestingly, not
-the fully typed one. This explains why @math{L} values of 1 and 2 do not 
+the fully typed one. This explains why increasing @math{L} to 1 and 2 does not 
 help much.
 @;TODO Strange no? <jan>
 
@@ -400,7 +400,8 @@ not as drastic as @tt{morse-code} or @tt{mbta}.  Half the configurations
 suffer a 2x overhead, even when @exact{$L$} increases.  This behavior is
 again explained by the summary data: as the fully-typed configuration incurs
 a 4x overhead, the ability to convert additional modules rarely helps reach
-a more performant configuration. This is case, where programmers may have
+a more performant configuration. This benchmark is a case in which
+programmers may have to
 undo some of the type annotations to recover  performance.
 
 @; WHY
@@ -413,8 +414,8 @@ undo some of the type annotations to recover  performance.
 
 
 @parag{Suffixtree} At @exact{$L$}=0, @tt{suffixtree} is the worst of our
-benchmarks.  Over half the gradually-typed configurations hit a performance
-wall and are not usable at any realistic overhead.  Increasing @exact{$L$},
+benchmarks.  Over half the gradually-typed configurations
+are not usable at any realistic overhead.  Increasing @exact{$L$},
 however, improves this picture.  Thus although most configurations suffer
 large performance overhead, they are, in theory, close to a configuration
 with better performance. Nevertheless there are still too many bad
@@ -472,7 +473,7 @@ is possible to find @deliverable{N} configurations from any configuration.
 @; - code was originally 1 module and educational
 
 @parag{Snake} The @tt{snake} benchmark performs well when fully typed, but
-most partially typed configurations suffer more than 20x
+most partially typed configurations suffer from more than 20x
 overhead. Increasing @exact{$L$} helps somewhat, but still one must accept
 6x overhead before the majority of configurations qualify as usable.
 

@@ -4,12 +4,12 @@
 
 @title[#:tag "sec:death"]{Sound Gradual Typing is Dead}
 
-Unsound type systems are useful. They find bugs, and an IDE can use them to
+Unsound type systems are useful. They find bugs at compile-time, and an IDE can use them to
  assist programmers. Sound type systems are meaningful in addition. A
  soundly typed program can't go wrong, up to a well-defined set of run-time
  exceptions@~cite[type-soundness]. When a typed program raises an
  exception, the exception message can (usually) pinpoint the location of
- the problem in the program source. As a result, types are one of the best
+ the problem in the program source. Hence sound types are one of the best
  forms of documentation and specification around. In the context of a sound
  type system, the type of a well-named function or method often explains
  (almost) as much as an inspection of their code will do.
@@ -33,7 +33,7 @@ In general, the graphs in @figure-ref["fig:lnm1" "fig:lnm2"] clarify how
  choice. But even allowing the conversion of two additional modules does
  not increase the number of acceptable configurations by much. Put
  differently, the number of @math{L}-step @math{N/M}-acceptable
- configurations remains small with liberal choices for all parameters.
+ configurations remains small with liberal choices for all three parameters.
 
 Like Marc Antony, we come here to bury sound gradual typing, not to praise
  it. Sound gradual typing is dead.
