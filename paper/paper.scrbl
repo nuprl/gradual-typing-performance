@@ -32,30 +32,29 @@
  maintaining and evolving these systems, the lack of explicit static typing
  becomes a bottleneck. In response, researchers have explored the idea of
  gradually typed programming languages which allow the post-hoc addition of
- type annotations to software written in one of these ``untyped'' languages.
- Some of these new hybrid languages insert run-time checks at the boundary
+ type annotations to software written in one of these untyped languages.
+ Some of these new, hybrid languages insert run-time checks at the boundary
  between typed and untyped code to establish type soundness for the overall
- system. With sound gradual typing programmers can rely on the language
- implementation to provide meaningful error messages when ``untyped'' code
- misbehaves.
+ system. With sound gradual typing, programmers can rely on the language
+ implementation to provide meaningful error messages when type invariants
+ are violated.
 
  While most research on sound gradual typing has remained theoretical, the
- few emerging implementations incur performance overheads due to these
- checks. Indeed, none of the publications on this topic come with a
- comprehensive performance evaluation; a few report disastrous numbers on
- toy benchmarks. In response, this paper proposes a methodology for
- evaluating the performance of gradually typed programming languages.  The
- key is to explore the performance impact of adding type annotations to
- different parts of a software system. The methodology takes takes the idea
+ few emerging implementations suffer from performance overheads due to these
+ checks. None of the publications on this topic come with a
+ comprehensive performance evaluation. However, a few report disastrous numbers.
+ In response, this paper proposes a method for
+ evaluating the performance of gradually typed programming languages.
+ The method takes the idea
  of a gradual conversion from untyped to typed seriously and calls for
- measuring the performance of all possible conversions of a given untyped
- benchmark.  Finally the paper validates the proposed methodology using
+ measuring the performance of all possible partial conversions of a given untyped
+ benchmark. The paper reports on the results of applying the method to
  Typed Racket, a mature implementation of sound gradual typing, and a suite
  of real-world programs of various sizes and complexities.  Based on the
- results obtained in this study, the paper concludes that, given the state
- of current implementation technologies, sound gradual typing is
+ results obtained in this study, the paper concludes that, given the current state
+ of implementation technologies, sound gradual typing is
  dead. Conversely, it raises the question of how implementations could 
- reduce the overheads associated with ensuring soundness and how
+ reduce the overheads associated with soundness and how
  tools could be used to steer programmers clear from pathological cases.}
 
 @include-section{intro.scrbl}

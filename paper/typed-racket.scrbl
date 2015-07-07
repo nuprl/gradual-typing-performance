@@ -158,7 +158,7 @@ modules in a configuration.
   order: @tt{data}, @tt{label}, @tt{lcs}, @tt{main}, @tt{structs}, and
   @tt{ukkonen}.
 
-Following the methodology outlined in section@secref{sec:fwk}, we start by
+Following the method outlined in section@secref{sec:fwk}, we start by
  considering the typed/untyped ratio. For each configuration, the ratio is
  computed by dividing the average of 30 iterations of the typed program by
  the average of 30 untyped iterations.  The figure omits standard deviations
@@ -291,7 +291,7 @@ curves with a smaller slope.
 @;Each line was obtained by measuring @id[PARAM-NUM-SAMPLES] overheads 
 @;linearly spaced along the x-axis.
 
-Our methodology defines @deliverable{N} and @usable["N" "M"] as to key
+Our method defines @deliverable{N} and @usable["N" "M"] as to key
 functions for measuring the quality of a gradual type system.  The
 cumulative performance graphs display the values of parameters @math{N} and
 @math{M} as, respectively, a @exact{\color{ForestGreen!90!black}{green}} and

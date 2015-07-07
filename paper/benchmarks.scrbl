@@ -4,13 +4,11 @@
 
 @title[#:tag "sec:bm"]{The Benchmark Programs}
 
-For our evaluation of Typed Racket, we curated a suite of twelve programs
-that are representative of actual user code and small enough so that
+For our evaluation of Typed Racket, we curated a suite of twelve programs.
+They are representative of actual user code yet small enough so that
 exhaustive exploration of the performance lattice remains tractable.  The
 benchmarks are either based on third-party libraries or scripts sourced from
-the original developer or from the Racket package repository. For each
-program, a fully typed version was either available or had to be written by
-the authors.
+the original developer or the Racket package repository.
 
 @section{Overview}
 
@@ -20,7 +18,7 @@ and a diagram of its module structure.
 
 Size is measured by the number of modules and lines of code (LOC) in a program.@note{We measured lines of code using the @hyperlink["http://www.dwheeler.com/sloccount/" "sloccount"] utility.}
 Crucially, the number of modules also determines the number of gradually-typed
-configurations we ran when testing the benchmark, as a program with @math{n} modules
+configurations to be run when testing the benchmark, as a program with @math{n} modules
 can be gradually typed in @exact{$2^n$} possible configurations.
 Lines of code is less important for evaluating macro gradual typing,
 but gives a sense of the overall complexity of each benchmark.
@@ -32,7 +30,7 @@ modules require annotations.
 The column labeled ``Other LOC'' measures the additional structure required
 to run each project for all typed-untyped configurations. This count includes
 project-wide type definitions, typed interfaces to untyped libraries, and
-any so-called typed adaptor modules (see below) we needed to add.
+any so-called typed adaptor modules (see below).
 
 Finally, the module structure graphs show a dot for each module in the program
 and an arrow from one module to another when the module at the arrow tail
@@ -42,7 +40,7 @@ and untyped modules, so it is interesting to compare the complexity of these
 graphs with our experimental results in section@secref{sec:tr}.
 This correlation, however, is a weak one because the module graphs show only
 @emph{static} dependencies, whereas the runtime cost of each boundary depends
-heavily on the frequency at which values flow across.
+heavily on the frequency at which values cross.
 
 @;;; to address this, we TODO added a counter to each contract and ran the prog.
 
@@ -84,7 +82,7 @@ The adaptor is a typed module that exports annotated versions of all
 bindings in the untyped data definition.
 Typed clients then import exclusively from the typed adaptor, bypassing the
 original data definition.
-Untyped clients still use the untyped data file.
+Untyped clients continue to use the untyped file.
 
 @figure["fig:adaptor" "Inserting a typed adaptor"
 @exact|{
@@ -107,13 +105,13 @@ Strictly speaking, typed adaptor modules are not necessary.
 It is possible to modify the design of imports for any given configuration so
 that a single typed module declares and re-exports type annotations for untyped
 data.
-This necessary redesign, however, presents a non-trivial challenge 
-when trying  to synthesize the @math{2^n} gradually-typed variations from
+This alternative presents a non-trivial challenge, however,
+when trying to synthesize the @math{2^n} gradually-typed configurations from
 a fully-untyped and fully-typed version of each benchmark.
 
-The layer of indirection provided by adaptors solved this issue and overall
-reduced the number of type annotations needed at boundaries because all typed
-clients could reference a single point of control.@note{In our experimental
+The layer of indirection provided by adaptors solves this issue and
+reduces the number of type annotations needed at boundaries because all typed
+clients can reference a single point of control.@note{In our experimental
 framework, typed adaptors are available to all configurations as library files.}
 Therefore we expect typed adaptor modules to be of independent use to
 practitioners.
@@ -121,9 +119,9 @@ practitioners.
 
 @section{Program Descriptions}
 
-We briefly describe each benchmark and note the dependencies and adaptor
-modules required to run it.  Unless otherwise noted, the benchmarks rely
-only on core Racket libraries and use no adaptor modules.
+This section briefly describes each benchmark, noting the dependencies and required adaptor
+modules.  Unless otherwise noted, the benchmarks rely
+only on core Racket libraries and do not use adaptor modules.
 
 @parag{Sieve}
 This program finds prime numbers using the Sieve of Eratosthenes and is our
@@ -131,20 +129,20 @@ smallest benchmark. It consists of two modules: a tiny streams library and a
 script implementing the Sieve using streams.
 
 @parag{Morse code}
-The @tt{morse-code} script was adapted from a morse code training program@note{@url["https://github.com/jbclements/morse-code-trainer"]}.
-The original program would play a morse code audio clip, read the keyboard for
-user input, and score the input based on its Levenshtein distance from the
+The @tt{morse-code} script is adapted from a morse code training program@note{@url["https://github.com/jbclements/morse-code-trainer"]}.
+The original program plays a morse code audio clip, reads the keyboard for
+user input, and scores the input based on its Levenshtein distance from the
 correct answer. Our benchmark tests generating morse code strings and running the
 Levenshtein algorithm on a list of frequently-used English words.
 
 @parag{MBTA}
 The @tt{mbta} program implements a server that asynchronously responds to
-path queries about a model of Boston's public transit system.
-The model is implemented using a third-party, untyped graph library.
-This introduces a typed-untyped boundary even in the ``completely typed'' case.
+path queries about a graph representation of Boston's public transit system.
+The graph representation is implemented using a third-party, untyped library.
+The latter introduces a typed-untyped boundary even in the ``completely typed'' case.
 
 @parag{ZO Traversal}
-The @tt{zo-traversal} script explores Racket bytecode structures (parsed from @tt{.zo} bytecode files)
+The @tt{zo-traversal} script provides a tool for exploring Racket bytecode structures
 and counts the frequency of AST nodes.
 The script operates on the Racket compiler's untyped zo data structures.
 Since these data structures are not natively supported in Typed Racket, even the
@@ -153,17 +151,17 @@ completely typed program incurs some dynamic overhead.
 @parag{Suffixtree}
 The @tt{suffixtree} library implements a longest-common-substring algorithm
 using Ukkonen's suffix tree algorithm. While the library has
-minimal external dependencies, we need to add one adaptor module for the
+minimal external dependencies, it calls for one adaptor module for the
 algorithm's internal data structures.
 
 @parag{L-NM}
-While writing this paper, we developed a small collection of scripts to analyze and present our experimental results.
-These scripts are included as the @tt{lnm} benchmark.
+This script analyzes the measurements included in this paper
+and generates @figure-ref{fig:lnm1} and @figure-ref{fig:lnm1}.
 Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticably less performant on large datasets.
 This program relies on an untyped image rendering library and uses two adaptor modules.
 
 @parag{K-CFA}
-The @tt{kcfa} program is a simple implementation of control flow analysis for a
+The @tt{kcfa} program implements a simple control flow analysis for a
 lambda calculus.
 The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
@@ -191,7 +189,7 @@ In order to run these library modules in all typed-untyped configurations we cre
 for the underlying array data structure.
 
 @parag{Gregor}
-This benchmark contains thirteen modules and stress-tests a date and time library.
+This benchmark consists of thirteen modules and stress-tests a date and time library.
 The original library uses a
 library for ad-hoc polymorphism that is not supported by Typed Racket. We
 get around this limitation by monomorphizing the code and removing @tt{gregor}'s
@@ -200,6 +198,6 @@ The benchmark uses two adaptor modules and relies on a small, untyped library fo
 acquiring data on local times.
 
 @parag{Quad}
-The @tt{quad} project is an experimental typesetting library.
+The @tt{quad} project implements a type-setting library.
 It depends on an external constraint satisfaction solver
 library (to divide lines of text across multiple columns) and uses two adaptor modules.
