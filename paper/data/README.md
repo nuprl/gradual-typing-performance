@@ -45,6 +45,7 @@ Run on Racket 6.2.
 - `lnm-large-06-28.rktd` Run on Desktop, single core. Benchmarked on data for gregor.
 - `morsecode-06-27.rktd` Run on Desktop, single core. Benchmarked on the entire list of frequently used words.
 - `sieve-2015-06-28T14:08:55.rktd` Run on Lambda, single core
+- `suffixtree-large-06-30.rktd` Run on Desktop, single core, 30 iters.
 - `funkytown-2015-06-30T15:34:39.rktd` Run on cluster, `-j 39`
 - `funkytown-2015-07-02T01:47:43.rktd` Run on cluster, `-j 19`
 - `snake-2015-06-30T14:55:40.rktd` Run on cluster, `-j 39`
