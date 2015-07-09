@@ -175,7 +175,7 @@ The fully typed configuration (top) is @emph{faster} than the fully untyped
 Sadly, the performance improvement of the fully typed configuration is the
  only good part of this benchmark. Almost all partially typed configurations
  exhibit slowdowns ranging from 0.7x to 105x. Inspection of the lattice
- clarifies several points about these slowdowns: @itemlist[
+ suggests several points about these slowdowns: @itemlist[
 
 @item{Adding type annotations to the @tt{main} module neither subtracts or
  adds much overhead because it is a driver module that is not coupled to
@@ -217,7 +217,7 @@ Sadly, the performance improvement of the fully typed configuration is the
 @; TODO check numbers
 The reason @tt{suffixtree} is bad news for gradual typing is because of
 performance ``valleys'' in which a maintenance programmer can get stuck.
-Consider that we start with the untyped program, and for some reason choose
+Consider starting with the untyped program, and for some reason choosing
 to add types to @tt{label}. The program slows down by 88x. Without any
 guidance, a developer may choose to then type @tt{structs} and see the
 program slow down to 104x.  After that typing @tt{main} (104x), @tt{ukkonen}
