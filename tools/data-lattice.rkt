@@ -66,7 +66,7 @@
     (apply hc-append
            1
            (for/list ([bit (in-bit-vector bv)])
-             (ellipse/border 3 5
+             (ellipse/border 3 8
                              #:border-width 1
                              #:color (if bit "black" "white")
                              #:border-color "black"))))
