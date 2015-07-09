@@ -28,7 +28,7 @@ done
 ########DO NOT EDIT ANYTHING ABOVE THIS LINE#########
 #####################################################
 
-~/racket-6.2/bin/racket tools/run.rkt -o quad-results-part-5.rktd -m 20001 25000 -i 30 -j 39 quad
+~/racket-6.2/bin/racket tools/run.rkt -o quad-results-part-5.rktd -m 14001 17000 -i 30 -j 39 quad
 
 cp quad-results-part-5.rktd ~/
 
