@@ -5,19 +5,21 @@
 @title[#:tag "sec:rel"]{The State of the Related Work}
 
 Gradual typing is a broad area teeming with both theoretical and practical
-results.  This section focuses on implementations rather than formal models.
+results.  This section focuses on implementations rather than formal models,
+paying special attention to performance evaluation of gradual type
+systems.
 
 @section{Sound Gradual Type Systems}
 
-Gradual typing has already been applied to a number of languages,
+Gradual typing has already been applied to a number of languages:
 Python@~cite[vksb-dls-2014], Smalltalk@~cite[acftd-scp-2013],
 Thorn@~cite[bfnorsvw-oopsla-2009] and TypeScript@~cite[rsfbv-popl-2015
-rnv-ecoop-2015], yet there are no conclusive studies of gradual typing's
+rnv-ecoop-2015]. None of the projects report on conclusive studies of gradual typing's
 impact on performance.
 
 The authors of Reticulated Python recognized the performance issues of
-gradual typing and designed the language to allow them to explore efficient
-casts mechanisms. However, Vitousek @etal note that ``Reticulated programs
+gradual typing and designed the language to allow the exploration of efficient
+cast mechanisms. However, Vitousek @etal note that ``Reticulated programs
 perform far worse than their unchecked Python implementations'' and that
 their @tt{slowSHA} program exhibits a ``10x slowdown'' compared to
 Python@~cite[(in-bib vksb-dls-2014 ", pg. 54")].
@@ -51,9 +53,9 @@ same microbenchmark suite as Safe TypeScript and compare the runtimes of
 type-erased and fully-typed versions using their optimizing compiler.  They
 report ``no benchmarks demonstrated slowdown outside of noise'' (and up 20%
 speed ups) on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 ",
-pg. 97")]. In our lattice terminology, the StrongScript comparison is
-essentially between the top and bottom of the lattice. The performance of
-intermediate states were not evaluated.
+pg. 97")]. In our lattice terminology, the StrongScript comparison reports
+typed/untyped ratios only. The performance of
+intermediate states are not evaluated.
 
 @section{Optional Type Systems}
 

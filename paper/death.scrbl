@@ -44,18 +44,28 @@ Like Marc Antony, we come here to bury sound gradual typing, not to praise
 @section{Threats to Validity of Conclusion}
 
 Our judgment is harsh and fails to acknowledge potential weaknesses in our
- evaluation framework and in our results.
+ evaluation method and in our results.
 
 First, our benchmarks are relatively small. The two largest ones consist of
  13 and 16 modules, respectively. Even these benchmarks pose serious
  challenges to our computing infrastructure because they require timing
  @math{2^13} and @math{2^16} configurations @math{30} times each.
  Running experiments with modules that consist of many
- more modules would be impractical. At the same time, our
- experience suggests that the results get worse as programs get larger in
- terms of number of modules. 
+ more modules would be impractical.
+ Our results might be less valid
+ in the context of large programs, though practical experience using
+ Typed Racket suggests otherwise. @; FIXME: not totally sure I read this edit right
 
-Second, many of our benchmarks import some modules from Racket's suite of
+To make the experiment feasible even at the sizes we use in this paper, we run the larger
+ benchmarks using multiple cores and divide up the configurations amongst
+ the cores. Each configuration is run in a single process running a separate
+ instance of the Racket VM pinned to a single core. However, this
+ parallelism may introduce confounding variables due to, for example, shared
+ caches or main memory. We have attempted to control for this case and, as
+ far as we can tell, executing on an unloaded machine does not make a
+ significant difference to our results.
+
+Second, several of our benchmarks import some modules from Racket's suite of
  libraries that remain untyped throughout the process, including for the
  fully typed configuration. While some of these run-time libraries come in
  the trusted code base---meaning Typed Racket knows their types and the
@@ -65,7 +75,7 @@ Second, many of our benchmarks import some modules from Racket's suite of
  partially typed configurations. But, given the low typed/untyped ratios, 
  these libraries are unlikely to affect our conclusions.
 
-Third, our framework imagines a particularly @emph{free} approach to
+Third, our method imagines a particularly @emph{free} approach to
  annotating programs with types. With ``free'' we mean that we do not expect
  software engineers to add types to modules in any particular
  order. Although this freedom is representative of some kind of maintenance
@@ -75,7 +85,7 @@ Third, our framework imagines a particularly @emph{free} approach to
  performance traps. Roughly speaking, such a plan would correspond to a
  specific path from the bottom element of the performance lattice to the top
  element.  Sadly our current measurements suggest that almost all
- bottom-to-top paths in our performance lattices suffer go through
+ bottom-to-top paths in our performance lattices go through
  performance bottlenecks.  As the  @tt{suffixtree} example
  demonstrates, a path-based approach depends very much on the structure of
  the module graph.  We therefore conjecture that some of the ideas offered
@@ -85,18 +95,7 @@ Fourth, we state our judgment with respect to the current implementation
  technology. Typed Racket compiles to Racket, which uses rather conventional
  compilation technology. It makes no attempt to reduce the overhead of
  contracts or to exploit contracts for optimizations. It remains to be seen
- whether contract-aware compilers or less-expressive gradual typing systems
+ whether contract-aware compilers
  can reduce the significant overhead that our evaluation
  shows. Nevertheless, we are convinced that even if the magnitude of the
  slowdowns are reduced, some pathologies will remain.
-
-Fifth, running all configurations of the benchmarks can take a very long
- wall-clock time. To make the experiment feasible, we run the larger
- benchmarks using multiple cores and divide up the configurations amongst
- the cores. Each configuration is run in a single process running a separate
- instance of the Racket VM pinned to a single core. However, this
- parallelism may introduce confounding variables due to, for example, shared
- caches or main memory. We have attempted to control for this case and as
- far as we can tell, executing on an unloaded machine does not make a
- significant difference to our results.  We believe that this is due to the 
- magnitude of the performance differentials between configurations.

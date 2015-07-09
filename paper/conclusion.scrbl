@@ -16,15 +16,14 @@ Our result calls for three orthogonal research efforts. First, Typed Racket
  is only one implementation of sound gradual typing, and it supports only
  macro-level gradual typing. Before we declare gradual typing completely
  dead, we must apply our framework to other implementations. The question
- is whether doing so yields equally negative results for other
- implementations of macro-level gradual typing. Safe
- TypeScript@~cite[rsfbv-popl-2015] appears to be one natural candidate for
+ is whether doing so will yield equally negative results.
+ Safe TypeScript@~cite[rsfbv-popl-2015] appears to be one natural candidate for
  such an effort. At the same time, we are also challenged to explore how
  our evaluation framework can be adapted to the world of micro-level
  gradual typing, where programmers can equip even the smallest expression
  with a type annotation and leave the surrounding context untyped.  We
- conjecture that annotating complete functions or classes (and their
- methods) is an appropriate starting point for an adaptation.
+ conjecture that annotating complete functions or classes 
+ is an appropriate starting point for such an adaptation experiment.
 
 Second, Typed Racket's implementation may not support run-time checks as
  well as modern JIT compilers. Typed Racket elaborates into plain Racket,
