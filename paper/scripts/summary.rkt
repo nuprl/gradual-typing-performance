@@ -178,7 +178,7 @@
          (for/list ([i (in-range 1 (vector-length data))])
            (vector-ref data i))))
 
-;; Fold over lattice points
+;; Fold over lattice points. Excludes fully-typed and fully-untyped.
 (define (fold-lattice sm f #:init [init #f])
   (define vec (summary-dataset sm))
   (for/fold ([prev init])
@@ -197,12 +197,31 @@
 (define (avg-runtime sm)
   (mean (all-gt-runtimes sm)))
 
+;; Count the number of variations with performance no worse than N times untyped
+(define (deliverable sm N)
+  (define baseline (* N (untyped-mean sm)))
+  (define (count-N acc val)
+    (if (<= val baseline) (+ 1 acc) acc))
+  (fold-lattice sm count-N #:init 0))
+
+(define (usable sm N M)
+  (define um (untyped-mean sm))
+  (define lo (* N um))
+  (define hi (* M um))
+  (define (count-NM acc val)
+    (if (and (<  lo val) (<= val hi))
+      (+ 1 acc)
+      acc))
+  (fold-lattice sm count-NM #:init 0))
+
 ;; -----------------------------------------------------------------------------
 ;; --- viewing
 
 (define (summary->pict sm
                        #:font-face face
                        #:font-size size
+                       #:N PARAM-N
+                       #:M PARAM-M
                        #:height height
                        #:width width
                        #:title [user-title #f])
@@ -210,8 +229,10 @@
   (define hspace (/ width 4))
   (define vpad (/ height 5))
   (define baseline (untyped-mean sm))
+  (define numvars (get-num-variations sm))
   (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
   (define (overhead n) (round2 (/ n baseline)))
+  (define (num+percent n) (format "~a (~a%)" n (round (* 100 (/ n (- numvars 2))))))
   (define (text->pict message) (text message face size))
   (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
   (define left-column
@@ -220,13 +241,17 @@
                (text->pict "typed/untyped ratio")
                (text->pict "max. overhead")
                (text->pict "mean overhead")
+               (text->pict (format "~a-deliverable" PARAM-N))
+               (text->pict (format "~a/~a-usable" PARAM-N PARAM-M))
                ))
   (define right-column
     (vr-append vspace (text->pict (format "(~a modules)" (get-num-modules sm)))
-    (ht-append hspace (vr-append vspace
+    (ht-append (/ hspace 2) (vr-append vspace
                (text->pict (overhead (typed-mean sm)))
                (text->pict (overhead (max-lattice-point sm)))
                (text->pict (overhead (avg-runtime sm)))
+               (text->pict (num+percent (deliverable sm PARAM-N)))
+               (text->pict (num+percent (usable sm PARAM-N PARAM-M)))
                ) (blank 0 0))))
   (vl-append vpad
              (hc-append hspace left-column right-column)
