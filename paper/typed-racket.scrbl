@@ -282,7 +282,7 @@ given slowdown.  They are, by definition, monotonically increasing because
 the more overhead is allowed, the more configurations satisfy the
 condition. The ``ideal'' result would be a flat line at a graph's top, this
 would mean that all configuration are as fast (or faster) as the untyped
-one.  The ``worst'' case scenario is a flat line at the graph's bottom,
+one.  The ``worst'' scenario is a flat line at the graph's bottom,
 indicating that all configuration are more than 20x slower than the untyped
 one. For ease of comparison between graphs, a dashed
 (@exact{\color{red}{red}}) horizontal line indicates 60% point of all
@@ -351,9 +351,7 @@ performance.
 @parag{Sieve} At @exact{$L$}=0, the @tt{sieve} benchmark is dead in the
 water, as both partially typed configuration have more than 20x overhead.
 Increasing @exact{$L$}, however, shows unsurprisingly that the fully typed
-configuration is one step away.  This is our only ``perfect'' graph, in
-which every configuration is within reach of a configuration that performs
-at least as well as the untyped program.
+configuration is one step away.
 
 @; This benchmark is admittedly contrived, but proves an interesting point:
 @; pathologically-bad configurations can be avoided if the programmer is able
