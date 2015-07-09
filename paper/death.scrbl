@@ -30,7 +30,9 @@ In general, the graphs in @figure-ref["fig:lnm1" "fig:lnm2"] clarify how
  @math{N/M}-usable. Worse, investing more effort into type annotation does
  not seem to pay off. In practice, converting a module takes a good portion
  of a workday, meaning that setting @math{L} to @math{2} is again a liberal
- choice. But even allowing the conversion of two additional modules does
+ choice. But even allowing the conversion of two additional modules @emph{and}
+ the unrealistic assumption that the developer picks two modules best-suited
+ to improve performance does
  not increase the number of acceptable configurations by much. Put
  differently, the number of @math{L}-step @math{N/M}-acceptable
  configurations remains small with liberal choices for all three parameters.
@@ -63,7 +65,7 @@ Second, many of our benchmarks import some modules from Racket's suite of
  partially typed configurations. But, given the low typed/untyped ratios, 
  these libraries are unlikely to affect our conclusions.
 
-Third, our framework images a particularly @emph{free} approach to
+Third, our framework imagines a particularly @emph{free} approach to
  annotating programs with types. With ``free'' we mean that we do not expect
  software engineers to add types to modules in any particular
  order. Although this freedom is representative of some kind of maintenance

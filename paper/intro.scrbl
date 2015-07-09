@@ -4,7 +4,7 @@
 
 @title[#:tag "sec:intro"]{Gradual Typing and Performance}
 
-Over the past couple of decades dynamically-typed languages have become a
+Dynamically-typed languages have become a
  staple of the software engineering world. Programmers use these languages
  to build all kinds of software systems. In many cases, the systems start
  as innocent prototypes. Soon enough, though, they grow into complex,
