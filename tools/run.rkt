@@ -211,7 +211,10 @@
 
   (when (and (not (only-compile?)) (output-path))
     (with-output-to-file (output-path)
-      (λ () (write results))
+      (λ ()
+        ;; first write a comment that encodes the commandline args
+        (printf ";; ~a~n" (current-command-line-arguments))
+        (write results))
       #:mode 'text
       #:exists 'replace))
 
