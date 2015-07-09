@@ -8,7 +8,7 @@
     (provide name ...)))
 
 (define+provide
-  [GREGOR-DATA     "./data/gregor-2015-06-30.rktd"]
+  [GREGOR-DATA     "./data/gregor-2015-07-02.rktd"]
   [KCFA-DATA       "./data/kcfa-2015-06-25T13:48:52.rktd"]
   [LNM-DATA        "./data/lnm-large-06-28.rktd"]
   [MBTA-DATA       "./data/mbta-04-25.rktd"]
@@ -17,7 +17,7 @@
   [SIEVE-DATA      "./data/sieve-2015-06-28T14:08:55.rktd"]
   [SNAKE-DATA      "./data/snake-2015-06-30T14:55:40.rktd"]
   [SUFFIXTREE-DATA "./data/suffixtree-06-10.rktd"]
-  [SYNTH-DATA      "./data/funkytown-2015-06-30T15:34:39.rktd"]
-  [TETRIS-DATA     "./data/tetris-2015-06-30T14:53:37.rktd"]
+  [SYNTH-DATA      "./data/funkytown-2015-07-02T01:47:43.rktd"]
+  [TETRIS-DATA     "./data/tetris-2015-07-01T16:39:46.rktd"]
   [ZORDOZ-DATA     "./data/zordoz-04-09.rktd"]
 )
