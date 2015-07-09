@@ -8,16 +8,19 @@
 The inspiration for our performance evaluation approach is due to Takikawa
  @|etal|@~cite[tfdffthf-ecoop-2015]. For their extension of functional
  Typed Racket to the object-oriented aspects of Racket, they use a
- lattice-style approach for their
- @italic{formative}@note{Takikawa @|etal| borrow this term from the
- education community@~cite[scriven-chapter-1967]. A @italic{formative
- evaluation} informs the design process. In contrast, a @italic{summative
- evaluation} assesses the outcome of an intervention.}  evaluation. By
- inspecting the entire lattice of typed/untyped configurations of a small
- game system, they are able to identify and then eliminate a major
- performance bottleneck from their implementation. Takikawa @|etal| make no
- attempt to use the lattice of their two benchmarks for any summative
- evaluation.
+ lattice-style approach for their preliminary performance evaluation.
+ By inspecting the entire lattices of typed/untyped configurations of two small
+ game systems, they are able to identify and then eliminate a major
+ performance bottleneck from their implementation.
+ Takikawa @|etal|'s performance evaluation was conducted in tandem with the
+ design and implementation of Typed Racket, and thus their final results are
+ relatively positive.
+ In contrast, we conduct our evaluation completely @emph{independently} of
+ Typed Racket's implementation efforts.@note{In Takikawa @|etal|'s terminology,
+ borrowed from the
+ education community@~cite[scriven-chapter-1967], they conducted a @italic{formative
+ evaluation} while we conduct a @italic{summative
+ evaluation} to assess the post-intervention state of the system.}
 
 Let us articulate Takikawa @|etal|'s landscape from our
 perspective: 
