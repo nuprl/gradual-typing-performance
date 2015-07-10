@@ -253,7 +253,8 @@ when all the modules are typed that performance improves (0.7x).
 summarize the results from exhaustively exploring the performance lattice
 of our twelve benchmarks. Each row
 reports the results for one program.  On the left, a table spells out the
-typed/untyped ratio, the maximum overhead, and the average overhead. This is
+typed/untyped ratio, the maximum overhead, the average overhead, and the number
+of @deliverable{300} and @usable["300" "1000"] configurations. This is
 followed by three graphs that show how many configurations impose an overhead
 between 1x and 20x for three values of @math{L}: @math{0}, @math{1}, and
 @math{2}.
@@ -272,6 +273,10 @@ from 1.25x (@tt{lmn}) to 168x (@tt{tetris}).  Average overheads range from
 0.6x (@tt{lmn}) to 68x (@tt{tetris}). The slowdowns reported in the
 partially typed configurations come from contracts and checks performed as
 untyped code interacts with typed code.
+
+The @deliverable{300} and @usable["300" "1000"] counts are computed for
+@math{L}=0. Next to each count, we report (in parentheses) the count divided
+by the number of configurations.
 
 Here is how to read the three cumulative performance graphs. The x-axis
 represents the slowdown over the untyped program (from 1x to
@@ -300,9 +305,9 @@ a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
 experiment we have chosen values of 3x and 10x. They are rather liberal,
 most production contexts would not tolerate anything higher than 2x (and
 some would object to any slowdown). Thus, for any program, the value of
-@deliverable{3} is the value of the y-axis where the blue line intersects
+@deliverable{300} is the value of the y-axis where the blue line intersects
 the green one.  This is how many configurations are deliverable.  Similarly
-for @usable["3" "10"], its value is the difference of the intercepts.
+for @usable["300" "1000"], its value is the difference of the intercepts.
 Higher values for both of these measures are better.
 
 Lastly, the figures show cumulative performance graphs for different values
