@@ -64,9 +64,8 @@ In sum, while we accept that the current implementation technology for
 
 @section[#:style 'unnumbered]{Data and Code}
 
-Code of our benchmarks, analysis scripts and raw data are freely available from: 
-??
-@; TODO fix
+We will make our complete benchmark suite, all configurations, and the
+measurements available jointly with our publication.
 
 @section[#:style 'unnumbered]{Acknowledgments}
 
