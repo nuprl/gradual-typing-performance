@@ -27,7 +27,7 @@
 
 @title{Is Sound Gradual Typing Dead?}
 
-@abstract{Programmers have come to embrace dynamically typed languages for
+@abstract{Programmers have come to embrace dynamically-typed languages for
  prototyping and delivering large and complex systems. When it comes to
  maintaining and evolving these systems, the lack of explicit static typing
  becomes a bottleneck. In response, researchers have explored the idea of
