@@ -19,7 +19,7 @@ and a diagram of its module structure.
 Size is measured by the number of modules and lines of code (LOC) in a program.@note{We measured lines of code using the @hyperlink["http://www.dwheeler.com/sloccount/" "sloccount"] utility.}
 Crucially, the number of modules also determines the number of gradually-typed
 configurations to be run when testing the benchmark, as a program with @math{n} modules
-can be gradually typed in @exact{$2^n$} possible configurations.
+can be gradually-typed in @exact{$2^n$} possible configurations.
 Lines of code is less important for evaluating macro gradual typing,
 but gives a sense of the overall complexity of each benchmark.
 Moreover, the Type Annotations LOC numbers are an upper bound on the annotations required

@@ -521,7 +521,7 @@ all configurations lie in reach of a point with at most 3x slowdown.
 @; heavy use/export of macros
 
 @parag{Gregor} Despite being a large benchmark, @tt{gregor} performs
-reasonably well even when gradually typed.  The worst-case slowdown of 5.2x
+reasonably well even when gradually-typed.  The worst-case slowdown of 5.2x
 is quite good compared to the other large benchmarks, and the steep
 vertical slope is encouraging.
 

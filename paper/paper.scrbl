@@ -31,7 +31,7 @@
  prototyping and delivering large and complex systems. When it comes to
  maintaining and evolving these systems, the lack of explicit static typing
  becomes a bottleneck. In response, researchers have explored the idea of
- gradually typed programming languages which allow the post-hoc addition of
+ gradually-typed programming languages which allow the post-hoc addition of
  type annotations to software written in one of these untyped languages.
  Some of these new, hybrid languages insert run-time checks at the boundary
  between typed and untyped code to establish type soundness for the overall
@@ -44,7 +44,7 @@
  checks. None of the publications on this topic come with a
  comprehensive performance evaluation. However, a few report disastrous numbers.
  In response, this paper proposes a method for
- evaluating the performance of gradually typed programming languages.
+ evaluating the performance of gradually-typed programming languages.
  The method takes the idea
  of a gradual conversion from untyped to typed seriously and calls for
  measuring the performance of all possible partial conversions of a given untyped

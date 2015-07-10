@@ -46,7 +46,7 @@ Third, the acceptance of Typed Racket in the commercial and open-source
  performance bottlenecks of sound gradual typing. To expand this community
  will take the development of both guidelines on how to go about annotating
  a large system and performance measurement tools that help programmers
- discover how to identify those components of a gradually typed
+ discover how to identify those components of a gradually-typed
  configuration that yield the most benefit (per time
  investment). St-Amour's feature-specific profiler@~cite[saf-cc-2015] and
  optimization coaches@~cite[stf-optimization-coaching] look promising; we
@@ -54,7 +54,7 @@ Third, the acceptance of Typed Racket in the commercial and open-source
  performance bottlenecks in our measurements.
 
 In sum, while we accept that the current implementation technology for
- gradually typed programming languages falls short of its promises, we also
+ gradually-typed programming languages falls short of its promises, we also
  conjecture that a rigorous performance evaluation framework will provide
  guidance for future research. Above we have spelled out practical
  directions but even theoretical ideas---such as Henglein's optimal
