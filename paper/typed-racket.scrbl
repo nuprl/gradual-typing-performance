@@ -13,7 +13,7 @@
 @title[#:tag "sec:tr"]{Evaluating Typed Racket} @; , Classical
 
 Measuring the running time for the performance lattices of our chosen dozen
-of benchmarks means compiling, running, and timing hundreds of thousands of
+benchmarks means compiling, running, and timing hundreds of thousands of
 configurations. Each configuration is run 30 times to ensure that the
 @;
 @;@margin-note*{cite the random number paper?}
@@ -22,7 +22,7 @@ timing is not affected by random factors; some configurations take minutes
 to run. Presenting and analyzing this wealth of data poses a separate
 challenge all by itself.
 
-This section present our measurements.
+This section presents our measurements.
 The first subsection discusses one benchmark in detail, demonstrating how we
  create the configurations, how the boundaries affect the performance of
  various configurations, and how the Typed Racket code base limits the
@@ -38,15 +38,15 @@ with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of Machines C
 @;from the Northeastern University Discovery Cluster@note{@url{http://nuweb12.neu.edu/rc/?page_id=27}}
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
 with 64GB RAM. All machines run a variant of Linux. The following
-benchmarks were run on machine A: @tt{morse-code} and @tt{lnm}.
-The following were run on machine B: @tt{sieve} and @tt{kcfa}.
-The following were run on machine C: @tt{suffixtree}, @tt{snake},
-@tt{synth}, @tt{tetris}, and @tt{gregor}.
+benchmarks were run on machine A: @tt{sieve} and @tt{kcfa}.
+The following were run on machine B: @tt{suffixtree}, @tt{morse-code}, and @tt{lnm}.
+The following were run on machine C: @tt{snake},
+@tt{synth}, @tt{tetris}, @tt{gregor}, and @tt{quad}.
 @;; FIXME edit this when all are run
 For each configuration we report the average of 30 runs.
 @; TODO: talk about warm up?  
 @; TODO:Compilation v. interpreteration v. jitting?
-All of our runs use a single core with green threads where applicable.
+All of our runs use a single core for each configuration with green threads where applicable.
 We did some sanity checks and were able to validate that performance differentials reported
 in the paper were not affected by the choice of machine.
 
@@ -85,11 +85,11 @@ thus links six modules, some of them typed and others untyped.
      (make-performance-lattice vec*))
 ]
 
-For typed modules, a programmer equips each structure, function, and class
-with types. Modules provide their exports together with types, so that the
-type checker can cross-check modules. A typed @defterm{client} module may import
-values from an untyped @defterm{server} module, which means that the
-corresponding @racket[require] specifications must be equipped with
+Typed modules require type annotations on their datatypes and functions.
+Modules provide their exports with types, so that the
+type checker can cross-check modules. A typed module may import
+values from an untyped module, which forces the
+corresponding @racket[require] specifications to come with
 types. Consider this example:
 @;%
 @(begin
@@ -125,12 +125,12 @@ The server module is called @tt{label.rkt}, and the client imports specific
 @; 
 
 The types in a
-@racket[require/typed] specification are compiled into run-time checks and
-contracts for the values that flow into the module. For example, if some
+@racket[require/typed] specification are compiled into contracts for
+the values that flow into the module. For example, if some
 imported variable is declared to be a @tt{Char}, the check @racket[char?]
 is performed as the value flows across the module boundary. Higher-order
 types (functions, objects, or classes) become contracts that are wrapped
-around the imported value and which check each future interaction of this
+around the imported value and which check future interactions of this
 value with its context.
 
 The performance costs of gradual typing thus consist of allocation of
@@ -142,7 +142,7 @@ Since our evaluation setup calls for linking typed modules to both typed
 and untyped server modules, depending on the configuration, we replace
 @racket[require/typed] specifications with @racket[require/typed/check]
 versions. This new syntax can determine whether the server module is typed
-or untyped. It installs dynamic checks and contracts if the server module
+or untyped. It installs contracts if the server module
 is untyped, and it ignores the annotation if the server module is typed.
 As a result, typed modules function independently of the rest of the
 modules in a configuration.
@@ -172,9 +172,9 @@ The fully typed configuration (top) is @emph{faster} than the fully untyped
  the ratio goes back up to 1. 
 
 
-Sadly, the performance improvement of the fully typed configuration is the
+Sadly, the performance improvement of the typed configuration is the
  only good part of this benchmark. Almost all partially typed configurations
- exhibit slowdowns ranging from 0.7x to 105x. Inspection of the lattice
+ exhibit slowdowns between 0.7x and 105x. Inspection of the lattice
  suggests several points about these slowdowns: @itemlist[
 
 @item{Adding type annotations to the @tt{main} module neither subtracts or
@@ -220,7 +220,7 @@ It exhibits performance ``valleys'' in which a maintenance programmer can get st
 Consider starting with the untyped program, and for some reason choosing
 to add types to @tt{label}. The program slows down by 88x. Without any
 guidance, a developer may choose to then type @tt{structs} and see the
-program slow down to 104x.  After that typing @tt{main} (104x), @tt{ukkonen}
+program slow down to 104x.  After that, typing @tt{main} (104x), @tt{ukkonen}
 (99x), and @tt{lcs} (103x) do little to improve performance. It is only
 when all the modules are typed that performance improves (0.7x).
 
@@ -261,7 +261,7 @@ followed by three graphs that show how many configurations impose an overhead
 between 1x and 20x for three values of @math{L}: @math{0}, @math{1}, and
 @math{2}.
 
-The typed/untyped ratio is the slowdown or speed up of fully typed code over
+The typed/untyped ratio is the slowdown or speedup of fully typed code over
 untyped code. Values smaller than 1 indicate a speedup due to some of the
 Typed Racket optimizations. Values larger than 1 are slowdowns caused by
 interaction with untyped parts of the underlying Racket runtime.  The ratios
@@ -280,15 +280,15 @@ The @deliverable{300} and @usable["300" "1000"] counts are computed for
 @math{L}=0. Next to each count, we report (in parentheses) the count divided
 by the number of configurations.
 
-Here is how to read the three cumulative performance graphs. The x-axis
+The three cumulative performance graphs are read as follows. The x-axis
 represents the slowdown over the untyped program (from 1x to
 @id[PARAM-MAX-OVERHEAD]x).  The y-axis is a count of the number of
 configurations (from @math{0} to @math{2^n}) scaled so all graphs are the
 same height. The blue curves show how many configurations have less than a
 given slowdown.  They are, by definition, monotonically increasing because
 the more overhead is allowed, the more configurations satisfy the
-condition. The ``ideal'' result would be a flat line at a graph's top, this
-would mean that all configuration are as fast (or faster) as the untyped
+condition. The ``ideal'' result would be a flat line at a graph's top. Such
+a result would mean that all configuration are as fast (or faster) as the untyped
 one.  The ``worst'' scenario is a flat line at the graph's bottom,
 indicating that all configuration are more than 20x slower than the untyped
 one. For ease of comparison between graphs, a dashed
@@ -304,8 +304,8 @@ functions for measuring the quality of a gradual type system.  The
 cumulative performance graphs display the values of parameters @math{N} and
 @math{M} as, respectively, a @exact{\color{ForestGreen!90!black}{green}} and
 a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
-experiment we have chosen values of 3x and 10x. They are rather liberal,
-most production contexts would not tolerate anything higher than 2x (and
+experiment we have chosen values of 300% and 1000%. These values are rather liberal
+and we expect that most production contexts would not tolerate anything higher than 200% (and
 some would object to any slowdown). Thus, for any program, the value of
 @deliverable{300} is the value of the y-axis where the blue line intersects
 the green one.  This is how many configurations are deliverable.  Similarly
@@ -341,7 +341,7 @@ factor for the same proportion of configurations to qualify as acceptable.
 Given the wide x-axis range of overhead factors, we would expect that only
 the leftmost quarter of each graph shows any interesting vertical slope.
 Put another way, if it were true that Typed Racket's sound gradual typing
-is reasonably practical but requires tuning and optimization, the data
+is practical but requires tuning and optimization, the data
 right of the 10x point should be nearly horizontal and well above the red
 dashed line for @math{L}=0.@note{Increasing @math{L} should remove
 pathologically-bad cases.}  This shape would suggest that although a small
@@ -385,7 +385,7 @@ program.
 
 @;FIXED VERSION:
 
-@parag{MBTA} The @tt{mbta} benchmark is nearly a steep vertical line, but
+@parag{MBTA} The @tt{mbta} benchmark is nearly a steep vertical line, except
 for one flat area.  This implies that a boundary (or group of boundaries)
 accounts for a 3x slowdown, such that the set of configurations where these
 boundaries connect typed and untyped modules all experience similar
@@ -403,7 +403,7 @@ help much.
 @parag{ZO Traversal} The curves for @tt{zo-traversal} are fairly steep, but
 not as drastic as @tt{morse-code} or @tt{mbta}.  Half the configurations
 suffer a 2x overhead, even when @exact{$L$} increases.  This behavior is
-again explained by the summary data: as the fully-typed configuration incurs
+again explained by the summary data. As the fully-typed configuration incurs
 a 4x overhead, the ability to convert additional modules rarely helps reach
 a more performant configuration. This benchmark is a case in which
 programmers may have to
@@ -540,8 +540,9 @@ vertical slope is encouraging.
 @; TODO
 Due to the massive size of this performance lattice (65536 configurations), this benchmark
 takes an extraordinary amount of time to run to completion. As a result, we are missing
-the final numbers for this benchmark except for the fully typed runtime. We will add the
-remaining data in the final version of this paper.
+the final numbers for this benchmark. 
+@;except for the fully typed runtime.
+We will add the remaining data in the final version of this paper.
 
 @; WHY
 @; - the ocm struct has vector & functions

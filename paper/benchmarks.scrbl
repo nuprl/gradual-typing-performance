@@ -20,14 +20,14 @@ Size is measured by the number of modules and lines of code (LOC) in a program.@
 Crucially, the number of modules also determines the number of gradually-typed
 configurations to be run when testing the benchmark, as a program with @math{n} modules
 can be gradually-typed in @exact{$2^n$} possible configurations.
-Lines of code is less important for evaluating macro gradual typing,
+Lines of code is less important for evaluating macro-level gradual typing,
 but gives a sense of the overall complexity of each benchmark.
 Moreover, the Type Annotations LOC numbers are an upper bound on the annotations required
 at any stage of gradual typing because each typed module in our experiment
 fully annotates its import statements. In practice, only imports from untyped
 modules require annotations.
 
-The column labeled ``Other LOC'' measures the additional structure required
+The column labeled ``Other LOC'' measures the additional infrastructure required
 to run each project for all typed-untyped configurations. This count includes
 project-wide type definitions, typed interfaces to untyped libraries, and
 any so-called type adaptor modules (see below).
@@ -157,7 +157,7 @@ algorithm's internal data structures.
 @parag{L-NM}
 This script analyzes the measurements included in this paper
 and generates @figure-ref{fig:lnm1} and @figure-ref{fig:lnm2}.
-Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticably less performant on large datasets.
+Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticeably less performant on large datasets.
 This program relies on an untyped image rendering library and uses two adaptor modules.
 
 @parag{K-CFA}
@@ -172,7 +172,7 @@ Nguyên @|etal|@~cite[nthvh-icfp-2014].  It implements a game where a growing
 and moving snake tries to eat apples while avoiding walls and its own tail.
 Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering
 the game state and does not display a GUI.  We use one adaptor module to
-represent the game data types, but otherwise the program is self-contained.
+represent the game datatypes, but otherwise the program is self-contained.
 
 @parag{Tetris}
 This program is taken from the same benchmark suite as @tt{snake}@~cite[nthvh-icfp-2014]
@@ -198,6 +198,6 @@ The benchmark uses two adaptor modules and relies on a small, untyped library fo
 acquiring data on local times.
 
 @parag{Quad}
-The @tt{quad} project implements a type-setting library.
+This project implements a type-setting library.
 It depends on an external constraint satisfaction solver
 library (to divide lines of text across multiple columns) and uses two adaptor modules.

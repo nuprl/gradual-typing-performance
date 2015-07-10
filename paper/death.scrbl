@@ -6,13 +6,13 @@
 
 Unsound type systems are useful. They find bugs at compile-time, and an IDE can use them to
  assist programmers. Sound type systems are meaningful in addition. A
- soundly typed program can't go wrong, up to a well-defined set of run-time
+ soundly typed program cannot go wrong, up to a well-defined set of run-time
  exceptions@~cite[type-soundness]. When a typed program raises an
  exception, the exception message can (usually) pinpoint the location of
  the problem in the program source. Hence sound types are one of the best
  forms of documentation and specification around. In the context of a sound
  type system, the type of a well-named function or method often explains
- (almost) as much as an inspection of their code will do.
+ (almost) as much as an inspection of the code.
 
 From this description, it is clear why programmers eventually wish to
  annotate programs in untyped languages with types and, ideally, with sound
@@ -47,7 +47,7 @@ Our judgment is harsh and fails to acknowledge potential weaknesses in our
  evaluation method and in our results.
 
 First, our benchmarks are relatively small. The two largest ones consist of
- 13 and 16 modules, respectively. Even these benchmarks pose serious
+ 13 and 16 modules, respectively. Even these benchmarks pose
  challenges to our computing infrastructure because they require timing
  @math{2^13} and @math{2^16} configurations @math{30} times each.
  Running experiments with modules that consist of many
@@ -76,7 +76,7 @@ Second, several of our benchmarks import some modules from Racket's suite of
  these libraries are unlikely to affect our conclusions.
 
 Third, our method imagines a particularly @emph{free} approach to
- annotating programs with types. With ``free'' we mean that we do not expect
+ annotating programs with types. By ``free'' we mean that we do not expect
  software engineers to add types to modules in any particular
  order. Although this freedom is representative of some kind of maintenance
  work---add types when bugs are repaired and only then---a team may decide
