@@ -30,7 +30,7 @@ modules require annotations.
 The column labeled ``Other LOC'' measures the additional structure required
 to run each project for all typed-untyped configurations. This count includes
 project-wide type definitions, typed interfaces to untyped libraries, and
-any so-called typed adaptor modules (see below).
+any so-called type adaptor modules (see below).
 
 Finally, the module structure graphs show a dot for each module in the program
 and an arrow from one module to another when the module at the arrow tail
@@ -80,11 +80,11 @@ inserted when an untyped data definition and the data's typed clients are
 part of the same configuration.
 The adaptor is a typed module that exports annotated versions of all
 bindings in the untyped data definition.
-Typed clients then import exclusively from the typed adaptor, bypassing the
+Typed clients then import exclusively from the type adaptor, bypassing the
 original data definition.
 Untyped clients continue to use the untyped file.
 
-@figure["fig:adaptor" "Inserting a typed adaptor"
+@figure["fig:adaptor" "Inserting a type adaptor"
 @exact|{
 \includegraphics[scale=0.25]{module-graphs/adaptor1.png}
 \hspace{1cm}
@@ -92,7 +92,7 @@ Untyped clients continue to use the untyped file.
 }|
 ]
 
-@Figure-ref{fig:adaptor} illustrates the basic problem that typed adaptors
+@Figure-ref{fig:adaptor} illustrates the basic problem that type adaptors
 solve.  The issue is that Racket structure types (record type definitions)
 are @emph{generative}; each assignment of a type annotation to an untyped
 structure creates a new ``black box'' definition.  This means that two
@@ -101,7 +101,7 @@ incompatible.  Using an adaptor ensures that only one canonical type is
 generated for each structure, as illustrated in the right half of
 @figure-ref{fig:adaptor}.
 
-Strictly speaking, typed adaptor modules are not necessary.
+Strictly speaking, type adaptor modules are not necessary.
 It is possible to modify the design of imports for any given configuration so
 that a single typed module declares and re-exports type annotations for untyped
 data.
@@ -112,8 +112,8 @@ a fully-untyped and fully-typed version of each benchmark.
 The layer of indirection provided by adaptors solves this issue and
 reduces the number of type annotations needed at boundaries because all typed
 clients can reference a single point of control.@note{In our experimental
-framework, typed adaptors are available to all configurations as library files.}
-Therefore we expect typed adaptor modules to be of independent use to
+framework, type adaptors are available to all configurations as library files.}
+Therefore we expect type adaptor modules to be of independent use to
 practitioners.
 
 
