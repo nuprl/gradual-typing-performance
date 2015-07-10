@@ -83,10 +83,10 @@ We apply our method to Typed Racket, the gradually typed
  performance.@note{Personal communication with the implementors, who claim
  some 100,000 unique downloads per year.}
 
-Section@secref{sec:fwk} explains the performance framework in detail,
+Section@secref{sec:fwk} introduces the performance framework in detail,
  including the information we retrieve from the lattices and how we
- parameterize these retrievals. Next, section@secref{sec:bm} presents our
- specific benchmarks. Section@secref{sec:tr} @; and@secref{sec:trp}
+ parameterize these retrievals. Next, section@secref{sec:bm} explains our
+ specific benchmarks. Section@secref{sec:tr} presents @; and@secref{sec:trp}
  the numeric results.
 @;  of evaluating Typed Racket's original
 @;  implementation and the Pycket variant,
