@@ -215,8 +215,8 @@ Sadly, the performance improvement of the fully typed configuration is the
 ]
 
 @; TODO check numbers
-The reason @tt{suffixtree} is bad news for gradual typing is because of
-performance ``valleys'' in which a maintenance programmer can get stuck.
+The performance lattice for @tt{suffixtree} is bad news for gradual typing.
+It exhibits performance ``valleys'' in which a maintenance programmer can get stuck.
 Consider starting with the untyped program, and for some reason choosing
 to add types to @tt{label}. The program slows down by 88x. Without any
 guidance, a developer may choose to then type @tt{structs} and see the
