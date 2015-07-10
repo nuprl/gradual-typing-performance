@@ -202,7 +202,9 @@
   (define baseline (* N (untyped-mean sm)))
   (define (count-N acc val)
     (if (<= val baseline) (+ 1 acc) acc))
-  (fold-lattice sm count-N #:init 0))
+  (+ 1 ;;untyped
+     (if (<= (typed-mean sm) baseline) 1 0)
+     (fold-lattice sm count-N #:init 0)))
 
 (define (usable sm N M)
   (define um (untyped-mean sm))
@@ -212,7 +214,10 @@
     (if (and (<  lo val) (<= val hi))
       (+ 1 acc)
       acc))
-  (fold-lattice sm count-NM #:init 0))
+  (+
+    (let ([tm (typed-mean sm)])
+      (if (and (< lo tm) (<= tm hi)) 1 0))
+    (fold-lattice sm count-NM #:init 0)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- viewing
@@ -232,7 +237,7 @@
   (define numvars (get-num-variations sm))
   (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
   (define (overhead n) (round2 (/ n baseline)))
-  (define (num+percent n) (format "~a (~a%)" n (round (* 100 (/ n (- numvars 2))))))
+  (define (num+percent n) (format "~a (~a%)" n (round (* 100 (/ n numvars)))))
   (define (text->pict message) (text message face size))
   (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
   (define left-column
@@ -241,8 +246,8 @@
                (text->pict "typed/untyped ratio")
                (text->pict "max. overhead")
                (text->pict "mean overhead")
-               (text->pict (format "~a-deliverable" PARAM-N))
-               (text->pict (format "~a/~a-usable" PARAM-N PARAM-M))
+               (text->pict (format "~a-deliverable" (* 100 PARAM-N)))
+               (text->pict (format "~a/~a-usable" (* 100 PARAM-N) (* 100 PARAM-M)))
                ))
   (define right-column
     (vr-append vspace (text->pict (format "(~a modules)" (get-num-modules sm)))
