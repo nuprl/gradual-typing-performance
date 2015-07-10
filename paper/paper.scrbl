@@ -39,7 +39,7 @@
  implementation to provide meaningful error messages when type invariants
  are violated.
 
- While most research on sound gradual typing has remained theoretical, the
+ While most of the research on sound gradual typing has remained theoretical, the
  few emerging implementations suffer from performance overheads due to these
  checks. None of the publications on this topic come with a
  comprehensive performance evaluation. However, a few report disastrous numbers.

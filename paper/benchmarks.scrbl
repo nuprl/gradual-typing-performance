@@ -75,7 +75,7 @@ Project name          & \# Modules & Untyped LOC & Type Ann. LOC & Other LOC & M
 
 @subsection{Adaptor Modules}
 
-Typed adaptor modules are a special case of typed interfaces to untyped code,
+Type adaptor modules are a special case of typed interfaces to untyped code,
 inserted when an untyped data definition and the data's typed clients are
 part of the same configuration.
 The adaptor is a typed module that exports annotated versions of all

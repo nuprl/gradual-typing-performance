@@ -5,7 +5,7 @@
 @; -----------------------------------------------------------------------------
 @title[#:tag "sec:fwk"]{Benchmarking Software Evolution}
 
-The inspiration for our performance evaluation approach is due to Takikawa
+The inspiration for our evaluation method is due to Takikawa
  @|etal|@~cite[tfdffthf-ecoop-2015]. For their extension of functional
  Typed Racket to the object-oriented aspects of Racket, they use a
  lattice-style approach for their preliminary performance evaluation.
@@ -22,7 +22,7 @@ The inspiration for our performance evaluation approach is due to Takikawa
  evaluation} while we conduct a @italic{summative
  evaluation} to assess the post-intervention state of the system.}
 
-Let us articulate Takikawa @|etal|'s landscape from our
+Let us articulate Takikawa @|etal|'s view from our
 perspective: 
 @itemlist[
 
@@ -47,7 +47,7 @@ perspective:
 Our contribution is to exploit the lattice-oriented approach to benchmarking
  for a @emph{summative} evaluation. To this end, we
  imagine software engineers who are considering the use of gradual typing
- for some system and consider what kind of question may influence their
+ for some system and consider what kinds of questions may influence their
  decision.  Based on this first step, we formulate a small number of
  parameterized, quantitative measures that capture possible answers to these
  questions.
@@ -67,13 +67,13 @@ Unfortunately, this assumption overlooks the realities of implementations
  of gradual typing. Some modules simply cannot be equipped with types
  because they use linguistic constructs that cannot be
  annotated. Furthermore, completely typed configurations still use the
- run-time libraries of the underlying untyped language and, in particular
+ run-time libraries of the underlying untyped language. In particular,
  Typed Racket's run-time system remains largely untyped. As a result, even
  the completely typed configurations of our benchmarks usually import
  constants, functions, and classes from an untyped module in the run-time
  system. When these values cross this boundary at run-time, the contract
  system performs checks, and that imposes additional costs. To address this
- issue, the kmplementors of Typed Racket have enlarged their trusted code
+ issue, the implementors of Typed Racket have enlarged their trusted code
  base with unchecked type environments that cover frequently imported parts
  of the run-time system. The next
  section explains what ``completely typed'' means for the individual
@@ -85,7 +85,7 @@ When the software system configuration consists of a reasonably large
  in a state where some modules are typed and some others are untyped. As a
  result, the configuration is likely to suffer from the software contracts
  that the gradual type system injects at the boundary between the typed and
- the untyped portion. If the cost is tolerable, the configuration can be
+ the untyped portions. If the cost is tolerable, the configuration can be
  released and can replace the currently deployed version. The
  projects working on macro-level approaches to gradual typing seem to
  assume this kind of mode of operation. The run-time costs may not be tolerable,

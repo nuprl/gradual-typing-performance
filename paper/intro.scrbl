@@ -16,20 +16,20 @@ Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
  solution to this pressing software engineering problem. The idea is to
  extend the language so that programmers can incrementally equip programs
  with types. In contrast to optional type systems@~cite[bg-oopsla-1993],
- gradual type systems provide programmers with soundness guarantees, that
- is, the type annotations correctly predict run-time
+ gradual type systems provide programmers with soundness guarantees.
+ In other words, the type annotations in gradual type systems correctly predict run-time
  behavior. 
 
 Realizing type soundness in this world requires run-time checks that watch
  out for potential impedance mismatches between the typed and untyped
  portions of the programs. The granularity of these checks determine
  the peformance overhead of gradual typing. To reduce the frequency of
- checks, macro-level gradual typing forces programmers to annotate entire
+ checks, @emph{macro-level} gradual typing forces programmers to annotate entire
  modules with types and relies on behavioral contracts@~cite[ff-icfp-2002]
  between typed and untyped modules to enforce soundness. Micro-level gradual
  typing instead assigns an implicit type @tt{Dyn}@~cite[TypeDynamic] to all
  unannotated parts of a program; type annotations can then be added to any
- declaration. It is up to the implementation to insert casts in the
+ declaration. It is up to the implementation to insert casts at the
  appropriate points in the code. Different language designs use slightly
  different semantics with different associated costs and limitations.
 
@@ -44,7 +44,7 @@ Both approaches to gradual typing come with two implicit claims. First, the
 @; claim. This done by adding restricitions (e.g. nominal...) but we definitely
 @; have no allocation of wrappers.  Tests boil down to constant time checks.
  gradual typing validates some version of the first claim, no projects
- tackle the second claim systematically. Most publications have qualified remarks about the
+ tackle the second claim systematically. Most publications come with qualified remarks about the
  performance of partially typed programs. Some plainly admit that such mixed
  programs may suffer performance degradations of two orders of magnitude.
 
@@ -83,7 +83,7 @@ We apply our method to Typed Racket, the gradually typed
  performance.@note{Personal communication with the implementors, who claim
  some 100,000 unique downloads per year.}
 
-Section@secref{sec:fwk} introduces the performance framework in detail,
+Section@secref{sec:fwk} introduces the evaluation method in detail,
  including the information we retrieve from the lattices and how we
  parameterize these retrievals. Next, section@secref{sec:bm} explains our
  specific benchmarks. Section@secref{sec:tr} presents @; and@secref{sec:trp}
