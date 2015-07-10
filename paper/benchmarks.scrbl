@@ -156,7 +156,7 @@ algorithm's internal data structures.
 
 @parag{L-NM}
 This script analyzes the measurements included in this paper
-and generates @figure-ref{fig:lnm1} and @figure-ref{fig:lnm1}.
+and generates @figure-ref{fig:lnm1} and @figure-ref{fig:lnm2}.
 Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticably less performant on large datasets.
 This program relies on an untyped image rendering library and uses two adaptor modules.
 
