@@ -1,4 +1,4 @@
-#lang racket/base
+#lang typed/racket/base
 
 (provide
   ;; Base 2 log, on naturals
@@ -27,29 +27,34 @@
 
 ;; =============================================================================
 
-;; (: log2 (-> Natural Natural))
+(: log2 (-> Natural Natural))
 (define (log2 n)
-  (exact-ceiling (/ (log n) (log 2))))
+  (: log2-help (-> Natural Natural Natural))
+  (define (log2-help pow acc)
+    (if (= acc n) pow (log2-help (add1 pow) (* acc 2))))
+  (log2-help 1 2))
 
 ;; Convert a natural number to a binary string, padded to the supplied width
-;; (: natural->bitstring (-> Index #:pad Index String))
+(: natural->bitstring (-> Index #:pad Exact-Positive-Integer String))
 (define (natural->bitstring n #:pad pad-width)
-  (and (exact-positive-integer? pad-width)
-       (~r n #:base 2 #:min-width pad-width #:pad-string "0")))
+  (~r n #:base 2 #:min-width pad-width #:pad-string "0"))
 
 ;; Convert a binary string to a natural number
-;; (: bitstring->natural (-> String Index))
+(: bitstring->natural (-> String Index))
 (define (bitstring->natural str)
   (define N (string-length str))
-  (for/sum ([i (in-range N)])
-    (define c (string-ref str (- N (add1 i))))
-    (if (equal? #\1 c)
-        (expt 2 i)
-        0)))
+  (define res
+    (for/sum : Integer ([i (in-range N)])
+      (define c (string-ref str (- N (add1 i))))
+      (if (equal? #\1 c)
+          (exact-ceiling (expt 2 i))
+          0)))
+  (if (index? res) res (error 'bitstring->natural)))
 
 ;; Return a copy of `str` where the `i`-th bit is flipped.
 ;; (Flipped => 0 goes to 1 and 1 goes to 0)
-;; (: bitstring-flip (-> String Index String))
+;; Should take an INDEX, but is Integer for now
+(: bitstring-flip (-> String Integer String))
 (define (bitstring-flip str i)
   (define new (if (equal? #\0 (string-ref str i)) "1" "0"))
   (string-append (substring str 0 i)
@@ -59,11 +64,11 @@
 ;; Return all bitstrings reachable from `str`
 ;;  after incrementing at most `L` bits.
 ;; Result does NOT include the argument bitstring.
-;; (: in-reach (-> String Index (Listof String)))
+(: in-reach (-> String Index (Listof String)))
 (define (in-reach str L)
   (cond [(zero? L) '()]
         [else
-         (define res*
+         (define res* : (Listof (Listof String))
            (for/list ([i (in-range (string-length str))]
                       #:when (equal? #\0 (string-ref str i)))
              (define str+ (bitstring-flip str i))
@@ -73,7 +78,7 @@
 ;; =============================================================================
 
 (module+ test
-  (require rackunit)
+  (require typed/rackunit)
 
   ;; -- log2
   (check-equal? (log2 2) 1)
@@ -81,7 +86,6 @@
   (check-equal? (log2 1024) 10)
 
   ;; -- natural->bitstring
-  (check-equal? (natural->bitstring 2 #:pad 0) #f)
   (check-equal? (natural->bitstring 2 #:pad 2) "10")
   (check-equal? (natural->bitstring 2 #:pad 10) "0000000010")
 
