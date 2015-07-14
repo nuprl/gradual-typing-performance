@@ -1,4 +1,4 @@
-#lang racket/base
+#lang typed/racket/base
 
 ;; Create L-N/M plots for .rktd files
 ;;
@@ -20,14 +20,20 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  "bitstring.rkt"
-  "summary.rkt"
-  plot/pict
+  plot/typed/pict
   (only-in racket/math exact-floor)
   (only-in plot/utils linear-seq)
   (only-in racket/math exact-floor exact-ceiling)
-  (only-in racket/stream stream-length stream->list stream-filter)
   (only-in racket/format ~r)
+  "bitstring.rkt"
+  "summary.rkt"
+  "pict-types.rkt"
+)
+
+(require/typed racket/stream
+  [stream-length (-> (Sequenceof String) Index)]
+  [stream->list (-> (Sequenceof String) (Listof String))]
+  [stream-filter (-> (-> String Boolean) (Sequenceof String) (Sequenceof String))]
 )
 
 ;; =============================================================================
@@ -48,6 +54,17 @@
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
 
+(: lnm-plot (->* [Summary #:L (U Index (Listof Index))]
+                 [#:N Index #:M Index #:max-overhead Index
+                  #:num-samples Positive-Integer
+                  #:font-face String
+                  #:font-size Positive-Integer
+                  #:labels? Boolean
+                  #:cutoff-proportion Real
+                  #:plot-width Positive-Integer
+                  #:plot-height Positive-Integer
+                  ]
+                  (Listof Pict)))
 (define (lnm-plot summary
                   #:L L ;; (U Index (Listof Index)), L-values to plot
                   #:N [N DEFAULT_N]  ;; Index, recommened N limit
@@ -90,7 +107,7 @@
                           #:samples num-samples
                           #:color 'navy
                           #:width THICK))
-      (plot-pict (list N-line M-line cutoff-line F)
+      (define res (plot-pict (list N-line M-line cutoff-line F)
                  #:x-min 1
                  #:x-max xmax
                  #:y-min 0
@@ -98,19 +115,23 @@
                  #:x-label (and labels? "Overhead (vs. untyped)")
                  #:y-label (and labels? "Count")
                  #:width width
-                 #:height height))))
+                 #:height height))
+      (if (pict? res) res (error 'notapict)))))
+
 
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of variations
 ;;  which can reach, in L or fewer steps,
 ;;  a variation with overhead no more than `N`
-;; (: count-variations (-> Summary Index (-> Real Index)))
+(: count-variations (->* [Summary Index] [#:cache-up-to (U #f Index)] (-> Real Natural)))
 (define (count-variations sm L #:cache-up-to [lim #f])
   (define baseline (untyped-mean sm))
   (define cache (and lim (cache-init sm lim #:L L)))
-  (lambda (N) ;; Real, but we assume non-negative
+  (lambda ([N-raw : Real]) ;; Real, but we assume non-negative
+    (: N Nonnegative-Real)
+    (define N (if (>= N-raw 0) N-raw (error 'count-variations)))
     (define good? (make-variation->good? sm (* N baseline) #:L L))
-    (if (and cache (<= N lim))
+    (if (and cache lim (<= N lim))
         ;; Use cache to save some work, only test the variations
         ;; in the next bucket
         (cache-lookup cache N good?)
@@ -120,22 +141,26 @@
 ;; Make a predicate checking whether a variation is good.
 ;; Good = no more than `L` steps away from a variation
 ;;        with average runtime less than `good-threshold`.
+(: make-variation->good? (->* [Summary Real] [#:L Index] (-> String Boolean)))
 (define (make-variation->good? summary good-threshold #:L [L 0])
-  (lambda (var)
+  (lambda ([var : String])
     (for/or ([var2 (cons var (in-reach var L))])
       (<= (variation->mean-runtime summary var2)
          good-threshold))))
 
 ;; -----------------------------------------------------------------------------
 ;; -- cache
+(define-type Cache (Vectorof (Listof String)))
 
 ;; Create a cache that saves the configurations between discrete overhead values
+(: cache-init (->* [Summary Index] [#:L Index] Cache))
 (define (cache-init summary max-overhead #:L [L 0])
   (define base-overhead (untyped-mean summary))
+  (: unsorted-variations (Boxof (Sequenceof String)))
   (define unsorted-variations (box (all-variations summary)))
   ;; For each integer-overhead-range [0, 1] [1, 2] ... [max-1, max]
   ;; save the variations within that overhead to a cache entry
-  (for/vector ([i (in-range (add1 max-overhead))])
+  (for/vector : Cache ([i (in-range (add1 max-overhead))])
     (define good? (make-variation->good? summary (* i base-overhead) #:L L))
     (define-values (good-vars rest)
       (stream-partition good? (unbox unsorted-variations)))
@@ -144,22 +169,26 @@
 
 ;; Count the number of variations with running time less than `overhead`.
 ;; Use `test-fun` to manually check variations we aren't sure about
+(: cache-lookup (-> Cache Nonnegative-Real (-> String Boolean) Natural))
 (define (cache-lookup $$$ overhead test-fun)
+  (: lo-overhead Natural)
   (define lo-overhead (exact-floor overhead))
+  (: hi-overhead Natural)
   (define hi-overhead (exact-ceiling overhead))
   (define num-known
-    (for/sum ([i (in-range (add1 lo-overhead))])
+    (for/sum : Natural ([i (in-range (add1 lo-overhead))])
       (length (vector-ref $$$ i))))
   (if (= hi-overhead lo-overhead)
       ;; Short circuit, because original overhead was an integer
       num-known
       ;; Else test all the variations in the "next" bucket
       (+ num-known
-         (for/sum ([var (in-list (vector-ref $$$ hi-overhead))]
+         (for/sum : Natural ([var (in-list (vector-ref $$$ hi-overhead))]
                    #:when (test-fun var)) 1))))
 
+(: stream-partition (-> (-> String Boolean) (Sequenceof String) (Values (Sequenceof String) (Sequenceof String))))
 (define (stream-partition f stream)
-  (define not-f (lambda (x) (not (f x))))
+  (define not-f (lambda ([x : String]) (not (f x))))
   (values (stream-filter f stream)
           (stream-filter not-f stream)))
 
@@ -169,31 +198,40 @@
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
+(: compute-yticks (->* [Index Index] [#:exact (U Real (Listof Real))] ticks))
 (define (compute-yticks max-y num-ticks #:exact [exact '()])
   (define exact-list (or (and (list? exact) exact) (list exact)))
   (define round-y (if (< max-y 1000) ;;TODO
                       round
-                      (lambda (n) (* 100 (exact-floor (/ n 100))))))
-  (ticks (lambda (ax-min ax-max)
-           (for/list ([y (in-list (linear-seq ax-min ax-max num-ticks #:end? #t))])
+                      (lambda ([n : Real]) (* 100 (exact-floor (/ n 100))))))
+  (ticks (lambda ([ax-min : Real] [ax-max : Real])
+           (for/list : (Listof pre-tick) ([y (in-list (linear-seq ax-min ax-max num-ticks #:end? #t))])
              (define rounded (round-y y))
-             (define ex (findf (lambda (n) (= rounded (round-y n)))
+             (define ex (findf (lambda ([n : Real]) (= rounded (round-y n)))
                                exact-list))
              (pre-tick (or (and ex (round ex))
                            rounded)
                        #t)))
-         (lambda (ax-min ax-max pre-ticks)
+         (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
                  (for/list ([pt (in-list pre-ticks)])
                    (number->string (pre-tick-value pt))))))
 
+(: compute-xticks (-> Index ticks))
 (define (compute-xticks num-ticks)
-  (ticks (lambda (ax-min ax-max)
-           (for/list ([i (in-list (linear-seq 1 ax-max num-ticks))])
+  (ticks (lambda ([ax-min : Real] [ax-max : Real])
+           (for/list : (Listof pre-tick) ([i (in-list (linear-seq 1 ax-max num-ticks))])
              (pre-tick (round i) #t)))
-         (lambda (ax-min ax-max pre-ticks)
-           (for/list ([pt (in-list pre-ticks)])
+         (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
+           (for/list : (Listof String) ([pt (in-list pre-ticks)])
              (format "~ax" (pre-tick-value pt))))))
 
+(: horizontal-line (->* [Real]
+                        [#:x-min Index
+                         #:x-max Index
+                         #:color Symbol
+                         #:width Nonnegative-Real
+                         #:style Plot-Pen-Style]
+                        renderer2d))
 (define (horizontal-line y-val
                          #:x-min [x-min 0]
                          #:x-max [x-max 1]
@@ -206,6 +244,13 @@
          #:width w
          #:style s))
 
+(: vertical-line (->* [Real]
+                      [#:y-min Index
+                       #:y-max Index
+                       #:color Symbol
+                       #:width Nonnegative-Real
+                       #:style Plot-Pen-Style]
+                      renderer2d))
 (define (vertical-line x-val
                        #:y-min [y-min 0]
                        #:y-max [y-max 1]
@@ -220,33 +265,49 @@
 
 ;; =============================================================================
 
-(module+ main
-  (require
-    racket/cmdline
-    (only-in pict pict->bitmap)
-    (only-in racket/class send)
-  )
-  (define l-param (box 2))
-  (command-line #:program "l-n/m plotter"
-                #:once-each
-                [("-l") l-value
-                        "Set max value of L"
-                        (set-box! l-param l-value)]
-                #:args (filename)
-    (define summary (from-rktd filename))
-    (define name (get-project-name summary))
-    (define l-list (for/list ([i (in-range (add1 (unbox l-param)))]) i))
-    (define picts (lnm-plot summary #:L l-list
-                                    #:plot-height 300
-                                    #:plot-width 400))
-    (for/list ([pic (in-list picts)]
-               [i (in-list l-list)])
-      (define fname (format "output/~a~a.png" name i))
-      (send (pict->bitmap pic) save-file fname 'png)))
-)
+;(module+ main
+;  (require
+;    racket/cmdline
+;    (only-in pict pict->bitmap)
+;    (only-in racket/class send)
+;    (only-in racket/sequence sequence->list)
+;  )
+;  (define l-param (box 2))
+;  (command-line #:program "l-n/m plotter"
+;                #:once-each
+;                [("-l") l-value
+;                        "Set max value of L"
+;                        (set-box! l-param (cast l-value Index))]
+;                #:args (filename)
+;    (define summary (from-rktd filename))
+;    (define name (get-project-name summary))
+;    (define l-list (sequence->list (in-range 0 (add1 l-param))))
+;    (define picts (lnm-plot summary #:L l-list
+;                                    #:plot-height 300
+;                                    #:plot-width 400))
+;    (for/list : (Listof Any) ([pic (in-list picts)]
+;               [i (in-list l-list)])
+;      (define fname (format "output/~a~a.png" name i))
+;      (send (pict->bitmap pic) save-file fname 'png)))
+;)
 
 ;; -----------------------------------------------------------------------------
 
-(module+ test
-  (require rackunit)
-)
+;(module+ test
+;  (require typed/rackunit)
+;
+;  ;; Create the graph for a 'large' file
+;  (define DATA "../data/")
+;  (define funkytown (string-append DATA "funkytown-2015-07-02T01:47:43.rktd"))
+;  (define gregor (string-append DATA "gregor-2015-07-02.rktd"))
+;  (define quad (string-append DATA "quad-placeholder.rktd"))
+;
+;  (: make-graph (-> String Void))
+;  (define (make-graph fname)
+;    (define summary (from-rktd fname))
+;    (lnm-plot summary #:L '(0 1 2))
+;    (void))
+;
+;  ;(time (make-graph funkytown)) ;;3,000ms
+;  (time (make-graph gregor)) ;;
+;)

@@ -1,4 +1,4 @@
-#lang racket/base
+#lang typed/racket/base
 
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
@@ -14,12 +14,15 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- pict
  (only-in "scripts/lnm-plot.rkt" lnm-plot)
- (only-in "scripts/summary.rkt" from-rktd summary->pict)
+ (only-in "scripts/summary.rkt" from-rktd summary->pict Summary)
  (only-in racket/file file->value)
- racket/serialize
- )
+ "scripts/pict-types.rkt"
+)
+
+(require/typed racket/serialize
+  [serialize (-> Pict Any)]
+  [deserialize (-> Any Pict)])
 
 ;; =============================================================================
 ;; --- constants
@@ -35,6 +38,7 @@
 (define PARAM-MAX-OVERHEAD 20)
 (define PARAM-NUM-SAMPLES 60)
 
+(: l-index->string (-> Integer String))
 (define (l-index->string i)
   (cond [(zero? i)
          (format "L = ~a" i)]
@@ -43,10 +47,12 @@
         [else
          (number->string i)]))
 (define L*+title*
-  (for/list ([i (in-range (add1 PARAM-L))])
-    (cons i (l-index->string i))))
-(define L* (map car L*+title*))
-(define L-title* (map cdr L*+title*))
+  (for/list : (Listof (Pairof Index String)) ([i (in-range (add1 PARAM-L))])
+    (cons (cast i Index) (l-index->string i))))
+(define L*
+  (for/list : (Listof Index) ([x (in-list L*+title*)]) (car x)))
+(define L-title*
+  (for/list : (Listof String) ([x (in-list L*+title*)]) (cdr x)))
 
 (define FONT-FACE "Liberation Serif")
 
@@ -63,17 +69,18 @@
 (define CACHE-PREFIX "./compiled/lnm-cache-")
 
 ;; Try to read a cached pict, fall back to making a new one.
+(: data->pict (->* [(Listof (List String String))] [#:tag String] Pict))
 (define (data->pict data* #:tag [tag ""])
-  (define title* (map car data*))
-  (define rktd* (map cadr data*))
+  (define title* (for/list : (Listof String) ([x (in-list data*)]) (car x)))
+  (define rktd* (for/list : (Listof String) ([x (in-list data*)]) (cadr x)))
   (or (get-cached rktd* #:tag tag)
       (get-new-lnm-pict rktd* #:tag tag #:titles title*)))
 
 ;; Create a summary and L-N/M picts for a data file.
-;; (-> Path-String (Listof Pict))
+(: file->pict* (-> String #:title (U String #f) (Listof Pict)))
 (define (file->pict* data-file #:title title)
   (define S (from-rktd data-file))
-  (define S-pict
+  (define S-pict : Pict
     (let ([p (summary->pict S
                    #:title title
                    #:font-face FONT-FACE
@@ -82,7 +89,7 @@
                    #:M PARAM-M
                    #:width (* 0.6 W)
                    #:height H)])
-      (vc-append p (blank 0 (- H (pict-height p))))))
+      (vc-append 0 p (blank 0 (- H (pict-height p))))))
   (define L-pict*
     (lnm-plot S
               #:L L*
@@ -97,10 +104,12 @@
               #:plot-width W)) ;;TODO adjust, to keep figure sizes all equal?
   (cons S-pict L-pict*))
 
+(: format-filepath (-> (U #f String) String))
 (define (format-filepath tag)
   (string-append CACHE-PREFIX (or tag "") ".rktd"))
 
 ;; Save a pict, tagging with with `tag` and the `rktd*` filenames
+(: cache-pict (-> Pict (Listof String) (U #f String) Void))
 (define (cache-pict pict rktd* tag)
   (define filepath (format-filepath tag))
   (debug "Caching new pict at '~a'" filepath)
@@ -109,48 +118,61 @@
     #:mode 'text
     #:exists 'replace))
 
+(: get-cached (->* [(Listof String)] [#:tag String] (U Pict #f)))
 (define (get-cached rktd* #:tag [tag ""])
   (define filepath (format-filepath tag))
   (and (file-exists? filepath)
        (read-cache rktd* filepath)))
 
+(define-type CachedPict (Pairof (Listof String) Any))
+(define-predicate cachedpict? CachedPict)
+
+(: read-cache (-> (Listof String) String (U #f Pict)))
 (define (read-cache rktd* filepath)
   (define tag+pict (file->value filepath))
-  (unless (and (pair? tag+pict)
-               (list? (car tag+pict)))
-    (error 'render-lmn (format "Malformed data in cache file '~a'" filepath)))
-  (and (equal? rktd* (car tag+pict))
-       (debug "Reading cached pict from '~a'" filepath)
-       (deserialize (cdr tag+pict))))
+  (cond
+    [(cachedpict? tag+pict)
+     (and (equal? rktd* (car tag+pict))
+     (debug "Reading cached pict from '~a'" filepath)
+     (deserialize (cdr tag+pict)))]
+    [else
+     (error 'render-lnm (format "Malformed data in cache file '~a'" filepath))]))
 
 ;; Create a pict, cache it for later use
+(: get-new-lnm-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
 (define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
-  (define title* (or maybe-title* (for/list ([x (in-list rktd*)]) #f)))
+  (: title* (U (Listof String) (Listof #f)))
+  (define title* (or maybe-title* (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
   ;; Align all picts vertically first
-  (define columns
-    (for/fold ([prev* #f])
+  (define columns : (Listof Pict)
+    (or (for/fold : (U #f (Listof Pict))
+              ([prev* : (U #f (Listof Pict)) #f])
               ([rktd (in-list rktd*)]
-               [title (in-list title*)])
+               [title : (U #f String) (in-list title*)])
       (define pict* (file->pict* rktd #:title title))
       (if prev*
           ;; Right-align the old picts with the new ones
-          (for/list ([old (in-list prev*)]
+          (for/list : (Listof Pict)
+                    ([old (in-list prev*)]
                      [new (in-list pict*)])
             (vr-append GRAPH-VSPACE old new))
           ;; Generate titles. Be careful aligning the summary row
           (cons (car pict*)
-          (for/list ([l-str (in-list L-title*)]
-                     [new (in-list (cdr pict*))])
-            (vc-append TITLE-VSPACE (text l-str TITLE-STYLE TITLE-SIZE) new))))))
+           (for/list : (Listof Pict)
+                     ([l-str (in-list L-title*)]
+                      [new (in-list (cdr pict*))])
+             (vc-append TITLE-VSPACE (text l-str TITLE-STYLE TITLE-SIZE) new)))))
+         (error 'invariant)))
   ;; Paste the columns together, insert a little extra space to make up for
   ;;  the missing title in the first column
-  (define pict
-    (for/fold ([prev-pict #f])
+  (define pict : Pict
+    (or (for/fold : (U #f Pict)
+              ([prev-pict : (U #f Pict) #f])
               ([c columns])
       (if prev-pict
           (hc-append GRAPH-HSPACE prev-pict c)
-          (vc-append TITLE-VSPACE (blank 0 10) c))))
+          (vc-append TITLE-VSPACE (blank 0 10) c)))
+        (error 'invariant)))
   (cache-pict pict rktd* tag)
   pict)
-
 
