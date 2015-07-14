@@ -27,10 +27,8 @@
   (only-in racket/format ~r)
   "bitstring.rkt"
   "summary.rkt"
+  "pict-types.rkt"
 )
-
-(require/typed pict
-  [#:opaque Pict pict?])
 
 (require/typed racket/stream
   [stream-length (-> (Sequenceof String) Index)]
@@ -279,7 +277,7 @@
 ;                #:once-each
 ;                [("-l") l-value
 ;                        "Set max value of L"
-;                        (set-box! l-param l-value)]
+;                        (set-box! l-param (cast l-value Index))]
 ;                #:args (filename)
 ;    (define summary (from-rktd filename))
 ;    (define name (get-project-name summary))
@@ -297,19 +295,19 @@
 
 ;(module+ test
 ;  (require typed/rackunit)
-
-  ;; Create the graph for a 'large' file
-  (define DATA "../data/")
-  (define funkytown (string-append DATA "funkytown-2015-07-02T01:47:43.rktd"))
-  (define gregor (string-append DATA "gregor-2015-07-02.rktd"))
-  (define quad (string-append DATA "quad-placeholder.rktd"))
-
-  (: make-graph (-> String Void))
-  (define (make-graph fname)
-    (define summary (from-rktd fname))
-    (lnm-plot summary #:L '(0 1 2))
-    (void))
-
-  ;(time (make-graph funkytown)) ;;3,000ms
-  (time (make-graph gregor)) ;;
+;
+;  ;; Create the graph for a 'large' file
+;  (define DATA "../data/")
+;  (define funkytown (string-append DATA "funkytown-2015-07-02T01:47:43.rktd"))
+;  (define gregor (string-append DATA "gregor-2015-07-02.rktd"))
+;  (define quad (string-append DATA "quad-placeholder.rktd"))
+;
+;  (: make-graph (-> String Void))
+;  (define (make-graph fname)
+;    (define summary (from-rktd fname))
+;    (lnm-plot summary #:L '(0 1 2))
+;    (void))
+;
+;  ;(time (make-graph funkytown)) ;;3,000ms
+;  (time (make-graph gregor)) ;;
 ;)

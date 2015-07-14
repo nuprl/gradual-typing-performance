@@ -26,9 +26,7 @@
   ;; (-> Summary (Streamof String))
   all-variations
   ;; Return a pict representation of the summary. A kind of TLDR.
-;; TODO TODO 
-;  ;; (-> Summary Pict)
-;  summary->pict
+  summary->pict
   Summary
 )
 
@@ -42,7 +40,7 @@
   (only-in racket/format ~r)
   "modulegraph.rkt"
   "bitstring.rkt"
-  pict
+  "pict-types.rkt"
 )
 
 (require/typed racket/stream
@@ -192,13 +190,6 @@
 (define (index->mean-runtime sm i)
   (mean (vector-ref (summary-dataset sm) i)))
 
-;;; Efficient enough?
-;(define (all-gt-runtimes sm)
-;  (define data (summary-dataset sm))
-;  (apply append
-;         (for/list ([i (in-range 1 (vector-length data))])
-;           (vector-ref data i))))
-
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
 (: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
 (define (fold-lattice sm f #:init [init #f])
@@ -219,75 +210,98 @@
 (define (min-lattice-point sm)
   (fold-lattice sm min))
 
-;;; Get the average over all gradually typed running times (exludes typed & untyped)
-;;; Takes into account every single measured data point.
-;(define (avg-runtime sm)
-;  (mean (all-gt-runtimes sm)))
-;
-;;; Count the number of variations with performance no worse than N times untyped
-;(define (deliverable sm N)
-;  (define baseline (* N (untyped-mean sm)))
-;  (define (count-N acc val)
-;    (if (<= val baseline) (+ 1 acc) acc))
-;  (+ 1 ;;untyped
-;     (if (<= (typed-mean sm) baseline) 1 0)
-;     (fold-lattice sm count-N #:init 0)))
-;
-;(define (usable sm N M)
-;  (define um (untyped-mean sm))
-;  (define lo (* N um))
-;  (define hi (* M um))
-;  (define (count-NM acc val)
-;    (if (and (<  lo val) (<= val hi))
-;      (+ 1 acc)
-;      acc))
-;  (+
-;    (let ([tm (typed-mean sm)])
-;      (if (and (< lo tm) (<= tm hi)) 1 0))
-;    (fold-lattice sm count-NM #:init 0)))
+(: avg-lattice-point (-> Summary Real))
+(define (avg-lattice-point sm)
+  (define 1/N (/ 1 (- (get-num-variations sm) 2)))
+  (: f (-> Real Real Real))
+  (define (f acc mean) (+ acc (* mean 1/N)))
+  (fold-lattice sm f #:init 0))
+
+;; Count the number of variations with performance no worse than N times untyped
+(: deliverable (-> Summary Index Natural))
+(define (deliverable sm N)
+  (define baseline (* N (untyped-mean sm)))
+  (: count-N (-> Natural Real Natural))
+  (define (count-N acc val)
+    (if (<= val baseline)
+      (+ 1 acc)
+      acc))
+  (+ 1 ;;untyped
+     (if (<= (typed-mean sm) baseline) 1 0)
+     ;; Cast should be unnecessary, but can't do polymorphic keyword args in fold-lattice
+     (cast (fold-lattice sm count-N #:init 0) Natural)))
+
+(: usable (-> Summary Index Index Natural))
+(define (usable sm N M)
+  (define um (untyped-mean sm))
+  (define lo (* N um))
+  (define hi (* M um))
+  (: count-NM (-> Natural Real Natural))
+  (define (count-NM acc val)
+    (if (and (<  lo val) (<= val hi))
+      (+ 1 acc)
+      acc))
+  (+
+    (let ([tm (typed-mean sm)])
+      (if (and (< lo tm) (<= tm hi)) 1 0))
+    (cast (fold-lattice sm count-NM #:init 0) Natural)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- viewing
 
-;(define (summary->pict sm
-;                       #:font-face face
-;                       #:font-size size
-;                       #:N PARAM-N
-;                       #:M PARAM-M
-;                       #:height height
-;                       #:width width
-;                       #:title [user-title #f])
-;  (define vspace (/ size 3))
-;  (define hspace (/ width 4))
-;  (define vpad (/ height 5))
-;  (define baseline (untyped-mean sm))
-;  (define numvars (get-num-variations sm))
-;  (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
-;  (define (overhead n) (round2 (/ n baseline)))
-;  (define (num+percent n) (format "~a (~a%)" n (round (* 100 (/ n numvars)))))
-;  (define (text->pict message) (text message face size))
-;  (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
-;  (define left-column
-;    (vr-append vspace
-;               (text->title (or user-title (get-project-name sm))) ;; BOLDER
-;               (text->pict "typed/untyped ratio")
-;               (text->pict "max. overhead")
-;               (text->pict "mean overhead")
-;               (text->pict (format "~a-deliverable" (* 100 PARAM-N)))
-;               (text->pict (format "~a/~a-usable" (* 100 PARAM-N) (* 100 PARAM-M)))
-;               ))
-;  (define right-column
-;    (vr-append vspace (text->pict (format "(~a modules)" (get-num-modules sm)))
-;    (ht-append (/ hspace 2) (vr-append vspace
-;               (text->pict (overhead (typed-mean sm)))
-;               (text->pict (overhead (max-lattice-point sm)))
-;               (text->pict (overhead (avg-runtime sm)))
-;               (text->pict (num+percent (deliverable sm PARAM-N)))
-;               (text->pict (num+percent (usable sm PARAM-N PARAM-M)))
-;               ) (blank 0 0))))
-;  (vl-append vpad
-;             (hc-append hspace left-column right-column)
-;             (blank 1 vpad)))
+(: summary->pict (->* [Summary
+                       #:font-face String
+                       #:font-size Exact-Positive-Integer
+                       #:N Index
+                       #:M Index
+                       #:height Real
+                       #:width Real]
+                      [#:title (U String #f)]
+                      Pict))
+(define (summary->pict sm
+                       #:font-face face
+                       #:font-size size
+                       #:N PARAM-N
+                       #:M PARAM-M
+                       #:height height
+                       #:width width
+                       #:title [user-title #f])
+  (define vspace (/ size 3))
+  (define hspace (/ width 4))
+  (define vpad (/ height 5))
+  (define baseline (untyped-mean sm))
+  (define numvars (get-num-variations sm))
+  (: round2 (-> Real String))
+  (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
+  (: overhead (-> Real String))
+  (define (overhead n) (round2 (/ n baseline)))
+  (: num+percent (-> Real String))
+  (define (num+percent n) (format "~a (~a%)" n (round (* 100 (/ n numvars)))))
+  (: text->pict (-> String Pict))
+  (define (text->pict message) (text message face size))
+  (: text->title (-> String Pict))
+  (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
+  (define left-column
+    (vr-append vspace
+               (text->title (or user-title (get-project-name sm))) ;; BOLDER
+               (text->pict "typed/untyped ratio")
+               (text->pict "max. overhead")
+               (text->pict "mean overhead")
+               (text->pict (format "~a-deliverable" (* 100 PARAM-N)))
+               (text->pict (format "~a/~a-usable" (* 100 PARAM-N) (* 100 PARAM-M)))
+               ))
+  (define right-column
+    (vr-append vspace (text->pict (format "(~a modules)" (get-num-modules sm)))
+    (ht-append (/ hspace 2) (vr-append vspace
+               (text->pict (overhead (typed-mean sm)))
+               (text->pict (overhead (max-lattice-point sm)))
+               (text->pict (overhead (avg-lattice-point sm)))
+               (text->pict (num+percent (deliverable sm PARAM-N)))
+               (text->pict (num+percent (usable sm PARAM-N PARAM-M)))
+               ) (blank 0 0))))
+  (vl-append vpad
+             (hc-append hspace left-column right-column)
+             (blank 1 vpad)))
 
 ;; =============================================================================
 
