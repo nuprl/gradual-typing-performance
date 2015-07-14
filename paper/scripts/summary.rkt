@@ -51,12 +51,19 @@
 ;; =============================================================================
 ;; -- data definition: summary
 
+(define-type Dataset (Vectorof (Listof Index)))
+
+(: dataset? (-> Any Dataset))
+(define (dataset? vec)
+  (cast vec Dataset))
+
 (struct summary (
   [source : Path-String] ;; the data's origin
-  [dataset : (Vectorof (Listof Index))] ;; the underlying experimental data
+  [dataset : Dataset] ;; the underlying experimental data
   [modulegraph : ModuleGraph] ;; the adjacency list of the represented project
   [num-runs : Index]
 ))
+
 (define-type Summary summary)
 
 ;; -----------------------------------------------------------------------------
@@ -82,7 +89,7 @@
   (summary path dataset mg num-runs))
 
 ;; Parse a dataset from a filepath.
-(: rktd->dataset (-> Path (Values (Vectorof (Listof Index)) Index)))
+(: rktd->dataset (-> Path (Values Dataset Index)))
 (define (rktd->dataset path)
   ;; Check .rktd
   (unless (bytes=? #"rktd" (or (filename-extension path) #""))
@@ -93,9 +100,9 @@
   (validate-dataset vec))
 
 ;; Confirm that the dataset `vec` is a well-formed vector of experiment results.
-(: validate-dataset (-> Any (Values (Vectorof (Listof Index)) Index)))
+(: validate-dataset (-> Any (Values Dataset Index)))
 (define (validate-dataset vec0)
-  (define vec (cast vec0 (Vectorof (Listof Index))))
+  (define vec (dataset? vec0))
   (unless (< 0 (vector-length vec)) (parse-error "Dataset is an empty vector, does not contain any entries"))
   ;; Record the number of runs in the first vector, match against other lengths
   (: num-runs (Boxof (U #f Index)))
@@ -105,14 +112,11 @@
     (define unboxed (unbox num-runs))
     (if (not unboxed)
         (set-box! num-runs (length inner))
-        (unless (= unboxed (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths (~a vs. ~a); all variations must describe the same number of runs.\n  Bad row: ~a" row-index unboxed (length inner) inner)))
-    (for ([val (in-list inner)])
-      (unless (exact-positive-integer? val)
-        (parse-error "Row ~a contains nonsense entry '~a'" row-index val))))
-    (values vec (or (unbox num-runs) (error 'neverhappens))))
+        (unless (= unboxed (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths (~a vs. ~a); all variations must describe the same number of runs.\n  Bad row: ~a" row-index unboxed (length inner) inner))))
+  (values vec (or (unbox num-runs) (error 'neverhappens))))
 
 ;; Check that the dataset and module graph agree
-(: validate-modulegraph (-> (Vectorof (Listof Index)) ModuleGraph Void))
+(: validate-modulegraph (-> Dataset ModuleGraph Void))
 (define (validate-modulegraph dataset mg)
   (define ds-num-modules (log2 (vector-length dataset)))
   (define mg-num-modules (length (module-names mg)))
