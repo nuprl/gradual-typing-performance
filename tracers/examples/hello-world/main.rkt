@@ -1,5 +1,5 @@
-#lang racket/base
+#lang typed/racket/base
 
-(require "message.rkt")
+(require/typed "message.rkt" [message String])
 
 (printf "~a\n" message)
