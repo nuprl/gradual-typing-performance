@@ -14,3 +14,14 @@
   (void))
 
 (main)
+
+;; -----------------------------------------------------------------------------
+;; --- output
+;; [BG:CREATE]	0	main.rkt	my-num	fact.rkt
+;; [BG:APPLY]	0	main.rkt	my-num	fact.rkt
+;; [BG:CREATE]	1	main.rkt	fact-naive	fact.rkt
+;; [BG:CREATE]	2	main.rkt	fact-acc	fact.rkt
+;; [BG:APPLY]	1	main.rkt	fact-naive	fact.rkt
+;; [BG:APPLY]	1	main.rkt	fact-naive	fact.rkt
+;; [BG:APPLY]	2	main.rkt	fact-acc	fact.rkt
+;; [BG:APPLY]	2	main.rkt	fact-acc	fact.rkt
