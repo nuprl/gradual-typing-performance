@@ -2,13 +2,16 @@ patch-racket
 ============
 
 #### How to Modify Racket to print typed contract logging information
-- Move `guts.rkt` to the "contract" folder.
+1. Move `guts.rkt` to the "contract" folder.
   If `SRC` is the directory for your local Racket installation, then the file
   you need to replace is `SRC/racket/collects/racket/contract/private/guts.rkt`.
   Or just search using `find SRC -name "guts.rkt"`.
-- Move `require-contract.rkt` to the `typed/utils/` folder.
+2. Move `require-contract.rkt` to the `typed/utils/` folder.
   That's probably `SRC/racket/share/pkgs/typed-racket-lib/typed-racket/utils/require-contract.rkt`.
-- Rebuild Racket, or just those two files and their dependencies.
+3. Rebuild Racket, or just those two files and their dependencies.
+4. Move `require-typed-utils.rkt` to your `benchmark-utils` package.
+   This comments out the parts of `require/typed/check` that suppress contracts,
+   and instead makes a contract for every identifier.
 
 #### How to understand the logging information
 Two kinds of messages are printed to `stdout` as the program runs.
