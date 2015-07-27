@@ -48,7 +48,7 @@
   (syntax-parse stx
     [(require/contract nm:renameable hidden:id cnt lib)
      ;;bg; create a log for this boundary
-     (define bg-message (format "~a\t~a\t~a\t~a" (unbox bg:id-counter) (syntax-source #'nm) (syntax-e #'nm) (syntax-e #'lib)))
+     (define bg-message (format "~a\t~a\t~a\t~a" (unbox bg:id-counter) (bg-source->string (syntax-source #'lib)) (syntax-e #'nm) (syntax-e #'lib)))
      (set-box! bg:id-counter (add1 (unbox bg:id-counter)))
      #`(begin (require (only-in lib [nm.orig-nm nm.orig-nm-r]))
               (define-syntax nm.nm
@@ -56,14 +56,24 @@
                  (syntax-property (syntax-property (quote-syntax hidden)
                                                    'not-free-identifier=? #t)
                                   'not-provide-all-defined #t)))
-              ;;bg; declare a new contract, pass along the log message for use-sites
+              ;;bg; declare a new contract
               (printf "[BG:CREATE]\t~a\n" #,bg-message)
               (define-ignored hidden
                 (contract cnt
                           (get-alternate nm.orig-nm-r)
                           '(interface for #,(syntax->datum #'nm.nm))
+                          ;;bg; hide the log message in the negative-position blame object
                           (list 'bg-typed-contract #,bg-message (current-contract-region))
                           (quote nm.nm)
                           (quote-srcloc nm.nm))))]))
 
 (define-for-syntax bg:id-counter (box 0))
+(define-for-syntax (last xs)
+  (for/fold ([prev #f]) ([x xs])
+    x))
+(define-for-syntax (bg-source->string src)
+  (cond
+   [(path-string? src)
+    (path->string (last (explode-path src)))]
+   [else
+    (error 'require-contract "BG cannot parse filename from '~a'\n" src)]))
