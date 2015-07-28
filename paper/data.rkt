@@ -13,7 +13,7 @@
   [LNM-DATA        "./data/lnm-large-06-28.rktd"]
   [MBTA-DATA       "./data/mbta-04-25.rktd"]
   [MORSECODE-DATA  "./data/morsecode-large-06-27.rktd"]
-  [QUAD-DATA       "./data/quad-placeholder.rktd"]
+  [QUAD-DATA       "./data/quad-galicia-07-26.rktd"]
   [SIEVE-DATA      "./data/sieve-2015-06-28T14:08:55.rktd"]
   [SNAKE-DATA      "./data/snake-2015-06-30T14:55:40.rktd"]
   [SUFFIXTREE-DATA "./data/suffixtree-large-06-30.rktd"]
