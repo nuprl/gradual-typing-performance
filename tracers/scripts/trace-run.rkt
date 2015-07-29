@@ -15,6 +15,7 @@
   (only-in racket/match match-define)
   (only-in racket/system system process)
   (only-in racket/string string-join string-split)
+  (only-in racket/file copy-directory/files)
 )
 
 ;; =============================================================================
@@ -69,7 +70,10 @@
     (make-directory dirname))
   (for ([path fill-with])
     (define dest (format "~a/~a" dirname (path-last path)))
-    (copy-file path dest #t)))
+    (if (directory-exists? path)
+        ;; The docs don't show how to copy+clobber a directory
+        (system (format "cp -r ~a ~a" path dest))
+        (copy-file path dest #t))))
 
 ;; (: ensure-hacked-racket (-> Void))
 (define (ensure-hacked-racket)
@@ -267,18 +271,30 @@
      boundary<?)))
 
 ;; Count the total number of contracts represented in the map
-;; (: count-contracts (-> ContractUsageMap Natural))
-(define (count-contracts from->to)
-  (for*/sum ([to->id (in-hash-values from->to)]
-             [id->nat (in-hash-values to->id)]
+;; (: count-contracts (->* [ContractUsageMap] [#:from (U #f String) #:to (U #f String)] Natural))
+(define (count-contracts from->to #:from [only-from #f] #:to [only-to #f])
+  (for*/sum ([to->id (or (and only-from (cond [(hash-ref from->to only-from (lambda () #f))
+                                               => (lambda (x) (list x))]
+                                              [else '()]))
+                         (in-hash-values from->to))]
+             [id->nat (or (and only-to (cond [(hash-ref to->id only-to (lambda () #f))
+                                              => (lambda (x) (list x))]
+                                             [else '()]))
+                          (in-hash-values to->id))]
              [dont-care (in-hash-values id->nat)])
     1))
 
 ;; Count the total number of contract checks / applications in the map
-;; (: count-checks (-> ContractUsageMap Natural))
-(define (count-checks from->to)
-  (for*/sum ([to->id (in-hash-values from->to)]
-             [id->nat (in-hash-values to->id)]
+;; (: count-checks (->* [ContractUsageMap] [#:from (U #f String) #:to (U #f String)] Natural))
+(define (count-checks from->to #:from [only-from #f] #:to [only-to #f])
+  (for*/sum ([to->id (or (and only-from (cond [(hash-ref from->to only-from (lambda () #f))
+                                               => (lambda (x) (list x))]
+                                              [else '()]))
+                         (in-hash-values from->to))]
+             [id->nat (or (and only-to (cond [(hash-ref to->id only-to (lambda () #f))
+                                              => (lambda (x) (list x))]
+                                             [else '()]))
+                          (in-hash-values to->id))]
              [nat (in-hash-values id->nat)])
     nat))
 
@@ -362,7 +378,9 @@
   (define num-contracts (count-contracts cmap))
   (define num-checks (count-checks cmap))
   (define worst-boundaries (filter-worst-boundaries cmap #:valid-filenames fnames))
-  (match-define (boundary wfrom wto wcontracts wchecks) (car worst-boundaries))
+  (match-define (boundary wfrom wto wval wchecks) (car worst-boundaries))
+  (define worst-total-contracts (count-contracts cmap #:from wfrom #:to wto))
+  (define worst-total-checks (count-checks cmap #:from wfrom #:to wto))
   ;; Print the heavy things to file
   (when out-opt
     (with-output-to-file out-opt #:exists 'replace
@@ -371,7 +389,7 @@
   (printf "\nResults\n=======\n")
   (printf "Created ~a contracts\n" num-contracts)
   (printf "Checked contracts ~a times\n" num-checks)
-  (printf "The worst boundary (~a -> ~a) created ~a contracts and caused ~a checks\n" wfrom wto wcontracts wchecks)
+  (printf "The worst boundary (~a -> ~a) created ~a contracts and caused ~a checks\n" wfrom wto worst-total-contracts worst-total-checks)
   (printf "Worst values, for each boundary:\n- ~a\n" (string-join (map format-boundary worst-boundaries) "\n- ")))
 
 ;; =============================================================================
