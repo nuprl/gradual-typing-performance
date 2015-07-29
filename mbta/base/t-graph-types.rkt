@@ -13,7 +13,7 @@
  Colors->Lines)
 
 ;; ===================================================================================================
-(require/typed "./graph/graph/main.rkt" [#:opaque Graph graph?])
+(require/typed graph [#:opaque Graph graph?])
 
 (define-type MBTA
   (Class 
