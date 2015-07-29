@@ -20,10 +20,9 @@
     (parameterize ([current-custodian c])
       (define (run-query str)
         (run-t in _out)
-        (displayln str)
-        (read-to EOM))
-      (parameterize ([current-input-port _in]
-                     [current-output-port out])
+        (displayln str out)
+        (read-to EOM _in))
+      (begin
         (assert (run-query (path "Airport" "Northeastern")) 14)
         (assert (run-query (disable "Government")) 1)
         (assert (run-query (path "Airport" "Northeastern")) 16)
@@ -57,11 +56,11 @@
                    SEP
                    (string-join result-list SEP)))))
 
-(: read-to (-> String (Listof String)))
-(define (read-to x)
-  (define next (read-line))
+(: read-to (-> String Input-Port (Listof String)))
+(define (read-to x in-port)
+  (define next (read-line in-port))
   (if (or (eof-object? next) (string=? x (string-trim next)))
       '()
-      (cons next (read-to x))))
+      (cons next (read-to x in-port))))
 
 (time (stress-test 10))
