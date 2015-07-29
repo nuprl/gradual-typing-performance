@@ -16,3 +16,11 @@ where `DIR` is a project directory, like `suffixtree/` or `quad/`.
 - Displays aggregate stats on run-time contract use
 
 Add the `-o FILENAME` option to fill `FILENAME` with data for every contracted identifier.
+
+
+Notes
+-----
+
+- The `uid` is reset often (it's a `define-for-syntax`).
+  It's probably not worth using a `uid`.
+  
