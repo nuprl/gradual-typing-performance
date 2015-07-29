@@ -74,14 +74,15 @@
    [(? stx?) (stx->spec z)]
    [(? form?) (form->spec z)]
    [(? expr?) (expr->spec z)]
-   [(? wrapped?) (wrapped->spec z)]
+   [(? stx-obj?) (stx-obj->spec z)]
    [(? wrap?) (wrap->spec z)]
-   [(? free-id-info?) (free-id-info->spec z)]
+   [(? module-shift?) (module-shift->spec z)]
+   [(? scope?) (scope->spec z)]
+   [(? multi-scope?) (multi-scope->spec z)]
+   [(? binding?) (binding->spec z)]
    [(? all-from-module?) (all-from-module->spec z)]
-   [(? module-binding?) (module-binding->spec z)]
-   [(? nominal-path?) (nominal-path->spec z)]
    [(? provided?) (provided->spec z)]
-   [x (error (format "unknown struct ~e" z))]
+   [x (error 'try-spec (format "unknown struct ~e" z))]
 ))
 (: form->spec (-> form Spec))
 (define (form->spec z)
@@ -94,9 +95,8 @@
    [(? splice?) (splice->spec z)]
    [(? inline-variant?) (inline-variant->spec z)]
    [(? mod?) (mod->spec z)]
-   [(? provided?) (provided->spec z)]
    [(? expr?) (expr->spec z)]
-   [x (error (format "unknown struct ~e" z))]
+   [x (error 'form (format "unknown struct ~e" z))]
 ))
 (: expr->spec (-> expr Spec))
 (define (expr->spec z)
@@ -120,37 +120,16 @@
    [(? assign?) (assign->spec z)]
    [(? apply-values?) (apply-values->spec z)]
    [(? primval?) (primval->spec z)]
-   [x (error (format "unknown struct ~e" z))]
+   [x (error 'expr (format "unknown struct ~e" z))]
 ))
-(: wrap->spec (-> wrap Spec))
-(define (wrap->spec z)
+(: binding->spec (-> binding Spec))
+(define (binding->spec z)
   (match z
-   [(? top-level-rename?) (top-level-rename->spec z)]
-   [(? mark-barrier?) (mark-barrier->spec z)]
-   [(? lexical-rename?) (lexical-rename->spec z)]
-   [(? phase-shift?) (phase-shift->spec z)]
-   [(? module-rename?) (module-rename->spec z)]
-   [(? wrap-mark?) (wrap-mark->spec z)]
-   [(? prune?) (prune->spec z)]
-   [x (error (format "unknown struct ~e" z))]
-))
-(: module-binding->spec (-> module-binding Spec))
-(define (module-binding->spec z)
-  (match z
-   [(? simple-module-binding?) (simple-module-binding->spec z)]
-   [(? phased-module-binding?) (phased-module-binding->spec z)]
-   [(? exported-nominal-module-binding?) (exported-nominal-module-binding->spec z)]
-   [(? nominal-module-binding?) (nominal-module-binding->spec z)]
-   [(? exported-module-binding?) (exported-module-binding->spec z)]
-   [x (error (format "unknown struct ~e" z))]
-))
-(: nominal-path->spec (-> nominal-path Spec))
-(define (nominal-path->spec z)
-  (match z
-   [(? simple-nominal-path?) (simple-nominal-path->spec z)]
-   [(? imported-nominal-path?) (imported-nominal-path->spec z)]
-   [(? phased-nominal-path?) (phased-nominal-path->spec z)]
-   [x (error (format "unknown struct ~e" z))]
+   [(? module-binding?) (module-binding->spec z)]
+   [(? decoded-module-binding?) (decoded-module-binding->spec z)]
+   [(? local-binding?) (local-binding->spec z)]
+   [(? free-id=?-binding?) (free-id=?-binding->spec z)]
+   [x 'binding (error (format "unknown struct ~e" z))]
 ))
 ;; --- private functions
 
@@ -178,7 +157,8 @@
   (list "prefix"
         (lcons "num-lifts" (number->string                (prefix-num-lifts z)))
         (lcons "toplevels" (list->string      tl->spec  (prefix-toplevels z)))
-        (lcons "stxs"      (listof-zo->string stx->spec (prefix-stxs z)))))
+        (lcons "stxs"      (listof-zo->string stx->spec (for/list : (Listof stx) ([sx (prefix-stxs z)] #:when sx) sx)))
+        (lcons "src-inspector-desc" (symbol->string (prefix-src-inspector-desc z)))))
 
 (: global-bucket->spec (-> global-bucket Spec))
 (define
@@ -206,57 +186,18 @@
 (define
   (stx->spec z)
   (list "stx"
-        (lcons "encoded" (wrapped->spec (stx-encoded z)))))
-
-(: wrapped->spec (-> wrapped Spec))
-(define
-  (wrapped->spec z)
-  (list "wrapped"
-        (lcons "datum"         (any->string                    (wrapped-datum z)))
-        (lcons "wraps"         (listof-zo->string wrap->spec (wrapped-wraps z)))
-        (lcons "tamper-status" (symbol->string                 (wrapped-tamper-status z)))))
-
-;; Helper for `free-id-info` and `all-from-module`
-(: phase->spec (-> (U Integer #f) String))
-(define (phase->spec ph)
-  (cond [(number? ph) (number->string ph)]
-        [else  (boolean->string ph)]))
-
-(: free-id-info->spec (-> free-id-info Spec))
-(define
-  (free-id-info->spec z)
-  (list "free-id-info"
-        (lcons "path0"                  (module-path-index->string (free-id-info-path0 z)))
-        (lcons "symbol0"                (symbol->string            (free-id-info-symbol0 z)))
-        (lcons "path1"                  (module-path-index->string (free-id-info-path1 z)))
-        (lcons "symbol1"                (symbol->string            (free-id-info-symbol1 z)))
-        (lcons "phase0"                 (phase->spec             (free-id-info-phase0 z)))
-        (lcons "phase1"                 (phase->spec             (free-id-info-phase1 z)))
-        (lcons "phase2"                 (phase->spec             (free-id-info-phase2 z)))
-        (lcons "use-current-inspector?" (boolean->string           (free-id-info-use-current-inspector? z)))))
+        (lcons "content" (stx-obj->spec (stx-content z)))))
 
 (: all-from-module->spec (-> all-from-module Spec))
 (define
   (all-from-module->spec z)
-  (: prefix->spec (-> (U Symbol #f) String))
-  (define (prefix->spec px)
-    (if (symbol? px)
-        (symbol->string px)
-        "#f"))
-  (: context->spec (-> (U (Listof Integer) (Vector (Listof Integer) Any)) String))
-  (define (context->spec ctx)
-    (cond [(eq? #f ctx)  "#f"]
-          [(list? ctx)   (list->string number->string ctx)]
-          [(vector? ctx) (format-list #:sep " "
-                                      (list (list->string number->string (vector-ref ctx 0))
-                                            (any->string                 (vector-ref ctx 1))))]))
   (list "all-from-module"
         (lcons "path"      (module-path-index->string (all-from-module-path z)))
-        (lcons "phase"     (phase->spec             (all-from-module-phase z)))
-        (lcons "src-phase" (phase->spec             (all-from-module-src-phase z)))
+        (lcons "phase"     (number-or-f->string (all-from-module-phase z)))
+        (lcons "src-phase" (number-or-f->string (all-from-module-src-phase z)))
+        (lcons "inspector-desc" (symbol->string (all-from-module-inspector-desc z)))
         (lcons "exceptions" (list->string symbol->string (all-from-module-exceptions z)))
-        (lcons "prefix"    (prefix->spec            (all-from-module-prefix z)))
-        (lcons "context"   (context->spec           (all-from-module-context z)))))
+        (lcons "prefix"    (symbol-or-f->string (all-from-module-prefix z)))))
 
 ;; --- form
 
@@ -420,6 +361,7 @@
         (lcons "dummy"            (toplevel->spec           (mod-dummy z)))
         (lcons "lang-info"        (lang-info->spec          (mod-lang-info z)))
         (lcons "internal-context" (internal-context->string (mod-internal-context z)))
+        (lcons "binding-names"    (format "~a" (mod-binding-names z)))
         (lcons "flags"            (list->string   symbol->string (mod-flags z)))
         (lcons "pre-submodules"   (listof-zo->string mod->spec (mod-pre-submodules z)))
         (lcons "post-submodules"  (listof-zo->string mod->spec (mod-post-submodules z)))))
@@ -497,7 +439,7 @@
   (list "let-one"
         (lcons "rhs"    (expr-seq-any->string (let-one-rhs  z)))
         (lcons "body"   (expr-seq-any->string (let-one-body z)))
-        (lcons "type"   (symbol-or-f->spec  (let-one-type z)))
+        (lcons "type"   (symbol-or-f->string  (let-one-type z)))
         (lcons "unused?" (boolean->string      (let-one-unused? z)))))
 
 (: let-void->spec (-> let-void Spec))
@@ -540,7 +482,7 @@
         (lcons "pos"           (number->string      (localref-pos z)))
         (lcons "clear?"        (boolean->string     (localref-clear? z)))
         (lcons "other-clears?" (boolean->string     (localref-other-clears? z)))
-        (lcons "type"          (symbol-or-f->spec (localref-type z)))))
+        (lcons "type"          (symbol-or-f->string (localref-type z)))))
 
 (: toplevel->spec (-> toplevel Spec))
 (define
@@ -621,149 +563,109 @@
   (list "primval"
         (lcons "id" (number->string (primval-id z)))))
 
+;; --- stx-obj
+
+(: stx-obj->spec (-> stx-obj Spec))
+(define
+  (stx-obj->spec so)
+  (list "stx-obj"
+        (lcons "datum" (any->string (stx-obj-datum so)))
+        (lcons "wrap" (wrap->spec (stx-obj-wrap so)))
+        (lcons "tamper-status" (symbol->string (stx-obj-tamper-status so)))))
+
 ;; --- wrap
 
-(: top-level-rename->spec (-> top-level-rename Spec))
+(: wrap->spec (-> wrap Spec))
 (define
-  (top-level-rename->spec z)
-  (list "top-level-rename"
-        (lcons "flag" (boolean->string (top-level-rename-flag z)))))
+  (wrap->spec wp)
+  (: ms->string (-> (List multi-scope (U #f Integer)) String))
+  (define (ms->string ms+id)
+    (format "(~a ~a)" (format-spec #f (multi-scope->spec (car ms+id)))
+                      (number-or-f->string (cadr ms+id))))
+  (list "wrap"
+        (lcons "shifts" (listof-zo->string module-shift->spec (wrap-shifts wp)))
+        (lcons "simple-scopes" (listof-zo->string scope->spec (wrap-simple-scopes wp)))
+        (lcons "multi-scopes" (list->string ms->string (wrap-multi-scopes wp)))))
 
-(: mark-barrier->spec (-> mark-barrier Spec))
+;; --- misc. syntax
+
+(: module-shift->spec (-> module-shift Spec))
 (define
-  (mark-barrier->spec z)
-  (list "mark-barrier"
-        (lcons "value" (symbol->string (mark-barrier-value z)))))
+  (module-shift->spec ms)
+  (list "module-shift"
+        (lcons "from" (cond [(module-shift-from ms) => module-path-index->string] [else "#f"]))
+        (lcons "to" (cond [(module-shift-to ms) => module-path-index->string] [else "#f"]))
+        (lcons "from-inspector-desc" (symbol-or-f->string (module-shift-from-inspector-desc ms)))
+        (lcons "to-inspector-desc" (symbol-or-f->string (module-shift-to-inspector-desc ms)))))
 
-(: lexical-rename->spec (-> lexical-rename Spec))
+(: scope->spec (-> scope Spec))
 (define
-  (lexical-rename->spec z)
-  (: lexical-rename-alist->string (-> (Listof (Pair Symbol (U Symbol (Pair Symbol (U (Pair Symbol (U Symbol #f)) free-id-info))))) String))
-  (define
-    (lexical-rename-alist->string alst)
-    (list->string (lambda ([x : String]) x)
-                  (for/list : (Listof String) ([a : (Pair Symbol (U Symbol (Pair Symbol (U (Pair Symbol (U Symbol #f)) free-id-info)))) alst])
-                    (format "(~a . ~a)"
-                            (car a)
-                            (cond [(symbol? (cdr a)) (cdr a)]
-                                  [else
-                                   (: a* (Pair Symbol (U (Pair Symbol (U Symbol #f)) free-id-info)))
-                                   (define a* (cdr a))
-                                   (format "(~a . ~a)"
-                                           (car a*)
-                                           (cond [(free-id-info? (cdr a*)) (free-id-info->spec (cdr a*))]
-                                                 [else                     (cdr a*)]))])))))
-  (list "lexical-rename"
-        (lcons "has-free-id-renames?" (boolean->string              (lexical-rename-has-free-id-renames? z)))
-        (lcons "bool2"                (boolean->string              (lexical-rename-bool2 z)))
-        (lcons "alist"                (lexical-rename-alist->string (lexical-rename-alist z)))))
+  (scope->spec sc)
+  (: sym+scope+binding->string (-> (List Symbol (Listof scope) binding) String))
+  (define (sym+scope+binding->string ssbs)
+    (format "(~a ~a ~a)" (symbol->string (car ssbs))
+                         (listof-zo->string scope->spec (cadr ssbs))
+                         (format-spec #f (binding->spec (caddr ssbs)))))
+  (: scope+all-from-module->string (-> (List (Listof scope) all-from-module) String))
+  (define (scope+all-from-module->string bbs)
+    (format "(~a ~a)" (listof-zo->string scope->spec (car bbs))
+                      (format-spec #f (all-from-module->spec (cadr bbs)))))
+  (list "scope"
+        (lcons "name" (let ([name : (U 'root Integer) (scope-name sc)])
+                        (cond [(eq? 'root name) "root"]
+                              [else (number->string name)])))
+        (lcons "kind" (symbol->string (scope-kind sc)))
+        (lcons "bindings" (list->string sym+scope+binding->string (scope-bindings sc)))
+        (lcons "bulk-bindings" (list->string scope+all-from-module->string (scope-bulk-bindings sc)))
+        (lcons "multi-owner" (cond [(scope-multi-owner sc) => multi-scope->spec]
+                                   [else "#f"]))))
 
-(: phase-shift->spec (-> phase-shift Spec))
+(: multi-scope->spec (-> multi-scope Spec))
 (define
-  (phase-shift->spec z)
-  (: mpi-or-f->string (-> (U Module-Path-Index #f) String))
-  (define (mpi-or-f->string x)
-    (if (module-path-index? x)
-        (module-path-index->string x)
-        "#f"))
-  (list "phase-shift"
-        (lcons "amt"       (number-or-f->string (phase-shift-amt z)))
-        (lcons "src"       (mpi-or-f->string    (phase-shift-src z)))
-        (lcons "dest"      (mpi-or-f->string    (phase-shift-dest z)))
-        (lcons "cancel-id" (number-or-f->string (phase-shift-cancel-id z)))))
+  (multi-scope->spec ms)
+  (: sc->string (-> (List (U Integer #f) scope) String))
+  (define (sc->string id+scope)
+    (format "(~a ~a)" (number-or-f->string (car id+scope))
+                      (format-spec #f (scope->spec (cadr id+scope)))))
+  (list "multi-scope"
+        (lcons "name" (number->string (multi-scope-name ms)))
+        (lcons "src-name" (any->string (multi-scope-src-name ms)))
+        (lcons "scopes" (list->string sc->string (multi-scope-scopes ms)))))
 
-(: module-rename->spec (-> module-rename Spec))
+;; --- binding
+
+(: module-binding->spec (-> module-binding Spec))
 (define
-  (module-rename->spec z)
-  (: rename->string (-> (Pair Symbol module-binding) String))
-  (define (rename->string rm)
-    (format "(~a ~a)"
-            (symbol->string (car rm))
-            (format-spec #f (module-binding->spec (cdr rm)))))
-  (list "module-rename"
-        (lcons "phase"        (number-or-f->string                     (module-rename-phase z)))
-        (lcons "kind"         (symbol->string                          (module-rename-kind z)))
-        (lcons "set-id"       (any->string                             (module-rename-set-id z)))
-        (lcons "unmarshals"   (list->string (lambda ([afm : all-from-module]) (format-spec #f (all-from-module->spec afm))) (module-rename-unmarshals z)))
-        (lcons "renames"      (list->string rename->string  (module-rename-renames z)))
-        (lcons "mark-renames" (any->string                             (module-rename-mark-renames z)))
-        (lcons "plus-kern?"   (boolean->string                         (module-rename-plus-kern? z)))))
+  (module-binding->spec mb)
+  (list "module-binding"
+        (lcons "encoded" (any->string (module-binding-encoded mb)))))
 
-(: wrap-mark->spec (-> wrap-mark Spec))
+(: decoded-module-binding->spec (-> decoded-module-binding Spec))
 (define
-  (wrap-mark->spec z)
-  (list "wrap-mark"
-        (lcons "val" (number->string (wrap-mark-val z)))))
+  (decoded-module-binding->spec dmb)
+  (list "decoded-module-binding"
+        (lcons "path" (cond [(decoded-module-binding-path dmb) => module-path-index->string] [else "#f"]))
+        (lcons "name" (symbol->string (decoded-module-binding-name dmb)))
+        (lcons "phase" (number->string (decoded-module-binding-phase dmb)))
+        (lcons "nominal-path" (cond [(decoded-module-binding-nominal-path dmb) => module-path-index->string] [else "#f"]))
+        (lcons "nominal-export-name" (symbol->string (decoded-module-binding-nominal-export-name dmb)))
+        (lcons "nominal-phase" (number-or-f->string (decoded-module-binding-nominal-phase dmb)))
+        (lcons "import-phase" (number-or-f->string (decoded-module-binding-import-phase dmb)))
+        (lcons "inspector-desc" (symbol-or-f->string (decoded-module-binding-inspector-desc dmb)))))
 
-(: prune->spec (-> prune Spec))
+(: local-binding->spec (-> local-binding Spec))
 (define
-  (prune->spec z)
-  (list "prune"
-        (lcons "sym" (any->string (prune-sym z)))))
+  (local-binding->spec lb)
+  (list "local-binding"
+        (lcons "name" (symbol->string (local-binding-name lb)))))
 
-;; --- module-binding
-
-(: simple-module-binding->spec (-> simple-module-binding Spec))
+(: free-id=?-binding->spec (-> free-id=?-binding Spec))
 (define
-  (simple-module-binding->spec z)
-  (list "simple-module-binding"
-        (lcons "path" (module-path-index->string (simple-module-binding-path z)))))
-
-(: phased-module-binding->spec (-> phased-module-binding Spec))
-(define
-  (phased-module-binding->spec z)
-  (list "phased-module-binding"
-        (lcons "path"                (module-path-index->string (phased-module-binding-path z)))
-        (lcons "phase"               (number->string            (phased-module-binding-phase z)))
-        (lcons "export-name"         (any->string               (phased-module-binding-export-name z)))
-        (lcons "nominal-path"        (nominal-path->spec      (phased-module-binding-nominal-path z)))
-        (lcons "nominal-export-name" (any->string               (phased-module-binding-nominal-export-name z)))))
-
-(: exported-nominal-module-binding->spec (-> exported-nominal-module-binding Spec))
-(define
-  (exported-nominal-module-binding->spec z)
-  (list "exported-nominal-module-binding"
-        (lcons "path"                (module-path-index->string (exported-nominal-module-binding-path z)))
-        (lcons "export-name"         (any->string               (exported-nominal-module-binding-export-name z)))
-        (lcons "nominal-path"        (nominal-path->spec      (exported-nominal-module-binding-nominal-path z)))
-        (lcons "nominal-export-name" (any->string               (exported-nominal-module-binding-nominal-export-name z)))))
-
-(: nominal-module-binding->spec (-> nominal-module-binding Spec))
-(define
-  (nominal-module-binding->spec z)
-  (list "nominal-module-binding"
-        (lcons "path"         (module-path-index->string (nominal-module-binding-path z)))
-        (lcons "nominal-path" (nominal-path->spec      (nominal-module-binding-nominal-path z)))))
-
-(: exported-module-binding->spec (-> exported-module-binding Spec))
-(define
-  (exported-module-binding->spec z)
-  (list "exported-module-binding"
-        (lcons "path"        (module-path-index->string (exported-module-binding-path z)))
-        (lcons "export-name" (any->string               (exported-module-binding-export-name z)))))
-
-;; --- nominal-path
-
-(: simple-nominal-path->spec (-> simple-nominal-path Spec))
-(define
-  (simple-nominal-path->spec z)
-  (list "simple-nominal-path"
-        (lcons "value" (module-path-index->string (simple-nominal-path-value z)))))
-
-(: imported-nominal-path->spec (-> imported-nominal-path Spec))
-(define
-  (imported-nominal-path->spec z)
-  (list "imported-nominal-path"
-        (lcons "value"        (module-path-index->string (imported-nominal-path-value z)))
-        (lcons "import-phase" (number->string            (imported-nominal-path-import-phase z)))))
-
-(: phased-nominal-path->spec (-> phased-nominal-path Spec))
-(define
-  (phased-nominal-path->spec z)
-  (list "phased-nominal-path"
-        (lcons "value"        (module-path-index->string (phased-nominal-path-value z)))
-        (lcons "import-phase" (number-or-f->string       (phased-nominal-path-import-phase z)))
-        (lcons "phase"        (number->string            (phased-nominal-path-phase z)))))
+  (free-id=?-binding->spec fib)
+  (list "free-id=?-binding"
+        (lcons "base" (binding->spec (free-id=?-binding-base fib)))
+        (lcons "id" (stx-obj->spec (free-id=?-binding-id fib)))
+        (lcons "phase" (number-or-f->string (free-id=?-binding-phase fib)))))
 
 ;; --- Shapes
 
@@ -938,9 +840,9 @@
       (number->string nf)))
 
 ;; Turn a symbol or #f into a string.
-(: symbol-or-f->spec (-> (U Symbol #f) String))
+(: symbol-or-f->string (-> (U Symbol #f) String))
 (define
-  (symbol-or-f->spec sf)
+  (symbol-or-f->string sf)
   (if (eq? #f sf)
       "#f"
       (symbol->string sf)))
@@ -963,4 +865,3 @@
   (define l (string-length str))
   (cond [(< l w) (format "~a~a" str (make-string (- w l) c))]
         [else    str]))
-
