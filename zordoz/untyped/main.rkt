@@ -16,7 +16,7 @@
 
 (define MID-TEST "../base/array-struct.zo")
 (define (mid-test)
-  (init (vector LARGE-TEST "branch")))
+  (init (vector MID-TEST "branch")))
 
 (define LARGE-TEST "../base/streams.zo")
 (define (large-test)
@@ -29,5 +29,5 @@
 
 ;(time (main self-test)) ; 1314967ms
 ;(time (main small-test)) ; 6ms
-;(time (main mid-test)) ; 343ms
-(time (main large-test)) ; 26343ms
+(time (main mid-test)) ; 343ms
+;(time (main large-test)) ; 26343ms

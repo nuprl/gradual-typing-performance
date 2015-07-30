@@ -15,6 +15,10 @@
 (define (small-test)
   (init (vector SMALL-TEST "branch")))
 
+(define MID-TEST "../base/array-struct.zo")
+(define (mid-test)
+  (init (vector MID-TEST "branch")))
+
 (define LARGE-TEST "../base/streams.zo")
 (define (large-test)
   (init (vector LARGE-TEST "branch")))
@@ -27,6 +31,7 @@
 (define-syntax-rule (main test)
   (with-output-to-file "/dev/null" test #:exists 'append))
 
-(time (main self-test)) ;
+;(time (main self-test)) ;
 ;(time (main small-test)) ; 10ms
+(time (main mid-test)) ; 
 ;(time (main large-test)) ; 61513ms
