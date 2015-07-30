@@ -17,5 +17,5 @@
   (void))
 
 ;(time (main SMALL_TEST)) ;150ms
-;(time (main LARGE_TEST)) ; 2500ms
-(time (main KCFA_TYPED)) ; 22567ms
+(time (main LARGE_TEST)) ; 2500ms
+;(time (main KCFA_TYPED)) ; 22567ms
