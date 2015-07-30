@@ -5,6 +5,10 @@
 ;; TODO reset the racket build, before and after
 
 (provide
+ filename=?/adapted
+ ;; (-> String String Boolean)
+ ;; True if two filenames are equal,
+ ;; or equal after removing the string '-adapted' from each.
  )
 
 ;; -----------------------------------------------------------------------------
@@ -14,7 +18,7 @@
   (only-in racket/list first second third fourth fifth last)
   (only-in racket/match match-define)
   (only-in racket/system system process)
-  (only-in racket/string string-join string-split)
+  (only-in racket/string string-join string-split string-replace)
   (only-in racket/file copy-directory/files)
 )
 
@@ -251,7 +255,7 @@
   to-file   ;; String  : where contracts went to
   val       ;; String  : the identifier covered with a contract
   checks    ;; Natural : the number of times the identifier was used
-) #:transparent)
+) #:prefab)
 ;; (define-type Boundary boundary)
 
 ;; True if `b1` is "more expensive" than `b2`. i.e. is called more
@@ -259,54 +263,75 @@
 (define (boundary>? b1 b2)
   (> (boundary-checks b1) (boundary-checks b2)))
 
+(define (filename=?/adapted f1 f2)
+  (or (string=? f1 f2)
+      (string=? (string-replace f1 "-adapted" "")
+                (string-replace f2 "-adapted" ""))))
+
 ;; Return a list of all contracts, represented as `boundary` structs
 ;; The list is partially sorted; for each from/to pair, the most expensive boundaries come first.
 ;; (: all-boundaries (-> ContractUsageMap (Listof Boundary)))
-(define (all-boundaries from->to #:valid-filenames fnames)
+(define (all-boundaries from->to #:valid-filenames [valid? #f])
   (for*/list ([(from to->id) (in-hash from->to)]
               [(to id->nat) (in-hash to->id)]
-              #:when (and (member from fnames) (member to fnames)))
+              #:when (or (not valid?)
+                         (and (valid? from) (valid? to))))
     (sort
      (for/list ([(val count) (in-hash id->nat)]) (boundary from to val count))
      boundary>?)))
+(define DATA-FORMAT
+  (string-join '(";; Data is a list of lists of boundary structures"
+                 ";; There is one inner list for each boundary in the program"
+                 ";; The boundary structures have 4 fields"
+                 ";; - from-file : String"
+                 ";; - to-file  : String"
+                 ";; - val : String"
+                 ";; - checks : Natural")
+               "\n"))
+
+;; Fold over a `ContractUsageMap`.
+;; (: fold-cmap (All (A) (->* [(-> A Natural A) A ContractUsageMap] [#:from (U #f String) #:to (U #f String)] A)))
+(define (fold-cmap f init from->to #:from [only-from #f] #:to [only-to #f])
+  (for*/fold ([acc init])
+             ([to->id (or (and only-from (cond [(hash-ref from->to only-from (lambda () #f))
+                                               => (lambda (x) (list x))]
+                                              [else '()]))
+                         (in-hash-values from->to))]
+             [id->nat (or (and only-to (cond [(hash-ref to->id only-to (lambda () #f))
+                                              => (lambda (x) (list x))]
+                                             [else '()]))
+                          (in-hash-values to->id))]
+             [num-checks (in-hash-values id->nat)])
+    (f acc num-checks)))
 
 ;; Count the total number of contracts represented in the map
 ;; (: count-contracts (->* [ContractUsageMap] [#:from (U #f String) #:to (U #f String)] Natural))
 (define (count-contracts from->to #:from [only-from #f] #:to [only-to #f])
-  (for*/sum ([to->id (or (and only-from (cond [(hash-ref from->to only-from (lambda () #f))
-                                               => (lambda (x) (list x))]
-                                              [else '()]))
-                         (in-hash-values from->to))]
-             [id->nat (or (and only-to (cond [(hash-ref to->id only-to (lambda () #f))
-                                              => (lambda (x) (list x))]
-                                             [else '()]))
-                          (in-hash-values to->id))]
-             [dont-care (in-hash-values id->nat)])
-    1))
+  (fold-cmap (lambda (acc checks) (add1 acc))
+             0
+             from->to
+             #:from only-from
+             #:to only-to))
 
 ;; Count the total number of contract checks / applications in the map
 ;; (: count-checks (->* [ContractUsageMap] [#:from (U #f String) #:to (U #f String)] Natural))
 (define (count-checks from->to #:from [only-from #f] #:to [only-to #f])
-  (for*/sum ([to->id (or (and only-from (cond [(hash-ref from->to only-from (lambda () #f))
-                                               => (lambda (x) (list x))]
-                                              [else '()]))
-                         (in-hash-values from->to))]
-             [id->nat (or (and only-to (cond [(hash-ref to->id only-to (lambda () #f))
-                                              => (lambda (x) (list x))]
-                                             [else '()]))
-                          (in-hash-values to->id))]
-             [nat (in-hash-values id->nat)])
-    nat))
+  (fold-cmap (lambda (acc checks) (+ acc checks))
+             0
+             from->to
+             #:from only-from
+             #:to only-to))
 
 ;; Return a list of the worst contracts, one for each pair of files.
 ;; Sort results in order of "most checks" to "fewest checks"
 ;; (: filter-worst-boundaries (-> ContractUsageMap (Listof Boundary)))
-(define (filter-worst-boundaries from->to #:valid-filenames [fnames '()])
+(define (filter-worst-boundaries from->to #:valid-filename? [valid? #f])
   (define unsorted-worst
     ;; For each from/to pair, pick the most expensive value
     (for*/list ([(from to->id) (in-hash from->to)]
                 [(to id->nat)  (in-hash to->id)]
-                #:when (and (member from fnames) (member to fnames)))
+                #:when (or (not valid?) ;; No filter = accept everything
+                           (and (valid? from) (valid? to))))
       ;; Make a boundary struct with each
       (define-values (best-val best-count)
         (for/fold ([bval #f] [bcnt #f])
@@ -373,18 +398,18 @@
 
 ;; Display aggregate stats about the contracts
 ;; (: show-contract (-> ContractUsageMap Void))
-(define (show-contract cmap #:output-file [out-opt #f] #:valid-filenames [fnames '()])
+(define (show-contract cmap #:output-file [out-opt #f] #:valid-filename? [valid? #f])
   (debug 1 "Aggregating results")
   (define num-contracts (count-contracts cmap))
   (define num-checks (count-checks cmap))
-  (define worst-boundaries (filter-worst-boundaries cmap #:valid-filenames fnames))
+  (define worst-boundaries (filter-worst-boundaries cmap #:valid-filename? valid?))
   (match-define (boundary wfrom wto wval wchecks) (car worst-boundaries))
   (define worst-total-contracts (count-contracts cmap #:from wfrom #:to wto))
   (define worst-total-checks (count-checks cmap #:from wfrom #:to wto))
-  ;; Print the heavy things to file
+  ;; Print the all things to file
   (when out-opt
     (with-output-to-file out-opt #:exists 'replace
-      (lambda () (write (all-boundaries cmap #:valid-filenames fnames)))))
+      (lambda () (displayln DATA-FORMAT) (write (all-boundaries cmap)))))
   ;; Print the light things to the console.
   (printf "\nResults\n=======\n")
   (printf "Created ~a contracts\n" num-contracts)
@@ -418,6 +443,8 @@
       (ensure-directory (format "~a/benchmark/base" parent-dir)
                         #:fill-with (in-glob (format "~a/base/*" parent-dir)))
       (define contract-set (collect-contract parent-dir))
+      (define module-names (get-module-names parent-dir))
+      (define (valid-filename? fn) (member fn module-names filename=?/adapted))
       (show-contract contract-set
                      #:output-file (output-path)
-                     #:valid-filenames (get-module-names parent-dir)))))
+                     #:valid-filename? valid-filename?))))
