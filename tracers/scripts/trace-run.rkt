@@ -256,8 +256,8 @@
 
 ;; True if `b1` is "more expensive" than `b2`. i.e. is called more
 ;; (: boundary<? (-> Boundary Boundary Boolean))
-(define (boundary<? b1 b2)
-  (< (boundary-checks b1) (boundary-checks b2)))
+(define (boundary>? b1 b2)
+  (> (boundary-checks b1) (boundary-checks b2)))
 
 ;; Return a list of all contracts, represented as `boundary` structs
 ;; The list is partially sorted; for each from/to pair, the most expensive boundaries come first.
@@ -268,7 +268,7 @@
               #:when (and (member from fnames) (member to fnames)))
     (sort
      (for/list ([(val count) (in-hash id->nat)]) (boundary from to val count))
-     boundary<?)))
+     boundary>?)))
 
 ;; Count the total number of contracts represented in the map
 ;; (: count-contracts (->* [ContractUsageMap] [#:from (U #f String) #:to (U #f String)] Natural))
@@ -316,7 +316,7 @@
               (values val count)
               (values bval bcnt))))
       (boundary from to best-val best-count)))
-  (sort unsorted-worst boundary<?))
+  (sort unsorted-worst boundary>?))
 
 ;; Convert a boundary struct to a pretty string
 ;; (: format-boundary (-> Boundary String))
