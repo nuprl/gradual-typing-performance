@@ -30,13 +30,16 @@
               [c2 (in-string suffix)])
       (char=? c1 c2))))
 
-(define (ensure-tikz fname)
-  (unless (ends-with? fname ".tex")
-    (error 'color-tikz (format "Expected a TiKZ file, got '~a' on command line" fname))))
+(define (ensure-tikz fname*)
+  (or
+   (for/first ([fname (in-list fname*)] #:when (ends-with? fname ".tex")) fname)
+   (error 'color-tikz (format "Expected a TiKZ file, got '~a' on command line" fname*))))
 
-(define (parse-data fname)
-  (unless (ends-with? fname ".rktd")
-    (error 'color-tikz (format "Expected a .rktd file, got '~a' on command line" fname)))
+(define (parse-data fname*)
+  (define fname
+    (or
+     (for/first ([fname (in-list fname*)] #:when (ends-with? fname ".rktd")) fname)
+     (error 'color-tikz (format "Expected a .rktd file, got '~a' on command line" fname*))))
   ;; List of Lists of Boundary
   (for/list ([bs  (in-list (file->value fname))])
     (for/list ([b   (in-list bs)])
@@ -62,7 +65,8 @@
   (define te (string->texedge line))
   (define from (cdr (assoc (texedge-from te) nat+fname*)))
   (define to (cdr (assoc (texedge-to te) nat+fname*)))
-  (values from to))
+  (values (string-append from ".rkt")
+          (string-append to ".rkt")))
 
 ;; Read the data for all boundaries between `from` and `to`.
 ;; Return two values:
@@ -83,9 +87,9 @@
 (define (percent->color pct)
   (define N (* 100 pct))
   (define colors '("green" "lime" "yellow" "orange" "red"))
-  (define step (/ 100 (length colors)))
+  ;;(define step (/ 50 (sub1 (length colors))))
   (for/first ([c   (in-list colors)]
-              [val (in-range step 101 step)]
+              [val '(10 20 30 40 101)]
               #:when (< N val))
     c))
 
@@ -133,15 +137,16 @@
    [("-o" "--output") o-param "Output file" (out-file o-param)]
    #:args (FILE.rktd TIKZ.tex)
    (begin
-     (ensure-tikz TIKZ.tex)
-     (define boundary** (parse-data FILE.rktd))
+     (define arg* (list FILE.rktd TIKZ.tex))
+     (define tikz (ensure-tikz arg*))
+     (define boundary** (parse-data arg*))
      (printf "Parsed data...\n")
      (define total (count-all-checks boundary**))
      (printf "Writing to file '~a'...\n" (out-file))
      (with-output-to-file (out-file) #:exists 'replace ;; TODO
        (lambda ()
          (printf (format-title total))
-         (with-input-from-file TIKZ.tex
+         (with-input-from-file tikz
            (lambda ()
              (for/fold ([nat+fname* '()])
                  ([t-line     (in-lines)])
