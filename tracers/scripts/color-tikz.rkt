@@ -4,6 +4,18 @@
 ;; Produce a colored TiKZ picture, labeled with the number of contract checks
 
 (provide
+  parse-data
+  ;; (-> (U String (Listof String)) (Listof (Listof Boundary)))
+  ;; Parse a data file into a list of lists of boundaries.
+  ;; Each sub-list is the collected contracts crossing a pair of files.
+
+  ;; A Boundary is a:
+  ;; (Vector Symbol String String String Natural)
+  boundary-from
+  boundary-to
+  boundary-val
+  boundary-checks
+  ;; -- getters for the boundary type
  )
 
 (require
@@ -38,6 +50,7 @@
 (define (parse-data fname*)
   (define fname
     (or
+     (and (string? fname*) fname*)
      (for/first ([fname (in-list fname*)] #:when (ends-with? fname ".rktd")) fname)
      (error 'color-tikz (format "Expected a .rktd file, got '~a' on command line" fname*))))
   ;; List of Lists of Boundary
@@ -56,11 +69,15 @@
 (define (boundary-checks v)
   (vector-ref v 4))
 
+;; Get a file's name and its ID from a line of TiKZ
+;; (: parse-id+fname (-> String (U #f (Pairof Natural String))))
 (define (parse-id+fname line)
   (define tn (string->texnode line))
   (and tn
        (cons (texnode-id tn) (texnode-name tn))))
 
+;; Parse a boundary (from/to pair) from a line of TiKZ
+;; (: line->from+to (-> String #:map (Listof (Pairof Natural String)) (Values String String)))
 (define (line->from+to line #:map nat+fname*)
   (define te (string->texedge line))
   (define from (cdr (assoc (texedge-from te) nat+fname*)))
@@ -84,6 +101,7 @@
              [b         (in-list boundary*)])
     (boundary-checks b)))
 
+;; Generate a color from a percentage (this is a simulated colormap)
 (define (percent->color pct)
   (define N (* 100 pct))
   (define colors '("green" "lime" "yellow" "orange" "red"))
@@ -93,6 +111,11 @@
               #:when (< N val))
     c))
 
+;; Process one line of TiKZ
+;; - if the line is a \node, add the ID and filename to a map
+;; - if the line is an edge, try to color it
+;; - otherwise do nothing with the line
+;; Return either the same line, or a colored version of the same
 (define (color-edge tikz-line boundary** #:total-checks total #:map nat+fname*)
   (define line (string-trim tikz-line))
   (cond

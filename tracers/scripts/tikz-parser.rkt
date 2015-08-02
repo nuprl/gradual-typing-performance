@@ -1,10 +1,7 @@
 #lang racket/base
 
-;; Utilities for working with modules graphs.
-;;
-;; The source of truth are TiKZ'd module graphs
-;; (because their layout requires human intervention)
-;; so this file provides a (brittle) parser.
+;; Parse data from TiKZ lines
+;; These functions are stolen from the `paper/script` folder of this repo
 
 (provide
  (struct-out texnode)

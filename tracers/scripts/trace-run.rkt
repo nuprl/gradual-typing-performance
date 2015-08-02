@@ -1,15 +1,17 @@
 #lang racket/base
 
-;; TODO document
-
-;; TODO reset the racket build, before and after
+;; Run a Racket file while tracking contract-count output.
+;; - Print summary results to console
+;; - (Optionally) given a `-o FILE.rktd` filename, save detailed result to file
 
 (provide
  filename=?/adapted
  ;; (-> String String Boolean)
  ;; True if two filenames are equal,
  ;; or equal after removing the string '-adapted' from each.
- )
+ ;; (In retrospect, this was not a good idea because the `file -> file-adapted`
+ ;;  boundaries are very important)
+)
 
 ;; -----------------------------------------------------------------------------
 
@@ -25,6 +27,7 @@
 ;; =============================================================================
 ;; -- constants
 
+;; Higher value = Print more debug information
 (define DEBUG 1)
 
 ;; -----------------------------------------------------------------------------
@@ -79,6 +82,9 @@
         (system (format "cp -r ~a ~a" path dest))
         (copy-file path dest #t))))
 
+;; Not implemented.
+;; THE IDEA: check that the user's racket installation matches the files in the `patch-racket` directory
+;; THE PROBLEM: not sure how to find the racket installation
 ;; (: ensure-hacked-racket (-> Void))
 (define (ensure-hacked-racket)
   (void))
@@ -157,7 +163,7 @@
     (char=? c1 c2)))
 
 ;; -----------------------------------------------------------------------------
-;; -- parse
+;; -- parsing results (logs -> contract information)
 
 ;; Data representing a line of output about contracts.
 ;; Log messages are always tab-separated (in Ben's instrumented Racket)
@@ -171,6 +177,7 @@
 ) #:transparent)
 ;; (define-type ContractLog contract-log)
 
+;; Convert a line of log information to a struct
 ;; (: string->contract-log (-> String ContractLog))
 (define (string->contract-log tag line)
   (define tag+id+to+val+from (string-split line))
@@ -248,7 +255,7 @@
         (hash-set! to-hash val (add1 val-count))])])]))
 
 ;; -----------------------------------------------------------------------------
-;; -- show
+;; -- show (display parsed logging information -- show me what the contracts did)
 
 (struct boundary (
   from-file ;; String  : where contracts came from
@@ -279,6 +286,8 @@
     (sort
      (for/list ([(val count) (in-hash id->nat)]) (boundary from to val count))
      boundary>?)))
+;; Informal documentation for output .rktd files.
+;; Belongs at the top of these printed files.
 (define DATA-FORMAT
   (string-join '(";; Data is a list of lists of boundary structures"
                  ";; There is one inner list for each boundary in the program"
@@ -442,8 +451,10 @@
       (ensure-directory (format "~a/benchmark" parent-dir))
       (ensure-directory (format "~a/benchmark/base" parent-dir)
                         #:fill-with (in-glob (format "~a/base/*" parent-dir)))
+      ;; -- run the project, collect contract information
       (define contract-set (collect-contract parent-dir))
       (define module-names (get-module-names parent-dir))
+      ;; -- print a summary of the collected information
       (define (valid-filename? fn) (member fn module-names filename=?/adapted))
       (show-contract contract-set
                      #:output-file (output-path)
