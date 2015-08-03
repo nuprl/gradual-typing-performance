@@ -1,9 +1,9 @@
 data
 ====
 
-Data for traced contracts.
+Data for traced contracts for each gradual typing project.
+There are 3 files for each project.
 
-For each project, we have three files:
 - `FILE-trace.txt` the output printed to `stdout` by `trace-run.rkt`.
   This is a high-level summary of the contracts created by the program.
 - `FILE-trace.rktd` the detailed output from `trace-run.rkt`.

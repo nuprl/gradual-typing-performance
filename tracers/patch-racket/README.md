@@ -13,6 +13,9 @@ patch-racket
    This comments out the parts of `require/typed/check` that suppress contracts,
    and instead makes a contract for every identifier.
 
+Note that, the total diff between these 2 files and their original counterparts is ~5 lines.
+
+
 #### How to understand the logging information
 Two kinds of messages are printed to `stdout` as the program runs.
 - When `require/typed` creates a contract
