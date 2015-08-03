@@ -10,6 +10,7 @@ Simple example programs to be traced.
 - `opaque` check contract generation for opaque types
 - `tt` typed to typed, ensure that contracts are made
 - `adapt` test adaptor module, make sure all from/to are sensible filenames
+- `list` check if `list/c` contracts are counted, or only the contracts on list elements
 
 To test, run the file `main.rkt` in each folder.
 These `main.rkt` files contain example output, in comments.
