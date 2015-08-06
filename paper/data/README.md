@@ -41,6 +41,7 @@ Run on Racket 6.2.
 
 - `gregor-2015-06-30.rktd` Run on cluster, `-j 39`
 - `gregor-2015-07-02.rktd` Run on cluster, `-j 19`
+- `gregor-2015-07-26T05:27:18.rktd` Run on lambda single-core.
 - `kcfa-2015-06-25T13:48:52.rktd` Run on Lambda with `-j 11`
 - `lnm-large-06-28.rktd` Run on Desktop, single core. Benchmarked on data for gregor.
 - `morsecode-06-27.rktd` Run on Desktop, single core. Benchmarked on the entire list of frequently used words.

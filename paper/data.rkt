@@ -8,7 +8,7 @@
     (provide name ...)))
 
 (define+provide
-  [GREGOR-DATA     "./data/gregor-2015-07-02.rktd"]
+  [GREGOR-DATA     "./data/gregor-2015-07-26T05:27:18.rktd"]
   [KCFA-DATA       "./data/kcfa-2015-06-25T13:48:52.rktd"]
   [LNM-DATA        "./data/lnm-large-06-28.rktd"]
   [MBTA-DATA       "./data/mbta-04-25.rktd"]
