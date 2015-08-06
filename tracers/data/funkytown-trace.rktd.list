@@ -13,9 +13,6 @@ Results for '../data/funkytown-trace.rktd'
 * Boundary from 'array-broadcast.rkt' to 'array-transform.rkt' created 2 contracts (3%) and caused 216 checks (0%)
 * Boundary from 'array-broadcast.rkt' to 'mixer.rkt' created 3 contracts (5%) and caused 891271 checks (2%)
 * Boundary from 'mixer.rkt' to 'main.rkt' created 1 contracts (2%) and caused 1 checks (0%)
-* Boundary from 'Mutable-Array>' to 'typed-data.rkt' created 1 contracts (2%) and caused 17644 checks (0%)
-* Boundary from 'Array>' to 'typed-data.rkt' created 1 contracts (2%) and caused 10930329 checks (21%)
-* Boundary from 'data.rkt' to 'typed-data.rkt' created 10 contracts (15%) and caused 13733576 checks (26%)
 * Boundary from 'synth.rkt' to 'main.rkt' created 2 contracts (3%) and caused 278520 checks (1%)
 * Boundary from 'synth.rkt' to 'sequencer.rkt' created 1 contracts (2%) and caused 1 checks (0%)
 * Boundary from 'synth.rkt' to 'drum.rkt' created 2 contracts (3%) and caused 3 checks (0%)
@@ -25,3 +22,8 @@ Results for '../data/funkytown-trace.rktd'
 * Boundary from 'array-utils.rkt' to 'drum.rkt' created 2 contracts (3%) and caused 17647 checks (0%)
 * Boundary from 'array-transform.rkt' to 'sequencer.rkt' created 1 contracts (2%) and caused 1 checks (0%)
 * Boundary from 'array-transform.rkt' to 'drum.rkt' created 1 contracts (2%) and caused 3 checks (0%)
+
+* Boundary from 'Mutable-Array>' to 'typed-data.rkt' created 1 contracts (2%) and caused 17644 checks (0%)
+* Boundary from 'Array>' to 'typed-data.rkt' created 1 contracts (2%) and caused 10930329 checks (21%)
+* Boundary from 'data.rkt' to 'typed-data.rkt' created 10 contracts (15%) and caused 13733576 checks (26%)
+
