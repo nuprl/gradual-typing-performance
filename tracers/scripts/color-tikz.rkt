@@ -95,27 +95,36 @@
                           (filename=?/adapted to   (boundary-to (car boundary*)))))
     (cons (length boundary*) (for/sum ([b (in-list boundary*)]) (boundary-checks b)))))
 
+;; Sum up all contracts created
+(define (count-all-contracts boundary**)
+  (for/sum ([boundary* (in-list boundary**)])
+    (length boundary*)))
+
 ;; Sum up all the checks in all the boundaries
 (define (count-all-checks boundary**)
   (for*/sum ([boundary* (in-list boundary**)]
              [b         (in-list boundary*)])
     (boundary-checks b)))
 
-;; Generate a color from a percentage (this is a simulated colormap)
-(define (percent->color pct)
-  (define N (* 100 pct))
-  (define colors '("green" "lime" "yellow" "orange" "red"))
-  ;;(define step (/ 50 (sub1 (length colors))))
-  (for/first ([c   (in-list colors)]
-              [val '(10 20 30 40 101)]
-              #:when (< N val))
-    c))
+;; Generate a color from a the total number of checks (this is a simulated colormap)
+;; #:total-checks should be the total number of contract checks across the program,
+;;                this would be used to normalize colors, but as of (2015-08-06) we
+;;                are just coloring by the number of digits
+(define (checks->color num-checks #:total-checks [total-param #f])
+  (define num-digits (string-length (number->string num-checks)))
+  (for/first ([c   (in-list '("green" "OliveGreen" "YellowOrange" "RedOrange" "red"))]
+              [val (in-list '(2       4             6              7           #f))]
+              [wth (in-list '(1       1.5           2              2.2         2.4))]
+              #:when (or (not val) (< num-digits val)))
+    (format "~a, line width=~apt" c wth)))
 
 ;; Process one line of TiKZ
 ;; - if the line is a \node, add the ID and filename to a map
 ;; - if the line is an edge, try to color it
 ;; - otherwise do nothing with the line
 ;; Return either the same line, or a colored version of the same
+;; #:total-checks is the cumulative number of checks across the entire file
+;; #:map associates TiKZ identifiers to filenames (an S.E. artifact of TiKZ)
 (define (color-edge tikz-line boundary** #:total-checks total #:map nat+fname*)
   (define line (string-trim tikz-line))
   (cond
@@ -133,8 +142,7 @@
      [contracts+checks
       (define contracts (car contracts+checks))
       (define checks (cdr contracts+checks))
-      (define pct (/ checks total))
-      (define new-line (string-replace tikz-line "->" (string-append "->," (percent->color pct))))
+      (define new-line (string-replace tikz-line "->" (string-append "->," (checks->color checks #:total-checks total))))
       (values nat+fname* new-line)]
      [else
       (printf "%% WARNING: no data for boundary '~a' ==> '~a'\n" from to)
@@ -143,9 +151,9 @@
     ;; Ignore the line
     (values nat+fname* tikz-line)]))
 
-(define (format-title total)
-  ;; TODO do something that works with tikz
-  (format "%% Total checks = ~a\n" total))
+(define (format-title total-contracts total-checks)
+  ;; TODO print a title that'll appear in the tex
+  (format "%% Total contracts = ~a\n%% Total checks = ~a\n" total-contracts total-checks))
 
 ;; =============================================================================
 
@@ -164,17 +172,18 @@
      (define tikz (ensure-tikz arg*))
      (define boundary** (parse-data arg*))
      (printf "Parsed data...\n")
-     (define total (count-all-checks boundary**))
+     (define total-checks (count-all-checks boundary**))
+     (define total-contracts (count-all-contracts boundary**))
      (printf "Writing to file '~a'...\n" (out-file))
      (with-output-to-file (out-file) #:exists 'replace ;; TODO
        (lambda ()
-         (printf (format-title total))
+         (printf (format-title total-contracts total-checks))
          (with-input-from-file tikz
            (lambda ()
              (for/fold ([nat+fname* '()])
                  ([t-line     (in-lines)])
                (define-values (new-map new-line)
-                 (color-edge t-line boundary** #:total-checks total #:map nat+fname*))
+                 (color-edge t-line boundary** #:total-checks total-checks #:map nat+fname*))
                (displayln new-line)
                new-map))))))
    (void))
