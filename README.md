@@ -3,7 +3,7 @@ The purpose of this repo is to share work among the team members that study
 the performance hypothesis underlying gradual typing.
 
 Auxillary folders:
-- `mirco/` simulated micro gradual typing benchmarks
+- `micro/` simulated micro gradual typing benchmarks
 - `thoughts/` our first folder, for gathering ideas
 - `tools/` scripts for creating, running, and visualizing the lattice
 - `threads/` experiments debugging MBTA
