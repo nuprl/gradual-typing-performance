@@ -389,29 +389,23 @@ program.
 for one flat area.  This implies that a boundary (or group of boundaries)
 accounts for a 3x slowdown, such that the set of configurations where these
 boundaries connect typed and untyped modules all experience similar
-overhead. Many configurations are @deliverable{2}, but, interestingly, not
-the fully typed one. This explains why increasing @math{L} to 1 and 2 does not 
-help much.
-@;TODO Strange no? <jan>
+overhead. Indeed, we found that applying a typed wrapper to the untyped graph
+library that @tt{mbta} depends on caused a 300% increase in the total number of
+contract checks.@note{From ~100 to ~300 checks} This also explains why the
+fully typed configuration is not @deliverable{2}.
 
-@; WHY
-@; - run-t and t-graph are tightly coupled
 @; PATH (easy)
 @; - small API, even with objects
 
 
 @parag{ZO Traversal} The curves for @tt{zo-traversal} are fairly steep, but
 not as drastic as @tt{morse-code} or @tt{mbta}.  Half the configurations
-suffer a 2x overhead, even when @exact{$L$} increases.  This behavior is
-again explained by the summary data. As the fully-typed configuration incurs
-a 4x overhead, the ability to convert additional modules rarely helps reach
-a more performant configuration. This benchmark is a case in which
-programmers may have to
-undo some of the type annotations to recover  performance.
+suffer a 2x overhead, even when @exact{$L$} increases.
+This behavior is again explained by one expensive boundary: when the underlying
+bytecode representation is wrapped in a contract, the program incurs an additional
+500,000 contract checks.  Hence projects that are "untyped enough" to avoid
+creating this boundary perform significantly better.
 
-@; WHY
-@; - the data is untyped, and this script is just an interface to that data
-@; - funny consequence: adding types just makes things worse
 @; PATH (easy)
 @; - HUGE bottleneck typing the zo structs
 @;   lots to do (62 structs, two zo-traversal functions for each)
@@ -426,8 +420,6 @@ large performance overhead, they are, in theory, close to a configuration
 with better performance. Nevertheless there are still too many bad
 configurations for comfort.
 
-@; WHY
-@; - explained in the in-depth, below
 @; PATH (hard)
 @; - lots of continuations and letrec, (one cont. instatiated with Values was rejected by TR)
 @; - module structure not bad
