@@ -6,13 +6,13 @@
   (struct-out node))
 
 
-(define-struct label (datum i j) #:mutable)
+(define-struct label (datum i j) #:mutable #:prefab)
 
 ;; A suffix tree consists of a root node.
-(define-struct suffix-tree (root))
+(define-struct suffix-tree (root) #:prefab)
 
 ;; up-label: label
 ;; parent: (union #f node)
 ;; children: (listof node)
 ;; suffix-link: (union #f node)
-(define-struct node (up-label parent children suffix-link) #:mutable)
+(define-struct node (up-label parent children suffix-link) #:mutable #:prefab)

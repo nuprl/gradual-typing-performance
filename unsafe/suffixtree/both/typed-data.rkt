@@ -1,43 +1,22 @@
 #lang typed/racket/base
 
-(provide Label Tree Node
-  ;(struct-out label)
-  label label? label-datum label-i label-j
-  ;(struct-out node)
-  node node? node-up-label node-parent node-children node-suffix-link
-  ;(struct-out suffix-tree)
-  suffix-tree suffix-tree? suffix-tree-root
-  make-label
-  set-label-i!
-  set-label-j!
-  make-suffix-tree
-  make-node
-  set-node-children!
-  set-node-up-label!
-  set-node-parent!
-  set-node-suffix-link!)
+(provide
+  Node Label Tree
+  (struct-out label)
+  (struct-out suffix-tree)
+  (struct-out node))
 
-(require benchmark-util typed/racket/unsafe)
-
-(require/typed/unsafe "data.rkt"
-  [#:struct label ([datum : (Vectorof (U Char Symbol))]
-                   [i : Natural] [j : Natural])]
-  [make-label (-> (Vectorof (U Char Symbol)) Natural Natural Label)]
-  [set-label-i! (-> Label Natural Void)]
-  [set-label-j! (-> Label Natural Void)]
-  [#:struct node ([up-label : Label]
-                  [parent : (U #f Node)]
-                  [children : (Listof Node)]
-                  [suffix-link : (U #f Node)])]
-  [make-suffix-tree (-> Node Tree)]
-  [make-node (-> Label (U #f Node) (Listof Node) (U #f Node) Node)]
-  [set-node-children! (-> Node (Listof Node) Void)]
-  [set-node-up-label! (-> Node Label Void)]
-  [set-node-parent! (-> Node Node Void)]
-  [set-node-suffix-link! (-> Node Node Void)]
-  [#:struct suffix-tree ([root : Node])])
-
+(define-type Node node)
 (define-type Label label)
 (define-type Tree suffix-tree)
-(define-type Node node)
 
+(define-struct label ([datum : (Vectorof (U Char Symbol))] [i : Natural] [j : Natural]) #:mutable #:prefab)
+
+;; A suffix tree consists of a root node.
+(define-struct suffix-tree ([root : node]) #:prefab)
+
+;; up-label: label
+;; parent: (union #f node)
+;; children: (listof node)
+;; suffix-link: (union #f node)
+(define-struct node ([up-label : label] [parent : (U #f node)] [children : (Listof node)] [suffix-link : (U #f node)]) #:mutable #:prefab)
