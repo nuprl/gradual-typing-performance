@@ -27,6 +27,7 @@
   all-variations
   ;; Return a pict representation of the summary. A kind of TLDR.
   summary->pict
+  summary-modulegraph
   Summary
 )
 
