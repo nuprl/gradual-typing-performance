@@ -18,3 +18,7 @@ and then do the following:
   patch -p1 < 0002-Add-docs-for-unsafe-TR-operations.patch
 
 (replace the patch paths with wherever they are in the filesystem)
+
+
+
+After installing, the file `./test/main.rkt` in this directory should compile.
