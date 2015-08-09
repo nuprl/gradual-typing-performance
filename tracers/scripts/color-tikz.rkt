@@ -112,9 +112,9 @@
 ;;                are just coloring by the number of digits
 (define (checks->color num-checks #:total-checks [total-param #f])
   (define num-digits (string-length (number->string num-checks)))
-  (for/first ([c   (in-list '("green" "OliveGreen" "YellowOrange" "RedOrange" "red"))]
-              [val (in-list '(2       4             6              7           #f))]
-              [wth (in-list '(1       2             3              3.5         4))]
+  (for/first ([c   (in-list '("green!48!white" "yellow!45!orange" "blue!43!white" "purple!64!white" "red!87!black"))]
+              [val (in-list '(2       4             6              7          #f))]
+              [wth (in-list '(1       2             2.5            3          3.5))]
               #:when (or (not val) (< num-digits val)))
     (format "~a, line width=~apt" c wth)))
 
