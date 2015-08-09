@@ -529,15 +529,13 @@ vertical slope is encouraging.
 
 
 @parag{Quad}
-@; TODO
-Due to the massive size of this performance lattice (65536 configurations), this benchmark
-takes an extraordinary amount of time to run to completion. As a result, we are missing
-the final numbers for this benchmark. 
-@;except for the fully typed runtime.
-We will add the remaining data in the final version of this paper.
+Only a small proportion of @tt{quad} variations are 300-deliverable or 300/1000-usable
+for any value of @tt{L}. The @tt{L=2} graph does show a large spike in the
+number of 1500-usable configurations, but this fact is not likely to help
+developers exploring the lattice.
 
 @; WHY
-@; - the ocm struct has vector & functions
+@; - module graph implies cost is spread throughout
 @; - many quad types, often recursive
 @; PATH (hard?)
 @; - hard to tell, was already typed
