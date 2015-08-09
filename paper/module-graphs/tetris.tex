@@ -1,3 +1,5 @@
+%% Total contracts = 55
+%% Total checks = 171340108
 \begin{tikzpicture}
 
   \node (00)               {\rkt{3}{consts}};
@@ -28,34 +30,42 @@
 
   %% -- edges
   %% block
-  \draw[->] (12) -- (02);
+  \draw[->,green!48!white, line width=1pt] (12) -- (02);
   %% bset
-  \draw[->] (20) -- (00);
+  \draw[->,green!48!white, line width=1pt] (20) -- (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'bset.rkt'
   \draw[->] (20) -- (02);
-  \draw[->] (20) -- (12);
+  \draw[->,purple!64!white, line width=3pt] (20) -- (12);
   %% elim
-  \draw[->] (30) edge[bend left=35] (00);
+  \draw[->,green!48!white, line width=1pt] (30) edge[bend left=35] (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'elim.rkt'
   \draw[->] (30) -- (02);
-  \draw[->] (30) -- (20);
+  \draw[->,red!87!black, line width=3.5pt] (30) -- (20);
   %% tetras
+%% WARNING: no data for boundary 'consts.rkt' ==> 'tetras.rkt'
   \draw[->] (32) -- (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'tetras.rkt'
   \draw[->] (32) edge[bend right=35] (02);
+%% WARNING: no data for boundary 'block.rkt' ==> 'tetras.rkt'
   \draw[->] (32) -- (12);
-  \draw[->] (32) -- (20);
+  \draw[->,blue!43!white, line width=2.5pt] (32) -- (20);
   %% aux
+%% WARNING: no data for boundary 'data.rkt' ==> 'aux.rkt'
   \draw[->] (42) edge[bend right=35] (02);
-  \draw[->] (42) -- (32);
+  \draw[->,green!48!white, line width=1pt] (42) -- (32);
   %% world
-  \draw[->] (50) edge[bend left=35] (00);
+  \draw[->,green!48!white, line width=1pt] (50) edge[bend left=35] (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'world.rkt'
   \draw[->] (50) -- (02);
-  \draw[->] (50) edge[bend left=35] (20);
-  \draw[->] (50) -- (30);
-  \draw[->] (50) -- (32);
-  \draw[->] (50) -- (42);
+  \draw[->,purple!64!white, line width=3pt] (50) edge[bend left=35] (20);
+  \draw[->,blue!43!white, line width=2.5pt] (50) -- (30);
+  \draw[->,blue!43!white, line width=2.5pt] (50) -- (32);
+  \draw[->,blue!43!white, line width=2.5pt] (50) -- (42);
   %% main
+%% WARNING: no data for boundary 'data.rkt' ==> 'main.rkt'
   \draw[->] (61) -- (02);
-  \draw[->] (61) -- (20);
-  \draw[->] (61) -- (42);
-  \draw[->] (61) -- (50);
+  \draw[->,green!48!white, line width=1pt] (61) -- (20);
+  \draw[->,green!48!white, line width=1pt] (61) -- (42);
+  \draw[->,blue!43!white, line width=2.5pt] (61) -- (50);
 
 \end{tikzpicture}

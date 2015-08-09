@@ -1,3 +1,5 @@
+%% Total contracts = 3
+%% Total checks = 2014220
 \begin{tikzpicture}
 
   \node (00) {\rkt{3}{morse-code-table}};
@@ -9,8 +11,8 @@
   \node (21) [left of=11] {\rkt{1}{main}};
 
   %% -- edges
-  \draw[->] (10) -- (00);
-  \draw[->] (21) -- (10);
-  \draw[->] (21) -- (01);
+  \draw[->,red!87!black, line width=3.5pt] (10) -- (00);
+  \draw[->,purple!64!white, line width=3pt] (21) -- (10);
+  \draw[->,purple!64!white, line width=3pt] (21) -- (01);
 
 \end{tikzpicture}
