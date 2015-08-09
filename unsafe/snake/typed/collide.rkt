@@ -5,8 +5,6 @@
 (require/typed/check "const.rkt"
                      [BOARD-WIDTH Integer]
                      [BOARD-HEIGHT Integer])
-(require/typed/check "data.rkt"
-                     [posn=? (Posn Posn . -> . Boolean)])
 
 ;; Is the snake colliding with any of the walls?
 (: snake-wall-collide? : (Snake . -> . Boolean))

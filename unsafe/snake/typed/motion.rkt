@@ -6,8 +6,6 @@
 (require/typed/check "const.rkt"
                      [BOARD-WIDTH Integer]
                      [BOARD-HEIGHT Integer])
-(require/typed/check "data.rkt"
-                     [posn=? (Posn Posn . -> . Boolean)])
 (require/typed/check "motion-help.rkt"
                      [snake-slither (Snake . -> . Snake)]
                      [snake-grow    (Snake . -> . Snake)])
