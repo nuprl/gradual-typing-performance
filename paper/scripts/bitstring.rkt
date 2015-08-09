@@ -1,20 +1,31 @@
 #lang typed/racket/base
 
 (provide
-  ;; Base 2 log, on naturals
-  ;; (-> Natural Natural)
   log2
+  ;; (-> Natural Natural)
+  ;; Base 2 log, on naturals
+
+  natural->bitstring
+  ;; (-> Index #:pad Index String)
   ;; Convert a natural number to a binary string representation
   ;; Keyword argument #:pad sets the width of the result string
-  ;; (-> Index #:pad Index String)
-  natural->bitstring
-  ;; Convert a string representation of a binary number to a natural.
-  ;; (-> String Index)
+
   bitstring->natural
+  ;; (-> String Index)
+  ;; Convert a string representation of a binary number to a natural.
+
+  in-reach
+  ;; (-> String Index (Listof String))
   ;; (in-reach s l)
   ;; List all bitstrings reachable from `s` by flipping at most `l` bits
-  ;; (-> String Index (Listof String))
-  in-reach
+
+  bit-high?
+  ;; (-> String Index Boolean)
+  ;; True if the bit at the index is set
+
+  bit-low?
+  ;; (-> String Index Boolean)
+  ;; True if the bit at the index is unset
 )
 
 ;; -----------------------------------------------------------------------------
@@ -75,6 +86,14 @@
              (cons str+ (in-reach str+ (sub1 L)))))
          (remove-duplicates (apply append res*) string=?)]))
 
+(: bit-high? (-> String Natural Boolean))
+(define (bit-high? str i)
+  (eq? #\1 (string-ref str i)))
+
+(: bit-low? (-> String Natural Boolean))
+(define (bit-low? str i)
+  (eq? #\0 (string-ref str i)))
+
 ;; =============================================================================
 
 (module+ test
@@ -114,4 +133,28 @@
   (check-equal? (bitstring-flip "0010" 2) "0000")
   (check-equal? (bitstring-flip "11011" 4) "11010")
   (check-equal? (bitstring-flip "000" 0) "100")
+
+  ;; -- bit-high? bit-low?
+  (check-true (bit-high? "1111" 0))
+  (check-true (bit-high? "1111" 1))
+  (check-true (bit-high? "1111" 2))
+  (check-true (bit-high? "1111" 3))
+  (check-true (bit-high? "1001" 0))
+  (check-true (bit-high? "1001" 3))
+  (check-false (bit-high? "1001" 1))
+  (check-false (bit-high? "1001" 2))
+  (check-false (bit-high? "00" 0))
+  (check-false (bit-high? "00" 1))
+
+  (check-false (bit-low? "1111" 0))
+  (check-false (bit-low? "1111" 1))
+  (check-false (bit-low? "1111" 2))
+  (check-false (bit-low? "1111" 3))
+  (check-false (bit-low? "1001" 0))
+  (check-false (bit-low? "1001" 3))
+  (check-true (bit-low? "1001" 1))
+  (check-true (bit-low? "1001" 2))
+  (check-true (bit-low? "00" 0))
+  (check-true (bit-low? "00" 1))
+
 )
