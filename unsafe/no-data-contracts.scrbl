@@ -22,7 +22,7 @@
                   ("snake"        "unsafe/usnake.rktd")
                   ("suffixtree"   "unsafe/usuffixtree.rktd")
                   ("tetris"       "unsafe/utetris.rktd")
-                  ("synth"        "unsafe/ufunkytown.rktd"))])
+                  ("synth"        "unsafe/usynth.rktd"))])
      (data->pict data #:tag "3"))
 ]
 
@@ -31,7 +31,7 @@
                   ("snake"        ,SNAKE-DATA)
                   ("suffixtree"   ,SUFFIXTREE-DATA)
                   ("tetris"       ,TETRIS-DATA)
-                  ("synth"        ,SUFFIXTREE-DATA))])
+                  ("synth"        ,SYNTH-DATA))])
      (data->pict data #:tag "4"))
 ]
 

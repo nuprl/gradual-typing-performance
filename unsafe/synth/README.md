@@ -1,7 +1,7 @@
-funkytown
+synth
 =========
 
-Funkytown benchmark.
+Synth benchmark.
 Original code taken from [the chaperones benchmarks](http://github.com/stamourv/contract-benchmarks) and the Racket [math/array](http://docs.racket-lang.org/math/array.html) library.
 
 Run `main.rkt` to create (and discard) some music.

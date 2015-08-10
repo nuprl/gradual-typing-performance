@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 projects=(sieve echo morse-code mbta suffixtree zordoz kcfa
-          funkytown tetris snake gregor quad)
+          synth tetris snake gregor quad)
 
 for p in ${projects[@]}
 do
