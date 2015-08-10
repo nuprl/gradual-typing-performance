@@ -4,29 +4,56 @@
 ;; Handles queries for raw data and statistical summary data.
 
 (provide
-  ;; Convert a filepath to a summary object
-  ;; (->* [Path-String] [#:graph Path-String] Summary)
   from-rktd
-  ;; Get the number of variations from a Summary
-  ;; (-> Summary Index)
+  ;; (->* [Path-String] [#:graph Path-String] Summary)
+  ;; Convert a filepath to a summary object
+
   get-num-variations
-  ;; Get the project name from a Summary
-  ;; (-> Summary String)
+  ;; (-> Summary Index)
+  ;; Get the number of variations from a Summary
+
   get-project-name
-  ;; Get the mean runtime of the Summary's untyped variation
-  ;; (-> Summary Real)
+  ;; (-> Summary String)
+  ;; Get the project name from a Summary
+
+  has-typed?
+  ;; (-> Summary String (Listof String) Boolean)
+  ;; (has-typed? S v name*)
+  ;; True if the module names `name*` are all typed in variation `v`
+
+  has-untyped?
+  ;; (-> Summary String (Listof String) Boolean)
+  ;; (has-untyped? S v name*)
+  ;; True if all module names `name*` are untyped in variation `v`
+
+  typed-modules
+  ;; (-> Summary BitString (Listof String))
+  ;; Return a list of modules that are typed in this variation
+
+  untyped-modules
+  ;; (-> Summary BitString (Listof String))
+  ;; Return a list of modules that are untyped in this variation
+
   untyped-mean
-  ;; Get the mean runtime of a variation, represented as a bitstring
-  ;; (-> Summary String Real)
+  ;; (-> Summary Real)
+  ;; Get the mean runtime of the Summary's untyped variation
+
   variation->mean-runtime
-  ;; Return a stream of variations satisfying the predicate
-  ;; (-> Summary (-> String Boolean) (Streamof String))
+  ;; (-> Summary String Real)
+  ;; Get the mean runtime of a variation, represented as a bitstring
+
   predicate->variations
-  ;; Return a stream of all variations in the Summary
-  ;; (-> Summary (Streamof String))
+  ;; (-> Summary (-> String Boolean) (Streamof String))
+  ;; Return a stream of variations satisfying the predicate
+
   all-variations
-  ;; Return a pict representation of the summary. A kind of TLDR.
+  ;; (-> Summary (Streamof String))
+  ;; Return a stream of all variations in the Summary
+
   summary->pict
+  ;; (-> Summary Pict)
+  ;; Return a pict representation of the summary. A kind of TLDR.
+
   summary-modulegraph
   Summary
 )
@@ -36,6 +63,7 @@
 (require
   racket/path
   math/statistics
+  (only-in racket/list range) ;; because in-range has the wrong type
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
   (only-in racket/format ~r)
@@ -163,6 +191,28 @@
 (: get-project-name (-> Summary String))
 (define (get-project-name sm)
   (project-name (summary-modulegraph sm)))
+
+(: has-typed? (-> Summary String (Listof String) Boolean))
+(define (has-typed? S v names*)
+  (for/and ([name (in-list names*)])
+    (bit-high? v (name->index (summary-modulegraph S) name))))
+
+(: has-untyped? (-> Summary String (Listof String) Boolean))
+(define (has-untyped? S v names*)
+  (for/and ([name (in-list names*)])
+    (bit-low? v (name->index (summary-modulegraph S) name))))
+
+(: typed-modules (-> Summary String (Listof String)))
+(define (typed-modules S v)
+  (for/list ([i (in-list (range (string-length v)))]
+             #:when (bit-high? v i))
+    (index->name (summary-modulegraph S) i)))
+
+(: untyped-modules (-> Summary String (Listof String)))
+(define (untyped-modules S v)
+  (for/list ([i : Natural (in-list (range (string-length v)))]
+             #:when (bit-low? v i))
+    (index->name (summary-modulegraph S) i)))
 
 (: predicate->variations (-> Summary (-> String Boolean) (Sequenceof String)))
 (define (predicate->variations sm p)
