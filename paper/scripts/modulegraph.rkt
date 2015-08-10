@@ -8,10 +8,33 @@
 
 (provide
   from-tex
+  ;; (-> Path-String ModuleGraph)
+  ;; Parse a tex file into a module graph
+
   module-names
-  ;(struct-out modulegraph)
+  ;; (-> ModuleGraph (Listof String))
+  ;; Return a list of all module names in the project
+
   path->project-name
+  ;; (-> Path-String String)
+  ;; Parse a project's name from a filename.
+
   project-name
+  ;; (-> ModuleGraph String)
+  ;; Get the project name direct from the modulegraph
+
+  name->index
+  ;; (-> ModuleGraph String Index)
+  ;; Get the module's index into bitstrings
+
+  index->name
+  ;; (-> ModuleGraph Index String)
+
+  requires
+  ;; (-> ModuleGraph String (Listof String))
+  ;; List of modules required by the given one
+
+  (struct-out modulegraph)
   ModuleGraph
 )
 
@@ -45,25 +68,27 @@
   (for/list ([node+neighbors (in-list (modulegraph-adjlist mg))])
     (car node+neighbors)))
 
-; ;; Get the index matching the module name
-; ;; (: name->index (-> ModuleGraph String Index))
-; (define (name->index mg name)
-;   (for/or ([node+neighbors (in-list (modulegraph-adjlist mg))]
-;            [i (in-range 0 (length (modulegraph-adjlist mg)))])
-;     (and (string=? name (car node+neighbors))
-;          i)))
-; 
-; ;; Get the name of the module with index `i`
-; ;; (: index->name (-> ModuleGraph Index String))
-; (define (index->name mg i)
-;   (car (list-ref (modulegraph-adjlist mg) i)))
-; 
-; ;; Get the names of modules required by `name`.
-; ;; (: require (-> ModuleGraph String (Listof String)))
-; (define (requires mg name)
-;   (for/or ([node+neighbors (in-list (modulegraph-adjlist mg))])
-;     (and (string=? name (car node+neighbors))
-;          (cdr node+neighbors))))
+(: name->index (-> ModuleGraph String Natural))
+(define (name->index mg name)
+  (: maybe-i (U #f Natural))
+  (define maybe-i
+    ;; Simulated for/first
+    (let loop ([i : Natural 0] [n+n (modulegraph-adjlist mg)])
+      (if (string=? name (caar n+n))
+        i
+        (loop (add1 i) (cdr n+n)))))
+  (or maybe-i
+     (error 'name->index (format "Invalid module name ~a" name))))
+
+(: index->name (-> ModuleGraph Natural String))
+(define (index->name mg i)
+  (car (list-ref (modulegraph-adjlist mg) i)))
+
+(: requires (-> ModuleGraph String (Listof String)))
+(define (requires mg name)
+  (for/list ([node+neighbors (in-list (modulegraph-adjlist mg))]
+             #:when (member name (cdr node+neighbors)))
+    (car node+neighbors)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- parsing TiKZ
@@ -290,4 +315,8 @@
   (for ([fname (in-glob "../module-graphs/*.tex")])
     (printf "TESTING ~a\n" fname)
     (test-file fname))
+
+  ;; -- name->index
+  ;; -- index->name
+  ;; -- requires
 )

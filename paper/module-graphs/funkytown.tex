@@ -1,3 +1,5 @@
+%% Total contracts = 65
+%% Total checks = 52988839
 \begin{tikzpicture}
 
   \node (00)               {\rkt{3}{array-utils}};
@@ -24,38 +26,42 @@
 
   %% -- edges
   %% array broadcast
-  \draw[->] (20) -- (11);
-  \draw[->] (20) -- (00);
+  \draw[->,yellow!45!orange, line width=2pt] (20) -- (11);
+  \draw[->,green!48!white, line width=1pt] (20) -- (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'array-broadcast.rkt'
   \draw[->] (20) edge[bend left=15] (02);
   %% array-struct
-  \draw[->] (11) -- (00);
+  \draw[->,blue!43!white, line width=2.5pt] (11) -- (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'array-struct.rkt'
   \draw[->] (11) -- (02);
   %% array-transform
-  \draw[->] (30) -- (20);
-  \draw[->] (30) -- (11);
-  \draw[->] (30) edge[bend left=35] (00);
+  \draw[->,yellow!45!orange, line width=2pt] (30) -- (20);
+  \draw[->,red!87!black, line width=3.5pt] (30) -- (11);
+  \draw[->,purple!64!white, line width=3pt] (30) edge[bend left=35] (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'array-transform.rkt'
   \draw[->] (30) -- (02);
   %% drum
-  \draw[->] (42) -- (11);
-  \draw[->] (42) -- (30);
-  \draw[->] (42) -- (00);
+  \draw[->,blue!43!white, line width=2.5pt] (42) -- (11);
+  \draw[->,green!48!white, line width=1pt] (42) -- (30);
+  \draw[->,blue!43!white, line width=2.5pt] (42) -- (00);
+%% WARNING: no data for boundary 'data.rkt' ==> 'drum.rkt'
   \draw[->] (42) edge[bend right=35] (02);
-  \draw[->] (42) edge[bend right=35] (22);
+  \draw[->,green!48!white, line width=1pt] (42) edge[bend right=35] (22);
   %% main
-  \draw[->] (51) -- (42);
-  \draw[->] (51) -- (32);
-  \draw[->] (51) -- (40);
-  \draw[->] (51) -- (22);
+  \draw[->,green!48!white, line width=1pt] (51) -- (42);
+  \draw[->,green!48!white, line width=1pt] (51) -- (32);
+  \draw[->,purple!64!white, line width=3pt] (51) -- (40);
+  \draw[->,purple!64!white, line width=3pt] (51) -- (22);
   %% mixer
-  \draw[->] (32) -- (20);
-  \draw[->] (32) -- (11);
+  \draw[->,purple!64!white, line width=3pt] (32) -- (20);
+  \draw[->,red!87!black, line width=3.5pt] (32) -- (11);
   %% sequencer
-  \draw[->] (40) -- (11);
-  \draw[->] (40) -- (30);
-  \draw[->] (40) -- (32);
-  \draw[->] (40) -- (22);
+  \draw[->,purple!64!white, line width=3pt] (40) -- (11);
+  \draw[->,green!48!white, line width=1pt] (40) -- (30);
+  \draw[->,green!48!white, line width=1pt] (40) -- (32);
+  \draw[->,green!48!white, line width=1pt] (40) -- (22);
   %% synth
-  \draw[->] (22) -- (11);
-  \draw[->] (22) -- (00);
+  \draw[->,red!87!black, line width=3.5pt] (22) -- (11);
+  \draw[->,red!87!black, line width=3.5pt] (22) -- (00);
 
 \end{tikzpicture}

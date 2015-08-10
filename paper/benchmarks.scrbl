@@ -13,8 +13,9 @@ the original developer or the Racket package repository.
 @section{Overview}
 
 The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark
-programs.  For each, we give an approximate measure of the program's size
-and a diagram of its module structure.
+programs.  For each, we give an approximate measure of the program's size,
+a diagram of its module structure, and a worst-case measure of the contracts
+created and checked at runtime.
 
 Size is measured by the number of modules and lines of code (LOC) in a program.@note{We measured lines of code using the @hyperlink["http://www.dwheeler.com/sloccount/" "sloccount"] utility.}
 Crucially, the number of modules also determines the number of gradually-typed
@@ -35,12 +36,20 @@ any so-called type adaptor modules (see below).
 Finally, the module structure graphs show a dot for each module in the program
 and an arrow from one module to another when the module at the arrow tail
 imports definitions from the module at the arrow head.
-The performance cost of gradual typing originates at boundaries between typed
-and untyped modules, so it is interesting to compare the complexity of these
-graphs with our experimental results in section@secref{sec:tr}.
-This correlation, however, is a weak one because the module graphs show only
-@emph{static} dependencies, whereas the runtime cost of each boundary depends
-heavily on the frequency at which values cross.
+When one of these modules is typed and the other untyped, the imported definitions
+are wrapped with a contract to ensure type soundness. To give a sense of how
+``expensive'' the contracts at each boundary are, we have colored and thickened
+arrows to match the absolute number of times any contracts formed at each boundary
+were checked. The color scale is shown below the table.
+
+The colors fail, however, to show the cost of protecting data structures
+imported from another library or factored through an adaptor module.
+For example, the @tt{kcfa} graph has many thin black edges because the modules
+only share data definitions; the expensive contracts are all formed within
+a module rather than along a boundary. Instead, we include the column ``% Missing''
+to give the proportion of observed contract checks that are not show in the
+module graphs.
+
 
 @;;; to address this, we TODO added a counter to each contract and ran the prog.
 
@@ -51,24 +60,36 @@ heavily on the frequency at which values cross.
 \newcommand{\yespycket}{$\CIRCLE$}
 \newcommand{\maybepycket}{$\RIGHTcircle$}
 \newcommand{\nopycket}{$\Circle$}
+\newcommand{\twoline}[2]{\parbox[s]{1.44cm}{\flushright\hfill #1\newline#2}}
 \begin{tabular}[t]{lrrrrll}
 \toprule
-Project name          & \# Modules & Untyped LOC & Type Ann. LOC & Other LOC & Module structure        \\
+Project name          & \# Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.}{LOC} & \twoline{Other}{LOC} & Module structure  & \% Missing      \\
 \midrule
-\tt{sieve}            & 2          & 35          & 17            & 0         & \pict{sieve}      \\
-\tt{morse-code}       & 4          & 216         & 29            & 0         & \pict{morsecode}  \\
-\tt{mbta}             & 4          & 369         & 77            & 89        & \pict{mbta}       \\
-\tt{zo-traversal}     & 5          & 1404        & 285           & 214       & \pict{zordoz}     \\
-\tt{suffixtree}       & 6          & 545         & 125           & 40        & \pict{suffixtree} \\
-\tt{lnm}              & 6          & 501         & 120           & 62        & \pict{lnm}        \\
-\tt{kcfa}             & 7          & 248         & 47            & 141       & \pict{kcfa}       \\
-\tt{snake}            & 8          & 161         & 50            & 27        & \pict{snake}      \\
-\tt{tetris}           & 9          & 305         & 71            & 38        & \pict{tetris}     \\
-\tt{synth}            & 10         & 837         & 142           & 33        & \pict{funkytown}  \\
-\tt{gregor}           & 13         & 996         & 164           & 103       & \pict{gregor}     \\
-\tt{quad}             & 16         & 6722        & 300           & 241       & \pict{quad}       \\
+\tt{sieve}            & 2          & 35          & 17            & 0         & \pict{sieve}      & 0  \\
+\tt{morse-code}       & 4          & 216         & 29            & 0         & \pict{morsecode}  & 0  \\
+\tt{mbta}             & 4          & 369         & 77            & 89        & \pict{mbta}       & 79 \\
+\tt{zo-traversal}     & 5          & 1404        & 285           & 214       & \pict{zordoz}     & 99 \\
+\tt{suffixtree}       & 6          & 545         & 125           & 40        & \pict{suffixtree} & 97 \\
+\tt{lnm}              & 6          & 501         & 120           & 62        & \pict{lnm}        & 46 \\
+\tt{kcfa}             & 7          & 248         & 47            & 141       & \pict{kcfa}       & 99 \\
+\tt{snake}            & 8          & 161         & 50            & 27        & \pict{snake}      & 93 \\
+\tt{tetris}           & 9          & 305         & 71            & 38        & \pict{tetris}     & 99 \\
+\tt{synth}            & 10         & 837         & 142           & 33        & \pict{funkytown}  & 47 \\
+\tt{gregor}           & 13         & 996         & 164           & 103       & \pict{gregor}     & 78 \\
+\tt{quad}             & 16         & 6722        & 300           & 241       & \pict{quad}       & 45 \\
 \bottomrule
 \end{tabular}
+
+\vspace{0.1cm}
+
+\newcommand{\blackmbf}[1]{\color{black}{\mathbf{#1}}}
+\begin{tikzpicture}
+  \draw [green!48!white, line width=6] (0,0) -- node[below] {$\blackmbf{<10}$} (2.5,0);
+  \draw [yellow!45!orange, line width=6] (2.5,0) -- node[below] {$\blackmbf{<1,000}$} (5,0);
+  \draw [blue!43!white, line width=6] (5,0) -- node[below] {$\blackmbf{<100,000}$} (7.5,0);
+  \draw [purple!64!white, line width=6] (7.5,0) -- node[below] {$\blackmbf{<1,000,000}$} (10,0);
+  \draw [red!87!black, line width=6] (10,0) -- node[below] {$\blackmbf{< 1 \mbox{ billion}}$} (12,0);
+\end{tikzpicture}
 }|
 ]
 
