@@ -298,7 +298,7 @@
 ;
 ;  ;; Create the graph for a 'large' file
 ;  (define DATA "../data/")
-;  (define funkytown (string-append DATA "funkytown-2015-07-02T01:47:43.rktd"))
+;  (define synth (string-append DATA "synth-2015-07-02T01:47:43.rktd"))
 ;  (define gregor (string-append DATA "gregor-2015-07-02.rktd"))
 ;  (define quad (string-append DATA "quad-placeholder.rktd"))
 ;
@@ -308,6 +308,6 @@
 ;    (lnm-plot summary #:L '(0 1 2))
 ;    (void))
 ;
-;  ;(time (make-graph funkytown)) ;;3,000ms
+;  ;(time (make-graph synth)) ;;3,000ms
 ;  (time (make-graph gregor)) ;;
 ;)

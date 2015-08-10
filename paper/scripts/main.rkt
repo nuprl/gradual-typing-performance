@@ -18,7 +18,7 @@
   (define DATAS
     (list
      ;; "../data/echo.rktd"
-     ;; "../data/funkytown.rktd"
+     ;; "../data/synth.rktd"
      ;; "../data/gregor-05-11.rktd"
      ;; "../data/gregor-05-24.rktd"
      ;; ;; BAD "../data/kcfa-06-01.rktd"

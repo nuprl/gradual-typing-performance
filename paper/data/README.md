@@ -47,15 +47,15 @@ Run on Racket 6.2.
 - `morsecode-06-27.rktd` Run on Desktop, single core. Benchmarked on the entire list of frequently used words.
 - `sieve-2015-06-28T14:08:55.rktd` Run on Lambda, single core
 - `suffixtree-large-06-30.rktd` Run on Desktop, single core, 30 iters.
-- `funkytown-2015-06-30T15:34:39.rktd` Run on cluster, `-j 39`
-- `funkytown-2015-07-02T01:47:43.rktd` Run on cluster, `-j 19`
+- `synth-2015-06-30T15:34:39.rktd` Run on cluster, `-j 39`
+- `synth-2015-07-02T01:47:43.rktd` Run on cluster, `-j 19`
 - `snake-2015-06-30T14:55:40.rktd` Run on cluster, `-j 39`
 - `snake-2015-07-01T16:35:34.rktd` Run on cluster, `-j 19`
 - `tetris-2015-06-30T14:53:37.rktd` Run on cluster, `-j 39`
 - `tetris-2015-07-01T16:39:46.rktd` Run on cluster, `-j 19`
 
 Benchmarks run on different-sized inputs
-- `funkytown-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
+- `synth-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
 - `kcfa-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a very small "standard example" test.
 - `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.
 - `moresecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
@@ -64,7 +64,7 @@ __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
 We need to update them all.
 
 - `echo.rktd` Unknown origin.
-- `funkytown.rktd`
+- `synth.rktd`
 - `gregor-05-11.rktd` Run on Galicia
 - `gregor-05-24.rktd` Run on the cluster.
 - `kcfa-06-01.rktd` Run on Galicia.

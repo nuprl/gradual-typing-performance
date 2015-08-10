@@ -74,7 +74,7 @@ Project name          & \# Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.
 \tt{kcfa}             & 7          & 248         & 47            & 141       & \pict{kcfa}       & 99 \\
 \tt{snake}            & 8          & 161         & 50            & 27        & \pict{snake}      & 93 \\
 \tt{tetris}           & 9          & 305         & 71            & 38        & \pict{tetris}     & 99 \\
-\tt{synth}            & 10         & 837         & 142           & 33        & \pict{funkytown}  & 47 \\
+\tt{synth}            & 10         & 837         & 142           & 33        & \pict{synth}      & 47 \\
 \tt{gregor}           & 13         & 996         & 164           & 103       & \pict{gregor}     & 78 \\
 \tt{quad}             & 16         & 6722        & 300           & 241       & \pict{quad}       & 45 \\
 \bottomrule
