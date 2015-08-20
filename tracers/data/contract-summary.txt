@@ -1,6 +1,8 @@
 Summary of Contract Profile result
 
 (note that we're double-counting data + adaptor, wouldn't happen with r/t/c)
+(note that nothing is polymorphic because of the lattice)
+
 * echo : nothing
 * synth
 - top 5 are higher-order (52647ms = 75% of total runtime)
@@ -29,7 +31,7 @@ Summary of Contract Profile result
 * snake
 - top 5 from adaptor, 832560ms = 86%
 - very worst are predicates = 468908ms
-- nothing higher-order, the worst is just lists
+- nothing higher-order, the at most lists
 * suffixtree
 - only 1 HO, 3584ms (double-counted)
 - top 5 predicates + data accessors (2729409ms, 65%)
