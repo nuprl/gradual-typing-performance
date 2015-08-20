@@ -1,6 +1,0 @@
-MODULE	INDEX	REQUIRES
-main.rkt	0	zo-shell.rkt
-zo-find.rkt	1	zo-transition.rkt,zo-string.rkt
-zo-shell.rkt	2	zo-find.rkt,zo-string.rkt,zo-transition.rkt
-zo-string.rkt	3	
-zo-transition.rkt	4	

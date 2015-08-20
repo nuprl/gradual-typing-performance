@@ -1,3 +1,0 @@
-MODULE	INDEX	REQUIRES
-main.rkt	0	streams.rkt
-streams.rkt	1	

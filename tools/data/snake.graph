@@ -1,9 +1,0 @@
-MODULE	INDEX	REQUIRES
-collide.rkt	0	data.rkt,const.rkt
-const.rkt	1	data.rkt
-cut-tail.rkt	2	data.rkt
-data.rkt	3	
-handlers.rkt	4	data.rkt,motion.rkt,collide.rkt
-main.rkt	5	data.rkt,const.rkt,handlers.rkt,motion.rkt
-motion-help.rkt	6	data.rkt,cut-tail.rkt
-motion.rkt	7	data.rkt,const.rkt,motion-help.rkt

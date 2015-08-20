@@ -1,5 +1,0 @@
-MODULE	INDEX	REQUIRES
-levenshtein.rkt	0	
-main.rkt	1	levenshtein.rkt,morse-code-strings.rkt
-morse-code-strings.rkt	2	morse-code-table.rkt
-morse-code-table.rkt	3	

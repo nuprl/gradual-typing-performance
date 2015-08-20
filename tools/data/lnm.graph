@@ -1,7 +1,0 @@
-MODULE	INDEX	REQUIRES
-bitstring.rkt	0	
-modulegraph.rkt	3	
-spreadsheet.rkt	4	bitstring.rkt
-summary.rkt	5	bitstring.rkt,modulegraph.rkt
-lnm-plot.rkt	1	bitstring.rkt,summary.rkt
-main.rkt	2	spreadsheet.rkt,lnm-plot.rkt,summary.rkt

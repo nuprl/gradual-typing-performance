@@ -1,9 +1,0 @@
-MODULE	INDEX	REQUIRES
-graph-adjlist-utils.rkt	0	
-graph-attach-edge-property.rkt	1	graph-struct.rkt
-graph-struct.rkt	2	
-graph-unweighted.rkt	3	graph-struct.rkt,graph-adjlist-utils.rkt
-main.rkt	4	run-t.rkt
-run-t.rkt	5	t-view.rkt
-t-graph.rkt	6	graph-unweighted.rkt,graph-struct.rkt,graph-attach-edge-property.rkt
-t-view.rkt	7	t-graph.rkt

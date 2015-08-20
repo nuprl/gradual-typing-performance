@@ -1,5 +1,0 @@
-MODULE	INDEX	REQUIRES
-run-t.rkt	0	t-view.rkt
-stress-test.rkt	1	run-t.rkt
-t-graph.rkt	2	
-t-view.rkt	3	t-graph.rkt
