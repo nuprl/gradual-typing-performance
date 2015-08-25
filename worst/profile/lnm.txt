@@ -1,0 +1,32 @@
+Running time is 67.4% contracts
+169/250 ms
+
+
+BY CONTRACT
+
+(->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?)) @ #(struct:srcloc (lib pict/main.rkt) 40 3 1293 2)
+  90 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  157/2 ms
+
+
+BY CALLEE
+
+(->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?)) @ #(struct:srcloc (lib pict/main.rkt) 40 3 1293 2)
+  dc
+  90 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  mean
+  157/2 ms
+
+
+BY CALLER
+
+(->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?)) @ #(struct:srcloc (lib pict/main.rkt) 40 3 1293 2)
+  90 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  157/2 ms
+
