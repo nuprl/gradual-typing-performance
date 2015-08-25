@@ -269,7 +269,7 @@
     (or (for/or : (U #f String) ([tx (in-list nodes)])
           (and (= id (texnode-id tx))
                (texnode-name tx)))
-        (error 'tex->modulegraph)))
+        (error 'tex->modulegraph (format "Could not convert tikz node id ~a to a module name" id))))
   ;; Create an adjacency list by finding the matching edges for each node
   (: adjlist (Listof (Pairof (Pairof Index String) (Listof String))))
   (define adjlist
