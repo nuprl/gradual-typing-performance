@@ -65,6 +65,8 @@ echo "Path="                      >> ~/Desktop/DrRacket.desktop
 echo "Terminal=false"             >> ~/Desktop/DrRacket.desktop
 echo "StartupNotify=false"        >> ~/Desktop/DrRacket.desktop
 
+chmod +x ~/Desktop/DrRacket.desktop
+
 # Cleanup
 cd ~
 #rm -r ~/paper-archive
