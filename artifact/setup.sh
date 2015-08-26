@@ -36,11 +36,10 @@ echo "export PATH=~/racket/bin:$PATH" >> ~/.bashrc
 raco setup -D # avoid huge memory use from doc build
 
 # Create the scribble docs
-# FIXME: make Scribble docs
-#cd paper-archive/artifact
-#scribble +m --htmls index.scrbl
-#mv index ~/readme-folder
-#ln -s ~/readme-folder/index.html ~/Desktop/README.html
+cd paper-archive/artifact
+scribble +m --htmls README.scrbl
+mv README ~/readme-folder
+ln -s ~/readme-folder/index.html ~/Desktop/README.html
 
 # Configure XFCE, instead of directly configuring this put it in the
 # .bash_profile because the command won't work without X11 running.
