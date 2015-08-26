@@ -224,8 +224,9 @@
   (when (and (not (only-compile?)) (output-path))
     (with-output-to-file (output-path)
       (λ ()
-        ;; first write a comment that encodes the commandline args
+        ;; first write a comment that encodes the commandline args / version
         (printf ";; ~a~n" (current-command-line-arguments))
+        (printf ";; ~a~n" (version))
         (write results))
       #:mode 'text
       #:exists 'replace))
