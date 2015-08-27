@@ -60,6 +60,11 @@ Benchmarks run on different-sized inputs
 - `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.
 - `moresecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
 
+Run on Racket 6.2.900.9
+- `st-with-more-adaptors-2015-08-25.rktd` Suffixtree, edited to have 2 adaptors instead of one data module.
+  Run on Desktop, single core, 30 iters
+
+
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
 We need to update them all.
 
