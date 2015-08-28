@@ -60,15 +60,6 @@ Run on Racket 6.2.
 - `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.
 - `moresecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
 
-###### Run on Racket 6.2.900.9
-- `adapt+suffixtree-2015-08-25.rktd` Suffixtree, edited to have 2 adaptors instead of one data module.
-  Run on Desktop, single core, 30 iters
-- `adapt+synth-2015-08-26.rktd` Synth, but without a data module. All structs defined in `array-structs.rkt`.
-  Run on Desktop, single core, 30 iters
-- `gregor2.rktd` Gregor, without `gregor-structs.rkt`. Uses multiple adaptors instead.
-  Run on Desktop, single core, 30 iters
-
-
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
 We need to update them all.
 
