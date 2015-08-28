@@ -1,6 +1,6 @@
 ;; tetris
 ;; ======
-;; Variation    Runtime (ms)    Overhead (X worse than untyped)   Compiles without adaptor? (1=Yes)
+;; Variation    Runtime (ms)    Overhead (vs. untyped)   Compiles without adaptor? (1=Yes)
 (
 (010100010   87645.97   117.28   1)
 (010000010   86114.23   115.23   1)

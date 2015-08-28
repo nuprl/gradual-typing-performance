@@ -1,6 +1,6 @@
 ;; lnm
 ;; ===
-;; Variation    Runtime (ms)    Overhead (X worse than untyped)   Compiles without adaptor? (1=Yes)
+;; Variation    Runtime (ms)    Overhead (vs. untyped)   Compiles without adaptor? (1=Yes)
 (
 (100100   49358.57   1.14   1)
 (100110   49153.47   1.13   1)

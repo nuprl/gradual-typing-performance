@@ -1,0 +1,34 @@
+tetris    010100010    87645.97ms    117.28x
+
+Running time is 93.54% contracts
+35275/37710 ms
+
+(-> any/c boolean?) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  block?
+  30043/2 ms
+
+(-> any/c Real) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  block-x
+  26687/2 ms
+  block-y
+  1543 ms
+
+(-> block? block? any) @ #(struct:srcloc block.rkt 35 1 1009 7)
+  block=?
+  10493/2 ms
+
+(-> Real Real block? any) @ #(struct:srcloc block.rkt 36 1 1018 10)
+  block-move
+  40 ms
+
+(-> any/c Symbol) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  block-color
+  30 ms
+
+(-> any/c any/c any/c block?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  block10
+  30 ms
+
+(-> any/c any/c tetra?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  tetra18
+  20 ms

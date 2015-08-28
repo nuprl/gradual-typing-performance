@@ -1,6 +1,6 @@
 ;; synth
 ;; =====
-;; Variation    Runtime (ms)    Overhead (X worse than untyped)   Compiles without adaptor? (1=Yes)
+;; Variation    Runtime (ms)    Overhead (vs. untyped)   Compiles without adaptor? (1=Yes)
 (
 (0010110111   22555.07   85.90   1)
 (0010100111   22215.63   84.61   1)

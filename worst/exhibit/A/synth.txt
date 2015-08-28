@@ -1,0 +1,52 @@
+synth    0010110111    22555.07ms    85.90x
+
+Running time is 81.95% contracts
+11004/13427 ms
+
+(-> (vectorof Integer) Integer (box/c (or/c #f #t)) (-> Void) (-> (vectorof Integer) Float) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/synth/benchmark/variation0010110111/data.rkt 8 10 127 5)
+  Array
+  5989/2 ms
+
+(-> Array? (-> (vectorof Integer) any)) @ #(struct:srcloc data.rkt 8 10 127 5)
+  Array-unsafe-proc
+  5805/2 ms
+
+(-> any/c (-> (vectorof Integer) Float)) @ #(struct:srcloc array-transform.rkt 10 3 216 17)
+  unsafe-array-proc
+  1803 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) any) Array?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/synth/benchmark/variation0010110111/mixer.rkt 13 3 363 18)
+  unsafe-build-array
+  1702 ms
+
+(-> (vectorof Integer) any/c (vectorof Integer) Void) @ #(struct:srcloc synth.rkt 15 3 280 13)
+  next-indexes!
+  1075 ms
+
+(-> (vectorof Natural) (-> (vectorof Integer) any) Array?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/synth/benchmark/variation0010110111/sequencer.rkt 7 3 121 11)
+  build-array
+  359/2 ms
+
+(-> Array? (vectorof Integer)) @ #(struct:srcloc data.rkt 8 10 127 5)
+  Array-shape
+  207/2 ms
+
+(-> Natural (listof (cons/c (or/c Natural #f) Natural)) Natural (-> any/c (-> (vectorof Integer) Float)) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/synth/benchmark/variation0010110111/sequencer.rkt 19 9 486 8)
+  sequence
+  141/2 ms
+
+(-> Float (-> (vectorof Integer) any)) @ #(struct:srcloc synth.rkt 5 2 42 13)
+  sawtooth-wave
+  143/2 ms
+
+(->* ((listof (vectorof Integer))) (any/c) (vectorof Integer)) @ #(struct:srcloc mixer.rkt 17 3 514 21)
+  array-shape-broadcast
+  103/2 ms
+
+(-> any/c (vectorof Integer)) @ #(struct:srcloc synth.rkt 19 3 467 11)
+  array-shape
+  40 ms
+
+(-> (vectorof Integer) Integer (box/c (or/c #f #t)) (-> Void) (-> (vectorof Integer) Float) (-> (vectorof Integer) any/c Void) (vectorof Float) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/synth/benchmark/variation0010110111/data.rkt 14 10 446 13)
+  Mutable-Array
+  10 ms

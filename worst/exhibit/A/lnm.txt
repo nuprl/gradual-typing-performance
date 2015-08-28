@@ -1,0 +1,20 @@
+lnm    100100    49358.57ms    1.14x
+
+Running time is 81.97% contracts
+47785/58296 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  mean
+  43175 ms
+
+(->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?)) @ #(struct:srcloc (lib pict/main.rkt) 40 3 1293 2)
+  dc
+  8759/2 ms
+
+(-> String any) @ #(struct:srcloc bitstring.rkt 6 2 65 18)
+  bitstring->natural
+  190 ms
+
+(-> String Index any) @ #(struct:srcloc bitstring.rkt 7 2 86 8)
+  in-reach
+  40 ms

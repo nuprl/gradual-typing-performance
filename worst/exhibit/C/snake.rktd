@@ -1,8 +1,7 @@
 ;; snake
 ;; =====
-;; Variation    Runtime (ms)    Overhead (X worse than untyped)   Compiles without adaptor? (1=Yes)
-main=51 -- motion=32 -- motion-help=22 -- cut-tail 12
-(  c  mhM
+;; Variation    Runtime (ms)    Overhead (vs. untyped)   Compiles without adaptor? (1=Yes)
+(
 (11001011   120666.70   121.51   0)
 (11100111   116057.43   116.87   0)
 (11101111   111178.73   111.96   0)

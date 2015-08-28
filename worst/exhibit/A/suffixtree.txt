@@ -1,0 +1,97 @@
+suffixtree    011110    274769.03ms    105.27x
+
+Running time is 92.18% contracts
+240211/260600 ms
+
+(-> any/c (vectorof (or/c Char Symbol))) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  label-datum
+  298495/2 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node?
+  32445/2 ms
+  label?
+  23861/2 ms
+  suffix-tree?
+  20 ms
+
+(-> any/c Natural) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  label-i
+  48671/2 ms
+  label-j
+  5921/2 ms
+
+(-> any/c label?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node-up-label
+  22449/2 ms
+
+(-> (vectorof (or/c Char Symbol)) any/c any/c label?) @ #(struct:srcloc typed-data.rkt 22 3 446 10)
+  make-label
+  10849 ms
+
+(-> any/c (listof node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node-children
+  11905/2 ms
+
+(-> any/c any/c Void) @ #(struct:srcloc typed-data.rkt 33 3 968 16)
+  set-node-children!
+  1471/2 ms
+  set-node-up-label!
+  443/2 ms
+  set-node-parent!
+  108 ms
+
+(-> any/c any/c any/c any/c node?) @ #(struct:srcloc typed-data.rkt 30 3 804 9)
+  make-node
+  963 ms
+  node14
+  10 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  label-length
+  1831/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  node-position-at-end?
+  1751/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  label-ref
+  1589/2 ms
+
+(-> any/c (or/c #f node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node-parent
+  710 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  node-find-child
+  1221/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  node-follow/k
+  496 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  sublabel
+  603/2 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  node-root?
+  423/2 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  node-add-leaf!
+  220 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  label-element-equal?
+  307/2 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  node-up-splice-leaf!
+  132 ms
+
+(-> any/c node?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  suffix-tree-root
+  10 ms
+
