@@ -54,16 +54,19 @@ Run on Racket 6.2.
 - `tetris-2015-06-30T14:53:37.rktd` Run on cluster, `-j 39`
 - `tetris-2015-07-01T16:39:46.rktd` Run on cluster, `-j 19`
 
-Benchmarks run on different-sized inputs
+###### Run on different-sized inputs
 - `synth-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
 - `kcfa-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a very small "standard example" test.
 - `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.
 - `moresecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
 
-Run on Racket 6.2.900.9
-- `st-with-more-adaptors-2015-08-25.rktd` Suffixtree, edited to have 2 adaptors instead of one data module.
+###### Run on Racket 6.2.900.9
+- `adapt+suffixtree-2015-08-25.rktd` Suffixtree, edited to have 2 adaptors instead of one data module.
   Run on Desktop, single core, 30 iters
-- `synth2.rktd` Synth, but without a data module. All structs defined in `array-structs.rkt`.
+- `adapt+synth-2015-08-26.rktd` Synth, but without a data module. All structs defined in `array-structs.rkt`.
+  Run on Desktop, single core, 30 iters
+- `gregor2.rktd` Gregor, without `gregor-structs.rkt`. Uses multiple adaptors instead.
+  Run on Desktop, single core, 30 iters
 
 
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
