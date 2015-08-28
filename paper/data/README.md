@@ -63,6 +63,7 @@ Benchmarks run on different-sized inputs
 Run on Racket 6.2.900.9
 - `st-with-more-adaptors-2015-08-25.rktd` Suffixtree, edited to have 2 adaptors instead of one data module.
   Run on Desktop, single core, 30 iters
+- `synth2.rktd` Synth, but without a data module. All structs defined in `array-structs.rkt`.
 
 
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
