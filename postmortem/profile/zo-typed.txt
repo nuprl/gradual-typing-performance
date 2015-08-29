@@ -1,0 +1,234 @@
+Running time is 93.93% contracts
+249693/265820 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  485895/2 ms
+
+(-> exported-nominal-module-binding? nominal-path?) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 246 21 14076 31)
+  6701/2 ms
+
+(-> any/c nominal-path?) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  1266 ms
+
+(-> any/c (listof (cons/c Symbol module-binding?))) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  1021 ms
+
+(-> module-rename? (listof (cons/c symbol? module-binding?))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 256 21 14901 13)
+  986 ms
+
+(-> lexical-rename? (listof (cons/c symbol? (or/c symbol? (cons/c symbol? (or/c (cons/c symbol? (or/c symbol? #f)) free-id-info?)))))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 206 21 11317 14)
+  57/2 ms
+
+(-> module-rename? (listof all-from-module?)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 256 21 14901 13)
+  20 ms
+
+(-> any/c (listof all-from-module?)) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  18 ms
+
+(-> application? (listof (or/c expr? seq? any/c))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 181 21 9499 11)
+  10 ms
+
+(-> def-syntaxes? (or/c toplevel? #f)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 116 21 4650 12)
+  10 ms
+
+(-> phased-module-binding? nominal-path?) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 241 21 13648 21)
+  10 ms
+
+(-> wrapped? (listof wrap?)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 75 20 2446 7)
+  15 ms
+
+(-> any/c (or/c #f toplevel?)) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  10 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  zo?
+  42071/2 ms
+  module-variable?
+  38589/2 ms
+  module-binding?
+  38279/2 ms
+  wrap?
+  17346 ms
+  free-id-info?
+  16918 ms
+  wrapped?
+  16239 ms
+  all-from-module?
+  32343/2 ms
+  compilation-top?
+  31805/2 ms
+  form?
+  15857 ms
+  prefix?
+  30923/2 ms
+  global-bucket?
+  30405/2 ms
+  simple-module-binding?
+  25249/2 ms
+  stx?
+  24989/2 ms
+  phased-module-binding?
+  8126 ms
+  exported-nominal-module-binding?
+  6513 ms
+  nominal-path?
+  9463/2 ms
+  simple-nominal-path?
+  8751/2 ms
+  expr?
+  8143/2 ms
+  seq-for-syntax?
+  279/2 ms
+  top-level-rename?
+  100 ms
+  seq?
+  90 ms
+  case-lam?
+  81 ms
+  let-one?
+  87 ms
+  module-rename?
+  143/2 ms
+  closure?
+  63 ms
+  splice?
+  127/2 ms
+  mark-barrier?
+  63 ms
+  lam?
+  65 ms
+  phase-shift?
+  119/2 ms
+  localref?
+  50 ms
+  let-rec?
+  97/2 ms
+  def-syntaxes?
+  53 ms
+  imported-nominal-path?
+  50 ms
+  let-void?
+  40 ms
+  boxenv?
+  45 ms
+  topsyntax?
+  42 ms
+  mod?
+  30 ms
+  provided?
+  30 ms
+  lexical-rename?
+  32 ms
+  install-value?
+  30 ms
+  req?
+  30 ms
+  inline-variant?
+  20 ms
+  def-values?
+  20 ms
+  phased-nominal-path?
+  43/2 ms
+  toplevel?
+  10 ms
+  exported-module-binding?
+  17/2 ms
+
+(-> exported-nominal-module-binding? nominal-path?) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 246 21 14076 31)
+  exported-nominal-module-binding-nominal-path
+  6701/2 ms
+
+(-> any/c nominal-path?) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  exported-nominal-module-binding-nominal-path
+  1256 ms
+  phased-module-binding-nominal-path
+  10 ms
+
+(-> any/c (listof (cons/c Symbol module-binding?))) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  module-rename-renames
+  1021 ms
+
+(-> module-rename? (listof (cons/c symbol? module-binding?))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 256 21 14901 13)
+  module-rename-renames
+  986 ms
+
+(-> lexical-rename? (listof (cons/c symbol? (or/c symbol? (cons/c symbol? (or/c (cons/c symbol? (or/c symbol? #f)) free-id-info?)))))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 206 21 11317 14)
+  lexical-rename-alist
+  57/2 ms
+
+(-> module-rename? (listof all-from-module?)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 256 21 14901 13)
+  module-rename-unmarshals
+  20 ms
+
+(-> any/c (listof all-from-module?)) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  module-rename-unmarshals
+  18 ms
+
+(-> application? (listof (or/c expr? seq? any/c))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 181 21 9499 11)
+  application-rands
+  10 ms
+
+(-> def-syntaxes? (or/c toplevel? #f)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 116 21 4650 12)
+  def-syntaxes-dummy
+  10 ms
+
+(-> phased-module-binding? nominal-path?) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 241 21 13648 21)
+  phased-module-binding-nominal-path
+  10 ms
+
+(-> wrapped? (listof wrap?)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 75 20 2446 7)
+  wrapped-wraps
+  15 ms
+
+(-> any/c (or/c #f toplevel?)) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  def-syntaxes-dummy
+  10 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  485895/2 ms
+
+(-> exported-nominal-module-binding? nominal-path?) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 246 21 14076 31)
+  6701/2 ms
+
+(-> any/c nominal-path?) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  1266 ms
+
+(-> any/c (listof (cons/c Symbol module-binding?))) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  1021 ms
+
+(-> module-rename? (listof (cons/c symbol? module-binding?))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 256 21 14901 13)
+  986 ms
+
+(-> lexical-rename? (listof (cons/c symbol? (or/c symbol? (cons/c symbol? (or/c (cons/c symbol? (or/c symbol? #f)) free-id-info?)))))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 206 21 11317 14)
+  57/2 ms
+
+(-> module-rename? (listof all-from-module?)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 256 21 14901 13)
+  20 ms
+
+(-> any/c (listof all-from-module?)) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  18 ms
+
+(-> application? (listof (or/c expr? seq? any/c))) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 181 21 9499 11)
+  10 ms
+
+(-> def-syntaxes? (or/c toplevel? #f)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 116 21 4650 12)
+  10 ms
+
+(-> phased-module-binding? nominal-path?) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 241 21 13648 21)
+  10 ms
+
+(-> wrapped? (listof wrap?)) @ #(struct:srcloc (lib compiler/zo-structs.rkt) 75 20 2446 7)
+  15 ms
+
+(-> any/c (or/c #f toplevel?)) @ #(struct:srcloc typed-zo-structs.rkt #f #f #f 0)
+  10 ms
+

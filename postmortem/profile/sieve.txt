@@ -1,0 +1,42 @@
+Running time is 95.15% contracts
+1943793/2042910 ms
+
+
+BY CONTRACT
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  2299911/2 ms
+
+(-> any/c boolean?) @ #(struct:srcloc main.rkt #f #f #f 0)
+  1103309/2 ms
+
+(-> any/c (values Natural stream?)) @ #(struct:srcloc main.rkt 12 3 351 13)
+  242183 ms
+
+
+BY CALLEE
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  make-stream
+  2299911/2 ms
+
+(-> any/c boolean?) @ #(struct:srcloc main.rkt #f #f #f 0)
+  stream?
+  1103309/2 ms
+
+(-> any/c (values Natural stream?)) @ #(struct:srcloc main.rkt 12 3 351 13)
+  stream-unfold
+  242183 ms
+
+
+BY CALLER
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  1304177/2 ms
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+  stream-unfold @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/streams.rkt 21 0 596 75)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+
+... truncated!

@@ -1,0 +1,36 @@
+digraph Profile {
+splines="true"
+subgraph cluster_1 {
+penwidth=3.0
+graph[shape="ellipse"]
+g234 [label="block-move\nblock.rkt:15:0\n61/2ms\n[3] @ bset.rkt : 70ms", style=filled, shape="box", fillcolor="1,0.004581301744167021,1"];
+g237 [label="block=?\nblock.rkt:10:0\n17223/2ms\n[5] @ bset.rkt : 5764ms", style=filled, shape="box", fillcolor="1,0.37723747504826727,1"];
+}
+subgraph cluster_2 {
+penwidth=3.0
+graph[shape="ellipse"]
+g235 [label="next-world\nworld.rkt:54:0\n30ms", style=filled];
+g241 [label="world-key-move\nworld.rkt:95:0\n0ms", style=filled];
+}
+subgraph cluster_3 {
+penwidth=3.0
+graph[shape="ellipse"]
+g236 [label="bset.rkt:71:9\n1621/2ms", style=filled];
+}
+g238 [label="posn?\n0ms\n[1] @ base-types.rkt : 10ms", style=filled, shape="box", fillcolor="1,0.0006544716777381459,1"];
+g239 [label="tetra?\n0ms\n[1] @ base-types.rkt : 10ms", style=filled, shape="box", fillcolor="1,0.0006544716777381459,1"];
+g240 [label="block-color\n0ms\n[6] @ base-types.rkt : 33/2ms", style=filled, shape="box", fillcolor="1,0.0010798782682679407,1"];
+g242 [label="block-y\n0ms\n[4] @ base-types.rkt : 3559/2ms", style=filled, shape="box", fillcolor="1,0.11646323505350305,1"];
+g244 [label="block-x\n0ms\n[4] @ base-types.rkt : 28465/2ms", style=filled, shape="box", fillcolor="1,0.9314768153408161,1"];
+g245 [label="tetra-blocks\n0ms\n[2] @ base-types.rkt : 20ms", style=filled, shape="box", fillcolor="1,0.0013089433554762918,1"];
+g246 [label="block?\n0ms\n[1] @ base-types.rkt : 30559/2ms", style=filled, shape="box", fillcolor="1,1.0,1"];
+g247 [label="block10\n0ms\n[0] @ base-types.rkt : 60ms", style=filled, shape="box", fillcolor="1,0.003926830066428875,1"];
+subgraph cluster_5 {
+penwidth=3.0
+graph[shape="ellipse"]
+g243 [label="tetra-overlaps-blocks?\ntetras.rkt:38:0\n0ms\n[7] @ world.rkt : 10ms", style=filled, shape="box", fillcolor="1,0.0006544716777381459,1"];
+}
+g236 -> g237;
+g241 -> g243;
+g235 -> g243;
+}

@@ -1,0 +1,60 @@
+Running time is 16.56% contracts
+53/320 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc typed/tzinfo-adapter.rkt #f #f #f 0)
+  43/2 ms
+
+(-> string? real? tzoffset?) @ #(struct:srcloc base/tzinfo/main.rkt 27 2 843 21)
+  10 ms
+
+(-> any/c Integer) @ #(struct:srcloc typed/tzinfo-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> (vectorof interval?) real? tzoffset?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/base/tzinfo/private/zoneinfo-search.rkt 8 2 118 15)
+  23/2 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc typed/tzinfo-adapter.rkt #f #f #f 0)
+  tzoffset?
+  43/2 ms
+
+(-> string? real? tzoffset?) @ #(struct:srcloc base/tzinfo/main.rkt 27 2 843 21)
+  utc-seconds->tzoffset
+  10 ms
+
+(-> any/c Integer) @ #(struct:srcloc typed/tzinfo-adapter.rkt #f #f #f 0)
+  tzoffset-utc-seconds
+  10 ms
+
+(-> (vectorof interval?) real? tzoffset?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/base/tzinfo/private/zoneinfo-search.rkt 8 2 118 15)
+  find-utc-offset
+  23/2 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc typed/tzinfo-adapter.rkt #f #f #f 0)
+  43/2 ms
+
+(-> string? real? tzoffset?) @ #(struct:srcloc base/tzinfo/main.rkt 27 2 843 21)
+  10 ms
+
+(-> any/c Integer) @ #(struct:srcloc typed/tzinfo-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> (vectorof interval?) real? tzoffset?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/base/tzinfo/private/zoneinfo-search.rkt 8 2 118 15)
+  find-utc-offset @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/base/tzinfo/private/zoneinfo-search.rkt 11 0 269 206)
+  #f @ #(struct:srcloc /home/ben/code/racket/fork/racket/collects/racket/contract/private/arrow-val-first.rkt 265 18 10916 32)
+  posix->moment @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/typed/moment.rkt 137 0 5311 317)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/typed/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/typed/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/typed/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/typed/main.rkt #f #f #f #f)
+  23/2 ms
+
