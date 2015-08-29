@@ -17,7 +17,8 @@ Meeting notes
 ####  Goals for next meeting
   * [ ] "Verify" contract overhead numbers by removing select contracts and
         checking runtime.
-  * [ ] See contract profiler accuracy. Also see if Racket HEAD improves it.
+  * [ ] See contract profiler accuracy.
+      ~~Also see if Racket HEAD improves it.~~ (bg: Things are ok on `v6.2.900.11`)
   * [ ] What's going on with profiling for, e.g., (listof ...) contracts?
   * [ ] Footnotes in paper about limitations/problems that ruled out some
         potential projects
