@@ -54,7 +54,7 @@ Run on Racket 6.2.
 - `tetris-2015-06-30T14:53:37.rktd` Run on cluster, `-j 39`
 - `tetris-2015-07-01T16:39:46.rktd` Run on cluster, `-j 19`
 
-Benchmarks run on different-sized inputs
+###### Run on different-sized inputs
 - `synth-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
 - `kcfa-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a very small "standard example" test.
 - `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.

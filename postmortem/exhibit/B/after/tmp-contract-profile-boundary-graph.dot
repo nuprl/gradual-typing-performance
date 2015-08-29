@@ -1,0 +1,4 @@
+digraph Profile {
+splines="true"
+g2892 [label="tetra-blocks\n0ms\n[0] @ base-types.rkt : 10ms", style=filled, shape="box", fillcolor="1,1.0,1"];
+}

@@ -171,6 +171,14 @@
   (stream-map (lambda ([n : Index]) (natural->bitstring n #:pad M))
               (in-range (get-num-variations sm))))
 
+;; This is a hack, until we have a REAL definition of variations that's
+;; parameterized by the Summary object.
+(: assert-variation-length (-> Summary String Void))
+(define (assert-variation-length S v)
+  (define N (get-num-modules S))
+  (unless (= N (string-length v))
+    (error 'assert-variation-length (format "Expected a variation with ~a modules, got '~a'" N v))))
+
 (: get-module-names (-> Summary (Listof String)))
 (define (get-module-names sm)
   (module-names (summary-modulegraph sm)))
@@ -194,22 +202,26 @@
 
 (: has-typed? (-> Summary String (Listof String) Boolean))
 (define (has-typed? S v names*)
+  (assert-variation-length S v)
   (for/and ([name (in-list names*)])
     (bit-high? v (name->index (summary-modulegraph S) name))))
 
 (: has-untyped? (-> Summary String (Listof String) Boolean))
 (define (has-untyped? S v names*)
+  (assert-variation-length S v)
   (for/and ([name (in-list names*)])
     (bit-low? v (name->index (summary-modulegraph S) name))))
 
 (: typed-modules (-> Summary String (Listof String)))
 (define (typed-modules S v)
+  (assert-variation-length S v)
   (for/list ([i (in-list (range (string-length v)))]
              #:when (bit-high? v i))
     (index->name (summary-modulegraph S) i)))
 
 (: untyped-modules (-> Summary String (Listof String)))
 (define (untyped-modules S v)
+  (assert-variation-length S v)
   (for/list ([i : Natural (in-list (range (string-length v)))]
              #:when (bit-low? v i))
     (index->name (summary-modulegraph S) i)))
@@ -238,8 +250,9 @@
   (mean (typed-runtimes sm)))
 
 (: variation->mean-runtime (-> Summary String Real))
-(define (variation->mean-runtime sm var)
-  (index->mean-runtime sm (bitstring->natural var)))
+(define (variation->mean-runtime S v)
+  (assert-variation-length S v) ;; Is this going to be expensive?
+  (index->mean-runtime S (bitstring->natural v)))
 
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime sm i)
