@@ -10,6 +10,7 @@
          racket/cmdline
          racket/date
          racket/draw
+         racket/future
          racket/match
          racket/port
          racket/system
@@ -201,6 +202,17 @@
                                 (date->string (current-date) #t)
                                 ".rktd")))
 
+  ;; Need at least 2 CPUs since our controller thread is pinned to core 0 and workers
+  ;; to cores 1 and above.
+  (when (< (processor-count) 2)
+    (raise-user-error
+      (string-append "Detected less than 2 CPUs. Please run this "
+                     "script on a machine/VM with at least 2 CPUs.")))
+  (when (< (processor-count) (add1 jobs))
+    (raise-user-error
+      (string-append "Too many jobs specified. Need at least as many "
+                     "processors as #jobs+1")))
+
   ;; Set the CPU affinity for this script to CPU0. Jobs spawned by this script run
   ;; using CPU1 and above.
   (system (format "taskset -pc 0 ~a" (getpid)))
@@ -212,8 +224,9 @@
   (when (and (not (only-compile?)) (output-path))
     (with-output-to-file (output-path)
       (λ ()
-        ;; first write a comment that encodes the commandline args
+        ;; first write a comment that encodes the commandline args / version
         (printf ";; ~a~n" (current-command-line-arguments))
+        (printf ";; ~a~n" (version))
         (write results))
       #:mode 'text
       #:exists 'replace))
