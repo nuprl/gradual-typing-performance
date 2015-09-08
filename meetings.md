@@ -22,3 +22,10 @@ Meeting notes
   * [ ] What's going on with profiling for, e.g., (listof ...) contracts?
   * [ ] Footnotes in paper about limitations/problems that ruled out some
         potential projects
+
+2015-09-08 (all NU authors present)
+-----------------------------------
+  * Discussed contract profiling accuracy, concluded that we should try
+    profiling with HEAD even if we're using 6.2 for the paper. If it's
+    better, we can also try backporting just the profiling improvements to 6.2.
+  * Will meet in 2 days when we have more results.
