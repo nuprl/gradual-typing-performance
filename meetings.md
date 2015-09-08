@@ -8,7 +8,7 @@ Meeting notes
     in predicate contracts, library contracts, & HOF contracts
 
 ####  Unresolved questions on numbers
-  * [ ] MBTA numbers are zero, need to run longer
+  * [X] MBTA numbers are zero, need to run longer
   * [ ] What is the % of "misc" other contracts made up of
   * [ ] What is the profiler measuring in the predicate cases?
         (probably the (-> any/c boolean?) contract and not the
