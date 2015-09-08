@@ -28,30 +28,32 @@
 
 (define manage (new manage%))
 
-(define (run-t [input-port (current-input-port)] [output-port (current-output-port)])
-  (thread 
-   (lambda ()
-     (parameterize ([current-input-port input-port]
-                    [current-output-port output-port])
-       (define next (read-line))
-       (unless (eof-object? next)
-         (cond
-           [(regexp-match PATH next)
-            => (lambda (x) (displayln (send manage find (second x) (third x))))]
-           [(regexp-match DISABLE next)
-            => (lambda (x) (status-check add-to-disabled (second x)))]
-           [(regexp-match ENABLE next)
-            => (lambda (x) (status-check remove-from-disabled (second x)))]
-           [else (displayln "message not understood")])
-         (displayln EOM)
-         (flush-output))))))
+(define (run-t next)
+    (cond
+      [(regexp-match PATH next)
+       => (lambda (x)
+       (define x2 (second x))
+       (define x3 (third x))
+       (unless (and x2 x3) (error 'run-t "invariat error"))
+       (send manage find x2 x3))]
+      [(regexp-match DISABLE next)
+       => (lambda (x)
+       (define x2 (second x))
+       (unless x2 (error 'run-t "invariants"))
+       (status-check add-to-disabled x2))]
+      [(regexp-match ENABLE next)
+       => (lambda (x)
+       (define x2 (second x))
+       (unless x2 (error 'run-t "invariants"))
+       (status-check remove-from-disabled x2))]
+      [else "message not understood"]))
 
 (define-syntax-rule
   (status-check remove-from-disabled enabled)
   (let ([status (send manage remove-from-disabled enabled)])
-    (if (boolean? status) 
-        (displayln DONE)
-        (displayln status))))
+    (if (boolean? status)
+        DONE
+        status)))
 
 ;; ---------------------------------------------------------------------------------------------------
 (module+ test

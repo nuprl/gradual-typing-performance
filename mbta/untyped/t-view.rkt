@@ -70,6 +70,7 @@
       (define from-station (send mbta-subways station from))
       (define to-station   (send mbta-subways station to))
       (cond
+        [(string=? from to) (format "Close your eyes and tap your heels three times. Open your eyes. You will be at ~a." to)]
         [(cons? from-station) (format CURRENT-LOCATION (string-join from-station))]
         [(cons? to-station)   (format DESTINATION (string-join to-station))]
         [(empty? from-station) (format CURRENT-LOCATION-0 from)]
