@@ -7,32 +7,17 @@
 (require (only-in racket/string string-join))
 (require/typed "run-t.rkt"
                [EOM String]
-               [run-t (-> Input-Port Output-Port Thread)])
+               [run-t (-> String String)])
 
+(: dat->station-names (-> Path-String (Listof String)))
+(define (dat->station-names fname)
+  (for/list ([line (in-list (file->lines fname))]
+             #:when (and (< 0 (string-length line))
+                         (not (eq? #\- (string-ref line 0)))))
+    (string-trim line)))
 
-(: stress-test (-> Natural Void))
-;; run the stress test n times
-(define (stress-test n)
-  (for ((_i (in-range n)))
-    (define-values (in out) (make-pipe))
-    (define-values (_in _out) (make-pipe))
-    (define c (make-custodian))
-    (parameterize ([current-custodian c])
-      (define (run-query str)
-        (run-t in _out)
-        (displayln str out)
-        (read-to EOM _in))
-      (begin
-        (assert (run-query (path "Airport" "Northeastern")) 14)
-        (assert (run-query (disable "Government")) 1)
-        (assert (run-query (path "Airport" "Northeastern")) 16)
-        (assert (run-query (enable "Government")) 1)
-        (assert (run-query (path "Airport" "Harvard Square")) 12)
-        (assert (run-query (disable "Park Street")) 1)
-        (assert (run-query (path "Northeastern" "Harvard Square")) 1) ;;impossible path
-        (assert (run-query (enable "Park Street")) 1)
-        (assert (run-query (path "Northeastern" "Harvard Square")) 12)))
-    (custodian-shutdown-all c)))
+(define BLUE-STATIONS (dat->station-names "../base/blue.dat"))
+(define GREEN-STATIONS (dat->station-names "../base/green.dat"))
 
 (: path (-> String String String))
 (define (path from to)
@@ -46,21 +31,37 @@
 (define (disable s)
   (format "disable ~a" s))
 
-(: assert (-> (Listof String) Natural Void))
-(define (assert result-list expected-length)
-  (define SEP "\n    ")
-  (unless (= (length result-list) expected-length)
-    (error (format "Expected ~a results, got ~a\nFull list:~a~a"
+(: assert (-> String Natural Void))
+(define (assert result expected-length)
+  (define num-result (length (string-split result "\n")))
+  (unless (= num-result expected-length)
+    (error (format "Expected ~a results, got ~a\nFull list:~a"
                    expected-length
-                   (length result-list)
-                   SEP
-                   (string-join result-list SEP)))))
+                   num-result
+                   result))))
 
-(: read-to (-> String Input-Port (Listof String)))
-(define (read-to x in-port)
-  (define next (read-line in-port))
-  (if (or (eof-object? next) (string=? x (string-trim next)))
-      '()
-      (cons next (read-to x in-port))))
+(: main (-> Void))
+;; run the stress test n times
+(define (main)
+  (: run-query (-> String String))
+  (define (run-query str)
+    (define r (run-t str))
+    (if r
+        r
+        (error 'main (format "run-t failed to respond to query ~e\n" str))))
+  (assert (run-query (path "Airport" "Northeastern")) 14)
+  (assert (run-query (disable "Government")) 1)
+  (assert (run-query (path "Airport" "Northeastern")) 16)
+  (assert (run-query (enable "Government")) 1)
+  (assert (run-query (path "Airport" "Harvard Square")) 12)
+  (assert (run-query (disable "Park Street")) 1)
+  (assert (run-query (path "Northeastern" "Harvard Square")) 1) ;;impossible path
+  (assert (run-query (enable "Park Street")) 1)
+  (assert (run-query (path "Northeastern" "Harvard Square")) 12)
+  ;; --
+  (for* ([s1 (in-list GREEN-STATIONS)] [s2 (in-list BLUE-STATIONS)])
+    (run-query (path s1 s2))))
 
-(time (stress-test 10))
+;(require/typed contract-profile [contract-profile-thunk (-> (-> Void) Void)])
+;(contract-profile-thunk main)
+(time (main))
