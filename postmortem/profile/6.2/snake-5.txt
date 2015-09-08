@@ -1,0 +1,224 @@
+Running time is 98.47% contracts
+34968/35513 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  16864 ms
+
+(-> any/c (cons/c posn? (listof posn?))) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  4718 ms
+
+(-> any/c Real) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  7519/2 ms
+
+(-> any/c snake?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  4509/2 ms
+
+(-> any/c posn?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  1234 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc motion.rkt 10 22 250 6)
+  1152 ms
+
+(-> any/c (listof posn?)) @ #(struct:srcloc motion-help.rkt 6 22 132 8)
+  1034 ms
+
+(-> any/c any/c posn?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  1911/2 ms
+
+(-> any/c any/c world?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  948 ms
+
+(-> any/c any/c snake?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  1827/2 ms
+
+(-> any/c (or/c up down left right)) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  731 ms
+
+(-> world? any) @ #(struct:srcloc motion.rkt 55 1 1634 12)
+  344 ms
+
+(-> world? String any) @ #(struct:srcloc handlers.rkt 26 1 911 10)
+  60 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  posn?
+  11555 ms
+  snake?
+  6133/2 ms
+  world?
+  4485/2 ms
+
+(-> any/c (cons/c posn? (listof posn?))) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  snake-segs
+  4718 ms
+
+(-> any/c Real) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  posn-x
+  5247/2 ms
+  posn-y
+  1136 ms
+
+(-> any/c snake?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  world-snake
+  4509/2 ms
+
+(-> any/c posn?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  world-food
+  1234 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc motion.rkt 10 22 250 6)
+  posn=?
+  1152 ms
+
+(-> any/c (listof posn?)) @ #(struct:srcloc motion-help.rkt 6 22 132 8)
+  cut-tail
+  1034 ms
+
+(-> any/c any/c posn?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  posn3
+  1911/2 ms
+
+(-> any/c any/c world?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  world17
+  948 ms
+
+(-> any/c any/c snake?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  snake10
+  1827/2 ms
+
+(-> any/c (or/c up down left right)) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  snake-dir
+  731 ms
+
+(-> world? any) @ #(struct:srcloc motion.rkt 55 1 1634 12)
+  game-over?
+  351/2 ms
+  world->world
+  337/2 ms
+
+(-> world? String any) @ #(struct:srcloc handlers.rkt 26 1 911 10)
+  handle-key
+  60 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  16864 ms
+
+(-> any/c (cons/c posn? (listof posn?))) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  4718 ms
+
+(-> any/c Real) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  7519/2 ms
+
+(-> any/c snake?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  4509/2 ms
+
+(-> any/c posn?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  1234 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc motion.rkt 10 22 250 6)
+  world->world @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/motion.rkt 22 0 640 157)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 33 9 771 54)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  539 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc motion.rkt 10 22 250 6)
+  973/2 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc collide.rkt 9 22 249 6)
+  snake-wall-collide? @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/collide.rkt 13 0 384 75)
+  game-over? @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/handlers.rkt 21 0 787 112)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 33 9 771 54)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  113/2 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc collide.rkt 9 22 249 6)
+  snake-self-collide? @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/collide.rkt 24 0 698 125)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 33 9 771 54)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  30 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc motion.rkt 10 22 250 6)
+  world-change-dir @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/motion.rkt 42 0 1232 112)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 33 9 771 54)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  20 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc collide.rkt 9 22 249 6)
+  snake-wall-collide? @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/collide.rkt 13 0 384 75)
+  game-over? @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/handlers.rkt 21 0 787 112)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 40 24 961 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c any/c (or/c #f #t)) @ #(struct:srcloc motion.rkt 10 22 250 6)
+  world->world @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/motion.rkt 22 0 640 157)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 40 24 961 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c (listof posn?)) @ #(struct:srcloc motion-help.rkt 6 22 132 8)
+  1569/2 ms
+
+(-> any/c (listof posn?)) @ #(struct:srcloc motion-help.rkt 6 22 132 8)
+  snake-slither @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/motion-help.rkt 20 0 712 200)
+  world->world @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/motion.rkt 22 0 640 157)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 33 9 771 54)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  499/2 ms
+
+(-> any/c any/c posn?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  1911/2 ms
+
+(-> any/c any/c world?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  948 ms
+
+(-> any/c any/c snake?) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  1827/2 ms
+
+(-> any/c (or/c up down left right)) @ #(struct:srcloc data-adaptor.rkt #f #f #f 0)
+  731 ms
+
+(-> world? any) @ #(struct:srcloc handlers.rkt 27 1 924 10)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 33 9 771 54)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  334 ms
+
+(-> world? any) @ #(struct:srcloc motion.rkt 55 1 1634 12)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 40 24 961 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  10 ms
+
+(-> world? String any) @ #(struct:srcloc handlers.rkt 26 1 911 10)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 10 2 142 341)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt 33 9 771 54)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/snake/benchmark/variation11001011/main.rkt #f #f #f #f)
+  60 ms
+

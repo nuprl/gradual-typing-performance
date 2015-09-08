@@ -1,0 +1,52 @@
+Running time is 88.94% contracts
+1624929/1827040 ms
+
+
+BY CONTRACT
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  1616817/2 ms
+
+(-> any/c (values Natural stream?)) @ #(struct:srcloc main.rkt 12 3 351 13)
+  414440 ms
+
+(-> any/c boolean?) @ #(struct:srcloc main.rkt #f #f #f 0)
+  402080 ms
+
+
+BY CALLEE
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  make-stream
+  1616817/2 ms
+
+(-> any/c (values Natural stream?)) @ #(struct:srcloc main.rkt 12 3 351 13)
+  stream-unfold
+  414440 ms
+
+(-> any/c boolean?) @ #(struct:srcloc main.rkt #f #f #f 0)
+  stream?
+  402080 ms
+
+
+BY CALLER
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  880267/2 ms
+
+(-> any/c (-> any) stream?) @ #(struct:srcloc main.rkt 11 3 303 11)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+  stream-unfold @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/streams.rkt 21 0 596 75)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+  stream-unfold @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/streams.rkt 21 0 596 75)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+  stream-unfold @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/streams.rkt 21 0 596 75)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+  stream-unfold @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/streams.rkt 21 0 596 75)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+  stream-unfold @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/streams.rkt 21 0 596 75)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+  stream-unfold @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/streams.rkt 21 0 596 75)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/sieve/benchmark/variation10/main.rkt 29 30 1065 23)
+
+...truncated!

@@ -1,0 +1,343 @@
+Running time is 80.36% contracts
+42488/52873 ms
+
+
+BY CONTRACT
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  37772 ms
+
+(->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?)) @ #(struct:srcloc (lib pict/main.rkt) 40 3 1293 2)
+  8867/2 ms
+
+(-> String any) @ #(struct:srcloc bitstring.rkt 6 2 65 18)
+  427/2 ms
+
+(-> String Index any) @ #(struct:srcloc bitstring.rkt 7 2 86 8)
+  67/2 ms
+
+(-> Index #:pad Index any) @ #(struct:srcloc bitstring.rkt 5 2 44 18)
+  10 ms
+
+(-> (-> any/c any/c (listof pre-tick?)) (-> any/c any/c any/c (listof String)) any) @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/ticks.rkt 34 8 1001 5)
+  15 ms
+
+(->*m (string?) ((or/c (is-a?/c font%) #f) any/c exact-nonnegative-integer?) (values (and/c real? (not/c negative?)) (and/c real? (not/c negative?)) (and/c real? (not/c negative?)) (and/c real? (not/c negative?)))) @ #(struct:srcloc #<blame> #f #f #f #f)
+  10 ms
+
+
+BY CALLEE
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  mean
+  37772 ms
+
+(->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?)) @ #(struct:srcloc (lib pict/main.rkt) 40 3 1293 2)
+  dc
+  8867/2 ms
+
+(-> String any) @ #(struct:srcloc bitstring.rkt 6 2 65 18)
+  bitstring->natural
+  427/2 ms
+
+(-> String Index any) @ #(struct:srcloc bitstring.rkt 7 2 86 8)
+  in-reach
+  67/2 ms
+
+(-> Index #:pad Index any) @ #(struct:srcloc bitstring.rkt 5 2 44 18)
+  natural->bitstring
+  10 ms
+
+(-> (-> any/c any/c (listof pre-tick?)) (-> any/c any/c any/c (listof String)) any) @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/ticks.rkt 34 8 1001 5)
+  ticks
+  15 ms
+
+(->*m (string?) ((or/c (is-a?/c font%) #f) any/c exact-nonnegative-integer?) (values (and/c real? (not/c negative?)) (and/c real? (not/c negative?)) (and/c real? (not/c negative?)) (and/c real? (not/c negative?)))) @ #(struct:srcloc #<blame> #f #f #f #f)
+  get-text-extent
+  10 ms
+
+
+BY CALLER
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  74345/2 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 123 4 4528 118)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  165 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 123 4 4528 118)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 156 9 6002 99)
+  cache-lookup @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 145 0 5556 548)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 146 19 6605 504)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 141 15 6380 871)
+  hash-ref! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/more-scheme.rkt 370 13 12696 455)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 69 5 3197 389)
+  plot-area @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 64 0 3072 659)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  80 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 123 4 4528 118)
+  not-f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 160 16 6158 24)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  stream-filter @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 150 0 4793 858)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 62 2 1656 32)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 136 2 5120 291)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  163/2 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 122 2 4510 137)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 156 9 6002 99)
+  cache-lookup @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 145 0 5556 548)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 146 19 6605 504)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 141 15 6380 871)
+  hash-ref! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/more-scheme.rkt 370 13 12696 455)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 69 5 3197 389)
+  plot-area @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 64 0 3072 659)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  60 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 123 4 4528 118)
+  not-f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 160 16 6158 24)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  50 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 123 4 4528 118)
+  not-f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 160 16 6158 24)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 62 2 1656 32)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 136 2 5120 291)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  43 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 122 2 4510 137)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  40 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 123 4 4528 118)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 62 2 1656 32)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 136 2 5120 291)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  32 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 122 2 4510 137)
+  not-f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 160 16 6158 24)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 62 2 1656 32)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 136 2 5120 291)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  22 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  variation->mean-runtime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 157 0 5482 93)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 122 2 4510 137)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 62 2 1656 32)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 136 2 5120 291)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  18 ms
+
+(->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any) @ #(struct:srcloc (lib math/private/statistics/expected-values.rkt) 7 9 120 4)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/summary.rkt 119 14 4435 43)
+  stream-force @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/stream-cons.rkt 42 0 1838 1362)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  8 ms
+
+(->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?)) @ #(struct:srcloc (lib pict/main.rkt) 40 3 1293 2)
+  8867/2 ms
+
+(-> String any) @ #(struct:srcloc bitstring.rkt 6 2 65 18)
+  427/2 ms
+
+(-> String Index any) @ #(struct:srcloc bitstring.rkt 7 2 86 8)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 122 2 4510 137)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 156 9 6002 99)
+  cache-lookup @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 145 0 5556 548)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 146 19 6605 504)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 141 15 6380 871)
+  hash-ref! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/more-scheme.rkt 370 13 12696 455)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 69 5 3197 389)
+  plot-area @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 64 0 3072 659)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  12 ms
+
+(-> String Index any) @ #(struct:srcloc bitstring.rkt 7 2 86 8)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 123 4 4528 118)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 156 9 6002 99)
+  cache-lookup @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 145 0 5556 548)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 146 19 6605 504)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/sample.rkt 141 15 6380 871)
+  hash-ref! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/more-scheme.rkt 370 13 12696 455)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 69 5 3197 389)
+  plot-area @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/no-gui/plot2d-utils.rkt 64 0 3072 659)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  10 ms
+
+(-> String Index any) @ #(struct:srcloc bitstring.rkt 7 2 86 8)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 122 2 4510 137)
+  loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 162 10 5163 311)
+  force! @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 160 6 5114 388)
+  #f @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 172 22 5525 27)
+  unsafe-stream-not-empty? @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/private/for.rkt 423 2 17506 149)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 62 2 1656 32)
+  stream->list @ #(struct:srcloc /home/ben/code/racket/6.2/collects/racket/stream.rkt 61 0 1629 60)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 136 2 5120 291)
+  cache-init39 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 131 0 4825 587)
+  count-variations25 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 106 0 3771 498)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 86 4 2959 566)
+  lnm-plot18 @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/lnm-plot.rkt 52 0 1154 2373)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt 38 24 1278 45)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/lnm/benchmark/variation100100/main.rkt #f #f #f #f)
+  23/2 ms
+
+(-> Index #:pad Index any) @ #(struct:srcloc bitstring.rkt 5 2 44 18)
+  10 ms
+
+(-> (-> any/c any/c (listof pre-tick?)) (-> any/c any/c any/c (listof String)) any) @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/plot-lib/plot/private/common/ticks.rkt 34 8 1001 5)
+  15 ms
+
+(->*m (string?) ((or/c (is-a?/c font%) #f) any/c exact-nonnegative-integer?) (values (and/c real? (not/c negative?)) (and/c real? (not/c negative?)) (and/c real? (not/c negative?)) (and/c real? (not/c negative?)))) @ #(struct:srcloc #<blame> #f #f #f #f)
+  10 ms
+

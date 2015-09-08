@@ -1,0 +1,351 @@
+Running time is 86.3% contracts
+999/1157 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  230 ms
+
+(-> any/c any/c any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  253/2 ms
+
+(-> any/c Rational) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  108 ms
+
+(-> any/c Integer) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  131/2 ms
+
+(-> any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  40 ms
+
+(-> any/c any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  40 ms
+
+(-> any/c any/c any/c YMD?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  30 ms
+
+(-> string? real? tzoffset?) @ #(struct:srcloc base/tzinfo/main.rkt 27 2 843 21)
+  30 ms
+
+(-> any/c YMD?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  63/2 ms
+
+(-> any/c Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 30 5 688 12)
+  32 ms
+
+(-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12)) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  35 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 48 1 1530 12)
+  32 ms
+
+(-> any/c Natural) @ #(struct:srcloc variation0011001101001/datetime.rkt 29 5 655 8)
+  30 ms
+
+(->* (any/c) (any/c any/c any/c) Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 31 5 725 9)
+  22 ms
+
+(-> any/c any/c any/c any/c HMSN?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  21 ms
+
+(-> any/c any/c Integer) @ #(struct:srcloc variation0011001101001/main.rkt 48 5 1702 21)
+  47/2 ms
+
+(-> HMSN? any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 15 1 185 12)
+  20 ms
+
+(-> any/c any/c any/c Moment?) @ #(struct:srcloc variation0011001101001/moment.rkt 26 5 728 11)
+  25 ms
+
+(-> any/c (or/c #f String)) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c any/c tzoffset?) @ #(struct:srcloc variation0011001101001/tzinfo-adapter.rkt 16 3 599 21)
+  8 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any) @ #(struct:srcloc variation0011001101001/datetime.rkt 38 1 924 8)
+  10 ms
+
+(-> DateTime? DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 57 1 2038 10)
+  17/2 ms
+
+(-> Natural any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 16 1 199 12)
+  10 ms
+
+(-> any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  DateTime?
+  183/2 ms
+  Time?
+  77/2 ms
+  YMD?
+  30 ms
+  HMSN?
+  25 ms
+  tzoffset?
+  20 ms
+  Date?
+  25 ms
+
+(-> any/c any/c any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  DateTime17
+  253/2 ms
+
+(-> any/c Rational) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  DateTime-jd
+  108 ms
+
+(-> any/c Integer) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  Date-jdn
+  20 ms
+  HMSN-m
+  22 ms
+  HMSN-s
+  12 ms
+  HMSN-n
+  23/2 ms
+
+(-> any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Moment-datetime/local
+  40 ms
+
+(-> any/c any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Date3
+  40 ms
+
+(-> any/c any/c any/c YMD?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  YMD3
+  30 ms
+
+(-> string? real? tzoffset?) @ #(struct:srcloc base/tzinfo/main.rkt 27 2 843 21)
+  utc-seconds->tzoffset
+  30 ms
+
+(-> any/c YMD?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Date-ymd
+  63/2 ms
+
+(-> any/c Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 30 5 688 12)
+  day-ns->time
+  47/2 ms
+  DateTime-time
+  17/2 ms
+
+(-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12)) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  YMD-m
+  35 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 48 1 1530 12)
+  datetime->jd
+  20 ms
+  datetime->date
+  12 ms
+
+(-> any/c Natural) @ #(struct:srcloc variation0011001101001/datetime.rkt 29 5 655 8)
+  YMD-d
+  20 ms
+  time->ns
+  10 ms
+
+(->* (any/c) (any/c any/c any/c) Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 31 5 725 9)
+  make-time
+  22 ms
+
+(-> any/c any/c any/c any/c HMSN?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  HMSN11
+  21 ms
+
+(-> any/c any/c Integer) @ #(struct:srcloc variation0011001101001/main.rkt 48 5 1702 21)
+  datetime-nanoseconds-between
+  27/2 ms
+  datetime-days-between
+  10 ms
+
+(-> HMSN? any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 15 1 185 12)
+  hmsn->day-ns
+  20 ms
+
+(-> any/c any/c any/c Moment?) @ #(struct:srcloc variation0011001101001/moment.rkt 26 5 728 11)
+  make-moment
+  25 ms
+
+(-> any/c (or/c #f String)) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Moment-zone
+  10 ms
+
+(-> any/c any/c tzoffset?) @ #(struct:srcloc variation0011001101001/tzinfo-adapter.rkt 16 3 599 21)
+  utc-seconds->tzoffset
+  8 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any) @ #(struct:srcloc variation0011001101001/datetime.rkt 38 1 924 8)
+  datetime
+  10 ms
+
+(-> DateTime? DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 57 1 2038 10)
+  datetime<?
+  17/2 ms
+
+(-> Natural any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 16 1 199 12)
+  day-ns->hmsn
+  10 ms
+
+(-> any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  DateTime-date
+  10 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  230 ms
+
+(-> any/c any/c any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  253/2 ms
+
+(-> any/c Rational) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  108 ms
+
+(-> any/c Integer) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  131/2 ms
+
+(-> any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  40 ms
+
+(-> any/c any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  40 ms
+
+(-> any/c any/c any/c YMD?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  30 ms
+
+(-> string? real? tzoffset?) @ #(struct:srcloc base/tzinfo/main.rkt 27 2 843 21)
+  30 ms
+
+(-> any/c YMD?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  63/2 ms
+
+(-> any/c Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 30 5 688 12)
+  37/2 ms
+
+(-> any/c Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 30 5 688 12)
+  datetime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/datetime.rkt 106 0 3612 187)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 174 24 7030 24)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  27/2 ms
+
+(-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12)) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  35 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 46 1 1432 14)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  12 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 48 1 1530 12)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  10 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 48 1 1530 12)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 174 24 7030 24)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c Natural) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  20 ms
+
+(-> any/c Natural) @ #(struct:srcloc variation0011001101001/datetime.rkt 29 5 655 8)
+  posix->datetime @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/datetime.rkt 92 0 3138 84)
+  posix->moment @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/moment.rkt 137 0 5311 317)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 174 24 7030 24)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt #f #f #f #f)
+  10 ms
+
+(->* (any/c) (any/c any/c any/c) Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 31 5 725 9)
+  22 ms
+
+(-> any/c any/c any/c any/c HMSN?) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  21 ms
+
+(-> any/c any/c Integer) @ #(struct:srcloc variation0011001101001/main.rkt 49 5 1761 28)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  27/2 ms
+
+(-> any/c any/c Integer) @ #(struct:srcloc variation0011001101001/main.rkt 48 5 1702 21)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  10 ms
+
+(-> HMSN? any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 15 1 185 12)
+  20 ms
+
+(-> any/c any/c any/c Moment?) @ #(struct:srcloc variation0011001101001/moment.rkt 26 5 728 11)
+  posix->moment @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/moment.rkt 137 0 5311 317)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c any/c any/c Moment?) @ #(struct:srcloc variation0011001101001/moment.rkt 26 5 728 11)
+  15 ms
+
+(-> any/c (or/c #f String)) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c any/c tzoffset?) @ #(struct:srcloc variation0011001101001/tzinfo-adapter.rkt 16 3 599 21)
+  8 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any) @ #(struct:srcloc variation0011001101001/datetime.rkt 38 1 924 8)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt #f #f #f #f)
+  10 ms
+
+(-> DateTime? DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 57 1 2038 10)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  datetime-months-between @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/difference.rkt 43 0 1229 1090)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 150 2 6339 300)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt #f #f #f #f)
+  17/2 ms
+
+(-> Natural any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 16 1 199 12)
+  10 ms
+
+(-> any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+

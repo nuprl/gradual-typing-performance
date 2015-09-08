@@ -1,0 +1,166 @@
+Running time is 91.27% contracts
+439615/481686 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc structs-adapted.rkt #f #f #f 0)
+  273331/2 ms
+
+(-> (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt 22 4 513 10)
+  167171/2 ms
+
+(-> any/c (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  117881/2 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c any/c (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt 21 4 444 13)
+  62154 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c (set/c Closure?)) @ #(struct:srcloc denotable-adapted.rkt 19 4 350 12)
+  53100 ms
+
+(-> any/c (hash/c Symbol Binding?) (hash/c Binding? (set/c Closure?)) any/c State?) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  40347 ms
+
+(-> any/c (listof Symbol)) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  4294 ms
+
+(-> (hash/c Symbol Binding?) any/c any/c (hash/c Symbol Binding?)) @ #(struct:srcloc benv-adapted.rkt 18 3 325 12)
+  287/2 ms
+
+(-> any/c (hash/c Symbol Binding?)) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  116 ms
+
+(-> (hash/c Symbol Binding?) any/c Binding?) @ #(struct:srcloc benv-adapted.rkt 16 3 250 11)
+  120 ms
+
+(-> any/c (hash/c Symbol Binding?) Closure?) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  159/2 ms
+
+(-> any/c (-> any/c Binding?)) @ #(struct:srcloc time-adapted.rkt 13 3 210 5)
+  63/2 ms
+
+(-> any/c (or/c exp? Ref? Lam? Call?)) @ #(struct:srcloc structs-adapted.rkt #f #f #f 0)
+  53/2 ms
+
+(-> any/c Lam?) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  23/2 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc structs-adapted.rkt #f #f #f 0)
+  Binding?
+  69250 ms
+  Closure?
+  67331 ms
+  Lam?
+  38 ms
+  Call?
+  43/2 ms
+  Ref?
+  15 ms
+  exp?
+  10 ms
+
+(-> (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt 22 4 513 10)
+  store-join
+  167171/2 ms
+
+(-> any/c (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  State-store
+  117881/2 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c any/c (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt 21 4 444 13)
+  store-update*
+  62154 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c (set/c Closure?)) @ #(struct:srcloc denotable-adapted.rkt 19 4 350 12)
+  store-lookup
+  53100 ms
+
+(-> any/c (hash/c Symbol Binding?) (hash/c Binding? (set/c Closure?)) any/c State?) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  State3
+  40347 ms
+
+(-> any/c (listof Symbol)) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  State-time
+  4294 ms
+
+(-> (hash/c Symbol Binding?) any/c any/c (hash/c Symbol Binding?)) @ #(struct:srcloc benv-adapted.rkt 18 3 325 12)
+  benv-extend*
+  287/2 ms
+
+(-> any/c (hash/c Symbol Binding?)) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  Closure-benv
+  96 ms
+  State-benv
+  20 ms
+
+(-> (hash/c Symbol Binding?) any/c Binding?) @ #(struct:srcloc benv-adapted.rkt 16 3 250 11)
+  benv-lookup
+  120 ms
+
+(-> any/c (hash/c Symbol Binding?) Closure?) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  Closure3
+  159/2 ms
+
+(-> any/c (-> any/c Binding?)) @ #(struct:srcloc time-adapted.rkt 13 3 210 5)
+  alloc
+  63/2 ms
+
+(-> any/c (or/c exp? Ref? Lam? Call?)) @ #(struct:srcloc structs-adapted.rkt #f #f #f 0)
+  Call-fun
+  33/2 ms
+  Lam-call
+  10 ms
+
+(-> any/c Lam?) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  Closure-lam
+  23/2 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc structs-adapted.rkt #f #f #f 0)
+  273331/2 ms
+
+(-> (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt 22 4 513 10)
+  167171/2 ms
+
+(-> any/c (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  117881/2 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c any/c (hash/c Binding? (set/c Closure?))) @ #(struct:srcloc denotable-adapted.rkt 21 4 444 13)
+  62154 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c (set/c Closure?)) @ #(struct:srcloc denotable-adapted.rkt 19 4 350 12)
+  53100 ms
+
+(-> any/c (hash/c Symbol Binding?) (hash/c Binding? (set/c Closure?)) any/c State?) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  40347 ms
+
+(-> any/c (listof Symbol)) @ #(struct:srcloc denotable-adapted.rkt #f #f #f 0)
+  4294 ms
+
+(-> (hash/c Symbol Binding?) any/c any/c (hash/c Symbol Binding?)) @ #(struct:srcloc benv-adapted.rkt 18 3 325 12)
+  287/2 ms
+
+(-> any/c (hash/c Symbol Binding?)) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  116 ms
+
+(-> (hash/c Symbol Binding?) any/c Binding?) @ #(struct:srcloc benv-adapted.rkt 16 3 250 11)
+  120 ms
+
+(-> any/c (hash/c Symbol Binding?) Closure?) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  159/2 ms
+
+(-> any/c (-> any/c Binding?)) @ #(struct:srcloc time-adapted.rkt 13 3 210 5)
+  63/2 ms
+
+(-> any/c (or/c exp? Ref? Lam? Call?)) @ #(struct:srcloc structs-adapted.rkt #f #f #f 0)
+  53/2 ms
+
+(-> any/c Lam?) @ #(struct:srcloc benv-adapted.rkt #f #f #f 0)
+  23/2 ms
+
