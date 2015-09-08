@@ -11,7 +11,7 @@
   [GREGOR-DATA     "./data/gregor-2015-07-26T05:27:18.rktd"]
   [KCFA-DATA       "./data/kcfa-2015-06-25T13:48:52.rktd"]
   [LNM-DATA        "./data/lnm-large-06-28.rktd"]
-  [MBTA-DATA       "./data/mbta-04-25.rktd"]
+  [MBTA-DATA       "./data/mbta-2015-09-07T23:17:52.rktd"]
   [MORSECODE-DATA  "./data/morsecode-large-06-27.rktd"]
   [QUAD-DATA       "./data/quad-galicia-07-26.rktd"]
   [SIEVE-DATA      "./data/sieve-2015-06-28T14:08:55.rktd"]
