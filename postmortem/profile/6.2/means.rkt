@@ -3,12 +3,13 @@
 (require glob math/statistics racket/format)
 
 (define NAME* (map symbol->string '(
-gregor
+;gregor
 ;kcfa
 ;lnm
 ;mbta
-morse-code
+;morse-code
 ;quad
+sieve
 ;snake
 ;suffixtree
 ;synth

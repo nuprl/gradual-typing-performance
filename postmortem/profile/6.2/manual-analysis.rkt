@@ -1,5 +1,10 @@
 #lang racket/base
 
+(require math/statistics racket/format)
+
+(define (rnd n)
+  (~r n #:precision '(= 2)))
+
 ;Average contract runtime, over 10 runs of the profiler.
 ;
 ;|------------+----------+------|
@@ -134,11 +139,30 @@
 '((B 479070 484310 483377 477380 486550 464933 474724 470260 472970 467964)
   (P 193655 390503/2 395779/2 395661/2 199348 191646 193949 386459/2 192409 380069/2)
   (H)
-  (L (201307 202788 410751/2 205207 206971 199541 402729/2 400233/2 199687 394737/2)))
+  (L 201307 202788 410751/2 205207 206971 199541 402729/2 400233/2 199687 394737/2)))
 
+(define (check-tags dat n)
+  (for ([v* (in-list dat)]
+        [tag (in-list '(B P H L))])
+    (unless (eq? (car v*) tag)
+      (error 'check-tags (format "Failure, tag ~a on index ~a" tag n)))))
+
+(define (v*->str v* full*)
+  (cond [(not (null? v*))
+         (define p* (for/list ([v (in-list v*)] [f (in-list full*)])
+                      (* 100 (if (list? v)
+                          (/ (apply + v) f)
+                          (/ v f)))))
+         (define m  (mean p*))
+         (define s  (stddev/mean m p*))
+         (format "~a (~a)" (rnd m) (rnd s))]
+        [else
+         ""]))
 
 (module+ main
-  (for ([dat (in-list gregor
+  (for ([n (in-naturals)]
+        [dat (in-list (list
+                      gregor
                       kcfa
                       lnm
                       mbta
@@ -149,11 +173,13 @@
                       suffixtree
                       synth
                       tetris
-                      zordoz)])
+                      zordoz))])
+    (check-tags dat n)
     (define full-time* (cdr (car dat)))
     (define pred-time* (cdr (cadr dat)))
     (define high-time* (cdr (caddr dat)))
     (define libr-time* (cdr (cadddr dat)))
-    (when 
-    TODO))
-
+    (printf " ~a | ~a | ~a |\n"
+            (v*->str pred-time* full-time*)
+            (v*->str high-time* full-time*)
+            (v*->str libr-time* full-time*))))
