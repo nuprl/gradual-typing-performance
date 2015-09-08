@@ -99,3 +99,59 @@ Fourth, we state our judgment with respect to the current implementation
  can reduce the significant overhead that our evaluation
  shows. Nevertheless, we are convinced that even if the magnitude of the
  slowdowns are reduced, some pathologies will remain.
+
+@; -----------------------------------------------------------------------------
+@section{Postmortem}
+
+The future of sound gradual typing hinges on whether the run-time cost of
+type soundness can be reduced.
+As a preliminary step towards this goal, we have used St. Amour @etal's
+feature-specific-profiler @~cite[saf-cc-2015] to measure the contract
+overhead of each benchmark's slowest variation.
+@Figure-ref{fig:postmortem} summarizes our findings.
+
+@figure*["fig:postmortem" "Profiling the worst-case contract overhead"
+@exact|{
+\begin{tabular}{l r r r r}
+Project name & Contract Overhead (\%) & Std. Error & \% \tt{(Any -> Boolean)} & \% Higher Order & \% Library \\
+\tt{sieve}        & TODO  & TODO & 59.16 & 28.38 \\
+\tt{morse-code}   & 33.64 & 2.90 & TODO & TODO \\
+\tt{mbta}         & 39.67 & 4.31
+\tt{zo-traversal} & 94.59 & 0.10
+\tt{suffixtree}   & 93.53 & 0.18
+\tt{lnm}          & 81.19 & 0.73
+\tt{kcfa}         & 91.38 & 0.25
+\tt{snake}        & 98.28 & 0.2
+\tt{tetris}       & 95.67 & 0.35
+\tt{synth}        & 82.70 & 1.22
+\tt{gregor}       & 82.24 & 2.81
+\tt{quad}         & 80.42 & 0.96
+\bottomrule
+\end{tabular}
+}|
+]
+
+The first data column, ``Contract Overhead'', gives the percent of each project's
+worst-case running time that was spent checking contracts.
+For example, our sampling profiler estimates that approximately 80\% of \tt{quad}'s worst-case running time was spent checking contracts.
+These proportions are the average of 10 runs of the sampling profiler, and the
+Std. Dev. column confirms there was relatively little variability in the
+time spent checking contracts.
+
+The last three columns attempt to pinpoint the most expensive contracts.
+Each column is a percentage of the Contract Overhead number.
+The first, \tt{(Any -> Boolean)}, gives the percent of contract runtime
+spent checking that untyped predicate functions truly return boolean values.
+Despite being a simple contract, it was run very frequently.
+Second, we give the percent of contract runtime spent verifying higher-order
+contracts (i.e., function contracts with a nested function in a negative position).
+These too account for a large chunk of the overhead.
+Finally, the ``Library'' column tallies the overhead of boundaries to
+third-party libraries.
+Note that these last two columns are overlapping; in particular \tt{lnm}
+uses a higher-order contract from the Racket's typed plotting library.
+
+These numbers are surprising.
+To verify these numbers we did TODO.
+
+TODO lessons
