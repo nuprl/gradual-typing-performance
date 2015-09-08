@@ -157,10 +157,14 @@ correct answer. Our benchmark tests generating morse code strings and running th
 Levenshtein algorithm on a list of frequently-used English words.
 
 @parag{MBTA}
-The @tt{mbta} program implements a server that asynchronously responds to
-path queries about a graph representation of Boston's public transit system.
-The graph representation is implemented using a third-party, untyped library.
-The latter introduces a typed-untyped boundary even in the ``completely typed'' case.
+The @tt{mbta} program builds a representation of Boston's public transit system
+and answers reachability queries.
+Its relies on an untyped graph library.
+
+Notably, the original program was implemented with a server thread that
+responded to queries asynchronously.
+We instead measured a synchronous version of the program to ensure compatibility
+with Racket's stack-based profiling tools.
 
 @parag{ZO Traversal}
 The @tt{zo-traversal} script provides a tool for exploring Racket bytecode structures
