@@ -107,40 +107,42 @@ The future of sound gradual typing hinges on whether the run-time cost of
 type soundness can be reduced.
 As a preliminary step towards this goal, we have used St. Amour @etal's
 feature-specific-profiler @~cite[saf-cc-2015] to measure the contract
-overhead of each benchmark's slowest variation.
+overhead of each benchmark's slowest variation.@note{Sampling frequency: 0.005s.}
 @Figure-ref{fig:postmortem} summarizes our findings.
+
 
 @figure*["fig:postmortem" "Profiling the worst-case contract overhead"
 @exact|{
 \begin{tabular}{l r r r r}
-Project name & Contract Overhead (\%) & Std. Error & \% \tt{(Any -> Boolean)} & \% Higher Order & \% Library \\
-\tt{sieve}        & TODO  & TODO & 59.16 & 28.38 \\
-\tt{morse-code}   & 33.64 & 2.90 & TODO & TODO \\
-\tt{mbta}         & 39.67 & 4.31
-\tt{zo-traversal} & 94.59 & 0.10
-\tt{suffixtree}   & 93.53 & 0.18
-\tt{lnm}          & 81.19 & 0.73
-\tt{kcfa}         & 91.38 & 0.25
-\tt{snake}        & 98.28 & 0.2
-\tt{tetris}       & 95.67 & 0.35
-\tt{synth}        & 82.70 & 1.22
-\tt{gregor}       & 82.24 & 2.81
-\tt{quad}         & 80.42 & 0.96
+Project name & Contract Overhead & \tt{(Any -> Boolean)} & Higher Order & Library \\
+\tt{sieve*}        & 91.93   (2.33) & 22.31 (6.87)  & 44.49 (3.43) & 0 \\
+\tt{morse-code}   & 33.64 (2.90) & 0            & 0            & 0 \\
+\tt{mbta}         & 39.67 (4.31) & 0            & 0            & 25.37 (3.08) \\
+\tt{zo-traversal} & 94.59 (0.10) & 40.85 (0.33) & 0            & 42.42 (0.34) \\
+\tt{suffixtree}   & 93.53 (0.18) & 16.41 (0.19) & 0.22 (0.03)  & 0 \\
+\tt{lnm}          & 81.19 (0.73) & 0            & 7.60 (0.52)  & 80.51 (0.73) \\
+\tt{kcfa}         & 91.38 (0.25) & 28.34 (0.35) & 0            & 0 \\
+\tt{snake}        & 98.28 (0.2)  & 48.08 (0.85) & 0            & 0 \\
+\tt{tetris}       & 95.67 (0.35) & 42.33 (0.61) & 0            & 0 \\
+\tt{synth}        & 82.70 (1.22) & 0            & 40.07 (1.25) & 0 \\
+\tt{gregor}       & 82.24 (2.81) & 25.57 (7.07) & 0            & 3.92 (1.56) \\
+\tt{quad}         & 80.42 (0.96) & 0.11 (0.05)  & 0.67 (0.22)  & 0 \\
 \bottomrule
 \end{tabular}
 }|
 ]
 
+
 The first data column, ``Contract Overhead'', gives the percent of each project's
 worst-case running time that was spent checking contracts.
-For example, our sampling profiler estimates that approximately 80\% of \tt{quad}'s worst-case running time was spent checking contracts.
+For example, our sampling profiler estimates that approximately 80\% of @tt{quad}'s worst-case running time was spent checking contracts.
 These proportions are the average of 10 runs of the sampling profiler, and the
 Std. Dev. column confirms there was relatively little variability in the
 time spent checking contracts.
 
 The last three columns attempt to pinpoint the most expensive contracts.
 Each column is a percentage of the Contract Overhead number.
-The first, \tt{(Any -> Boolean)}, gives the percent of contract runtime
+The first, @tt{(Any -> Boolean)}, gives the percent of contract runtime
 spent checking that untyped predicate functions truly return boolean values.
 Despite being a simple contract, it was run very frequently.
 Second, we give the percent of contract runtime spent verifying higher-order
@@ -148,7 +150,7 @@ contracts (i.e., function contracts with a nested function in a negative positio
 These too account for a large chunk of the overhead.
 Finally, the ``Library'' column tallies the overhead of boundaries to
 third-party libraries.
-Note that these last two columns are overlapping; in particular \tt{lnm}
+Note that these last two columns are overlapping; in particular @tt{lnm}
 uses a higher-order contract from the Racket's typed plotting library.
 
 These numbers are surprising.
