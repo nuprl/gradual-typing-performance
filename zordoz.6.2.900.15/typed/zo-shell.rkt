@@ -17,7 +17,7 @@
   [zo-transition (-> zo String (values (U zo (Listof zo)) Boolean))])
 (require/typed/check "zo-find.rkt"
   [zo-find (-> zo String [#:limit (U Natural #f)] (Listof result))]
-  [#:struct result ([z : zo]
+  [#:struct result ([zo : zo]
                     [path : (Listof zo)])])
 (require/typed compiler/zo-parse
                [zo-parse (->* () (Input-Port) zo)])
