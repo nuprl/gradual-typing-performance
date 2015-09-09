@@ -1,0 +1,32 @@
+Running time is 19.23% contracts
+50/260 ms
+
+
+BY CONTRACT
+
+(-> any/c any) @ #(struct:srcloc typed.rkt 22 11 499 10)
+  50 ms
+
+
+BY CALLEE
+
+(-> any/c any) @ #(struct:srcloc typed.rkt 22 11 499 10)
+  make-truth
+  50 ms
+
+
+BY CALLER
+
+(-> any/c any) @ #(struct:srcloc typed.rkt 22 11 499 10)
+  make-truth @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/typed.rkt 18 2 406 81)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/typed.rkt 31 2 590 48)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/typed.rkt #f #f #f #f)
+  40 ms
+
+(-> any/c any) @ #(struct:srcloc typed.rkt 22 11 499 10)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/typed.rkt 31 2 590 48)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/typed.rkt #f #f #f #f)
+  10 ms
+
