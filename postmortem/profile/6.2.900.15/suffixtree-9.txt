@@ -1,0 +1,1709 @@
+Running time is 95.69% contracts
+469445/490610 ms
+
+
+BY CONTRACT
+
+(-> any/c (vectorof (or/c Char Symbol))) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  372313 ms
+
+(-> any/c Natural) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  26717 ms
+
+(-> (vectorof (or/c Char Symbol)) any/c any/c label?) @ #(struct:srcloc typed-data.rkt 22 3 446 10)
+  25470 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  23329 ms
+
+(-> any/c label?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  9306 ms
+
+(-> any/c (listof node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  4215 ms
+
+(-> any/c (or/c #f node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  1141 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  2075/2 ms
+
+(-> any/c any/c Void) @ #(struct:srcloc typed-data.rkt 31 3 872 18)
+  1999/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  952 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  880 ms
+
+(-> any/c any/c any/c any/c node?) @ #(struct:srcloc typed-data.rkt 30 3 804 9)
+  754 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  595 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  1123/2 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  431 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  292 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  271 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  83 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  137/2 ms
+
+(-> any/c suffix-tree?) @ #(struct:srcloc typed-data.rkt 29 3 768 16)
+  37/2 ms
+
+(-> any/c node?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  10 ms
+
+
+BY CALLEE
+
+(-> any/c (vectorof (or/c Char Symbol))) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  label-datum
+  372313 ms
+
+(-> any/c Natural) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  label-i
+  49005/2 ms
+  label-j
+  4429/2 ms
+
+(-> (vectorof (or/c Char Symbol)) any/c any/c label?) @ #(struct:srcloc typed-data.rkt 22 3 446 10)
+  make-label
+  25470 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node?
+  13903 ms
+  label?
+  18809/2 ms
+  suffix-tree?
+  43/2 ms
+
+(-> any/c label?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node-up-label
+  9306 ms
+
+(-> any/c (listof node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node-children
+  4215 ms
+
+(-> any/c (or/c #f node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  node-parent
+  1141 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  node-position-at-end?
+  2075/2 ms
+
+(-> any/c any/c Void) @ #(struct:srcloc typed-data.rkt 31 3 872 18)
+  set-node-children!
+  1299/2 ms
+  set-node-up-label!
+  447/2 ms
+  set-node-parent!
+  108 ms
+  tree-add!
+  37/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  label-ref
+  952 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  label-length
+  880 ms
+
+(-> any/c any/c any/c any/c node?) @ #(struct:srcloc typed-data.rkt 30 3 804 9)
+  make-node
+  754 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  node-find-child
+  595 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  node-follow/k
+  1123/2 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  sublabel
+  431 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  node-add-leaf!
+  292 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  node-root?
+  271 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  node-up-splice-leaf!
+  83 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  label-element-equal?
+  137/2 ms
+
+(-> any/c suffix-tree?) @ #(struct:srcloc typed-data.rkt 29 3 768 16)
+  make-suffix-tree
+  37/2 ms
+
+(-> any/c node?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  suffix-tree-root
+  10 ms
+
+
+BY CALLER
+
+(-> any/c (vectorof (or/c Char Symbol))) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  372313 ms
+
+(-> any/c Natural) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  26717 ms
+
+(-> (vectorof (or/c Char Symbol)) any/c any/c label?) @ #(struct:srcloc typed-data.rkt 22 3 446 10)
+  25470 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  23329 ms
+
+(-> any/c label?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  9306 ms
+
+(-> any/c (listof node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  4215 ms
+
+(-> any/c (or/c #f node?)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  1141 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  435/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  138 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  102 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  92 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  191/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  147/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  97/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  50 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  81/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  63/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  57/2 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  17 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  15 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  8 ms
+
+(-> node? Index any) @ #(struct:srcloc structs.rkt 32 1 940 21)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c any/c Void) @ #(struct:srcloc typed-data.rkt 31 3 872 18)
+  981 ms
+
+(-> any/c any/c Void) @ #(struct:srcloc lcs.rkt 25 2 667 9)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  37/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  202 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  117 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  98 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  100 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  117/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  73/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  42 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  69/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  30 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  30 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  30 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  32 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  30 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  30 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  43/2 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  jump-to-suffix @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 56 0 1880 692)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> label? Integer any) @ #(struct:srcloc label.rkt 33 8 957 9)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  232 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  233/2 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  94 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  175/2 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  82 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  81/2 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  42 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  32 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  30 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  30 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  18 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  27/2 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  12 ms
+
+(-> label? any) @ #(struct:srcloc label.rkt 32 8 936 12)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c any/c any/c any/c node?) @ #(struct:srcloc typed-data.rkt 30 3 804 9)
+  754 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  139 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  77 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  74 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  60 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  97/2 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  40 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  73/2 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  23 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  12 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  17/2 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  17/2 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  8 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  jump-to-suffix @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 56 0 1880 692)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? any/c any) @ #(struct:srcloc structs.rkt 30 1 911 15)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  327/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  73 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  115/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  123/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  97/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  83/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  63/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  20 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  33/2 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  8 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any) @ #(struct:srcloc structs.rkt 35 1 1001 13)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  179/2 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  60 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  97/2 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  53 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  38 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  67/2 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  57/2 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(->* (label? Index) (Index) any) @ #(struct:srcloc label.rkt 34 8 975 8)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  97/2 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  83/2 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  42 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  30 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  20 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  20 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  20 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? label? any) @ #(struct:srcloc structs.rkt 33 1 963 14)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  73 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  50 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  77/2 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  43/2 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  main-logic @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 161 12 5800 202)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  33/2 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  23/2 ms
+
+(-> node? any) @ #(struct:srcloc structs.rkt 31 1 928 10)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  23/2 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  do-construction! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 198 8 6889 250)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  23/2 ms
+
+(-> node? Index label? any) @ #(struct:srcloc structs.rkt 34 1 979 20)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  loop-first @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 112 10 3937 309)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  20 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  20 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  find-next-extension-point/add-suffix-link! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 101 0 3545 2099)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes-loop! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 245 8 8540 865)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  17/2 ms
+
+(-> any/c any/c any) @ #(struct:srcloc label.rkt 24 8 707 20)
+  skip-count-helper @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 26 0 789 555)
+  loop-general @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 125 10 4438 564)
+  add-rest-suffixes! @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/ukkonen.rkt 236 8 8286 204)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 61 2 2109 179)
+  longest-common-substring @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/lcs.rkt 35 0 971 193)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 17 2 446 63)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/suffixtree/benchmark/variation011110/main.rkt 26 24 729 29)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  10 ms
+
+(-> any/c suffix-tree?) @ #(struct:srcloc typed-data.rkt 29 3 768 16)
+  37/2 ms
+
+(-> any/c node?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  10 ms
+
