@@ -8,7 +8,7 @@
  ;; Search a struct recursively for member zo-structs matching a string.
  zo-find
  ;; Search result: a zo-struct and the path to reach it
- (struct-out result))
+ result result? result-z result-path)
 
 (require (only-in racket/list empty?)
          (only-in racket/string string-split string-trim)
@@ -49,31 +49,29 @@
 
 ;; Check if `str` is one of the known looping zo-structs.
 ;; 2015-01-23: So far as I know, only closures may loop.
-;; 2015-07-29: New macro expander => scope and multi-scope can loop
 (: may-loop? (-> String Boolean))
 (define (may-loop? str)
-  (if (member str '("closure" "multi-scope" "scope"))
+  (if (member str (list "closure"))
       #t #f))
 
 ;; Recursive helper for `zo-find`.
 ;; Add the current struct to the results, if it matches.
 ;; Check struct members for matches unless the search has reached its limit.
-(: zo-find-aux (-> zo (Listof zo) String Natural (U Natural #f) (Listof String) (Listof result)))
+(: zo-find-aux (-> zo (Listof zo) String Natural (U Natural #f) (Listof zo) (Listof result)))
 (define (zo-find-aux z hist str i lim seen)
   (define-values (title children) (parse-zo z))
-  (define zstr (format "~a" z))
   (: results (Listof result))
   (define results
     (cond
      [(and lim (<= lim i))
       '()]
      ;; Terminate search if we're seeing a node for the second time
-     [(and (may-loop? title) (member zstr seen))
+     [(and (may-loop? title) (member z seen))
       '()]
      [else
       ;; Remember current node if we might see it again.
-      (: seen* (Listof String))
-      (define seen* (if (may-loop? title) (cons zstr seen) seen))
+      (: seen* (Listof zo))
+      (define seen* (if (may-loop? title) (cons z seen) seen))
       (: hist* (Listof zo))
       (define hist* (cons z hist))
       (append-all (for/list : (Listof (Listof result)) ([z* : zo children])
@@ -111,3 +109,4 @@
      (cond [(not success?) (get-children z tl)]
            [(list? r)      (append (filter zo? r) (get-children z tl))]
            [(zo?   r)      (cons r (get-children z tl))])]))
+                
