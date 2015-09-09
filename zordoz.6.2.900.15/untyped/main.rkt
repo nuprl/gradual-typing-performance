@@ -22,6 +22,6 @@
 (define-syntax-rule (main test)
   (with-output-to-file "/dev/null" test #:exists 'append))
 
-;(time (main self-test)) ;
+(time (main self-test)) ; 1316ms
 ;(time (main small-test)) ;
-(time (main large-test)) ; 63ms
+;(time (main large-test)) ; 63ms
