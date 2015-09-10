@@ -24,8 +24,9 @@
 (define codomain?
   (cparse 'codomain
     ;; Get the last thing from the arrow contract
-    (let ([r1 (regexp "any/c\\) @")])
-      (lambda (ln) (regexp-match? r1 ln)))))
+    (let ([r1 (regexp "any/c\\) @")]
+          [r2 (regexp "any\\) @")])
+      (lambda (ln) (or (regexp-match? r1 ln) (regexp-match? r2 ln))))))
 
 (define domain?
   (cparse 'domain
