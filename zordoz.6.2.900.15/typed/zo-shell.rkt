@@ -12,6 +12,7 @@
          racket/match)
 
 (require/typed/check "zo-string.rkt"
+  [zo->spec (-> zo Spec)]
   [zo->string (->* (zo) (#:deep? Boolean) String)])
 (require/typed/check "zo-transition.rkt"
   [zo-transition (-> zo String (values (U zo (Listof zo)) Boolean))])
