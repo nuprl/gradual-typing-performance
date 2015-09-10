@@ -34,7 +34,7 @@
       (lambda (ln)
         (define m (regexp-match r ln))
         (and m
-             (for/list ([d (in-list (cdr (reverse (string-split (cadr m)))))])
+             (for/and ([d (in-list (cdr (reverse (string-split (cadr m)))))])
                (string=? d "any/c")))))))
 
 (define higher-order?
