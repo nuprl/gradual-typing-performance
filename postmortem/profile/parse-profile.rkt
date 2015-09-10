@@ -185,8 +185,8 @@
      (define TITLE ";; Data rows have mean,stddev,percent-of-contract-time,stderr")
      (define conclusions
        (list*
-        (list 'total-time:mean:std (rnd (mean alltime*))
-                                   (rnd (stddev alltime*)))
+        (list 'total-time (rnd (mean alltime*))
+                          (rnd (stddev alltime*)))
         (list 'contract-time (rnd (mean ctime*))
                              (rnd (stddev ctime*))
                              (rnd (mean (map (lambda (c t) (* 100 (/ c t))) ctime* alltime*)))
@@ -199,6 +199,34 @@
                           (rnd (stddev v*))))))
      (if (*output*)
          (with-output-to-file (*output*) #:exists 'replace
-           (lambda () (displayln TITLE) (write conclusions)))
-         (begin (displayln TITLE) (displayln conclusions))))))
+           (lambda () (pretty-print conclusions)))
+         (begin (pretty-print conclusions))))))
 
+;; Nicely format summary results
+(define (pretty-print conclusions)
+  ;; (write conclusions))
+  (org-print conclusions))
+
+(define (org-print c*)
+  (displayln "|---")
+  (displayln "| | MEAN | STD | %total | STE |")
+  (displayln "|---")
+  (let ([row (car c*)])
+    (printf "| ~a | ~a | ~a | | |\n" (car row) (cadr row) (caddr row)))
+  (print-row (cadr c*))
+  (displayln "|---")
+  (newline)
+  (displayln "|---")
+  (displayln "| C-type | MEAN | STD | %contract | STE |")
+  (displayln "|---")
+  (for ([r (in-list (cddr c*))])
+    (print-row r))
+  (displayln "|---"))
+
+(define (print-row r)
+  (display "|")
+  (for ([v (in-list r)])
+    (display " ")
+    (display v)
+    (display " |"))
+  (newline))
