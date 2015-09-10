@@ -14,7 +14,7 @@
 (define (small-test)
   (init (vector SMALL-TEST "branch")))
 
-(define LARGE-TEST "../base/large-test.zo")
+(define LARGE-TEST "../base/streams.zo")
 (define (large-test)
   (init (vector LARGE-TEST "branch")))
 
@@ -23,6 +23,6 @@
 (define-syntax-rule (main test)
   (with-output-to-file "/dev/null" test #:exists 'append))
 
-(time (main self-test)) ; 866ms
+(time (main self-test)) ; 1330ms
 ;(time (main small-test)) ;
 ;(time (main large-test)) ;

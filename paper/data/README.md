@@ -59,10 +59,13 @@ Run on Racket 6.2.
 - `synth-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
 - `kcfa-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a very small "standard example" test.
 - `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.
-- `moresecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
+- `morsecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
 
 __NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
 We need to update them all.
+
+- zordoz.6.2.900.15-2015-09-09T20:10:57.rktd, For Racket v6.2.900.11, on Desktop
+- zordoz-2015-09-09.rktd, A re-run of zordoz, on Desktop with Racket 6.2
 
 - `echo.rktd` Unknown origin.
 - `synth.rktd`
