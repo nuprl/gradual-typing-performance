@@ -113,24 +113,32 @@ overhead of each benchmark's slowest variation.@note{Sampling frequency: 0.005s.
 
 @figure*["fig:postmortem" "Profiling the worst-case contract overhead"
 @exact|{
-\begin{tabular}{l r r r r}
-Project name & Contract Overhead & \tt{(Any -> Boolean)} & Higher Order & Library \\
-\tt{sieve*}        & 91.93   (2.33) & 22.31 (6.87)  & 44.49 (3.43) & 0 \\
-\tt{morse-code}   & 33.64 (2.90) & 0            & 0            & 0 \\
-\tt{mbta}         & 39.67 (4.31) & 0            & 0            & 25.37 (3.08) \\
-\tt{zo-traversal} & 94.59 (0.10) & 40.85 (0.33) & 0            & 42.42 (0.34) \\
-\tt{suffixtree}   & 93.53 (0.18) & 16.41 (0.19) & 0.22 (0.03)  & 0 \\
-\tt{lnm}          & 81.19 (0.73) & 0            & 7.60 (0.52)  & 80.51 (0.73) \\
-\tt{kcfa}         & 91.38 (0.25) & 28.34 (0.35) & 0            & 0 \\
-\tt{snake}        & 98.28 (0.2)  & 48.08 (0.85) & 0            & 0 \\
-\tt{tetris}       & 95.67 (0.35) & 42.33 (0.61) & 0            & 0 \\
-\tt{synth}        & 82.70 (1.22) & 0            & 40.07 (1.25) & 0 \\
-\tt{gregor}       & 82.24 (2.81) & 25.57 (7.07) & 0            & 3.92 (1.56) \\
-\tt{quad}         & 80.42 (0.96) & 0.11 (0.05)  & 0.67 (0.22)  & 0 \\
+\begin{tabular}{l r || r r r r r r}
+Project & C pct (ste) & adapt & \tt{(any->bool)} & cod-only & dom-only & hoc & lib \\\hline
+\tt{sieve}       & 91.93 (2.33) &      0 &      31.08 &     31.08 &         0 & 46.27 &     0 \\
+\tt{morse-code}  & 29.60 (6.80) &      0 &          0 &    100.00 &         0 &     0 &     0 \\
+\tt{mbta}        & 39.03 (3.65) &      0 &          0 &     64.95 &         0 &     0 & 64.95 \\
+\tt{zo}          & 94.59 (0.10) &      0 &      43.19 &     99.01 &         0 &     0 & 44.84 \\
+\tt{suffixtree}  & 93.53 (0.18) &  97.91 &      17.55 &     93.97 &      2.09 &  0.23 &     0 \\
+\tt{lnm}         & 81.19 (0.73) &      0 &       9.36 &         0 &     90.63 & 99.14 & 99.52 \\
+\tt{kcfa}        & 91.38 (0.26) & 100.00 &      31.02 &     31.03 &         0 &  0.02 &     0 \\
+\tt{snake}       & 98.28 (0.21) &  92.90 &      48.93 &     77.68 &      1.42 &     0 &     0 \\
+\tt{tetris}      & 95.67 (0.35) &  88.98 &      44.25 &     88.98 &     11.02 &     0 &     0 \\
+\tt{synth}       & 82.70 (1.22) &      0 &          0 &     19.59 &     29.30 & 90.05 &     0 \\
+\tt{gregor}      & 83.32 (4.01) &  78.42 &      30.84 &     84.65 &      7.04 &     0 &  3.33 \\
+\tt{quad}        & 80.42 (0.96) &   0.31 &       0.08 &      0.51 &      3.23 &  0.53 &     0 \\
 \bottomrule
 \end{tabular}
 }|
 ]
+
+@; TODO explain columns
+@; TODO explain % (contract vs all else)
+@; TODO 
+@; TODO to verify, we instrumented the Racket contract system stop applying some contracts. Results as expected.
+@; TODO note: on HEAD things are 30% better already, by our measures
+@; TODO lessons
+@; TODO we even removed data (on kcfa)
 
 
 The first data column, ``Contract Overhead'', gives the percent of each project's
@@ -152,8 +160,3 @@ Finally, the ``Library'' column tallies the overhead of boundaries to
 third-party libraries.
 Note that these last two columns are overlapping; in particular @tt{lnm}
 uses a higher-order contract from the Racket's typed plotting library.
-
-These numbers are surprising.
-To verify these numbers we did TODO.
-
-TODO lessons
