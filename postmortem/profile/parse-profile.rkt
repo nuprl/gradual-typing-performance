@@ -83,7 +83,7 @@
 ;; Get the time (in ms) from a line
 (define (parse-time ln)
   (define s (car (string-split ln)))
-  (define v (with-input-from-string s (lambda () (read))))
+  (define v (string->number s))
   (unless (number? v)
     (raise-user-error (format "Could not parse time from line '~a'" ln)))
   v)
