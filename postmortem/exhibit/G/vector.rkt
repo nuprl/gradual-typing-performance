@@ -17,8 +17,9 @@
 (require 'vec)
 
 (define (main)
+  (define v (make-vector 10000 (atom)))
   (for ([i (in-range 10000)])
-    (make-v (make-vector 10000 (atom)))
+    (make-v v)
     (void))
   (void))
 

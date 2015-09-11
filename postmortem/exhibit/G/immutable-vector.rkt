@@ -5,22 +5,21 @@
   (struct atom ())
   (provide (struct-out atom)))
 
-(module ls typed/racket/base
+(module vec typed/racket/base
   (require/typed (submod ".." data)
     [#:struct atom []])
-  (: make-l (-> (Listof atom) Boolean))
-  (define (make-l x)
+  (: make-v (-> (Vectorof atom) Boolean))
+  (define (make-v x)
     #t)
-  (provide make-l))
+  (provide make-v))
 
 (require 'data)
-(require 'ls)
-(require racket/list)
+(require 'vec)
 
 (define (main)
-  (define l (make-list 10000 (atom)))
+  (define v (vector->immutable-vector (make-vector 10000 (atom))))
   (for ([i (in-range 10000)])
-    (make-l l)
+    (make-v v)
     (void))
   (void))
 
