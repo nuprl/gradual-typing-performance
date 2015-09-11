@@ -5,32 +5,26 @@ contract-profile output for various benchmarks on their worst variations.
 
 ### Summary Table
 
-- `%C` is the proportion of runtime spent checking contracts,
-  as reported by `contract-profile`
-- `%PC` is the proportion of `%C` that was spent on `(-> Any Boolean)` contracts
-- `%LC` is the proportion of `%C` spent on library contracts -- contracts on functions that lie outside the benchmark files, for example in `compiler/zo-lib`.
-- `%HOC` is the proportion of `%C` spent on higher-order contracts -- any contract with an `->` in a negative position. (All reported contracts have the form `(-> ...)`. This column documents the `(-> ... (-> ...) ...)` forms.
+Proposed table for the paper.
+Data taken using Racket v6.2
 
-Note that the `%PC` and `%LC` columns may overlap.
-The `%LC` and `%HOC` also overlap.
+|------------+--------------+---+------------+-------+----------+-----------+-----------+--------|
+| Project    | %C     (STE) |   | %any->bool |  %HOC | %library | %cod-only | %dom-only | %adapt |
+|------------+--------------+---+------------+-------+----------+-----------+-----------+--------|
+| gregor     | 83.32 (4.01) |   |      30.84 |     0 |     3.33 |     84.65 |      7.04 |  78.42 |
+| kcfa       | 91.38 (0.26) |   |      31.02 |  0.02 |        0 |     31.03 |         0 | 100.00 |
+| lnm        | 81.19 (0.73) |   |       9.36 | 99.14 |    99.52 |         0 |     90.63 |      0 |
+| mbta       | 39.03 (3.65) |   |          0 |     0 |    64.95 |     64.95 |         0 |      0 |
+| morsecode  | 29.60 (6.80) |   |          0 |     0 |        0 |    100.00 |         0 |      0 |
+| quad       | 80.42 (0.96) |   |       0.08 |  0.53 |        0 |      0.51 |      3.23 |   0.31 |
+| sieve      | 91.93 (2.33) |   |      31.08 | 46.27 |        0 |     31.08 |         0 |      0 |
+| snake      | 98.28 (0.21) |   |      48.93 |     0 |        0 |     77.68 |      1.42 |  92.90 |
+| suffixtree | 93.53 (0.18) |   |      17.55 |  0.23 |        0 |     93.97 |      2.09 |  97.91 |
+| synth      | 82.70 (1.22) |   |          0 | 90.05 |        0 |     19.59 |     29.30 |      0 |
+| tetris     | 95.67 (0.35) |   |      44.25 |     0 |        0 |     88.98 |     11.02 |  88.98 |
+| zo         | 94.59 (0.10) |   |      43.19 |     0 |    44.84 |     99.01 |      0.00 |   0.00 |
+|------------+--------------+---+------------+-------+----------+-----------+-----------+--------|
 
-
-|------------+------------------+-------------+------------------------+-------+-------+-------+-------|
-| Project    |       Worst Var. | Runtime(ms) | Overhead (vs. untyped) |   % C |  % PC |   %LC |  %HOC |
-|------------+------------------+-------------+------------------------+-------+-------+-------+-------|
-| gregor     |    0011001101001 |     3144.57 |                   4.72 | 68.09 | 19.34 |  6.29 |     0 |
-| kcfa       |          1001001 |  1017144.57 |                  22.67 | 86.89 | 22.19 |     0 |     0 |
-| lnm        |           100100 |    49358.57 |                   1.14 | 81.97 |     0 | 99.52 |  9.17 |
-| mbta       |             1110 |      149.84 |                   2.80 |     0 |     0 |     0 |     0 |
-| morsecode  |             0101 |   133414.93 |                   1.95 | 22.77 |     0 |     0 |     0 |
-| quad       | 0100100000110101 |    11049.91 |                  56.43 | 80.09 |     0 |     0 |  0.51 |
-| sieve      |               10 |  1313641.77 |                 114.47 | 95.15 | 59.16 |     0 | 28.38 |
-| snake      |         11001011 |   120666.70 |                 121.51 | 96.65 | 42.74 |     0 |     0 |
-| suffixtree |           011110 |   274769.03 |                 105.27 | 92.18 | 11.73 |     0 |  0.21 |
-| synth      |       0010110111 |    22555.07 |                  85.90 | 81.95 |     0 |     0 | 88.45 |
-| tetris     |        010100010 |    87645.97 |                 117.28 | 93.54 | 42.58 |     0 |     0 |
-| zo         |            11101 |     2200.00 |                   4.33 | 94.80 | 43.67 | 45.26 | 54.74 |
-|------------+------------------+-------------+------------------------+-------+-------+-------+-------|
 
 # gregor                                  # snake
   0. clock.rkt                              0. collide.rkt
