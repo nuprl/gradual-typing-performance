@@ -1,0 +1,34 @@
+Running time is 66.67% contracts
+100/150 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  90 ms
+
+(-> any/c Real) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  10 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  block?
+  80 ms
+  tetra?
+  10 ms
+
+(-> any/c Real) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  block-y
+  10 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  90 ms
+
+(-> any/c Real) @ #(struct:srcloc base-types.rkt #f #f #f 0)
+  10 ms
+
