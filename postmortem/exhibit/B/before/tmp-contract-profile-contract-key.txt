@@ -1,8 +1,0 @@
-[0] = (-> any/c any/c any/c block?)
-[1] = (-> any/c boolean?)
-[2] = (-> any/c (listof block?))
-[3] = (-> Real Real block? any)
-[4] = (-> any/c Real)
-[5] = (-> block? block? any)
-[6] = (-> any/c Symbol)
-[7] = (-> tetra? (listof block?) any)

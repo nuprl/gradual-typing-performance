@@ -1,6 +1,0 @@
-digraph {
-rankdir=LR
-g2890[label="(interface for tetra-blocks)"][color="red"]
-g2891[label="base-types.rkt"][color="green"]
-g2891 -> g2890[label="10ms"]
-}
