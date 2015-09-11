@@ -18,25 +18,30 @@
 
 (define adaptor?
   (cparse 'adaptor
-          (let ([re (regexp "adapt")])
-            (lambda (ln) (regexp-match? re ln)))))
+          (let ([r (regexp "adapt")])
+            (lambda (ln)
+              (regexp-match? r1 ln)))))
 
-(define codomain?
-  (cparse 'codomain
+;; A most dangerous regexp, but works pretty often
+(define codomain-only?
+  (cparse 'codomain-only
+          (let ([r (regexp "^\\(-> any/c")])
+            (lambda (ln)
+              (regexp-match? r ln)))))
+    ;; ;; Get all things in the arrow, make sure all but the last are any/c
+    ;; (let ([r (regexp "^\\(-> (.*?)\\) @")])
+    ;;   (lambda (ln)
+    ;;     (define m (regexp-match r ln))
+    ;;     (and m
+    ;;          (for/and ([d (in-list (cdr (reverse (string-split (cadr m)))))])
+    ;;            (string=? d "any/c")))))))
+
+(define domain-only?
+  (cparse 'domain-only
     ;; Get the last thing from the arrow contract
     (let ([r1 (regexp "any/c\\) @")]
           [r2 (regexp "any\\) @")])
       (lambda (ln) (or (regexp-match? r1 ln) (regexp-match? r2 ln))))))
-
-(define domain?
-  (cparse 'domain
-    ;; Get all things in the arrow, make sure all but the last are any/c
-    (let ([r (regexp "^\\(-> (.*?)\\) @")])
-      (lambda (ln)
-        (define m (regexp-match r ln))
-        (and m
-             (for/and ([d (in-list (cdr (reverse (string-split (cadr m)))))])
-               (string=? d "any/c")))))))
 
 (define higher-order?
   (cparse 'higher-order
@@ -47,10 +52,12 @@
              (for/or ([d (in-list (cdr (reverse (string-split (cadr m)))))])
                (regexp-match? "->" d)))))))
 
-;; Not sure how to verify library contracts. Depends on the project.
+;; Depends on the project, but "lib" catches built-in Racket libraries
 (define library?
   (cparse 'library
-          (lambda (ln) #f)))
+          (let ([r (regexp "\\(lib ")])
+            (lambda (ln)
+              (regexp-match? r ln)))))
 
 (define predicate?
   (cparse 'predicate
@@ -60,7 +67,7 @@
         (or (regexp-match? r1 ln)
             (regexp-match? r2 ln))))))
 
-(define ALL-FILTERS (list adaptor? codomain? domain? higher-order? library? predicate?))
+(define ALL-FILTERS (list adaptor? codomain-only? domain-only? higher-order? library? predicate?))
 
 ;; -----------------------------------------------------------------------------
 
@@ -112,10 +119,10 @@
    #:once-each
    [("-a" "--adaptor")
      "Record the time spent in contracts from an adaptor module." (*A* #t)]
-   [("-c" "--codomain")
-     "Record the time spent in contracts with 'any' as their codomain. (These are type contracts checked in an untyped module.)" (*C* #t)]
-   [("-d" "--domain")
-     "Record the time spent in contracts with 'any' as their domain. (These are type contracts checked in a typed module.)" (*D* #t)]
+   [("-c" "--codomain-only")
+     "Record the time spent in contracts with 'any' as their domain. (These are type contracts checked in a typed module.)" (*C* #t)]
+   [("-d" "--domain-only")
+     "Record the time spent in contracts with 'any' as their codomain. (These are type contracts checked in an untyped module.)" (*D* #t)]
    [("-f" "--higher-order")
      "Record the time spent in higher-order contracts" (*H* #t)]
    [("-l" "--library")
@@ -218,7 +225,7 @@
   (displayln "|---")
   (newline)
   (displayln "|---")
-  (displayln "| C-type | MEAN | STD | %contract | STE |")
+  (displayln "| c-type | MEAN | STD | %contract | STE |")
   (displayln "|---")
   (for ([r (in-list (cddr c*))])
     (print-row r))
