@@ -29,3 +29,15 @@ Meeting notes
     profiling with HEAD even if we're using 6.2 for the paper. If it's
     better, we can also try backporting just the profiling improvements to 6.2.
   * Will meet in 2 days when we have more results.
+
+2015-09-11
+----------
+  * Discussed contract profiler accuracy, results suggest that the
+    profiling results are accurate since removing the contracts does speed
+    up the program.
+  * Decided to look into a table for the results for Monday.
+
+2015-09-14
+----------
+  * Looked at and discussed a table for the profiling results. The goal for
+    Friday is to begin some prose and discuss the reviews.
