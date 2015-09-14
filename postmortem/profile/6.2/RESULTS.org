@@ -1,3 +1,8 @@
+WARNING: this file is difficult to re-make.
+The library & adaptor & higher-order columns were customized to each benchmark.
+
+(And I didn't think to record these customizations)
+
 * gregor
 
 |---------------+---------+--------+--------+------|
@@ -53,10 +58,13 @@
 | adaptor       |     0.00 |    0.00 |      0.00 | 0.00 |
 | codomain-only |     0.00 |    0.00 |      0.00 | 0.00 |
 | domain-only   | 40287.40 | 2588.44 |     90.63 | 0.69 |
-| higher-order  |     1.50 |    4.50 |      0.00 | 0.01 |
+| higher-order  |  4148.90 |  190.57 |      9.37 | 0.68 |
 | library       | 44054.45 | 2525.27 |     99.14 | 0.18 |
 | predicate     |     0.00 |    0.00 |      0.00 | 0.00 |
 |---------------+----------+---------+-----------+------|
+
+Project      & C / R (S.E.) & adapt & hoc & lib & dom-only & \tt{(any->?)} & [ \tt{(any->bool)} ] & 
+X            &    81 (0.73) &     0 &   9 &  99 &       91 &             0 &                    0 &
 
 * mbta
 
