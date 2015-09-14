@@ -1,0 +1,34 @@
+Running time is 92.27% contracts
+203/220 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean+) @ #(struct:srcloc untyped.rkt 17 26 378 10)
+  203 ms
+
+
+BY CALLEE
+
+(-> any/c boolean+) @ #(struct:srcloc untyped.rkt 17 26 378 10)
+  make-truth
+  203 ms
+
+
+BY CALLER
+
+(-> any/c boolean+) @ #(struct:srcloc untyped.rkt 17 26 378 10)
+  boolean+ @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/untyped.rkt 12 2 234 88)
+  #f @ #(struct:srcloc /home/ben/code/racket/fork/racket/collects/racket/contract/private/guts.rkt 552 7 19455 254)
+  #f @ #(struct:srcloc /home/ben/code/racket/fork/racket/collects/racket/contract/private/arrow-val-first.rkt 302 18 12987 32)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/untyped.rkt 33 2 662 48)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/untyped.rkt #f #f #f #f)
+  173 ms
+
+(-> any/c boolean+) @ #(struct:srcloc untyped.rkt 17 26 378 10)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/untyped.rkt 33 2 662 48)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/D/untyped.rkt #f #f #f #f)
+  30 ms
+

@@ -1,0 +1,40 @@
+Running time is 25.44% contracts
+132/517 ms
+
+
+BY CONTRACT
+
+(-> any/c any/c Integer) @ #(struct:srcloc main.rkt 17 16 427 18)
+  77 ms
+
+(-> any/c String) @ #(struct:srcloc main.rkt 14 3 336 13)
+  109/2 ms
+
+
+BY CALLEE
+
+(-> any/c any/c Integer) @ #(struct:srcloc main.rkt 17 16 427 18)
+  string-levenshtein
+  77 ms
+
+(-> any/c String) @ #(struct:srcloc main.rkt 14 3 336 13)
+  string->morse
+  109/2 ms
+
+
+BY CALLER
+
+(-> any/c any/c Integer) @ #(struct:srcloc main.rkt 17 16 427 18)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/morse-code/benchmark/variation0101/main.rkt 40 2 1286 178)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/morse-code/benchmark/variation0101/main.rkt 40 2 1286 178)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/morse-code/benchmark/variation0101/main.rkt #f #f #f #f)
+  77 ms
+
+(-> any/c String) @ #(struct:srcloc main.rkt 14 3 336 13)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/morse-code/benchmark/variation0101/main.rkt 40 2 1286 178)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/morse-code/benchmark/variation0101/main.rkt 40 2 1286 178)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/morse-code/benchmark/variation0101/main.rkt #f #f #f #f)
+  109/2 ms
+

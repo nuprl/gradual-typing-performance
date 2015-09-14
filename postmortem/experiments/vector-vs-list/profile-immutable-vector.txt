@@ -1,0 +1,26 @@
+Running time is 46.89% contracts
+2167/4620 ms
+
+
+BY CONTRACT
+
+(-> (vectorof atom?) any) @ #(struct:srcloc vector.rkt 14 11 296 6)
+  4333/2 ms
+
+
+BY CALLEE
+
+(-> (vectorof atom?) any) @ #(struct:srcloc vector.rkt 14 11 296 6)
+  make-v
+  4333/2 ms
+
+
+BY CALLER
+
+(-> (vectorof atom?) any) @ #(struct:srcloc vector.rkt 14 11 296 6)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/G/vector.rkt 21 2 422 54)
+  main @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/G/vector.rkt 19 0 338 148)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/postmortem/exhibit/G/vector.rkt #f #f #f #f)
+  4333/2 ms
+

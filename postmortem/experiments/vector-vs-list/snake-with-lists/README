@@ -1,0 +1,16 @@
+;; The worst snake variation.
+;; Original runtime : 120666.70 ms
+;; New runtime : 24340 ms
+;; Changes:
+;; - Add `cut-tail-protector`, modify `motion-help` to unpack "cached" results
+;; New runtime : 19000 ms
+;; Changes:
+;; - Change adaptor to cache NEList typechecking in snake struct definition
+'(("collide.rkt" #t)
+  ("const.rkt" #t)
+  ("cut-tail.rkt" #f)
+  ("data.rkt" #f)
+  ("handlers.rkt" #t)
+  ("main.rkt" #f)
+  ("motion-help.rkt" #t)
+  ("motion.rkt" #t))

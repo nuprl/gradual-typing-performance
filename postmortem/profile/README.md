@@ -3,34 +3,23 @@ profile
 
 contract-profile output for various benchmarks on their worst variations.
 
+
 ### Summary Table
 
-- `%C` is the proportion of runtime spent checking contracts,
-  as reported by `contract-profile`
-- `%PC` is the proportion of `%C` that was spent on `(-> Any Boolean)` contracts
-- `%LC` is the proportion of `%C` spent on library contracts -- contracts on functions that lie outside the benchmark files, for example in `compiler/zo-lib`.
-- `%HOC` is the proportion of `%C` spent on higher-order contracts -- any contract with an `->` in a negative position. (All reported contracts have the form `(-> ...)`. This column documents the `(-> ... (-> ...) ...)` forms.
+| Project         | C/R (S.E.) | adaptor | higher-order | library | \tt{(T->any)} | \tt{(any->T)} | \tt{(any->bool)} |
+| \tt{sieve}      | 92 (2.33)  |       0 |           46 |       0 |             0 |            54 |               31 |
+| \tt{morse-code} | 29 (6.80)  |       0 |            0 |       0 |             0 |           100 |                0 |
+| \tt{mbta}       | 39 (3.65)  |       0 |            0 |      65 |             0 |            65 |                0 |
+| \tt{zo}         | 95 (0.10)  |       0 |            0 |      45 |             0 |            99 |               43 |
+| \tt{suffixtree} | 94 (0.18)  |      98 |           <1 |       0 |             2 |            94 |               18 |
+| \\tt{lnm}       | 81 (0.73)  |       0 |            9 |      99 |            91 |             0 |                0 |
+| \tt{kcfa}       | 91 (0.26)  |     100 |            0 |       0 |             0 |            54 |               31 |
+| \tt{snake}      | 98 (0.21)  |      93 |            0 |       0 |             1 |            78 |               49 |
+| \tt{tetris}     | 96 (0.35)  |      89 |            0 |       0 |            11 |            89 |               44 |
+| \tt{synth}      | 83 (1.22)  |       0 |           90 |       0 |            29 |            20 |                0 |
+| \tt{gregor}     | 83 (4.01)  |      78 |            0 |       3 |             7 |            85 |               31 |
+| \tt{quad}       | 80 (0.96)  |      <1 |           <1 |       0 |             3 |            <1 |               <1 |
 
-Note that the `%PC` and `%LC` columns may overlap.
-The `%LC` and `%HOC` also overlap.
-
-
-|------------+------------------+-------------+------------------------+-------+-------+-------+-------|
-| Project    |       Worst Var. | Runtime(ms) | Overhead (vs. untyped) |   % C |  % PC |   %LC |  %HOC |
-|------------+------------------+-------------+------------------------+-------+-------+-------+-------|
-| gregor     |    0011001101001 |     3144.57 |                   4.72 | 68.09 | 19.34 |  6.29 |     0 |
-| kcfa       |          1001001 |  1017144.57 |                  22.67 | 86.89 | 22.19 |     0 |     0 |
-| lnm        |           100100 |    49358.57 |                   1.14 | 81.97 |     0 | 99.52 |  9.17 |
-| mbta       |             1110 |      149.84 |                   2.80 |     0 |     0 |     0 |     0 |
-| morsecode  |             0101 |   133414.93 |                   1.95 | 22.77 |     0 |     0 |     0 |
-| quad       | 0100100000110101 |    11049.91 |                  56.43 | 80.09 |     0 |     0 |  0.51 |
-| sieve      |               10 |  1313641.77 |                 114.47 | 95.15 | 59.16 |     0 | 28.38 |
-| snake      |         11001011 |   120666.70 |                 121.51 | 96.65 | 42.74 |     0 |     0 |
-| suffixtree |           011110 |   274769.03 |                 105.27 | 92.18 | 11.73 |     0 |  0.21 |
-| synth      |       0010110111 |    22555.07 |                  85.90 | 81.95 |     0 |     0 | 88.45 |
-| tetris     |        010100010 |    87645.97 |                 117.28 | 93.54 | 42.58 |     0 |     0 |
-| zo         |            11101 |     2200.00 |                   4.33 | 94.80 | 43.67 | 45.26 | 54.74 |
-|------------+------------------+-------------+------------------------+-------+-------+-------+-------|
 
 # gregor                                  # snake
   0. clock.rkt                              0. collide.rkt

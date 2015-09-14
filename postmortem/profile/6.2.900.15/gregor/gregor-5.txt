@@ -1,0 +1,260 @@
+Running time is 67.17% contracts
+556/827 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  174 ms
+
+(-> any/c any/c any/c DateTime?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  50 ms
+
+(-> any/c Integer) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  40 ms
+
+(-> any/c Rational) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  30 ms
+
+(-> any/c any/c Date?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  30 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 46 1 1432 14)
+  20 ms
+
+(-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12)) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  20 ms
+
+(-> any/c any/c any/c Moment?) @ #(struct:srcloc variation0011001101001/moment.rkt 26 5 728 11)
+  20 ms
+
+(-> any/c Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 30 5 688 12)
+  20 ms
+
+(-> (vectorof interval?) real? tzoffset?) @ #(struct:srcloc base/tzinfo/private/zoneinfo-search.rkt 8 2 118 15)
+  43/2 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural) any) @ #(struct:srcloc variation0011001101001/date.rkt 6 1 69 4)
+  10 ms
+
+(-> any/c (or/c #f String)) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> DateTime? DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 57 1 2038 10)
+  10 ms
+
+(-> any/c any/c any/c any/c HMSN?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  10 ms
+
+(-> any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c YMD?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c any/c Integer) @ #(struct:srcloc variation0011001101001/main.rkt 48 5 1702 21)
+  10 ms
+
+(-> HMSN? any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 15 1 185 12)
+  10 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any) @ #(struct:srcloc variation0011001101001/datetime.rkt 38 1 924 8)
+  10 ms
+
+(-> any/c any/c tzoffset?) @ #(struct:srcloc variation0011001101001/tzinfo-adapter.rkt 16 3 599 21)
+  10 ms
+
+(-> any/c Natural) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> path-string? string? (vector/c (vectorof interval?) (vectorof tzoffset?))) @ #(struct:srcloc base/tzinfo/private/tzfile-parser.rkt 9 2 141 12)
+  10 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  DateTime?
+  102 ms
+  HMSN?
+  42 ms
+  YMD?
+  10 ms
+  Date?
+  10 ms
+  Moment?
+  10 ms
+
+(-> any/c any/c any/c DateTime?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  DateTime17
+  50 ms
+
+(-> any/c Integer) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Date-jdn
+  20 ms
+  HMSN-n
+  20 ms
+
+(-> any/c Rational) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  DateTime-jd
+  30 ms
+
+(-> any/c any/c Date?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  Date3
+  30 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 46 1 1432 14)
+  datetime->date
+  10 ms
+  datetime->jd
+  10 ms
+
+(-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12)) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  YMD-m
+  20 ms
+
+(-> any/c any/c any/c Moment?) @ #(struct:srcloc variation0011001101001/moment.rkt 26 5 728 11)
+  make-moment
+  20 ms
+
+(-> any/c Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 30 5 688 12)
+  day-ns->time
+  10 ms
+  DateTime-time
+  10 ms
+
+(-> (vectorof interval?) real? tzoffset?) @ #(struct:srcloc base/tzinfo/private/zoneinfo-search.rkt 8 2 118 15)
+  find-utc-offset
+  43/2 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural) any) @ #(struct:srcloc variation0011001101001/date.rkt 6 1 69 4)
+  date
+  10 ms
+
+(-> any/c (or/c #f String)) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Moment-zone
+  10 ms
+
+(-> DateTime? DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 57 1 2038 10)
+  datetime<?
+  10 ms
+
+(-> any/c any/c any/c any/c HMSN?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  HMSN11
+  10 ms
+
+(-> any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Moment-datetime/local
+  10 ms
+
+(-> any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  DateTime-date
+  10 ms
+
+(-> any/c YMD?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  Date-ymd
+  10 ms
+
+(-> any/c any/c Integer) @ #(struct:srcloc variation0011001101001/main.rkt 48 5 1702 21)
+  datetime-days-between
+  10 ms
+
+(-> HMSN? any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 15 1 185 12)
+  hmsn->day-ns
+  10 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any) @ #(struct:srcloc variation0011001101001/datetime.rkt 38 1 924 8)
+  datetime
+  10 ms
+
+(-> any/c any/c tzoffset?) @ #(struct:srcloc variation0011001101001/tzinfo-adapter.rkt 16 3 599 21)
+  utc-seconds->tzoffset
+  10 ms
+
+(-> any/c Natural) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  YMD-y
+  10 ms
+
+(-> path-string? string? (vector/c (vectorof interval?) (vectorof tzoffset?))) @ #(struct:srcloc base/tzinfo/private/tzfile-parser.rkt 9 2 141 12)
+  parse-tzfile
+  10 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  174 ms
+
+(-> any/c any/c any/c DateTime?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  50 ms
+
+(-> any/c Integer) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  40 ms
+
+(-> any/c Rational) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  30 ms
+
+(-> any/c any/c Date?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  30 ms
+
+(-> DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 46 1 1432 14)
+  20 ms
+
+(-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12)) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  20 ms
+
+(-> any/c any/c any/c Moment?) @ #(struct:srcloc variation0011001101001/moment.rkt 26 5 728 11)
+  20 ms
+
+(-> any/c Time?) @ #(struct:srcloc variation0011001101001/datetime.rkt 30 5 688 12)
+  20 ms
+
+(-> (vectorof interval?) real? tzoffset?) @ #(struct:srcloc base/tzinfo/private/zoneinfo-search.rkt 8 2 118 15)
+  43/2 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural) any) @ #(struct:srcloc variation0011001101001/date.rkt 6 1 69 4)
+  10 ms
+
+(-> any/c (or/c #f String)) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> DateTime? DateTime? any) @ #(struct:srcloc variation0011001101001/datetime.rkt 57 1 2038 10)
+  10 ms
+
+(-> any/c any/c any/c any/c HMSN?) @ #(struct:srcloc #<blame> #f #f #f 0)
+  10 ms
+
+(-> any/c DateTime?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c Date?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c YMD?) @ #(struct:srcloc variation0011001101001/gregor-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> any/c any/c Integer) @ #(struct:srcloc variation0011001101001/main.rkt 48 5 1702 21)
+  test-iso @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 124 0 5427 828)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt 167 2 6806 90)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/fork/racket/share/pkgs/contract-profile/main.rkt 243 0 9731 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/gregor/benchmark/variation0011001101001/main.rkt #f #f #f #f)
+  10 ms
+
+(-> HMSN? any) @ #(struct:srcloc variation0011001101001/hmsn.rkt 15 1 185 12)
+  10 ms
+
+(->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any) @ #(struct:srcloc variation0011001101001/datetime.rkt 38 1 924 8)
+  10 ms
+
+(-> any/c any/c tzoffset?) @ #(struct:srcloc variation0011001101001/tzinfo-adapter.rkt 16 3 599 21)
+  10 ms
+
+(-> any/c Natural) @ #(struct:srcloc variation0011001101001/core-adapter.rkt #f #f #f 0)
+  10 ms
+
+(-> path-string? string? (vector/c (vectorof interval?) (vectorof tzoffset?))) @ #(struct:srcloc base/tzinfo/private/tzfile-parser.rkt 9 2 141 12)
+  10 ms
+

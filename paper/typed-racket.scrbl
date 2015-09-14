@@ -541,3 +541,26 @@ developers exploring the lattice.
 @; - hard to tell, was already typed
 @; - recovering API was VERY HARD; macros often generated definitions
 @; - typing hyphenate (one untyped module) was tricky -- had to replace 'parititon' with 2 filters
+
+
+@figure*["fig:postmortem" "Profiling the worst-case contract overhead"
+@exact|{
+\begin{tabular}{l r || r r r r r r}
+Project         & C/R (S.E.) & adaptor & higher-order & library & \tt{(T->any)} & \tt{(any->T)} & \tt{(any->bool)} \\\hline
+\tt{sieve}      & 92 (2.33)  &       0 &           46 &       0 &             0 &            54 &               31 \\
+\tt{morse-code} & 29 (6.80)  &       0 &            0 &       0 &             0 &           100 &                0 \\
+\tt{mbta}       & 39 (3.65)  &       0 &            0 &      65 &             0 &            65 &                0 \\
+\tt{zo}         & 95 (0.10)  &       0 &            0 &      45 &             0 &            99 &               43 \\
+\tt{suffixtree} & 94 (0.18)  &      98 &           <1 &       0 &             2 &            94 &               18 \\
+\tt{lnm}        & 81 (0.73)  &       0 &            9 &      99 &            91 &             0 &                0 \\
+\tt{kcfa}       & 91 (0.26)  &     100 &            0 &       0 &             0 &            54 &               31 \\
+\tt{snake}      & 98 (0.21)  &      93 &            0 &       0 &             1 &            78 &               49 \\
+\tt{tetris}     & 96 (0.35)  &      89 &            0 &       0 &            11 &            89 &               44 \\
+\tt{synth}      & 83 (1.22)  &       0 &           90 &       0 &            29 &            20 &                0 \\
+\tt{gregor}     & 83 (4.01)  &      78 &            0 &       3 &             7 &            85 &               31 \\
+\tt{quad}       & 80 (0.96)  &      <1 &           <1 &       0 &             3 &            <1 &               <1 \\
+\bottomrule
+\end{tabular}
+}|
+]
+

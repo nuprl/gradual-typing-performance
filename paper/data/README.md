@@ -81,3 +81,10 @@ We need to update them all.
 - `tetris.rktd` Run on Galicia, date unknown
 - `zordoz-04-09.rktd` Run on Galicia
 
+Without Any->Bool contracts
+---------------------------
+(Not sure I trust these, the graphs are funny and unexpected.
+ Want to re-run both before & after on the same computer.)
+
+- `tetris-anybool-09-11.rktd` on Desktop, 11 iterations, single core, 6.2.900.15
+- `suffixtree-anybool-09-11.rktd` on Desktop, 11 iterations, single core, 6.2.900.15
