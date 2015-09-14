@@ -5,7 +5,7 @@
   (only-in racket/match match-define)
   (only-in racket/port with-input-from-string)
   math/statistics
-  (only-in racket/format ~r)
+  racket/format
 )
 
 ;; Parse contract-profile output, produce a table of results
@@ -20,7 +20,7 @@
   (cparse 'adaptor
           (let ([r (regexp "adapt")])
             (lambda (ln)
-              (regexp-match? r1 ln)))))
+              (regexp-match? r ln)))))
 
 ;; A most dangerous regexp, but works pretty often
 (define codomain-only?
@@ -100,6 +100,9 @@
 
 (define (rnd n)
   (~r n #:precision '(= 2)))
+
+(define (align s W)
+  (~a s #:align 'right #:min-width W))
 
 ;; -----------------------------------------------------------------------------
 
@@ -205,10 +208,57 @@
                           (rnd (stddev (cdr col)))
                           (rnd (mean v*))
                           (rnd (stddev v*))))))
+     (define row
+       (list*
+        (cons (mean (map (lambda (c t) (* 100 (/ c t))) ctime* alltime*))
+              (stddev (map (lambda (c t) (* 100 (/ c t))) ctime* alltime*)))
+        (for/list ([col (in-list col**)])
+          (define v* (map (lambda (v c) (* 100 (/ v c))) (cdr col) ctime*))
+          (cons (car col) (mean v*)))))
      (if (*output*)
          (with-output-to-file (*output*) #:exists 'replace
            (lambda () (pretty-print conclusions)))
-         (begin (pretty-print conclusions))))))
+         (pretty-print conclusions))
+     (newline)
+     (print-tex row))))
+
+;; Requires all
+(define (print-tex c*)
+  (define col* '("C / R (S.E.)"
+                 "adapt"
+                 "hoc"
+                 "lib"
+                 "dom-only"
+                 "\\tt{(any->?)}"
+                 "[ \\tt{(any->bool)} ]"))
+  (define val*
+    (for/list ([tag (map cparse->symbol (list adaptor?
+                                              higher-order?
+                                              library?
+                                              domain-only?
+                                              codomain-only?
+                                              predicate?))])
+      (or (findf (lambda (x) (eq? tag (car x))) (cdr c*))
+          (raise-user-error 'print-tex (format "Cannot generate row, missing data for column '~e'" tag)))))
+  (define mw (string-length "suffixtree"))
+  ;; -- important, print the title
+  (display (~a "Project" #:min-width (+ 2 (string-length "suffixtree"))))
+  (display " & ")
+  (for ([c (in-list col*)])
+    (display c)
+    (display " & "))
+  (newline)
+  (display (~a "X" #:min-width (+ 2 (string-length "suffixtree"))))
+  (display " & ")
+  (display (align (format "~a (~a)" (round (caar c*)) (rnd (cdar c*)))
+                  (string-length (car col*))))
+  (display " & ")
+  (for ([c (in-list (cdr col*))]
+        [v (in-list val*)])
+    (display (align (round (cdr v))
+                    (string-length c)))
+    (display " & "))
+  (newline))
 
 ;; Nicely format summary results
 (define (pretty-print conclusions)
