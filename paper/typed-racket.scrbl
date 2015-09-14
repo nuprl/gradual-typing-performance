@@ -543,10 +543,11 @@ developers exploring the lattice.
 @; - typing hyphenate (one untyped module) was tricky -- had to replace 'parititon' with 2 filters
 
 
+@; Note: these results are for v6.2. On HEAD things are 30% better; see `postmortem/profile/contract-speedup.org`
 @figure*["fig:postmortem" "Profiling the worst-case contract overhead"
 @exact|{
 \begin{tabular}{l r || r r r r r r}
-Project         & C/R (S.E.) & adaptor & higher-order & library & \tt{(T->any)} & \tt{(any->T)} & \tt{(any->bool)} \\\hline
+Project         & \%C (S.E.) & adaptor & higher-order & library & \tt{(T->any)} & \tt{(any->T)} & \tt{(any->bool)} \\\hline
 \tt{sieve}      & 92 (2.33)  &       0 &           46 &       0 &             0 &            54 &               31 \\
 \tt{morse-code} & 29 (6.80)  &       0 &            0 &       0 &             0 &           100 &                0 \\
 \tt{mbta}       & 39 (3.65)  &       0 &            0 &      65 &             0 &            65 &                0 \\
@@ -563,4 +564,45 @@ Project         & C/R (S.E.) & adaptor & higher-order & library & \tt{(T->any)} 
 \end{tabular}
 }|
 ]
+
+@; -----------------------------------------------------------------------------
+@section[#:tag "sec:postmortem"]{Postmortem}
+
+(Things look bad blah blah lets find out why blah blah.
+We used St. Amour @etal's feature-specific-profiler @~cite[saf-cc-2015] to measure the contract
+overhead of each benchmark's slowest variation.)
+
+@Figure-ref{fig:postmortem} summarizes our findings.
+The leftmost data column, labeled "%C", gives the percent of each benchmark's total running
+time that was spent checking contracts on the slowest variation.
+These numbers are the average of 10 trials, so in parentheses we give the standard error of our measurements.
+Except for the short-running benchmarks@note{@tt{gregor}, @tt{morse-code}, and @tt{mbta}
+finished in under 2 seconds.
+All other benchmarks ran for at least 12 seconds on their worst-case variation.},
+we saw little variability across trials.
+
+(Note that all contracts were function contracts.
+Other contracts didn't get "hot" enough.
+Also, this percentage is still kinda opaque, hence the other columns.)
+
+The remaining columns are different partitions of the %C column.
+They tell what percentage of each benchmark's contract-checking time was spent on a particular
+variety of contracts.
+Adaptor contracts lie between a typed module and untyped data structures.
+Higher-order contracts are function contracts with at least one function in their domain.
+Library contracts separate an untyped library from typed modules, or in the case of @tt{lnm},
+a typed library from untyped modules.
+The last three columns classify patterns of function contracts.
+First, @tt{(T->any)} denotes function contracts with protected domains and unchecked codomains.@note{In Racket, the @tt{any/c} contract is a no-op contract.}
+Contracts of this shape guard typed functions called in untyped modules.
+The shape @tt{(any->T)} is the opposite; these contracts verify that untyped functions
+produce well-typed results when called in a typed module.
+The final column, @tt{(any->bool)} is a subset of the @tt{(any->T)} column.
+It counts the total time spent checking the function contract @tt{(-> any/c boolean?)}, which
+asserts that its value is a function taking one argument and returning a boolean value.
+
+Note that many of these columns can overlap.
+For example, all adaptor contracts are also @tt{(any->T)} contracts.
+
+(Summarize results)
 
