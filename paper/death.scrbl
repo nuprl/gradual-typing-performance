@@ -114,19 +114,19 @@ overhead of each benchmark's slowest variation.@note{Sampling frequency: 0.005s.
 @figure*["fig:postmortem" "Profiling the worst-case contract overhead"
 @exact|{
 \begin{tabular}{l r || r r r r r r}
-Project & C pct (ste) & adapt & \tt{(any->bool)} & cod-only & dom-only & hoc & lib \\\hline
-\tt{sieve}       & 91.93 (2.33) &      0 &      31.08 &     31.08 &         0 & 46.27 &     0 \\
-\tt{morse-code}  & 29.60 (6.80) &      0 &          0 &    100.00 &         0 &     0 &     0 \\
-\tt{mbta}        & 39.03 (3.65) &      0 &          0 &     64.95 &         0 &     0 & 64.95 \\
-\tt{zo}          & 94.59 (0.10) &      0 &      43.19 &     99.01 &         0 &     0 & 44.84 \\
-\tt{suffixtree}  & 93.53 (0.18) &  97.91 &      17.55 &     93.97 &      2.09 &  0.23 &     0 \\
-\tt{lnm}         & 81.19 (0.73) &      0 &       9.36 &         0 &     90.63 & 99.14 & 99.52 \\
-\tt{kcfa}        & 91.38 (0.26) & 100.00 &      31.02 &     31.03 &         0 &  0.02 &     0 \\
-\tt{snake}       & 98.28 (0.21) &  92.90 &      48.93 &     77.68 &      1.42 &     0 &     0 \\
-\tt{tetris}      & 95.67 (0.35) &  88.98 &      44.25 &     88.98 &     11.02 &     0 &     0 \\
-\tt{synth}       & 82.70 (1.22) &      0 &          0 &     19.59 &     29.30 & 90.05 &     0 \\
-\tt{gregor}      & 83.32 (4.01) &  78.42 &      30.84 &     84.65 &      7.04 &     0 &  3.33 \\
-\tt{quad}        & 80.42 (0.96) &   0.31 &       0.08 &      0.51 &      3.23 &  0.53 &     0 \\
+Project         & C/R (S.E.) & adaptor & higher-order & library & \tt{(T->any)} & \tt{(any->T)} & \tt{(any->bool)} \\\hline
+\tt{sieve}      & 92 (2.33)  &       0 &           46 &       0 &             0 &            54 &               31 \\
+\tt{morse-code} & 29 (6.80)  &       0 &            0 &       0 &             0 &           100 &                0 \\
+\tt{mbta}       & 39 (3.65)  &       0 &            0 &      65 &             0 &            65 &                0 \\
+\tt{zo}         & 95 (0.10)  &       0 &            0 &      45 &             0 &            99 &               43 \\
+\tt{suffixtree} & 94 (0.18)  &      98 &           <1 &       0 &             2 &            94 &               18 \\
+\tt{lnm}        & 81 (0.73)  &       0 &            9 &      99 &            91 &             0 &                0 \\
+\tt{kcfa}       & 91 (0.26)  &     100 &            0 &       0 &             0 &            54 &               31 \\
+\tt{snake}      & 98 (0.21)  &      93 &            0 &       0 &             1 &            78 &               49 \\
+\tt{tetris}     & 96 (0.35)  &      89 &            0 &       0 &            11 &            89 &               44 \\
+\tt{synth}      & 83 (1.22)  &       0 &           90 &       0 &            29 &            20 &                0 \\
+\tt{gregor}     & 83 (4.01)  &      78 &            0 &       3 &             7 &            85 &               31 \\
+\tt{quad}       & 80 (0.96)  &      <1 &           <1 &       0 &             3 &            <1 &               <1 \\
 \bottomrule
 \end{tabular}
 }|
@@ -137,6 +137,7 @@ Project & C pct (ste) & adapt & \tt{(any->bool)} & cod-only & dom-only & hoc & l
 @; TODO 
 @; TODO to verify, we instrumented the Racket contract system stop applying some contracts. Results as expected.
 @; TODO note: on HEAD things are 30% better already, by our measures
+@; synth, called within a macro!
 @; TODO lessons
 @; TODO we even removed data (on kcfa)
 

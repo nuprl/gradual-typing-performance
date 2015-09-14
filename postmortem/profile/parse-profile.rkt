@@ -228,8 +228,8 @@
                  "adapt"
                  "hoc"
                  "lib"
-                 "dom-only"
-                 "\\tt{(any->?)}"
+                 "\\tt{(T->any)}"
+                 "\\tt{(any->T)}"
                  "[ \\tt{(any->bool)} ]"))
   (define val*
     (for/list ([tag (map cparse->symbol (list adaptor?
