@@ -1,5 +1,5 @@
-Adapt
-=====
+Many Adaptor
+============
 
 Re-editions of certain benchmarks with many adaptors, instead of just one.
 Should remove bottlenecks.

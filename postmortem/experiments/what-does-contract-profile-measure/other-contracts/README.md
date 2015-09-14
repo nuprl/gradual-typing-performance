@@ -1,5 +1,5 @@
-Exhibit H: removing other contracts
-===================================
+Removing Other Contracts
+========================
 
 1. Removed `(-> (vectorof Integer) Integer (box/c (or/c #f #t)) (-> Void) (-> (vectorof Integer) Float) any)` from synth.
    NO DIFFERENCE.

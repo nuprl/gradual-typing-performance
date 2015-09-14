@@ -1,3 +1,6 @@
+Vectors vs. Lists
+=================
+
 Accounting for vectors & lists
 
 #### Goal:

@@ -1,7 +1,15 @@
-The Worst
-=========
+Postmortem
+==========
 
-Summary of the worst-of-all variations
+Analyzing the sources of contract overhead in our benchmarks
+
+- `experiments` assorted tests and measurements
+- `profile` output from the contract profiler, and analysis
+
+
+
+Worst Variations
+----------------
 
 |------------+------------------+-------------+------------------------|
 | Project    |       Worst Var. | Runtime(ms) | Overhead (vs. untyped) |
@@ -19,9 +27,6 @@ Summary of the worst-of-all variations
 
 Observations
 ------------
-
-(Use these to confirm the suspicions in the paper)
-
 
 #### gregor
 ###### Worst
