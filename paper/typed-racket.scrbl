@@ -581,15 +581,12 @@ finished in under 2 seconds.
 All other benchmarks ran for at least 12 seconds on their worst-case variation.},
 we saw little variability across trials.
 
-Clearly, the benchmarks are spending an enormous proportion of their running time in checking that values satisfy their contracts.
+Clearly, the benchmarks are spending an enormous proportion of their running time checking that values satisfy their contracts.
 This was obvious from our experiment.
 The more interesting question is: what patterns, if any, do these contracts share?
 
-Unsurprisingly, all contracts noticed by the profiler were function
-contracts.@note{Value contracts may be discharged immediately, and are less likely to be observed during sampling.}
-
-To answer this question, the remaining columns of @figure-ref{"fig:postmortem"} tell what
-percentage of each benchmark's @tt{contract-checking} execution time was spent on a
+To answer this question, the remaining columns of @figure-ref{fig:postmortem} tell what
+percentage of each benchmark's @emph{contract-checking} execution time was spent on a
 particular variety of contracts.
 Adaptor contracts lie between a typed module and untyped data structures.
 Higher-order contracts are function contracts with at least one function in their domain.
@@ -598,14 +595,24 @@ a typed library from untyped modules.
 The last three columns classify patterns of function contracts.
 First, @tt{(T->any)} denotes function contracts with protected domains and unchecked codomains.@note{In Racket, the @tt{any/c} contract is a no-op contract.}
 Contracts of this shape guard typed functions called in untyped modules.
-The shape @tt{(any->T)} is the opposite; these contracts verify that untyped functions
-produce well-typed results when called in a typed module.
-The final column, @tt{(any->bool)} is a subset of the @tt{(any->T)} column.
+The shape @tt{(any->T)} is the opposite; these contracts guard functions with unchecked domains and protected codomains.
+For example, if a typed module calls an untyped function with immutable arguments, Typed Racket
+can statically verify that the untyped function is given well-typed arguments, but must insert a contract to verify
+the function's result.
+Lastly, the @tt{(any->bool)} column is a subset of the @tt{(any->T)} column.
 It counts the total time spent checking the function contract @tt{(-> any/c boolean?)}, which
 asserts that its value is a function taking one argument and returning a boolean value.
 
-Note that many of these columns can overlap.
-For example, all adaptor contracts are also @tt{(any->T)} contracts.
+@;bg: Should we explain that (any->T) is variable arity, but (any->bool) is strictly one argument?
+@:    I think the message is clear without it
 
-(Summarize results)
+Note that many of these columns can overlap.
+The @tt{mbta} benchmark in particular spends 65% of its contract-checking time verifying library functions.
+These checks are always triggered by a typed module on immutable arguments, so they also classify as @tt{(any->T)} contracts.
+
+These results (todo)
+
+@; Unsurprisingly, all contracts noticed by the profiler were function
+@; contracts.@note{Value contracts may be discharged immediately, and are less likely to be observed during sampling.}
+
 
