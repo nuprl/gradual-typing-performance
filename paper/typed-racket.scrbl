@@ -555,7 +555,7 @@ Project         & \%C (S.E.) & adaptor & higher-order & library & \tt{(T->any)} 
 \tt{suffixtree} & 94 (0.18)  &      98 &           <1 &       0 &             2 &            94 &               18 \\
 \tt{lnm}        & 81 (0.73)  &       0 &            9 &      99 &            91 &             0 &                0 \\
 \tt{kcfa}       & 91 (0.26)  &     100 &            0 &       0 &             0 &            54 &               31 \\
-\tt{snake}      & 98 (0.21)  &      93 &            0 &       0 &             1 &            78 &               49 \\
+\tt{snake}      & 98 (0.21)  &      93 &            0 &       0 &             1 &            99 &               49 \\
 \tt{tetris}     & 96 (0.35)  &      89 &            0 &       0 &            11 &            89 &               44 \\
 \tt{synth}      & 83 (1.22)  &       0 &           90 &       0 &            29 &            20 &                0 \\
 \tt{gregor}     & 83 (4.01)  &      78 &            0 &       3 &             7 &            85 &               31 \\
@@ -574,20 +574,23 @@ overhead of each benchmark's slowest variation.)
 
 @Figure-ref{fig:postmortem} summarizes our findings.
 The leftmost data column, labeled "%C", gives the percent of each benchmark's total running
-time that was spent checking contracts on the slowest variation.
+time that was spent checking contracts on its slowest variation.
 These numbers are the average of 10 trials, so in parentheses we give the standard error of our measurements.
 Except for the short-running benchmarks@note{@tt{gregor}, @tt{morse-code}, and @tt{mbta}
 finished in under 2 seconds.
 All other benchmarks ran for at least 12 seconds on their worst-case variation.},
 we saw little variability across trials.
 
-(Note that all contracts were function contracts.
-Other contracts didn't get "hot" enough.
-Also, this percentage is still kinda opaque, hence the other columns.)
+Clearly, the benchmarks are spending an enormous proportion of their running time in checking that values satisfy their contracts.
+This was obvious from our experiment.
+The more interesting question is: what patterns, if any, do these contracts share?
 
-The remaining columns are different partitions of the %C column.
-They tell what percentage of each benchmark's contract-checking time was spent on a particular
-variety of contracts.
+Unsurprisingly, all contracts noticed by the profiler were function
+contracts.@note{Value contracts may be discharged immediately, and are less likely to be observed during sampling.}
+
+To answer this question, the remaining columns of @figure-ref{"fig:postmortem"} tell what
+percentage of each benchmark's @tt{contract-checking} execution time was spent on a
+particular variety of contracts.
 Adaptor contracts lie between a typed module and untyped data structures.
 Higher-order contracts are function contracts with at least one function in their domain.
 Library contracts separate an untyped library from typed modules, or in the case of @tt{lnm},
