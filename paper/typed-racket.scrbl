@@ -621,20 +621,34 @@ of predicate contracts may be a symptom of placing a typed/untyped boundary
 between a data definition and functions closely associated with the data.
 One example of this is the @tt{zo} analyzer; indeed the purpose of that code
 is to provide an interface to native compiler data structures.
-
 Nearly all benchmarks using adaptor modules exhibit this same pattern,
-with the exception of @tt{quad}.
-In fact, none of our columns tell much about the contracts present in @tt{quad}.
-This is because all core data structures in @tt{quad} are
-represented as lists rather than structs.
-As such, 93% of @tt{quad}'s contract-checking time is spent on recursive contracts
-asserting lists of a fixed size and format.
+where both the adaptor and @tt{(any->bool)} contracts account for a significant
+proportion of all contracts.
+The exceptions are @tt{synth} and @tt{quad}, the former because it more often
+creates structured data from raw vectors (and thus spends less time
+on adaptor predicates) and the latter because its core data is represented as fixed-length lists.
+In fact, @tt{quad}'s list contracts do not fit well into any of our categories
+because they do not require an adaptor module and cannot be optimized away.
+Nonetheless, recursive contracts checking structured lists account for
+93% of @tt{quad}'s contract-checking time.
+@;bg; manual inspection, average of 10 runs
 
 Regarding higher-order contracts, we see relatively few in our benchmark programs.
 Only @tt{synth} and @tt{sieve} make heavy use of higher-order functions across
 contract boundaries.
-(Suggests these contracts are infrequent, or rather shows that flat function
-contracts can really add up)
+In these programs the cost of higher-order contracts is apparent, but more broadly
+we were surprised to learn that so many of our benchmarks had abysmal performance
+just from flat and first-order function contracts.
 
-(The dom and cod contracts imply that costs are in typed or untyped modules.
-Interesting for synth and lnm, almost everything else worse off with untyped data)
+Finally, the @tt{(T->any)} and @tt{(any->T)} give a rough impression of whether
+untyped or typed modules trigger most contract checks.
+We confirmed these findings by inspecting the individual benchmarks.
+For most benchmarks, we indeed found that the high-cost (or, high-frequency)
+contracts arose from a typed module calling an untyped library or data definition.
+This includes @tt{kcfa}, although half its calls from typed to untyped used
+mutable arguments and hence could not be reduced to @tt{any/c}. 
+The exceptions were @tt{lnm}, @tt{synth}, and @tt{quad}, which all suffered more
+when untyped modules called typed ones.
+With @tt{lnm} this was because it used a typed library for plotting.
+The others spent more time creating typed data from untyped arguments.
+
