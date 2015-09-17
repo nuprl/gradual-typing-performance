@@ -1,0 +1,40 @@
+TODO: (things to possibly respond to)
+
+Reviewer 1 & 2:
+  "even the lattice-based evaluation method is not novel [24]"
+
+Reviewer 1:
+  "would have liked to see the results for a popular language like TypeScript"
+  "constructive suggestions" -> reply about profiling
+
+Reviewer 2:
+
+  "The whole phrasing around sound gradual typing being dead is
+  eye-catching, but given that the evaluation is over a runtime that
+  does not leverage modern JIT compilation technology, I do not think
+  very strong conclusions about its feasibility can be made from the
+  evaluation." -> Jan has this
+
+  "The paper could be improved by adding analysis of what types of checks
+  tend to cause the most overhead." -> reply about profiling
+
+  "The additional metrics of N-deliverability, N/M-usability, etc. do not
+  seem all that helpful to me.  In the real world, I doubt that any code
+  for which performance matters would ever be deployed with more than a
+  50% slowdown.  The bottom line of the excessive slowdown from sound
+  gradual typing is fairly clear without these additional metrics."
+
+Reviewer 3:
+
+  * Several suggestions to clarify scope of benchmarks, details of
+    approach, figures, etc. --> we should just say we will make these changes
+
+    (I think the "more than one typing" may be worth mentioning in the
+     response explicitly)
+
+  * "I'm sure I am missing something here, but I'd like to understand better
+  how there can be repeated crossing of boundaries between modules A
+  and B if B depends on A but not vice-versa" <-- should clarify this in response
+
+  * "When reading 3.1.1 I didn't get what message you were trying to give."
+    <-- maybe clarify adaptors in response?
