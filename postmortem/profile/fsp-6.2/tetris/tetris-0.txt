@@ -1,0 +1,17 @@
+5092 samples
+
+
+Contracts
+account(s) for 94.21% of total running time
+98933/2 / 52504 ms
+
+Cost Breakdown
+  53663/2 ms : block=? (-> block? block? any)
+  20360 ms : block-x (-> any/c Real)
+  4125/2 ms : block-y (-> any/c Real)
+  179/2 ms : block-move (-> Real Real block? any)
+  53 ms : block10 (-> any/c any/c any/c block?)
+  20 ms : tetra-overlaps-blocks? (-> tetra? (listof block?) any)
+  20 ms : block-color (-> any/c Symbol)
+  18 ms : tetra-blocks (-> any/c (listof block?))
+  12 ms : blocks-move (-> any/c any/c any/c (listof block?))

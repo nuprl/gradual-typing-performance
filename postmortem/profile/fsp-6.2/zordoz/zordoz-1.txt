@@ -1,0 +1,34 @@
+95 samples
+
+
+Contracts
+account(s) for 79.25% of total running time
+1623/2 / 1024 ms
+
+Cost Breakdown
+  310 ms : zo->spec (-> any/c (recursive-contract (cons/c String (listof (cons/c String (-> (or/c String (recursive-contract g30333136 #:chaperone)))))) #:chaperone))
+  40 ms : seq? (-> any/c boolean?)
+  40 ms : zo? (-> any/c boolean?)
+  79/2 ms : lam? (-> any/c boolean?)
+  77/2 ms : seq-for-syntax? (-> any/c boolean?)
+  77/2 ms : install-value? (-> any/c boolean?)
+  57/2 ms : case-lam? (-> any/c boolean?)
+  25 ms : provided? (-> any/c boolean?)
+  22 ms : closure? (-> any/c boolean?)
+  43/2 ms : boxenv? (-> any/c boolean?)
+  20 ms : let-void? (-> any/c boolean?)
+  20 ms : def-syntaxes? (-> any/c boolean?)
+  20 ms : localref? (-> any/c boolean?)
+  39/2 ms : compilation-top? (-> any/c boolean?)
+  37/2 ms : let-one? (-> any/c boolean?)
+  10 ms : stx? (-> any/c boolean?)
+  10 ms : mod? (-> any/c boolean?)
+  10 ms : module-variable? (-> any/c boolean?)
+  10 ms : def-values? (-> any/c boolean?)
+  10 ms : let-rec? (-> any/c boolean?)
+  10 ms : prefix? (-> any/c boolean?)
+  10 ms : def-values-ids (-> any/c (listof (or/c Symbol toplevel?)))
+  10 ms : expr? (-> any/c boolean?)
+  10 ms : branch-then (-> branch? (or/c expr? seq? any/c))
+  10 ms : application-rator (-> any/c any/c)
+  10 ms : varref? (-> any/c boolean?)

@@ -1,0 +1,42 @@
+106 samples
+
+
+Contracts
+account(s) for 82.89% of total running time
+1807/2 / 1090 ms
+
+Cost Breakdown
+  197/2 ms : datetime->jd (-> DateTime? any)
+  197/2 ms : YMD3 (-> any/c any/c any/c YMD?)
+  117/2 ms : DateTime-jd (-> any/c Rational)
+  50 ms : day-ns->time (-> any/c Time?)
+  97/2 ms : HMSN11 (-> any/c any/c any/c any/c HMSN?)
+  87/2 ms : DateTime17 (-> any/c any/c any/c DateTime?)
+  43 ms : datetime->time (-> DateTime? any)
+  37 ms : date->ymd (-> Date? any)
+  63/2 ms : Date3 (-> any/c any/c Date?)
+  30 ms : datetime<? (-> DateTime? DateTime? any)
+  30 ms : make-time (->* (any/c) (any/c any/c any/c) Time?)
+  57/2 ms : datetime-days-between (-> any/c any/c Integer)
+  57/2 ms : time->ns (-> any/c Natural)
+  43/2 ms : hmsn->day-ns (-> HMSN? any)
+  43/2 ms : HMSN-s (-> any/c Integer)
+  20 ms : DateTime-date (-> any/c Date?)
+  20 ms : Moment-zone (-> any/c (or/c #f String))
+  20 ms : utc-seconds->tzoffset (-> string? real? tzoffset?)
+  20 ms : Moment-datetime/local (-> any/c DateTime?)
+  13 ms : HMSN-m (-> any/c Integer)
+  23/2 ms : make-moment (-> any/c any/c any/c Moment?)
+  23/2 ms : HMSN-h (-> any/c Integer)
+  23/2 ms : DateTime-time (-> any/c Time?)
+  10 ms : tzoffset-utc-seconds (-> any/c Integer)
+  10 ms : datetime-nanoseconds-between (-> any/c any/c Integer)
+  10 ms : YMD? (-> any/c boolean?)
+  10 ms : day-ns->hmsn (-> Natural any)
+  10 ms : datetime->date (-> DateTime? any)
+  10 ms : datetime (->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any)
+  10 ms : Date-jdn (-> any/c Integer)
+  10 ms : datetime-months-between (-> any/c any/c Integer)
+  10 ms : Date-ymd (-> any/c YMD?)
+  17/2 ms : YMD-y (-> any/c Natural)
+  17/2 ms : date+time->datetime (-> Date? Time? any)

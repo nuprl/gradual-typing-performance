@@ -1,0 +1,22 @@
+3285 samples
+
+
+Contracts
+account(s) for 97.48% of total running time
+64973/2 / 33327 ms
+
+Cost Breakdown
+  12138 ms : snake-segs (-> any/c (cons/c posn? (listof posn?)))
+  7687/2 ms : world-snake (-> any/c snake?)
+  5441/2 ms : world-food (-> any/c posn?)
+  2424 ms : posn-x (-> any/c Real)
+  1942 ms : cut-tail (-> any/c (listof posn?))
+  1620 ms : world17 (-> any/c any/c world?)
+  1529 ms : posn3 (-> any/c any/c posn?)
+  1440 ms : snake10 (-> any/c any/c snake?)
+  2083/2 ms : posn=? (-> any/c any/c (or/c #f #t))
+  2065/2 ms : game-over? (-> world? any)
+  990 ms : posn-y (-> any/c Real)
+  931 ms : world->world (-> world? any)
+  1279/2 ms : snake-dir (-> any/c (or/c up down left right))
+  195 ms : handle-key (-> world? String any)

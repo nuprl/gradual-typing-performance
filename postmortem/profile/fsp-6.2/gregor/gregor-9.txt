@@ -1,0 +1,41 @@
+105 samples
+
+
+Contracts
+account(s) for 80.47% of total running time
+1743/2 / 1083 ms
+
+Cost Breakdown
+  183/2 ms : YMD3 (-> any/c any/c any/c YMD?)
+  163/2 ms : datetime->jd (-> DateTime? any)
+  44 ms : Date3 (-> any/c any/c Date?)
+  40 ms : DateTime-jd (-> any/c Rational)
+  40 ms : HMSN11 (-> any/c any/c any/c any/c HMSN?)
+  77/2 ms : date+time->datetime (-> Date? Time? any)
+  77/2 ms : DateTime17 (-> any/c any/c any/c DateTime?)
+  77/2 ms : day-ns->time (-> any/c Time?)
+  38 ms : DateTime-date (-> any/c Date?)
+  63/2 ms : datetime (->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any)
+  30 ms : Date-ymd (-> any/c YMD?)
+  30 ms : datetime->date (-> DateTime? any)
+  30 ms : YMD-d (-> any/c Natural)
+  30 ms : Date-jdn (-> any/c Integer)
+  28 ms : make-time (->* (any/c) (any/c any/c any/c) Time?)
+  47/2 ms : HMSN-m (-> any/c Integer)
+  43/2 ms : DateTime-time (-> any/c Time?)
+  43/2 ms : utc-seconds->tzoffset (-> any/c any/c tzoffset?)
+  20 ms : time->ns (-> any/c Natural)
+  37/2 ms : YMD? (-> any/c boolean?)
+  37/2 ms : YMD-y (-> any/c Natural)
+  10 ms : Moment-zone (-> any/c (or/c #f String))
+  10 ms : datetime-nanoseconds-between (-> any/c any/c Integer)
+  10 ms : tzoffset-utc-seconds (-> any/c Integer)
+  10 ms : YMD-m (-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12))
+  10 ms : Moment-datetime/local (-> any/c DateTime?)
+  10 ms : HMSN-n (-> any/c Integer)
+  10 ms : date (->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural) any)
+  10 ms : datetime-days-between (-> any/c any/c Integer)
+  10 ms : find-utc-offset (-> (vectorof interval?) real? tzoffset?)
+  10 ms : make-moment (-> any/c any/c any/c Moment?)
+  10 ms : datetime-months-between (-> any/c any/c Integer)
+  8 ms : datetime->time (-> DateTime? any)

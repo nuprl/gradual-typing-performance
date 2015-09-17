@@ -1,0 +1,31 @@
+38630 samples
+
+
+Contracts
+account(s) for 91.97% of total running time
+394402 / 428827 ms
+
+Cost Breakdown
+  232699/2 ms : store-join (-> (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Closure?)))
+  83417 ms : store-update* (-> (hash/c Binding? (set/c Closure?)) any/c any/c (hash/c Binding? (set/c Closure?)))
+  78350 ms : State-store (-> any/c (hash/c Binding? (set/c Closure?)))
+  64834 ms : store-lookup (-> (hash/c Binding? (set/c Closure?)) any/c (set/c Closure?))
+  94445/2 ms : State3 (-> any/c (hash/c Symbol Binding?) (hash/c Binding? (set/c Closure?)) any/c State?)
+  3323 ms : State-time (-> any/c (listof Symbol))
+  351/2 ms : benv-extend* (-> (hash/c Symbol Binding?) any/c any/c (hash/c Symbol Binding?))
+  128 ms : Closure-benv (-> any/c (hash/c Symbol Binding?))
+  237/2 ms : benv-lookup (-> (hash/c Symbol Binding?) any/c Binding?)
+  108 ms : State-benv (-> any/c (hash/c Symbol Binding?))
+  183/2 ms : Closure3 (-> any/c (hash/c Symbol Binding?) Closure?)
+  50 ms : State-call (-> any/c (or/c Lam? exp? Ref? Call?))
+  87/2 ms : Ref? (-> any/c boolean?)
+  73/2 ms : tick (-> any/c any/c (listof Symbol))
+  35 ms : alloc (-> any/c (-> any/c Binding?))
+  25 ms : Lam-formals (-> any/c (listof Symbol))
+  20 ms : Lam-call (-> any/c (or/c exp? Ref? Lam? Call?))
+  17 ms : Binding-var (-> any/c Symbol)
+  27/2 ms : Call-args (-> any/c (listof (or/c exp? Ref? Lam? Call?)))
+  27/2 ms : Closure-lam (-> any/c Lam?)
+  12 ms : Call-fun (-> any/c (or/c exp? Ref? Lam? Call?))
+  10 ms : Call? (-> any/c boolean?)
+  17/2 ms : Lam? (-> any/c boolean?)

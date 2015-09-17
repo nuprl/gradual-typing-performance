@@ -1,0 +1,17 @@
+1126 samples
+
+
+Contracts
+account(s) for 84.51% of total running time
+19479/2 / 11524 ms
+
+Cost Breakdown
+  2718 ms : Array (-> (vectorof Integer) Integer (box/c (or/c #f #t)) (-> Void) (-> (vectorof Integer) Float) any)
+  4245/2 ms : Array-unsafe-proc (-> Array? (-> (vectorof Integer) any))
+  3747/2 ms : unsafe-array-proc (-> any/c (-> (vectorof Integer) Float))
+  1711 ms : unsafe-build-array (-> (vectorof Integer) (-> (vectorof Integer) any) Array?)
+  940 ms : next-indexes! (-> (vectorof Integer) any/c (vectorof Integer) Void)
+  214 ms : build-array (-> (vectorof Natural) (-> (vectorof Integer) any) Array?)
+  72 ms : sequence (-> Natural (listof (cons/c (or/c Natural #f) Natural)) Natural (-> any/c (-> (vectorof Integer) Float)) any)
+  113/2 ms : sawtooth-wave (-> Float (-> (vectorof Integer) any))
+  32 ms : Mutable-Array (-> (vectorof Integer) Integer (box/c (or/c #f #t)) (-> Void) (-> (vectorof Integer) Float) (-> (vectorof Integer) any/c Void) (vectorof Float) any)

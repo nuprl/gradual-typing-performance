@@ -1,0 +1,33 @@
+27773 samples
+
+
+Contracts
+account(s) for 93.58% of total running time
+265638 / 283847 ms
+
+Cost Breakdown
+  142559 ms : label-datum (-> any/c (vectorof (or/c Char Symbol)))
+  30218 ms : label-i (-> any/c Natural)
+  28703 ms : node-children (-> any/c (listof node?))
+  28532 ms : node-up-label (-> any/c label?)
+  23663/2 ms : make-label (-> (vectorof (or/c Char Symbol)) any/c any/c label?)
+  4698 ms : label-j (-> any/c Natural)
+  5951/2 ms : node-position-at-end? (-> node? Index any)
+  5499/2 ms : label-ref (-> label? Integer any)
+  2309 ms : label-length (-> label? any)
+  1959 ms : node-find-child (-> node? any/c any)
+  3361/2 ms : make-node (-> any/c any/c any/c any/c node?)
+  3301/2 ms : node-parent (-> any/c (or/c #f node?))
+  2381/2 ms : set-node-children! (-> any/c any/c Void)
+  2041/2 ms : node-add-leaf! (-> node? label? any)
+  1705/2 ms : node-root? (-> node? any)
+  819 ms : sublabel (->* (label? Index) (Index) any)
+  551 ms : node-up-splice-leaf! (-> node? Index label? any)
+  533 ms : node-follow/k (-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/c any/c any/c any/c) (-> any/c any/c any/c any/c any/c) any)
+  671/2 ms : set-node-parent! (-> any/c any/c Void)
+  651/2 ms : set-node-up-label! (-> any/c any/c Void)
+  163/2 ms : label-element-equal? (-> any/c any/c any)
+  30 ms : make-suffix-tree (-> any/c suffix-tree?)
+  12 ms : node14 (-> any/c any/c any/c any/c node?)
+  23/2 ms : tree-add! (-> any/c any/c Void)
+  10 ms : suffix-tree-root (-> any/c node?)

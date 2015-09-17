@@ -1,0 +1,12 @@
+4894 samples
+
+
+Contracts
+account(s) for 80.63% of total running time
+82023/2 / 50866 ms
+
+Cost Breakdown
+  25406 ms : mean (->* ((sequence/c Real)) ((or/c #f (sequence/c Real))) any)
+  30877/2 ms : dc (->i ((draw (-> (is-a?/c dc<%>) real? real? any)) (w real?) (h real?)) ((d (or/c #f real?)) (a (or/c #f real?))) #:pre (draw) (... draw) (p pict?))
+  147 ms : bitstring->natural (-> String any)
+  20 ms : in-reach (-> String Index any)

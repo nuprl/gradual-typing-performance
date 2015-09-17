@@ -1,0 +1,40 @@
+104 samples
+
+
+Contracts
+account(s) for 79.83% of total running time
+859 / 1076 ms
+
+Cost Breakdown
+  109 ms : DateTime-jd (-> any/c Rational)
+  163/2 ms : DateTime17 (-> any/c any/c any/c DateTime?)
+  77 ms : Date3 (-> any/c any/c Date?)
+  75 ms : YMD3 (-> any/c any/c any/c YMD?)
+  97/2 ms : hmsn->day-ns (-> HMSN? any)
+  42 ms : utc-seconds->tzoffset (-> any/c any/c tzoffset?)
+  77/2 ms : utc-seconds->tzoffset (-> string? real? tzoffset?)
+  63/2 ms : HMSN11 (-> any/c any/c any/c any/c HMSN?)
+  63/2 ms : Date-jdn (-> any/c Integer)
+  30 ms : datetime->jd (-> DateTime? any)
+  57/2 ms : Moment-datetime/local (-> any/c DateTime?)
+  43/2 ms : tzoffset-utc-seconds (-> any/c Integer)
+  43/2 ms : HMSN-h (-> any/c Integer)
+  20 ms : datetime<? (-> DateTime? DateTime? any)
+  20 ms : DateTime-date (-> any/c Date?)
+  20 ms : datetime (->* (Natural) ((or/c 1 2 3 4 5 6 7 8 9 10 11 12) Natural Natural Natural Natural Natural) any)
+  13 ms : date+time->datetime (-> Date? Time? any)
+  23/2 ms : datetime-months-between (-> any/c any/c Integer)
+  23/2 ms : find-utc-offset (-> (vectorof interval?) real? tzoffset?)
+  10 ms : datetime->date (-> DateTime? any)
+  10 ms : HMSN-m (-> any/c Integer)
+  10 ms : day-ns->time (-> any/c Time?)
+  10 ms : day-ns->hmsn (-> Natural any)
+  10 ms : DateTime-time (-> any/c Time?)
+  10 ms : parse-tzfile (-> path-string? string? (vector/c (vectorof interval?) (vectorof tzoffset?)))
+  10 ms : HMSN? (-> any/c boolean?)
+  10 ms : make-time (->* (any/c) (any/c any/c any/c) Time?)
+  10 ms : make-moment (-> any/c any/c any/c Moment?)
+  10 ms : time->ns (-> any/c Natural)
+  10 ms : YMD-d (-> any/c Natural)
+  17/2 ms : date->ymd (-> Date? any)
+  17/2 ms : YMD-m (-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12))

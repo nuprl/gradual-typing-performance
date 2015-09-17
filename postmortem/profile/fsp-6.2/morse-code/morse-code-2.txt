@@ -1,0 +1,10 @@
+46 samples
+
+
+Contracts
+account(s) for 32.3% of total running time
+323/2 / 500 ms
+
+Cost Breakdown
+  167/2 ms : string->morse (-> any/c String)
+  78 ms : string-levenshtein (-> any/c any/c Integer)

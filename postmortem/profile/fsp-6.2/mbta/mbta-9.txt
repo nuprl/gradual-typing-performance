@@ -1,0 +1,11 @@
+148 samples
+
+
+Contracts
+account(s) for 39.03% of total running time
+1231/2 / 1577 ms
+
+Cost Breakdown
+  535/2 ms : attach-edge-property (->* (any/c) (#:for-each Any #:init any/c) (values (-> any/c any/c (set/c (or/c green E D C B red Mattapan Braintree orange blue))) any/c (-> any/c any/c any/c Void)))
+  200 ms : read-t-graph (-> anonymous-contract)
+  148 ms : in-neighbors (-> any/c any/c (sequence/c String))
