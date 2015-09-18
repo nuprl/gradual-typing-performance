@@ -153,8 +153,8 @@ has its own flavor with different cost centers.
 
 * Who wote the programs that you study?
 
-All the programs in the study were existing Racket (or TR) programs that
-have been used by others.
+All the programs in the study were existing Racket/TR programs that have
+been used by others.
 
 Their authorship is:
 
@@ -232,3 +232,18 @@ Good point.
 
 We will clarify.
 
+
+* To what extent can type inference help in inferring types for modules?
+
+This is an interesting idea, we will consider it. Thanks!
+
+* It's cool to have done exhaustive consideration of typed configurations,
+* but, as you remark, this is not feasible for larger programs. Why not
+* choose random paths.
+
+Random walks is one of the many, many things we have tried when doing this
+research.  It is certainly something that one would do to scale our approach
+to situations with much larger search spaces (either massive systems, or
+micro-level GT), but for this paper we wanted to give an exhaustive view of
+the space of configurations to convince the readers that we were not cherry
+pickig bad ones.
