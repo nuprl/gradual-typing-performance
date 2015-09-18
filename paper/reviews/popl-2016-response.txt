@@ -5,8 +5,8 @@ GT  SOUND Gradual Typing
 TR  Typed Racket 
 JIT Just in time compiler 
 
-Are our results already known in light of your previous work? 
-*************************************************************
+Are our results already known in light of previous work?
+********************************************************
 
 SOUND GT follows from a distinguished series of foundational works:
 
@@ -21,7 +21,8 @@ that paper explains/motivates/validates the framework.
 
 The experimental results are for a mature implementation of gradual typing
 with a large user base (commercial!) on independently created programs,
-representative of idiomatic usage of TR. They are a SHOCK to the devs. 
+representative of idiomatic usage of TR. They are a SHOCK to the devs.
+
 
 Our results point to a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
 As such, they are a call to arms for designers and implementers..
@@ -40,7 +41,7 @@ from 2006.  Any language that tags values with the casts applied to them
 behave similarly to TR: there will be allocations when the casts are
 applied; indirections to access data; and checks at use points.  TR
 implementation is NOT a naive implementation of GT. It includes a JIT and
-many optimizations. 
+many optimizations.
 
 * #81A asks about the performance of TypeScript.
 
@@ -56,24 +57,24 @@ it remains UNSOUND..
 The primary result is the EVAL FRAMEWORK. The negative evaluations for the
 most mature implementation of GT is a VALIDATION OF ITS USEFULNESS.
 
-TR does have a JIT, but the JIT is not aware of gradual types.  
+TR does have a JIT, but the JIT is not aware of gradual types.
 
 What impact MIGHT hypothetical GT-aware optimizations have on performance?
 The cost of GT split in three:
--- cast:- requires allocation
+-- cast: requires allocation
 -- unprotected access: may be slower as any value may have a contract
 -- protected access: checks must be run
 
 There is NO LOCALITY the JIT can leverage. A value cast in one part of the
-program must flow through the code, through modules, and is accessed pretty
-much anywhere. There are NO EXISTING optimization that would avoid these
-costs in the presence of dynamic features. 
+program flows across module boundaries to arbitrary destinations.
+There are NO EXISTING optimization that would avoid these
+costs in the presence of dynamic features.
 
-* The reviewer ask about an evaluation using Safe Typescript programs.
+* #81B ask about an evaluation using Safe TypeScript programs.
 
-We have not done this. We note in the paper that a 77x slowdown was reported
-by the authors in case of a fully dynamic program, so it is likely that an
-application of our framework would yield similarly frightening results. 
+We have not done this. We note in the paper that POPL '15 reported a 77x
+slowdown for a fully dynamic program, so it is likely that an
+application of our framework would yield similarly frightening results.
 
 Our paper is a challenge to other implementors of GT to evaluate their work
 properly before flooding POPL with more theoretical papers. The effort of
@@ -86,21 +87,21 @@ that; we don't.
 * #81B also states that 50% overhead is likely the maximum acceptable.
 
 The very reason for this formulation is that any user can pick a threshold.
-If 50% is what is required than clearly GT in its present form is dead.  No
+If N=50 is what is required than clearly GT in its present form is dead.  No
 JIT optimizations will save us.  For TR, we have users that still use GT,
 but that may be the peculiarities of one community.
 
-Our point is that if someone finds a solution that speeds up GT, this is the
-framework to evaluate that solution.
+Our point is that if someone claims to have a solution that speeds up GT,
+this is the framework to evaluate that solution.
 
 * #81A asks for constructive suggestions and solutions.
 * #81B+#81A ask for details about what kinds of checks are expensive.
 *********************************************************************
 
-TR/GT is a 10+ research investment. The magnitude of the overheads and the
+TR/GT is a +10-year research investment. The magnitude of the overheads and the
 ease with which a programmer can fall off a performance cliff came as a
 SHOCK.  This paper's role is to stand as a warning to others in the field,
-and to provide with a methodology that other can follow to evaluate their
+and to provide with a methodology that others can follow to evaluate their
 implementations.
 
 We now do have results on specific bottlenecks and -- with the permission
@@ -111,8 +112,8 @@ Reviewer #81C
 
 * Who wote the programs that you study?
 
-Except for 1, they are pre-existing idiomatic programs from others. 
-Here is a complete table: 
+All but 2 programs are pre-existing and idiomatic.
+Here is a complete table:
 
 ?????????????????????????????????????????????????????????????????????????????
 
@@ -131,50 +132,53 @@ quad -- Matthew B.
 
 ?????????????????????????????????????????????????????????????????????????????
 
-* You talk about "adapting" existing programs. 
+The benchmark test cases we used were largely synthetic.
+We will clarify in the paper.
+
+* You talk about "adapting" existing programs.
 
 The adaptations were the addition/removal of type annotations for easy
-benchmarking. 
+benchmarking.
 
 * When typing a module in TR, is there just one choice of typing?
 
 There is more than one way but we checked/chose the most specific types
-where possible. We will add a sentence to the paper to clarify. 
+where possible. We will add a sentence to the paper to clarify.
 
 * From your benchmark descriptions it does *not* appear that the programs
-* you study are at the scale where they would be implemented by teams. 
+* you study are at the scale where they would be implemented by teams.
 
 Yes, we will clarify.
 
 * The "Gregor" benchmark sounds totally synthetic.
 
 The library is used in real-world products, but the benchmark setup around
-this library is synthetic. 
+this library is synthetic.
 
 * L-step N/M-usable overlooks that two different modules may vary
 * dramatically in their size and their ease of typability.
 
-Annotations are required only on definitions (structures, functions, etc)
-so typability is not directly proportional to the size of a module. Still 
+Annotations are required on definitions (structures, functions, etc)
+so their number is not directly proportional to the size of a module. Still
 we accept your point.
 
-* I got confused by your use of "clique". 
+* I got confused by your use of "clique".
 
 Yes! We used a technical term from algorithms with its loose, colloquial
-meaning to apply to a measure of software complexity. We will clarify. 
+meaning to apply to a measure of software complexity. We will clarify.
 
 [ We mean 'bundles' of modules that are closely connected and export
   functions that generate a dense call graph. ]
 
 * quad in Figure 5
 
-We have data for quad now. It also looks bad. 
+We have data for quad now. It also looks bad.
 
 * "Our results may be less valid in the context of large programs, though
 *  practical experience using TR suggests otherwise."  - this statement is
-*  vague and mysterious to the reader.  
+*  vague and mysterious to the reader.
 
-We will elaborate. 
+We will elaborate.
 
 * To what extent can type inference help in inferring types for modules?
 
