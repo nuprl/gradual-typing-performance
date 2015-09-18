@@ -15,41 +15,40 @@ SOUND GT follows from a distinguished series of foundational works:
  POPL 2008, 2010, 2011, 2x 2015
  PLDI 2015
 
-This paper is the first to present any EVALUATION IDEA of the GT. While we
+This paper is the first to present a thorough EVALUATION of GT. While we
 used the idea in our OWN ECOOP paper for TWO SMALL BENCHMARKS, nothing in
 that paper explains/motivates/validates the framework.
 
-The experimental results are for a mature implementation of gradual typing
-with a large user base (commercial!) on independently created programs,
-representative of idiomatic usage of TR. They are a SHOCK to the devs.
-
+The experimental results are for a mature implementation of gradual typing with
+a user base on mostly independently created programs, representative of
+idiomatic usage of TR. They are a SHOCK to the devs.
 
 Our results point to a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
-As such, they are a call to arms for designers and implementers..
+As such, they are a call to arms for designers and implementers.
 
 Are our results of limited applicability?
 *****************************************
 
 * #81A laments the lack of attention of mico-level gradual typing.
 
-We tried! There is no robust implementations with rich libraries of GT.
+We tried! There is no robust implementations with rich libraries.
 
 * #81A asks if choosing TR biases experiments and endanger our conclusions.
 
 TR is representative of an approach to GT that goes back to the 2 Ur-papers
 from 2006.  Any language that tags values with the casts applied to them
 behave similarly to TR: there will be allocations when the casts are
-applied; indirections to access data; and checks at use points.  TR
-implementation is NOT a naive implementation of GT. It includes a JIT and
+applied; indirections to access data; and checks at use points. TR's
+implementation is NOT a naive implementation. It includes a JIT and
 many optimizations.
 
 * #81A asks about the performance of TypeScript.
 
 TypeScript is UNSOUND!!  The underlying JavaScript VM sees the same code
-for each configuration in our lattice.
+for each configuration in the lattice.
 
 StrongScript (by Vitek) has low overheads for partial soundness checks, but
-it remains UNSOUND..
+it remains UNSOUND.
 
 * #81B claims the impossibility of a negative result without evaluating the
 * potential benefits of JITs.
@@ -57,10 +56,10 @@ it remains UNSOUND..
 The primary result is the EVAL FRAMEWORK. The negative evaluations for the
 most mature implementation of GT is a VALIDATION OF ITS USEFULNESS.
 
-TR does have a JIT, but the JIT is not aware of gradual types.
-
+Racket's JIT is not specialized for gradual types.
 What impact MIGHT hypothetical GT-aware optimizations have on performance?
 The cost of GT split in three:
+
 -- cast: requires allocation
 -- unprotected access: may be slower as any value may have a contract
 -- protected access: checks must be run
@@ -79,7 +78,7 @@ application of our framework would yield similarly frightening results.
 Our paper is a challenge to other implementors of GT to evaluate their work
 properly before flooding POPL with more theoretical papers. The effort of
 applying our framework is HUGE and requires a substantial team. MS may have
-that; we don't. 
+that; we don't.
 
 * #81B states that N-deliverability, N/M-usability are unhelpful as the
 * performance of gradual typing is so bad that there is no point to them.
@@ -87,7 +86,7 @@ that; we don't.
 * #81B also states that 50% overhead is likely the maximum acceptable.
 
 The very reason for this formulation is that any user can pick a threshold.
-If N=50 is what is required than clearly GT in its present form is dead.  No
+If N=50 is what is required then clearly GT in its present form is dead.  No
 JIT optimizations will save us.  For TR, we have users that still use GT,
 but that may be the peculiarities of one community.
 
@@ -152,7 +151,7 @@ Yes, we will clarify.
 
 * The "Gregor" benchmark sounds totally synthetic.
 
-The library is used in real-world products, but the benchmark setup around
+The library is used in real-world programs, but the benchmark setup around
 this library is synthetic.
 
 * L-step N/M-usable overlooks that two different modules may vary
