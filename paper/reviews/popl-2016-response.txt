@@ -1,15 +1,19 @@
 This is not your usual POPL paper, thanks for the consideration.
 
+Gradual Typing = GT
+Typed Racket = TR
+Just in time compiler = JIT
+
 **********************************************************************
-*** Are our results already known in light of previous work?
+*** Are our results already known in light of previous work? *********
 **********************************************************************
 
-* Reviewers #81A and #81B remark that we published peformance results at
-* ECOOP'15 [24] and question novelty as well lessons learned.
+* Reviewers #81A+#81B remark we published performance results at
+* ECOOP'15~[24] and question novelty as well lessons learned.
 
-This paper is the first attempt to systematically evaluate the costs of the
-sound gradual typing approach. Sound gradual typing follows from a
-distinguished series of foundational works, e.g.:
+This is the first attempt to systematically evaluate the costs of the sound
+gradual typing approach. Sound GT follows from a distinguished series of
+foundational works:
 
 - Siek & Taha,        SFP 2006
 - Tobin-Hochstadt ea, DLS 2006
@@ -24,61 +28,60 @@ distinguished series of foundational works, e.g.:
 
 We provide experimental results for a mature implementation of gradual
 typing (TR is used by more than us) on independently written programs
-representative of idiomatic usage.
+representative of idiomatic usage of TR.
 
 Our results point to a fundamental challenge to the entire line of work, one
 that must absolutely be addressed if the approach is succeed.
 
-We hope this work to be a call to arms to language designers (are there
-other sound designs without the overheads?)  and language implementers (can
-innovative optimizations mitigate costs?).
+This paper is a call to arms to language designers (are there other sound
+designs?)  and language implementers (can optimizations mitigate costs?).
 
 We view our results as opening new research directions for the field!
 
-********************************************************************
-*** Are our results of limited applicability due to our choice of
-***  experimental environment?
+**********************************************************************
+*** Are our results of limited applicability due to our choice of ****
+***  experimental environment? ***************************************
+**********************************************************************
 
-* Reviewer #81A laments the lack of attention of mico-level gradual
-* typing.
+* #81A laments the lack of attention of mico-level gradual typing.
 
-One reason for not tackling micro-level gradual typing was the lack of
-robust implementations. We tried several systems but they were too fragile
-to run the range of programs that we were interested in evaluating.
+One reason for this is the lack of robust implementations with rich
+libraries. We tried some prototypes but they were too fragile or too
+impoverished to run the range of programs that we were interested in
+evaluating. (Eg. no concurrency, no graphics, no...)
+
+* #81A wonders if choosing TR biases the experiments and endanger our
+* conclusions.
+
+TR is representative of an approach to sound GT that goes back to Siek et
+al. and Tobin-Hochstadt et al.  Any language that tags values with the casts
+applied to them will behave similarly to TR: namely there will be allocation
+costs when the casts are applied, indirections to access data, and finally
+checks at use points.
+
+The TR implementation is far from a naive implementation of GT, many
+optimizations have been implemented in the contract system, and the TR JIT
+does help.
+
+* #81A asks about the performance on TypeScript.
+
+TypeScript is unsound, types are erased, thus there will be no difference in
+performance between any of the versions.  The underlying JavaScript VM will
+see the same code for each configuration in our lattice.
+
+One of the authors implemented StrongScript [Richards, ECOOP 15] which had
+low overheads. But again it is unsound (with some sound patches, but this a
+weaker guarantee).
 
 
-* Reviewer #81A wonders if the choice of Typed Racket does not introduce a
-* systematic bias in the experiments and thus endangers our conclusions.
+* #81B makes a point about the impossibility of a negative result without
+* evaluating the potential benefits of JITs.
 
+TR does have a JIT, which was on during our experiments. But the JIT is not
+aware of gradual types.
 
-TR is representative of an approach to sound gradual typing that goes back
-to Siek et al. and Tobin-Hochstadt et al.  Any language where values must be
-tagged by the casts applied to them will behave similarly to
-TR.  There will be allocation costs when the casts are applied. There will
-be indirections to access data, and finally there will checks at use points.
-
-The TR implementation already optimizes many contracts and has a JIT
-compiler (we have established that the JIT is speeding up the contracts, so
-an interpreted implementation would be even slower).
-
-* The reviewer also wonders about the performance on TypeScript.
-
-TypeScript is unsound. All types are erased and thus there would be no
-difference in performance between any of the versions.
-
-One of the authors implemented the StrongScript language, which had
-low overheads, but again it was not sound. (There were patches that could be
-shown sound, but this a weaker guarantee).
-
-
-* Reviewer #81B makes a point about the impossibility of having a negative
-* result like ours without evaluating the potential benefits of a JIT.
-
-Racket does have a JIT, which was on during our experiments. But the JIT is
-not aware of gradual types.
-
-So the question the reviewer is asking is to speculate what impact would
-hypothetical GT-aware optimizations have on performance.
+So the question is can we speculate what impact would hypothetical GT-aware
+optimizations have on performance?
 
 The cost of GT are split in three places:
 
@@ -89,78 +92,143 @@ The cost of GT are split in three places:
 
  - protected access -- here checks must be run
 
-The problem for a JIT is that there is no locality that can be leveraged. A
-value cast in one part of the program can (and does!) flow through the code,
-through modules, etc.  We can't think of an optimization that would avoid
-these costs.  We can imagine attenuating them to some extent, but only up to
-a point.
+The challenge is that there is no locality the JIT can leverage. A value
+cast in one part of the program can (and does!) flow through the code,
+through modules, and is accessed pretty much anywhere.  We can't think of an
+optimization that would avoid these costs yet support the dynamic features
+of the languages we are interested in (e.g. eval).  We can imagine
+attenuating them to some extent, but only up to a point.
 
 * The reviewer ask about an evaluation using Safe Typescript programs.
 
-We have not done this. We noted in the paper that a 77x slow down was
-reported by the authors in the case of a fully dynamic program, so it would
-not be surprising if our results carried over.  But we cannot tell for sure.
+We have not done this. We noted in the paper that a 77x slowdown was
+reported by the authors in case of a fully dynamic program, so it would not
+be surprising if our results carried over.  But we cannot tell for sure.
 The main challenge would be to develop a benchmark suite of interesting
 programs in STS.  Porting our code is unlikely to work as JavaScript does
 not have the libraries (graphics) or the threading support that would be
-required for direct ports.
+required for direct ports. One could fall back to something like the
+"Language performance Game" which has codes in all possible languages, but
+our experience with them (we used them to evaluate an implementation of R in
+VEE'14) is that they are a poor substitute for real code written in an
+idiomatic style.
 
+* #81B states that N-deliverability, N/M-usability are unhelpful as the
+* performance of gradual typing is so bad that there is no point.
 
-* Reviewer #81B states that N-deliverability, N/M-usability are unhelpful as
-* (paraphrasing) the performance of gradual typing is so bad that there is
-* no point in using those metrics.
-
-* Reviewer #81B makes the point that 50% overhead is likely the maximum
-* acceptable in the real world.
+* #81B makes the point that 50% overhead is likely the maximum acceptable.
 
 The very reason for this formulation is that any user can pick his or her
-threshold.  If 50% is what is required than clearly gradual typing in its
-present form is dead.  No JIT optimizations will give us a 100x speedup.
+threshold.  If 50% is what is required than clearly GT in its present form
+is dead.  No JIT optimizations will save us.  For TR, we have users that use
+GT, but that may be the peculiarities of one community.
 
-We have users willing to tolerate large slow downs. But this could be
-limited to our community.
-
-The point is: if someone finds a solution that speeds up GT, we have provided
-a framework to evaluate it.
+Our point is that if someone finds a solution that speeds up GT, we have
+provided a framework to evaluate it.
 
 
-**********************************************************************
-*** More insights would be appreciated
+***************************************************************************
+*** More insights would be appreciated ************************************
+***************************************************************************
 
-* Reviewer #81A asks for constructive suggestions and solutions that would
-* be more efficient.
+* #81A asks for constructive suggestions and solutions.
 
-One thing that this work have given us is a clear picture of how bad things
-can get. Since, we have realized the extent of the possible overheads we
-have been trying to come up with ways to alleviate them, but have not found
-any.  The performance is so bad that for some programs even a 10 fold speed
-up would not be enough to make the approach viable.
+GT is a 10+ research investment. The magnitude of the overheads and the ease
+with which a programmer can fall off a performance cliff came as a shock.
+This paper's role is to stand as a warning to others in the field, and to
+provide with a methodology that other can follow to evaluate their
+implementations.
 
-* Reviewers #81B and #81A ask for details about what kinds of checks are
-* expensive.
+* #81B+#81A ask for details about what kinds of checks are expensive.
 
-We do have these results. Since a rebuttal cannot introduce new results,
-let us say that each benchmark has its own flavor with different
-cost centers.
+We do have these results and can add them, space permitting. Since a
+rebuttal cannot introduce new results, let us just say that each benchmark
+has its own flavor with different cost centers.
 
-* Reviewer #81C asked for several clarifications on the scope of benchmarks
-  and details of the approach.
 
-Thank you for the feedback, we will make these clarifications.
+***************************************************************************
+********** Reviewer #81C **************************************************
+***************************************************************************
+
+
+* Who wote the programs that you study?
+
+All the programs in the study were existing Racket (or TR) programs that
+have been used by others.
+
+Their authorship is:
+
+- LIST HERE
+
+* You talk about "adapting" existing programs. 
+
+The adaptations were the addition of type annotations for Racket program and
+their removal for TR programs.
+
+* When typing a module in TR, is there just one choice of typing?
 
 One point that we would like to clarify here is that, indeed, there is more
-than one way to add types to our Typed Racket benchmarks. We expect that this
-is true to some extent for any practical gradual type system and that a subjective
-choice must be made. We will address this in our paper.
+than one way to add types to our TR benchmarks. We expect that
+this is true to some extent for any practical gradual type system and that a
+subjective choice must be made. We will address this in our paper.
 
-* Reviewer #81C asked how bidirectional boundary crossings can happen in a module
-  graph that is a DAG.
+* From your benchmark descriptions it does *not* appear that the programs
+* you study are at the scale where they would be implemented by teams. 
+
+Good point, we will clarify.
+
+* The "Gregor" benchmark sounds totally synthetic.
+
+...
+
+* A problem I have with the definition of L-step N/M-usable is that
+* two different modules may vary dramatically in their size and their
+* ease of typability. 
+
+In TR, types are put on the interface of modules. So the while your point is
+correct, modules that export more definitions require more annotations, it
+is worth pointing out that these annotations are not proportional to the
+size of the modules in lines of code.
+
+
+* In your discussion of Fig. 3 you say "Almost all partially typed
+  configurations exhibit slowdowns between 0.7x and 105x."  First, 0.7x is
+  the speedup associated with having full types.  Second, I could not see
+  (from Fig. 3) any exceptions to this range.  If there are exceptions,
+  please comment on a couple of them.  If there are no exceptions then I'm
+  not sure what point you are making here other than commenting on the range
+  associated with the figure.
+
+?? Minor ??? Ignore
+
+* I got confused by your statement: "These modules make up a tightly coupled
+  clique."  By "clique" I thought you meant that the graph of inter-module
+  dependences would be the complete graph.  But looking at Figure 1, the
+  module structures all appear to be DAGs.  So there are no cycles between
+  modules, and thus modules cannot form cliques.
 
 A boundary crossing happens when a value from one module is used by code in the
 other. In the case that a function is exported from A to B, then calls to that
 function in B will cause B values to flow into the body of the function in A.
  and B if B depends on A but not vice-versa" <-- should clarify this in response
 
-TODO:
-* "When reading 3.1.1 I didn't get what message you were trying to give."
-  <-- maybe clarify adaptors in response?
+
+* I found your inclusion of quad in Figure 5 misleading - it would have been
+* clearer to use dashes in the figure to indicate that there was no data.
+
+Good point.
+
+* "Our results may be less valid in the context of large programs, though
+*  practical experience using TR suggests otherwise."  - this statement is
+*  vague and mysterious to the reader.  
+
+??
+
+
+* In 3.1.1 ... it wasn't clear to me whether you had to manually adapt the
+*  benchmarks to use adaptors, or whether this was somehow done
+*  automatically.  This became clearer later, but I think you could explain
+*  more clearly at this point that you did have to manually edit benchmarks.
+
+We will clarify.
+
