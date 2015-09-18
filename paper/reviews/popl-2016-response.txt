@@ -1,12 +1,13 @@
-This is not your usual POPL paper, thanks for the consideration.
 
-GT: SOUND Gradual Typing 
-TR: Typed Racket 
+This is not your usual POPL paper, thanks for the consideration
+and apologies for the extensive response. 
+
+GT  SOUND Gradual Typing 
+TR  Typed Racket 
 JIT Just in time compiler 
 
-**********************************************************************
-*** Are our results already known in light of your previous work? ***
-**********************************************************************
+Are our results already known in light of your previous work? 
+*************************************************************
 
 SOUND GT follows from a distinguished series of foundational works:
 
@@ -15,21 +16,19 @@ SOUND GT follows from a distinguished series of foundational works:
  POPL 2008, 2010, 2011, 2x 2015
  PLDI 2015
 
-This paper is the first to present any evaluation of the gradual typing
-approach at all. While we used the idea in our OWN ECOOP paper for two
-small benchmarks, nothing in this paper explains/motivates the framework.
+This paper is the first to present any EVALUATION IDEA of the GT. While we
+used the idea in our OWN ECOOP paper for TWO SMALL BENCHMARKS, nothing in
+that paper explains/motivates/validates the framework.
 
 The experimental results are for a mature implementation of gradual typing
 with a large user base (commercial!) on independently created programs,
-representative of idiomatic usage of TR.
+representative of idiomatic usage of TR. They are a SHOCK to the devs. 
 
 Our results point to a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
 As such, they are a call to arms for designers and implementers..
 
-**********************************************************************
-*** Are our results of limited applicability due to our choice of ****
-***  experimental environment? ***************************************
-**********************************************************************
+Are our results of limited applicability?
+*****************************************
 
 * #81A laments the lack of attention of mico-level gradual typing.
 
@@ -46,17 +45,17 @@ many optimizations.
 
 * #81A asks about the performance of TypeScript.
 
-TypeScript is UNSOUND (!!!!).  The underlying JavaScript VM sees the same
-code for each configuration in our lattice.
+TypeScript is UNSOUND!!  The underlying JavaScript VM sees the same code
+for each configuration in our lattice.
 
-StrongScript (by Vitek) has low overheads for partial checks, but it
-remains UNSOUND..
+StrongScript (by Vitek) has low overheads for partial soundness checks, but
+it remains UNSOUND..
 
-* #81B makes a point about the impossibility of a negative result without
-* evaluating the potential benefits of JITs.
+* #81B claims the impossibility of a negative result without evaluating the
+* potential benefits of JITs.
 
-The primary result is a framework. The negative evaluations for the most
-mature implementation of GT is a validation of its usefulness. 
+The primary result is the EVAL FRAMEWORK. The negative evaluations for the
+most mature implementation of GT is a VALIDATION OF ITS USEFULNESS.
 
 TR does have a JIT, but the JIT is not aware of gradual types.  
 
@@ -95,107 +94,74 @@ but that may be the peculiarities of one community.
 Our point is that if someone finds a solution that speeds up GT, this is the
 framework to evaluate that solution.
 
-***************************************************************************
-*** More insights would be appreciated ************************************
-***************************************************************************
-
 * #81A asks for constructive suggestions and solutions.
+* #81B+#81A ask for details about what kinds of checks are expensive.
+*********************************************************************
 
-GT is a 10+ research investment. The magnitude of the overheads and the ease
-with which a programmer can fall off a performance cliff came as a SHOCK.
-This paper's role is to stand as a warning to others in the field, and to
-provide with a methodology that other can follow to evaluate their
+TR/GT is a 10+ research investment. The magnitude of the overheads and the
+ease with which a programmer can fall off a performance cliff came as a
+SHOCK.  This paper's role is to stand as a warning to others in the field,
+and to provide with a methodology that other can follow to evaluate their
 implementations.
 
-* #81B+#81A ask for details about what kinds of checks are expensive.
+We now do have results on specific bottlenecks and -- with the permission
+of the committee -- we will add them AFTER THE PAPER IS ACCEPTED AS IS. 
 
-We now do have these results and -- with the permission of the committee
-AFTER THE PAPER IS ACCEPTED AS IS -- we will add them. 
-
-***************************************************************************
-********** Reviewer #81C **************************************************
-***************************************************************************
+Reviewer #81C 
+*************
 
 * Who wote the programs that you study?
 
-All the programs in the study were existing Racket/TR programs that have
-been used by others.
+Except for 1, they are pre-existing idiomatic programs from others. 
+Here is a complete table: 
 
-Their authorship is:
-
-- LIST HERE
+?????????????????????????????????????????????????????????????????????????????
 
 * You talk about "adapting" existing programs. 
 
-The adaptations were the addition of type annotations for Racket program and
-their removal for TR programs.
+The adaptations were the addition/removal of type annotations for easy
+benchmarking. 
 
 * When typing a module in TR, is there just one choice of typing?
 
-One point that we would like to clarify here is that, indeed, there is more
-than one way to add types to our TR benchmarks. We expect that
-this is true to some extent for any practical gradual type system and that a
-subjective choice must be made. We will address this in our paper.
+There is more than one way but we checked/chose the most specific types
+where possible. We will add a sentence to the paper to clarify. 
 
 * From your benchmark descriptions it does *not* appear that the programs
 * you study are at the scale where they would be implemented by teams. 
 
-Good point, we will clarify.
+Yes, we will clarify.
 
 * The "Gregor" benchmark sounds totally synthetic.
 
-...
+?????????????????????????????????????????????????????????????????????????????
 
-* A problem I have with the definition of L-step N/M-usable is that
-* two different modules may vary dramatically in their size and their
-* ease of typability. 
+* L-step N/M-usable overlooks that two different modules may vary
+* dramatically in their size and their ease of typability.
 
 In TR, types are put on the interface of modules. So the while your point is
 correct, modules that export more definitions require more annotations, it
 is worth pointing out that these annotations are not proportional to the
 size of the modules in lines of code.
 
+??? THEY ARE. ?????????????????????????????????????????????????????????????????????????????
 
-* In your discussion of Fig. 3 you say "Almost all partially typed
-  configurations exhibit slowdowns between 0.7x and 105x."  First, 0.7x is
-  the speedup associated with having full types.  Second, I could not see
-  (from Fig. 3) any exceptions to this range.  If there are exceptions,
-  please comment on a couple of them.  If there are no exceptions then I'm
-  not sure what point you are making here other than commenting on the range
-  associated with the figure.
+* I got confused by your use of "clique". 
 
-?? Minor ??? Ignore
+Yes! We used a technical term from algorithms with its loose, colloquial
+meaning to apply to a measure of software complexity. We will clarify. 
+[[ We mean 'bundles' of modules that are closely connected and export
+  functions that generate a clique-ish call graph.]
 
-* I got confused by your statement: "These modules make up a tightly coupled
-  clique."  By "clique" I thought you meant that the graph of inter-module
-  dependences would be the complete graph.  But looking at Figure 1, the
-  module structures all appear to be DAGs.  So there are no cycles between
-  modules, and thus modules cannot form cliques.
+* quad in Figure 5
 
-A boundary crossing happens when a value from one module is used by code in the
-other. In the case that a function is exported from A to B, then calls to that
-function in B will cause B values to flow into the body of the function in A.
- and B if B depends on A but not vice-versa" <-- should clarify this in response
-
-
-* I found your inclusion of quad in Figure 5 misleading - it would have been
-* clearer to use dashes in the figure to indicate that there was no data.
-
-Good point.
+We have data for quad now. It also looks bad. 
 
 * "Our results may be less valid in the context of large programs, though
 *  practical experience using TR suggests otherwise."  - this statement is
 *  vague and mysterious to the reader.  
 
-??
-
-
-* In 3.1.1 ... it wasn't clear to me whether you had to manually adapt the
-*  benchmarks to use adaptors, or whether this was somehow done
-*  automatically.  This became clearer later, but I think you could explain
-*  more clearly at this point that you did have to manually edit benchmarks.
-
-We will clarify.
+We will elaborate. 
 
 * To what extent can type inference help in inferring types for modules?
 
@@ -205,9 +171,10 @@ This is an interesting idea, we will consider it. Thanks!
 * but, as you remark, this is not feasible for larger programs. Why not
 * choose random paths.
 
-Random walks is one of the many, many things we have tried when doing this
-research.  It is certainly something that one would do to scale our approach
-to situations with much larger search spaces (either massive systems, or
-micro-level GT), but for this paper we wanted to give an exhaustive view of
-the space of configurations to convince the readers that we were not cherry
-pickig bad ones.
+Random walks is one of the many, many things we considered when doing this
+research.  It might scale our approach to situations with much larger
+search spaces (either massive systems, or micro-level GT), but for this
+paper we wanted to give an exhaustive view of the space of configurations
+to convince the readers that we were not cherry pickig bad ones and that
+the evaluation framework reveals serious weaknesses that were completely
+overlooked in the literature so far. 
