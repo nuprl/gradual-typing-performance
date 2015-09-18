@@ -1,42 +1,30 @@
 This is not your usual POPL paper, thanks for the consideration.
 
-Gradual Typing = GT
-Typed Racket = TR
-Just in time compiler = JIT
+GT: SOUND Gradual Typing 
+TR: Typed Racket 
+JIT Just in time compiler 
 
 **********************************************************************
-*** Are our results already known in light of previous work? *********
+*** Are our results already known in light of your previous work? ***
 **********************************************************************
 
-* Reviewers #81A+#81B remark we published performance results at
-* ECOOP'15~[24] and question novelty as well lessons learned.
+SOUND GT follows from a distinguished series of foundational works:
 
-This is the first attempt to systematically evaluate the costs of the sound
-gradual typing approach. Sound GT follows from a distinguished series of
-foundational works:
+ SFP 2006 and DLS 2006
+ ECOOP 2007, ESOP 2009
+ POPL 2008, 2010, 2011, 2x 2015
+ PLDI 2015
 
-- Siek & Taha,        SFP 2006
-- Tobin-Hochstadt ea, DLS 2006
-- Siek & Taha,        ECOOP 2007
-- Tobin-Hochstadt ea, POPL 2008
-- Siek ea,            ESOP 2009
-- Siek ea,            POPL 2010
-- Amal ea,            POPL 2011
-- Garcia ea,          POPL 2015
-- Greenberg ea        POPL 2015
-- Siek ea,            PLDI 2015
+This paper is the first to present any evaluation of the gradual typing
+approach at all. While we used the idea in our OWN ECOOP paper for two
+small benchmarks, nothing in this paper explains/motivates the framework.
 
-We provide experimental results for a mature implementation of gradual
-typing (TR is used by more than us) on independently written programs
+The experimental results are for a mature implementation of gradual typing
+with a large user base (commercial!) on independently created programs,
 representative of idiomatic usage of TR.
 
-Our results point to a fundamental challenge to the entire line of work, one
-that must absolutely be addressed if the approach is to succeed.
-
-This paper is a call to arms to language designers (are there other sound
-designs?)  and language implementers (can optimizations mitigate costs?).
-
-We view our results as opening new research directions!
+Our results point to a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
+As such, they are a call to arms for designers and implementers..
 
 **********************************************************************
 *** Are our results of limited applicability due to our choice of ****
@@ -45,77 +33,64 @@ We view our results as opening new research directions!
 
 * #81A laments the lack of attention of mico-level gradual typing.
 
-One reason for this is the lack of robust implementations with rich
-libraries. We tried some prototypes but they were too fragile or too
-impoverished to run the range of programs that we were interested in
-evaluating. (Eg. no concurrency, no graphics, no...)
+We tried! There is no robust implementations with rich libraries of GT.
 
 * #81A asks if choosing TR biases experiments and endanger our conclusions.
 
-TR is representative of an approach to sound GT that goes back to Siek et
-al. and Tobin-Hochstadt et al.  Any language that tags values with the casts
-applied to them will behave similarly to TR: namely there will be allocation
-costs when the casts are applied, indirections to access data, and finally
-checks at use points.  The TR implementation is far from a naive
-implementation of GT, many optimizations have been implemented in the
-contract system, and the TR JIT does help.
+TR is representative of an approach to GT that goes back to the 2 Ur-papers
+from 2006.  Any language that tags values with the casts applied to them
+behave similarly to TR: there will be allocations when the casts are
+applied; indirections to access data; and checks at use points.  TR
+implementation is NOT a naive implementation of GT. It includes a JIT and
+many optimizations. 
 
 * #81A asks about the performance of TypeScript.
 
-TypeScript is unsound, types are erased, thus there will be no difference
-between any of the versions.  The underlying JavaScript VM will see the same
+TypeScript is UNSOUND (!!!!).  The underlying JavaScript VM sees the same
 code for each configuration in our lattice.
 
-One of the authors implemented StrongScript [Richards, ECOOP 15] which had
-low overheads. But again it is unsound (with some sound patches, but this a
-weaker guarantee).
+StrongScript (by Vitek) has low overheads for partial checks, but it
+remains UNSOUND..
 
 * #81B makes a point about the impossibility of a negative result without
 * evaluating the potential benefits of JITs.
 
-TR does have a JIT, which was turned on during our experiments. But the JIT
-is not aware of gradual types.
+The primary result is a framework. The negative evaluations for the most
+mature implementation of GT is a validation of its usefulness. 
 
-So the question is: can we speculate what impact would hypothetical GT-aware
-optimizations have on performance?
+TR does have a JIT, but the JIT is not aware of gradual types.  
 
+What impact MIGHT hypothetical GT-aware optimizations have on performance?
 The cost of GT split in three:
+-- cast:- requires allocation
+-- unprotected access: may be slower as any value may have a contract
+-- protected access: checks must be run
 
- - cast  -- requires allocation
-
- - unprotected access -- may be slower as any value may have a contract
-
- - protected access -- checks must be run
-
-There is no locality the JIT can leverage. A value cast in one part of the
-program can (and does!) flow through the code, through modules, and is
-accessed pretty much anywhere.  We can't think of an optimization that would
-avoid these costs yet support dynamic features such as eval. We can imagine
-attenuating them to some extent, but only up to a point.
+There is NO LOCALITY the JIT can leverage. A value cast in one part of the
+program must flow through the code, through modules, and is accessed pretty
+much anywhere. There are NO EXISTING optimization that would avoid these
+costs in the presence of dynamic features. 
 
 * The reviewer ask about an evaluation using Safe Typescript programs.
 
 We have not done this. We note in the paper that a 77x slowdown was reported
-by the authors in case of a fully dynamic program, so it would not be
-surprising if our results carried over.  But we cannot tell for sure.  The
-main challenge would be to develop a benchmark suite of interesting programs
-in STS.  Porting our code is unlikely to work as JavaScript does not have
-the libraries (graphics) or the threading support that would be required for
-direct ports. One could fall back to something like the "Language
-performance Game" which has codes in all possible languages, but our
-experience with them (we used them to evaluate an implementation of R in
-VEE'14) is that they are a poor substitute for real codes written in an
-idiomatic style.
+by the authors in case of a fully dynamic program, so it is likely that an
+application of our framework would yield similarly frightening results. 
+
+Our paper is a challenge to other implementors of GT to evaluate their work
+properly before flooding POPL with more theoretical papers. The effort of
+applying our framework is HUGE and requires a substantial team. MS may have
+that; we don't. 
 
 * #81B states that N-deliverability, N/M-usability are unhelpful as the
 * performance of gradual typing is so bad that there is no point to them.
 
-* #81B states that 50% overhead is likely the maximum acceptable.
+* #81B also states that 50% overhead is likely the maximum acceptable.
 
-The very reason for this formulation is that any user can pick his or her
-threshold.  If 50% is what is required than clearly GT in its present form
-is dead.  No JIT optimizations will save us.  For TR, we have users that
-still use GT, but that may be the peculiarities of one community.
+The very reason for this formulation is that any user can pick a threshold.
+If 50% is what is required than clearly GT in its present form is dead.  No
+JIT optimizations will save us.  For TR, we have users that still use GT,
+but that may be the peculiarities of one community.
 
 Our point is that if someone finds a solution that speeds up GT, this is the
 framework to evaluate that solution.
@@ -127,17 +102,15 @@ framework to evaluate that solution.
 * #81A asks for constructive suggestions and solutions.
 
 GT is a 10+ research investment. The magnitude of the overheads and the ease
-with which a programmer can fall off a performance cliff came as a shock.
+with which a programmer can fall off a performance cliff came as a SHOCK.
 This paper's role is to stand as a warning to others in the field, and to
 provide with a methodology that other can follow to evaluate their
 implementations.
 
 * #81B+#81A ask for details about what kinds of checks are expensive.
 
-We do have these results and will add them, space permitting. Since we
-cannot introduce new results here, let's just say that each benchmark has
-its own flavor with different cost centers.
-
+We now do have these results and -- with the permission of the committee
+AFTER THE PAPER IS ACCEPTED AS IS -- we will add them. 
 
 ***************************************************************************
 ********** Reviewer #81C **************************************************
