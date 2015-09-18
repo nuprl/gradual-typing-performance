@@ -1,6 +1,5 @@
 
-This is not your usual POPL paper, thanks for the consideration
-and apologies for the extensive response. 
+This is not your usual POPL paper. Please read carefully. 
 
 GT  SOUND Gradual Typing 
 TR  Typed Racket 
@@ -117,6 +116,21 @@ Here is a complete table:
 
 ?????????????????????????????????????????????????????????????????????????????
 
+sieve -- BenG (artificial) 
+morse -- Clements 
+mbta -- Matthias (old course software) 
+zo -- BenG (library) 
+suffixtree -- Danny Yoo (library) 
+lnm -- BenG (useful) 
+kcfa -- Matt Might & Jay McCarthy 
+snake -- David Van Horn & Phil & Sam 
+tetris -- ditto 
+synth -- Vincent St-Amour and Neil Toronto 
+gregor -- Jon Zeppiri 
+quad -- Matthew B.
+
+?????????????????????????????????????????????????????????????????????????????
+
 * You talk about "adapting" existing programs. 
 
 The adaptations were the addition/removal of type annotations for easy
@@ -134,24 +148,23 @@ Yes, we will clarify.
 
 * The "Gregor" benchmark sounds totally synthetic.
 
-?????????????????????????????????????????????????????????????????????????????
+The library is used in real-world products, but the benchmark setup around
+this library is synthetic. 
 
 * L-step N/M-usable overlooks that two different modules may vary
 * dramatically in their size and their ease of typability.
 
-In TR, types are put on the interface of modules. So the while your point is
-correct, modules that export more definitions require more annotations, it
-is worth pointing out that these annotations are not proportional to the
-size of the modules in lines of code.
-
-??? THEY ARE. ?????????????????????????????????????????????????????????????????????????????
+Annotations are required only on definitions (structures, functions, etc)
+so typability is not directly proportional to the size of a module. Still 
+we accept your point.
 
 * I got confused by your use of "clique". 
 
 Yes! We used a technical term from algorithms with its loose, colloquial
 meaning to apply to a measure of software complexity. We will clarify. 
-[[ We mean 'bundles' of modules that are closely connected and export
-  functions that generate a clique-ish call graph.]
+
+[ We mean 'bundles' of modules that are closely connected and export
+  functions that generate a dense call graph. ]
 
 * quad in Figure 5
 
@@ -172,9 +185,7 @@ This is an interesting idea, we will consider it. Thanks!
 * choose random paths.
 
 Random walks is one of the many, many things we considered when doing this
-research.  It might scale our approach to situations with much larger
-search spaces (either massive systems, or micro-level GT), but for this
-paper we wanted to give an exhaustive view of the space of configurations
-to convince the readers that we were not cherry pickig bad ones and that
-the evaluation framework reveals serious weaknesses that were completely
-overlooked in the literature so far. 
+research.  For this paper, we wanted to give an exhaustive view of the
+space of configurations to convince the readers that we were not
+cherry-picking bad ones. In short, the evaluation framework reveals
+fundamental weaknesses that were completely overlooked in POPL so far.
