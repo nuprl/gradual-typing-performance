@@ -293,8 +293,7 @@ one.  The ``worst'' scenario is a flat line at the graph's bottom,
 indicating that all configuration are more than 20x slower than the untyped
 one. For ease of comparison between graphs, a dashed
 (@exact{\color{red}{red}}) horizontal line indicates 60% point of all
-configurations.  As a rule of thumb, curves that climb faster are better than
-curves with a smaller slope.
+configurations.
 
 @;Each line was obtained by measuring @id[PARAM-NUM-SAMPLES] overheads 
 @;linearly spaced along the x-axis.
@@ -325,18 +324,15 @@ in one step.
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:all-results"]{Interpretation}
 
-@; Due dilligence for each benchmark,
-@; The "WHY" try to explain the performance.
-@; The "PATH" comment on how difficult porting was
-
 As mentioned, the ideal shape for these curves is a flat line at the top of the y-axis.
 Of course the dynamic checks inserted by gradual type systems make this
 ideal difficult to achieve even with type-driven optimizations, so the
-next-best shape is a nearly-vertical line reaching the 100% count at a low
-x-value.  This kind of slope means that a large proportion of
-all configurations run within a small constant overhead.  For lines with
-lower gradients this small constant must be replaced with a larger overhead
-factor for the same proportion of configurations to qualify as acceptable.
+next-best shape is a nearly-vertical line reaching the 100% count at a low x-value.
+Generally, a steep slope implies a good tradeoff between accepting a larger
+performance overhead and the number of configurations that run within the
+accepted overhead.
+A large y-intercept means that many configurations run at least as quickly
+as the untyped program.
 
 Given the wide x-axis range of overhead factors, we would expect that only
 the leftmost quarter of each graph shows any interesting vertical slope.
@@ -388,8 +384,7 @@ at 10x and even 3x overhead.
 @parag{LNM}
 These results are ideal.
 Note the large y-intercept at @math{L}=0.
-This shows that very few configurations suffer any overhead versus the untyped
-configuration.
+This shows that very few configurations suffer any overhead.
 
 @parag{K-CFA}
 The most distinctive feature at @math{L}=0 is the flat portion between @math{N}=0
@@ -397,7 +392,7 @@ and @math{N}=6. This characteristic remains at @math{L}=1, and overall performan
 is very good at @tt{L}=2.
 
 @parag{Snake}
-The slope at @math{L}=0 is very little.
+The slope at @math{L}=0 is very low.
 Allowing @math{L}=1 brings a noticeable improvement when @math{N} is at least 5,
 but the difference between @math{L}=1 and @math{L}=2 is small.
 
@@ -408,18 +403,18 @@ This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
 if we let @math{L}=2.
 
 @parag{Synth}
-Each slope is very poor.
+Each slope is very low.
 Furthermore, some configurations remain unusable even at @math{L}=2.
 These plots have few flat areas, which implies that overheads are spread
 evenly throughout possible boundaries in the program.
 
 @parag{Gregor}
 These steep lines are impressive given that @tt{gregor} has 13 modules.
-Increasing @math{L} brings modest, but consistent, improvements.
+Increasing @math{L} brings consistent improvements.
 
 @parag{Quad}
 The @tt{quad} plots follow the same pattern as @tt{mbta} and the @tt{zo} analyzer, despite being visually distinct.
-In all three cases, there is a plateau for overhead below the typed/untyped ratio and a steep increase just after it.
+In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
 
 
 @; -----------------------------------------------------------------------------
@@ -447,11 +442,11 @@ Project         & \%C (S.E.) & adaptor & higher-order & library & \tt{(T->any)} 
 }|
 ]
 
-To help understand the source of costs, we used St. Amour @etal's
-feature-specific-profiler @~cite[saf-cc-2015] to measure the contract
-overhead of each benchmark's slowest configuration.
+To help understand the source of costs, we used the feature-specific profiler
+of St. Amour @etal @~cite[saf-cc-2015] to measure the contract
+overhead of each benchmark's @emph{slowest} configuration.
 @Figure-ref{fig:postmortem} summarizes our findings.
-The leftmost data column, labeled "%C", gives the percent of each benchmark's total running
+The leftmost data column, labeled ``%C'', gives the percent of each benchmark's total running
 time that was spent checking contracts on its slowest configuration.
 These numbers are the average of 10 trials, so in parentheses we give the standard error of our measurements.
 Except for the short-running benchmarks@note{@tt{gregor}, @tt{morse-code}, and @tt{mbta}
@@ -459,8 +454,7 @@ finished in under 2 seconds.
 All other benchmarks ran for at least 12 seconds on their worst-case configuration.},
 we saw little variability across trials.
 
-Clearly, the benchmarks are spending an enormous proportion of their running time checking that values satisfy their contracts.
-This was obvious from our experiment.
+As expected, the programs spend an incredible amount of time checking contracts.
 The more interesting question is: what patterns, if any, do these contracts share?
 
 To answer this question, the remaining columns of @figure-ref{fig:postmortem} tell what
@@ -475,7 +469,7 @@ First, @tt{(T->any)} denotes function contracts with protected domains and unche
 Contracts of this shape guard typed functions called in untyped modules.
 The shape @tt{(any->T)} is the opposite; these contracts guard functions with unchecked domains and protected codomains.
 For example, if a typed module calls an untyped function with immutable arguments, Typed Racket
-can statically verify that the untyped function is given well-typed arguments, but must insert a contract to verify
+statically verifies that the untyped function is given well-typed arguments, but must insert a contract to verify
 the function's result.
 Lastly, the @tt{(any->bool)} column is a subset of the @tt{(any->T)} column.
 It counts the total time spent checking the function contract @tt{(-> any/c boolean?)}, which
@@ -485,49 +479,48 @@ asserts that its value is a function taking one argument and returning a boolean
 @;    I think the message is clear without it
 
 Note that many of these columns can overlap.
-The @tt{mbta} benchmark in particular spends 65% of its contract-checking time verifying library functions.
+The @tt{mbta} benchmark in particular spends 65% of its contract-checking time verifying first-order library functions.
 These checks are always triggered by a typed module on immutable arguments, so they also classify as @tt{(any->T)} contracts.
+@; Non-overlapping pairs: (adaptor, library), (higher-order, any->T), (higher-order, any->bool), *(T->any, any->T)
 
 The most striking result in this table is the @tt{(any->bool)} column.
 It says that on average, 20% of the time our benchmarks spend checking contracts
-goes towards verifying that predicate function have the trivial @tt{(Any -> Boolean)} type.
+goes towards verifying that predicate functions have the trivial @tt{(Any -> Boolean)} type.
 Moreover, nearly all these predicates are generated by Racket structure definitions,
 so their type correctness might be assumed.
-Removing or optimizing these contracts seems like a clear place for Racket to improve.
+Removing or optimizing these contracts seems like a clear place for Typed Racket to improve.
 
 The adaptor and library columns, however, suggest that the apparently high cost
 of predicate contracts may be a symptom of placing a typed/untyped boundary
 between a data definition and functions closely associated with the data.
-One example of this is the @tt{zo} analyzer; indeed the purpose of that code
+One example of this is the @tt{zo} analyzer; indeed, the purpose of that code
 is to provide an interface to native compiler data structures.
 Nearly all benchmarks using adaptor modules exhibit this same pattern,
 where both the adaptor and @tt{(any->bool)} contracts account for a significant
 proportion of all contracts.
 The exceptions are @tt{synth} and @tt{quad}, the former because it more often
-creates structured data from raw vectors (and thus spends less time
-on adaptor predicates) and the latter because its core data is represented as fixed-length lists.
+creates structured data from raw vectors than accessing data
+and the latter because its core data is represented as fixed-length lists.
 In fact, @tt{quad}'s list contracts do not fit well into any of our categories
-because they do not require an adaptor module and cannot be optimized away.
-Nonetheless, recursive contracts checking structured lists account for
+because they do not require an adaptor module and cannot be optimized to @tt{any} contracts.
+Nonetheless, recursive contracts for structured lists account for
 93% of @tt{quad}'s contract-checking time.
 @;bg; manual inspection, average of 10 runs
 
 Regarding higher-order contracts, we see relatively few in our benchmark programs.
 Only @tt{synth} and @tt{sieve} make heavy use of higher-order functions across
 contract boundaries.
-In these programs the cost of higher-order contracts is apparent, but more broadly
+In these programs the cost of higher-order contracts is apparent, but
 we were surprised to learn that so many of our benchmarks had abysmal performance
 just from flat and first-order function contracts.
 
-Finally, the @tt{(T->any)} and @tt{(any->T)} give a rough impression of whether
+Finally, the @tt{(T->any)} and @tt{(any->T)} columns give a rough impression of whether
 untyped or typed modules trigger most contract checks.
-We confirmed these findings by inspecting the individual benchmarks.
-For most benchmarks, we indeed found that the high-cost (or, high-frequency)
-contracts arose from a typed module calling an untyped library or data definition.
+We confirmed these findings by inspecting the individual programs.
+For most, we indeed found that the high-cost (or, high-frequency)
+contracts were triggered from a typed module calling an untyped library or data definition.
 This includes @tt{kcfa}, although half its calls from typed to untyped used
 mutable arguments and hence could not be reduced to @tt{any/c}. 
 The exceptions were @tt{lnm}, @tt{synth}, and @tt{quad}, which all suffered more
 when untyped modules called typed ones.
-With @tt{lnm} this was because it used a typed library for plotting.
-The others spent more time creating typed data from untyped arguments.
 
