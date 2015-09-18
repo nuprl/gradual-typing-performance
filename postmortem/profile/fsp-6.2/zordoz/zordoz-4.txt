@@ -2,27 +2,32 @@
 
 
 Contracts
-account(s) for 75.95% of total running time
-777 / 1023 ms
+account(s) for 80.66% of total running time
+826 / 1024 ms
 
 Cost Breakdown
-  593/2 ms : zo->spec (-> any/c (recursive-contract (cons/c String (listof (cons/c String (-> (or/c String (recursive-contract g30333136 #:chaperone)))))) #:chaperone))
-  135/2 ms : compilation-top? (-> any/c boolean?)
-  48 ms : provided? (-> any/c boolean?)
-  42 ms : global-bucket? (-> any/c boolean?)
-  38 ms : inline-variant? (-> any/c boolean?)
-  38 ms : prefix? (-> any/c boolean?)
-  32 ms : def-syntaxes? (-> any/c boolean?)
-  30 ms : seq? (-> any/c boolean?)
-  26 ms : boxenv? (-> any/c boolean?)
-  26 ms : form? (-> any/c boolean?)
-  51/2 ms : mod? (-> any/c boolean?)
-  43/2 ms : let-one? (-> any/c boolean?)
-  20 ms : let-rec? (-> any/c boolean?)
-  10 ms : toplevel? (-> any/c boolean?)
-  10 ms : let-void? (-> any/c boolean?)
-  10 ms : branch-test (-> branch? (or/c expr? seq? any/c))
+  338 ms : zo->spec (-> any/c (recursive-contract (cons/c String (listof (cons/c String (-> (or/c String (recursive-contract g30333136 #:chaperone)))))) #:chaperone))
+  107/2 ms : mod? (-> any/c boolean?)
+  53 ms : req? (-> any/c boolean?)
+  40 ms : localref? (-> any/c boolean?)
+  35 ms : let-rec? (-> any/c boolean?)
+  63/2 ms : zo? (-> any/c boolean?)
+  30 ms : expr? (-> any/c boolean?)
+  30 ms : provided? (-> any/c boolean?)
+  43/2 ms : let-void? (-> any/c boolean?)
+  20 ms : splice? (-> any/c boolean?)
+  20 ms : form? (-> any/c boolean?)
+  33/2 ms : closure? (-> any/c boolean?)
+  27/2 ms : stx? (-> any/c boolean?)
+  12 ms : def-syntaxes? (-> any/c boolean?)
+  23/2 ms : let-one? (-> any/c boolean?)
+  10 ms : seq? (-> any/c boolean?)
+  10 ms : seq-for-syntax? (-> any/c boolean?)
+  10 ms : module-variable? (-> any/c boolean?)
+  10 ms : prefix? (-> any/c boolean?)
   10 ms : case-lam? (-> any/c boolean?)
-  10 ms : zo? (-> any/c boolean?)
-  8 ms : def-values? (-> any/c boolean?)
-  8 ms : expr? (-> any/c boolean?)
+  10 ms : application-rands (-> any/c (listof any/c))
+  10 ms : boxenv? (-> any/c boolean?)
+  10 ms : def-values? (-> any/c boolean?)
+  10 ms : install-value? (-> any/c boolean?)
+  10 ms : compilation-top? (-> any/c boolean?)

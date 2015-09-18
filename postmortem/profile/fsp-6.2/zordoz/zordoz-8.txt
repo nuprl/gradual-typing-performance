@@ -1,33 +1,30 @@
-94 samples
+92 samples
 
 
 Contracts
-account(s) for 81.18% of total running time
-1661/2 / 1023 ms
+account(s) for 81.37% of total running time
+1655/2 / 1017 ms
 
 Cost Breakdown
-  376 ms : zo->spec (-> any/c (recursive-contract (cons/c String (listof (cons/c String (-> (or/c String (recursive-contract g30333136 #:chaperone)))))) #:chaperone))
-  93/2 ms : zo? (-> any/c boolean?)
-  44 ms : inline-variant? (-> any/c boolean?)
-  40 ms : prefix? (-> any/c boolean?)
-  28 ms : stx? (-> any/c boolean?)
-  28 ms : compilation-top? (-> any/c boolean?)
-  53/2 ms : seq-for-syntax? (-> any/c boolean?)
-  22 ms : let-void? (-> any/c boolean?)
-  20 ms : seq? (-> any/c boolean?)
-  20 ms : boxenv? (-> any/c boolean?)
-  20 ms : form? (-> any/c boolean?)
-  39/2 ms : module-variable? (-> any/c boolean?)
-  27/2 ms : splice? (-> any/c boolean?)
-  27/2 ms : case-lam? (-> any/c boolean?)
-  12 ms : mod? (-> any/c boolean?)
-  23/2 ms : provided? (-> any/c boolean?)
-  23/2 ms : install-value? (-> any/c boolean?)
-  10 ms : application-rator (-> application? (or/c expr? seq? any/c))
-  10 ms : def-values-rhs (-> def-values? (or/c expr? seq? inline-variant? any/c))
-  10 ms : req? (-> any/c boolean?)
-  10 ms : def-syntaxes? (-> any/c boolean?)
-  10 ms : localref? (-> any/c boolean?)
-  10 ms : application? (-> any/c boolean?)
-  10 ms : closure? (-> any/c boolean?)
-  8 ms : branch-test (-> any/c any/c)
+  631/2 ms : zo->spec (-> any/c (recursive-contract (cons/c String (listof (cons/c String (-> (or/c String (recursive-contract g30333136 #:chaperone)))))) #:chaperone))
+  83 ms : prefix? (-> any/c boolean?)
+  97/2 ms : form? (-> any/c boolean?)
+  67/2 ms : def-syntaxes? (-> any/c boolean?)
+  63/2 ms : global-bucket? (-> any/c boolean?)
+  30 ms : req? (-> any/c boolean?)
+  30 ms : install-value? (-> any/c boolean?)
+  30 ms : closure? (-> any/c boolean?)
+  57/2 ms : stx? (-> any/c boolean?)
+  57/2 ms : boxenv? (-> any/c boolean?)
+  23 ms : localref? (-> any/c boolean?)
+  20 ms : compilation-top? (-> any/c boolean?)
+  20 ms : expr? (-> any/c boolean?)
+  37/2 ms : zo? (-> any/c boolean?)
+  15 ms : def-values? (-> any/c boolean?)
+  27/2 ms : branch? (-> any/c boolean?)
+  23/2 ms : splice? (-> any/c boolean?)
+  10 ms : provided? (-> any/c boolean?)
+  10 ms : seq? (-> any/c boolean?)
+  10 ms : lam? (-> any/c boolean?)
+  17/2 ms : mod? (-> any/c boolean?)
+  17/2 ms : wrap? (-> any/c boolean?)
