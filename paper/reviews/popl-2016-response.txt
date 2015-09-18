@@ -11,7 +11,9 @@ This paper is the first attempt to systematically evaluate the costs of the
 sound gradual typing approach. Sound gradual typing follows from a
 distinguished series of foundational works, e.g.:
 
-- Siek ea,            ECOOP 2007
+- Siek & Taha,        SFP 2006
+- Tobin-Hochstadt ea, DLS 2006
+- Siek & Taha,        ECOOP 2007
 - Tobin-Hochstadt ea, POPL 2008
 - Siek ea,            ESOP 2009
 - Siek ea,            POPL 2010
