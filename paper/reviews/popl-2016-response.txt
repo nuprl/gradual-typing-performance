@@ -224,7 +224,6 @@ Good point.
 
 We will clarify.
 
-
 * To what extent can type inference help in inferring types for modules?
 
 This is an interesting idea, we will consider it. Thanks!
