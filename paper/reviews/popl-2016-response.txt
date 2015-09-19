@@ -21,7 +21,7 @@ that paper explains/motivates/validates the framework.
 
 The experimental results are for a mature implementation of gradual typing with
 a user base on mostly independently created programs, representative of
-idiomatic usage of TR. They are a SHOCK to the devs.
+idiomatic usage of TR.
 
 Our results point to a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
 As such, they are a call to arms for designers and implementers.
@@ -31,7 +31,7 @@ Are our results of limited applicability?
 
 * #81A laments the lack of attention of mico-level gradual typing.
 
-We tried! There is no robust implementations with rich libraries.
+We tried! There are no robust implementations with rich libraries.
 
 * #81A asks if choosing TR biases experiments and endanger our conclusions.
 
@@ -49,6 +49,17 @@ for each configuration in the lattice.
 
 StrongScript (by Vitek) has low overheads for partial soundness checks, but
 it remains UNSOUND.
+
+* #81B ask about an evaluation using Safe TypeScript programs.
+
+We have not done this. We note in the paper that POPL '15 reported a 77x
+slowdown for a fully dynamic program, so it is likely that an
+application of our framework would yield similarly frightening results.
+
+Our paper is a challenge to other implementors of GT to evaluate their work
+properly before flooding POPL with more theoretical papers. The effort of
+applying our framework is HUGE and requires a substantial team. MS may have
+that; we don't.
 
 * #81B claims the impossibility of a negative result without evaluating the
 * potential benefits of JITs.
@@ -68,17 +79,6 @@ There is NO LOCALITY the JIT can leverage. A value cast in one part of the
 program flows across module boundaries to arbitrary destinations.
 There are NO EXISTING optimization that would avoid these
 costs in the presence of dynamic features.
-
-* #81B ask about an evaluation using Safe TypeScript programs.
-
-We have not done this. We note in the paper that POPL '15 reported a 77x
-slowdown for a fully dynamic program, so it is likely that an
-application of our framework would yield similarly frightening results.
-
-Our paper is a challenge to other implementors of GT to evaluate their work
-properly before flooding POPL with more theoretical papers. The effort of
-applying our framework is HUGE and requires a substantial team. MS may have
-that; we don't.
 
 * #81B states that N-deliverability, N/M-usability are unhelpful as the
 * performance of gradual typing is so bad that there is no point to them.
@@ -126,7 +126,7 @@ lnm -- * (useful)
 kcfa -- Matt Might & Jay McCarthy (teaching, untyped)
 snake -- David Van Horn & Phil Nguyen & Sam Tobin-Hochstadt (game, untyped)
 tetris -- ditto
-synth -- Vincent St-Amour and Neil Toronto (app+library, typed)
+synth -- Vincent St-Amour & Neil Toronto (app+library, typed)
 gregor -- Jon Zeppieri (library, untyped)
 quad -- Matthew Butterick (app, untyped+typed)
 -----------------------------------------------------------------------------
@@ -151,8 +151,8 @@ Yes, we will clarify.
 
 * The "Gregor" benchmark sounds totally synthetic.
 
-The library is used in real-world programs, but the benchmark setup around
-this library is synthetic.
+The library is used in real-world programs, but the inputs we used
+to stress test were indeed synthetic.
 
 * L-step N/M-usable overlooks that two different modules may vary
 * dramatically in their size and their ease of typability.
