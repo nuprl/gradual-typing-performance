@@ -5,6 +5,7 @@ GT  SOUND Gradual Typing
 TR  Typed Racket 
 JIT Just in time compiler 
 
+
 Are our results already known in light of previous work?
 ********************************************************
 
@@ -19,28 +20,47 @@ This paper is the first to present a thorough EVALUATION of GT. While we
 used the idea in our OWN ECOOP paper for TWO SMALL BENCHMARKS, nothing in
 that paper explains/motivates/validates the framework.
 
-The experimental results are for a mature implementation of gradual typing with
-a user base on mostly independently created programs, representative of
+The experimental results are for a mature implementation of gradual typing
+(with a user base) on mostly independently created programs, representative of
 idiomatic usage of TR.
 
-Our results point to a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
-As such, they are a call to arms for designers and implementers.
+Our results identify a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
+They are a call to arms for designers and implementers.
+
 
 Are our results of limited applicability?
 *****************************************
 
-* #81A laments the lack of attention of mico-level gradual typing.
-
-We tried! There are no robust implementations with rich libraries.
-
-* #81A asks if choosing TR biases experiments and endanger our conclusions.
+* #81A asks if choosing TR biases our experiments and endangers our conclusions.
 
 TR is representative of an approach to GT that goes back to the 2 Ur-papers
 from 2006.  Any language that tags values with the casts applied to them
-behave similarly to TR: there will be allocations when the casts are
+behaves similarly to TR: there will be allocations when the casts are
 applied; indirections to access data; and checks at use points. TR's
-implementation is NOT a naive implementation. It includes a JIT and
-many optimizations.
+implementation is NOT a naive implementation. It includes a traditional JIT
+and many optimizations.
+
+* #81B claims the impossibility of a negative result without evaluating the
+* potential benefits of JITs.
+
+The primary result is the EVAL FRAMEWORK. The negative evaluations for the
+most mature implementation of GT is a VALIDATION OF ITS USEFULNESS.
+
+What impact MIGHT hypothetical GT-aware optimizations have on performance?
+The cost of GT split in three:
+
+-- cast: requires allocation
+-- unprotected access: may be slower as any value may have a contract
+-- protected access: checks must be run
+
+There is NO LOCALITY the JIT can leverage. A value cast in one part of the
+program flows across module boundaries to arbitrary destinations.
+There are NO EXISTING optimizations that would avoid these
+costs in the presence of dynamic features.
+
+* #81A laments the lack of attention of micro-level gradual typing.
+
+We tried! There are no robust implementations with rich libraries.
 
 * #81A asks about the performance of TypeScript.
 
@@ -57,28 +77,7 @@ slowdown for a fully dynamic program, so it is likely that an
 application of our framework would yield similarly frightening results.
 
 Our paper is a challenge to other implementors of GT to evaluate their work
-properly before flooding POPL with more theoretical papers. The effort of
-applying our framework is HUGE and requires a substantial team. MS may have
-that; we don't.
-
-* #81B claims the impossibility of a negative result without evaluating the
-* potential benefits of JITs.
-
-The primary result is the EVAL FRAMEWORK. The negative evaluations for the
-most mature implementation of GT is a VALIDATION OF ITS USEFULNESS.
-
-Racket's JIT is not specialized for gradual types.
-What impact MIGHT hypothetical GT-aware optimizations have on performance?
-The cost of GT split in three:
-
--- cast: requires allocation
--- unprotected access: may be slower as any value may have a contract
--- protected access: checks must be run
-
-There is NO LOCALITY the JIT can leverage. A value cast in one part of the
-program flows across module boundaries to arbitrary destinations.
-There are NO EXISTING optimization that would avoid these
-costs in the presence of dynamic features.
+properly before flooding POPL with more theoretical papers.
 
 * #81B states that N-deliverability, N/M-usability are unhelpful as the
 * performance of gradual typing is so bad that there is no point to them.
@@ -86,28 +85,33 @@ costs in the presence of dynamic features.
 * #81B also states that 50% overhead is likely the maximum acceptable.
 
 The very reason for this formulation is that any user can pick a threshold.
-If N=50 is what is required then clearly GT in its present form is dead.  No
-JIT optimizations will save us.  For TR, we have users that still use GT,
-but that may be the peculiarities of one community.
+If N=50 is what is required then clearly GT in its present form is dead.
+No JIT optimizations will save us.
 
 Our point is that if someone claims to have a solution that speeds up GT,
 this is the framework to evaluate that solution.
+
 
 * #81A asks for constructive suggestions and solutions.
 * #81B+#81A ask for details about what kinds of checks are expensive.
 *********************************************************************
 
 TR/GT is a +10-year research investment. The magnitude of the overheads and the
-ease with which a programmer can fall off a performance cliff came as a
-SHOCK.  This paper's role is to stand as a warning to others in the field,
-and to provide with a methodology that others can follow to evaluate their
+ease with which a programmer can fall off a performance cliff came as a SHOCK.
+This paper's role is to stand as a warning to others in the field,
+and to provide a methodology that others can follow to evaluate their
 implementations.
 
-We now do have results on specific bottlenecks and -- with the permission
+We now have results on specific bottlenecks and -- with the permission
 of the committee -- we will add them AFTER THE PAPER IS ACCEPTED AS IS. 
 
-Reviewer #81C 
-*************
+
+================================================================================
+==== End of 500 word limit =====================================================
+================================================================================
+
+Detailed response to Reviewer #81C 
+**********************************
 
 * Who wote the programs that you study?
 
