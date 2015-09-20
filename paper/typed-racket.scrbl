@@ -277,8 +277,8 @@ partially typed configurations come from contracts and checks performed as
 untyped code interacts with typed code.
 
 The @deliverable{300} and @usable["300" "1000"] counts are computed for
-@math{L}=0. Next to each count, we report (in parentheses) the count divided
-by the number of configurations.
+@math{L}=0. In parentheses, we express these counts as a percentage of all
+configurations for the program.
 
 The three cumulative performance graphs are read as follows. The x-axis
 represents the slowdown over the untyped program (from 1x to
@@ -288,8 +288,8 @@ same height. The blue curves show how many configurations have less than a
 given slowdown.  They are, by definition, monotonically increasing because
 the more overhead is allowed, the more configurations satisfy the
 condition. The ``ideal'' result would be a flat line at a graph's top. Such
-a result would mean that all configuration are as fast (or faster) as the untyped
-one.  The ``worst'' scenario is a flat line at the graph's bottom,
+a result would mean that all configuration are as fast as (or faster than) the
+untyped one.  The ``worst'' scenario is a flat line at the graph's bottom,
 indicating that all configuration are more than 20x slower than the untyped
 one. For ease of comparison between graphs, a dashed
 (@exact{\color{red}{red}}) horizontal line indicates 60% point of all
@@ -305,8 +305,8 @@ cumulative performance graphs display the values of parameters @math{N} and
 a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
 experiment we have chosen values of 300% and 1000%. These values are rather liberal
 and we expect that most production contexts would not tolerate anything higher than 200% (and
-some would object to any slowdown). Thus, for any program, the value of
-@deliverable{300} is the value of the y-axis where the blue line intersects
+some would object to any slowdown). Thus, for any program, the number of
+@deliverable{300} configurations is the value of the y-axis where the blue line intersects
 the green one.  This is how many configurations are deliverable.  Similarly
 for @usable["300" "1000"], its value is the difference of the intercepts.
 Higher values for both of these measures are better.
@@ -363,14 +363,13 @@ Increasing @math{L} improves the worst cases.
 These lines are also steep, but flatten briefly at @math{N}=2.
 This coincides with the @deliverable{200} performance of the fully-typed
 configuration.
-Increasing @math{L} draws the flat line further left.
 As one would expect, freedom to type additional modules brings more configurations
 into a @deliverable{200} equivalence class.
 
 @parag{ZO Traversal}
 Plots here are similar to @tt{mbta}.
-The fully-typed configuration is @deliverable{322} and this limits the possible
-benefits of increasing @math{L}.
+There is a gap between the @deliverable{322} performance of the fully-typed
+configuration and the performance of the next-fastest lattice point.
 
 @parag{Suffixtree}
 The wide horizontal areas are explained by the performance lattice in
@@ -416,7 +415,7 @@ In all three cases, there is a flat slope for overheads below the typed/untyped 
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:postmortem"]{Postmortem}
+@section[#:tag "sec:postmortem"]{Worst-Case Profiling}
 
 @; Note: these results are for v6.2. On HEAD things are 30% better; see `postmortem/profile/contract-speedup.org`
 @figure*["fig:postmortem" "Profiling the worst-case contract overhead"
@@ -490,26 +489,26 @@ so their type correctness might be assumed.
 Removing or optimizing these contracts seems like a clear place for Typed Racket to improve.
 
 The adaptor and library columns, however, suggest that the apparently high cost
-of predicate contracts may be a symptom of placing a typed/untyped boundary
+of predicate contracts may just be a symptom of placing a typed/untyped boundary
 between a data definition and functions closely associated with the data.
 One example of this is the @tt{zo} analyzer; indeed, the purpose of that code
 is to provide an interface to native compiler data structures.
-Nearly all benchmarks using adaptor modules exhibit this same pattern,
-where both the adaptor and @tt{(any->bool)} contracts account for a significant
-proportion of all contracts.
-The exceptions are @tt{synth} and @tt{quad}, the former because it more often
-creates structured data from raw vectors than accessing data
-and the latter because its core data is represented as fixed-length lists.
-In fact, @tt{quad}'s list contracts do not fit well into any of our categories
-because they do not require an adaptor module and cannot be optimized away.
-Nonetheless, recursive contracts for structured lists account for
-93% of @tt{quad}'s contract-checking time.
-@;bg; manual inspection, average of 10 runs
+Nearly all benchmarks using adaptor modules exhibit this same pattern in these
+worst-case results, where both the adaptor and @tt{(any->bool)} contracts
+account for a significant proportion of all contracts.
+The apparent exceptions are @tt{synth} and @tt{quad}.
+Only @tt{synth} truly is an exception, and this is because it spends much more time
+creating structured data from raw vectors than accessing the data.
+The @tt{quad} benchmark in fact spends 93% of its contract-checking time validating
+data structures, however this data is stored in fixed-length lists rather than
+in struct types.
+These lists do not require an adaptor, but produce contracts that are more
+expensive than a type predicate and cannot be optimized away.
 
 Regarding higher-order contracts, we see relatively few in our benchmark programs.
 Only @tt{synth} and @tt{sieve} make heavy use of higher-order functions across
 contract boundaries.
-In these programs the cost of higher-order contracts is apparent, but
+In these programs the cost of such contracts is apparent, but
 we were more surprised to learn that so many of our benchmarks had abysmal performance
 just from flat and first-order function contracts.
 
