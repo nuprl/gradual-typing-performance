@@ -20,7 +20,7 @@ This paper is the first to present a thorough EVALUATION of GT. While we
 used the idea in our OWN ECOOP paper for TWO SMALL BENCHMARKS, nothing in
 that paper explains/motivates/validates the framework.
 
-The experimental results are for a mature implementation of gradual typing
+The experimental results are for a mature implementation of GT
 (with a user base) on mostly independently created programs, representative of
 idiomatic usage of TR.
 
@@ -37,8 +37,8 @@ TR is representative of an approach to GT that goes back to the 2 Ur-papers
 from 2006.  Any language that tags values with the casts applied to them
 behaves similarly to TR: there will be allocations when the casts are
 applied; indirections to access data; and checks at use points. TR's
-implementation is NOT a naive implementation. It includes a traditional JIT
-and many optimizations.
+implementation is NOT a naive implementation of GT.
+It includes a traditional JIT and many optimizations.
 
 * #81B claims the impossibility of a negative result without evaluating the
 * potential benefits of JITs.
@@ -60,7 +60,7 @@ costs in the presence of dynamic features.
 
 * #81A laments the lack of attention of micro-level gradual typing.
 
-We tried! There are no robust implementations with rich libraries.
+We tried! There are no robust implementations of GT with rich libraries.
 
 * #81A asks about the performance of TypeScript.
 
