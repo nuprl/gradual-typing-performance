@@ -331,8 +331,6 @@ next-best shape is a nearly-vertical line reaching the 100% count at a low x-val
 Generally, a steep slope implies a good tradeoff between accepting a larger
 performance overhead and the number of configurations that run within the
 accepted overhead.
-A large y-intercept means that many configurations run at least as quickly
-as the untyped program.
 
 Given the wide x-axis range of overhead factors, we would expect that only
 the leftmost quarter of each graph shows any interesting vertical slope.
@@ -365,7 +363,7 @@ Increasing @math{L} improves the worst cases.
 These lines are also steep, but flatten briefly at @math{N}=2.
 This coincides with the @deliverable{200} performance of the fully-typed
 configuration.
-Increasing @tt{L} draws the flat line further left.
+Increasing @math{L} draws the flat line further left.
 As one would expect, freedom to type additional modules brings more configurations
 into a @deliverable{200} equivalence class.
 
@@ -377,7 +375,7 @@ benefits of increasing @math{L}.
 @parag{Suffixtree}
 The wide horizontal areas are explained by the performance lattice in
 @figure-ref{fig:suffixtree}: configurations' running times are not evenly
-distributed but rather increase drastically when certain boundaries exist.
+distributed but instead vary drastically when certain boundaries exist.
 Increasing @math{L} significantly improves the number of acceptable configuration
 at 10x and even 3x overhead.
 
@@ -389,7 +387,7 @@ This shows that very few configurations suffer any overhead.
 @parag{K-CFA}
 The most distinctive feature at @math{L}=0 is the flat portion between @math{N}=0
 and @math{N}=6. This characteristic remains at @math{L}=1, and overall performance
-is very good at @tt{L}=2.
+is very good at @math{L}=2.
 
 @parag{Snake}
 The slope at @math{L}=0 is very low.
@@ -409,7 +407,7 @@ These plots have few flat areas, which implies that overheads are spread
 evenly throughout possible boundaries in the program.
 
 @parag{Gregor}
-These steep lines are impressive given that @tt{gregor} has 13 modules.
+These steep curves are impressive given that @tt{gregor} has 13 modules.
 Increasing @math{L} brings consistent improvements.
 
 @parag{Quad}
@@ -455,6 +453,7 @@ All other benchmarks ran for at least 12 seconds on their worst-case configurati
 we saw little variability across trials.
 
 As expected, the programs spend an incredible amount of time checking contracts.
+This was obvious given our experimental results in Section@secref{sec:all-results}.
 The more interesting question is: what patterns, if any, do these contracts share?
 
 To answer this question, the remaining columns of @figure-ref{fig:postmortem} tell what
@@ -468,8 +467,8 @@ The last three columns classify patterns of function contracts.
 First, @tt{(T->any)} denotes function contracts with protected domains and unchecked codomains.@note{In Racket, the @tt{any/c} contract is a no-op contract.}
 Contracts of this shape guard typed functions called in untyped modules.
 The shape @tt{(any->T)} is the opposite; these contracts guard functions with unchecked domains and protected codomains.
-For example, if a typed module calls an untyped function with immutable arguments, Typed Racket
-statically verifies that the untyped function is given well-typed arguments, but must insert a contract to verify
+For example, if a typed module calls an untyped function with immutable arguments, Typed Racket will
+statically prove that the untyped function is given well-typed arguments, but must insert a contract to verify
 the function's result.
 Lastly, the @tt{(any->bool)} column is a subset of the @tt{(any->T)} column.
 It counts the total time spent checking the function contract @tt{(-> any/c boolean?)}, which
@@ -502,7 +501,7 @@ The exceptions are @tt{synth} and @tt{quad}, the former because it more often
 creates structured data from raw vectors than accessing data
 and the latter because its core data is represented as fixed-length lists.
 In fact, @tt{quad}'s list contracts do not fit well into any of our categories
-because they do not require an adaptor module and cannot be optimized to @tt{any} contracts.
+because they do not require an adaptor module and cannot be optimized away.
 Nonetheless, recursive contracts for structured lists account for
 93% of @tt{quad}'s contract-checking time.
 @;bg; manual inspection, average of 10 runs
@@ -511,7 +510,7 @@ Regarding higher-order contracts, we see relatively few in our benchmark program
 Only @tt{synth} and @tt{sieve} make heavy use of higher-order functions across
 contract boundaries.
 In these programs the cost of higher-order contracts is apparent, but
-we were surprised to learn that so many of our benchmarks had abysmal performance
+we were more surprised to learn that so many of our benchmarks had abysmal performance
 just from flat and first-order function contracts.
 
 Finally, the @tt{(T->any)} and @tt{(any->T)} columns give a rough impression of whether
@@ -519,8 +518,8 @@ untyped or typed modules trigger most contract checks.
 We confirmed these findings by inspecting the individual programs.
 For most, we indeed found that the high-cost (or, high-frequency)
 contracts were triggered from a typed module calling an untyped library or data definition.
-This includes @tt{kcfa}, although half its calls from typed to untyped used
-mutable arguments and hence could not be reduced to @tt{any/c}. 
+This includes @tt{kcfa}, although half its calls from typed to untyped code used
+mutable arguments and hence could not be reduced to @tt{any/c}.
 The exceptions were @tt{lnm}, @tt{synth}, and @tt{quad}, which all suffered more
-when untyped modules called typed ones.
+when untyped modules relied upon typed ones.
 
