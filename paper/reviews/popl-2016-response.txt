@@ -1,9 +1,8 @@
+This is not your usual POPL paper, please read carefully. 
 
-This is not your usual POPL paper. Please read carefully. 
-
-GT  SOUND Gradual Typing 
-TR  Typed Racket 
-JIT Just in time compiler 
+ GT=SOUND Gradual Typing 
+ TR=Typed Racket 
+JIT=Just in time compiler 
 
 
 Are our results already known in light of previous work?
@@ -20,9 +19,8 @@ This paper is the first to present a thorough EVALUATION of GT. While we
 used the idea in our OWN ECOOP paper for TWO SMALL BENCHMARKS, nothing in
 that paper explains/motivates/validates the framework.
 
-The experimental results are for a mature implementation of GT
-(with a user base) on mostly independently created programs, representative of
-idiomatic usage of TR.
+The experimental results are for a mature implementation of GT (with a user
+base) on programs representative of idiomatic usage of TR.
 
 Our results identify a FUNDAMENTAL CHALLENGE to the ENTIRE LINE OF WORK.
 They are a call to arms for designers and implementers.
@@ -37,8 +35,8 @@ TR is representative of an approach to GT that goes back to the 2 Ur-papers
 from 2006.  Any language that tags values with the casts applied to them
 behaves similarly to TR: there will be allocations when the casts are
 applied; indirections to access data; and checks at use points. TR's
-implementation is NOT a naive implementation of GT.
-It includes a traditional JIT and many optimizations.
+implementation is NOT a naive implementation of GT.  It includes a
+traditional JIT and many optimizations.
 
 * #81B claims the impossibility of a negative result without evaluating the
 * potential benefits of JITs.
@@ -54,9 +52,9 @@ The cost of GT split in three:
 -- protected access: checks must be run
 
 There is NO LOCALITY the JIT can leverage. A value cast in one part of the
-program flows across module boundaries to arbitrary destinations.
-There are NO EXISTING optimizations that would avoid these
-costs in the presence of dynamic features.
+program flows across module boundaries to arbitrary destinations.  There are
+NO EXISTING optimizations that would avoid these costs in the presence of
+dynamic features.
 
 * #81A laments the lack of attention of micro-level gradual typing.
 
@@ -64,17 +62,16 @@ We tried! There are no robust implementations of GT with rich libraries.
 
 * #81A asks about the performance of TypeScript.
 
-TypeScript is UNSOUND!!  The underlying JavaScript VM sees the same code
-for each configuration in the lattice.
+TypeScript is UNSOUND!  The underlying JavaScript VM sees the same code for
+each configuration in the lattice.
 
-StrongScript (by Vitek) has low overheads for partial soundness checks, but
-it remains UNSOUND.
+StrongScript (by Vitek) has low overheads but it remains UNSOUND.
 
 * #81B ask about an evaluation using Safe TypeScript programs.
 
-We have not done this. We note in the paper that POPL '15 reported a 77x
-slowdown for a fully dynamic program, so it is likely that an
-application of our framework would yield similarly frightening results.
+We have not done this. We note that POPL'15 reported a 77x slowdown for a
+fully dynamic program, so it is conceivable that an application of our
+framework would yield similarly frightening results.
 
 Our paper is a challenge to other implementors of GT to evaluate their work
 properly before flooding POPL with more theoretical papers.
@@ -85,26 +82,29 @@ properly before flooding POPL with more theoretical papers.
 * #81B also states that 50% overhead is likely the maximum acceptable.
 
 The very reason for this formulation is that any user can pick a threshold.
-If N=50 is what is required then clearly GT in its present form is dead.
-No JIT optimizations will save us.
+If N=50 is what is required then clearly GT in its present form is dead.  No
+JIT optimizations will save us.
 
 Our point is that if someone claims to have a solution that speeds up GT,
 this is the framework to evaluate that solution.
 
 
+
+* More details on costs and potential solutions?
+************************************************
+
 * #81A asks for constructive suggestions and solutions.
 * #81B+#81A ask for details about what kinds of checks are expensive.
-*********************************************************************
 
-TR/GT is a +10-year research investment. The magnitude of the overheads and the
-ease with which a programmer can fall off a performance cliff came as a SHOCK.
-This paper's role is to stand as a warning to others in the field,
-and to provide a methodology that others can follow to evaluate their
+
+TR/GT is a +10-year research investment. The magnitude of the overheads and
+the ease with which a programmer can fall off a performance cliff came as a
+SHOCK to us.  This paper's role is to stand as a warning to others in the
+field, and to provide a methodology they can follow to evaluate their
 implementations.
 
-We now have results on specific bottlenecks and -- with the permission
-of the committee -- we will add them AFTER THE PAPER IS ACCEPTED AS IS. 
-
+We have results on specific bottlenecks which we will add -- with 
+permission from the PC chair.
 
 ================================================================================
 ==== End of 500 word limit =====================================================
@@ -115,71 +115,57 @@ Detailed response to Reviewer #81C
 
 * Who wote the programs that you study?
 
-All but 2 programs are pre-existing and idiomatic.
-Here is a complete table:
+All but 2 programs are pre-existing and idiomatic:
 
------------------------------------------------------------------------------
-* = Written for this paper
+              *** = Written for this paper
 
-sieve -- * (artificial)
-morse-code -- John Clements & Neil Van Dyke (app+library, untyped)
-mbta -- Matthias Felleisen (courseware, untyped)
-zo -- Ben Greenman (library, untyped)
+gregor     -- Jon Zeppieri (library, untyped)
+kcfa       -- Matt Might, Jay McCarthy (teaching, untyped)
+lnm        -- ***  (app)
+mbta       -- Matthias Felleisen (courseware, untyped)
+morse-code -- John Clements, Neil Van Dyke (app+library, untyped)
+quad       -- Matthew Butterick (app, untyped+typed)
+sieve      -- *** (artificial)
+snake      -- David Van Horn, Phil Nguyen & Sam Tobin-Hochstadt (game, untyped)
 suffixtree -- Danny Yoo (library, untyped)
-lnm -- * (useful)
-kcfa -- Matt Might & Jay McCarthy (teaching, untyped)
-snake -- David Van Horn & Phil Nguyen & Sam Tobin-Hochstadt (game, untyped)
-tetris -- ditto
-synth -- Vincent St-Amour & Neil Toronto (app+library, typed)
-gregor -- Jon Zeppieri (library, untyped)
-quad -- Matthew Butterick (app, untyped+typed)
------------------------------------------------------------------------------
+synth      -- Vincent St-Amour, Neil Toronto (app+library, typed)
+tetris     -- David Van Horn, Phil Nguyen, Sam Tobin-Hochstadt (game, untyped)
+zo         -- Ben Greenman (library, untyped)
 
-The benchmark test cases we used were largely synthetic.
-We will clarify in the paper.
 
 * You talk about "adapting" existing programs.
 
-The adaptations were the addition/removal of type annotations for easy
-benchmarking.
+Adaptations were the addition/removal of type annotations for benchmarking.
 
 * When typing a module in TR, is there just one choice of typing?
 
-There is more than one way but we checked/chose the most specific types
-where possible. We will add a sentence to the paper to clarify.
+We chose the most specific types where possible. We will clarify.
 
-* From your benchmark descriptions it does *not* appear that the programs
-* you study are at the scale where they would be implemented by teams.
+* The programs you study do NOT require teams of implementers.
 
 Yes, we will clarify.
 
-* The "Gregor" benchmark sounds totally synthetic.
+* The "Gregor" benchmark sounds synthetic.
 
-The library is used in real-world programs, but the inputs we used
-to stress test were indeed synthetic.
+The library is used in real-world programs.
 
-* L-step N/M-usable overlooks that two different modules may vary
-* dramatically in their size and their ease of typability.
+* Your L/N/M metrics ignore the size of modules and their ease of typability.
 
-Annotations are required on definitions (structures, functions, etc)
-so their number is not directly proportional to the size of a module. Still
-we accept your point.
+Annotations are required on definitions (structures, functions) so their
+number is not directly proportional to the size of a module in LOC. 
+We will clarify.
 
 * I got confused by your use of "clique".
 
 Yes! We used a technical term from algorithms with its loose, colloquial
 meaning to apply to a measure of software complexity. We will clarify.
 
-[ We mean 'bundles' of modules that are closely connected and export
-  functions that generate a dense call graph. ]
-
-* quad in Figure 5
+* quad missing from Figure 5
 
 We have data for quad now. It also looks bad.
 
 * "Our results may be less valid in the context of large programs, though
-*  practical experience using TR suggests otherwise."  - this statement is
-*  vague and mysterious to the reader.
+*  practical experience using TR suggests otherwise."  ???
 
 We will elaborate.
 
@@ -189,10 +175,10 @@ This is an interesting idea, we will consider it. Thanks!
 
 * It's cool to have done exhaustive consideration of typed configurations,
 * but, as you remark, this is not feasible for larger programs. Why not
-* choose random paths.
+* choose random paths?
 
-Random walks is one of the many, many things we considered when doing this
-research.  For this paper, we wanted to give an exhaustive view of the
-space of configurations to convince the readers that we were not
+Random walks is one of the many, many things we experimented with while
+doing this research.  For this paper, we wanted to give an exhaustive view
+of the space of configurations to convince the readers that we were not
 cherry-picking bad ones. In short, the evaluation framework reveals
 fundamental weaknesses that were completely overlooked in POPL so far.
