@@ -49,7 +49,7 @@
       (lambda (ln)
         (define m (regexp-match r ln))
         (and m
-             (for/or ([d (in-list (cdr (reverse (string-split (cadr m)))))])
+             (for/or ([d (in-list (string-split (cadr m)))])
                (regexp-match? "->" d)))))))
 
 ;; Depends on the project, but "lib" catches built-in Racket libraries
