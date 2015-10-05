@@ -2,7 +2,7 @@
 
 @require["common.rkt"]
 
-@title[#:tag "sec:death"]{Sound Gradual Typing is Dead}
+@title[#:tag "sec:death"]{The Fall of Sound Gradual Typing}
 
 Unsound type systems are useful. They find bugs at compile-time, and an IDE can use them to
  assist programmers. Sound type systems are meaningful in addition. A
@@ -36,9 +36,6 @@ In general, the graphs in @figure-ref["fig:lnm1" "fig:lnm2"] clarify how
  not increase the number of acceptable configurations by much. Put
  differently, the number of @math{L}-step @math{N/M}-acceptable
  configurations remains small with liberal choices for all three parameters.
-
-Like Marc Antony, we come here to bury sound gradual typing, not to praise
- it. Sound gradual typing is dead.
 
 @; -----------------------------------------------------------------------------
 @section{Threats to Validity of Conclusion}

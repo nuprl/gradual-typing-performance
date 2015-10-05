@@ -36,8 +36,8 @@
  Typed Racket, a mature implementation of sound gradual typing, and a suite
  of real-world programs of various sizes and complexities.  Based on the
  results obtained in this study, the paper concludes that, given the current state
- of implementation technologies, sound gradual typing is
- dead. Conversely, it raises the question of how implementations could 
+ of implementation technologies, sound gradual typing faces significant
+ challenges. Conversely, it raises the question of how implementations could 
  reduce the overheads associated with soundness and how
  tools could be used to steer programmers clear from pathological cases.}
 
