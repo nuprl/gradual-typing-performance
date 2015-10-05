@@ -6,6 +6,14 @@
 
 (define OUTPUT "benchmarks/output.png")
 
+(define (filename->tag fname)
+  (first (string-split (last (string-split fname "/")) ".")))
+
+(define (filter-valid-filenames arg*)
+  (for/list ([fname (in-list arg*)]
+             #:when (valid-filename? fname))
+    fname))
+
 (define (valid-filename? fname)
   (cond
    [(and (file-exists? fname)
@@ -14,11 +22,6 @@
    [else
     (printf "Skipping invalid file '~a'\n" fname)
     #f]))
-
-(define (filter-valid-filenames arg*)
-  (for/list ([fname (in-list arg*)]
-             #:when (valid-filename? fname))
-    fname))
 
 (module+ main
   (require racket/cmdline)
@@ -38,7 +41,6 @@
      (pict->bitmap
        (data->pict #:tag "sample"
          (for/list ([fname (in-list arg*)])
-           (list (last (string-split fname "/")) fname)))))
+           (list (filename->tag fname) fname)))))
    ;; -- Show the pict
-   (send BM save-file (*output*) 'png 100)
-   (printf "Saved output to '~a'\n" (*output*))))
+   (send BM save-file (*output*) 'png 100)))
