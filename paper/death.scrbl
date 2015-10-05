@@ -99,3 +99,113 @@ Fourth, we state our judgment with respect to the current implementation
  can reduce the significant overhead that our evaluation
  shows. Nevertheless, we are convinced that even if the magnitude of the
  slowdowns are reduced, some pathologies will remain.
+
+@; -----------------------------------------------------------------------------
+@section[#:tag "sec:postmortem"]{Worst-Case Profiling}
+
+@; Note: these results are for v6.2. On HEAD things are 30% better; see `postmortem/profile/contract-speedup.org`
+@figure*["fig:postmortem" "Profiling the worst-case contract overhead"
+@exact|{
+\begin{tabular}{l r || r r r r r r}
+Project         & \%C (S.E.) & adaptor & higher-order & library & \tt{(T->any)} & \tt{(any->T)} & \tt{(any->bool)} \\\hline
+\tt{sieve}      & 92 (2.33)  &       0 &           46 &       0 &             0 &            54 &               31 \\
+\tt{morse-code} & 29 (6.80)  &       0 &            0 &       0 &             0 &           100 &                0 \\
+\tt{mbta}       & 39 (3.65)  &       0 &            0 &      65 &             0 &            65 &                0 \\
+\tt{zo}         & 95 (0.10)  &       0 &           55 &      45 &             0 &            99 &               43 \\
+\tt{suffixtree} & 94 (0.18)  &      98 &           <1 &       0 &             2 &            94 &               18 \\
+\tt{lnm}        & 81 (0.73)  &       0 &            9 &      99 &            91 &             0 &                0 \\
+\tt{kcfa}       & 91 (0.26)  &     100 &            0 &       0 &             0 &            54 &               31 \\
+\tt{snake}      & 98 (0.21)  &      93 &            0 &       0 &             1 &            99 &               49 \\
+\tt{tetris}     & 96 (0.35)  &      89 &            0 &       0 &            11 &            89 &               44 \\
+\tt{synth}      & 83 (1.22)  &      51 &           90 &       0 &            29 &            20 &                0 \\
+\tt{gregor}     & 83 (4.01)  &      78 &            0 &       3 &             7 &            85 &               31 \\
+\tt{quad}       & 80 (0.96)  &      <1 &            1 &       0 &             3 &            <1 &               <1 \\
+\bottomrule
+\end{tabular}
+}|
+]
+
+To help understand the source of costs, we used the feature-specific profiler
+of St. Amour @etal @~cite[saf-cc-2015] to measure the contract
+overhead of each benchmark's @emph{slowest} configuration.
+@Figure-ref{fig:postmortem} summarizes our findings.
+The leftmost data column, labeled ``%C'', gives the percent of each benchmark's total running
+time that was spent checking contracts on its slowest configuration.
+These numbers are the average of 10 trials, so in parentheses we give the standard error of our measurements.
+Except for the short-running benchmarks@note{@tt{gregor}, @tt{morse-code}, and @tt{mbta}
+finished in under 2 seconds.
+All other benchmarks ran for at least 12 seconds on their worst-case configuration.},
+we saw little variability across trials.
+
+As expected, the programs spend an incredible amount of time checking contracts.
+This was obvious given our experimental results in Section@secref{sec:all-results}.
+The more interesting question is: what patterns, if any, do these contracts share?
+
+To answer this question, the remaining columns of @figure-ref{fig:postmortem} tell what
+percentage of each benchmark's @emph{contract-checking} execution time was spent on a
+particular variety of contracts.
+Adaptor contracts lie between a typed module and untyped data structures.
+Higher-order contracts are function contracts with at least one function in their domain or codomain.
+Library contracts separate an untyped library from typed modules, or in the case of @tt{lnm},
+a typed library from untyped modules.
+The last three columns classify patterns of function contracts.
+First, @tt{(T->any)} denotes function contracts with protected domains and unchecked codomains.@note{In Racket, the @tt{any/c} contract is a no-op contract.}
+Contracts of this shape guard typed functions called in untyped modules.
+The shape @tt{(any->T)} is the opposite; these contracts guard functions with unchecked domains and protected codomains.
+For example, if a typed module calls an untyped function with immutable arguments, Typed Racket will
+statically prove that the untyped function is given well-typed arguments, but must insert a contract to verify
+the function's result.
+Lastly, the @tt{(any->bool)} column is a subset of the @tt{(any->T)} column.
+It counts the total time spent checking the function contract @tt{(-> any/c boolean?)}, which
+asserts that its value is a function taking one argument and returning a boolean.
+
+@;bg: Should we explain that (any->T) is variable arity, but (any->bool) is strictly one argument?
+@;    I think the message is clear without it
+
+Note that many of these columns can overlap.
+The @tt{mbta} benchmark in particular spends 65% of its contract-checking time verifying first-order library functions.
+These checks are always triggered by a typed module on immutable arguments, so Typed Racket optimizes them to @tt{(any->T)} contracts.
+@; Non-overlapping pairs: (adaptor, library), (higher-order, any->T), (higher-order, any->bool), *(T->any, any->T)
+
+The most striking result in this table is the @tt{(any->bool)} column.
+It says that on average, 20% of the time our benchmarks spend checking contracts
+goes towards verifying that predicate functions have the trivial @tt{(Any -> Boolean)} type.
+Moreover, nearly all these predicates are generated by Racket structure definitions,
+so their type correctness might be assumed.
+Removing these contracts or optimizing the cost of indirection seems like a clear place for Typed Racket to improve.
+
+The adaptor and library columns, however, suggest that the apparently high cost
+of predicate contracts may just be a symptom of placing a typed/untyped boundary
+between a data definition and functions closely associated with the data.
+One example of this is the @tt{zo} analyzer; indeed, the purpose of that code
+is to provide an interface to native compiler data structures.
+Nearly all benchmarks using adaptor modules exhibit this same pattern in these
+worst-case results, where both the adaptor and @tt{(any->bool)} contracts
+account for a significant proportion of all contracts.
+The apparent exceptions are @tt{synth} and @tt{quad}.
+Only @tt{synth} truly is an exception, and this is because it spends much more time
+creating structured data from raw vectors than accessing the data.
+The @tt{quad} benchmark in fact spends 93% of its contract-checking time validating
+data structures, however this data is stored in fixed-length lists rather than
+in structure types.
+These lists do not require an adaptor, but produce contracts that are more
+expensive than a type predicate and cannot be optimized away.
+
+Regarding higher-order contracts, we see relatively few in our benchmark programs.
+Only @tt{synth}, @tt{sieve}, and @tt{zordoz} make heavy use of higher-order functions across
+contract boundaries.
+@; Even then, @tt{zordoz} only returns thunks. It's barely using higher-order-ness
+In these programs the cost of such contracts is apparent, but
+we were more surprised to learn that so many of our benchmarks had abysmal performance
+just from flat and first-order function contracts.
+
+Finally, the @tt{(T->any)} and @tt{(any->T)} columns give a rough impression of whether
+untyped or typed modules trigger most contract checks.
+We confirmed these findings by inspecting the individual programs.
+For all but 3 benchmarks, we indeed found that the high-cost (or, high-frequency)
+contracts were triggered from a typed module calling an untyped library or data definition.
+This includes @tt{kcfa}, although half its calls from typed to untyped code used
+mutable arguments and hence could not be reduced to @tt{any/c}.
+The exceptions were @tt{lnm}, @tt{synth}, and @tt{quad}, which all suffered more
+when untyped modules imported definitions from typed ones.
+
