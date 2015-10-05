@@ -1,0 +1,403 @@
+From: "POPL 2016 HotCRP" <noreply@popl16.hotcrp.com>
+Subject: [POPL 2016] Paper #81 "Is Sound Gradual Typing Dead?"
+Date: October 5, 2015 2:46:27 AM EDT
+To: Matthias Felleisen <matthias@ccs.neu.edu>
+Cc: rupak@mpi-sws.org
+Reply-To: rupak@mpi-sws.org
+
+Dear Matthias Felleisen,
+
+I am happy to inform you that your paper
+      Title: Is Sound Gradual Typing Dead?
+ Paper site: https://popl16.hotcrp.com/paper/81
+
+has been selected to appear at POPL 2016. Congratulations! The program
+committee selected 59 out of 253 submissions and worked very hard to
+provide detailed comments. I hope that you will take their advice into
+account while preparing the final version.
+
+Reviews for your paper are appended, and can also be found on the HotCRP
+site.
+
+Detailed instructions for preparing the final version of your paper will
+follow next week.
+
+I look forward to seeing you in St Petersburgh.
+
+Use the link below to sign in to the submissions site.
+
+https://popl16.hotcrp.com/?email=matthias%40ccs.neu.edu
+
+Contact rupak@mpi-sws.org with any questions or concerns.
+
+- POPL 2016 Submissions
+
+===========================================================================
+                          POPL 2016 Review #81A
+---------------------------------------------------------------------------
+                Paper #81: Is Sound Gradual Typing Dead?
+---------------------------------------------------------------------------
+
+                     Overall merit: 2. Weak reject
+Reviewer expertise (shown to authors): 2. 
+                                       Some familiarity (I am familiar
+                                       with the topic)
+
+                        ===== Paper summary =====
+
+This paper presents an experimental evaluation in order to
+assess the practicality of gradually-typed programming languages. The
+idea is to explore all possible up-conversions (from untyped to typed)
+of untyped benchmarks, thereby covering all possible gradual typing
+strategies. The experimental evaluation focuses in particular on Typed
+Racket, a mature implementation of gradual typing. The results show a
+dramatic slowdown, which leads the authors to the conclusion that
+sound gradual typing is dead.
+
+===== Comments for authors and suggestions to make this a strong paper =====
+
+
+I appreciate the idea of systematically assessing the performance of
+sound gradual typing, but I have the feeling  that this work is incomplete and, in
+particular, that a sharp conclusion like "gradual typing is dead"
+actually requires more work to be justified.
+
+The slowdown  induced by this technique
+is far from being surprising, since it has already been discussed
+(albeit not systematically) in previous work, and even the lattice-based
+evaluation method is not novel [24]. Given that, I would have expected
+a systematic experimental evaluation returning interesting
+insights and lessons learned. 
+
+First of all, this work focuses on macro-level graduate typing,
+leaving micro-level gradual typing as future work. This scope
+restriction should be clearly stated, both in the intro and in the
+title.
+
+Second, the results focus on Typed Racket and it is not clear to me
+whether they are general or they actually depend on the specifics of
+the typed programming language.  For instance, I would have liked to
+see the results for a popular programming language like TypeScript and
+see whether the numbers are confirmed.
+
+Finally, it would have been interesting to draw constructive
+suggestions to improve the performance of gradually typed languages
+based on your results. Which checks are particularly expensive? Do you
+see ways to circumvent the sources of inefficiency or to come up with
+more efficient approaches? 
+
+To conclude, I believe this is a worthwhile research direction, but
+the paper is not sufficiently complete and mature for publication in a
+venue like POPL.
+
+===========================================================================
+                          POPL 2016 Review #81B
+                    Updated 4 Oct 2015 2:11:59am EDT
+---------------------------------------------------------------------------
+                Paper #81: Is Sound Gradual Typing Dead?
+---------------------------------------------------------------------------
+
+                     Overall merit: 2. Weak reject
+Reviewer expertise (shown to authors): 3. 
+                                       Knowledgeable (I have a broad
+                                       understanding of this topic)
+
+                        ===== Paper summary =====
+
+This paper presents an evaluation of the performance overhead of sound
+gradual typing.  The evaluation considers all possible ways in which a
+program may evolve from being untyped to fully typed, by adding type
+annotations on a per-module basis.  Overhead is introduced due to
+interactions between typed and untyped code; additional checks and
+wrappers must be introduced to ensure the type annotations are not
+violated by untyped code.  Given n modules, there are 2^n ways to
+choose which modules are typed and which are untyped.  This work aims
+to do a performance evaluation of all such combinations, to gain a
+comprehensive picture of how gradual typing overheads affect programs
+during evolution.  The experimental evaluation shows that for some
+benchmarks, many configurations incur dramatic overhead of 10X or
+higher.  Further, the paper proposes a distance metric $L$ indicating
+the distance between two gradually-typed variants.  For some
+benchmarks, even when searching for variants up to distance 2 from the
+current one, no low-overhead variants can be found.  This indicates
+that adding type annotations gradually in a sound gradual type system
+is not currently practical, or as the paper puts it, "Sound gradual
+typing is dead."
+
+===== Comments for authors and suggestions to make this a strong paper =====
+
+After rebuttal
+==============
+The rebuttal claims that JITs will not help the performance situation, but the paper itself spends a paragraph talking about the potential for tracing JITs to reduce overhead (on page 12).  Please ensure the discussion of JITs is clear in the revision.
+
+I still hold out hope that the authors will find time to provide a deeper characterization of the overheads discovered here, like breaking down the cost of allocating wrappers vs. performing checks vs. other factors. How much does wrapper allocation affect garbage collection? How much of the cost is due to higher-order functions, vs. first-order checks? Such data would be more valuable than these artificial notions of N-deliverability and N/M-usability.
+
+Finally, I respectfully suggest that the authors REFRAIN FROM SHOUTING IN ALL CAPS when responding to reviewers in the future.
+
+Original review
+===============
+I appreciate the rigorous evaluation methodology used in this paper,
+and the comprehensive evaluation.  It does indeed establish that, at
+least within the Typed Racket runtime, further optimizations and
+techniques are required to make sound gradual typing practical.  That
+said, overall the contribution of this paper over related work seems
+too small for acceptance.  The exhaustive-search methodology for
+evaluating how overheads change with different combinations of typed
+and untyped modules was already proposed in [24].  So the primary
+contribution here is the additional application of that evaluation
+technique to more benchmarks, and discussion of the experimental
+results.  This is a valuable contribution, but more is needed before
+this work is ready for publication.
+
+The paper could be improved by adding analysis of what types of checks
+tend to cause the most overhead.  How much is due to creating wrappers
+for higher-order functions?  How much is due to basic type checks?
+Does the memory overhead of the wrappers cause a significant increase
+in garbage collection time?  This more detailed analysis could help
+guide future work on reducing the costs of the checks.
+
+The whole phrasing around sound gradual typing being dead is
+eye-catching, but given that the evaluation is over a runtime that
+does not leverage modern JIT compilation technology, I do not think
+very strong conclusions about its feasibility can be made from the
+evaluation.  A number of JIT compilation techniques could reduce
+overhead, in particular since JITs often work by inferring types for
+type-stable but untyped code.  With built-in awareness of the checks
+being introduced for sound gradual typing, I suspect some of the
+overheads seen in this work could be reduced dramatically.  The paper
+is up-front about the lack of evaluation of JIT technology, but
+nevertheless, the evaluation feels limited since this technology is
+not considered.  Perhaps applying similar evaluation techniques to
+Safe Typescript programs could further illuminate this issue.
+
+The additional metrics of N-deliverability, N/M-usability, etc. do not
+seem all that helpful to me.  In the real world, I doubt that any code
+for which performance matters would ever be deployed with more than a
+50% slowdown.  The bottom line of the excessive slowdown from sound
+gradual typing is fairly clear without these additional metrics.
+
+===========================================================================
+                          POPL 2016 Review #81C
+                    Updated 3 Oct 2015 3:27:53am EDT
+---------------------------------------------------------------------------
+                Paper #81: Is Sound Gradual Typing Dead?
+---------------------------------------------------------------------------
+
+                     Overall merit: 5. Strong accept
+Reviewer expertise (shown to authors): 3. 
+                                       Knowledgeable (I have a broad
+                                       understanding of this topic)
+
+                        ===== Paper summary =====
+
+At the PC meeting we decided to conditionally accept the paper, as described in the accompanying comment.
+=======================================
+
+The paper presents an empirical study evaluating the performance
+overhead of sound gradual typing for the Typed Racket language.  The
+authors have taken a number of example programs, each consisting of
+multiple untyped modules, manually added types to each module, and
+then compared, for each program, the performance overhead associated
+with every possible combination of typed and untyped modules.  The
+top-level finding is that, for one implementation of one language,
+applied to one set of benchmarks, sound gradual typing has the
+frustrating property that performance improves if *everything* is
+typed, but that performance is typically extremely bad if some modules
+are typed and others are not typed.  The study, and its limitations,
+is clearly presented.
+
+===== Comments for authors and suggestions to make this a strong paper =====
+
+I'm keen on this paper: the authors do a very thorough job conducting
+a relatively large empirical study of an important and interesting
+problem.  The precise trade-offs between using typed and untyped
+languages are not at all clear, and the issue leads to wide
+disagreement between practitioners and purists, but what is absolutely
+clear is that (a) there are trade-offs, (b) both approaches have
+benefits, and (c) the idea of a middle ground, where some parts of an
+application are typed and others are not, is appealing.  For (c) to be
+useful, the performance of partially typed programs needs to be
+reasonable, and perhaps more importantly, the changes in performance
+one encounters during the process of gradually typing a multi-module
+program should not be too large - one does not want massive,
+unpredictable spikes or dips in performance during this process.
+
+The authors systematically study 12 benchmark programs written in
+Typed Racket, exploring every possible configuration of typed and
+untyped modules.  For a given program this leads to a lattice of
+programs with the completely untyped program at the bottom, the fully
+typed program at the top, and where intermediate programs are ordered
+according to whether one is at least as typed as another.
+
+The main finding of the study is that while fully typing a program can
+have performance benefits, typing some modules of a program but not
+others can have a dramatic negative impact on performance.  The
+authors discuss reasons for this in some detail.
+
+I think this is a really well conducted study, and it's important for
+PL researchers to undertake these kinds of empirical studies.  I
+support acceptance of the paper at POPL.
+
+I have some questions and remarks, mainly related to additional
+threats to the validity of the study; I'd appreciate it if the authors
+could comment on these in the response, and I hope they will update
+the paper to address them.
+
+- Most importantly: who wrote the programs that you study?  You
+ provide a description of each program, but you do not make it at all
+ clear whether the programs were implemented in Typed Racket by the
+ authors, or whether they are existing Typed Racket programs written
+ by others.  You talk about "adapting" existing programs.  I did not
+ check the URLs you give - without checking these, I don't know
+ whether this means that you adapted existing Typed Racket
+ implementations (which leads to the question of why you did so, and
+ in what manner you adapted them), or whether you took programs
+ written in other languages and re-implemented them in Typed Racket.
+ This information is important to give the reader a clear picture of
+ how realistic your programs are.  If they're not terribly realistic
+ (toy programs implemented by you), then that's still OK; it may
+ inspire future efforts to study more realistic examples.
+
+- Related to this: in the definitions of N-deliverable, N/M-usable,
+ etc., you talk about teams of software engineers.  From your
+ benchmark descriptions it does *not* appear that the programs you
+ study are at the scale where they would be implemented by teams.  I
+ think you should remark on this, making it clear that in the
+ definitions you are envisaging scenarios where a gradually typed
+ language is used at scale, despite the fact this is not the case for
+ the benchmark programs you study.
+
+- Again, related to this issue of how realistic the benchmarks are:
+ the "Gregor" benchmark sounds totally synthetic.  If this is the
+ case it should be acknowledged (or removed).  If I'm wrong, then
+ perhaps this needs to be clarified.
+
+- When typing a module in Typed Racket, is there just one choice of
+ typing, or might there be many ways to type the module?  If the
+ former, please say so.  If the latter, you need to make this clear
+ and also to add this issue to your "threads to validity".  It could
+ be that different typings would lead to different performance
+ results.
+
+- A problem I have with the definition of L-step N/M-usable is that
+ two different modules may vary dramatically in their size and their
+ ease of typability.  I'm not sure how useful it is to know that one
+ is only 6 modules away from having something that is N/M usable -
+ the 6 modules may be tiny and trivial, or they maybe gigantic.  Even
+ if you keep this definition, I suggest you acknowledge this point.
+
+- In your discussion of Fig. 3 you say "Almost all partially typed
+ configurations exhibit slowdowns between 0.7x and 105x."  First,
+ 0.7x is the speedup associated with having full types.  Second, I
+ could not see (from Fig. 3) any exceptions to this range.  If there
+ are exceptions, please comment on a couple of them.  If there are no
+ exceptions then I'm not sure what point you are making here other
+ than commenting on the range associated with the figure.
+
+- When you discuss the performance overhead associated with the
+ typed-untyped boundary, I got confused by your statement: "These
+ modules make up a tightly coupled clique."  By "clique" I thought
+ you meant that the graph of inter-module dependences would be the
+ complete graph (or a mostly complete graph).  But looking at Figure
+ 1, the module structures all appear to be DAGs.  So there are no
+ cycles between modules, and thus modules cannot form cliques.  I'm
+ sure I am missing something here, but I'd like to understand better
+ how there can be repeated crossing of boundaries between modules A
+ and B if B depends on A but not vice-versa.
+
+- Thanks for being open about omitting quad.  But I found your
+ inclusion of quad in Figure 5 misleading - it would have been clearer
+ to use dashes in the figure to indicate that there was no data.
+
+- "Our results may be less valid in the context of large programs,
+ though practical experience using Typed Racket suggests otherwise."
+ - this statement is vague and mysterious to the reader.  If you're
+ going to make this anecdotal remark you need to give a bit of
+ information about what your experience is.
+
+- When reading 3.1.1 I didn't get what message you were trying to
+ give.  In particular, it wasn't clear to me whether you had to
+ manually adapt the benchmarks to use adaptors, or whether this was
+ somehow done automatically.  This became clearer later, but I think
+ you could explain more clearly at this point that you did have to
+ manually edit benchmarks.
+
+Two further questions (no need to address these in the rebuttal, but
+they might be worth thinking about):
+
+- To what extent can type inference help in inferring types for
+ modules?  Specifically, if one types a bunch of modules, might the
+ types at interface boundaries equip a type inference algorithm with
+ the necessary constraints to fill in the types for other modules?
+
+- It's cool to have done exhaustive consideration of typed
+ configurations, but, as you remark, this is not feasible for larger
+ programs.  For such programs, why not type each module, and then
+ consider a number of randomly chosen paths through the lattice of
+ programs, up to some threshold?  You could draw interesting
+ conclusions for larger programs using this method.
+
+===========================================================================
+                          POPL 2016 Review #81D
+---------------------------------------------------------------------------
+                Paper #81: Is Sound Gradual Typing Dead?
+---------------------------------------------------------------------------
+
+                     Overall merit: 4. Accept
+Reviewer expertise (shown to authors): 4. 
+                                       Expert (I have published papers in
+                                       related topics)
+
+                        ===== Paper summary =====
+
+The paper introduces a methodology for evaluating the efficiency of
+implementations of (sound) gradually typed languages based on the idea
+of measuring the performance of all variants of a program obtained by
+adding type annotations (and static type checking) to some modules but
+not others. The paper proposes several ways to analyze the resulting
+data, such as graphing overhead versus number of configurations,
+measuring how far off each slow configuration is from a fast
+configuration, and counting the number of configurations that have
+acceptable performance for production or for development (i.e. for
+testing, debugging, etc.)
+
+The paper applies the methodology to Typed Racket on a benchmark suite
+of 12 programs consisting of between 2 and 16 modules. The results are
+quite negative for many of the benchmarks, showing that a large number
+of the configurations in these benchmarks have unnacceptable
+performance.
+
+===== Comments for authors and suggestions to make this a strong paper =====
+
+I recommend acceptance of this paper because 
+* the methodology is novel and important,
+* the results for Typed Racket are informative, 
+* the paper reports negative results, which our community
+ is historically bad at reporting, and
+* the results provide focus for future research on the
+ efficiency of implementations of gradual typing.
+
+However, the paper needs to be revised to bring the claim "sound
+gradual typing is dead" in line with the actual result of the paper,
+which is more like "a straightforward implementation of gradual typing
+results in high overheads". The paper is intentionally overstating the
+results for shock factor, at the expense of possibly misleading
+readers who are not experts in the area.
+
+There are several reasons to expect that a more sophisticate
+implementation of gradual typing will reduce the overheads that are
+seen in Typed Racket.
+* Typed Racket does not address the space-efficiency issue (Herman et
+ al. 2007), which may also be contributing to the run time. An
+ interesting question to ask about their data is how much of
+ the overhead is spent on executing redundant contracts.
+* Typed Racket implements casts using the contract system, which
+ is more general than casts and therefore comes with higher overhead.
+* Typed Racket is implemented by translation to Racket, which is a
+ dynamically typed language implemented with a relatively simple
+ JIT. While Typed Racket does perform some optimizations based on
+ static types, it is clear that for fully static programs, it does
+ not achieve performance comparable to a typical optimizing compiler
+ for a statically typed language.
+
+

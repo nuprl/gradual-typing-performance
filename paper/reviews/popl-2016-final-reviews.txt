@@ -559,14 +559,30 @@ fundamental weaknesses that were completely overlooked in POPL so far.
 ---------------------------------------------------------------------------
 We discussed the paper at length at the PC meeting.  We had two main concerns:
 
-1. As discussed in the reviews, we feel that the authors could investigate more detailed reasons for the performance associated with partially typing a program.  However, we in the end agreed that the paper could be accepted without this additional investigation because the empirical study as is has been well executed and is clear.
+1. As discussed in the reviews, we feel that the authors could investigate
+more detailed reasons for the performance associated with partially typing
+a program.  However, we in the end agreed that the paper could be accepted
+without this additional investigation because the empirical study as is has
+been well executed and is clear. 
 
-2. We are not happy about the "shock factor" approach to the paper's presentation.  In particular, we feel that the title of the paper is misleading with respect to the actual findings of the paper.
+2. We are not happy about the "shock factor" approach to the paper's
+presentation.  In particular, we feel that the title of the paper is
+misleading with respect to the actual findings of the paper. 
 
-As a condition of acceptance, we ask the authors to pay careful attention to issue 2 in the final version.  This comment by Reviewer D sums up our wishes:
+As a condition of acceptance, we ask the authors to pay careful attention
+to issue 2 in the final version.  This comment by Reviewer D sums up our
+wishes: 
 
-"However, the paper needs to be revised to bring the claim "sound gradual typing is dead" in line with the actual result of the paper, which is more like "a straightforward implementation of gradual typing results in high overheads". The paper is intentionally overstating the results for shock factor, at the expense of possibly misleading readers who are not experts in the area."
+"However, the paper needs to be revised to bring the claim "sound gradual
+typing is dead" in line with the actual result of the paper, which is more
+like "a straightforward implementation of gradual typing results in high
+overheads". The paper is intentionally overstating the results for shock
+factor, at the expense of possibly misleading readers who are not experts
+in the area." 
 
-This should be an easy, non-intrusive change to make.  The PC would be happy to check (via the PC chair) a revision of the paper prior to the camera-ready deadline to confirm whether we are happy that this issue has been sufficiently addressed.
+This should be an easy, non-intrusive change to make.  The PC would be
+happy to check (via the PC chair) a revision of the paper prior to the
+camera-ready deadline to confirm whether we are happy that this issue has
+been sufficiently addressed. 
 
 
