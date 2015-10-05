@@ -13,3 +13,5 @@ Scripts for running our benchmarks.
 
 - `setup-benchmark.rkt` Script for synthesizing all lattice configurations from
   a fully-typed and fully-untyped versions of a benchmark.
+
+- `view.rkt` Create a picture from `.rktd` output.
