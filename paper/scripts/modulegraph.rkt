@@ -302,21 +302,3 @@
     (for/list ([tag+neighbors (in-list sorted)])
       (cons (cdar tag+neighbors) (cdr tag+neighbors))))
   (modulegraph project-name untagged))
-
-;; =============================================================================
-
-(module+ test
-  ;; -- Simple test, just make sure all module graphs parse.
-  (require/typed glob [in-glob (-> String (Sequenceof String))])
-  (: test-file (-> String Void))
-  (define (test-file fn)
-    (define mg (from-tex fn))
-    (printf "Parsed '~a' from '~a'\n" mg fn))
-  (for ([fname (in-glob "../module-graphs/*.tex")])
-    (printf "TESTING ~a\n" fname)
-    (test-file fname))
-
-  ;; -- name->index
-  ;; -- index->name
-  ;; -- requires
-)

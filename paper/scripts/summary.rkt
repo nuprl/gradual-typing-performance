@@ -62,6 +62,7 @@
 
 (require
   racket/path
+  racket/runtime-path
   math/statistics
   (only-in racket/list range) ;; because in-range has the wrong type
   (only-in racket/file file->value)
@@ -99,7 +100,7 @@
 ;; -- constants
 
 ;; Default location for TiKZ module graphs
-(define MODULE_GRAPH_DIR "module-graphs")
+(define-runtime-path MODULE_GRAPH_DIR "../module-graphs")
 
 ;; -----------------------------------------------------------------------------
 ;; -- parsing
@@ -158,9 +159,9 @@
   ;; Get the prefix of the path
   (define tag (path->project-name path))
   ;; Search in the MODULE_GRAPH_DIR directory for a matching TeX file
-  (define relative-pathstring (format "../~a/~a.tex" MODULE_GRAPH_DIR tag))
-  (build-path (or (path-only path) (error 'infer-graph))
-              (string->path relative-pathstring)))
+  (build-path MODULE_GRAPH_DIR
+              (string-append tag ".tex")))
+  ;(or (path-only path) (error 'infer-graph))
 
 ;; -----------------------------------------------------------------------------
 ;; -- querying
