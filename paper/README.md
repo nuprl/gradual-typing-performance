@@ -1,11 +1,10 @@
 paper
 =====
 
-Submission for POPL 2015.
+Draft for POPL 2015.
 
 To compile the paper, run `make`.
-This will take approximately 30 minutes the first time,
- or after running `make clean`,
+This will take approximately 30 minutes the first time, or after running `make clean`,
  because it processes our experimental data to create figures.
 
 

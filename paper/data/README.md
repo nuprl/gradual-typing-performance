@@ -18,61 +18,33 @@ We order variations by:
 - Generating a bitstring for each variation, where the `k`-th bit is high iff the `k`-th module
   in the alphabetical ordering is typed. (Zero is the left end of the bitstring.)
 - Mapping each bitstring to the natural number it represents in binary.
-So the fourth entry in the `.rktd` data representing a project with four modules
-would correspond to the variation `0100`.
 
-There is no metadata stored in these data files.
-We track that here.
+Example: the fourth entry in the `.rktd` data representing a project with four modules
+would correspond to the variation `0100`.
 
 
 Machines
 --------
 - Galicia (4 phys. cores, Core i7-3770K 3.50GHz)
-- "The cluster" (40 phys. cores, Xeon CPU E5-2680 2.8GHz)
+- Cluster (40 phys. cores, Xeon CPU E5-2680 2.8GHz)
 - Desktop (4 phys. cores, Core i7-4790 3.60GHz)
 - Lambda (12 phys. cores, Xeon E5-2630 2.30GHz)
-- Sapporo (2 phys. cores, PPC970MP)
 
 
 Files
 -----
 
-Run on Racket 6.2.
+All data run on Racket 6.2.
 
-- `gregor-2015-06-30.rktd` Run on cluster, `-j 39`
-- `gregor-2015-07-02.rktd` Run on cluster, `-j 19`
-- `gregor-2015-07-26T05:27:18.rktd` Run on lambda single-core.
+- `gregor-2015-07-26T05:27:18.rktd` Run on Lambda, single-core.
 - `kcfa-2015-06-25T13:48:52.rktd` Run on Lambda with `-j 11`
 - `lnm-large-06-28.rktd` Run on Desktop, single core. Benchmarked on data for gregor.
-- `morsecode-06-27.rktd` Run on Desktop, single core. Benchmarked on the entire list of frequently used words.
+- `mbta-04-25.rktd` Run on Galicia, single core.
+- `morsecode-large-06-27.rktd` Run on Desktop, single core.
+- `quad-galicia-07-26.rktd` Run on Galicia, 3 cores.
 - `sieve-2015-06-28T14:08:55.rktd` Run on Lambda, single core
-- `suffixtree-large-06-30.rktd` Run on Desktop, single core, 30 iters.
-- `synth-2015-06-30T15:34:39.rktd` Run on cluster, `-j 39`
-- `synth-2015-07-02T01:47:43.rktd` Run on cluster, `-j 19`
-- `snake-2015-06-30T14:55:40.rktd` Run on cluster, `-j 39`
-- `snake-2015-07-01T16:35:34.rktd` Run on cluster, `-j 19`
-- `tetris-2015-06-30T14:53:37.rktd` Run on cluster, `-j 39`
-- `tetris-2015-07-01T16:39:46.rktd` Run on cluster, `-j 19`
-
-Benchmarks run on different-sized inputs
-- `synth-mid-06-26.rktd` Run on Galicia, single core. Benchmarked on medium-size synth test (smoke on the water).
-- `kcfa-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a very small "standard example" test.
-- `lnm-mid-06-22.rktd` Run on Desktop, single core. Benchmarked on data for suffixtree.
-- `moresecode-small-06-27.rktd` Run on Desktop, single core. Benchmarked on a subset of the "frequently-used-words" file.
-
-__NOTE__ all these files are _unofficial_, they were not run on Racket 6.2.
-We need to update them all.
-
-- `echo.rktd` Unknown origin.
-- `synth.rktd`
-- `gregor-05-11.rktd` Run on Galicia
-- `gregor-05-24.rktd` Run on the cluster.
-- `kcfa-06-01.rktd` Run on Galicia.
-- `mbta-04-20.rktd` Original MBTA, run on Galicia.
-- `mbta-04-25.rktd` Fixed MBTA, run on Galicia.
-- `sieve-04-06.rktd` Run on Galicia
-- `snake-04-10.rktd` Run on Galicia
-- `suffixtree-06-10.rktd` Run on Galicia
-- `tetris.rktd` Run on Galicia, date unknown
-- `zordoz-04-09.rktd` Run on Galicia
-
+- `snake-2015-06-30T14:55:40.rktd` Run on Cluster, `-j 39`
+- `suffixtree-large-06-30.rktd` Run on Desktop, single core.
+- `synth-2015-07-02T01:47:43.rktd` Run on Cluster, `-j 19`
+- `tetris-2015-07-01T16:39:46.rktd` Run on Cluster, `-j 19`
+- `zordoz-04-09` Run on Galicia, single core.
