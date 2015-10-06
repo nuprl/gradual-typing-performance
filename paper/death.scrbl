@@ -4,62 +4,63 @@
 
 @title[#:tag "sec:death"]{Quo Vadis Sound Gradual Typing?}
 
-Unsound type systems are useful. They find bugs at compile-time, and an IDE can use them to
- assist programmers. Sound type systems are useful and meaningful. A
- soundly typed program cannot go wrong, up to a well-defined set of run-time
- exceptions@~cite[type-soundness]. When a typed program raises an
- exception, the exception message can (usually) pinpoint the location of
- the problem in the program source. Hence sound types are one of the best
- forms of documentation and specification around. In the context of a sound
- type system, the type of a well-named function or method often explains
- (almost) as much as an inspection of the code.
+Unsound type systems are useful. They document the code, find bugs at
+ compile-time, and enable the IDE to assist programmers. Sound type systems
+ are useful @emph{and} meaningful. A soundly typed program cannot go wrong,
+ up to a well-defined set of run-time exceptions@~cite[type-soundness].
+ When a typed program raises an exception, the accompanying message usually
+ pinpoints the location of the problem in the program source. 
 
 From this description it is clear why programmers eventually wish to
  annotate programs in untyped languages with types and, ideally, with sound
- types. Types increase a programmer's productivity, and sound types help
- with testing, debugging, and other maintenance tasks.  Hence sound gradual
- typing seems to be such a panacea. The problem is, however, that the cost
- of enforcing soundness appears to be overwhelming according to our
- measurements.
+ types. Types directly and indirectly increase a programmer's productivity,
+ and sound types help with testing, debugging, and other maintenance tasks.
+ In short, sound gradual typing seems to be a panacea. 
 
-In general, the graphs in @figure-ref["fig:lnm1" "fig:lnm2"] clarify how
- few partially typed configurations are usable by developers or deliverable
- to customers. For almost all benchmarks, the lines are below the (red)
- horizontal line of acceptability. Even with extremely liberal settings for
- @math{N} and @math{M}, few configurations are @math{N}-deliverable or
- @math{N/M}-usable. Worse, investing more effort into type annotation does
- not seem to pay off. In practice, converting a module takes a good portion
- of a workday, meaning that setting @math{L} to @math{2} is again a liberal
- choice. But even allowing the conversion of two additional modules @emph{and}
- the unrealistic assumption that the developer picks two modules best-suited
- to improve performance does
- not increase the number of acceptable configurations by much. Put
- differently, the number of @math{L}-step @math{N/M}-acceptable
- configurations remains small with liberal choices for all three parameters.
+The problem is that, according to our measurements, the cost of enforcing
+ soundness is overwhelming.  @Figure-ref["fig:lnm1" "fig:lnm2"] clarify
+ just how few partially typed configurations are usable by developers or
+ deliverable to customers. For almost all benchmarks, the lines are below
+ the (red) horizontal line of acceptability. Even with extremely liberal
+ settings for @math{N} and @math{M}, few configurations are
+ @math{N}-deliverable or @math{N/M}-usable. Worse, investing more effort
+ into type annotation does not seem to pay off. In practice, converting a
+ module takes a good portion of a workday, meaning that setting @math{L} to
+ @math{2} is again a liberal choice. But even allowing the conversion of
+ two additional modules @emph{and} the unrealistic assumption that the
+ developer picks two modules best-suited to improve performance does not
+ increase the number of acceptable configurations by much. Put differently,
+ the number of @math{L}-step @math{N/M}-acceptable configurations remains
+ small with liberal choices for all three parameters.
+
+Our use of the evaluation framework projects an extremely negative image of
+ @emph{sound} gradual typing. While we are confident that the framework
+ captures the proclaimed spirit of the goals of gradual typing, our
+ particular application of the framework and its results must be put in
+ perspective. @Secref{sec:threats} explains why the evaluation of Typed
+ Racket---though not the framework itself---may look overly
+ negative. @Secref{sec:postmortem} presents a detailed analysis of the
+ worst elements in the twelve lattices and highlights those kinds of
+ contracts that impose the most significant cost.
 
 @; -----------------------------------------------------------------------------
-@section{Threats to Validity of Conclusion}
+@section[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
-Our use of the evaluation framework projects an exceedingly negative
- image. While we are confident that the framework is a strong match for the
- goals of gradual typing, the application of the framework and its results
- must be put in perspective.
+We have identified four threats to the validity of our measurements and our
+ conclusions. 
 
-First, our benchmarks are relatively small. The two largest ones consist of
- 13 and 16 modules, respectively. Even these benchmarks pose
- challenges to our computing infrastructure because they require timing
- @math{2^13} and @math{2^16} configurations @math{30} times each.
- Running experiments with programs that consist of many
- more modules would be impractical.
-
-To make the experiment feasible for our chosen benchmark, the larger
- benchmarks are run using multiple cores and divide up the configurations
- amongst the cores. Each configuration is put into a single process running
- a separate instance of the Racket VM pinned to a single core.  This
- parallelism may introduce confounding variables due to, for example,
- shared caches or main memory. We have attempted to control for this case
- and, as far as we can tell, executing on an unloaded machine does not make
- a significant difference to our results.
+First, our benchmarks are relatively small due to constraints on our
+ computing infrastructure. The two largest ones consist of 13 and 16
+ modules, respectively, and pose serious challenges because they require
+ timing @math{2^13} and @math{2^16} configurations @math{30} times each.
+ In order to obtain results for these large benchmarks in a reasonable
+ amount of time, they are run using multiple cores and the configurations
+ are divided amongst the cores. Each configuration is put into a single
+ process running a separate instance of the Racket VM pinned to a single
+ core.  This parallelism may introduce confounding variables due to, for
+ example, shared caches or main memory. We have attempted to control for
+ this case and, as far as we can tell, executing on an unloaded machine
+ does not make a significant difference to our results.
 
 Second, several of our benchmarks import some modules from Racket's suite of
  libraries that remain untyped throughout the process, including for the
@@ -87,14 +88,14 @@ Third, our method imagines a particularly @emph{free} approach to
  the module graph.  We therefore conjecture that some of the ideas offered
  in the conclusion section may help such planned, path-based approaches.
 
-Fourth, we articulate our results on the basis of current implementation
- technology. Typed Racket compiles to Racket, which uses rather conventional
- compilation technology. It makes no attempt to reduce the overhead of
- contracts or to exploit contracts for optimizations. It remains to be seen
- whether contract-aware compilers
- can reduce the significant overhead that our evaluation
- shows. Nevertheless, we are convinced that even if the magnitude of the
- slowdowns are reduced, some pathologies will remain.
+Fourth, we articulate our conclusions on the basis of current
+ implementation technology. Typed Racket compiles to Racket, which uses
+ rather conventional JIT compilation technology. It makes no attempt to
+ reduce the overhead of contracts or to exploit contracts for
+ optimizations. It remains to be seen whether contract-aware compilers can
+ reduce the significant overhead that our evaluation shows. Nevertheless,
+ we are convinced that even if the magnitude of the slowdowns are reduced,
+ some pathologies will remain.
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:postmortem"]{What are the Bottlenecks?}
@@ -148,11 +149,9 @@ To analyze the cost of dynamic contract checks, we used the
 The leftmost data column (%C) gives the percent of each benchmark's total
  running time that was spent checking contracts.  These numbers are the
  average of ten trials; the numbers in parentheses represent the standard
- error.  Except for the short-running benchmarks,@note{The @tt{gregor},
- @tt{morse-code}, and @tt{mbta} benchmarks finished in under 2 seconds.
- All other benchmarks ran for at least 12 seconds on their worst-case
- configuration.} we see little variability across trials.  As expected,
- the programs spend a huge amount of time checking contracts.
+ error.  Except for the short-running benchmarks (@tt{gregor},
+ @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
+ As expected, the programs spend a huge proportion of running time checking contracts.
 
 The remaining columns of @figure-ref{fig:postmortem} report what percentage
  of each benchmark's @emph{contract-checking} execution time is spent on a
@@ -179,12 +178,12 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
  statically proves that the untyped function is given well-typed
  arguments but must insert a contract to verify the function's result.}
 
-@item{The @any->bool[] column is a subset of the @any->T[] column.  It
- measures the time spent checking functions that take a single argument
- and returning a Boolean value.}  
+@item{The @any->bool[] column measures the time spent checking functions
+ that take a single argument and returning a Boolean value. It is thus a
+ subset of the @any->T[] column.}  
 ]
 @;
-These columns may overlap.  For example, the @tt{mbta} benchmark in
+Other columns overlap, too.  For example, the @tt{mbta} benchmark in
 particular spends 65% of its contract-checking time on first-order
 library functions. These checks are always triggered by a typed module on
 immutable arguments, so Typed Racket optimizes them to @any->T[] contracts.
@@ -216,7 +215,7 @@ structured data from raw vectors than accessing the data.  The
 time validating data structures, which is stored in fixed-length
 lists rather than in structure types.  These lists do not require
 an adaptor, but their types translate to contracts that are far
-more expensive than a plain type predicate.
+more expensive than plain structure type predicates.
 
 Higher-order contracts show up in only a few of the benchmark
 programs. Specifically, only @tt{synth}, @tt{sieve}, and
