@@ -33,11 +33,6 @@
       "scripts": [ "root-setup.sh" ]
     },
     {
-      "type": "file",
-      "source": "paper-archive.tar",
-      "destination": "/home/artifact/paper-archive.tar"
-    },
-    {
       "type": "shell",
       "scripts": [ "setup.sh" ]
     }
