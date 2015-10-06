@@ -14,12 +14,12 @@ chown -R artifact ~/.ssh
 
 # Set up the artifact files
 cd ~/Desktop
-wget http://ccs.neu.edu/home/types/v0.0.tar.gz
-tar -xzf v0.0.tar.gz
-rm v0.0.tar.gz
+wget http://ccs.neu.edu/home/types/v0.1.tar.gz
+tar -xzf v0.1.tar.gz
+rm v0.1.tar.gz
 
-# TODO Copy over the paper
-# cp gradual-typing-performance-0.0/paper/draft.pdf ./is-sound-gradual-typing-dead.pdf
+# Copy over the paper
+cp paper/paper.pdf ./is-sound-gradual-typing-dead.pdf
 
 # Install Racket
 # first download Racket v6.2
@@ -35,11 +35,10 @@ echo "export PATH=~/racket/bin:$PATH" >> ~/.bashrc
 
 # Install packages that are needed for the artifact
 yes | raco pkg install glob
-yes | raco pkg install ./gradual-typing-performance-0.0/tools/benchmark-util
+yes | raco pkg install tools/benchmark-util
 raco setup -D # avoid huge memory use from doc build
 
 # TODO Create the scribble docs
-#cd TODO/
 #scribble +m --htmls README.scrbl
 #mv README ~/Desktop/readme-folder
 #ln -s ~/Desktop/readme-folder/index.html ~/Desktop/README.html
@@ -69,6 +68,9 @@ echo "StartupNotify=false"        >> ~/Desktop/DrRacket.desktop
 
 chmod +x ~/Desktop/DrRacket.desktop
 
+# Setup desktop background
+wget -O ~/racket-logo.jpg http://ccs.neu.edu/home/types/racket-logo.jpg
+feh --bg-center ~/racket-logo.jpg
+
 # Cleanup
-cd ~/Desktop
-rm racket-6.2-x86_64-linux-ubuntu-precise.sh
+rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh
