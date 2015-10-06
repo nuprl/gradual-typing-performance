@@ -7,11 +7,13 @@
 ;; will set up benchmarks using the provided directory
 (module+ main
   (match (current-command-line-arguments)
+    ['#()
+     (printf "Usage: setup-benchmark.rkt <directory>\n")]
     [(vector path)
      (create-benchmark-dirs path)]))
 
 ;; ===================================================================================================
-(require srfi/13)
+(require racket/format)
 
 (define TYPED? "typed?")
 (define TYPED "yes")
@@ -93,7 +95,8 @@
 ;; ---------------------------------------------------------------------------------------------------
 ;; String -> String 
 (define (filled s)
-  (string-pad-right s (- 80 (string-length TYPED?))))
+  (~a s #:min-width (- 80 (string-length TYPED?))
+        #:right-pad-string " "))
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; Path -> Void 
