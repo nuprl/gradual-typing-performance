@@ -70,8 +70,6 @@
     (for/list ([var-slice (in-slice slice-size (in-values-sequence (in-indexed (in-list variations))))]
                [job# (in-range 1 (add1 jobs))])
       ;; Spawn a control thread for each job, which will in turn spawn an OS process.
-      ;; Each job gets assigned to the CPU that is the same as the job# using
-      ;; the `taskset` command.
       (thread
        (λ ()
          (for ([var-in-slice var-slice])
@@ -81,8 +79,8 @@
 
            (parameterize ([current-directory new-cwd])
              ;; first compile the variation
-             (unless (system (format "taskset -c ~a raco make -v ~a"
-                                     job# (path->string file)))
+             (unless (system (format "raco make -v ~a"
+                                     (path->string file)))
                (error (format "Compilation failed for '~a/~a', shutting down"
                               (current-directory) (path->string file))))
 
@@ -91,8 +89,8 @@
              (unless (only-compile?)
                (printf "job#~a, throwaway build/run to avoid OS caching~n" job#)
                (match-define (list in out _ err control)
-                 (process (format "taskset -c ~a racket ~a"
-                                  job# (path->string file))))
+                 (process (format "racket ~a"
+                                  (path->string file))))
                ;; make sure to block on this run
                (control 'wait)
                (close-input-port in)
@@ -105,7 +103,7 @@
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
-                   (process (format "taskset -c ~a racket -e '~s'" job# command)
+                   (process (format "racket -e '~s'" command)
                             #:set-pwd? #t))
                  ;; if this match fails, something went wrong since we put time in above
                  (define time-info
@@ -200,10 +198,6 @@
                                 "-"
                                 (date->string (current-date) #t)
                                 ".rktd")))
-
-  ;; Set the CPU affinity for this script to CPU0. Jobs spawned by this script run
-  ;; using CPU1 and above.
-  (system (format "taskset -pc 0 ~a" (getpid)))
 
   (define results (run-benchmarks basepath entry-point iters jobs
                                   #:config (exclusive-config)
