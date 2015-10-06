@@ -35,7 +35,7 @@ Due to the high resource requirements of evaluating
 the performance lattices, experiments were run on a cluster consisting of a
 Machine A with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, Machine B
 with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of Machines C
-@;from the Northeastern University Discovery Cluster@note{@url{http://nuweb12.neu.edu/rc/?page_id=27}}
+@;from the Northeastern University Discovery Cluster@note{@url{nuweb12.neu.edu/rc/?page_id=27}}
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
 with 64GB RAM. All machines run a variant of Linux. The following
 benchmarks were run on machine A: @tt{sieve} and @tt{kcfa}.

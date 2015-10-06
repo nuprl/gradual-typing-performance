@@ -77,10 +77,10 @@ untyped languages.
 Optional type systems in the contemporary sense exist for
 Clojure@~cite[bonnaire-sergeant-thesis-2012], Lua@~cite[mmi-dyla-2014],
 Python@note[@url{http://mypy-lang.org/}],
-PHP@note[@url{http://hacklang.org/}],
-ActionScript@note[@url{http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7ec7.html}],
-Dart@note[@url{https://www.dartlang.org}], and
-JavaScript@note[@url{http://flowtype.org}]@~cite[bat-ecoop-2014].  Since the
+PHP@note[@url{hacklang.org/}],
+ActionScript@note[@url{help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7ec7}],
+Dart@note[@url{dartlang.org}], and
+JavaScript@note[@url{flowtype.org}]@~cite[bat-ecoop-2014].  Since the
 type annotations in these systems are unsound for typed-untyped
 interoperation, they incur no runtime overhead from proxy wrapping or
 dynamic checks meaning there is no need for a comprehensive evaluation such

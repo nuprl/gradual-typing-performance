@@ -2,10 +2,10 @@
 
 @require["common.rkt"]
 
-@title[#:tag "sec:death"]{The Fall of Sound Gradual Typing}
+@title[#:tag "sec:death"]{Quo Vadis Sound Gradual Typing?}
 
 Unsound type systems are useful. They find bugs at compile-time, and an IDE can use them to
- assist programmers. Sound type systems are meaningful in addition. A
+ assist programmers. Sound type systems are useful and meaningful. A
  soundly typed program cannot go wrong, up to a well-defined set of run-time
  exceptions@~cite[type-soundness]. When a typed program raises an
  exception, the exception message can (usually) pinpoint the location of
@@ -14,13 +14,13 @@ Unsound type systems are useful. They find bugs at compile-time, and an IDE can 
  type system, the type of a well-named function or method often explains
  (almost) as much as an inspection of the code.
 
-From this description, it is clear why programmers eventually wish to
+From this description it is clear why programmers eventually wish to
  annotate programs in untyped languages with types and, ideally, with sound
- types. Types increase a programmer's productivity, and sound types greatly
- help with testing, debugging, and other bug-related maintenance tasks.
- Hence sound gradual typing seems to be such a panacea. The problem is,
- however, that the cost of enforcing soundness appears to be overwhelming
- according to our measurements. 
+ types. Types increase a programmer's productivity, and sound types help
+ with testing, debugging, and other maintenance tasks.  Hence sound gradual
+ typing seems to be such a panacea. The problem is, however, that the cost
+ of enforcing soundness appears to be overwhelming according to our
+ measurements.
 
 In general, the graphs in @figure-ref["fig:lnm1" "fig:lnm2"] clarify how
  few partially typed configurations are usable by developers or deliverable
@@ -40,27 +40,26 @@ In general, the graphs in @figure-ref["fig:lnm1" "fig:lnm2"] clarify how
 @; -----------------------------------------------------------------------------
 @section{Threats to Validity of Conclusion}
 
-Our judgment is harsh and fails to acknowledge potential weaknesses in our
- evaluation method and in our results.
+Our use of the evaluation framework projects an exceedingly negative
+ image. While we are confident that the framework is a strong match for the
+ goals of gradual typing, the application of the framework and its results
+ must be put in perspective.
 
 First, our benchmarks are relatively small. The two largest ones consist of
  13 and 16 modules, respectively. Even these benchmarks pose
  challenges to our computing infrastructure because they require timing
  @math{2^13} and @math{2^16} configurations @math{30} times each.
- Running experiments with modules that consist of many
+ Running experiments with programs that consist of many
  more modules would be impractical.
- Our results might be less valid
- in the context of large programs, though practical experience using
- Typed Racket suggests otherwise. @; FIXME: not totally sure I read this edit right
 
-To make the experiment feasible even at the sizes we use in this paper, we run the larger
- benchmarks using multiple cores and divide up the configurations amongst
- the cores. Each configuration is run in a single process running a separate
- instance of the Racket VM pinned to a single core. However, this
- parallelism may introduce confounding variables due to, for example, shared
- caches or main memory. We have attempted to control for this case and, as
- far as we can tell, executing on an unloaded machine does not make a
- significant difference to our results.
+To make the experiment feasible for our chosen benchmark, the larger
+ benchmarks are run using multiple cores and divide up the configurations
+ amongst the cores. Each configuration is put into a single process running
+ a separate instance of the Racket VM pinned to a single core.  This
+ parallelism may introduce confounding variables due to, for example,
+ shared caches or main memory. We have attempted to control for this case
+ and, as far as we can tell, executing on an unloaded machine does not make
+ a significant difference to our results.
 
 Second, several of our benchmarks import some modules from Racket's suite of
  libraries that remain untyped throughout the process, including for the
@@ -69,7 +68,7 @@ Second, several of our benchmarks import some modules from Racket's suite of
  types are not compiled to contracts---others are third-party libraries
  that impose a cost on all configurations. In principle, these interfaces
  might substantially contribute to the running-time overhead of
- partially typed configurations. But, given the low typed/untyped ratios, 
+ partially typed configurations. Regardless, given the low typed/untyped ratios, 
  these libraries are unlikely to affect our conclusions.
 
 Third, our method imagines a particularly @emph{free} approach to
@@ -88,7 +87,7 @@ Third, our method imagines a particularly @emph{free} approach to
  the module graph.  We therefore conjecture that some of the ideas offered
  in the conclusion section may help such planned, path-based approaches.
 
-Fourth, we state our judgment with respect to the current implementation
+Fourth, we articulate our results on the basis of current implementation
  technology. Typed Racket compiles to Racket, which uses rather conventional
  compilation technology. It makes no attempt to reduce the overhead of
  contracts or to exploit contracts for optimizations. It remains to be seen
@@ -98,7 +97,7 @@ Fourth, we state our judgment with respect to the current implementation
  slowdowns are reduced, some pathologies will remain.
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:postmortem"]{Worst-Case Profiling}
+@section[#:tag "sec:postmortem"]{What are the Bottlenecks?}
 
 @; Note: these results are for v6.2. On HEAD things are 30% better; see `postmortem/profile/contract-speedup.org`
 @figure*["fig:postmortem" "Profiling the worst-case contract overhead"
@@ -122,39 +121,40 @@ Project         & \%C (S.E.) & adaptor & higher-order & library & \tt{(T->any)} 
 }|
 ]
 
-To help understand the source of costs, we use the feature-specific profiler
-of St. Amour @|etal|@~cite[saf-cc-2015] to measure the contract
-overhead of each benchmark's @emph{slowest} configuration.
-@Figure-ref{fig:postmortem} summarizes our findings.
-The leftmost data column, labeled ``%C'', gives the percent of each benchmark's total running
-time that was spent checking contracts on its slowest configuration.
-These numbers are the average of 10 trials and in parentheses we give the standard error of our measurements.
-Except for the short-running benchmarks@note{@tt{gregor}, @tt{morse-code}, and @tt{mbta}
-finished in under 2 seconds.
-All other benchmarks ran for at least 12 seconds on their worst-case configuration.},
-we see little variability across trials.
+To analyze the cost of dynamic contract checks, we used the
+ feature-specific profiler@~cite[saf-cc-2015] on each benchmark's
+ @emph{slowest} configuration in the lattice. @Figure-ref{fig:postmortem}
+ summarizes our findings.  
 
-As expected, the programs spend an incredible amount of time checking contracts.
-This is obvious given our experimental results in Section@secref{sec:all-results}.
-The more interesting question is: what patterns, if any, do these contracts share?
+The leftmost data column (``%C'') gives the percent of each benchmark's
+ total running time that was spent checking contracts.  These numbers are
+ the average of ten trials; the numbers in parentheses represent the
+ standard error.  Except for the short-running benchmarks,@note{The
+ @tt{gregor}, @tt{morse-code}, and @tt{mbta} benchmarks finished in under 2
+ seconds.  All other benchmarks ran for at least 12 seconds on their
+ worst-case configuration.} we see little variability across trials.  As
+ expected, the programs spend a huge amount of time checking contracts.
 
-To answer this question, the remaining columns of @figure-ref{fig:postmortem} tell what
-percentage of each benchmark's @emph{contract-checking} execution time was spent on a
-particular variety of contracts.
-Adaptor contracts lie between a typed module and untyped data structures.
-Higher-order contracts are function contracts with at least one function in their domain or codomain.
-Library contracts separate an untyped library from typed modules, or in the case of @tt{lnm},
-a typed library from untyped modules.
-The last three columns classify patterns of function contracts.
-First, @tt{(T->any)} denotes function contracts with protected domains and unchecked codomains.@note{In Racket, the @tt{any/c} contract is a no-op contract.}
-Contracts of this shape guard typed functions called in untyped modules.
-The shape @tt{(any->T)} is the opposite; these contracts guard functions with unchecked domains and protected codomains.
-For example, if a typed module calls an untyped function with immutable arguments, Typed Racket will
-statically prove that the untyped function is given well-typed arguments, but must insert a contract to verify
-the function's result.
-Lastly, the @tt{(any->bool)} column is a subset of the @tt{(any->T)} column.
-It counts the total time spent checking the function contract @tt{(-> any/c boolean?)}, which
-asserts that its value is a function taking one argument and returning a boolean.
+The remaining columns of @figure-ref{fig:postmortem} report what percentage
+ of each benchmark's @emph{contract-checking} execution time is spent on a
+ particular variety of contract.  Adaptor contracts separate a typed module
+ from an untyped module with data structures.  Higher-order contracts are
+ function contracts with at least one function in their domain or
+ co-domain.  Library contracts separate an untyped library from typed
+ modules, or in the case of @tt{lnm}, a typed library from untyped modules.
+ The last three columns classify patterns of function contracts.  First,
+ @tt{(T->any)} denotes function contracts with protected domains and
+ unchecked co-domains.@note{In Racket, the @tt{any/c} contract is a no-op
+ contract.}  Contracts of this shape guard typed functions called in
+ untyped modules.  The shape @tt{(any->T)} is the opposite; these contracts
+ guard functions with unchecked domains and protected co-domains.  For
+ example, if a typed module calls an untyped function with immutable
+ arguments, Typed Racket statically proves that the untyped function is
+ given well-typed arguments but must insert a contract to verify the
+ function's result.  Lastly, the @tt{(any->bool)} column is a subset of the
+ @tt{(any->T)} column.  It counts the total time spent checking the
+ function contract @tt{(-> any/c boolean?)}, which asserts that its value
+ is a function taking one argument and returning a boolean.
 
 @;bg: Should we explain that (any->T) is variable arity, but (any->bool) is strictly one argument?
 @;    I think the message is clear without it

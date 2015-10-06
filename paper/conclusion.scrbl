@@ -59,10 +59,10 @@ In sum, while we accept that the current implementation technology for
  contracts@~cite[sw-popl-2010]---may take inspiration from the application
  of our framework.
 
-@section[#:style 'unnumbered]{Data and Code}
+@;{section[#:style 'unnumbered]{Data and Code}
 
 We will make our complete benchmark suite, all configurations, and the
-measurements available jointly with our publication.
+measurements available jointly with our publication.}
 
 @section[#:style 'unnumbered]{Acknowledgments}
 
