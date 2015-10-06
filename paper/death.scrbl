@@ -151,7 +151,7 @@ The leftmost data column (%C) gives the percent of each benchmark's total
  average of ten trials; the numbers in parentheses represent the standard
  error.  Except for the short-running benchmarks (@tt{gregor},
  @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
- As expected, the programs spend a huge proportion of running time checking contracts.
+ As expected, the programs spend a huge proportion of their running time checking contracts.
 
 The remaining columns of @figure-ref{fig:postmortem} report what percentage
  of each benchmark's @emph{contract-checking} execution time is spent on a
@@ -208,11 +208,11 @@ that code is to provide an interface to native compiler data
 structures.  In nearly all worst-case measurememts for benchmarks
 using adaptor modules the adaptor and @any->bool[] contracts seem
 to account for a huge proportion of all contracts.  The apparent
-exceptions are @tt{synth} and @tt{quad}.  Only @tt{synth} truly is
+exceptions are @tt{synth} and @tt{quad}.  Only @tt{synth} is
 a true exception, though; it spends much more time creating
 structured data from raw vectors than accessing the data.  The
 @tt{quad} benchmark in fact spends 93% of its contract-checking
-time validating data structures, which is stored in fixed-length
+time validating data structures, which are stored in fixed-length
 lists rather than in structure types.  These lists do not require
 an adaptor, but their types translate to contracts that are far
 more expensive than plain structure type predicates.
