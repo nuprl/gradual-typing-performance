@@ -68,9 +68,5 @@ echo "StartupNotify=false"        >> ~/Desktop/DrRacket.desktop
 
 chmod +x ~/Desktop/DrRacket.desktop
 
-# Setup desktop background
-wget -O ~/racket-logo.jpg http://ccs.neu.edu/home/types/racket-logo.jpg
-feh --bg-center ~/racket-logo.jpg
-
 # Cleanup
 rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh
