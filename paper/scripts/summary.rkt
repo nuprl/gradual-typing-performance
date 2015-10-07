@@ -268,7 +268,7 @@
               ([i    (in-range 1 (sub1 (vector-length vec)))])
       (define val (mean (vector-ref vec i)))
       (or (and prev (f prev val)) val))
-    (error 'whoops)))
+    0))
 
 (: max-lattice-point (-> Summary Real))
 (define (max-lattice-point sm)
@@ -280,7 +280,8 @@
 
 (: avg-lattice-point (-> Summary Real))
 (define (avg-lattice-point sm)
-  (define 1/N (/ 1 (- (get-num-variations sm) 2)))
+  (define N (- (get-num-variations sm) 2))
+  (define 1/N (if (zero? N) 0 (/ 1 N)))
   (: f (-> Real Real Real))
   (define (f acc mean) (+ acc (* mean 1/N)))
   (fold-lattice sm f #:init 0))
@@ -338,6 +339,8 @@
   (define hspace (/ width 4))
   (define vpad (/ height 5))
   (define baseline (untyped-mean sm))
+  (when (zero? baseline)
+    (raise-user-error 'summary "Untyped runtime is 0ms. Cannot produce summary results."))
   (define numvars (get-num-variations sm))
   (: round2 (-> Real String))
   (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
