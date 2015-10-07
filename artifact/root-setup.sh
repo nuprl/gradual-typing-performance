@@ -8,7 +8,9 @@ sudo apt-get -y -q install linux-headers-$(uname -r) build-essential dkms nfs-co
 sudo apt-get -y -q install virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-dkms
 
 # Install necessary packages
-sudo apt-get -y -q install firefox vim xvfb git wget tar xfce4 lightdm mupdf texlive-latex-base texlive-latex-extra pgf
+sudo apt-get -y -q install firefox vim xvfb git wget tar xfce4 lightdm mupdf
+# Install latex, for Scribble
+sudo apt-get -y -q texlive-latex-base texlive-fonts-recommended texlive-fonts-extra texlive-latex-extra pgf
 
 # Add an XSession session for lightdm
 sudo echo "[Desktop Entry]"         > /usr/share/xsessions/custom.desktop
