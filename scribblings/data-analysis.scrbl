@@ -8,7 +8,7 @@
 
 @section{Data}
 The data we present in the paper is in @tt{paper/data/}.
-The @tt{.rktd} files contained therein are racket data files in a simple S-expression format.
+The @tt{.rktd} files contained therein are Racket data files in a simple S-expression format.
 Each file contains a vector of lists of runtimes that can easily be read into Racket.
 Each list in the vector contains all the runtimes (in milliseconds) for a specific typed/untyped
 configuration.
@@ -33,11 +33,18 @@ The @tt{tools/} directory contains more high-level scripts.
 
 @tt{tools/view.rkt} will produce the LNM-plots (Figure 4 in the paper)
 for any number of benchmarks
-given a sequence of @tt{.rktd} files produced by @tt{tools/run.rkt}
-It outputs it as @tt{output.png}.
+given a sequence of @tt{.rktd} files produced by @tt{tools/run.rkt}.
+Here is an example invocation (assuming the working directory is @tt{~/Desktop}):
+
+  @nested[#:style 'inset]{@tt{racket tools/view.rkt paper/data/kcfa-2015-06-25T13:48:52.rktd}}
+
+It outputs the plot as @tt{output.png}.
 
 @tt{tools/data-lattice.rkt} will produce a picture summarizing the entire runtime lattice from a benchmark @tt{.rktd} file,
-as in Figure 3 in the paper.
+as in Figure 3 in the paper. For example,
+
+  @nested[#:style 'inset]{@tt{racket tools/data-lattice.rkt paper/data/kcfa-2015-06-25T13:48:52.rktd}}
+
 The black and white ovals correspond to the bitstrings explained in @secref{run}, where black denotes
 typed and white untyped. The numbers are the ratio between the runtimes of the configuration and the
 wholly untyped configuration.

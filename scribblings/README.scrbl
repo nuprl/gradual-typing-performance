@@ -35,14 +35,20 @@ If you want to analyze the benchmark programs or run the benchmarks yourself, se
 
 @section[#:tag "vm"]{Setting up and installing the artifact}
 
-The artifact is available as a virtual machine appliance for VirtualBox. If
-you are already reading this README in the VM, feel free to ignore the
+The artifact is available as a virtual machine appliance for VirtualBox and
+can be downloaded at this URL:
+
+  @nested[#:style 'inset]{@url["http://www.ccs.neu.edu/home/asumu/artifacts/popl-2016/artifact.ovf"]}
+
+If you are already reading this README in the VM, feel free to ignore the
 rest of this section.
 
 To run the artifact image, open the given @tt{.ovf} file using the
 @tt{File->Import Appliance} menu item. This will create a new VM
 that can be launched after import. We recommend giving the VM at least
-4GB of RAM if you want to run analysis on the largest datasets.
+4GB of RAM if you want to run the analysis on the largest datasets. We
+also recommend allocating at least two cores in the VirtualBox settings
+for the VM.
 
 The image is configured to automatically login to the @tt{artifact} user
 account. The account has root privileges using @tt{sudo} without a password.
@@ -59,6 +65,9 @@ This directory contains
   @item{@tt{run.sh}: A script to run a particular benchmark}
   @item{@tt{run-all.sh}: A script to run all benchmarks in the @tt{benchmark/} directory. This may take as long as 2 months to complete.}
  ]
+
+See the following sections for more details on the contents of these directories
+and how to use the included scripts.
 
 @include-section{data-analysis.scrbl}
 @include-section{benchmarks.scrbl}
