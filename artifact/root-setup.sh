@@ -29,4 +29,4 @@ sed -i -e '/Defaults\s\+env_reset/a Defaults\texempt_group=sudo' /etc/sudoers
 sed -i -e 's/%sudo ALL=(ALL) ALL/%sudo ALL=NOPASSWD:ALL/g' /etc/sudoers
 
 # Setup Desktop background
-mv /home/artifact/racket-logo.jpg /usr/share/backgrounds/xfce/xfce-blue.jpg
+wget -O /usr/share/backgrounds/xfce/xfce-blue.jpg http://ccs.neu.edu/home/types/racket-logo.jpg
