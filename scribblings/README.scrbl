@@ -21,29 +21,19 @@
 This is a README file for the artifact that accompanies
 "Is Sound Gradual Typing Dead?" in POPL 2016.
 
-Our artifact is consists of a VM image that contains
-@itemlist[
-  @item{A distribution of the Racket programming language}
-  @item{The benchmarking tools used to generate the data in the paper}
-  @item{The source code for the paper}
-  @item{The benchmarks used in the paper}
-  @item{The benchmark data used in the paper}
- ]
-
 The goals of this artifact are to
 @itemlist[
   @item{Make the raw data we collected available for outside analysis}
   @item{Enable replication of our experimental evaluation}
  ]
 
-If you want to analyze the data presented in the paper, see 
+For instructions on setting up the virtual machine, see @secref{vm}.
 
-Note that the larger benchmarks will take a very long time to run on a typical desktop computer.
-For the time-constrained, see @secref{speed}.
+If you want to analyze the data presented in the paper, see @secref{data}.
 
+If you want to analyze the benchmark programs or run the benchmarks yourself, see @secref{benchmarks} and possibly @secref{walkthrough}.
 
-
-@section{Setting up and installing the artifact}
+@section[#:tag "vm"]{Setting up and installing the artifact}
 
 The artifact is available as a virtual machine appliance for VirtualBox. If
 you are already reading this README in the VM, feel free to ignore the
@@ -52,7 +42,7 @@ rest of this section.
 To run the artifact image, open the given @tt{.ovf} file using the
 @tt{File->Import Appliance} menu item. This will create a new VM
 that can be launched after import. We recommend giving the VM at least
-4GB of RAM.
+4GB of RAM if you want to run analysis on the largest datasets.
 
 The image is configured to automatically login to the @tt{artifact} user
 account. The account has root privileges using @tt{sudo} without a password.
