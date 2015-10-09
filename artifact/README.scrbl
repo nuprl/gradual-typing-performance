@@ -148,7 +148,7 @@ wholly untyped configuration.
 To bring it all together we provide a walkthrough of creating a benchmark program,
 running all configurations and analyzing the data.
 
-@subsection[#:tag "echo"]{Echo Server}
+@subsection[#:tag "echo"]{The Program: Echo}
 First we make an untyped program and add types to it. The program is intentionally small
 and over-modularized for demonstration purposes. The program is a simple echo server with a
 client to send it some data.
@@ -160,13 +160,13 @@ subdirectories.
 We start with the @tt{untyped/} files.
 A file @tt{constants.rkt} containing global constants:
 
-@#reader scribble/comment-reader (racketmod
+@(racketmod
  racket/base
 
 (provide
-  ;; Natural number port number to run the echo server on
+  (code:comment "Natural number port number to run the echo server on")
   PORT
-  ;; String message to send over the tcp connection
+  (code:comment "String message to send over the tcp connection")
   DATA)
 
 (define PORT 8887)
@@ -174,17 +174,17 @@ A file @tt{constants.rkt} containing global constants:
 
 @tt{server.rkt} which contains the actual echo server:
 
-@#reader scribble/comment-reader (racketmod
+@(racketmod
  racket/base
 
-;; TCP server: read from a buffer until end of file.
+(code:comment "TCP server: read from a buffer until end of file.")
 
 (provide server)
 
 (require "constants.rkt"
          (only-in racket/tcp tcp-accept tcp-listen))
 
-;; ---------------------------------------------------------------------------------------------------
+(code:comment "---------------------------------------------------------------------------------------------------")
 
 (define (server)
   (define-values (in out) (tcp-accept (tcp-listen PORT 5 #t)))
@@ -199,21 +199,20 @@ A file @tt{constants.rkt} containing global constants:
           [else (printf "server processed ~a bytes\n" bytes)]))))
 
 @tt{client.rkt} which is a simple client that repeatedly sends the same message to the server:
-@#reader scribble/comment-reader (racketmod
+@(racketmod
 racket/base
 
-;; TCP client bot: loop for a fixed number of iterations
-;; sending a message over a port.
-;; The message and port are defined in constants.rkt
+(code:comment "TCP client bot: loop for a fixed number of iterations")
+(code:comment "sending a message over a port.")
+(code:comment "The message and port are defined in constants.rkt")
 
 (provide client)
 
 (require "constants.rkt"
          (only-in racket/tcp tcp-connect))
+(code:comment "---------------------------------------------------------------------------------------------------")
 
-;; ---------------------------------------------------------------------------------------------------
-
-;; `client n` loop for `n` iterations, sending a constant message on a constant port.
+(code:comment "`client n` loop for `n` iterations, sending a constant message on a constant port.")
 (define (client num-iters)
   (define-values (in out) (tcp-connect "127.0.0.1" PORT))
   (define buffer (make-string (string-length DATA)))
@@ -230,17 +229,16 @@ and finally @tt{main.rkt}, which hooks the client up to the server and runs for 
 the file includes a usage of racket's @tt{time} form, which prints out the time that the block
 inside it takes to execute. This is what the benchmarking script will parse as the runtime.
 
-@#reader scribble/comment-reader
-(racketmod racket/base
+@(racketmod racket/base
  
 (require (only-in "client.rkt" client)
          (only-in "server.rkt" server))
 
-;; ---------------------------------------------------------------------------------------------------
-
+(code:comment "---------------------------------------------------------------------------------------------------")
+; wtfffffffffff
 (define (main arg)
-  (thread (lambda () (client arg)))
-  (server))
+        (thread (lambda () (client arg)))
+        (server))
 
 (time (main 200000)))
 
@@ -250,13 +248,12 @@ the @tt{benchmarks/echo/typed/} directory.
 The only changes we need to make are to use typed racket and add a few annotations.
 
 First, we annotate the constants in @tt{constants.rkt}:
-@#reader scribble/comment-reader
-(racketmod typed/racket/base
+@(racketmod typed/racket/base
 
 (provide
-  ;; Natural number port number to run the echo server on
+  (code:comment "Natural number port number to run the echo server on")
   PORT
-  ;; String message to send over the tcp connection
+  (code:comment "String message to send over the tcp connection")
   DATA)
 
 (: PORT Natural)
@@ -267,10 +264,9 @@ First, we annotate the constants in @tt{constants.rkt}:
 
 For @tt{server.rkt} we add an annotation, and we annotate our import of @tt{constants.rkt} for
 the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
-@#reader scribble/comment-reader
-(racketmod typed/racket/base
+@(racketmod typed/racket/base
 
-;; TCP server: read from a buffer until end of file.
+(code:comment "TCP server: read from a buffer until end of file.")
 
 (provide server)
 
@@ -278,11 +274,10 @@ the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
          (only-in racket/tcp tcp-accept tcp-listen))
 
 (require/typed/check "constants.rkt"
-  [PORT Natural]
-  [DATA String])
+                     [PORT Natural]
+                     [DATA String])
 
-;; ---------------------------------------------------------------------------------------------------
-
+(code:comment "---------------------------------------------------------------------------------------------------")
 (: server (-> Void))
 (define (server)
   (define-values (in out) (tcp-accept (tcp-listen PORT 5 #t)))
@@ -297,12 +292,11 @@ the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
           [else (printf "server processed ~a bytes\n" bytes)]))))
 
 @tt{client.rkt} is similar:
-@#reader scribble/comment-reader
-(racketmod typed/racket/base
+@(racketmod typed/racket/base
 
-;; TCP client bot: loop for a fixed number of iterations
-;; sending a message over a port.
-;; The message and port are defined in constants.rkt
+(code:comment "TCP client bot: loop for a fixed number of iterations")
+(code:comment "sending a message over a port.")
+(code:comment "The message and port are defined in constants.rkt")
 
 (provide client)
 
@@ -313,9 +307,9 @@ the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
   [PORT Natural]
   [DATA String])
 
-;; ---------------------------------------------------------------------------------------------------
+(code:comment "---------------------------------------------------------------------------------------------------")
 
-;; `client n` loop for `n` iterations, sending a constant message on a constant port.
+(code:comment "`client n` loop for `n` iterations, sending a constant message on a constant port.")
 (: client (-> Natural Void))
 (define (client num-iters)
   (define-values (in out) (tcp-connect "127.0.0.1" PORT))
@@ -329,8 +323,7 @@ the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
   (close-output-port out)))
 
 As is @tt{main.rkt}:
-@#reader scribble/comment-reader
-(racketmod typed/racket/base
+@(racketmod typed/racket/base
 
 (require benchmark-util)
 
@@ -340,7 +333,7 @@ As is @tt{main.rkt}:
 (require/typed/check "server.rkt"
   [server (-> Void)])
 
-;; ---------------------------------------------------------------------------------------------------
+(code:comment "---------------------------------------------------------------------------------------------------")
 
 (: main (-> Natural Void))
 (define (main arg)
@@ -348,3 +341,15 @@ As is @tt{main.rkt}:
   (server))
 
 (time (main 200000)))
+
+@subsection{Running the Benchmark}
+
+As before we can use @tt{./run.sh benchmarks/echo} to run our benchmark.
+The raw data is now in @tt{benchmarks/echo.rktd}, if you read it you see the numbers are basically
+all the same, so there's very little overhead from typing.
+
+You can see the LNM graph at @tt{benchmarks/echo.png}. You'll just see a blue line at the top since
+all configurations work here.
+
+For another analysis, we can run @tt{racket tools/data-lattice.rkt benchmarks/echo.rktd}, which will
+show that no configurations have high overhead (all the numbers should be close to 1).
