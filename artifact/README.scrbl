@@ -35,11 +35,8 @@ The goals of this artifact are to
   @item{Enable replication of our experimental evaluation}
  ]
 
-with the following caveats:
-@itemlist[
-  @item{The version of Racket included in the artifact is not exactly the same as the one used to create the data. However, the implementations of Typed Racket and the contract system are the same, so we expect little difference in the results}
-  @item{The larger benchmarks will take a very long time to run on a typical desktop computer.}
- ]
+Note that the larger benchmarks will take a very long time to run on a typical desktop computer.
+For the time-constrained, see @secref{speed}.
 
 @section{Setting up and installing the artifact}
 
@@ -57,29 +54,40 @@ account. The account has root privileges using @tt{sudo} without a password.
 The password for the account is @tt{artifact}.
 
 @section{Artifact Overview}
-@todo{fill in with the correct file name}
-The relevant files are in @tt{/home/artifact/Desktop/gradual-typing-performance-x.x}.
+The relevant files are in @tt{/home/artifact/Desktop/}.
 This directory contains
 @itemlist[
   @item{@tt{README.html}: This page}
-  @item{@tt{paper/}: A directory with the source code of the paper}
+  @item{@tt{paper/}: A directory with the source code of the paper and the data used in the paper}
   @item{@tt{tools/}: A directory with the tools used to run the benchmarks and process the data generated}
   @item{@tt{benchmarks/}: A directory with the benchmarks used in the paper}
   @item{@tt{run.sh}: A script to run a particular benchmark}
   @item{@tt{run-all.sh}: A script to run all benchmarks in the @tt{benchmark/} directory. This may take as long as 2 months to complete.}
  ]
 
-@section{Running and Creating Benchmarks}
-@todo{currently this is wrong: it outputs output.png, fix this before we send in the artifact.}
+@section[#:tag "run"]{Running Benchmarks}
 @todo{explain the ordering produced in the .rktd file}
 To run a benchmark, use the @tt{run.sh} script.
 For example, to run the @tt{morsecode} benchmark, run the command @tt{./run.sh benchmarks/morescode}.
 This will produce two relevant files: @tt{benchmarks/morsecode.rktd} which contains the runtimes for
 all runs performed and @tt{benchmarks/morsecode.png}, which is a contains the L-step N/M usable results as in Figure 4 of the paper.
 
+The @tt{.rktd} file produced is a racket data file that contains a vector of lists of runtimes
+that can easily be read into racket (see @secref{walkthrough} for examples).
+Each list in the vector contains all the runtimes (in milliseconds) for a specific typed/untyped
+configuration.
+The ordering is a lexicographic in the typed/untyped bitstring which is formatted as follows.
+For a program with @tt{n} modules, each configuration is assigned a length @tt{n} bitstring
+where the @tt{i}th bit corresponds to the @tt{i}th module alphabetically.
+@tt{1} denotes typed and @tt{0} denotes untyped.
+For example, a program that has three modules: @tt{a.rkt}, @tt{b.rkt} and @tt{c.rkt} will produce
+@tt{2^3=8} configurations and therefore a vector of 8 lists of runtimes.
+The 5th runtime corresponds to the bitstring @tt{101} which means modules @tt{a.rkt} and @tt{c.rkt}
+were using their typed versions and @tt{b.rkt} was using its untyped version.
+
 The @tt{run-all.sh} script simply calls the @tt{run.sh} script on every benchmark in the @tt{benchmarks/} directory.
 
-@section{Benchmarks}
+@section[#:tag "benchmarks"]{Benchmarks}
 
 A benchmark directory should contain at least 2 subdirectories: @tt{typed/} and @tt{untyped/}.
 The two directories should contain the typed and untyped versions of each module in the benchmark program.
@@ -98,6 +106,245 @@ therefore have different behavior in different configurations.
 In principle, everything in the @tt{base/} directory could be placed in the @tt{both/} directory instead
 but it would be a large waste in storage space and runtime for large benchmarks.
 
+@subsection[#:tag "speed"]{Benchmarking Speed}
 
+Many of the benchmarks take a very long time to run due to the high overheads of contract checking
+and the large number of runs (exponential in the number of modules).
 
-@section{Benchmarking Tools}
+The two shortest-running benchmarks are
+@itemlist[
+  @item{mbta/}
+  @item{morsecode/}
+ ]
+
+@Secref{walkthrough} contains a short-running benchmark as well.
+
+@section[#:tag "paper"]{Paper}
+The @tt{paper/} directory contains the data collected for all benchmarks in @tt{paper/data/}.
+The directory also contains the source code for the paper.
+The subdirectory @tt{paper/scripts/} contains files that may be useful for performing new analyses.
+The racket files therein document their exports fairly well.
+
+@section[#:tag "tools"]{Analysis Tools}
+
+The @tt{tools/} directory contains more fine-grained scripts than @tt{run.sh} and @tt{run-all.sh}.
+
+@tt{tools/run.rkt} will run a single benchmark, outputing an @tt{.rktd} file with the same basename
+as the benchmark directory.
+
+@tt{tools/view.rkt} will produce the LNM-plots (Figure 4 in the paper)
+for any number of benchmarks
+given a sequence of @tt{.rktd} files produced by @tt{tools/run.rkt}
+It outputs it as @tt{output.png}.
+
+@tt{tools/data-lattice.rkt} will produce a picture summarizing the entire runtime lattice from a benchmark @tt{.rktd} file,
+as in Figure 3 in the paper.
+The black and white ovals correspond to the bitstrings explained in @secref{run}, where black denotes
+typed and white untyped. The numbers are the ratio between the runtimes of the configuration and the
+wholly untyped configuration.
+
+@section[#:tag "walkthrough"]{Walkthrough: Creating and Analyzing a Benchmark Program}
+
+To bring it all together we provide a walkthrough of creating a benchmark program,
+running all configurations and analyzing the data.
+
+@subsection[#:tag "echo"]{Echo Server}
+First we make an untyped program and add types to it. The program is intentionally small
+and over-modularized for demonstration purposes. The program is a simple echo server with a
+client to send it some data.
+
+In the @tt{benchmark/} directory, create a @tt{echo/} directory with @tt{untyped/} and @tt{typed/}
+subdirectories.
+
+@subsubsection{Untyped}
+We start with the @tt{untyped/} files.
+A file @tt{constants.rkt} containing global constants:
+
+@#reader scribble/comment-reader (racketmod
+ racket/base
+
+(provide
+  ;; Natural number port number to run the echo server on
+  PORT
+  ;; String message to send over the tcp connection
+  DATA)
+
+(define PORT 8887)
+(define DATA "Hello there sailor\n"))
+
+@tt{server.rkt} which contains the actual echo server:
+
+@#reader scribble/comment-reader (racketmod
+ racket/base
+
+;; TCP server: read from a buffer until end of file.
+
+(provide server)
+
+(require "constants.rkt"
+         (only-in racket/tcp tcp-accept tcp-listen))
+
+;; ---------------------------------------------------------------------------------------------------
+
+(define (server)
+  (define-values (in out) (tcp-accept (tcp-listen PORT 5 #t)))
+  (define buffer (make-string (string-length DATA)))
+  (file-stream-buffer-mode out 'none)
+  (let loop ([i (read-string! buffer in)]
+             [bytes 0])
+    (cond [(not (eof-object? i))
+           (display buffer out)
+           (loop (read-string! buffer in)
+             (+ bytes (string-length buffer)))]
+          [else (printf "server processed ~a bytes\n" bytes)]))))
+
+@tt{client.rkt} which is a simple client that repeatedly sends the same message to the server:
+@#reader scribble/comment-reader (racketmod
+racket/base
+
+;; TCP client bot: loop for a fixed number of iterations
+;; sending a message over a port.
+;; The message and port are defined in constants.rkt
+
+(provide client)
+
+(require "constants.rkt"
+         (only-in racket/tcp tcp-connect))
+
+;; ---------------------------------------------------------------------------------------------------
+
+;; `client n` loop for `n` iterations, sending a constant message on a constant port.
+(define (client num-iters)
+  (define-values (in out) (tcp-connect "127.0.0.1" PORT))
+  (define buffer (make-string (string-length DATA)))
+  (file-stream-buffer-mode out 'none)
+  (for ([n num-iters])
+    (display DATA out)
+    (read-string! buffer in)
+    (unless (equal? DATA buffer)
+        (error (format "Unexpected data ~e in buffer" DATA))))
+  (close-output-port out)))
+
+@todo{link to the time form}
+and finally @tt{main.rkt}, which hooks the client up to the server and runs for a while. Importantly,
+the file includes a usage of racket's @tt{time} form, which prints out the time that the block
+inside it takes to execute. This is what the benchmarking script will parse as the runtime.
+
+@#reader scribble/comment-reader
+(racketmod racket/base
+ 
+(require (only-in "client.rkt" client)
+         (only-in "server.rkt" server))
+
+;; ---------------------------------------------------------------------------------------------------
+
+(define (main arg)
+  (thread (lambda () (client arg)))
+  (server))
+
+(time (main 200000)))
+
+@subsubsection{Typed}
+Fortunately, it is not difficult to add types to the code above. Put all of the following files in
+the @tt{benchmarks/echo/typed/} directory.
+The only changes we need to make are to use typed racket and add a few annotations.
+
+First, we annotate the constants in @tt{constants.rkt}:
+@#reader scribble/comment-reader
+(racketmod typed/racket/base
+
+(provide
+  ;; Natural number port number to run the echo server on
+  PORT
+  ;; String message to send over the tcp connection
+  DATA)
+
+(: PORT Natural)
+(define PORT 8887)
+
+(: DATA String)
+(define DATA "Hello there sailor\n"))
+
+For @tt{server.rkt} we add an annotation, and we annotate our import of @tt{constants.rkt} for
+the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
+@#reader scribble/comment-reader
+(racketmod typed/racket/base
+
+;; TCP server: read from a buffer until end of file.
+
+(provide server)
+
+(require benchmark-util
+         (only-in racket/tcp tcp-accept tcp-listen))
+
+(require/typed/check "constants.rkt"
+  [PORT Natural]
+  [DATA String])
+
+;; ---------------------------------------------------------------------------------------------------
+
+(: server (-> Void))
+(define (server)
+  (define-values (in out) (tcp-accept (tcp-listen PORT 5 #t)))
+  (define buffer (make-string (string-length DATA)))
+  (file-stream-buffer-mode out 'none)
+  (let loop ([i (read-string! buffer in)]
+             [bytes 0])
+    (cond [(not (eof-object? i))
+           (display buffer out)
+           (loop (read-string! buffer in)
+             (+ bytes (string-length buffer)))]
+          [else (printf "server processed ~a bytes\n" bytes)]))))
+
+@tt{client.rkt} is similar:
+@#reader scribble/comment-reader
+(racketmod typed/racket/base
+
+;; TCP client bot: loop for a fixed number of iterations
+;; sending a message over a port.
+;; The message and port are defined in constants.rkt
+
+(provide client)
+
+(require benchmark-util
+         (only-in racket/tcp tcp-connect))
+
+(require/typed/check "constants.rkt"
+  [PORT Natural]
+  [DATA String])
+
+;; ---------------------------------------------------------------------------------------------------
+
+;; `client n` loop for `n` iterations, sending a constant message on a constant port.
+(: client (-> Natural Void))
+(define (client num-iters)
+  (define-values (in out) (tcp-connect "127.0.0.1" PORT))
+  (define buffer (make-string (string-length DATA)))
+  (file-stream-buffer-mode out 'none)
+  (for ([n num-iters])
+    (display DATA out)
+    (read-string! buffer in)
+    (unless (equal? DATA buffer)
+        (error (format "Unexpected data ~e in buffer" DATA))))
+  (close-output-port out)))
+
+As is @tt{main.rkt}:
+@#reader scribble/comment-reader
+(racketmod typed/racket/base
+
+(require benchmark-util)
+
+(require/typed/check "client.rkt"
+  [client (-> Natural Void)])
+
+(require/typed/check "server.rkt"
+  [server (-> Void)])
+
+;; ---------------------------------------------------------------------------------------------------
+
+(: main (-> Natural Void))
+(define (main arg)
+  (thread (lambda () (client arg)))
+  (server))
+
+(time (main 200000)))
