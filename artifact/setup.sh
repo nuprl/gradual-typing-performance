@@ -14,9 +14,8 @@ chown -R artifact ~/.ssh
 
 # Set up the artifact files
 cd ~/Desktop
-wget http://ccs.neu.edu/home/types/v0.1.tar.gz
-tar -xzf v0.1.tar.gz
-rm v0.1.tar.gz
+tar -xzf popl-2016-artifact.tar
+rm popl-2016-artifact.tar
 
 # Copy over the paper
 cp paper/paper.pdf ./is-sound-gradual-typing-dead.pdf
@@ -38,10 +37,9 @@ yes | raco pkg install glob
 yes | raco pkg install tools/benchmark-util
 raco setup -D # avoid huge memory use from doc build
 
-# TODO Create the scribble docs
-#scribble +m --htmls README.scrbl
-#mv README ~/Desktop/readme-folder
-#ln -s ~/Desktop/readme-folder/index.html ~/Desktop/README.html
+# Create the scribble docs
+scribble +m --htmls README.scrbl
+ln -s /home/artifact/Desktop/README/index.html /home/artifact/Desktop/README.html
 
 # Configure XFCE, instead of directly configuring this put it in the
 # .bash_profile because the command won't work without X11 running.
@@ -69,4 +67,4 @@ echo "StartupNotify=false"        >> ~/Desktop/DrRacket.desktop
 chmod +x ~/Desktop/DrRacket.desktop
 
 # Cleanup
-rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh
+# rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh

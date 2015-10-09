@@ -33,6 +33,16 @@
       "scripts": [ "root-setup.sh" ]
     },
     {
+      "type": "file",
+      "source": "racket-logo.jpg",
+      "destination": "/home/artifact/racket-logo.jpg"
+    },
+    {
+      "type": "file",
+      "source": "popl-2016-artifact.tar",
+      "destination": "/home/artifact/Desktop/popl-2016-artifact.tar"
+    },
+    {
       "type": "shell",
       "scripts": [ "setup.sh" ]
     }
