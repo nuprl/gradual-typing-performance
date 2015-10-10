@@ -2,7 +2,6 @@
 
 # Make sure there is a Desktop
 mkdir -p ~/Desktop
-rm -f ~/Desktop/*
 
 # Installing vagrant keys
 mkdir ~/.ssh
@@ -13,12 +12,15 @@ chmod 600 ~/.ssh/authorized_keys
 chown -R artifact ~/.ssh
 
 # Set up the artifact files
-cd ~/Desktop
-tar -xzf popl-2016-artifact.tar
+cd /home/artifact
+tar -xf popl-2016-artifact.tar
 rm popl-2016-artifact.tar
+cd popl-2016-artifact
 
 # Copy over the paper
-cp paper/paper.pdf ./is-sound-gradual-typing-dead.pdf
+mv paper/paper.pdf /home/artifact/Desktop/is-sound-gradual-typing-dead.pdf
+mv run.sh run-all.sh benchmarks paper tools ~/Desktop
+cd ~/Desktop
 
 # Install Racket
 # first download Racket v6.2
@@ -38,8 +40,9 @@ yes | raco pkg install tools/benchmark-util
 raco setup -D # avoid huge memory use from doc build
 
 # Create the scribble docs
-scribble +m --htmls README.scrbl
-ln -s /home/artifact/Desktop/README/index.html /home/artifact/Desktop/README.html
+cd /home/artifact/popl-2016-artifact; scribble +m --htmls README.scrbl
+ln -s /home/artifact/popl-2016-artifact/README/index.html ~/Desktop/README.html
+cd ~/Desktop
 
 # Configure XFCE, instead of directly configuring this put it in the
 # .bash_profile because the command won't work without X11 running.
@@ -67,4 +70,4 @@ echo "StartupNotify=false"        >> ~/Desktop/DrRacket.desktop
 chmod +x ~/Desktop/DrRacket.desktop
 
 # Cleanup
-# rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh
+rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh
