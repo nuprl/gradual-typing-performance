@@ -70,5 +70,9 @@ echo "StartupNotify=false"        >> ~/Desktop/DrRacket.desktop
 
 chmod +x ~/Desktop/DrRacket.desktop
 
+# Center wallpaper and set bg color
+echo "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVBOX0/workspace0/image-style -s 1" >> ~/.profile
+echo "xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitorVBOX0/workspace0/color1 -s 65535 -s 65535 -s 65535 -s 65535" >> ~/.profile
+
 # Cleanup
 rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh
