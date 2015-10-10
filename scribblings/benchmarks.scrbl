@@ -9,7 +9,7 @@
 @section[#:tag "run"]{Running Benchmarks}
 
 To run a benchmark, use the @tt{run.sh} script in @tt{~/Desktop}.
-For example, to run the @tt{morsecode} benchmark, run the command @tt{./run.sh benchmarks/morescode}.
+For example, to run the @tt{morsecode} benchmark, run the command @tt{./run.sh benchmarks/morsecode}.
 
 This will produce two relevant files: @tt{benchmarks/morsecode.rktd} which contains the runtimes for
 all runs performed and @tt{benchmarks/morsecode.png}, which is a contains the L-step N/M usable results as in Figure 4 of the paper.
