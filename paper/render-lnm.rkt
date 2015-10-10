@@ -106,6 +106,7 @@
 
 (: format-filepath (-> (U #f String) String))
 (define (format-filepath tag)
+  (unless (directory-exists? "./compiled") (make-directory "./compiled"))
   (string-append CACHE-PREFIX (or tag "") ".rktd"))
 
 ;; Save a pict, tagging with with `tag` and the `rktd*` filenames

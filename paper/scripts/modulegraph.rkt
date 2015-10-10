@@ -7,6 +7,10 @@
 ;; so this file provides a (brittle) parser.
 
 (provide
+  from-directory
+  ;; (-> Path ModuleGraph)
+  ;; Parse a directory into a module graph
+
   from-tex
   ;; (-> Path-String ModuleGraph)
   ;; Parse a tex file into a module graph
@@ -42,6 +46,7 @@
 
 (require
   racket/match
+  (only-in racket/list last)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
   (only-in racket/string string-split string-trim)
@@ -52,9 +57,10 @@
 
 ;; A module graph is represented as an adjacency list (all graphs are DAGs)
 ;; Invariant: names in the adjlist are kept in alphabetical order.
+(define-type AdjList (Listof (Listof String)))
 (struct modulegraph (
   [project-name : String]
-  [adjlist : (Listof (Listof String))]) #:transparent)
+  [adjlist : AdjList]) #:transparent)
 (define-type ModuleGraph modulegraph)
 
 ;; Get the name of the project represented by a module graph
@@ -103,6 +109,23 @@
 
 (define-syntax-rule (parse-error msg arg* ...)
   (error 'modulegraph (format msg arg* ...)))
+
+(: rkt-file? (-> Path Boolean))
+(define (rkt-file? p)
+  (string=? "rkt"
+            (last (string-split (path->string p) "."))))
+
+(: from-directory (-> Path ModuleGraph))
+(define (from-directory parent)
+  (define name (path->project-name parent))
+  (define u-dir (build-path parent "untyped"))
+  ;; No edges, just nodes
+  (: adjlist AdjList)
+  (define adjlist
+    (for/list ([p (in-list (directory-list u-dir))]
+               #:when (rkt-file? p))
+      (list (path->project-name p))))
+  (modulegraph name adjlist))
 
 ;; Interpret a .tex file containing a TiKZ picture as a module graph
 (: from-tex (-> Path-String ModuleGraph))

@@ -12,6 +12,7 @@
     "lnm-plot.rkt"
     pict
     racket/class
+    glob
   )
   (define L-list '(0 1 2))
   (define DATAS

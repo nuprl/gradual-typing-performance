@@ -68,6 +68,7 @@
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
   (only-in racket/format ~r)
+  (only-in racket/string string-split)
   "modulegraph.rkt"
   "bitstring.rkt"
   "pict-types.rkt"
@@ -108,13 +109,20 @@
 (define-syntax-rule (parse-error msg arg* ...)
   (error 'summary (format msg arg* ...)))
 
+(define-syntax-rule (strip-suffix fname)
+  (car (string-split fname ".")))
+
 ;; Create a summary from a raw dataset.
 ;; Infers the location of the module graph if #:graph is not given explicitly
 (: from-rktd (->* [String] [#:graph (U Path #f)] Summary))
 (define (from-rktd filename #:graph [graph-path #f])
   (define path (string->path filename))
   (define-values (dataset num-runs) (rktd->dataset path))
-  (define mg (from-tex (or graph-path (infer-graph path))))
+  (define gp (or graph-path (infer-graph path)))
+  (define mg (if (file-exists? gp)
+               (from-tex gp)
+               (from-directory
+                 (string->path (strip-suffix filename)))))
   (validate-modulegraph dataset mg)
   (summary path dataset mg num-runs))
 
@@ -161,7 +169,6 @@
   ;; Search in the MODULE_GRAPH_DIR directory for a matching TeX file
   (build-path MODULE_GRAPH_DIR
               (string-append tag ".tex")))
-  ;(or (path-only path) (error 'infer-graph))
 
 ;; -----------------------------------------------------------------------------
 ;; -- querying
@@ -256,7 +263,7 @@
               ([i    (in-range 1 (sub1 (vector-length vec)))])
       (define val (mean (vector-ref vec i)))
       (or (and prev (f prev val)) val))
-    (error 'whoops)))
+    0))
 
 (: max-lattice-point (-> Summary Real))
 (define (max-lattice-point sm)
@@ -268,10 +275,14 @@
 
 (: avg-lattice-point (-> Summary Real))
 (define (avg-lattice-point sm)
-  (define 1/N (/ 1 (- (get-num-variations sm) 2)))
-  (: f (-> Real Real Real))
-  (define (f acc mean) (+ acc (* mean 1/N)))
-  (fold-lattice sm f #:init 0))
+  (define N (- (get-num-variations sm) 2))
+  (cond
+   [(zero? N)
+    0]
+   [else
+    (: f (-> Real Real Real))
+    (define (f acc mean) (+ acc (* mean (/ 1 N))))
+    (fold-lattice sm f #:init 0)]))
 
 ;; Count the number of variations with performance no worse than N times untyped
 (: deliverable (-> Summary Index Natural))
@@ -326,6 +337,8 @@
   (define hspace (/ width 4))
   (define vpad (/ height 5))
   (define baseline (untyped-mean sm))
+  (when (zero? baseline)
+    (raise-user-error 'summary "Untyped mean is 0ms. Cannot produce summary figures."))
   (define numvars (get-num-variations sm))
   (: round2 (-> Real String))
   (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
@@ -359,21 +372,3 @@
              (hc-append hspace left-column right-column)
              (blank 1 vpad)))
 
-;; =============================================================================
-
-;(module+ test
-;  (require rackunit)
-;
-;  ;; -- infer-graph
-;  (check-equal? "foo/bar/../module-graphs/baz.tex"
-;                (path->string (infer-graph (string->path "foo/bar/baz.rktd"))))
-;  (check-equal? "foo/bar/../module-graphs/baz.tex"
-;                (path->string (infer-graph (string->path "foo/bar/baz-and-other-ignored-stuff.rktd"))))
-;
-;  ;; -- all variations
-;
-;  ;; -- from rktd
-;  (define sm (from-rktd "../data/echo.rktd"))
-;  (check-equal? (stream->list (all-variations sm))
-;                '("0000" "0001" "0010" "0011" "0100" "0101" "0110" "0111" "1000" "1001" "1010" "1011" "1100" "1101" "1110" "1111"))
-;)
