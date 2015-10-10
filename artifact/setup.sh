@@ -19,7 +19,7 @@ cd popl-2016-artifact
 
 # Copy over the paper
 mv paper/paper.pdf /home/artifact/Desktop/is-sound-gradual-typing-dead.pdf
-mv run.sh run-all.sh benchmarks paper tools ~/Desktop
+mv run.sh run-all.sh benchmarks paper scribblings tools ~/Desktop
 cd ~/Desktop
 
 # Install Racket
@@ -40,8 +40,9 @@ yes | raco pkg install tools/benchmark-util
 raco setup -D # avoid huge memory use from doc build
 
 # Create the scribble docs
-cd /home/artifact/popl-2016-artifact; scribble +m --htmls README.scrbl
-ln -s /home/artifact/popl-2016-artifact/README/index.html ~/Desktop/README.html
+cd /home/artifact/Desktop/scribblings
+make
+ln -s /home/artifact/Desktop/scribblings/README/index.html ~/Desktop/README.html
 cd ~/Desktop
 
 # Configure XFCE, instead of directly configuring this put it in the
