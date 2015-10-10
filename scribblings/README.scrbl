@@ -38,7 +38,9 @@ If you want to analyze the benchmark programs or run the benchmarks yourself, se
 The artifact is available as a virtual machine appliance for VirtualBox and
 can be downloaded at this URL:
 
-  @nested[#:style 'inset]{@url["http://www.ccs.neu.edu/home/asumu/artifacts/popl-2016/artifact.ovf"]}
+  @nested[#:style 'inset]{@url["http://www.ccs.neu.edu/home/asumu/artifacts/popl-2016/artifact.tar.xz"]}
+
+The archive contains a @tt{.vmdk} and @tt{.ovf} file.
 
 If you are already reading this README in the VM, feel free to ignore the
 rest of this section.
