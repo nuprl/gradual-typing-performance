@@ -29,17 +29,14 @@ Second, Typed Racket's implementation may not support run-time checks as
  well as modern JIT compilers. Typed Racket elaborates into plain Racket,
  type-checks the result, inserts contracts between typed and untyped
  modules, and then uses Racket to compile the
- result@~cite[thscff-pldi-2011]. The latter is essentially a conventional
- ahead-of-time compiler that compiles a function when it is used the first
- time. One implication is that code from contracts does not get eliminated
- even if it is re-evaluated for the same value in a plain loop. Clearly, a
- tracing JIT compiler may eliminate some of the contract overhead in such
- situations. The Typed Racket team at Indiana University is developing such
- a tracing compiler backend for Racket@~cite[fbpsth-dyla-2014], dubbed Pycket,
- and we are looking forward to applying our evaluation framework to this
- implementation of Typed Racket. Doing so will allow us to validate both
- the usefulness of the benchmarking framework and the potential of tracing
- JIT compilers as possible saviors of sound gradual typing.
+ result@~cite[thscff-pldi-2011]. The latter implements a
+ JIT compiler that open-codes primitive functions.
+ One implication is that code from contracts does not get eliminated
+ even if it is re-evaluated for the same value in a plain loop.
+ A more sophisticated JIT compiler may eliminate some of the contract overhead
+ in such cases, but we conjecture that performance pathologies will still remain.
+ Applying our method to an implementation with a more sophisticated compiler,
+ e.g., Pycket@~cite[fbpsth-dyla-2014], may let us validate this conjecture.
 
 Third, the acceptance of Typed Racket in the commercial and open-source
  Racket community suggests that (some) programmers find a way around the
@@ -62,10 +59,10 @@ In sum, while we accept that the current implementation technology for
  contracts@~cite[sw-popl-2010]---may take inspiration from the application
  of our framework.
 
-@section[#:style 'unnumbered]{Data and Code}
+@;{section[#:style 'unnumbered]{Data and Code}
 
 We will make our complete benchmark suite, all configurations, and the
-measurements available jointly with our publication.
+measurements available jointly with our publication.}
 
 @section[#:style 'unnumbered]{Acknowledgments}
 

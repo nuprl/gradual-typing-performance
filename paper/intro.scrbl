@@ -48,8 +48,14 @@ Both approaches to gradual typing come with two implicit claims. First, the
  performance of partially typed programs. Some plainly admit that such mixed
  programs may suffer performance degradations of two orders of magnitude.
 
-This paper introduces a method for the systematic performance
- evaluation of gradual type systems. The paper's insight is that to
+This paper presents a single result: a method for systematically evaluating the
+performance of a gradual type system and its application to Typed Racket, a mature implementation of
+gradual typing. We find that Typed Racket's cost of soundness is @emph{not}
+tolerable according to our framework. If applying our framework to other gradual
+type system implementations yields similar results, and assuming that our framework
+correctly evaluates gradual type system usefulness, then sound gradual typing is dead.
+
+The insight behind the method is that to
  understand the performance of a gradual type system it is necessary to
  simulate how a maintenance programmer chooses to add types to an existing
  software system. For practical reasons, such as time or access to source

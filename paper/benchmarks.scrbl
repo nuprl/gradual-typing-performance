@@ -150,17 +150,21 @@ smallest benchmark. It consists of two modules: a tiny streams library and a
 script implementing the Sieve using streams.
 
 @parag{Morse code}
-The @tt{morse-code} script is adapted from a morse code training program@note{@url["https://github.com/jbclements/morse-code-trainer"]}.
+The @tt{morse-code} script is adapted from a morse code training program@note{@url["github.com/jbclements/morse-code-trainer"]}.
 The original program plays a morse code audio clip, reads the keyboard for
 user input, and scores the input based on its Levenshtein distance from the
 correct answer. Our benchmark tests generating morse code strings and running the
 Levenshtein algorithm on a list of frequently-used English words.
 
 @parag{MBTA}
-The @tt{mbta} program implements a server that asynchronously responds to
-path queries about a graph representation of Boston's public transit system.
-The graph representation is implemented using a third-party, untyped library.
-The latter introduces a typed-untyped boundary even in the ``completely typed'' case.
+The @tt{mbta} program builds a representation of Boston's public transit system
+and answers reachability queries.
+Its relies on an untyped graph library.
+
+Notably, the original program was implemented with a server thread that
+responded to queries asynchronously.
+We instead measured a synchronous version of the program to ensure compatibility
+with Racket's stack-based profiling tools.
 
 @parag{ZO Traversal}
 The @tt{zo-traversal} script provides a tool for exploring Racket bytecode structures
@@ -188,7 +192,7 @@ The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
 
 @parag{Snake} This program is based on a contract verification
-benchmark@note{@url["https://github.com/philnguyen/soft-contract"]} by
+benchmark@note{@url["github.com/philnguyen/soft-contract"]} by
 Nguyên @|etal|@~cite[nthvh-icfp-2014].  It implements a game where a growing
 and moving snake tries to eat apples while avoiding walls and its own tail.
 Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering
@@ -202,7 +206,7 @@ Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here r
 one adaptor module.
 
 @parag{Synth}
-The @tt{synth} benchmark@note{@url["https://github.com/stamourv/synth"]}
+The @tt{synth} benchmark@note{@url["github.com/stamourv/synth"]}
 is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
 The program consists of nine modules, half of which are from Typed Racket's array library.

@@ -2,28 +2,14 @@
 
 @(require "common.rkt")
 
-@(define numerals '(I II III IV V VI VII VIII))
-@(define (authorinfo* name institution email)
-   @authorinfo[
-     (string-append "Dr. Double B. Reviewing, " 
-       (begin0
-          (symbol->string (car numerals))
-          (set! numerals (cdr numerals))))
-     (string-append (famous) " " "Famous University")
-     "turing@award.com"])
+@authorinfo["Asumu Takikawa, 
+             Daniel Feltey,
+             Ben Greenman,
+             Max S. New,
+             Jan Vitek,
+             Matthias Felleisen" "Northeastern University" ""]
 
-@(define (famous)
-   (define famous '("Very" "Somewhat" "Less" "In"))
-   (list-ref famous (random (length famous))))
-
-@authorinfo*["Asumu Takikawa" "Northeastern University" "asumu@ccs.neu.edu"]
-@authorinfo*["Daniel Feltey" "Northeastern University" "dfeltey@ccs.neu.edu"]
-@authorinfo*["Ben Greenman" "Northeastern University" "types@ccs.neu.edu"]
-@authorinfo*["Max S. New" "Northeastern University" "maxsnew@ccs.neu.edu"]
-@authorinfo*["Jan Vitek" "Northeastern University" "j.vitek@ccs.neu.edu"]
-@authorinfo*["Matthias Felleisen" "Northeastern University" "matthias@ccs.neu.edu"]
-
-@title{Is Sound Gradual Typing Dead?}
+@title{DRAFT: Is Sound Gradual Typing Dead?}
 
 @abstract{Programmers have come to embrace dynamically-typed languages for
  prototyping and delivering large and complex systems. When it comes to
@@ -50,8 +36,8 @@
  Typed Racket, a mature implementation of sound gradual typing, and a suite
  of real-world programs of various sizes and complexities.  Based on the
  results obtained in this study, the paper concludes that, given the current state
- of implementation technologies, sound gradual typing is
- dead. Conversely, it raises the question of how implementations could 
+ of implementation technologies, sound gradual typing faces significant
+ challenges. Conversely, it raises the question of how implementations could 
  reduce the overheads associated with soundness and how
  tools could be used to steer programmers clear from pathological cases.}
 
@@ -59,6 +45,7 @@
 @include-section{framework.scrbl}
 @include-section{benchmarks.scrbl}
 @include-section{typed-racket.scrbl}
+@;include-section{pycket.scrbl}
 @include-section{death.scrbl}
 @include-section{related.scrbl}
 @include-section{conclusion.scrbl}

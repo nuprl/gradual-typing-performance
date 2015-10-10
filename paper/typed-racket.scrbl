@@ -35,7 +35,7 @@ Due to the high resource requirements of evaluating
 the performance lattices, experiments were run on a cluster consisting of a
 Machine A with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, Machine B
 with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of Machines C
-@;from the Northeastern University Discovery Cluster@note{@url{http://nuweb12.neu.edu/rc/?page_id=27}}
+@;from the Northeastern University Discovery Cluster@note{@url{nuweb12.neu.edu/rc/?page_id=27}}
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
 with 64GB RAM. All machines run a variant of Linux. The following
 benchmarks were run on machine A: @tt{sieve} and @tt{kcfa}.
@@ -277,8 +277,8 @@ partially typed configurations come from contracts and checks performed as
 untyped code interacts with typed code.
 
 The @deliverable{300} and @usable["300" "1000"] counts are computed for
-@math{L}=0. Next to each count, we report (in parentheses) the count divided
-by the number of configurations.
+@math{L}=0. In parentheses, we express these counts as a percentage of all
+configurations for the program.
 
 The three cumulative performance graphs are read as follows. The x-axis
 represents the slowdown over the untyped program (from 1x to
@@ -288,13 +288,12 @@ same height. The blue curves show how many configurations have less than a
 given slowdown.  They are, by definition, monotonically increasing because
 the more overhead is allowed, the more configurations satisfy the
 condition. The ``ideal'' result would be a flat line at a graph's top. Such
-a result would mean that all configuration are as fast (or faster) as the untyped
-one.  The ``worst'' scenario is a flat line at the graph's bottom,
+a result would mean that all configuration are as fast as (or faster than) the
+untyped one.  The ``worst'' scenario is a flat line at the graph's bottom,
 indicating that all configuration are more than 20x slower than the untyped
 one. For ease of comparison between graphs, a dashed
 (@exact{\color{red}{red}}) horizontal line indicates 60% point of all
-configurations.  As a rule of thumb, curves that climb faster are better than
-curves with a smaller slope.
+configurations.
 
 @;Each line was obtained by measuring @id[PARAM-NUM-SAMPLES] overheads 
 @;linearly spaced along the x-axis.
@@ -306,8 +305,8 @@ cumulative performance graphs display the values of parameters @math{N} and
 a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
 experiment we have chosen values of 300% and 1000%. These values are rather liberal
 and we expect that most production contexts would not tolerate anything higher than 200% (and
-some would object to any slowdown). Thus, for any program, the value of
-@deliverable{300} is the value of the y-axis where the blue line intersects
+some would object to any slowdown). Thus, for any program, the number of
+@deliverable{300} configurations is the value of the y-axis where the blue line intersects
 the green one.  This is how many configurations are deliverable.  Similarly
 for @usable["300" "1000"], its value is the difference of the intercepts.
 Higher values for both of these measures are better.
@@ -325,18 +324,13 @@ in one step.
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:all-results"]{Interpretation}
 
-@; Due dilligence for each benchmark,
-@; The "WHY" try to explain the performance.
-@; The "PATH" comment on how difficult porting was
-
 As mentioned, the ideal shape for these curves is a flat line at the top of the y-axis.
 Of course the dynamic checks inserted by gradual type systems make this
 ideal difficult to achieve even with type-driven optimizations, so the
-next-best shape is a steep vertical line reaching the 100% count at a low
-x-value.  A steep slope from the 1x point means that a large proportion of
-all configurations run within a small constant overhead.  For lines with
-lower gradients this small constant must be replaced with a larger overhead
-factor for the same proportion of configurations to qualify as acceptable.
+next-best shape is a nearly-vertical line reaching the 100% count at a low x-value.
+Generally, a steep slope implies a good tradeoff between accepting a larger
+performance overhead and the number of configurations that run within the
+accepted overhead.
 
 Given the wide x-axis range of overhead factors, we would expect that only
 the leftmost quarter of each graph shows any interesting vertical slope.
@@ -355,189 +349,67 @@ center and right column as rather drastic countermeasures to recover
 performance.
 
 
-@parag{Sieve} At @exact{$L$}=0, the @tt{sieve} benchmark is dead in the
-water, as both partially typed configuration have more than 20x overhead.
-Increasing @exact{$L$}, however, shows unsurprisingly that the fully typed
-configuration is one step away.
+@parag{Sieve}
+The flat line at @math{L}=0 shows that half of all configurations suffer
+unacceptable overhead. As there are only 4 configurations in the lattice
+for @tt{sieve}, increasing @math{L} improves performance.
 
-@; This benchmark is admittedly contrived, but proves an interesting point:
-@; pathologically-bad configurations can be avoided if the programmer is able
-@; to identify tightly-connected modules and ensure there is no boundary
-@; between them. 
-@; WHY:
-@; - tons of higher-order interaction because streams are lambdas
-@; PATH: (easy)
-@; - but in practice might be hard -- depending on the untyped library your 
-@;   untyped script maybe isn't safe
+@parag{Morse code}
+The steep lines show that a few configurations suffer modest overhead (below 2x),
+otherwise @tt{morse-code} performs well.
+Increasing @math{L} improves the worst cases.
 
-@parag{Morse code} The @tt{morse-code} benchmark shows acceptable
-performance.  At @math{L}=0 three configurations perform at least as well as
-the untyped program, and the maximum overhead is below 2x.  Increasing
-@math{L} raises the y-intercept of the lines, which matches the observation
-given that the fully-typed @tt{morse-code} runs faster than the original
-program. 
+@parag{MBTA}
+These lines are also steep, but flatten briefly at @math{N}=2.
+This coincides with the @deliverable{200} performance of the fully-typed
+configuration.
+As one would expect, freedom to type additional modules brings more configurations
+into a @deliverable{200} equivalence class.
 
-@; WHY
-@; - Very little inter-module communication
-@; PATH (easy)
-@; - small APIs (levenshtein was 300 lines for 1 export)
-@; - only 2 modules really did things, the others were data(+parser) & main
+@parag{ZO Traversal}
+Plots here are similar to @tt{mbta}.
+There is a gap between the @deliverable{322} performance of the fully-typed
+configuration and the performance of the next-fastest lattice point.
 
-@;FIXED VERSION:
+@parag{Suffixtree}
+The wide horizontal areas are explained by the performance lattice in
+@figure-ref{fig:suffixtree}: configurations' running times are not evenly
+distributed but instead vary drastically when certain boundaries exist.
+Increasing @math{L} significantly improves the number of acceptable configuration
+at 10x and even 3x overhead.
 
-@parag{MBTA} The @tt{mbta} benchmark is nearly a steep vertical line, except
-for one flat area.  This implies that a boundary (or group of boundaries)
-accounts for a 3x slowdown, such that the set of configurations where these
-boundaries connect typed and untyped modules all experience similar
-overhead. Indeed, we found that applying a typed wrapper to the untyped graph
-library that @tt{mbta} depends on caused a 300% increase in the total number of
-contract checks.@note{From ~100 to ~300 checks} This also explains why the
-fully typed configuration is not @deliverable{2}.
+@parag{LNM}
+These results are ideal.
+Note the large y-intercept at @math{L}=0.
+This shows that very few configurations suffer any overhead.
 
-@; PATH (easy)
-@; - small API, even with objects
+@parag{K-CFA}
+The most distinctive feature at @math{L}=0 is the flat portion between @math{N}=0
+and @math{N}=6. This characteristic remains at @math{L}=1, and overall performance
+is very good at @math{L}=2.
 
+@parag{Snake}
+The slope at @math{L}=0 is very low.
+Allowing @math{L}=1 brings a noticeable improvement when @math{N} is at least 5,
+but the difference between @math{L}=1 and @math{L}=2 is small.
 
-@parag{ZO Traversal} The curves for @tt{zo-traversal} are fairly steep, but
-not as drastic as @tt{morse-code} or @tt{mbta}.  Half the configurations
-suffer a 2x overhead, even when @exact{$L$} increases.
-This behavior is again explained by one expensive boundary: when the underlying
-bytecode representation is wrapped in a contract, the program incurs an additional
-500,000 contract checks.  Hence projects that are "untyped enough" to avoid
-creating this boundary perform significantly better.
+@parag{Tetris}
+Each @tt{tetris} plot is essentially a flat line.
+At @math{L}=0 roughly 1/3 of configurations lie below the line.
+This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
+if we let @math{L}=2.
 
-@; PATH (easy)
-@; - HUGE bottleneck typing the zo structs
-@;   lots to do (62 structs, two zo-traversal functions for each)
-@; - afterwards, straightforward (at least for the author)
+@parag{Synth}
+Each slope is very low.
+Furthermore, some configurations remain unusable even at @math{L}=2.
+These plots have few flat areas, which implies that overheads are spread
+evenly throughout possible boundaries in the program.
 
-
-@parag{Suffixtree} At @exact{$L$}=0, @tt{suffixtree} is the worst of our
-benchmarks.  Over half the gradually-typed configurations
-are not usable at any realistic overhead.  Increasing @exact{$L$},
-however, improves this picture.  Thus although most configurations suffer
-large performance overhead, they are, in theory, close to a configuration
-with better performance. Nevertheless there are still too many bad
-configurations for comfort.
-
-@; PATH (hard)
-@; - lots of continuations and letrec, (one cont. instatiated with Values was rejected by TR)
-@; - module structure not bad
-
-
-@parag{LNM} The shape of the @tt{lnm} graphs is ideal.  The sharp vertical
-line at @exact{$L$}=0 indicates that gradual typing introduces only a small
-overhead compared to the untyped program.  Indeed, the summary for @tt{lnm}
-confirm that the maximum overhead is 1.14x slower than the untyped
-baseline. Furthermore, the fully typed performance is very good. Likely,
-this is due to the heavy use of Racket's plotting library, which is typed.
-This also suggest that the untyped program suffers from a performance
-penalty due to contracts.
-
-@; If all graphs were similar to this at @exact{$L$}=1, performance would not be a significant issue.
-@; Even at @exact{$L$}=2, we could shift focus to identifying the good
-@; configurations rather than finding a new implementation strategy. 
-
-@; WHY
-@; - little goes across the boundary. client/server communicate over ports
-@; PATH (easy)
-@; - very small program
-
-
-@parag{K-CFA} The @tt{kcfa} benchmark has a jagged shape, implying
-that @exact{$N/M$}-usability is not a helpful tradeoff for this program.
-At @exact{$L$}=0, selecting an @exact{$N$} strongly influences the
-proportion of acceptable configurations for small values of @exact{$M$}.  This
-is especially true for @exact{$N$} between 1x and 6x, and remains
-true even after increasing @exact{$L$} to 1; however at @exact{$L$}=2 it
-is possible to find @deliverable{N} configurations from any configuration.
-
-@; Control-flow analyses typically run slowly, and the implementation in
-@; our benchmark is poor even in comparison. 
-@; Without typed/untyped boundaries, our benchmark takes almost a minute to
-@; analyze a small arithmetic expression for @exact{$k$}=2 evaluation
-@; steps. 
-@; k-CFA is not a good application for gradual typing! Then again it's not
-@; much of a real program either 
-
-@; WHY
-@; inefficient algorithm
-@; recursive struct hierarchy (though underlying types are simple)
-@; - later structs contain lists and hashtables
-@; - opaques might make it all better
-@; PATH (easy)
-@; - organized & simple project
-@; - code was originally 1 module and educational
-
-@parag{Snake} The @tt{snake} benchmark performs well when fully typed, but
-most partially typed configurations suffer from more than 20x
-overhead. Increasing @exact{$L$} helps somewhat, but still one must accept
-6x overhead before the majority of configurations qualify as usable.
-
-@; WHY
-@; - (probably) tightly-coupled module structure?
-@; - anyway, it's interesting that synth was not an isolated problem
-@; - also interesting that it's not exactly tetris
-@; PATH (easy)
-@; - simple types, small project, fully contracted (it was already a contract benchmark)
-
-
-@parag{Tetris} Like @tt{suffixtree}, the @tt{tetris} benchmark is a success
-story for increasing @exact{$L$}.  When @exact{$L$}=0 we see that most of
-the modules are more than 20x worse than the untyped program.  The good configurations
-are apparently spread  throughout the lattice so that they are easily
-reachable in two steps of typing.
-
-@; WHY
-@; - where is the heavy boundary?
-@; - why is this different from snake?
-@; PATH (easy)
-@; - like snake, simple types + small + full contracts
-
-@parag{Synth} The @tt{synth} benchmark is similar to @tt{snake}. Over half
-the configurations suffer an overhead of more than 20x.  Increasing @math{L}
-does increase the slopes of the lines, meaning a larger number of
-configurations become usable for a fixed @math{N}/@math{M} pair, but gradual
-typing still introduces a large overhead.  Even at @math{L}=2 only 30% of
-all configurations lie in reach of a point with at most 3x slowdown.
-
-@; WHY
-@; - original had poor typed/untyped performance,
-@; - math library is documented to be bad for untyped interaction
-@;   - (probably, not confirmed) tightly coupled module structure
-@;   - complex array type : function with rectangular domain
-@; PATH (hard)
-@; - had to re-type files often, was easier to bottom-up
-@;   (may have just been Ben's inexperience)
-@; - array functions were all polymorphic, made for difficult boundaries
-@; heavy use/export of macros
-
-@parag{Gregor} Despite being a large benchmark, @tt{gregor} performs
-reasonably well even when gradually-typed.  The worst-case slowdown of 5.2x
-is quite good compared to the other large benchmarks, and the steep
-vertical slope is encouraging.
-
-@; WHY
-@; Contracts are all on simple types, pycket or soft contracts could do great things here
-@; - structures all contain simple types (may as well be tuples)
-@; - no higher-order functions, just simple -> simple contracts
-@; - fanciest: optional args
-@; PATH (easy)
-@; - not bad. Library already had contracts
-@; - intricate module structure, but again most things had an api
-
-
+@parag{Gregor}
+These steep curves are impressive given that @tt{gregor} has 13 modules.
+Increasing @math{L} brings consistent improvements.
 
 @parag{Quad}
-Only a small proportion of @tt{quad} variations are 300-deliverable or 300/1000-usable
-for any value of @tt{L}. The @tt{L=2} graph does show a large spike in the
-number of 1500-usable configurations, but this fact is not likely to help
-developers exploring the lattice.
+The @tt{quad} plots follow the same pattern as @tt{mbta} and the @tt{zo} analyzer, despite being visually distinct.
+In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
 
-@; WHY
-@; - module graph implies cost is spread throughout
-@; - many quad types, often recursive
-@; PATH (hard?)
-@; - hard to tell, was already typed
-@; - recovering API was VERY HARD; macros often generated definitions
-@; - typing hyphenate (one untyped module) was tricky -- had to replace 'parititon' with 2 filters
