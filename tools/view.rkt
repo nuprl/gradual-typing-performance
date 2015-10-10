@@ -2,6 +2,7 @@
 
 (require
   pict
+  (only-in racket/string string-join)
   "../paper/render-lnm.rkt")
 
 (define OUTPUT "benchmarks/output.png")
@@ -39,7 +40,7 @@
    ;; -- Create a pict
    (define BM
      (pict->bitmap
-       (data->pict #:tag "sample"
+       (data->pict #:tag (string-join (map filename->tag arg*) "-")
          (for/list ([fname (in-list arg*)])
            (list (filename->tag fname) fname)))))
    ;; -- Show the pict
