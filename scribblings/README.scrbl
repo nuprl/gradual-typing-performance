@@ -68,6 +68,14 @@ This directory contains
   @item{@tt{run-all.sh}: A script to run all benchmarks in the @tt{benchmark/} directory. This may take as long as 2 months to complete.}
  ]
 
+The experiments for this artifact are run using Racket v6.2, which has been
+pre-installed in this VM. To explore any of the Racket code, you can open the
+relevant file from the DrRacket IDE that is linked from the Desktop.
+
+A copy of the Racket documentation is also bundled with this VM. It can be accessed
+by pressing @tt{F1} in DrRacket or by running @tt{raco doc <keyword>} in the
+command-line. The keywords in this README are also hyperlinked to the documentation.
+
 See the following sections for more details on the contents of these directories
 and how to use the included scripts.
 
