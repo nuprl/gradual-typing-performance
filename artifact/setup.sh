@@ -76,3 +76,4 @@ echo "xfconf-query -n -t uint -t uint -t uint -t uint -c xfce4-desktop -p /backd
 
 # Cleanup
 rm ~/Desktop/racket-6.2-x86_64-linux-ubuntu-precise.sh
+rm -r ~/popl-2016-artifact
