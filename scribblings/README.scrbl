@@ -68,7 +68,7 @@ This directory contains
   @item{@tt{run-all.sh}: A script to run all benchmarks in the @tt{benchmark/} directory. This may take as long as 2 months to complete.}
  ]
 
-The experiments for this artifact are run using Racket v6.2, which has been
+The experiments for this artifact are run using @hyperlink["http://www.racket-lang.org"]{Racket} v6.2, which has been
 pre-installed in this VM. To explore any of the Racket code, you can open the
 relevant file from the DrRacket IDE that is linked from the Desktop.
 
