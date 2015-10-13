@@ -10,7 +10,8 @@ the @tt{benchmarks/echo/typed/} directory.
 The only changes we need to make are to use typed racket and add a few annotations.
 
 First, we annotate the constants in @tt{constants.rkt}:
-@(racketmod typed/racket/base
+@(racketmod
+typed/racket/base
 
 (provide
   (code:comment "Natural number port number to run the echo server on")
@@ -26,7 +27,8 @@ First, we annotate the constants in @tt{constants.rkt}:
 
 For @tt{server.rkt} we add an annotation, and we annotate our import of @tt{constants.rkt} for
 the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
-@(racketmod typed/racket/base
+@(racketmod
+typed/racket/base
 
 (code:comment "TCP server: read from a buffer until end of file.")
 
@@ -54,7 +56,8 @@ the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
           [else (printf "server processed ~a bytes\n" bytes)]))))
 
 @tt{client.rkt} is similar:
-@(racketmod typed/racket/base
+@(racketmod
+typed/racket/base
 
 (code:comment "TCP client bot: loop for a fixed number of iterations")
 (code:comment "sending a message over a port.")
@@ -85,7 +88,8 @@ the cases where @tt{server.rkt} is typed and @tt{constants.rkt} is untyped:
   (close-output-port out)))
 
 As is @tt{main.rkt}:
-@(racketmod typed/racket/base
+@(racketmod
+typed/racket/base
 
 (require benchmark-util)
 
