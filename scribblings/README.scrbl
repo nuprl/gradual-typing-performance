@@ -23,7 +23,7 @@ This is a README file for the artifact that accompanies
 
 The goals of this artifact are to
 @itemlist[
-  @item{Make the raw data we collected available for outside analysis}
+  @item{Make the raw lattice data we collected available for outside analysis}
   @item{Enable replication of our experimental evaluation}
  ]
 
