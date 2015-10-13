@@ -27,7 +27,7 @@ were using their typed versions and @tt{a.rkt} was using its untyped version.
 
 The subdirectory @tt{paper/scripts/} contains files that may be useful
 for parsing the data and performing new analyses.
-The racket files therein document their exports fairly well.
+The Racket files therein document their exports fairly well.
 
 The @tt{tools/} directory contains more high-level scripts.
 
@@ -38,7 +38,7 @@ Here is an example invocation (assuming the working directory is @tt{~/Desktop})
 
   @nested[#:style 'inset]{@tt{racket tools/view.rkt paper/data/kcfa-2015-06-25T13:48:52.rktd}}
 
-It outputs the plot as @tt{output.png}.
+It outputs the plot as @tt{output.png} to the benchmarks directory.
 
 @tt{tools/data-lattice.rkt} will produce a picture summarizing the entire runtime lattice from a benchmark @tt{.rktd} file,
 as in Figure 3 in the paper. For example,
@@ -46,5 +46,5 @@ as in Figure 3 in the paper. For example,
   @nested[#:style 'inset]{@tt{racket tools/data-lattice.rkt paper/data/kcfa-2015-06-25T13:48:52.rktd}}
 
 The black and white ovals correspond to the bitstrings explained in @secref{run}, where black denotes
-typed and white untyped. The numbers are the ratio between the runtimes of the configuration and the
+typed and white untyped. Each number is the ratio between the runtime of the configuration and the
 wholly untyped configuration.
