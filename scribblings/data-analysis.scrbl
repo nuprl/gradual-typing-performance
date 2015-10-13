@@ -48,3 +48,6 @@ as in Figure 3 in the paper. For example,
 The black and white ovals correspond to the bitstrings explained in @secref{run}, where black denotes
 typed and white untyped. Each number is the ratio between the runtime of the configuration and the
 wholly untyped configuration.
+
+We suggest using this last visualization tool only on the smaller benchmarks (up to 7 modules). Larger
+lattices do not fit on most screens and may fail to load.
