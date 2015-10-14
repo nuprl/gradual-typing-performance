@@ -29,7 +29,14 @@
 (provide main)
 
 ;; ---------------------------------------------------------------------------------------------------
-(require "evolution.rkt" "automata.rkt")
+(require
+  benchmark-util
+  "automata-adapted.rkt"
+  (only-in "population-adapted.rkt" Population)
+)
+(require/typed/check "evolution.rkt"
+  [evolve (-> [Population Automaton] Natural Natural Natural [Listof Payoff])]
+)
 
 (: simulation->lines (-> [Listof [List Real Real]]))
 (define (simulation->lines)

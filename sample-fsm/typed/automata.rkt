@@ -1,10 +1,7 @@
 #lang typed/racket
 
 (provide
- ;; type Payoff = PositiveNumber 
- Payoff
- Automaton
-
+ automaton?
  ;; -> [Population Automata]
  A
  ;; Automata Automata -> Payoff Payoff Automata Automata 
@@ -12,7 +9,16 @@
 
 ;; ---------------------------------------------------------------------------------------------------
 
-(require "population.rkt" "utilities.rkt")
+(require
+  benchmark-util
+  "population-adapted.rkt"
+)
+(require/typed/check "utilities.rkt"
+  [one-of (All (A) (-> A A A))]
+  [apply-to-first (All (a b c) (-> [Listof a] b [-> a b] [-> a c] (U '() c)))]
+  [sum (-> [Listof Real] Real)]
+  [relative-average (-> [Listof Real] Real Real)]
+)
 
 ;; AUTOMATON
 (define-type Payoff Real)

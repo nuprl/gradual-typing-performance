@@ -1,8 +1,6 @@
 #lang typed/racket
 
 (provide
- ;; type [Population X]
- Population
 
  ;; N [N -> X] -> Population
  ;; (build-population n c) for even n, build a population of size n 
