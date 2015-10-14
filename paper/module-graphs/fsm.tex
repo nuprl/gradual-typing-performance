@@ -1,0 +1,27 @@
+\begin{tikzpicture}
+
+  \node (00) {\rkt{3}{population}};
+  \node (01) [below of=00] {};
+  \node (02) [below of=01] {\rkt{4}{utilities}};
+
+  \node (10) [left of=00] {};
+  \node (11) [left of=01] {};
+  \node (12) [left of=02] {\rkt{0}{automata}};
+
+  \node (20) [left of=10] {\rkt{1}{evolution}};
+  \node (21) [left of=11] {};
+
+  \node (31) [left of=21] {\rkt{2}{main}};
+
+  %% -- edges
+  \draw[->] (31) -- (20);
+  \draw[->] (31) -- (12);
+
+  \draw[->] (20) -- (12);
+  \draw[->] (20) -- (02);
+  \draw[->] (20) -- (00);
+
+  \draw[->] (12) -- (02);
+  \draw[->] (12) -- (00);
+
+\end{tikzpicture}
