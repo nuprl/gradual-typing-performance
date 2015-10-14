@@ -10,19 +10,24 @@
 (require
   benchmark-util
   "automata-adapted.rkt"
-  "population-adapted.rkt"
 )
+(define-type [Population a] (cons (Vectorof a) (Vectorof a)))
+(require/typed/check "population.rkt"
+  [match-ups (-> [Population Automaton] Natural [-> Automaton Automaton (values Real Real Automaton Automaton)] [Listof Real])]
+  [death-birth (-> [Population Automaton] [Listof Real] Natural [Population Automaton])])
 (require/typed/check "utilities.rkt"
   [sum (-> (Listof Real) Real)]
   [relative-average (-> (Listof Real) Real Real)]
 )
+
+;; =============================================================================
 
 (: evolve (-> [Population Automaton] Natural Natural Natural [Listof Payoff]))
 (define (evolve population cycles rate rounds)
   (define-values (result _)
     (for/fold ([result : [Listof Payoff] '()][population : [Population Automaton] population])
               ([_ (in-range cycles)])
-      [define payoffs ((inst match-ups Automaton) population rounds interact)]
+      [define payoffs (match-ups population rounds interact)]
       (values ({inst cons Real [Listof Payoff]} (relative-average payoffs rounds) result)
               (death-birth population (payoff-percentages payoffs) rate))))
   (reverse result))
