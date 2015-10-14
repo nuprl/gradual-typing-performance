@@ -7,7 +7,15 @@
  evolve)
 
 ;; ---------------------------------------------------------------------------------------------------
-(require "automata.rkt" "population.rkt" "utilities.rkt")
+(require
+  benchmark-util
+  "automata-adapted.rkt"
+  "population-adapted.rkt"
+)
+(require/typed/check "utilities.rkt"
+  [sum (-> (Listof Real) Real)]
+  [relative-average (-> (Listof Real) Real Real)]
+)
 
 (: evolve (-> [Population Automaton] Natural Natural Natural [Listof Payoff]))
 (define (evolve population cycles rate rounds)

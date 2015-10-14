@@ -1,6 +1,7 @@
 #lang racket
 
 (provide
+ automaton?
  ;; type Payoff = PositiveNumber 
  ;Payoff
  ;Automaton
