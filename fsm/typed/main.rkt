@@ -29,10 +29,10 @@
 (provide main)
 
 ;; ---------------------------------------------------------------------------------------------------
+(define-type [Population a] (cons (Vectorof a) (Vectorof a)))
 (require
   benchmark-util
   "automata-adapted.rkt"
-  (only-in "population-adapted.rkt" Population)
 )
 (require/typed/check "evolution.rkt"
   [evolve (-> [Population Automaton] Natural Natural Natural [Listof Payoff])]
