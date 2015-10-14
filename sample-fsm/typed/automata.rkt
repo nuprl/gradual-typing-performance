@@ -11,7 +11,10 @@
 
 (require
   benchmark-util
-  "population-adapted.rkt"
+)
+(define-type [Population a] (cons (Vectorof a) (Vectorof a)))
+(require/typed/check "population.rkt"
+  [build-population (-> Natural (-> Natural Automaton) (Population Automaton))]
 )
 (require/typed/check "utilities.rkt"
   [one-of (All (A) (-> A A A))]
