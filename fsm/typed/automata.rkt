@@ -1,7 +1,7 @@
 #lang typed/racket
 
 (provide
- automaton?
+ Automaton
  ;; -> [Population Automata]
  A
  ;; Automata Automata -> Payoff Payoff Automata Automata 
