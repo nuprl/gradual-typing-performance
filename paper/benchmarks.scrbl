@@ -143,20 +143,24 @@ practitioners.
 This section briefly describes each benchmark, noting the dependencies and required adaptor
 modules.  Unless otherwise noted, the benchmarks rely
 only on core Racket libraries and do not use adaptor modules.
+We credit program authors in parentheses; except for @tt{sieve}, all programs
+are independently used.
 
-@parag{Sieve}
+@parag{Sieve (*)}
 This program finds prime numbers using the Sieve of Eratosthenes and is our
 smallest benchmark. It consists of two modules: a tiny streams library and a
 script implementing the Sieve using streams.
+We developed this benchmark to illustrate the pitfalls of sound gradual typing.
 
-@parag{Morse code}
+@parag{Morse code (John Clements & Neil Van Dyke)}
 The @tt{morse-code} script is adapted from a morse code training program@note{@url["github.com/jbclements/morse-code-trainer"]}.
-The original program plays a morse code audio clip, reads the keyboard for
-user input, and scores the input based on its Levenshtein distance from the
-correct answer. Our benchmark tests generating morse code strings and running the
+The original program plays a morse code audio clip, 
+reads the keyboard for user input, and scores the input based on its
+Levenshtein distance from the correct answer.
+Our benchmark tests generating morse code strings and running the
 Levenshtein algorithm on a list of frequently-used English words.
 
-@parag{MBTA}
+@parag{MBTA (Matthias Felleisen)}
 The @tt{mbta} program builds a representation of Boston's public transit system
 and answers reachability queries.
 Its relies on an untyped graph library.
@@ -166,32 +170,32 @@ responded to queries asynchronously.
 We instead measured a synchronous version of the program to ensure compatibility
 with Racket's stack-based profiling tools.
 
-@parag{ZO Traversal}
+@parag{ZO Traversal (Ben Greenman)}
 The @tt{zo-traversal} script provides a tool for exploring Racket bytecode structures
 and counts the frequency of AST nodes.
 The script operates on the Racket compiler's untyped zo data structures.
 Since these data structures are not natively supported in Typed Racket, even the
 completely typed program incurs some dynamic overhead.
 
-@parag{Suffixtree}
+@parag{Suffixtree (Danny Yoo)}
 The @tt{suffixtree} library implements a longest-common-substring algorithm
 using Ukkonen's suffix tree algorithm. While the library has
 minimal external dependencies, it calls for one adaptor module for the
 algorithm's internal data structures.
 
-@parag{L-NM}
+@parag{L-NM (Ben Greenman)}
 This script analyzes the measurements included in this paper
 and generates figures 4 and 5. @; @figure-ref{fig:lnm1} and @figure-ref:lnm2}.
 Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this progam is noticably less performant on large datasets.
 This program relies on an untyped image rendering library and uses two adaptor modules.
 
-@parag{K-CFA}
+@parag{K-CFA (Matt Might)}
 The @tt{kcfa} program implements a simple control flow analysis for a
 lambda calculus.
 The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
 
-@parag{Snake} This program is based on a contract verification
+@parag{Snake (Phúc Nguyễn)} This program is based on a contract verification
 benchmark@note{@url["github.com/philnguyen/soft-contract"]} by
 Nguyên @|etal|@~cite[nthvh-icfp-2014].  It implements a game where a growing
 and moving snake tries to eat apples while avoiding walls and its own tail.
@@ -199,13 +203,13 @@ Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering
 the game state and does not display a GUI.  We use one adaptor module to
 represent the game datatypes, but otherwise the program is self-contained.
 
-@parag{Tetris}
+@parag{Tetris (Phúc Nguyễn)}
 This program is taken from the same benchmark suite as @tt{snake}@~cite[nthvh-icfp-2014]
 and implements the eponymous game.
 Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here requires
 one adaptor module.
 
-@parag{Synth}
+@parag{Synth (Vincent St-Amour & Neil Toronto)}
 The @tt{synth} benchmark@note{@url["github.com/stamourv/synth"]}
 is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
@@ -213,7 +217,7 @@ The program consists of nine modules, half of which are from Typed Racket's arra
 In order to run these library modules in all typed-untyped configurations we created an adaptor module
 for the underlying array data structure.
 
-@parag{Gregor}
+@parag{Gregor (Jon Zeppieri)}
 This benchmark consists of thirteen modules and stress-tests a date and time library.
 The original library uses a
 library for ad-hoc polymorphism that is not supported by Typed Racket. We
@@ -222,7 +226,7 @@ string parsing component.
 The benchmark uses two adaptor modules and relies on a small, untyped library for
 acquiring data on local times.
 
-@parag{Quad}
+@parag{Quad (Matthew Butterick)}
 This project implements a type-setting library.
 It depends on an external constraint satisfaction solver
 library (to divide lines of text across multiple columns) and uses two adaptor modules.
