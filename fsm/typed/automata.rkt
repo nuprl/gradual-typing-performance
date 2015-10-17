@@ -12,10 +12,22 @@
 (require
   benchmark-util
 )
-(define-type [Population a] (cons (Vectorof a) (Vectorof a)))
-(require/typed/check "population.rkt"
-  [build-population (-> Natural (-> Natural Automaton) (Population Automaton))]
+
+(require/typed "population.rkt"
+ [#:struct Population (
+  [car : (Vectorof Automaton)]
+  [cdr : (Vectorof Automaton)])]
+ [build-population (-> Natural (-> Natural Automaton) Population)]
+  [match-ups (-> Population Natural [-> Automaton Automaton (values Real Real Automaton Automaton)] [Listof Real])]
+  [death-birth (-> Population [Listof Real] Natural Population)]
 )
+
+(provide
+  Population
+  build-population
+  match-ups
+  death-birth)
+
 (require/typed/check "utilities.rkt"
   [one-of (All (A) (-> A A A))]
   [apply-to-first (All (a b c) (-> [Listof a] b [-> a b] [-> a c] (U '() c)))]
@@ -38,7 +50,7 @@
 
 (define-type Automaton automaton)
 
-(: A (-> [Population Automaton]))
+(: A (-> Population))
 (define (A)
   (build-population
    100

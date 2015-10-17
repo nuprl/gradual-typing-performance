@@ -7,7 +7,7 @@
  evolve)
 
 ;; ---------------------------------------------------------------------------------------------------
-(require "automata.rkt" "population.rkt" "utilities.rkt")
+(require "automata.rkt" "utilities.rkt")
 
 ;(: evolve (-> [Population Automaton] Natural Natural Natural [Listof Payoff]))
 (define (evolve population cycles rate rounds)

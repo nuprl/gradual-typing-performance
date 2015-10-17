@@ -9,7 +9,14 @@
  ;; -> [Population Automata]
  A
  ;; Automata Automata -> Payoff Payoff Automata Automata 
- interact)
+ interact
+
+ ;; --
+ (struct-out Population)
+ build-population
+ match-ups
+ death-birth
+)
 
 ;; ---------------------------------------------------------------------------------------------------
 
