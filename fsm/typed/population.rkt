@@ -1,6 +1,7 @@
 #lang typed/racket
 
 (provide
+ (struct-out Population)
 
  ;; N [N -> X] -> Population
  ;; (build-population n c) for even n, build a population of size n 
@@ -21,18 +22,21 @@
 
 ;; ---------------------------------------------------------------------------------------------------
 
-(define-type [Population a] (cons (Vectorof a) (Vectorof a)))
+(struct [a] Population (
+ [car : (Vectorof a)]
+ [cdr : (Vectorof a)]
+) #:transparent )
 
 ;; type [Population X] = (Cons [Vectorof X] [Vectorof X])
 ;; the first vector carries the current "citizens", death-birth switches the two 
 
 (: build-population (All (a) (-> Natural [-> Natural a] [Population a])))
 (define (build-population n f)
-  ({inst cons (Vectorof a) (Vectorof a)} (build-vector n f) (build-vector n f)))
+  (Population (build-vector n f) (build-vector n f)))
 
 (: match-ups (All (a) (-> [Population a] Natural [-> a a (values Real Real a a)] [Listof Real])))
 (define (match-ups population0 rounds-per-match interact)
-  (define population (car population0))
+  (define population (Population-car population0))
   (define n (- (vector-length population) 1))
   ;; Automata Automata ->* Number Number Any Any Any Any 
   ;; the sum of pay-offs for the two respective automata over all rounds
@@ -55,12 +59,12 @@
 
 (: death-birth (All (a) (-> [Population a] [Listof Real] Natural [Population a])))
 (define (death-birth population0 fitness rate)
-  (define population (car population0))
+  (define population (Population-car population0))
   ;; MF: why are we dropping of the first 'speed'?
   [define substitutes ({inst randomise-over-fitness a} population fitness rate)]
   (for ([i (in-range rate)][p substitutes])
     (vector-set! population i p))
-  (shuffle-vector population (cdr population0)))
+  (shuffle-vector population (Population-cdr population0)))
 
 ;; [Population X] [Listof [0,1]] N -> [Listof X]
 ;; spawn another set of fitt automata
@@ -86,7 +90,7 @@
                #:break (< r f))
       p)))
 
-(: shuffle-vector (All (X) (-> [Vectorof X] [Vectorof X] (cons [Vectorof X] [Vectorof X]))))
+(: shuffle-vector (All (X) (-> [Vectorof X] [Vectorof X] (Population X))))
 ;; effect: shuffle vector b into vector a
 ;; constraint: (= (vector-length a) (vector-length b))
 ;; Fisher-Yates Shuffle
@@ -95,6 +99,6 @@
     (define j (random (add1 i)))
     (unless (= j i) (vector-set! a i (vector-ref a j)))
     (vector-set! a j x))
-  (cons a b))
+  (Population a b))
 
 ; (shuffle-vector (vector 1 2 3 4 5 6) (make-vector 6 'a))
