@@ -11,7 +11,7 @@
 
 (require benchmark-util)
 (require/typed/check "automata.rkt"
- [#:opaque Automaton automata?]
+ [#:opaque Automaton automaton?]
  (automaton-payoff (-> Automaton Payoff))
  (defects (-> Payoff Automaton))
  (cooperates (-> Payoff Automaton))
