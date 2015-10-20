@@ -1,6 +1,7 @@
 #lang typed/racket
 
 ;; Run a Simulation of Interacting Automata
+(random-seed 7480)
 
 ;; =============================================================================
 (require benchmark-util
