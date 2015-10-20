@@ -46,7 +46,7 @@ Our use of the evaluation framework projects an extremely negative image of
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
-We have identified four threats to the validity of our measurements and our
+We have identified five threats to the validity of our measurements and our
  conclusions. 
 
 First, our benchmarks are relatively small due to constraints on our
@@ -88,7 +88,18 @@ Third, our method imagines a particularly @emph{free} approach to
  the module graph.  We therefore conjecture that some of the ideas offered
  in the conclusion section may help such planned, path-based approaches.
 
-Fourth, we articulate our conclusions on the basis of current
+Fourth, the set of type annotations that are needed to gradually type a program
+is rarely unique. We tried to pick reasonable type annotations for our
+benchmarks programs, but it is possible that better typings exist.  Since the
+dynamic checks in gradually typed programs are translated from types, the
+choice of type annotations can affect the performance characteristics of the
+program. Therefore it is possible that our results are not representative of
+Typed Racket's best case performance.
+On the other hand, it is still a failure for gradual typing if a
+programmer must divine the best possible type annotations in order to obtain
+reasonable performance.
+
+Fifth, we articulate our conclusions on the basis of current
  implementation technology. Typed Racket compiles to Racket, which uses
  rather conventional JIT compilation technology. It makes no attempt to
  reduce the overhead of contracts or to exploit contracts for
