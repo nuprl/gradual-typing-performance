@@ -95,12 +95,9 @@ types. Consider this example:
 @(begin
 #reader scribble/comment-reader
 (racketblock
-(require 
-  (only-in "label.rkt" 
-            make-label 
-            sublabel 
-            ... 
-            vector->label/s))
+(require (only-in "label.rkt"
+                  make-label
+                  ...))
 ))
 @;%
 The server module is called @tt{label.rkt}, and the client imports specific
@@ -114,13 +111,7 @@ The server module is called @tt{label.rkt}, and the client imports specific
 (require/typed/check "label.rkt" 
  [make-label
   (-> (U String (Vectorof (U Char Symbol))) Label)]
- [sublabel 
-  (case-> 
-    (-> Label Index Label)
-    (-> Label Index Index Label))]
- ...
- [vector->label/s
-  (-> (Vectorof (U Char Symbol)) Label)])
+ ...)
 ))
 @; 
 
