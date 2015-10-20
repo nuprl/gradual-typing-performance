@@ -1,4 +1,5 @@
 #lang racket
+(random-seed 7480)
 ;; INTRODUCTION
 ;; I generate a population of finite state automata randomly
 ;; in each cycle, they are pair-matched to play a repeated game
