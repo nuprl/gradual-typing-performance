@@ -66,7 +66,8 @@ measurements available jointly with our publication.}
 
 @section[#:style 'unnumbered]{Acknowledgments}
 
-We thank Matthew Butterick, John Clements, Matthew Might,
- Phúc C. Nguyễn, Vincent St-Amour, Danny Yoo,
- and Jon Zeppieri for providing benchmark code bases.
+The authors gratefully acknowledge support from the National Science
+Foundation (SHF 1518844). They also thank Matthew Butterick, John Clements,
+Matthew Might, Phúc C. Nguyễn, Vincent St-Amour, Danny Yoo, and Jon
+Zeppieri for providing benchmark code bases.
 
