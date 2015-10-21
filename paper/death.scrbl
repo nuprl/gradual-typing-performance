@@ -88,16 +88,18 @@ Third, our method imagines a particularly @emph{free} approach to
  the module graph.  We therefore conjecture that some of the ideas offered
  in the conclusion section may help such planned, path-based approaches.
 
-Fourth, the set of type annotations that are needed to gradually type a program
-is rarely unique. We tried to pick reasonable type annotations for our
-benchmarks programs, but it is possible that better typings exist.  Since the
-dynamic checks in gradually typed programs are translated from types, the
-choice of type annotations can affect the performance characteristics of the
-program. Therefore it is possible that our results are not representative of
-Typed Racket's best case performance.
-On the other hand, it is still a failure for gradual typing if a
-programmer must divine the best possible type annotations in order to obtain
-reasonable performance.
+Fourth, the feasible set of type annotations for a program component is
+ rarely unique in a gradually typed system; after all, untyped languages
+ are @emph{multi-typed} languages.  Since types are translated into
+ contracts in Typed Racket, the choice of type annotations may affect
+ performance. All of our case studies use reasonable type annotations, but
+ typing annotations with superior performance may exist. For example, one
+ class-based benchmark (not included, completed after submission) exhibits
+ noticeable differences though the overall result remains the
+ same. Generally speaking, our results may not be fully representative.
+ Then again, it is still a failure of gradual typing if a programmer must
+ divine the best possible type annotations to obtain reasonable
+ performance.
 
 Fifth, we articulate our conclusions on the basis of current
  implementation technology. Typed Racket compiles to Racket, which uses
