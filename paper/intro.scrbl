@@ -50,7 +50,7 @@ Both approaches to gradual typing come with two implicit claims. First, the
 
 This paper presents a single result: a method for systematically evaluating the
 performance of a gradual type system and its application to Typed Racket, a mature implementation of
-gradual typing. We find that Typed Racket's cost of soundness is @emph{not}
+macro-level gradual typing. We find that Typed Racket's cost of soundness is @emph{not}
 tolerable according to our framework. If applying our framework to other gradual
 type system implementations yields similar results, and assuming that our framework
 correctly evaluates gradual type system usefulness, then sound gradual typing is dead.
