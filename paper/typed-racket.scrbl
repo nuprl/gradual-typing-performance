@@ -296,8 +296,8 @@ experiment we have chosen values of 300% and 1000%. These values are rather libe
 and we expect that most production contexts would not tolerate anything higher than 200% (and
 some would object to any slowdown). Thus, for any program, the number of
 @deliverable{300} configurations is the value of the y-axis where the blue line intersects
-the green one.  This is how many configurations are deliverable.  Similarly
-for @usable["300" "1000"], its value is the difference of the intercepts.
+the green one.
+The number of @usable["300" "1000"] configurations is the difference of the intercepts.
 Higher values for both of these measures are better.
 
 Lastly, the figures show cumulative performance graphs for different values

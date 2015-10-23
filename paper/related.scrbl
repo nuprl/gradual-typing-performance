@@ -34,10 +34,10 @@ avoid higher-order wrapping where possible---in Gradualtalk on
 microbenchmarks. These efforts evaluate the cost of specific features, but
 do not represent the cost of the whole gradual typing process.
 
-Safe TypeScript comes with an evaluation on the Octane benchmarks ported to
-TypeScript. Unlike our lattice-based approach, their evaluation
+Safe TypeScript's evaluation is based on the TypeScript ports of the
+Octane benchmarks. Unlike our lattice-based approach, it
 compares only the performance of the fully untyped and fully typed programs.
-For Safe TypeScript, Rastogi @etal report slowdowns in
+Rastogi @etal report slowdowns in
 unannotated programs in a ``range from a factor of 2.4x (splay) to 72x
 (crypto), with an average of 22x''@~cite[(in-bib rsfbv-popl-2015 ", pg. 178")].
 On fully typed programs, the overhead is ``on average only 6.5%"@~cite[(in-bib rsfbv-popl-2015 ", pg. 178")].
