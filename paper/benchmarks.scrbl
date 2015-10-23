@@ -151,7 +151,7 @@ This section briefly describes each benchmark, noting the dependencies and requi
 modules.  Unless otherwise noted, the benchmarks rely
 only on core Racket libraries and do not use adaptor modules.
 We credit program authors in parentheses; except for @tt{sieve}, all programs
-are independently used.
+are independently useful.
 
 @parag{Sieve (*)}
 This program finds prime numbers using the Sieve of Eratosthenes and is our
