@@ -41,6 +41,14 @@
  reduce the overheads associated with soundness and how
  tools could be used to steer programmers clear from pathological cases.}
 
+@category["D.2.8" "Software Engineering" "Metrics" "Performance measures"]
+
+@; Cut for space
+@;@category["D.3.3" "Programming Languages" "Language Constructs and Features"]
+@;@terms{Performance, Experimentation, Measurement}
+
+@keywords{Gradual type systems, performance evaluation}
+
 @include-section{intro.scrbl}
 @include-section{framework.scrbl}
 @include-section{benchmarks.scrbl}
