@@ -165,7 +165,7 @@ The fully typed configuration (top) is @emph{faster} than the fully untyped
 
 Sadly, the performance improvement of the typed configuration is the
  only good part of this benchmark. Almost all partially typed configurations
- exhibit slowdowns between 0.7x and 105x. Inspection of the lattice
+ exhibit slowdowns up to 105x. Inspection of the lattice
  suggests several points about these slowdowns: @itemlist[
 
 @item{Adding type annotations to the @tt{main} module neither subtracts or
