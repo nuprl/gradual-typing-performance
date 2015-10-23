@@ -96,14 +96,17 @@ Project name          & \# Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.
 
 @subsection{Adaptor Modules}
 
-Type adaptor modules are specialized typed interfaces to untyped code
-that are used when an untyped data definition and the data's typed clients are
-part of the same configuration.
-The adaptor, itself a typed module, exports annotated versions of all
-bindings in the untyped data definition.
+To facilitate our experiment, we manually add @emph{type adaptor modules}
+to some of the programs. Adaptor modules are specialized typed interfaces to
+untyped code that are used when an untyped data definition and the data's
+typed clients are part of the same configuration. Our experimental setup
+makes this necessary since some configurations will leave data modules
+untyped but will use typed client modules.
+The adaptor is itself a typed module and exports type annotated versions
+of all bindings from the untyped data definition.
 Typed clients are set up to import exclusively from the type adaptor, bypassing the
 original data definition.
-Untyped clients continue to use the untyped file.
+Untyped clients continue to use the original untyped file.
 
 @figure["fig:adaptor" "Inserting a type adaptor"
 @exact|{
@@ -113,15 +116,16 @@ Untyped clients continue to use the untyped file.
 }|
 ]
 
-@Figure-ref{fig:adaptor} illustrates the basic problem that type adaptors
-solve.  The issue is that Racket structure types (record type definitions)
-are @emph{generative}; each assignment of a type annotation to an untyped
-structure creates a new ``black box'' definition.  This means that two
-syntactically-identical type assignments to the same structure are
-incompatible.  Using an adaptor ensures that only one canonical type is
-generated for each structure, as illustrated in the right half of
-@figure-ref{fig:adaptor}.
+Instead of using an adaptor module, each typed client module could duplicate
+the type annotations for the data definitions. This does not work, however,
+for generative structure types, which are ubiquitous in Racket code.
+@Figure-ref{fig:adaptor} illustrates this problem.
+Racket's structure types (record type definitions) are @emph{generative}; two
+declarations of the same structure yield distinct types. This carries over to
+type-annotated structures for typed modules, meaning that annotating the same
+structure twice will yield incompatible type definitions.
 
+@;{
 Strictly speaking, type adaptor modules are not necessary.
 It is possible to modify the design of imports for any given configuration so
 that a single typed module declares and re-exports type annotations for untyped
@@ -129,13 +133,16 @@ data.
 This alternative presents a non-trivial challenge, however,
 when trying to synthesize the @math{2^n} gradually-typed configurations from
 a fully-untyped and fully-typed version of each benchmark.
+}
 
-The layer of indirection provided by adaptors solves this issue and
-reduces the number of type annotations needed at boundaries because all typed
+Using an adaptor ensures that only one canonical type is
+generated for each structure, as illustrated in the right half of
+@figure-ref{fig:adaptor}. Adaptors also
+reduce the number of type annotations needed at boundaries because all typed
 clients can reference a single point of control.@note{In our experimental
 framework, type adaptors are available to all configurations as library files.}
 Therefore we expect type adaptor modules to be of independent use to
-practitioners.
+practitioners, rather than just a synthetic byproduct of our setup.
 
 
 @section{Program Descriptions}
