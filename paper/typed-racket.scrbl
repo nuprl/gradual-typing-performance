@@ -59,7 +59,7 @@ its timing results in detail.
 
 @tt{Suffixtree} consists of six modules: @tt{data} to define label and
 tree nodes, @tt{label} with functions on suffixtree node labels,
-@tt{lcs} to compute Longest-Common-Subsequences, @tt{main} to apply
+@tt{lcs} to compute longest common substrings, @tt{main} to apply
 lcs to data, @tt{structs} to create and traverse suffix tree nodes,
 @tt{ukkonen} to build suffix trees via Ukkonen's algorithm. Each
 module is available with and without type annotations.  Each configuration
@@ -85,7 +85,7 @@ thus links six modules, some of them typed and others untyped.
      (make-performance-lattice vec*))
 ]
 
-Typed modules require type annotations on their datatypes and functions.
+Typed modules require type annotations on their data definitions and functions.
 Modules provide their exports with types, so that the
 type checker can cross-check modules. A typed module may import
 values from an untyped module, which forces the
@@ -95,9 +95,7 @@ types. Consider this example:
 @(begin
 #reader scribble/comment-reader
 (racketblock
-(require (only-in "label.rkt"
-                  make-label
-                  ...))
+(require (only-in "label.rkt" make-label ...))
 ))
 @;%
 The server module is called @tt{label.rkt}, and the client imports specific
@@ -108,7 +106,7 @@ The server module is called @tt{label.rkt}, and the client imports specific
 @(begin
 #reader scribble/comment-reader
 (racketblock
-(require/typed/check "label.rkt" 
+(require/typed "label.rkt" 
  [make-label
   (-> (U String (Vectorof (U Char Symbol))) Label)]
  ...)
@@ -116,17 +114,17 @@ The server module is called @tt{label.rkt}, and the client imports specific
 @; 
 
 The types in a
-@racket[require/typed] specification are compiled into contracts for
-the values that flow into the module. For example, if some
+@racket[require/typed] form are compiled into contracts for
+the imported values. For example, if some
 imported variable is declared to be a @tt{Char}, the check @racket[char?]
 is performed as the value flows across the module boundary. Higher-order
-types (functions, objects, or classes) become contracts that are wrapped
-around the imported value and which check future interactions of this
+types (functions, objects, or classes) become contracts that wrap
+the imported value and which check future interactions of this
 value with its context.
 
-The performance costs of gradual typing thus consist of allocation of
-wrapper and run-time checks. Moreover, the compiler has to assume that
-any value could be wrapped, so cannot generate direct field access code
+The performance costs of gradual typing thus consist of wrapper allocation
+and run-time checks. Moreover, the compiler must assume that
+any value could be wrapped, so it cannot generate direct field access code
 as would be done in a statically typed language.
 
 Since our evaluation setup calls for linking typed modules to both typed
@@ -156,9 +154,9 @@ modules in a configuration.
  as they small enough to not affect the discusion.
 
 The fully typed configuration (top) is @emph{faster} than the fully untyped
- (bottom) configuration by around 30%, which puts the typed/untyped ratio at 0.7. This is
- easily explained by Typed Racket's optimizations such as specialization of
- arithmetic operations, improved field accesses, and elimination of some
+ (bottom) configuration by around 30%, which puts the typed/untyped ratio at 0.7. This can
+ be explained by Typed Racket's optimizer, which performs specialization of
+ arithmetic operations and field accesses, and can eliminate some
  bounds checks@~cite[thscff-pldi-2011]. When the optimizer is turned off,
  the ratio goes back up to 1. 
 

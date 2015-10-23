@@ -39,15 +39,15 @@ from module B.
 When one of these modules is typed and the other untyped, the imported definitions
 are wrapped with a contract to ensure type soundness. To give a sense of how
 ``expensive'' the contracts at each boundary are, we have colored and thickened
-arrows to match the absolute number of times any contracts formed at each boundary
+arrows to match the absolute number of times contracts at a given boundary
 were checked. The color scale is shown below the table.
 
-The colors fail, however, to show the cost of protecting data structures
+The colors fail, however, to show the cost of checking data structures
 imported from another library or factored through an adaptor module.
 For example, the @tt{kcfa} graph has many thin black edges because the modules
 only share data definitions; the expensive contracts are all formed within
-a module rather than along a boundary. Instead, we include the column ``% Missing''
-to give the proportion of observed contract checks that are not show in the
+a module rather than along a boundary. We include the column ``% Missing''
+to give the proportion of observed contract checks that are not shown in the
 module graphs.
 
 
@@ -155,12 +155,12 @@ are independently useful.
 
 @parag{Sieve (*)}
 This program finds prime numbers using the Sieve of Eratosthenes and is our
-smallest benchmark. It consists of two modules: a tiny streams library and a
-script implementing the Sieve using streams.
-We developed this benchmark to illustrate the pitfalls of sound gradual typing.
+smallest benchmark. It consists of two modules: a streams library and the
+Sieve implementation.
+We wrote this benchmark to illustrate the pitfalls of sound gradual typing.
 
 @parag{Morse code (John Clements & Neil Van Dyke)}
-The @tt{morse-code} script is adapted from a morse code training program@note{@url["http://github.com/jbclements/morse-code-trainer"]}.
+This script is adapted from a morse code training program@note{@url["http://github.com/jbclements/morse-code-trainer"]}.
 The original program plays a morse code audio clip, 
 reads the keyboard for user input, and scores the input based on its
 Levenshtein distance from the correct answer.
