@@ -26,7 +26,7 @@
  While most research on sound gradual typing remains theoretical, the
  few emerging implementations suffer from performance overheads due to these
  checks. None of the publications on this topic come with a
- comprehensive performance evaluation. However, a few report disastrous numbers.
+ comprehensive performance evaluation. Worse, a few report disastrous numbers.
  In response, this paper proposes a method for
  evaluating the performance of gradually-typed programming languages.
  The method takes the idea
