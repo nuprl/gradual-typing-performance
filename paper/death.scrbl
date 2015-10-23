@@ -156,8 +156,10 @@ Fifth, we articulate our conclusions on the basis of current
 
 To analyze the cost of dynamic contract checks, we used the
  feature-specific profiler@~cite[saf-cc-2015] on each benchmark's
- @emph{slowest} configuration in the lattice. @Figure-ref{fig:postmortem}
- summarizes our findings.  
+ @emph{slowest} configuration in the lattice.@note{We found no statistically
+ significant difference in the proportion of runtimes spent in garbage collection
+ between the untyped & slowest configurations of any benchmark.}
+ @Figure-ref{fig:postmortem} summarizes our findings.
 
 The leftmost data column (%C) gives the percent of each benchmark's total
  running time that was spent checking contracts.  These numbers are the
