@@ -40,7 +40,7 @@ Second, Typed Racket's implementation may not support run-time checks as
 
 Third, the acceptance of Typed Racket in the commercial and open-source
  Racket community suggests that (some) programmers find a way around the
- performance bottlenecks of sound gradual typing. To expand this community
+ performance bottlenecks of sound gradual typing. Expanding this community
  will take the development of both guidelines on how to go about annotating
  a large system and performance measurement tools that help programmers
  discover how to identify those components of a gradually-typed
