@@ -33,9 +33,9 @@ to run each project for all typed-untyped configurations. This count includes
 project-wide type definitions, typed interfaces to untyped libraries, and
 any so-called type adaptor modules (see below).
 
-Finally, the module structure graphs show a dot for each module in the program
-and an arrow from one module to another when the module at the arrow tail
-imports definitions from the module at the arrow head.
+The module structure graphs show a dot for each module in the program.
+An arrow is drawn from module A to module B when module A imports definitions
+from module B.
 When one of these modules is typed and the other untyped, the imported definitions
 are wrapped with a contract to ensure type soundness. To give a sense of how
 ``expensive'' the contracts at each boundary are, we have colored and thickened
