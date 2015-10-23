@@ -153,7 +153,7 @@ script implementing the Sieve using streams.
 We developed this benchmark to illustrate the pitfalls of sound gradual typing.
 
 @parag{Morse code (John Clements & Neil Van Dyke)}
-The @tt{morse-code} script is adapted from a morse code training program@note{@url["github.com/jbclements/morse-code-trainer"]}.
+The @tt{morse-code} script is adapted from a morse code training program@note{@url["http://github.com/jbclements/morse-code-trainer"]}.
 The original program plays a morse code audio clip, 
 reads the keyboard for user input, and scores the input based on its
 Levenshtein distance from the correct answer.
@@ -196,7 +196,7 @@ The language definitions and analysis are spread across seven modules, four of
 which require adaptors because they introduce new datatypes.
 
 @parag{Snake (Phúc Nguyễn)} This program is based on a contract verification
-benchmark@note{@url["github.com/philnguyen/soft-contract"]} by
+benchmark@note{@url["http://github.com/philnguyen/soft-contract"]} by
 Nguyên @|etal|@~cite[nthvh-icfp-2014].  It implements a game where a growing
 and moving snake tries to eat apples while avoiding walls and its own tail.
 Our benchmark, like Nguyên's, runs a pre-recorded history of moves altering
@@ -210,7 +210,7 @@ Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here r
 one adaptor module.
 
 @parag{Synth (Vincent St-Amour & Neil Toronto)}
-The @tt{synth} benchmark@note{@url["github.com/stamourv/synth"]}
+The @tt{synth} benchmark@note{@url["http://github.com/stamourv/synth"]}
 is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
 The program consists of nine modules, half of which are from Typed Racket's array library.
