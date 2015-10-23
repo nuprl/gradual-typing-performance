@@ -174,9 +174,9 @@ Sadly, the performance improvement of the typed configuration is the
 @item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
 @; TODO -- check if 35x is correct
  or @tt{structs}---while leaving all other modules untyped causes slowdown of
- at least 35x. These modules make up
- tightly coupled clique. Laying down a type-untyped boundary to separate
- this clique causes many crossings of values, with associated
+ at least 35x. This group of modules are tightly coupled.
+ Laying down a type-untyped boundary to separate
+ elements of this group causes many crossings of values, with associated
  contract-checking cost.}
 
 @item{Inspecting @tt{data} and @tt{label} further reveals that the latter
