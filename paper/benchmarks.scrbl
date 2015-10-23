@@ -163,22 +163,22 @@ Levenshtein algorithm on a list of frequently-used English words.
 @parag{MBTA (Matthias Felleisen)}
 The @tt{mbta} program builds a representation of Boston's public transit system
 and answers reachability queries.
-Its relies on an untyped graph library.
+It relies on an untyped graph library.
 
-Notably, the original program was implemented with a server thread that
+The original program was implemented with a server thread that
 responded to queries asynchronously.
-We instead measured a synchronous version of the program to ensure compatibility
+We instead measure a synchronous version of the program to ensure compatibility
 with Racket's stack-based profiling tools.
 
 @parag{ZO Traversal (Ben Greenman)}
-The @tt{zo-traversal} script provides a tool for exploring Racket bytecode structures
-and counts the frequency of AST nodes.
-The script operates on the Racket compiler's untyped zo data structures.
+This tool is used for exploring and counting the frequency of
+Racket bytecode structures.
+It operates on the Racket compiler's untyped zo data structures.
 Since these data structures are not natively supported in Typed Racket, even the
 completely typed program incurs some dynamic overhead.
 
 @parag{Suffixtree (Danny Yoo)}
-The @tt{suffixtree} library implements a longest-common-substring algorithm
+This library implements a longest common substring algorithm
 using Ukkonen's suffix tree algorithm. While the library has
 minimal external dependencies, it calls for one adaptor module for the
 algorithm's internal data structures.
