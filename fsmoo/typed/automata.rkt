@@ -25,16 +25,12 @@
    [equal (-> oAutomaton Boolean)]))
 
 (define-type oAutomaton (Instance Automaton))
-
 (define-type Payoff Nonnegative-Real)
 
 (require "../base/type-utility.rkt")
 
-(provide
- Payoff
- oAutomaton)
-
 (provide/type
+ (automaton? (-> Any Boolean))
  (defects (-> Payoff oAutomaton))
  (cooperates (-> Payoff oAutomaton))
  (tit-for-tat (-> Payoff oAutomaton))
@@ -45,22 +41,10 @@
   ;; with a random transition table 
   (-> Natural oAutomaton)))
 
-;; =============================================================================
-(module+ test
-  (provide
-   ;; syntax: (check-payoffs? actual expected1 expected2)
-   ;; runs actual, expects two automata, compares their payoffs with expected{i}
-   check-payoffs?)
-  
-  (require typed/rackunit)
-  
-  (define-syntax-rule
-    (check-payoffs? actual expected1 expected2)
-    (check-equal? (let-values ([(auto1 auto2) actual])
-                    (list (send auto1 pay) (send auto2 pay)))
-                  (list expected1 expected2))))
+(define (automaton? v)
+  (is-a? v automaton%))
 
-;; -----------------------------------------------------------------------------
+;; =============================================================================
 (define-type Transition* [Vectorof [Vectorof State]])
 (define-type State Natural)
 (define-type Input Natural)
@@ -181,40 +165,3 @@
   (vector (vector cc cd) (vector dc dd)))
 
 ;; -----------------------------------------------------------------------------
-(module+ test
-  (: make-automaton (-> State Transition* oAutomaton))
-  (define (make-automaton current table)
-    (new automaton% [current current][payoff 0][table table]))
-
-  (: t1 Transition*)
-  (define t1
-    (vector
-     (vector 0 0)
-     (vector 1 1)))
-  (: t2 Transition*)
-  (define t2
-    (vector
-     (vector 0 1)
-     (vector 0 1)))
-  (define observably-equivalent-to-all-defects (make-automaton DEFECT t1))
-  (define observably-equivalent-to-tit-for-tat (make-automaton COOPERATE t2))
-  
-  (check-pred (lambda (x) (is-a? x automaton%)) (make-automaton 0 t1))
-  
-  (check-equal?
-   (get-field
-    payoff
-    (send (new automaton% [current 1] [payoff 4] [table t2]) reset))
-   0)
-  
-  (check-equal?
-   (get-field
-    current
-    (send (new automaton% [current 1][payoff 4][table t2]) clone))
-   1)
-  
-  (define d0 (defects 0))
-  (define c0 (cooperates 0))
-  (check-payoffs? (send d0 match-pair c0 10) 40 0)
-  (check-payoffs? (send (defects 0) match-pair (tit-for-tat 0) 10) 13 9)
-  (check-payoffs? (send (tit-for-tat 0) match-pair (defects 0) 10) 9 13))
