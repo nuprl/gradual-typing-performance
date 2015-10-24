@@ -36,10 +36,6 @@
 ;; =============================================================================
 (require "automata.rkt" "utilities.rkt")
 
-(module+ test
-  (require typed/rackunit)
-  (require (submod "automata.rkt" test)))
-
 ;; Population = (Cons Automaton* Automaton*)
 ;; Automaton* = [Vectorof Automaton]
 
@@ -104,58 +100,4 @@
       this)))
 
 ;; -----------------------------------------------------------------------------
-(module+ test
-  (define a1 (vector (defects 0) (cooperates 40)))
-  (define p1 (new population% [a* a1]))
-  (define e1 (vector (defects 40) (cooperates 0)))
-  (define p1-expected (cons e1 a1))
-  
-  (define a2 (vector (defects 0) (tit-for-tat 0)))
-  (define p2 (cons a2 a2))
-  (define e2 (vector (defects 13) (tit-for-tat 9)))
-  (define p2-expected (cons e2 a2))
-  
-  (define a3 (vector (tit-for-tat 0) (defects 0)))
-  (define p3 (cons a3 a3))
-  (define e3 (vector (tit-for-tat 9) (defects 13)))
-  (define p3-expected (cons e3 a3))
-  
-  ;; these don't work because the population changes 
-  ; (check-euqal? (match-up* p2 10) p2-expected)
-  ; (check-equal? (match-up* p3 10) p3-expected)  
-
-  ;; MISSING FROM typed/rackunit?
-  (check-true
-   (let ([p3-a (get-field a*(send p1 match-up* 10))])
-     (for/and : Boolean ([a : oAutomaton (in-vector p3-a)][e : oAutomaton (in-vector e1)])
-       (define x (send a equal e))
-       (unless x (error "ouch"))
-       ; (unless x (displayln `(,(send a guts) ,(send e guts))))
-       x)))
-
-  (: a* Automaton*)
-  (define a* (vector (cooperates 1)))
-  (: p* oPopulation)
-  (define p* (new population% [a* a*]))
-  ;; strange error message from typed-untyped interface
-  ;; I understand that p* is an object, so equal is weird
-  #;
-  (check-equal? (send p* death-birth 1) p*)
-  
-  (define a20 (vector (cooperates 1)  (cooperates 9)))
-  (define p20 (new population% [a* a20]))
-  
-  (define c0 (cooperates 0))
-  (define c9 (cooperates 9))
-  (check-pred
-   (lambda ({o : oPopulation})
-     (define a* (get-field a* o))
-     (or
-      (and
-       (send (vector-ref a* 0) equal c0)
-       (send (vector-ref a* 1) equal c9))
-      (and
-       (send (vector-ref a* 0) equal c9)
-       (send (vector-ref a* 1) equal c0))))
-   (send p20 death-birth 1 #:random .2)))
 

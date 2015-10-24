@@ -1,4 +1,4 @@
-#lang typed/racket/gui
+#lang typed/racket
 (random-seed 7480)
 
 ;; Run a Simulation of Interacting Automata
@@ -38,3 +38,4 @@
            ;; even though it is explicitly typed ... [Listof Payoff]
            (evolve p3 (- c 1) s r))]))
 
+(time (main))

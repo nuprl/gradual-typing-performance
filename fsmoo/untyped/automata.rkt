@@ -37,20 +37,6 @@
  make-random-automaton)
 
 ;; =============================================================================
-(module+ test
-  (provide
-   ;; syntax: (check-payoffs? actual expected1 expected2)
-   ;; runs actual, expects two automata, compares their payoffs with expected{i}
-   check-payoffs?)
-  
-  (require rackunit)
-  
-  (define-syntax-rule
-    (check-payoffs? actual expected1 expected2)
-    (check-equal? (let-values ([(auto1 auto2) actual])
-                    (list (send auto1 pay) (send auto2 pay)))
-                  (list expected1 expected2))))
-
 ;; -----------------------------------------------------------------------------
 ;; Table      = [Vectorof n Transition])
 ;; Transition = [Vectorof n State]
@@ -175,36 +161,3 @@
   (vector (vector cc cd) (vector dc dd)))
 
 ;; -----------------------------------------------------------------------------
-(module+ test
-  (define (make-automaton current table)
-    (new automaton% [current current][payoff 0][table table]))
-  
-  (define t1
-    (vector
-     (vector 0 0)
-     (vector 1 1)))
-  (define t2
-    (vector
-     (vector 0 1)
-     (vector 0 1)))
-  (define observably-equivalent-to-all-defects (make-automaton DEFECT t1))
-  (define observably-equivalent-to-tit-for-tat (make-automaton COOPERATE t2))
-  
-  (check-pred (lambda (x) (is-a? x automaton%)) (make-automaton 0 t1))
-  
-  (check-equal?
-   (get-field
-    payoff
-    (send (new automaton% [current 1] [payoff 4] [table t2]) reset))
-   0)
-  
-  (check-equal?
-   (get-field
-    current
-    (send (new automaton% [current 1][payoff 4][table t2]) clone))
-   1)
-  
-  
-  (check-payoffs? (send (defects 0) match-pair (cooperates 0) 10) 40 0)
-  (check-payoffs? (send (defects 0) match-pair (tit-for-tat 0) 10) 13 9)
-  (check-payoffs? (send (tit-for-tat 0) match-pair (defects 0) 10) 9 13))
