@@ -46,9 +46,9 @@ Thorn combines a sound type system with an optional type system, allowing
 programmers to choose between so-called concrete types and like
 types@~cite[bfnorsvw-oopsla-2009].  StrongScript follows Thorn's lead by
 adding a sound type system (with a limited form of higher-order wrappers) to
-TypeScript. Thorn had a minimal performance evaluation which showed that by
-sprinkling a few type annotations over toy benchmarks speed ups between 3x
-and 6x could be obtained@~cite[wnlov-popl-2010].  Richards @etal use the
+TypeScript. Thorn has a minimal performance evaluation which shows that by
+sprinkling a few type annotations over toy benchmarks, speed-ups between 3x
+and 6x can be obtained@~cite[wnlov-popl-2010].  Richards @etal use the
 same microbenchmark suite as Safe TypeScript and compare the runtimes of
 type-erased and fully-typed versions using their optimizing compiler.  They
 report ``no benchmarks demonstrated slowdown outside of noise'' (and up 20%
@@ -82,17 +82,17 @@ Dart,@note[@url{dartlang.org}] and
 JavaScript@~cite[bat-ecoop-2014]  Since the
 type annotations in these systems are unsound for typed-untyped
 interoperation, they incur no runtime overhead from proxy wrapping or
-dynamic checks meaning there is no need for a comprehensive evaluation such
-as the one suggested in this paper.
+dynamic checks. The lack of overheads obviates the need for a
+performance evaluation such as the one in this paper.
 
-Previous publications have, however, investigated the performance impact of
-optional typing with respect to compiler optimizations. Intuitively one
-would expect that a compiler could use these annotations as hints for
-generating more preformant code. This intuition is borne out by Chang
-@|etal|@~cite[cmscgbwf-dls-2011] who reported significant speed up for
-partially and fully typed ActionScript code over untyped code. But one
+Some publications have, however, investigated the performance impact of
+optional typing with respect to compiler optimizations. Intuitively, one
+would expect that a compiler could use these annotations as hints to
+generate faster code. This intuition is borne out by Chang
+@|etal|@~cite[cmscgbwf-dls-2011] who report significant speed-ups for
+typed ActionScript code over untyped code. But one
 should take such results with a pinch of salt as they are highly dependent
-on the quality of the virtual machine used as baseline.  Richards
+on the quality of the virtual machine used as the baseline.  Richards
 @|etal|@~cite[rnv-ecoop-2015] report at most 20% speed up for fully typed
 JavaScript. They ascribe this unimpressive result to the quality of the
 optimizations implemented in V8. In other words, V8 is able to guess types
