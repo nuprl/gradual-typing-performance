@@ -5,7 +5,14 @@
 ;; Run a Simulation of Interacting Automata
 
 ;; =============================================================================
-(require "automata.rkt" "population.rkt" "utilities.rkt")
+(require
+  "automata-adapted.rkt"
+  "population-adapted.rkt"
+  benchmark-util
+)
+(require/typed/check "utilities.rkt"
+ (relative-average (-> [Listof Real] Real Real))
+)
 
 ;; effect: run timed simulation, create and display plot of average payoffs
 ;; effect: measure time needed for the simulation

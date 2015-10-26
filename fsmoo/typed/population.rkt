@@ -3,6 +3,13 @@
 ;; Populations of Automata
 
 (require "../base/type-utility.rkt")
+(require
+  "automata-adapted.rkt"
+  benchmark-util)
+(define-type Probability Nonnegative-Real)
+(require/typed/check "utilities.rkt"
+ (choose-randomly
+  (-> [Listof Probability] Natural [#:random (U False Real)] [Listof Natural])))
 
 (define-type Population
   (Class
@@ -22,9 +29,6 @@
 
 (define-type Automaton* (Vectorof oAutomaton))
 
-(provide
- oPopulation)
-
 (provide/type
  (build-random-population
   ;; (build-population n c) for even n, build a population of size n 
@@ -34,7 +38,6 @@
  )
 
 ;; =============================================================================
-(require "automata.rkt" "utilities.rkt")
 
 ;; Population = (Cons Automaton* Automaton*)
 ;; Automaton* = [Vectorof Automaton]
