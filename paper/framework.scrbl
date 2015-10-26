@@ -5,25 +5,23 @@
 @; -----------------------------------------------------------------------------
 @title[#:tag "sec:fwk"]{Benchmarking Software Evolution}
 
-The inspiration for our evaluation method is due to Takikawa
- @|etal|@~cite[tfdffthf-ecoop-2015]. For their extension of functional
- Typed Racket to the object-oriented aspects of Racket, they use a
- lattice-style approach for their preliminary performance evaluation.
+Our evaluation method is inspired by our previous work on extending functional
+ Typed Racket to the object-oriented aspects of Racket, in which we
+ use a lattice-style approach for a preliminary performance evaluation@~cite[tfdffthf-ecoop-2015].
  By inspecting the entire lattices of typed/untyped configurations of two small
- game systems, they are able to identify and then eliminate a major
- performance bottleneck from their implementation.
- Takikawa @|etal|'s performance evaluation was conducted in tandem with the
- design and implementation of Typed Racket, and thus their final results are
+ game systems, we identified and then eliminated a major
+ performance bottleneck from the implementation.
+ Our previous performance evaluation was conducted in tandem with the
+ design and implementation of Typed Racket, and thus the final results are
  relatively positive.
- In contrast, we conduct our evaluation completely @emph{independently} of
- Typed Racket's implementation efforts.@note{In Takikawa @|etal|'s terminology,
+ In contrast, we conduct our current evaluation completely @emph{independently} of
+ Typed Racket's implementation efforts.@note{In our previous work's terminology,
  borrowed from the
- education community@~cite[scriven-chapter-1967], they conducted a @italic{formative
- evaluation} while we conduct a @italic{summative
+ education community@~cite[scriven-chapter-1967], we conducted a @italic{formative
+ evaluation} while this paper conducts a @italic{summative
  evaluation} to assess the post-intervention state of the system.}
 
-Let us articulate Takikawa @|etal|'s view from our
-perspective: 
+Let us re-articulate the salient points from our previous work:
 @itemlist[
 
 @item{A (@italic{software system}) @italic{configuration} is a sequence of
