@@ -80,14 +80,14 @@ Unfortunately, this assumption overlooks the realities of implementations
 When the software system configuration consists of a reasonably large
  number of modules, no software engineering team can annotate the entire
  system with types all at once. Every effort is bound to leave the configuration
- in a state where some modules are typed and some others are untyped. As a
+ in a state in which some modules are typed and some others are untyped. As a
  result, the configuration is likely to suffer from the software contracts
- that the gradual type system injects at the boundary between the typed and
+ that the gradual type system injects at the boundaries between the typed and
  the untyped portions. If the cost is tolerable, the configuration can be
  released and can replace the currently deployed version. The
  projects working on macro-level approaches to gradual typing seem to
  assume this kind of mode of operation. The run-time costs may not be tolerable,
- however, as Takikawa @|etal| observe. In that case, the question is how
+ however, as our previous work observes. In that case, the question is how
  much more work the software engineers have to invest to reach a releasable
  configuration. That is, how many more modules must be converted before the
  performance is good enough for the new configuration to replace the

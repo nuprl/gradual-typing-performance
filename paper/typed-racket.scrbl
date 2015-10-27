@@ -163,7 +163,7 @@ The fully typed configuration (top) is @emph{faster} than the fully untyped
 
 Sadly, the performance improvement of the typed configuration is the
  only good part of this benchmark. Almost all partially typed configurations
- exhibit slowdowns up to 105x. Inspection of the lattice
+ exhibit slowdowns of up to 105x. Inspection of the lattice
  suggests several points about these slowdowns: @itemlist[
 
 @item{Adding type annotations to the @tt{main} module neither subtracts or
@@ -254,7 +254,7 @@ The typed/untyped ratio is the slowdown or speedup of fully typed code over
 untyped code. Values smaller than 1 indicate a speedup due to some of the
 Typed Racket optimizations. Values larger than 1 are slowdowns caused by
 interaction with untyped parts of the underlying Racket runtime.  The ratios
-ranges between 0.28x (@tt{lnm}) and 3.22x (@tt{zo-traversal}).
+range between 0.28x (@tt{lnm}) and 3.22x (@tt{zo-traversal}).
 
 The maximum overhead is computed by finding the running time of the slowest configuration and
 dividing it by the running time of the untyped version. The average overhead is obtained by
@@ -272,7 +272,7 @@ configurations for the program.
 The three cumulative performance graphs are read as follows. The x-axis
 represents the slowdown over the untyped program (from 1x to
 @id[PARAM-MAX-OVERHEAD]x).  The y-axis is a count of the number of
-configurations (from @math{0} to @math{2^n}) scaled so all graphs are the
+configurations (from @math{0} to @math{2^n}) scaled so that all graphs are the
 same height. The blue curves show how many configurations have less than a
 given slowdown.  They are, by definition, monotonically increasing because
 the more overhead is allowed, the more configurations satisfy the

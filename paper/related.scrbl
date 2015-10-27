@@ -51,8 +51,8 @@ sprinkling a few type annotations over toy benchmarks, speed-ups between 3x
 and 6x can be obtained@~cite[wnlov-popl-2010].  Richards @etal use the
 same microbenchmark suite as Safe TypeScript and compare the runtimes of
 type-erased and fully-typed versions using their optimizing compiler.  They
-report ``no benchmarks demonstrated slowdown outside of noise'' (and up 20%
-speed ups) on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 ",
+report ``no benchmarks demonstrated slowdown outside of noise'' (and up to 20%
+speedups) on the fully-typed versions@~cite[(in-bib rnv-ecoop-2015 ",
 pg. 97")]. In our lattice terminology, the StrongScript comparison reports
 typed/untyped ratios only. The performance of
 intermediate states are not evaluated.

@@ -5,7 +5,7 @@
 @title[#:tag "sec:bm"]{The Benchmark Programs}
 
 For our evaluation of Typed Racket, we curated a suite of twelve programs.
-They are representative of actual user code yet small enough so that
+They are representative of actual user code yet small enough so that an
 exhaustive exploration of the performance lattice remains tractable.  The
 benchmarks are either based on third-party libraries or scripts sourced from
 the original developer or the Racket package repository.
@@ -118,12 +118,13 @@ Untyped clients continue to use the original untyped file.
 
 Instead of using an adaptor module, each typed client module could duplicate
 the type annotations for the data definitions. This does not work, however,
-for generative structure types, which are ubiquitous in Racket code.
+for the generative structure types (record type definitions) that are
+ubiquitous in Racket code.
 @Figure-ref{fig:adaptor} illustrates this problem.
-Racket's structure types (record type definitions) are @emph{generative}; two
-declarations of the same structure yield distinct types. This carries over to
+In this context, @emph{generative} means that two
+declarations of the same structure yield distinct datatypes. This carries over to
 type-annotated structures for typed modules, meaning that annotating the same
-structure twice will yield incompatible type definitions.
+structure twice will yield incompatible static type definitions.
 
 @;{
 Strictly speaking, type adaptor modules are not necessary.
@@ -221,7 +222,7 @@ The @tt{synth} benchmark@note{@url["http://github.com/stamourv/synth"]}
 is a sound synthesis example from St-Amour @|etal|'s work on
 feature-specific profiling@~cite[saf-cc-2015].
 The program consists of nine modules, half of which are from Typed Racket's array library.
-In order to run these library modules in all typed-untyped configurations we created an adaptor module
+In order to run these library modules in all typed-untyped configurations we create an adaptor module
 for the underlying array data structure.
 
 @parag{Gregor (Jon Zeppieri)}
