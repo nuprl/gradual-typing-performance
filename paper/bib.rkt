@@ -17,22 +17,22 @@
 
 (define IEEE "IEEE ")
 (define ACM "ACM ")
-(define International "Intl. ")
-(define Conference "Conf. ")
-(define Workshop "Wksp. ")
-(define Journal "J. ")
-(define Symposium "Sym. ")
-(define Transactions "Trans. ")
+(define International "International ")
+(define Conference "Conference ")
+(define Workshop "Workshop ")
+(define Journal "Journal ")
+(define Symposium "Symposium ")
+(define Transactions "Transactions on ")
 
 
 (define/short asplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
 (define/short fpca "FPCA" (string-append ACM International Conference "Functional Programming Languages and Computer Architecture"))
-(define/short icfp "ICFP" (string-append ACM International Conference "Functional Programming"))
-(define/short pldi "PLDI" (string-append ACM Conference "Programming Language Design and Implementation"))
-(define/short popl "POPL" (string-append ACM Symposium "Principles of Programming Languages"))
+(define/short icfp "ICFP" (string-append ACM International Conference "on Functional Programming"))
+(define/short pldi "PLDI" (string-append ACM Conference "on Programming Language Design and Implementation"))
+(define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
 (define/short lncs "LNCS" "Lecture Notes in Computer Science")
 (define/short sigplan-notices "SIGPLAN Notices" (string-append ACM "SIGPLAN Notices"))
-(define/short scheme-workshop "SFP" (string-append Workshop "Scheme and Functional Programming"))
+(define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
 (define/short jfp "JFP" (string-append Journal "Functional Programming"))
 (define/short hosc "HOSC" "Higher-Order and Symbolic Programming")
 (define/short lfp "LFP" "LISP and Functional Programming")
@@ -40,9 +40,9 @@
 (define/short ifl "IFL" (string-append International Symposium "Functional and Logic Programming"))
 (define/short tfp "TFP" (string-append Symposium "Trends in Functional Programming"))
 (define/short ecoop "ECOOP" (string-append "European " Conference "Object-Oriented Programming"))
-(define/short oopsla "OOPSLA" (string-append ACM Conference "Object-Oriented Programming, Systems, Languages and Applications"))
+(define/short oopsla "OOPSLA" (string-append ACM Conference "on Object-Oriented Programming, Systems, Languages and Applications"))
 (define/short ieee-software (string-append IEEE "Software"))
-(define/short toplas "TOPLAS" (string-append Transactions "Programming Languages and Systems"))
+(define/short toplas "TOPLAS" (string-append ACM Transactions "Programming Languages and Systems"))
 (define/short dls "DLS" "Dynamic Languages Symposium")
 (define/short flops "FLOPS" (string-append Symposium "Functional and Logic Programming"))
 (define/short esop "ESOP" (string-append "European " Symposium "on Programming"))
@@ -60,7 +60,7 @@
 (define/short sac "SAC" (string-append Symposium "on Applied Computing"))
 (define/short gpce "GPCE" "Generative Programming: Concepts & Experiences")
 (define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications"))
-(define/short issta "ISSTA" (string-append International Symposium "Software Testing and Analysis"))
+(define/short issta "ISSTA" (string-append International Symposium "on Software Testing and Analysis"))
 
 ;; ----------------------------------------
 
@@ -257,7 +257,7 @@
 
 (define TypeDynamic
   (make-bib
-    #:title "Dynamic typing in a statically typed language"
+    #:title "Dynamic Typing in a Statically Typed Language"
     #:author (authors
 	       "Martin Abadi"
 	       "Luca Cardelli"
@@ -1019,7 +1019,7 @@
    #:author (authors "Matthew M. Papi" "Mahmood Ali" "Telmo Louis Correa, Jr."
                      "Jeff H. Perkins" "Michael D. Ernst")
    #:title "Practical Pluggable Types for Java"
-   #:location (proceedings-location issta)
+   #:location (proceedings-location issta #:pages '(201 212))
    #:date 2008))
 
 ;; ----------------------------------------
