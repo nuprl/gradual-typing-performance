@@ -2,8 +2,21 @@
 
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
+;; We currently use this two ways:
+;; - The paper (typed-racket.scrbl) calls 'data->pict' to create an image
+;; - From the command-line, call `render-lnm.rkt -o FIG.png DATA.rktd ...`
+;;   to create a figure named `FIG.png` from the data files `DATA.rktd ...`
+
 (provide
  data->pict
+ ;; (->* ((Listof (List String Path-String))) (#:tag String) Pict)
+ ;; Build a picture from a list of pairs:
+ ;;   1st component labels a dataset
+ ;;   2nd component is a path-string to data
+ ;; Optional argument tags the generated figure, because results are cached
+ ;;  are re-used (when called with the same tag & dataset list)
+
+ ;; -- Global parameters for the generated figures.
  PARAM-N
  PARAM-M
  PARAM-L
@@ -176,3 +189,54 @@
   (cache-pict pict rktd* tag)
   pict)
 
+;; =============================================================================
+
+(module+ main
+  (require
+    racket/cmdline
+    (only-in racket/list first last)
+    (only-in racket/string string-split))
+  (require/typed "scripts/show-pict.rkt"
+   [pict->png (-> Pict Path-String Boolean)])
+
+  (: filename->tag (-> String String))
+  (define (filename->tag fname)
+    (first (string-split (last (string-split fname "/")) ".")))
+
+  (: filter-valid-filenames (-> (Listof Any) (Listof String)))
+  (define (filter-valid-filenames arg*)
+    (for/list : (Listof String)
+              ([fname (in-list arg*)]
+               #:when (and (string? fname)
+                           (valid-filename? fname)))
+      fname))
+
+  (: valid-filename? (-> String Boolean))
+  (define (valid-filename? fname)
+    (cond
+     [(and (file-exists? fname)
+           (regexp-match? #rx"\\.rktd$" fname))
+      #t]
+     [else
+      (printf "Skipping invalid file '~a'\n" fname)
+      #f]))
+
+  (define *output* (make-parameter "./output.png"))
+  (command-line
+   #:program "view-pict"
+   #:once-each
+   [("-o" "--output") o-param
+    "Location to save results" (*output* (cast o-param String))]
+   #:args FNAME*
+   ;; -- Filter valid arguments, assert that we got anything to render
+   (define arg* (filter-valid-filenames FNAME*))
+   (when (null? arg*)
+     (raise-user-error "Usage: render-lnm.rkt DATA.rktd ..."))
+   ;; -- Create a pict
+   (define P
+       (data->pict #:tag "render-lnm-cmdline"
+         (for/list : (Listof (List String String))
+                   ([fname (in-list arg*)])
+           (list (filename->tag fname) fname))))
+   ;; TODO: pict->png should be typed, and defined in this module.
+   (pict->png P (*output*))))
