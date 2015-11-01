@@ -67,6 +67,7 @@
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
   (only-in racket/format ~r)
+  (only-in racket/string string-split)
   "modulegraph.rkt"
   "bitstring.rkt"
   "pict-types.rkt"
@@ -107,13 +108,22 @@
 (define-syntax-rule (parse-error msg arg* ...)
   (error 'summary (format msg arg* ...)))
 
+(define-syntax-rule (strip-suffix str)
+  (car (string-split str ".")))
+
 ;; Create a summary from a raw dataset.
 ;; Infers the location of the module graph if #:graph is not given explicitly
 (: from-rktd (->* [String] [#:graph (U Path #f)] Summary))
 (define (from-rktd filename #:graph [graph-path #f])
   (define path (string->path filename))
   (define-values (dataset num-runs) (rktd->dataset path))
-  (define mg (from-tex (or graph-path (infer-graph path))))
+  (define gp (or graph-path (infer-graph path)))
+  (define mg
+    (if gp
+      (from-tex gp)
+      (begin
+        (printf "Warning: could not find module graph for '~a'.\n" filename)
+        (from-directory (string->path (strip-suffix filename))))))
   (validate-modulegraph dataset mg)
   (summary path dataset mg num-runs))
 
@@ -153,14 +163,15 @@
     (parse-error "Dataset and module graph represent different numbers of modules. The dataset says '~a' but the module graph says '~a'" ds-num-modules mg-num-modules)))
 
 ;; Guess the location of the module graph matching the dataset
-(: infer-graph (-> Path Path-String))
+(: infer-graph (-> Path (U #f Path-String)))
 (define (infer-graph path)
   ;; Get the prefix of the path
   (define tag (path->project-name path))
   ;; Search in the MODULE_GRAPH_DIR directory for a matching TeX file
   (define relative-pathstring (format "../~a/~a.tex" MODULE_GRAPH_DIR tag))
-  (build-path (or (path-only path) (error 'infer-graph))
-              (string->path relative-pathstring)))
+  (define gp (build-path (or (path-only path) (error 'infer-graph))
+                         (string->path relative-pathstring)))
+  (and (file-exists? gp) gp))
 
 ;; -----------------------------------------------------------------------------
 ;; -- querying

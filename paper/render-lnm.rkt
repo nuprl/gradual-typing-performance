@@ -234,9 +234,9 @@
      (raise-user-error "Usage: render-lnm.rkt DATA.rktd ..."))
    ;; -- Create a pict
    (define P
-       (data->pict #:tag "render-lnm-cmdline"
-         (for/list : (Listof (List String String))
-                   ([fname (in-list arg*)])
-           (list (filename->tag fname) fname))))
+     (data->pict #:tag "render-lnm-cmdline"
+       (for/list : (Listof (List String String))
+                 ([fname (in-list arg*)])
+         (list (filename->tag fname) fname))))
    ;; TODO: pict->png should be typed, and defined in this module.
    (pict->png P (*output*))))
