@@ -4,6 +4,9 @@
 (provide
   Bitstring
 
+  all-paths-from
+  ;; (-> Bitstring (Sequenceof (Listof Bitstring)))
+
   log2
   ;; (-> Natural Natural)
   ;; Base 2 log, on naturals
@@ -37,6 +40,7 @@
   (only-in racket/math exact-ceiling)
   (only-in racket/format ~r)
   (only-in racket/list remove-duplicates)
+  "stream-types.rkt"
 )
 
 ;; =============================================================================
@@ -89,6 +93,23 @@
              (cons str+ (in-reach str+ (sub1 L)))))
          (remove-duplicates (apply append res*) string=?)]))
 
+(: all-paths-from (-> Bitstring (Listof (Listof Bitstring))))
+(define (all-paths-from str)
+  (define rest*
+    (for/list : (Listof (Listof (Listof String)))
+              ([i : Integer (in-range (string-length str))]
+               #:when (and (<= 0 i)
+                           (bit-low? str i)))
+      (map
+        ;; append is a kludge, we can't type the `stream-cons` macro
+        (lambda ([rest : (Listof String)]) (cons str rest))
+        (all-paths-from (bitstring-flip str i)))))
+  (if (null? rest*)
+      (if (string=? "" str)
+          '(())
+          (list (list str)))
+      (apply append rest*)))
+
 (: bit-high? (-> Bitstring Natural Boolean))
 (define (bit-high? str i)
   (eq? #\1 (string-ref str i)))
@@ -129,6 +150,22 @@
   (in-reach-test "0" 3 '("1"))
   (in-reach-test "110" 3 '("111"))
   (in-reach-test "10010" 3 '("11111" "11110" "11011" "11010" "10111" "10110" "10011"))
+
+  ;; -- all-paths-from
+  (define-syntax-rule (check-all-paths [in out] ...)
+    (begin (check-equal? (all-paths-from in) out) ...))
+  (check-all-paths
+   ["" '(())]
+   ["0" '(("0" "1"))]
+   ["1" '(("1"))]
+   ["00" '(("00" "10" "11")
+           ("00" "01" "11"))]
+   ["000" '(("000" "100" "110" "111")
+            ("000" "100" "101" "111")
+            ("000" "010" "110" "111")
+            ("000" "010" "011" "111")
+            ("000" "001" "101" "111")
+            ("000" "001" "011" "111"))])
 
   ;; -- bitstring-flip
   (check-equal? (bitstring-flip "0" 0) "1")
