@@ -1,30 +1,33 @@
 #lang typed/racket/base
 
+(define-type Bitstring String)
 (provide
+  Bitstring
+
   log2
   ;; (-> Natural Natural)
   ;; Base 2 log, on naturals
 
   natural->bitstring
-  ;; (-> Index #:pad Index String)
+  ;; (-> Index #:pad Index Bitstring)
   ;; Convert a natural number to a binary string representation
   ;; Keyword argument #:pad sets the width of the result string
 
   bitstring->natural
-  ;; (-> String Index)
+  ;; (-> Bitstring Index)
   ;; Convert a string representation of a binary number to a natural.
 
   in-reach
-  ;; (-> String Index (Listof String))
+  ;; (-> Bitstring Index (Listof Bitstring))
   ;; (in-reach s l)
   ;; List all bitstrings reachable from `s` by flipping at most `l` bits
 
   bit-high?
-  ;; (-> String Index Boolean)
+  ;; (-> Bitstring Index Boolean)
   ;; True if the bit at the index is set
 
   bit-low?
-  ;; (-> String Index Boolean)
+  ;; (-> Bitstring Index Boolean)
   ;; True if the bit at the index is unset
 )
 
@@ -46,12 +49,12 @@
   (log2-help 1 2))
 
 ;; Convert a natural number to a binary string, padded to the supplied width
-(: natural->bitstring (-> Index #:pad Exact-Positive-Integer String))
+(: natural->bitstring (-> Index #:pad Exact-Positive-Integer Bitstring))
 (define (natural->bitstring n #:pad pad-width)
   (~r n #:base 2 #:min-width pad-width #:pad-string "0"))
 
 ;; Convert a binary string to a natural number
-(: bitstring->natural (-> String Index))
+(: bitstring->natural (-> Bitstring Index))
 (define (bitstring->natural str)
   (define N (string-length str))
   (define res
@@ -65,7 +68,7 @@
 ;; Return a copy of `str` where the `i`-th bit is flipped.
 ;; (Flipped => 0 goes to 1 and 1 goes to 0)
 ;; Should take an INDEX, but is Integer for now
-(: bitstring-flip (-> String Integer String))
+(: bitstring-flip (-> Bitstring Integer Bitstring))
 (define (bitstring-flip str i)
   (define new (if (equal? #\0 (string-ref str i)) "1" "0"))
   (string-append (substring str 0 i)
@@ -75,22 +78,22 @@
 ;; Return all bitstrings reachable from `str`
 ;;  after incrementing at most `L` bits.
 ;; Result does NOT include the argument bitstring.
-(: in-reach (-> String Index (Listof String)))
+(: in-reach (-> Bitstring Index (Listof Bitstring)))
 (define (in-reach str L)
   (cond [(zero? L) '()]
         [else
-         (define res* : (Listof (Listof String))
+         (define res* : (Listof (Listof Bitstring))
            (for/list ([i (in-range (string-length str))]
                       #:when (equal? #\0 (string-ref str i)))
              (define str+ (bitstring-flip str i))
              (cons str+ (in-reach str+ (sub1 L)))))
          (remove-duplicates (apply append res*) string=?)]))
 
-(: bit-high? (-> String Natural Boolean))
+(: bit-high? (-> Bitstring Natural Boolean))
 (define (bit-high? str i)
   (eq? #\1 (string-ref str i)))
 
-(: bit-low? (-> String Natural Boolean))
+(: bit-low? (-> Bitstring Natural Boolean))
 (define (bit-low? str i)
   (eq? #\0 (string-ref str i)))
 
