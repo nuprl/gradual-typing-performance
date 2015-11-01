@@ -40,7 +40,13 @@
   (only-in racket/math exact-ceiling)
   (only-in racket/format ~r)
   (only-in racket/list remove-duplicates)
-  "stream-types.rkt"
+)
+(require/typed racket/stream
+  [stream-length (-> (Sequenceof String) Index)]
+  [stream->list (-> (Sequenceof String) (Listof String))]
+  [stream-filter (-> (-> String Boolean) (Sequenceof String) (Sequenceof String))]
+  [stream-map (-> (-> (Listof String) (Listof String)) (Sequenceof (Listof String)) (Sequenceof (Listof String)))]
+  [stream-append (-> (Sequenceof (Listof String)) * (Sequenceof (Listof String)))]
 )
 
 ;; =============================================================================
@@ -93,22 +99,21 @@
              (cons str+ (in-reach str+ (sub1 L)))))
          (remove-duplicates (apply append res*) string=?)]))
 
-(: all-paths-from (-> Bitstring (Listof (Listof Bitstring))))
+(: all-paths-from (-> Bitstring (Sequenceof (Listof Bitstring))))
 (define (all-paths-from str)
   (define rest*
-    (for/list : (Listof (Listof (Listof String)))
+    (for/list : (Listof (Sequenceof (Listof String)))
               ([i : Integer (in-range (string-length str))]
                #:when (and (<= 0 i)
                            (bit-low? str i)))
-      (map
-        ;; append is a kludge, we can't type the `stream-cons` macro
+      (stream-map
         (lambda ([rest : (Listof String)]) (cons str rest))
         (all-paths-from (bitstring-flip str i)))))
   (if (null? rest*)
       (if (string=? "" str)
           '(())
           (list (list str)))
-      (apply append rest*)))
+      (apply stream-append rest*)))
 
 (: bit-high? (-> Bitstring Natural Boolean))
 (define (bit-high? str i)
@@ -153,7 +158,11 @@
 
   ;; -- all-paths-from
   (define-syntax-rule (check-all-paths [in out] ...)
-    (begin (check-equal? (all-paths-from in) out) ...))
+    (begin (check-equal?
+             (for/list : (Listof (Listof String))
+                       ([p (all-paths-from in)])
+               p)
+             out) ...))
   (check-all-paths
    ["" '(())]
    ["0" '(("0" "1"))]
