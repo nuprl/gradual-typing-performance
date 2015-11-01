@@ -9,7 +9,6 @@
 
 (provide
  data->pict
- ;; (->* ((Listof (List String Path-String))) (#:tag String) Pict)
  ;; Build a picture from a list of pairs:
  ;;   1st component labels a dataset
  ;;   2nd component is a path-string to data
@@ -27,7 +26,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- (only-in "scripts/lnm-plot.rkt" lnm-plot)
+ "scripts/lnm-plot.rkt"
  (only-in "scripts/summary.rkt" from-rktd summary->pict Summary)
  (only-in racket/file file->value)
  "scripts/pict-types.rkt"
@@ -82,16 +81,17 @@
 (define CACHE-PREFIX "./compiled/lnm-cache-")
 
 ;; Try to read a cached pict, fall back to making a new one.
-(: data->pict (->* [(Listof (List String String))] [#:tag String] Pict))
-(define (data->pict data* #:tag [tag ""])
+(: data->pict (->* [(Listof (List String String))] [#:tag String #:show-paths? Boolean] Pict))
+(define (data->pict data* #:tag [tag ""] #:show-paths? [show-paths? #f])
   (define title* (for/list : (Listof String) ([x (in-list data*)]) (car x)))
   (define rktd* (for/list : (Listof String) ([x (in-list data*)]) (cadr x)))
   (or (get-cached rktd* #:tag tag)
-      (get-new-lnm-pict rktd* #:tag tag #:titles title*)))
+      (get-new-lnm-pict rktd* #:show-paths? show-paths? #:tag tag #:titles title*)))
 
 ;; Create a summary and L-N/M picts for a data file.
-(: file->pict* (-> String #:title (U String #f) (Listof Pict)))
-(define (file->pict* data-file #:title title)
+(: file->pict* (->* [String #:title (U String #f)]
+                    [#:show-paths? Boolean] (Listof Pict)))
+(define (file->pict* data-file #:title title #:show-paths? [show-paths? #f])
   (define S (from-rktd data-file))
   (define S-pict : Pict
     (let ([p (summary->pict S
@@ -104,17 +104,32 @@
                    #:height H)])
       (vc-append 0 p (blank 0 (- H (pict-height p))))))
   (define L-pict*
-    (lnm-plot S
-              #:L L*
-              #:N PARAM-N
-              #:M PARAM-M
-              #:max-overhead PARAM-MAX-OVERHEAD
-              #:num-samples PARAM-NUM-SAMPLES
-              #:font-face FONT-FACE
-              #:font-size GRAPH-FONT-SIZE
-              #:labels? #f
-              #:plot-height H
-              #:plot-width W)) ;;TODO adjust, to keep figure sizes all equal?
+    ;; TODO there's only a 3-character difference between the branches...
+    ;;  I tried making plot-fn = (if show-paths? path-plot lnm-plot),
+    ;;  but a U-type can't be applied!
+    (if show-paths?
+      (path-plot S
+               #:L L*
+               #:N PARAM-N
+               #:M PARAM-M
+               #:max-overhead PARAM-MAX-OVERHEAD
+               #:num-samples PARAM-NUM-SAMPLES
+               #:font-face FONT-FACE
+               #:font-size GRAPH-FONT-SIZE
+               #:labels? #f
+               #:plot-height H
+               #:plot-width W) ;;TODO adjust, to keep figure sizes all equal?
+      (lnm-plot S
+               #:L L*
+               #:N PARAM-N
+               #:M PARAM-M
+               #:max-overhead PARAM-MAX-OVERHEAD
+               #:num-samples PARAM-NUM-SAMPLES
+               #:font-face FONT-FACE
+               #:font-size GRAPH-FONT-SIZE
+               #:labels? #f
+               #:plot-height H
+               #:plot-width W))) ;;TODO adjust, to keep figure sizes all equal?
   (cons S-pict L-pict*))
 
 (: format-filepath (-> (U #f String) String))
@@ -152,8 +167,8 @@
      (error 'render-lnm (format "Malformed data in cache file '~a'" filepath))]))
 
 ;; Create a pict, cache it for later use
-(: get-new-lnm-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
-(define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
+(: get-new-lnm-pict (->* [(Listof String)] [#:show-paths? Boolean #:tag String #:titles (U #f (Listof String))] Pict))
+(define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f] #:show-paths? [show-paths? #f])
   (: title* (U (Listof String) (Listof #f)))
   (define title* (or maybe-title* (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
   ;; Align all picts vertically first
@@ -162,7 +177,7 @@
               ([prev* : (U #f (Listof Pict)) #f])
               ([rktd (in-list rktd*)]
                [title : (U #f String) (in-list title*)])
-      (define pict* (file->pict* rktd #:title title))
+      (define pict* (file->pict* rktd #:title title #:show-paths? show-paths?))
       (if prev*
           ;; Right-align the old picts with the new ones
           (for/list : (Listof Pict)
@@ -222,11 +237,15 @@
       #f]))
 
   (define *output* (make-parameter "./output.png"))
+  (: *show-paths* (Parameterof Boolean))
+  (define *show-paths* (make-parameter #f))
   (command-line
    #:program "view-pict"
    #:once-each
    [("-o" "--output") o-param
     "Location to save results" (*output* (cast o-param String))]
+   [("-p" "--paths")
+    "If set, draw a line for lattice paths" (*show-paths* #t)]
    #:args FNAME*
    ;; -- Filter valid arguments, assert that we got anything to render
    (define arg* (filter-valid-filenames FNAME*))
@@ -234,7 +253,9 @@
      (raise-user-error "Usage: render-lnm.rkt DATA.rktd ..."))
    ;; -- Create a pict
    (define P
-     (data->pict #:tag "render-lnm-cmdline"
+     (data->pict
+       #:tag (format "render-lnm-cmdline~a" (if (*show-paths*) "-path" ""))
+       #:show-paths? (*show-paths*)
        (for/list : (Listof (List String String))
                  ([fname (in-list arg*)])
          (list (filename->tag fname) fname))))
