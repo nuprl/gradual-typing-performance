@@ -240,15 +240,21 @@ when all the modules are typed that performance improves (0.7x).
 @; -----------------------------------------------------------------------------
 @section{Experimental Results}
 
+Our method defines @deliverable{N} and @usable["N" "M"] as key
+functions for measuring the quality of a gradual type system.
+For this experiment we have chosen values of 300% and 1000%. These values are rather liberal
+and we expect that most production contexts would not tolerate anything higher than 200% (and
+some would object to any slowdown).
+
 @Figure-ref["fig:lnm1" "fig:lnm2"]
 summarize the results from exhaustively exploring the performance lattice
 of our twelve benchmarks. Each row
 reports the results for one program.  On the left, a table spells out the
 typed/untyped ratio, the maximum overhead, the average overhead, and the number
 of @deliverable{300} and @usable["300" "1000"] configurations. This is
-followed by three graphs that show how many configurations impose an overhead
-between 1x and 20x for three values of @math{L}: @math{0}, @math{1}, and
-@math{2}.
+followed by three graphs that show 0-step @usable["300" "1000"],
+1-step @usable["300" "1000"], and 2-step @usable["300" "1000"] configurations
+respectively.
 
 The typed/untyped ratio is the slowdown or speedup of fully typed code over
 untyped code. Values smaller than 1 indicate a speedup due to some of the
@@ -260,8 +266,8 @@ The maximum overhead is computed by finding the running time of the slowest conf
 dividing it by the running time of the untyped version. The average overhead is obtained by
 computing the average over all configurations (excluding the top and bottom
 ones) and dividing it by the running time of the untyped configuration. Maximum overheads range
-from 1.25x (@tt{lmn}) to 168x (@tt{tetris}).  Average overheads range from
-0.6x (@tt{lmn}) to 68x (@tt{tetris}). The slowdowns reported in the
+from 1.25x (@tt{lnm}) to 168x (@tt{tetris}).  Average overheads range from
+0.6x (@tt{lnm}) to 68x (@tt{tetris}). The slowdowns reported in the
 partially typed configurations come from contracts and checks performed as
 untyped code interacts with typed code.
 
@@ -269,12 +275,18 @@ The @deliverable{300} and @usable["300" "1000"] counts are computed for
 @math{L}=0. In parentheses, we express these counts as a percentage of all
 configurations for the program.
 
-The three cumulative performance graphs are read as follows. The x-axis
-represents the slowdown over the untyped program (from 1x to
-@id[PARAM-MAX-OVERHEAD]x).  The y-axis is a count of the number of
-configurations (from @math{0} to @math{2^n}) scaled so that all graphs are the
-same height. The blue curves show how many configurations have less than a
-given slowdown.  They are, by definition, monotonically increasing because
+The three cumulative performance graphs are read as follows.
+The x-axis represents the slowdown over the untyped program (from 1x to @id[PARAM-MAX-OVERHEAD]x).
+The y-axis is a count of the number of configurations (from @math{0} to @math{2^n})
+scaled so that all graphs are the same height.
+For each program we show three graphs corresponding to different values of @math{L}.
+
+At @math{L=0}, the blue line represents the total number of configurations with
+performance no worse than the overhead on the x-axis.
+For arbitrary @math{L=0}, the count includes all configurations that can reach a
+configuration with performance no worse than the x-axis in at most @math{L}
+conversion steps.
+They are, by definition, monotonically increasing because
 the more overhead is allowed, the more configurations satisfy the
 condition. The ``ideal'' result would be a flat line at a graph's top. Such
 a result would mean that all configuration are as fast as (or faster than) the
@@ -287,14 +299,10 @@ configurations.
 @;Each line was obtained by measuring @id[PARAM-NUM-SAMPLES] overheads 
 @;linearly spaced along the x-axis.
 
-Our method defines @deliverable{N} and @usable["N" "M"] as key
-functions for measuring the quality of a gradual type system.  The
-cumulative performance graphs display the values of parameters @math{N} and
+The cumulative performance graphs display the values of parameters @math{N} and
 @math{M} as, respectively, a @exact{\color{ForestGreen!90!black}{green}} and
-a @exact{\color{Goldenrod!65!black}{yellow}} vertical line. For this
-experiment we have chosen values of 300% and 1000%. These values are rather liberal
-and we expect that most production contexts would not tolerate anything higher than 200% (and
-some would object to any slowdown). Thus, for any program, the number of
+a @exact{\color{Goldenrod!65!black}{yellow}} vertical line.
+Thus, for any program, the number of
 @deliverable{300} configurations is the value of the y-axis where the blue line intersects
 the green one.
 The number of @usable["300" "1000"] configurations is the difference of the intercepts.
@@ -303,11 +311,11 @@ Higher values for both of these measures are better.
 Lastly, the figures show cumulative performance graphs for different values
 of @math{L} (from 0 to 2).  The interpretation of @math{L} = 1 and 2 are as
 follows. For each configuration, we search the entire space of
-@math{O(n!-(n-L)!)}  reachable configurations to find a neighbor with usable
+reachable configurations to find a neighbor with usable
 running time.  If the
 top configuration (fully typed) is reachable, it is included in the set. Clearly the
 number of steps is bounded by the height of the performance lattice. Thus,
-for example, @tt{sieve} which has only two modules can get an ideal result
+for example, @tt{sieve} can get an ideal result
 in one step.
 
 @; -----------------------------------------------------------------------------
