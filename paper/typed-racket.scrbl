@@ -277,30 +277,16 @@ For ease of comparison between graphs, a dashed (@exact{\color{red}{red}}) horiz
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:all-results"]{Interpretation}
 
-As mentioned, the ideal shape for these curves is a flat line at the top of the y-axis.
-Of course the dynamic checks inserted by gradual type systems make this
-ideal difficult to achieve even with type-driven optimizations, so the
-next-best shape is a nearly-vertical line reaching the 100% count at a low x-value.
-Generally, a steep slope implies a good tradeoff between accepting a larger
-performance overhead and the number of configurations that run within the
-accepted overhead.
+The ideal shape is difficult to achieve because of the overwhelming cost of the
+dynamic checks inserted at the boundaries between typed and untyped code.
+The next-best shape is a nearly-vertical line that reaches the top at a low x-value.
+All else being equal, a steep slope anywhere on the graph is desirable because
+the number of acceptable programs quickly increases at that point.
 
-Given the wide x-axis range of overhead factors, we would expect that only
-the leftmost quarter of each graph shows any interesting vertical slope.
-Put another way, if it were true that Typed Racket's sound gradual typing
-is practical but requires tuning and optimization, the data
-right of the 10x point should be nearly horizontal and well above the red
-dashed line for @math{L}=0.@note{Increasing @math{L} should remove
-pathologically-bad cases.}  This shape would suggest that although a small
-percentage of configurations suffer an order of magnitude slowdown, the
-performance of most gradually-typed configurations is within a (large) constant
-factor.
-
-We now judge the shape of the results for each benchmark.  Our procedure
-is to focus on the left column, where @math{L}=0, and to consider the
+For each benchmark, we evaluate the actual graphs against these expectations.
+Our approach is to focus on the left column, where @math{L}=0, and to consider the
 center and right column as rather drastic countermeasures to recover
-performance.
-
+performance.@note{Increasing @math{L} should remove pathologically-bad cases.} 
 
 @parag{Sieve}
 The flat line at @math{L}=0 shows that half of all configurations suffer

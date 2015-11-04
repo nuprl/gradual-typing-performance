@@ -91,9 +91,9 @@ Project name          & Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.}{L
 
 @section{Adaptor Modules}
 
-A quirk in Racket's structure type definitions calls for one twist to
+A quirk in Racket's structure-type definitions calls for one twist to
 an otherwise straightforward setup of benchmark configurations. Consider
-the following structure type definition from @tt{Gregor}, one of the
+the following structure-type definition from @tt{Gregor}, one of the
 benchmark programs: 
 @;%
 @(begin
@@ -106,19 +106,18 @@ Its evaluation introduces a new class of data structure via a constructor
 (@racket[DateTime]), a predicate (@racket[DateTime?]), and a number of
 selector and assignment functions. A second evaluation creates a disjoint
 class of structures, meaning the selectors and assignment functions for the
-first class do not work on the second and vice versa. The static type
-system of Typed Racket cannot distinguish these two classes of structure
-types. 
+first class do not work on the second and vice versa. 
 
-If a structure type is exported, a configuration may place the definition
+If a structure-type is exported, a configuration may place the definition
 in an untyped module and its clients into the typed portion of the program.
 As explained below, importing a @racket[struct] demands that each client
 assigns a type to the structure-type definition. Now, when these typed
 clients wish to exchange instances of these structure types, the type
-checker must prove that the static types match---and due to the above
-quirk, it is currently impossible to do so, even if, under the best of
-circumstances, the developers who annotate the clients with types, choose
-the same names.
+checker must prove that the static types match. But due to the above
+quirk, the type system assigns generative static types to imported structure
+types. Thus, even if the developers who annotate the two clients with types choose
+the same names for the imported structure types, the two clients now have
+mutually incompatible static types.
 
 @Figure-ref{fig:adaptor} illuminates the problems with the left-hand
 diagram. An export of a structure-type definition from the untyped module
