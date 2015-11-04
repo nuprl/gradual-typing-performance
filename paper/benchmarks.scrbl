@@ -47,7 +47,6 @@ reports the proportion of observed contract checks due to adaptor modules and
 libraries.
 
 
-@;;; to address this, we TODO added a counter to each contract and ran the prog.
 
 
 @;; FIXME: remove figure caption rule

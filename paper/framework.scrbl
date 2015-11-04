@@ -96,11 +96,11 @@ To capture this idea, we formulate the following definition of
  ``deliverable configurations.''
 
 @def[#:term @list{@deliverable{N}}]{A configuration in a performance
- lattice is @deliverable{N} if its performance is no worse than an N% slowdown
+ lattice is @deliverable{N} if its performance is no worse than an @math{N}x slowdown
  compared to the completely untyped configuration.}
 
- We parameterize this definition over the slowdown percentage that a team
- may consider acceptable. One team may think of a 10% slowdown as barely
+ We parameterize this definition over the slowdown factor that a team
+ may consider acceptable. One team may think of a 1.1x slowdown as barely
  acceptable, while another one may tolerate a slowdown of an order of
  magnitude@~cite[tfdffthf-ecoop-2015].
 
@@ -113,7 +113,7 @@ Even if a configuration is not deliverable, it might be suitably fast to
 
 @def[#:term @list{@usable["N" "M"]}]{A configuration in a performance
  lattice is @usable["N" "M"] if its performance is worse than an
- N% slowdown and no worse than an M% slowdown compared to
+ @math{N}x slowdown and no worse than an @math{M}x slowdown compared to
  the completely untyped configuration.}
 
 Using the first parameter, we exclude deliverable configurations from the count. The

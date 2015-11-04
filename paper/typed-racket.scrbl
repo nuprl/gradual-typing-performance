@@ -205,7 +205,6 @@ Sadly, the performance improvement of the typed configuration is the
  example, which consists of just a data module and its client.}
 ]
 
-@; TODO check numbers
 The performance lattice for @tt{suffixtree} is bad news for gradual typing.
 It exhibits performance ``valleys'' in which a maintenance programmer can get stuck.
 Consider starting with the untyped program, and for some reason choosing
@@ -244,8 +243,8 @@ when all the modules are typed that performance becomes acceptable again (0.7x).
 @section{Reading the Figures}
 
 Our method defines the number of @step["L" "N" "M"] configurations as the key metric for measuring the quality of a gradual type system.
-For this experiment we have chosen values of 300% and 1000% for @math{N} and @math{M}, respectively, and allow up to 2 additional type conversion steps.
-These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 200%} but serve to ground our discussion.
+For this experiment we have chosen values of 3x and 10x for @math{N} and @math{M}, respectively, and allow up to 2 additional type conversion steps.
+These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 2x} but serve to ground our discussion.
 
 The twelve rows of graphs in @Figure-ref["fig:lnm1" "fig:lnm2"] summarize the results from exhaustively exploring the performance lattices of our benchmarks.
 Each row contains a table of summary statistics and one graph for each value of @math{L} between 0 and 2.
@@ -260,7 +259,7 @@ The average overhead is obtained by computing the average over all configuration
 Maximum overheads range from 1.25x (@tt{lnm}) to 168x (@tt{tetris}).
 Average overheads range from 0.6x (@tt{lnm}) to 68x (@tt{tetris}).
 
-The @deliverable{300} and @usable["300" "1000"] counts are computed for @math{L=0}.
+The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
 In parentheses, we express these counts as a percentage of all configurations for the program.
 
 The three cumulative performance graphs are read as follows.
@@ -314,11 +313,11 @@ otherwise @tt{morse-code} performs well.
 Increasing @math{L} improves the worst cases.
 
 @parag{MBTA}
-These lines are also steep, but flatten briefly at @math{N}=2.
+These lines are also steep, but flatten briefly at 2x.
 This coincides with the performance of the fully-typed
 configuration.
 As one would expect, freedom to type additional modules adds configurations
-to the @deliverable{200} equivalence class.
+to the @deliverable{2} equivalence class.
 
 @parag{ZO Traversal}
 Plots here are similar to @tt{mbta}.
@@ -338,13 +337,13 @@ Note the large y-intercept at @math{L}=0.
 This shows that very few configurations suffer any overhead.
 
 @parag{KCFA}
-The most distinctive feature at @math{L}=0 is the flat portion between @math{N}=0
-and @math{N}=6. This characteristic remains at @math{L}=1, and overall performance
+The most distinctive feature at @math{L}=0 is the flat portion between 1x
+and 6x. This characteristic remains at @math{L}=1, and overall performance
 is very good at @math{L}=2.
 
 @parag{Snake}
 The slope at @math{L}=0 is very low.
-Allowing @math{L}=1 brings a noticeable improvement when @math{N} is at least 5,
+Allowing @math{L}=1 brings a noticeable improvement above the 5x mark,
 but the difference between @math{L}=1 and @math{L}=2 is small.
 
 @parag{Tetris}
