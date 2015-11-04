@@ -1,0 +1,85 @@
+===========================================================================
+                 POPL 2016 Artifact Evaluation Review #8A
+                    Updated 25 Oct 2015 12:48:52pm EDT
+---------------------------------------------------------------------------
+                  Paper #8: Is Sound Gradual Typing Dead?
+---------------------------------------------------------------------------
+
+                        ===== Does it build? =====
+
+The VM seems to work fine.  I appreciate the detailed instructions (e.g., how to import virtual appliance, recommended settings etc).
+
+                      Overall merit: 4. Exceeds expectations
+
+                      ===== Brief paper summary =====
+
+The paper describes a technique to test how different combinations of typed and untyped modules in a program can impact its performance.  They show that most combinations (other than the 2 extreme ones where everything either typed or untyped) make the program considerably slower than a completely untyped version! This might be a deal breaker for those who wants to apply gradually typing to their programs.
+
+                       ===== Artifact summary =====
+
+The authors provided the VM with all the necessary programs and scripts to reproduce the results in the paper.  These files allow for running the benchmarks, reproducing the results as well as graphs generated in the papers.
+
+                 ===== Detailed artifact evaluation =====
+
+I cannot run all the benchmarks (the README says it can take up to 2 months),  however I was able to complete runs for mbta and morse-code with 4 modules.  I try to run other ones that seem small enough (with <- 6 more dules), but they too take a long time that I can't finish them.  I am surpised that sieve also takes a long time to run even though it has only 2 modules.
+
+For mbta and morese-code, I run the benchmarks several times and compare the result graphs and data, they all look consistent.  However, I see some noticeable differences comparing to the paper. 
+
+mbta / paper 
+
+typed/untyped ration: 3.31x,  2.65x
+max. overhead: 6.42x,         2.80x   #LARGE DIFF
+mean overhead: 2.54x,        1.91x   
+300-deliverable: 9 (56 %),  16 (100%)  #LARGE DIFF
+300/100-usable: 7 (44%),    0(0%)  #LARGE DIFF
+
+
+morsecode  / paper
+typed/untyped ration: 0.89x , 0.99x
+max. overhead: 193x, 1.95x
+mean overhead: 1.51x , 1.47x
+300-deliverable: 16(100 %),  16 (100%)
+300/100-usable: 0(0%), 0 (0 %)
+
+Although I expect differences (different testing env etc), but these large differences are eye-catching.  
+
+Nonetheless, my results still support the paper's main claim that gradual typing has a significant overhead (in fact my results seem to support this claim even stronger than the paper's results).  In general, the organization of this artifact is very well-thought and excellent. All documents are clear and easy to follow.  The additional section showing how to use these scripts to test new benchmarks is thoughtful and encourages others to adopt this technique shown in the paper.
+
+===========================================================================
+                 POPL 2016 Artifact Evaluation Review #8B
+                     Updated 24 Oct 2015 4:47:56pm EDT
+---------------------------------------------------------------------------
+                  Paper #8: Is Sound Gradual Typing Dead?
+---------------------------------------------------------------------------
+
+                        ===== Does it build? =====
+
+It worked fine.
+
+                      Overall merit: 4. Exceeds expectations
+
+                      ===== Brief paper summary =====
+
+A core argument for gradual typing is that it enables programmers to transition between un-typed and typed code in a pay-as-you-go fashion. Initially, the programmer can quickly write un-typed code, and then spend effort to type their code and gain additional performance and correctness benefits. Unfortunately, this argument requires that this transition is in fact pay-as-you-go. This paper presents a novel performance analysis of gradually typed code that measures the performance of all of the possible typed/un-typed configurations of a piece of software. The unfortunate result of this analysis is that very few configurations between fully typed and fully untyped have acceptable performance.
+
+                       ===== Artifact summary =====
+
+The artifact packages the benchmarks used in the paper with an automated test harness for replicating the paper's results or reproducing the experiment with new benchmarks. The artifact even goes so far as to build figures for inclusion in the paper (automated using scribble), a nice touch.
+
+                 ===== Detailed artifact evaluation =====
+
+The authors did a fantastic job of packaging up the tools necessary for the experiments into an artifact. It is well-documented and easy to use. While attempting to replicate the paper's results in full would be too computationally involved for this review, I did attempt it for one of the benchmarks, "mbta." I ran the benchmark several times varying the number of runs and got results that were consistent.
+
+That said, I would characterize my results as a reproduction, rather than a replication of the initial experiment. While the results were very consistent, they did not match the results in the paper exactly. This is too be expected, since my runs were performed in a significantly different environment (virtualized on different hardware). My results certainly support the interpretation and analysis in the paper.
+
+Paper:
+ratio: 2.65x    max overhead: 2.80x    mean overhead: 1.91x
+300-deliverable: 16 (100%)   300/1000-usable: 0 (0%)
+
+My runs:
+ratio: 2.34x    max overhead: 4.97x    mean overhead: 1.81x
+300-deliverable: 14 (88%)    300/1000-usable: 2 (12%)
+
+Overall, the artifact definitely exceeds my exceptions. It is well-documented, well put together, and could easily be used to fully reproduce or extend the investigation in the paper.
+
+
