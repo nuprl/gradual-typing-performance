@@ -7,7 +7,7 @@
              Ben Greenman,
              Max S. New,
              Jan Vitek,
-             Matthias Felleisen" "Northeastern University" "Boston, MA, USA"]
+             Matthias Felleisen" "Northeastern University, Boston, MA" ""]
 
 @title{Is Sound Gradual Typing Dead?}
 
