@@ -244,7 +244,7 @@ when all the modules are typed that performance becomes acceptable again (0.7x).
 
 Our method defines the number of @step["L" "N" "M"] configurations as the key metric for measuring the quality of a gradual type system.
 For this experiment we have chosen values of 3x and 10x for @math{N} and @math{M}, respectively, and allow up to 2 additional type conversion steps.
-These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 2x} but serve to ground our discussion.
+These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 2x.} but serve to ground our discussion.
 
 The twelve rows of graphs in @Figure-ref["fig:lnm1" "fig:lnm2"] summarize the results from exhaustively exploring the performance lattices of our benchmarks.
 Each row contains a table of summary statistics and one graph for each value of @math{L} between 0 and 2.
