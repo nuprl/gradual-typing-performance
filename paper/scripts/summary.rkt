@@ -354,13 +354,12 @@
   (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
   (define left-column
     (vr-append vspace
-               (text->title (or user-title (get-project-name sm))) ;; BOLDER
+               (text->title (or user-title (get-project-name sm)))
                (text->pict "typed/untyped ratio")
                (text->pict "max. overhead")
                (text->pict "mean overhead")
-               (text->pict (format "~a-deliverable" (* 100 PARAM-N)))
-               (text->pict (format "~a/~a-usable" (* 100 PARAM-N) (* 100 PARAM-M)))
-               ))
+               (text->pict (format "~a-deliverable" PARAM-N))
+               (text->pict (format "~a/~a-usable" PARAM-N PARAM-M))))
   (define right-column
     (vr-append vspace (text->pict (format "(~a modules)" (get-num-modules sm)))
     (ht-append (/ hspace 2) (vr-append vspace
