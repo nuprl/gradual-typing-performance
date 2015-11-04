@@ -63,7 +63,7 @@ its timing results in detail.
 @tt{Suffixtree} consists of six modules: @tt{data} to define label and
 tree nodes, @tt{label} with functions on suffixtree node labels,
 @tt{lcs} to compute longest common substrings, @tt{main} to apply
-lcs to data, @tt{structs} to create and traverse suffix tree nodes,
+@tt{lcs} to @tt{data}, @tt{structs} to create and traverse suffix tree nodes,
 @tt{ukkonen} to build suffix trees via Ukkonen's algorithm. Each
 module is available with and without type annotations.  Each configuration
 thus links six modules, some of them typed and others untyped.
@@ -154,7 +154,7 @@ modules in a configuration.
  For each configuration in the lattice, the ratio is
  computed by dividing the average timing of the typed program by
  the untyped average. The figure omits standard deviations
- as they small enough to not affect the discusion.
+ as they are small enough to not affect the discusion.
 
 The fully typed configuration (top) is @emph{faster} than the fully untyped
  (bottom) configuration by around 30%, which puts the typed/untyped ratio at 0.7. This can
@@ -169,7 +169,7 @@ Sadly, the performance improvement of the typed configuration is the
  exhibit slowdowns of up to 105x. Inspection of the lattice
  suggests several points about these slowdowns: @itemlist[
 
-@item{Adding type annotations to the @tt{main} module neither subtracts or
+@item{Adding type annotations to the @tt{main} module neither subtracts nor
  adds much overhead because it is a driver module that is not coupled to
  other modules.}
 
