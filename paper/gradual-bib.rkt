@@ -39,7 +39,7 @@
   (define/short asplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
   (define/short fpca "FPCA" (string-append ACM International Conference "on Functional Programming Languages and Computer Architecture"))
   (define/short icfp "ICFP" (string-append ACM International Conference "on Functional Programming"))
-  (define/short pldi "PLDI" (string-append ACM Conference "Programming Language Design and Implementation"))
+  (define/short pldi "PLDI" (string-append ACM Conference "on Programming Language Design and Implementation"))
   (define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
   (define/short lncs "LNCS" "Lecture Notes in Computer Science")
   (define/short sigplan-notices "SIGPLAN Notices" (string-append ACM "SIGPLAN Notices"))
@@ -393,7 +393,10 @@
   (make-bib
    #:author (authors "Esteban Allende" "Oscar Callaú" "Johan Fabry" "Éric Tanter" "Marcus Denker")
    #:title "Gradual typing for Smalltalk"
-   #:location (journal-location "Science of Computer Programming")
+   #:location (journal-location "Science of Computer Programming"
+                                #:volume 96
+                                #:number 1
+                                #:pages '(52 69))
    #:date 2013))
 
 (define aft-dls-2013
