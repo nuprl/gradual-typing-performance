@@ -36,7 +36,7 @@ Second, Typed Racket's implementation may not support run-time checks as
  A sophisticated JIT compiler may eliminate some of the contract overhead
  in such cases, but we conjecture that performance pathologies will still remain.
  Applying our method to an implementation with a more sophisticated compiler,
- e.g., Pycket@~cite[fbpsth-dyla-2014], may let us validate this conjecture.
+ e.g., Pycket@~cite[bauman-et-al-icfp-2015], may let us validate this conjecture.
 
 Third, the acceptance of Typed Racket in the commercial and open-source
  Racket community suggests that (some) programmers find a way around the

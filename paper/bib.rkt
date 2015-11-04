@@ -1008,7 +1008,7 @@
                      "Vasily Kirilichev" "Tobias Pape" "Jeremy G. Siek"
                      "Sam Tobin-Hochstadt")
    #:title "Pycket: A Tracing JIT For a Functional Language"
-   #:location (proceedings-location icfp)
+   #:location (proceedings-location icfp #:pages '(22 34))
    #:date 2015))
 
 ;; ----------------------------------------
