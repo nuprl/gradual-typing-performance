@@ -144,7 +144,7 @@ To analyze the cost of contract checks, we used the
  @Figure-ref{fig:postmortem} summarizes our findings.
 
 The leftmost data column (%C) gives the percent of each benchmark's total
- running time that was spent checking contracts.  These numbers are the
+ running time that was spent checking contracts.  These percentages are the
  average of ten trials; the numbers in parentheses (S.E.) represent the standard
  error.  Except for the short-running benchmarks (@tt{gregor},
  @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
