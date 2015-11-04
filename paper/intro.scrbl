@@ -90,7 +90,10 @@ We apply our method to Typed Racket, the gradually typed
  which suggests adequate performance for its commercial and open source
  community.
 
- Section@secref{sec:tr} presents @; and@secref{sec:trp}
- the numeric results.
- Section@secref{sec:death} discusses these
- results.
+After collecting data from our benchmarks, we summarize their runtimes using
+the metrics described in section@secref{sec:fwk}. These computed metrics are
+analyzed in detail in section@secref{sec:tr}. We interpret the ramifications
+of these metrics in section@secref{sec:death} and discuss the threats to
+validity of our conclusions. In addition, we also include a preliminary
+investigation into the possible causes of the slowdowns in our benchmark
+configurations.
