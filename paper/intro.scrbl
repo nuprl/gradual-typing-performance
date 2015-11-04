@@ -15,8 +15,8 @@ Over the past couple of decades dynamically-typed languages have become a
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
  solution to this pressing software engineering problem. The idea is to
  extend the language so that programmers can incrementally equip programs
- with types. In contrast to optional type systems,
- gradual type systems provide programmers with soundness guarantees.
+ with types. In contrast to optional typing,
+ gradual typing provide programmers with soundness guarantees.
 
 Realizing type soundness in this world requires run-time checks that watch
  out for potential impedance mismatches between the typed and untyped
@@ -72,28 +72,27 @@ The insight behind the method is that to
  the lattice. In short, the lattice mimics all possible choices of single-module
  type conversions a programmer faces when a maintenance task comes up.
 
-A performance evaluation of a gradual type system must run and time every
- configuration for every benchmark and extract information from these
- timings. Section@secref{sec:fwk} introduces the evaluation method in detail,
- including the information we retrieve from the lattices and how we
- parameterize these retrievals. 
- The timings may answer
- basic questions such as how many of these configurations could be
- deployed without degrading performance too much.
+A performance evaluation of a system for gradual typing must time these
+ configurations of a benchmark and extract information from these
+ timings. Section@secref{sec:fwk} introduces the evaluation method in
+ detail, including the information we retrieve from the lattices and how we
+ parameterize these retrievals.  The timings may answer basic questions
+ such as how many of these configurations could be deployed without
+ degrading performance too much.
 
-We apply our method to Typed Racket, the gradually typed
- sister language of Racket, on a collection of programs ranging from 150 to
- 7.5K lines of code. @Secref{sec:bm} presents our benchmarks in detail.
- Typed Racket is the oldest (developed since 2006) and
+We apply our method to Typed Racket, the gradually typed sister language of
+ Racket.  With nine years of development, Typed Racket is the oldest and
  probably most sophisticated implementation of gradual typing.
- Furthermore, Typed Racket has also acquired a fair number of users,
- which suggests adequate performance for its commercial and open source
- community.
+ Furthermore, Typed Racket has also acquired a fair number of users, which
+ suggests adequate performance for these commercial and open source
+ communities. The chosen benchmark programs originate from these
+ communities and range from 150 to 7,500 lines of code. @Secref{sec:bm}
+ presents these benchmarks in detail.
 
-After collecting data from our benchmarks, we summarize their runtimes using
-the metrics described in section@secref{sec:fwk}. These computed metrics are
-analyzed in detail in section@secref{sec:tr}. We interpret the ramifications
-of these metrics in section@secref{sec:death} and discuss the threats to
-validity of our conclusions. In addition, we also include a preliminary
-investigation into the possible causes of the slowdowns in our benchmark
-configurations.
+Section@secref{sec:tr} presents the results from running all configurations
+ of the Typed Racket benchmarks according to the metrics spelled out in
+ section@secref{sec:fwk}.  We interpret the ramifications of these rather
+ negative results in section@secref{sec:death} and discuss the threats to
+ validity of these conclusions. The section also includes our report on a
+ preliminary investigation into the possible causes of the slowdowns in our
+ benchmark configurations.

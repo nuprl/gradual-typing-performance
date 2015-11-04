@@ -48,7 +48,7 @@
 @;@category["D.3.3" "Programming Languages" "Language Constructs and Features"]
 @;@terms{Performance, Experimentation, Measurement}
 
-@keywords{Gradual type systems, performance evaluation}
+@keywords{Gradual typing, performance evaluation}
 
 @include-section{intro.scrbl}
 @include-section{framework.scrbl}
