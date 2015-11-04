@@ -1014,6 +1014,13 @@
 ;; ----------------------------------------
 ; Pluggable types
 
+(define bracha-pluggable-types
+  (make-bib
+   #:author "Gilad Bracha"
+   #:title "Pluggable Type Systems"
+   #:location (proceedings-location "OOPSLA Workshop on Revival of Dynamic Languages")
+   #:date 2004))
+
 (define pacpe-issta-2008
   (make-bib
    #:author (authors "Matthew M. Papi" "Mahmood Ali" "Telmo Louis Correa, Jr."

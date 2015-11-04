@@ -68,7 +68,7 @@ Lisp, differ from the contemporary view of optional types as statically-checked
 annotations for software maintenance. In Lisp systems, these annotations are
 used for compiler optimizations and dynamic checking.
 
-Pluggable type systems are a closely related idea@~cite[bg-oopsla-1993], and also belong to the unsound camp.  Recent
+Pluggable type systems are a closely related idea@~cite[bg-oopsla-1993 bracha-pluggable-types], and also belong to the unsound camp.  Recent
 implementations, e.g. Papi @etal's work for Java@~cite[pacpe-issta-2008], layer
 additional typed reasoning on top of existing typed languages rather than
 untyped languages.
