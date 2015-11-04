@@ -39,11 +39,11 @@ and a set of Machines D
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
 with 64GB RAM. All machines run a variant of Linux and all benchmarks were run
 on Racket v6.2. The following
-benchmarks were run on machine A: @tt{sieve} and @tt{kcfa}.
-The following were run on machine B: @tt{suffixtree}, @tt{morse-code}, and @tt{lnm}.
-Only @tt{quad} was run on machine C.
+benchmarks were run on machine A: @tt{sieve}, @tt{kcfa}, and @tt{gregor}.
+The following were run on machine B: @tt{suffixtree}, @tt{morse-code}, @tt{mbta}, and @tt{lnm}.
+The following were run on machine C: @tt{zo-traversal} and @tt{quad}.
 The following were run on machine D: @tt{snake},
-@tt{synth}, @tt{tetris}, and @tt{gregor}.
+@tt{synth}, and @tt{tetris}.
 For each configuration we report the average of 30 runs.
 @; TODO: talk about warm up?  
 @; TODO:Compilation v. interpreteration v. jitting?
