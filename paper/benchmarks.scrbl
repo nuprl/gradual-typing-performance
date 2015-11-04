@@ -51,28 +51,28 @@ libraries.
 
 
 @;; FIXME: remove figure caption rule
-@figure*["fig:bm" "The software characteristics of the benchmarks"
+@figure*["fig:bm" "Characteristics of the benchmarks"
 @exact|{
 \newcommand{\yespycket}{$\CIRCLE$}
 \newcommand{\maybepycket}{$\RIGHTcircle$}
 \newcommand{\nopycket}{$\Circle$}
 \newcommand{\twoline}[2]{\parbox[s]{1.44cm}{\flushright\hfill #1\newline#2}}
-\begin{tabular}[t]{lrrrrll}
+\begin{tabular}[t]{lrrrrcr}
 \toprule
-Project name          & \# Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.}{LOC} & \twoline{Other}{LOC} & Module structure  & \% Adaptors \& Libraries      \\
+Project name          & Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.}{LOC} & \twoline{Other}{LOC} & Module structure & \twoline{Adaptors +}{Libraries} \\
 \midrule
-\tt{sieve}            & 2          & 35          & 17            & 0         & \pict{sieve}      & 0  \\
-\tt{morse-code}       & 4          & 216         & 29            & 0         & \pict{morsecode}  & 0  \\
-\tt{mbta}             & 4          & 369         & 77            & 89        & \pict{mbta}       & 79 \\
-\tt{zo-traversal}     & 5          & 1404        & 285           & 214       & \pict{zordoz}     & 99 \\
-\tt{suffixtree}       & 6          & 545         & 125           & 40        & \pict{suffixtree} & 97 \\
-\tt{lnm}              & 6          & 501         & 120           & 62        & \pict{lnm}        & 46 \\
-\tt{kcfa}             & 7          & 248         & 47            & 141       & \pict{kcfa}       & 99 \\
-\tt{snake}            & 8          & 161         & 50            & 27        & \pict{snake}      & 93 \\
-\tt{tetris}           & 9          & 305         & 71            & 38        & \pict{tetris}     & 99 \\
-\tt{synth}            & 10         & 837         & 142           & 33        & \pict{synth}      & 47 \\
-\tt{gregor}           & 13         & 996         & 164           & 103       & \pict{gregor}     & 78 \\
-\tt{quad}             & 16         & 6722        & 300           & 241       & \pict{quad}       & 45 \\
+\tt{sieve}            & 2          & 35          & 17            & 0     & \pict{sieve}      & 0\%   \\
+\tt{morse-code}       & 4          & 216         & 29            & 0     & \pict{morsecode}  & 0\%   \\
+\tt{mbta}             & 4          & 369         & 77            & 89    & \pict{mbta}       & 79\%  \\
+\tt{zo-traversal}     & 5          & 1404        & 285           & 214   & \pict{zordoz}     & 99\%  \\
+\tt{suffixtree}       & 6          & 545         & 125           & 40    & \pict{suffixtree} & 97\%  \\
+\tt{lnm}              & 6          & 501         & 120           & 62    & \pict{lnm}        & 46\%  \\
+\tt{kcfa}             & 7          & 248         & 47            & 141   & \pict{kcfa}       & 99\%  \\
+\tt{snake}            & 8          & 161         & 50            & 27    & \pict{snake}      & 93\%  \\
+\tt{tetris}           & 9          & 305         & 71            & 38    & \pict{tetris}     & 99\%  \\
+\tt{synth}            & 10         & 837         & 142           & 33    & \pict{synth}      & 47\%  \\
+\tt{gregor}           & 13         & 996         & 164           & 103   & \pict{gregor}     & 78\%  \\
+\tt{quad}             & 16         & 6722        & 300           & 241   & \pict{quad}       & 45\%  \\
 \bottomrule
 \end{tabular}
 
