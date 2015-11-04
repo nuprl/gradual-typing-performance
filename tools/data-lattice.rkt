@@ -73,7 +73,7 @@
   (vc-append (blank 1 2)
              box-pict
              (blank 1 4)
-             (text (~r normalized-mean #:precision 1) style 9)))
+             (text (~a (~r normalized-mean #:precision 1) "x") style 9)))
 
 ;; adds lines between elements in levels
 (define (add-all-lines base vec bits)

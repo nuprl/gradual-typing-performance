@@ -81,7 +81,7 @@ thus links six modules, some of them typed and others untyped.
 
 
 @figure*["fig:suffixtree" 
-          @list{Performance lattice (labels are slowdowns).}
+          @list{Performance lattice (labels are speedup/slowdown factors)}
   @(let* ([vec (file->value SUFFIXTREE-DATA)]
           [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
      (make-performance-lattice vec*))
