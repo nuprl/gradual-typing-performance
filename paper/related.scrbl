@@ -73,13 +73,13 @@ implementations, e.g. Papi @etal's work for Java@~cite[pacpe-issta-2008], layer
 additional typed reasoning on top of existing typed languages rather than
 untyped languages.
 
-Contemporary optional type systems exist for
+Contemporary optional type systems have been developed for
 Clojure@~cite[bonnaire-sergeant-thesis-2012], Lua@~cite[mmi-dyla-2014],
 Python,@note[@url{http://mypy-lang.org}]
 PHP,@note[@url{http://hacklang.org}]
 ActionScript,@note[@url{http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7f8a.html}]
 Dart,@note[@url{http://dartlang.org}] and
-JavaScript@~cite[bat-ecoop-2014]  Since the
+JavaScript@~cite[bat-ecoop-2014]. Since the
 type annotations in these systems are unsound for typed-untyped
 interoperation, they incur no runtime overhead from proxy wrapping or
 dynamic checks. The lack of overheads obviates the need for a
