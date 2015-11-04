@@ -25,12 +25,11 @@ The problem is that, according to our measurements, the cost of enforcing
  settings for @math{N} and @math{M}, few configurations are
  @math{N}-deliverable or @math{N/M}-usable. Worse, investing more effort
  into type annotation does not seem to pay off. In practice, converting a
- module takes a good portion of a workday, meaning that setting @math{L} to
- @math{2} is again a liberal choice. But even allowing the conversion of
- two additional modules @emph{and} the unrealistic assumption that the
- developer picks two modules best-suited to improve performance does not
- increase the number of acceptable configurations by much. Put differently,
- the number of @math{L}-step @math{N/M}-acceptable configurations remains
+ module takes a good amount of time, meaning that setting @math{L} to
+ @math{2} is again a liberal choice. But even this liberal choice does not
+ increase the number of acceptable configurations by much; worse, it
+ unrealistically assumes those two modules best-suited to improve performance.
+ Put differently, the number of @math{L}-step @math{N/M}-acceptable configurations remains
  small with liberal choices for all three parameters.
 
 Our use of the evaluation framework projects an extremely negative image of
@@ -46,7 +45,7 @@ Our use of the evaluation framework projects an extremely negative image of
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
-We have identified five threats to the validity of our measurements and our
+We have identified four threats to the validity of our measurements and our
  conclusions. 
 
 First, our benchmarks are relatively small due to constraints on our
@@ -72,25 +71,8 @@ Second, several of our benchmarks import some modules from Racket's suite of
  partially typed configurations. Regardless, given the low typed/untyped ratios, 
  these libraries are unlikely to affect our conclusions.
 
-Third, our method imagines a particularly @emph{free} approach to
- annotating programs with types. By ``free'' we mean that we do not expect
- software engineers to add types to modules in any particular
- order. Although this freedom is representative of some kind of maintenance
- work---add types when bugs are repaired and only then---a team may decide
- to add types to an entire project in a focused approach. In this case, they
- may come up with a particular kind of plan that avoids all of these
- performance traps. Roughly speaking, such a plan would correspond to a
- specific path from the bottom element of the performance lattice to the top
- element.  Sadly our current measurements suggest that almost all
- bottom-to-top paths in our performance lattices go through
- performance bottlenecks.  As the  @tt{suffixtree} example
- demonstrates, a path-based approach depends very much on the structure of
- the module graph.  We therefore conjecture that some of the ideas offered
- in the conclusion section may help such planned, path-based approaches.
-
-Fourth, the feasible set of type annotations for a program component is
- rarely unique in a gradually typed system; after all, untyped languages
- are @emph{multi-typed} languages.  Since types are translated into
+Third, the feasible set of type annotations for a program component is
+ rarely unique in a gradually typed system.  Since types are translated into
  contracts in Typed Racket, the choice of type annotations may affect
  performance. All of our case studies use reasonable type annotations, but
  typing annotations with superior performance may exist. For example, one
@@ -101,7 +83,7 @@ Fourth, the feasible set of type annotations for a program component is
  divine the best possible type annotations to obtain reasonable
  performance.
 
-Fifth, we articulate our conclusions on the basis of current
+Finally, we articulate our conclusions on the basis of current
  implementation technology. Typed Racket compiles to Racket, which uses
  rather conventional JIT compilation technology. It makes no attempt to
  reduce the overhead of contracts or to exploit contracts for
@@ -154,19 +136,19 @@ Fifth, we articulate our conclusions on the basis of current
 
 }
 
-To analyze the cost of dynamic contract checks, we use the
+To analyze the cost of contract checks, we used the
  feature-specific profiler@~cite[saf-cc-2015] on each benchmark's
- @emph{slowest} configuration in the lattice.@note{We found no statistically
+ @emph{slowest} configuration.@note{We found no statistically
  significant difference in the proportion of runtimes spent in garbage collection
  between the untyped & slowest configurations of any benchmark.}
  @Figure-ref{fig:postmortem} summarizes our findings.
 
 The leftmost data column (%C) gives the percent of each benchmark's total
  running time that was spent checking contracts.  These numbers are the
- average of ten trials; the numbers in parentheses represent the standard
+ average of ten trials; the numbers in parentheses (S.E.) represent the standard
  error.  Except for the short-running benchmarks (@tt{gregor},
  @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
- As expected, the programs spend a huge proportion of their running time checking contracts.
+ As expected, the programs spend a substantial proportion of their running time checking contracts.
 
 The remaining columns of @figure-ref{fig:postmortem} report what percentage
  of each benchmark's @emph{contract-checking} execution time is spent on a
@@ -198,7 +180,7 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
  subset of the @any->T[] column.}  
 ]
 @;
-Other columns overlap as well.  For example, the @tt{mbta} benchmark in
+Other columns overlap as well.  The @tt{mbta} benchmark in
 particular spends 65% of its contract-checking time on first-order
 library functions. These checks are always triggered by a typed module on
 immutable arguments, so Typed Racket optimizes them to @any->T[] contracts.
@@ -222,19 +204,18 @@ example of this is the @tt{zo} analyzer; indeed, the purpose of
 that code is to provide an interface to native compiler data
 structures.  In nearly all worst-case measurememts for benchmarks
 using adaptor modules the adaptor and @any->bool[] contracts seem
-to account for a huge proportion of all contracts.  The apparent
-exceptions are @tt{synth} and @tt{quad}.  Only @tt{synth} is
-a true exception, though; it spends much more time creating
-structured data from raw vectors than accessing the data.  The
-@tt{quad} benchmark in fact spends 93% of its contract-checking
+to account for a huge proportion of all contracts.
+The @tt{quad} benchmark in fact spends 93% of its contract-checking
 time validating data structures, which are stored in fixed-length
 lists rather than in structure types.  These lists do not require
 an adaptor, but their types translate to contracts that are far
 more expensive than plain structure type predicates.
+The only exception is @tt{synth}. It spends much more time creating
+structured data from raw vectors than accessing the data.
 
 Higher-order contracts show up in only a few of the benchmark
 programs. Specifically, only @tt{synth}, @tt{sieve}, and
-@tt{zordoz} make heavy use of higher-order functions across
+@tt{zo-traversal} make heavy use of higher-order functions across
 contract boundaries.  Unlike the cost of first-order contracts,
 the costs of these higher-order contracts is quite apparent in these programs.
 
@@ -246,7 +227,7 @@ contracts are triggered by calls from a typed module into an
 untyped library or data definition.  This includes @tt{kcfa},
 although half its calls from typed to untyped code used mutable
 arguments and hence could not be reduced to @tt{any/c}.  The
-exceptions are @tt{lnm}, @tt{synth}, and @tt{quad}, which all
-suffer more when untyped modules imported definitions from typed
+exceptions are @tt{lnm}, @tt{synth}, and @tt{quad}, which
+suffer from slowdowns when untyped modules import definitions from typed
 ones.
 

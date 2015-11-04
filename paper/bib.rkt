@@ -579,7 +579,7 @@
 
 (define nthvh-icfp-2014
   (make-bib
-   #:author (authors "Phúc C. Nguyên" "Sam Tobin-Hochstadt" "David Van Horn")
+   #:author (authors "Phúc C. Nguyễn" "Sam Tobin-Hochstadt" "David Van Horn")
    #:title "Soft Contract Verification"
    #:location (proceedings-location icfp #:pages '(139 152))
    #:date 2014))

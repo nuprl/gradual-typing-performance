@@ -266,7 +266,7 @@
 
 \DeclareOption{numbers}{\@setflag \@authoryear = \@false}
 
-\DeclareOption{onecolumn}{\@setflag \@onecolumn = \@true}
+%%%\DeclareOption{onecolumn}{\@setflag \@onecolumn = \@true}
 
 \DeclareOption{preprint}{\@setflag \@preprint = \@true}
 
@@ -340,7 +340,7 @@
 \setlength{\standardtextwidth}{42pc}
 
 \if \@onecolumn
-  \setlength{\textwidth}{20.5pc}
+  \setlength{\textwidth}{40.5pc}
 \else
   \setlength{\textwidth}{\standardtextwidth}
 \fi

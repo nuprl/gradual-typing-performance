@@ -12,48 +12,51 @@
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket} @; , Classical
 
-Measuring the running time for the performance lattices of our chosen dozen
-benchmarks means compiling, running, and timing hundreds of thousands of
+Measuring the running time for the performance lattices of our
+benchmarks means compiling, running, and timing thousands of
 configurations. Each configuration is run 30 times to ensure that the
 @;
 @;@margin-note*{cite the random number paper?}
 @;
 timing is not affected by random factors; some configurations take minutes
-to run. Presenting and analyzing this wealth of data poses a separate
-challenge all by itself.
+to run.
 
-This section presents our measurements.
+Here we present our measurements in terms of the metrics of section @secref["sec:fwk"].
 The first subsection discusses one benchmark in detail, demonstrating how we
  create the configurations, how the boundaries affect the performance of
  various configurations, and how the Typed Racket code base limits the
- experiment.  The second subsection explains how we present the data in
- terms of the definitions of section@secref{sec:fwk}.  The last subsection
- discuss the results for all benchmarks.
+ experiment.  The second subsection explains our findings.
+ The last subsection interprets them.
 
 @parag{Experimental setup}
 Due to the high resource requirements of evaluating 
-the performance lattices, experiments were run on a cluster consisting of a
+the performance lattices, experiments were run on multiple machines.
 Machine A with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, Machine B
-with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, and a set of Machines C
+with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, Machine C with
+with 4 physical Core i7-3770K 3.50GHz cores and 32GB RAM,
+and a set of Machines D
 @;from the Northeastern University Discovery Cluster@note{@url{nuweb12.neu.edu/rc/?page_id=27}}
 with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
-with 64GB RAM. All machines run a variant of Linux. The following
+with 64GB RAM. All machines run a variant of Linux and all benchmarks were run
+on Racket v6.2. The following
 benchmarks were run on machine A: @tt{sieve} and @tt{kcfa}.
 The following were run on machine B: @tt{suffixtree}, @tt{morse-code}, and @tt{lnm}.
-The following were run on machine C: @tt{snake},
-@tt{synth}, @tt{tetris}, @tt{gregor}, and @tt{quad}.
-@;; FIXME edit this when all are run
+Only @tt{quad} was run on machine C.
+The following were run on machine D: @tt{snake},
+@tt{synth}, @tt{tetris}, and @tt{gregor}.
 For each configuration we report the average of 30 runs.
 @; TODO: talk about warm up?  
 @; TODO:Compilation v. interpreteration v. jitting?
-All of our runs use a single core for each configuration with green threads where applicable.
-We did some sanity checks and were able to validate that performance differentials reported
-in the paper were not affected by the choice of machine.
+All of our runs use a single core for each configuration.
+We performed sanity checks to validate that performance differentials reported
+in the paper were not affected by the choice of machine.@;
+@note{The scripts that we use to run the experiments are available in
+our artifact: @url{http://www.ccs.neu.edu/racket/pubs/#popl15-tfgnvf}}
 
 @; -----------------------------------------------------------------------------
 @section{Suffixtree in Depth}
 
-To illustrate the key points of the experiments, this section describes
+To illustrate the key points of the evaluation, this section describes
 one of the benchmarks, @tt{suffixtree}, and explains the setup and
 its timing results in detail.
 
@@ -207,11 +210,11 @@ Sadly, the performance improvement of the typed configuration is the
 The performance lattice for @tt{suffixtree} is bad news for gradual typing.
 It exhibits performance ``valleys'' in which a maintenance programmer can get stuck.
 Consider starting with the untyped program, and for some reason choosing
-to add types to @tt{label}. The program slows down by 88x. Without any
+to add types to @tt{label}. The program slows down by a factor of 88x. Without any
 guidance, a developer may choose to then type @tt{structs} and see the
 program slow down to 104x.  After that, typing @tt{main} (104x), @tt{ukkonen}
 (99x), and @tt{lcs} (103x) do little to improve performance. It is only
-when all the modules are typed that performance improves (0.7x).
+when all the modules are typed that performance becomes acceptable again (0.7x).
 
 
 @figure*["fig:lnm1" 
@@ -340,7 +343,7 @@ percentage of configurations suffer an order of magnitude slowdown, the
 performance of most gradually-typed configurations is within a (large) constant
 factor.
 
-We now describe the shape of the results for each benchmark.  Our procedure
+We now judge the shape of the results for each benchmark.  Our procedure
 is to focus on the left column, where @math{L}=0, and to consider the
 center and right column as rather drastic countermeasures to recover
 performance.
@@ -358,14 +361,14 @@ Increasing @math{L} improves the worst cases.
 
 @parag{MBTA}
 These lines are also steep, but flatten briefly at @math{N}=2.
-This coincides with the @deliverable{200} performance of the fully-typed
+This coincides with the performance of the fully-typed
 configuration.
-As one would expect, freedom to type additional modules brings more configurations
-into a @deliverable{200} equivalence class.
+As one would expect, freedom to type additional modules adds configurations
+to the @deliverable{200} equivalence class.
 
 @parag{ZO Traversal}
 Plots here are similar to @tt{mbta}.
-There is a gap between the @deliverable{322} performance of the fully-typed
+There is a gap between the performance of the fully-typed
 configuration and the performance of the next-fastest lattice point.
 
 @parag{Suffixtree}
@@ -380,7 +383,7 @@ These results are ideal.
 Note the large y-intercept at @math{L}=0.
 This shows that very few configurations suffer any overhead.
 
-@parag{K-CFA}
+@parag{KCFA}
 The most distinctive feature at @math{L}=0 is the flat portion between @math{N}=0
 and @math{N}=6. This characteristic remains at @math{L}=1, and overall performance
 is very good at @math{L}=2.
@@ -394,7 +397,7 @@ but the difference between @math{L}=1 and @math{L}=2 is small.
 Each @tt{tetris} plot is essentially a flat line.
 At @math{L}=0 roughly 1/3 of configurations lie below the line.
 This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
-if we let @math{L}=2.
+when @math{L}=2.
 
 @parag{Synth}
 Each slope is very low.

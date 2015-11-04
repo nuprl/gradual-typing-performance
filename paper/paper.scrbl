@@ -7,7 +7,7 @@
              Ben Greenman,
              Max S. New,
              Jan Vitek,
-             Matthias Felleisen" "Northeastern University" ""]
+             Matthias Felleisen" "Northeastern University" "Boston, MA, USA"]
 
 @title{Is Sound Gradual Typing Dead?}
 
@@ -15,27 +15,28 @@
  prototyping and delivering large and complex systems. When it comes to
  maintaining and evolving these systems, the lack of explicit static typing
  becomes a bottleneck. In response, researchers have explored the idea of
- gradually-typed programming languages which allow the post-hoc addition of
+ gradually-typed programming languages which allow the incremental addition of
  type annotations to software written in one of these untyped languages.
  Some of these new, hybrid languages insert run-time checks at the boundary
  between typed and untyped code to establish type soundness for the overall
  system. With sound gradual typing, programmers can rely on the language
  implementation to provide meaningful error messages when type invariants
  are violated.
-
  While most research on sound gradual typing remains theoretical, the
  few emerging implementations suffer from performance overheads due to these
- checks. None of the publications on this topic come with a
+ checks. None of the publications on this topic comes with a
  comprehensive performance evaluation. Worse, a few report disastrous numbers.
+
  In response, this paper proposes a method for
  evaluating the performance of gradually-typed programming languages.
- The method takes the idea
- of a gradual conversion from untyped to typed seriously and calls for
- measuring the performance of all possible partial conversions of a given untyped
- benchmark. The paper reports on the results of applying the method to
- Typed Racket, a mature implementation of sound gradual typing, and a suite
- of real-world programs of various sizes and complexities.  Based on the
- results obtained in this study, the paper concludes that, given the current state
+ The method hinges on exploring the space of partial conversions from
+ untyped to typed. For each benchmark, the performance of the different
+ versions is reported in a synthetic metric that associates runtime overhead
+ to conversion effort.
+ The paper reports on the results of applying the method to
+ Typed Racket, a mature implementation of sound gradual typing, using a suite
+ of real-world programs of various sizes and complexities.  Based on these
+ results the paper concludes that, given the current state
  of implementation technologies, sound gradual typing faces significant
  challenges. Conversely, it raises the question of how implementations could 
  reduce the overheads associated with soundness and how
