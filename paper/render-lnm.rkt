@@ -215,8 +215,9 @@
         (error 'invariant)))
   (define pict
     (vc-append (* 2 TITLE-VSPACE)
-      (frame (hc-pad 10 LEGEND) #:color "darkgray")
-      pict0))
+      pict0
+      LEGEND
+      #;pict0))
   (cache-pict pict rktd* tag)
   pict)
 
