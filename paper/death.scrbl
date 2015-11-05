@@ -25,34 +25,32 @@ The problem is that, according to our measurements, the cost of enforcing
  settings for @math{N} and @math{M}, few configurations are
  @math{N}-deliverable or @math{N/M}-usable. Worse, investing more effort
  into type annotation does not seem to pay off. In practice, converting a
- module takes a good amount of time, meaning that setting @math{L} to
- @math{2} is again a liberal choice. But even this liberal choice does not
+ module takes a good amount of time, meaning that @math{L=2}
+ is again a liberal choice. But even this liberal choice does not
  increase the number of acceptable configurations by much; worse, it
  unrealistically assumes those two modules best-suited to improve performance.
  Put differently, the number of @math{L}-step @math{N/M}-acceptable configurations remains
  small with liberal choices for all three parameters.
 
-Our use of the evaluation framework projects an extremely negative image of
- @emph{sound} gradual typing. While we are confident that the framework
- captures the proclaimed spirit of the goals of gradual typing, our
- particular application of the framework and its results must be put in
+The application of our evaluation method projects an extremely negative image of
+ @emph{sound} gradual typing. While we are confident that the method
+ captures the spirit of the goals of gradual typing, our
+ particular application of the method and its results must be put in
  perspective. @Secref{sec:threats} explains why the evaluation of Typed
- Racket---though not the framework itself---may look overly
- negative. @Secref{sec:postmortem} presents a detailed analysis of the
+ Racket may look overly
+ negative. @Secref{sec:postmortem} presents an analysis of the
  worst elements in the twelve lattices and highlights those kinds of
  contracts that impose the most significant cost.
+
+@exact{\vspace{-0.2em}}
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
-We have identified four threats to the validity of our measurements and our
- conclusions. 
-
+We have identified four threats to validity.
 First, our benchmarks are relatively small due to constraints on our
- computing infrastructure. The two largest ones consist of 13 and 16
- modules and pose serious challenges because they require
- timing @math{2^13} and @math{2^16} configurations @math{30} times each.
- In order to obtain results for these benchmarks in a reasonable
+ computing infrastructure, but even those consume considerable resources.
+ To obtain results for these benchmarks in a reasonable
  amount of time, they are run using multiple cores and the configurations
  are divided amongst the cores. Each configuration is put into a single
  process running a separate instance of the Racket VM pinned to a single
@@ -75,7 +73,7 @@ Third, the feasible set of type annotations for a program component is
  rarely unique in a gradually typed system.  Since types are translated into
  contracts in Typed Racket, the choice of type annotations may affect
  performance. All of our case studies use reasonable type annotations, but
- typing annotations with superior performance may exist. For example, one
+ type annotations with superior performance may exist. For example, one
  class-based benchmark (not included, completed after submission) exhibits
  noticeable differences though the overall result remains the
  same. Generally speaking, our results may not be fully representative.
@@ -94,6 +92,20 @@ Finally, we articulate our conclusions on the basis of current
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:postmortem"]{What are the Bottlenecks?}
+
+To analyze the cost of contract checks, we used the
+ feature-specific profiler@~cite[saf-cc-2015] on each benchmark's
+ @emph{slowest} configuration.@note{We found no statistically
+ significant difference in the proportion of runtimes spent in garbage collection
+ between the untyped & slowest configurations of any benchmark.}
+ @Figure-ref{fig:postmortem} summarizes our findings.
+
+The leftmost data column (%C) gives the percent of each benchmark's total
+ running time that was spent checking contracts.  These percentages are the
+ average of ten trials; the numbers in parentheses (S.E.) represent the standard
+ error.  Except for the short-running benchmarks (@tt{gregor},
+ @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
+ As expected, the programs spend a substantial proportion of their running time checking contracts.
 
 @; Note: these results are for v6.2. On HEAD things are 30% better; see `postmortem/profile/contract-speedup.org`
 
@@ -136,20 +148,6 @@ Finally, we articulate our conclusions on the basis of current
 
 }
 
-To analyze the cost of contract checks, we used the
- feature-specific profiler@~cite[saf-cc-2015] on each benchmark's
- @emph{slowest} configuration.@note{We found no statistically
- significant difference in the proportion of runtimes spent in garbage collection
- between the untyped & slowest configurations of any benchmark.}
- @Figure-ref{fig:postmortem} summarizes our findings.
-
-The leftmost data column (%C) gives the percent of each benchmark's total
- running time that was spent checking contracts.  These percentages are the
- average of ten trials; the numbers in parentheses (S.E.) represent the standard
- error.  Except for the short-running benchmarks (@tt{gregor},
- @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
- As expected, the programs spend a substantial proportion of their running time checking contracts.
-
 The remaining columns of @figure-ref{fig:postmortem} report what percentage
  of each benchmark's @emph{contract-checking} execution time is spent on a
  particular variety of contract:
@@ -165,8 +163,7 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
  or vice versa (in the case of @tt{lnm}).}
 
 @item{The shape @T->any[] refers to contracts with a protected
- argument and an unchecked co-domain.@note{In Racket, the @tt{any/c}
- contract is a no-op contract.}  Contracts of this shape typically guard
+ argument and an unchecked co-domain. Contracts of this shape typically guard
  typed functions called in untyped modules.}
 
 @item{Conversely, @any->T[] guards functions with (any number of)

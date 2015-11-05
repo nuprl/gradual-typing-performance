@@ -15,11 +15,11 @@ In the context of current implementation technology, sound gradual typing
 Our result calls for three orthogonal research efforts. First, Typed Racket
  is only one implementation of sound gradual typing, and it supports only
  macro-level gradual typing. Before we declare gradual typing completely
- dead, we must apply our framework to other implementations. The question
+ dead, we must apply our method to other implementations. The question
  is whether doing so will yield equally negative results.
  Safe TypeScript@~cite[rsfbv-popl-2015] appears to be one natural candidate for
  such an effort. At the same time, we are also challenged to explore how
- our evaluation framework can be adapted to the world of micro-level
+ our evaluation method can be adapted to the world of micro-level
  gradual typing, where programmers can equip even the smallest expression
  with a type annotation and leave the surrounding context untouched.  We
  conjecture that annotating complete functions or classes 
@@ -57,12 +57,12 @@ In sum, while we accept that the current implementation technology for
  directions but even theoretical ideas---such as Henglein's optimal
  coercion insertion@~cite[hr-fpca-1995] and the collapsing of chains of
  contracts@~cite[sw-popl-2010]---may take inspiration from the application
- of our framework.
+ of our method.
 
 @section[#:style 'unnumbered]{Data and Code}
 
-Our complete benchmark suite and measurements are available in
-our artifact: @linebreak[]@linebreak[] @hspace[1]
+Our benchmarks and measurements are available in
+our artifact:
 @url{http://www.ccs.neu.edu/racket/pubs/#popl15-tfgnvf}
 
 @section[#:style 'unnumbered]{Acknowledgments}

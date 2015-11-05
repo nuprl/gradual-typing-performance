@@ -169,8 +169,7 @@ Sadly, the performance improvement of the typed configuration is the
  suggests several points about these slowdowns: @itemlist[
 
 @item{Adding type annotations to the @tt{main} module neither subtracts nor
- adds much overhead because it is a driver module that is not coupled to
- other modules.}
+ adds overhead because it is a driver module.}
 
 
 @item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
@@ -188,10 +187,10 @@ Sadly, the performance improvement of the typed configuration is the
  to about 13x.
 @;  TODO - check 13x
 
- The @tt{structs} module depends on @tt{data} in the same fashion.  Because
- @tt{structs} also depends on @tt{label}, the configuration in which both
+ The @tt{structs} module depends on @tt{data} in the same fashion and
+ additionally on @tt{label}. Thus, the configuration in which both
  @tt{structs} and @tt{data} are typed still has a large slowdown. When all
- three modules are typed, the slowdown is reduced to about 5x.}
+ three modules are typed, the slowdown is reduced to 5x.}
 
 @item{Finally, the configurations close to the worst slowdown case are
  those in which the @tt{data} module is left untyped but several of the
@@ -244,14 +243,14 @@ when all the modules are typed that performance becomes acceptable again (0.7x).
 
 Our method defines the number of @step["L" "N" "M"] configurations as the key metric for measuring the quality of a gradual type system.
 For this experiment we have chosen values of 3x and 10x for @math{N} and @math{M}, respectively, and allow up to 2 additional type conversion steps.
-These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 2x.} but serve to ground our discussion.
+These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 2x, if that much.} but serve to ground our discussion.
 
 The twelve rows of graphs in @Figure-ref["fig:lnm1" "fig:lnm2"] summarize the results from exhaustively exploring the performance lattices of our benchmarks.
 Each row contains a table of summary statistics and one graph for each value of @math{L} between 0 and 2.
 
 The typed/untyped ratio is the slowdown or speedup of fully typed code over untyped code.
-Values smaller than 1 indicate a speedup due to Typed Racket optimizations.
-Values larger than 1 are slowdowns caused by interaction with untyped libraries or untyped parts of the underlying Racket runtime.
+Values smaller than @math{1.0} indicate a speedup due to Typed Racket optimizations.
+Values larger than @math{1.0} are slowdowns caused by interaction with untyped libraries or untyped parts of the underlying Racket runtime.
 The ratios range between 0.28x (@tt{lnm}) and 3.22x (@tt{zordoz}).
 
 The maximum overhead is computed by finding the running time of the slowest configuration and dividing it by the running time of the untyped configuration.
@@ -351,4 +350,4 @@ Increasing @math{L} brings consistent improvements.
 @parag{Quad}
 The @tt{quad} plots follow the same pattern as @tt{mbta} and @tt{zordoz}, despite being visually distinct.
 In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
-
+The high typed/untyped ratio is explained by small differences in the original author-supplied variants.

@@ -4,7 +4,7 @@
 
 @title[#:tag "sec:bm"]{The Benchmark Programs}
 
-For our evaluation of Typed Racket, we chose a suite of twelve programs.
+For our evaluation of Typed Racket, we use a suite of twelve programs.
 They are representative of actual user code yet small enough so that an
 exhaustive exploration of the performance lattice remains tractable.
 
@@ -107,13 +107,13 @@ benchmark programs:
 (struct DateTime [date time jd])
 ))
 @;%
-Its evaluation introduces a new class of data structure via a constructor
+Its evaluation introduces a new class of data structures via a constructor
 (@racket[DateTime]), a predicate (@racket[DateTime?]), and a number of
 selectors. A second evaluation creates a disjoint
 class of structures, meaning the selectors for the
 first class do not work on the second and vice versa.
 
-If a structure-type is exported, a configuration may place the definition
+If a structure-type definition is exported, a configuration may place the definition
 in an untyped module and its clients into the typed portion of the program.
 As explained below, importing a @racket[struct] demands that each client
 assigns a type to the structure-type definition. Now, when these typed
@@ -121,15 +121,15 @@ clients wish to exchange instances of these structure types, the type
 checker must prove that the static types match. But due to the above
 quirk, the type system assigns generative static types to imported structure
 types. Thus, even if the developers who annotate the two clients with types choose
-the same names for the imported structure types, the two clients now have
+the same names for the imported structure types, the two clients actually have
 mutually incompatible static types.
 
 @Figure-ref{fig:adaptor} illuminates the problems with the left-hand
 diagram. An export of a structure-type definition from the untyped module
 (star-shaped) to the two typed clients (black squares) ensures that the
 type checker cannot equate the two assigned static types. The right-hand
-side of the figure explains the solution. We manually add @emph{type
-adaptor modules}. Adaptor modules are specialized typed interfaces to
+side of the figure explains the solution. We manually add a @emph{type
+adaptor module}. Such adaptor modules are specialized typed interfaces to
 untyped code. The typed clients import structure-type definitions and the
 associated static types exclusively from the type adaptor, ensuring that
 only one canonical type is generated for each structure type.  Untyped
@@ -137,7 +137,7 @@ clients remain untouched and continue to use the original untyped file.
 
 Adaptor modules also reduce the number of type annotations needed at
 boundaries because all typed clients can reference a single point of
-control.@note{In our experimental framework, type adaptors are available to
+control.@note{In our experimental setup, type adaptors are available to
 all configurations as library files.}  Therefore we expect type adaptor
 modules to be of independent use to practitioners, rather than just a
 synthetic byproduct of our setup.
@@ -232,3 +232,4 @@ acquiring data on local times.
 This project implements a type-setting library.
 It depends on an external constraint satisfaction solver
 library (to divide lines of text across multiple columns) and uses two adaptor modules.
+The original author provided both untyped and fully typed variants.

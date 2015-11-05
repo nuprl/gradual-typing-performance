@@ -136,7 +136,7 @@ Finally, we can also ask the question how much work a team has to invest to
  conversion steps away from a @deliverable{N} or a @usable["N" "M"]
  configuration.}
 
-This paper thus proposes an evaluation method based on an exhaustive exploration of
+This paper thus proposes an evaluation method based on a systematic exploration of
 the performance lattice. The benefit of parameterized metrics is that
 every reader can interpret the raw data with his or her own choices for
 @math{L}, @math{N}, and @math{M}.
