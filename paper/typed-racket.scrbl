@@ -153,7 +153,7 @@ modules in a configuration.
  For each configuration in the lattice, the ratio is
  computed by dividing the average timing of the typed program by
  the untyped average. The figure omits standard deviations
- as they are small enough to not affect the discusion.
+ as they are small enough to not affect the discussion.
 
 The fully typed configuration (top) is @emph{faster} than the fully untyped
  (bottom) configuration by around 30%, which puts the typed/untyped ratio at 0.7. This can

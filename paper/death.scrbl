@@ -202,7 +202,7 @@ of placing a typed/untyped boundary between a structure type
 definition and functions closely associated with the data.  One
 example of this is the @tt{zo} analyzer; indeed, the purpose of
 that code is to provide an interface to native compiler data
-structures.  In nearly all worst-case measurememts for benchmarks
+structures.  In nearly all worst-case measurements for benchmarks
 using adaptor modules the adaptor and @any->bool[] contracts seem
 to account for a huge proportion of all contracts.
 The @tt{quad} benchmark in fact spends 93% of its contract-checking
