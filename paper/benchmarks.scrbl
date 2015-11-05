@@ -185,13 +185,13 @@ using Ukkonen's suffix tree algorithm. While the library has
 minimal external dependencies, it calls for one adaptor module for the
 algorithm's internal data structures.
 
-@parag{L-NM (Ben Greenman)}
+@parag{LNM (Ben Greenman)}
 This script analyzes the measurements included in this paper
 and generates figures 4 and 5. @; @figure-ref{fig:lnm1} and @figure-ref:lnm2}.
 Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this program is noticeably less performant.
 This program relies on an untyped image rendering library and uses two adaptor modules.
 
-@parag{K-CFA (Matt Might)}
+@parag{KCFA (Matt Might)}
 The @tt{kcfa} program implements a simple control flow analysis for a
 lambda calculus.
 The language definitions and analysis are spread across seven modules, four of
