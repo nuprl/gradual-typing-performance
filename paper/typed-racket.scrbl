@@ -41,7 +41,7 @@ with 64GB RAM. All machines run a variant of Linux and all benchmarks were run
 on Racket v6.2.
 The following benchmarks were run on machine A: @tt{sieve}, @tt{kcfa}, and @tt{gregor}.
 On machine B: @tt{suffixtree}, @tt{morse-code}, @tt{mbta}, and @tt{lnm}.
-On machine C: @tt{zo-traversal} and @tt{quad}.
+On machine C: @tt{zordoz} and @tt{quad}.
 On machine D: @tt{snake}, @tt{synth}, and @tt{tetris}.
 For each configuration we report the average of 30 runs.
 @; TODO: talk about warm up?  
@@ -220,7 +220,7 @@ when all the modules are typed that performance becomes acceptable again (0.7x).
   @(let* ([data `(("sieve"        ,SIEVE-DATA)
                   ("morse-code"   ,MORSECODE-DATA)
                   ("mbta"         ,MBTA-DATA)
-                  ("zo-traversal" ,ZORDOZ-DATA)
+                  ("zordoz"       ,ZORDOZ-DATA)
                   ("suffixtree"   ,SUFFIXTREE-DATA)
                   ("lnm"          ,LNM-DATA)
                   )])
@@ -252,7 +252,7 @@ Each row contains a table of summary statistics and one graph for each value of 
 The typed/untyped ratio is the slowdown or speedup of fully typed code over untyped code.
 Values smaller than 1 indicate a speedup due to Typed Racket optimizations.
 Values larger than 1 are slowdowns caused by interaction with untyped libraries or untyped parts of the underlying Racket runtime.
-The ratios range between 0.28x (@tt{lnm}) and 3.22x (@tt{zo-traversal}).
+The ratios range between 0.28x (@tt{lnm}) and 3.22x (@tt{zordoz}).
 
 The maximum overhead is computed by finding the running time of the slowest configuration and dividing it by the running time of the untyped configuration.
 The average overhead is obtained by computing the average over all configurations (excluding the fully-typed and untyped configurations) and dividing it by the running time of the untyped configuration.
@@ -305,7 +305,7 @@ configuration.
 As one would expect, freedom to type additional modules adds configurations
 to the @deliverable{2} equivalence class.
 
-@parag{ZO Traversal}
+@parag{Zordoz}
 Plots here are similar to @tt{mbta}.
 There is a gap between the performance of the fully-typed
 configuration and the performance of the next-fastest lattice point.
@@ -349,6 +349,6 @@ These steep curves are impressive given that @tt{gregor} has 13 modules.
 Increasing @math{L} brings consistent improvements.
 
 @parag{Quad}
-The @tt{quad} plots follow the same pattern as @tt{mbta} and the @tt{zo} analyzer, despite being visually distinct.
+The @tt{quad} plots follow the same pattern as @tt{mbta} and @tt{zordoz}, despite being visually distinct.
 In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
 

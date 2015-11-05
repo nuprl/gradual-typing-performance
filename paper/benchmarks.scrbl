@@ -69,7 +69,7 @@ Project name          & Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.}{L
 \tt{sieve}            & 2          & 35          & 17            & 0     & \pict{sieve}      & 0\%   \\
 \tt{morse-code}       & 4          & 216         & 29            & 0     & \pict{morsecode}  & 0\%   \\
 \tt{mbta}             & 4          & 369         & 77            & 89    & \pict{mbta}       & 79\%  \\
-\tt{zo-traversal}     & 5          & 1404        & 285           & 214   & \pict{zordoz}     & 99\%  \\
+\tt{zordoz}           & 5          & 1404        & 285           & 214   & \pict{zordoz}     & 99\%  \\
 \tt{suffixtree}       & 6          & 545         & 125           & 40    & \pict{suffixtree} & 97\%  \\
 \tt{lnm}              & 6          & 501         & 120           & 62    & \pict{lnm}        & 46\%  \\
 \tt{kcfa}             & 7          & 248         & 47            & 141   & \pict{kcfa}       & 99\%  \\
@@ -172,7 +172,7 @@ The original program responded asynchronously to queries with a server thread.
 We instead measure a synchronous version of the program to ensure compatibility
 with Racket's stack-based profiling tools.
 
-@parag{ZO Traversal (Ben Greenman)}
+@parag{Zordoz (Ben Greenman)}
 This tool is used for exploring and counting the frequency of
 Racket bytecode structures.
 It operates on the Racket compiler's untyped zo data structures.

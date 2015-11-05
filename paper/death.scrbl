@@ -122,7 +122,7 @@ Finally, we articulate our conclusions on the basis of current
  @row[ sieve          92    2.33         0           46       0         0        54           31]
  @row[ morse-code     29    6.80         0            0       0         0       100            0]
  @row[ mbta           39    3.65         0            0      65         0        65            0]
- @row[ zo             95    0.10         0           55      45         0        99           43]
+ @row[ zordoz         95    0.10         0           55      45         0        99           43]
  @row[ suffixtree     94    0.18        98           <1       0         2        94           18]
  @row[ lnm            81    0.73         0            9      99        91         0            0]
  @row[ kcfa           91    0.26       100            0       0         0        54           31]
@@ -200,7 +200,7 @@ In contrast, the adaptor and library columns suggest that the
 apparently high cost of predicate contracts may just be a symptom
 of placing a typed/untyped boundary between a structure type
 definition and functions closely associated with the data.  One
-example of this is the @tt{zo} analyzer; indeed, the purpose of
+example of this is @tt{zordoz}; indeed, the purpose of
 that code is to provide an interface to native compiler data
 structures.  In nearly all worst-case measurements for benchmarks
 using adaptor modules the adaptor and @any->bool[] contracts seem
@@ -215,7 +215,7 @@ structured data from raw vectors than accessing the data.
 
 Higher-order contracts show up in only a few of the benchmark
 programs. Specifically, only @tt{synth}, @tt{sieve}, and
-@tt{zo-traversal} make heavy use of higher-order functions across
+@tt{zordoz} make heavy use of higher-order functions across
 contract boundaries.  Unlike the cost of first-order contracts,
 the costs of these higher-order contracts is quite apparent in these programs.
 
