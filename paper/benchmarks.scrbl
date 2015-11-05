@@ -132,9 +132,7 @@ clients remain untouched and continue to use the original untyped file.
 
 @figure["fig:adaptor" "Inserting a type adaptor"
 @exact|{
-\includegraphics[scale=0.25]{module-graphs/adaptor1.png}
-\hspace{1cm}
-\includegraphics[scale=0.25]{module-graphs/adaptor2.png}
+\input{fig-adaptor.tex}
 }|
 ]
 
