@@ -50,14 +50,14 @@ We have identified four threats to the validity of our measurements and our
 
 First, our benchmarks are relatively small due to constraints on our
  computing infrastructure. The two largest ones consist of 13 and 16
- modules, respectively, and pose serious challenges because they require
+ modules and pose serious challenges because they require
  timing @math{2^13} and @math{2^16} configurations @math{30} times each.
- In order to obtain results for these large benchmarks in a reasonable
+ In order to obtain results for these benchmarks in a reasonable
  amount of time, they are run using multiple cores and the configurations
  are divided amongst the cores. Each configuration is put into a single
  process running a separate instance of the Racket VM pinned to a single
- core.  This parallelism may introduce confounding variables due to, for
- example, shared caches or main memory. We have attempted to control for
+ core.  This parallelism may introduce confounding variables due to,
+ e.g., shared caches or main memory. We have attempted to control for
  this case and, as far as we can tell, executing on an unloaded machine
  does not make a significant difference to our results.
 
