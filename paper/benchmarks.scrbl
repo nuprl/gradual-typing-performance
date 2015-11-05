@@ -42,7 +42,7 @@ are checked. These numbers are independent from the actual configurations.
 The colors fail to show the cost of checking data structures
 imported from another library or factored through an adaptor module.
 For example, the @tt{kcfa} graph has many thin black edges because the modules
-only share data definitions. The column labeled ``Adaptors & Libraries''
+only share data definitions. The column labeled ``Adaptors + Libraries''
 reports the proportion of observed contract checks due to adaptor modules and
 libraries.
 
