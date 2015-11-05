@@ -46,6 +46,12 @@ only share data definitions. The column labeled ``Adaptors & Libraries''
 reports the proportion of observed contract checks due to adaptor modules and
 libraries.
 
+@; This stupid figure placement is necessary to make it show up in the right place in paper
+@figure-here["fig:adaptor" "Inserting a type adaptor"
+@exact|{
+\input{fig-adaptor.tex}
+}|
+]
 
 
 
@@ -88,7 +94,6 @@ Project name          & Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.}{L
 }|
 ]
 
-
 @section{Adaptor Modules}
 
 A quirk in Racket's structure-type definitions calls for one twist to
@@ -129,12 +134,6 @@ untyped code. The typed clients import structure-type definitions and the
 associated static types exclusively from the type adaptor, ensuring that
 only one canonical type is generated for each structure type.  Untyped
 clients remain untouched and continue to use the original untyped file.
-
-@figure["fig:adaptor" "Inserting a type adaptor"
-@exact|{
-\input{fig-adaptor.tex}
-}|
-]
 
 Adaptor modules also reduce the number of type annotations needed at
 boundaries because all typed clients can reference a single point of
