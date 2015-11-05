@@ -215,7 +215,7 @@ when all the modules are typed that performance becomes acceptable again (0.7x).
 
 
 @figure*["fig:lnm1"
-  @list{@step["L" "N" "M"] results for the first 6 benchmarks}
+  @list{@step["L" "N" "M"] results for the first six benchmarks}
   @(let* ([data `(("sieve"        ,SIEVE-DATA)
                   ("morse-code"   ,MORSECODE-DATA)
                   ("mbta"         ,MBTA-DATA)
