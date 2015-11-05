@@ -164,7 +164,7 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
 @item{Library contracts separate an untyped library from typed modules
  or vice versa (in the case of @tt{lnm}).}
 
-@item{The shape @T->any[] refers to all those contracts with a protected
+@item{The shape @T->any[] refers to contracts with a protected
  argument and an unchecked co-domain.@note{In Racket, the @tt{any/c}
  contract is a no-op contract.}  Contracts of this shape typically guard
  typed functions called in untyped modules.}

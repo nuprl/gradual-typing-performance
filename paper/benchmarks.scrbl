@@ -98,7 +98,7 @@ Project name          & Modules & \twoline{Untyped}{LOC} & \twoline{Type Ann.}{L
 
 A quirk in Racket's structure-type definitions calls for one twist to
 an otherwise straightforward setup of benchmark configurations. Consider
-the following structure-type definition from @tt{Gregor}, one of the
+the following structure-type definition from @tt{gregor}, one of the
 benchmark programs: 
 @;%
 @(begin
@@ -109,9 +109,9 @@ benchmark programs:
 @;%
 Its evaluation introduces a new class of data structure via a constructor
 (@racket[DateTime]), a predicate (@racket[DateTime?]), and a number of
-selector and assignment functions. A second evaluation creates a disjoint
-class of structures, meaning the selectors and assignment functions for the
-first class do not work on the second and vice versa. 
+selectors. A second evaluation creates a disjoint
+class of structures, meaning the selectors for the
+first class do not work on the second and vice versa.
 
 If a structure-type is exported, a configuration may place the definition
 in an untyped module and its clients into the typed portion of the program.
@@ -152,24 +152,23 @@ are independently useful.
 
 @parag{Sieve (Ben Greenman)}
 This program finds prime numbers using the Sieve of Eratosthenes and is our
-smallest benchmark. It consists of two modules: a streams library and the
-Sieve implementation.
+smallest benchmark. It contains two modules: a streams library and the
+sieve code.
 We wrote this benchmark to illustrate the pitfalls of sound gradual typing.
 
 @parag{Morse code (John Clements & Neil Van Dyke)}
 This script is adapted from a morse code training program.@note{@url["http://github.com/jbclements/morse-code-trainer"]}
 The original program plays a morse code audio clip, 
-reads the keyboard for user input, and scores the input based on its
+reads keyboard input, and scores the input based on its
 Levenshtein distance from the correct answer.
 Our benchmark setup generates morse code strings and runs the
-Levenshtein algorithm on a list of frequently-used English words.
+Levenshtein algorithm on a list of frequently used words.
 
 @parag{MBTA (Matthias Felleisen)}
 The @tt{mbta} program builds a representation of Boston's public transit system
 and answers reachability queries.
 It relies on an untyped graph library.
-The original program was implemented with a server thread that
-responded to queries asynchronously.
+The original program responded asynchronously to queries with a server thread.
 We instead measure a synchronous version of the program to ensure compatibility
 with Racket's stack-based profiling tools.
 

@@ -21,7 +21,7 @@ configurations. Each configuration is run 30 times to ensure that the
 timing is not affected by random factors; some configurations take minutes
 to run.
 
-Here we present our measurements in terms of the metrics of section @secref["sec:fwk"].
+Here we present our measurements in terms of the metrics of section@secref["sec:fwk"].
 The first subsection discusses one benchmark in detail, demonstrating how we
  create the configurations, how the boundaries affect the performance of
  various configurations, and how the Typed Racket code base limits the
@@ -209,7 +209,7 @@ The performance lattice for @tt{suffixtree} is bad news for gradual typing.
 It exhibits performance ``valleys'' in which a maintenance programmer can get stuck.
 Consider starting with the untyped program, and for some reason choosing
 to add types to @tt{label}. The program slows down by a factor of 88x. Without any
-guidance, a developer may choose to then type @tt{structs} and see the
+guidance, a developer may choose to then add types to @tt{structs} and see the
 program slow down to 104x.  After that, typing @tt{main} (104x), @tt{ukkonen}
 (99x), and @tt{lcs} (103x) do little to improve performance. It is only
 when all the modules are typed that performance becomes acceptable again (0.7x).
@@ -268,9 +268,9 @@ The y-axis is a count of the number of configurations (from @math{0} to @math{2^
 If @math{L} is zero, the blue line represents the total number of configurations with performance no worse than the overhead on the x-axis.
 For arbitrary @math{L}, the blue line gives the number of configurations that can reach a configuration with performance no worse than the overhead on the x-axis in at most @math{L} conversion steps.
 
-The ``ideal'' result would be a flat line at a graph's top.
+The ideal result would be a flat line at a graph's top.
 Such a result would mean that all configurations are as fast as (or faster than) the untyped one.
-The ``worst'' scenario is a flat line at the graph's bottom, indicating that all configurations are more than 20x slower than the untyped one.
+The worst scenario is a flat line at the graph's bottom, indicating that all configurations are more than 20x slower than the untyped one.
 For ease of comparison between graphs, a dashed (@exact{\color{red}{red}}) horizontal line indicates the 60% point along each project's y-axis.
 
 

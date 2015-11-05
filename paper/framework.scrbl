@@ -117,8 +117,8 @@ Even if a configuration is not deliverable, it might be suitably fast to
  the completely untyped configuration.}
 
 Using the first parameter, we exclude deliverable configurations from the count. The
- second parameter specifies the positive boundary, that is, the acceptable
- slowdown percentage for a usable configuration.
+ second parameter specifies the positive boundary, i.e., the acceptable
+ slowdown factor for a usable configuration.
 
 @def[#:term "unacceptable"]{For any choice of @math{N} and @math{M}, a
  configuration is unacceptable if it is neither @deliverable{N} nor
