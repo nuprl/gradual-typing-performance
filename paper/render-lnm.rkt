@@ -214,10 +214,9 @@
           (vc-append TITLE-VSPACE (blank 0 10) c)))
         (error 'invariant)))
   (define pict
-    (vc-append (* 2 TITLE-VSPACE)
+    (vc-append (* 1 TITLE-VSPACE)
       pict0
-      LEGEND
-      #;pict0))
+      LEGEND))
   (cache-pict pict rktd* tag)
   pict)
 
