@@ -215,9 +215,8 @@ program slow down to 104x.  After that, typing @tt{main} (104x), @tt{ukkonen}
 when all the modules are typed that performance becomes acceptable again (0.7x).
 
 
-@figure*["fig:lnm1" 
-  @list{@step["L" "N" "M"] results for the first 6
-  benchmarks. The x-axes measure overhead and the y-axes count configurations.} 
+@figure*["fig:lnm1"
+  @list{@step["L" "N" "M"] results for the first 6 benchmarks}
   @(let* ([data `(("sieve"        ,SIEVE-DATA)
                   ("morse-code"   ,MORSECODE-DATA)
                   ("mbta"         ,MBTA-DATA)
@@ -228,7 +227,8 @@ when all the modules are typed that performance becomes acceptable again (0.7x).
      (data->pict data #:tag "1"))
 ]
 
-@figure*["fig:lnm2" @list{@step["L" "N" "M"] results for the remaining benchmarks}
+@figure*["fig:lnm2"
+  @list{@step["L" "N" "M"] results for the remaining benchmarks}
   @(let* ([data `(("kcfa"       ,KCFA-DATA)
                   ("snake"      ,SNAKE-DATA)
                   ("tetris"     ,TETRIS-DATA)

@@ -17,6 +17,7 @@
  (only-in "scripts/lnm-plot.rkt" lnm-plot)
  (only-in "scripts/summary.rkt" from-rktd summary->pict Summary)
  (only-in racket/file file->value)
+ (only-in racket/string string-join)
  "scripts/pict-types.rkt"
 )
 
@@ -67,6 +68,45 @@
 (define TITLE-VSPACE (/ GRAPH-VSPACE 2))
 
 (define CACHE-PREFIX "./compiled/lnm-cache-")
+
+(define LEGEND
+  (let ()
+    (define VSHIM (/ TITLE-VSPACE 3))
+    (: mytext (->* (String) (Any) Pict))
+    (define (mytext str [mystyle #f])
+        (text str
+          (if mystyle (cons mystyle TITLE-STYLE) TITLE-STYLE)
+          (+ 1 TEXT-FONT-SIZE)))
+    (hc-append (* 6 GRAPH-HSPACE)
+      (vl-append VSHIM
+       (mytext "x-axis: overhead")
+       (mytext "y-axis: # configs"))
+      (vl-append VSHIM
+       (hc-append 0
+         (colorize (mytext "red") "orangered")
+         (mytext " line: 60% of configs."))
+       (hc-append 0
+         (colorize (mytext "blue") "navy")
+         (mytext " line: # ")
+         (mytext "L" 'italic)
+         (mytext "-step ")
+         (mytext "N" 'italic)
+         (mytext "/")
+         (mytext "M" 'italic)
+         (mytext "-usable")))
+      (vl-append VSHIM
+       (hc-append 0
+         (colorize (mytext "green") "forestgreen")
+         (mytext " line: ")
+         (mytext "N" 'italic)
+         (mytext "=3"))
+       (hc-append 0
+         (colorize (mytext "yellow") "goldenrod")
+         (mytext " line: ")
+         (mytext "M" 'italic)
+         (mytext "=10"))))))
+
+;; =============================================================================
 
 ;; Try to read a cached pict, fall back to making a new one.
 (: data->pict (->* [(Listof (List String String))] [#:tag String] Pict))
@@ -165,7 +205,7 @@
          (error 'invariant)))
   ;; Paste the columns together, insert a little extra space to make up for
   ;;  the missing title in the first column
-  (define pict : Pict
+  (define pict0 : Pict
     (or (for/fold : (U #f Pict)
               ([prev-pict : (U #f Pict) #f])
               ([c columns])
@@ -173,6 +213,15 @@
           (hc-append GRAPH-HSPACE prev-pict c)
           (vc-append TITLE-VSPACE (blank 0 10) c)))
         (error 'invariant)))
+  (define pict
+    (vc-append (* 2 TITLE-VSPACE)
+      (frame (hc-pad 10 LEGEND) #:color "darkgray")
+      pict0))
   (cache-pict pict rktd* tag)
   pict)
+
+(: hc-pad (-> Real Pict Pict))
+(define (hc-pad n p)
+  (define b (blank 0 0))
+  (hc-append n b p b))
 
