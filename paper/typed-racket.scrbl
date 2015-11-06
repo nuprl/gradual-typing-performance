@@ -44,8 +44,6 @@ On machine B: @tt{suffixtree}, @tt{morse-code}, @tt{mbta}, and @tt{lnm}.
 On machine C: @tt{zordoz} and @tt{quad}.
 On machine D: @tt{snake}, @tt{synth}, and @tt{tetris}.
 For each configuration we report the average of 30 runs.
-@; TODO: talk about warm up?  
-@; TODO:Compilation v. interpreteration v. jitting?
 All of our runs use a single core for each configuration.
 We performed sanity checks to validate that performance differentials reported
 in the paper were not affected by the choice of machine.@;
@@ -67,8 +65,6 @@ tree nodes, @tt{label} with functions on suffixtree node labels,
 module is available with and without type annotations.  Each configuration
 thus links six modules, some of them typed and others untyped.
 
-@; TODO Why does this look so bad? Too much space at end of table
-@; TODO <jan>Can this figure go to the bottom of the column? </jan>
 @; @figure["fig:purpose-statements" "Suffixtree Modules"
 @; @tabular[#:sep @hspace[2]
 @; (list (list @bold{Module} @bold{Purpose})
@@ -173,7 +169,6 @@ Sadly, the performance improvement of the typed configuration is the
 
 
 @item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
-@; TODO -- check if 35x is correct
  or @tt{structs}---while leaving all other modules untyped causes slowdown of
  at least 35x. This group of modules are tightly coupled.
  Laying down a type-untyped boundary to separate
@@ -185,7 +180,6 @@ Sadly, the performance improvement of the typed configuration is the
  contract boundary when either of the two modules is untyped. When both
  modules are typed but all others remain untyped, the slowdown is reduced
  to about 13x.
-@;  TODO - check 13x
 
  The @tt{structs} module depends on @tt{data} in the same fashion and
  additionally on @tt{label}. Thus, the configuration in which both

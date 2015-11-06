@@ -55,7 +55,6 @@ libraries.
 
 
 
-@;; FIXME: remove figure caption rule
 @figure*["fig:bm" "Characteristics of the benchmarks"
 @exact|{
 \newcommand{\yespycket}{$\CIRCLE$}
