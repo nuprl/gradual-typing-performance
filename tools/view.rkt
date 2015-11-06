@@ -35,6 +35,8 @@
    #:args FNAME*
    ;; -- Filter valid arguments, assert that we got anything to render
    (define arg* (filter-valid-filenames FNAME*))
+   (unless (directory-exists? "compiled")
+     (make-directory "compiled"))
    (when (null? arg*)
      (raise-user-error "Usage: view.rkt DATA.rktd ..."))
    ;; -- Create a pict
