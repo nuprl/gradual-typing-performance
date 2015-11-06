@@ -144,12 +144,13 @@
                   #:plot-height [height (plot-height)]) ;; Index
   (define L-list (list 0)) ;; TODO eventually generalize
   (define num-paths (get-num-paths summary))
-  (define cutoff-point (* cutoff-proportion num-paths))
+  (define ymax 50)
+  (define cutoff-point (* cutoff-proportion ymax))
   ;; Make renderers for the lines
-  (define N-line (vertical-line N #:y-max num-paths
+  (define N-line (vertical-line N #:y-max ymax
                                   #:color 'forestgreen
                                   #:width THIN))
-  (define M-line (vertical-line M #:y-max num-paths
+  (define M-line (vertical-line M #:y-max ymax
                                   #:color 'goldenrod
                                   #:width THIN))
   (define cutoff-line (horizontal-line cutoff-point #:x-max xmax
@@ -160,7 +161,7 @@
   ;; Set plot parameters ('globally', for all picts)
   (parameterize (
     [plot-x-ticks (compute-xticks 5)]
-    [plot-y-ticks (compute-yticks num-paths 6 #:exact (list cutoff-point num-paths))]
+    [plot-y-ticks (compute-yticks ymax 6 #:exact (list cutoff-point ymax))]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     [plot-tick-size 4]
@@ -174,7 +175,7 @@
                             ([n : Real (linear-seq 0 xmax num-samples)])
                     (list n (f n)))
                   #:x-min 0 #:x-max xmax
-                  #:y-min 0 #:y-max num-paths
+                  #:y-min 0 #:y-max ymax
                   #:color 'violet
                   #:sym 'dot)))
       (define res
@@ -182,7 +183,7 @@
                    #:x-min 1
                    #:x-max xmax
                    #:y-min 0
-                   #:y-max num-paths
+                   #:y-max ymax
                    #:x-label (and labels? "Overhead (vs. untyped)")
                    #:y-label (and labels? "#Paths")
                    #:width width
