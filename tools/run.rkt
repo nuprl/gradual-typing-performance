@@ -36,6 +36,7 @@
 (define entry-point-param (make-parameter #f))
 (define exclusive-config (make-parameter #f))
 (define min-max-config (make-parameter #f))
+(define *racket-bin* (make-parameter "")) ;; Path-String
 
 ;; Get paths for all variation directories
 ;; Path Path -> Listof Path
@@ -82,8 +83,8 @@
 
            (parameterize ([current-directory new-cwd])
              ;; first compile the variation
-             (unless (system (format "taskset -c ~a raco make -v ~a"
-                                     job# (path->string file)))
+             (unless (system (format "taskset -c ~a ~araco make -v ~a"
+                                     job# (*racket-bin*) (path->string file)))
                (error (format "Compilation failed for '~a/~a', shutting down"
                               (current-directory) (path->string file))))
 
@@ -92,8 +93,8 @@
              (unless (only-compile?)
                (printf "job#~a, throwaway build/run to avoid OS caching~n" job#)
                (match-define (list in out _ err control)
-                 (process (format "taskset -c ~a racket ~a"
-                                  job# (path->string file))))
+                 (process (format "taskset -c ~a ~aracket ~a"
+                                  job# (*racket-bin*) (path->string file))))
                ;; make sure to block on this run
                (control 'wait)
                (close-input-port in)
@@ -106,7 +107,7 @@
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
-                   (process (format "taskset -c ~a racket -e '~s'" job# command)
+                   (process (format "taskset -c ~a ~aracket -e '~s'" job# (*racket-bin*) command)
                             #:set-pwd? #t))
                  ;; if this match fails, something went wrong since we put time in above
                  (define time-info
@@ -162,6 +163,10 @@
                   [("-j" "--jobs") j
                                    "The number of processes to spawn"
                                    (num-jobs j)]
+                  [("-r" "--racket") r-p
+                                     "Directory containing the preferred racket & raco executables"
+                                     (*racket-bin* (string-append r-p "/"))]
+
                   #:multi
                   [("-i" "--iterations") n-i
                                          "The number of iterations to run"
