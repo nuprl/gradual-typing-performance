@@ -1,0 +1,16 @@
+Parts List for Ben's Ridiculous Machine
+---------------------------------------
+
+CPU:         2x AMD Opteron 6376 16-core CPU ($1400)
+             http://www.newegg.com/Product/Product.aspx?Item=N82E16819113306
+Motherboard: Supermicro MBD-H8DG6-F-O E-ATX ($570)
+             http://www.newegg.com/Product/Product.aspx?Item=N82E16813182322
+RAM:         2x G.SKILL Ripjaws Z Series 64GB (2x $325)
+             http://www.newegg.com/Product/Product.aspx?Item=N82E16820231711
+Storage:     Use existing
+Case:        Fractal Design R4 ($80)
+             http://www.newegg.com/Product/Product.aspx?Item=N82E16811352038
+PSU:         Seasonic X-series 650W ($110)
+             http://www.newegg.com/Product/Product.aspx?Item=N82E16817151088
+
+Total estimate: $2810
