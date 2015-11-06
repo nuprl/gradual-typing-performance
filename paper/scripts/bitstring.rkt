@@ -1,4 +1,4 @@
-#lang typed/racket/base
+#lang typed/racket
 
 (define-type Bitstring String)
 (provide
@@ -40,13 +40,11 @@
   (only-in racket/math exact-ceiling)
   (only-in racket/format ~r)
   (only-in racket/list remove-duplicates)
+  (only-in math/number-theory factorial)
 )
 (require/typed racket/stream
-  [stream-length (-> (Sequenceof String) Index)]
-  [stream->list (-> (Sequenceof String) (Listof String))]
-  [stream-filter (-> (-> String Boolean) (Sequenceof String) (Sequenceof String))]
-  [stream-map (-> (-> (Listof String) (Listof String)) (Sequenceof (Listof String)) (Sequenceof (Listof String)))]
-  [stream-append (-> (Sequenceof (Listof String)) * (Sequenceof (Listof String)))]
+  [stream-first (-> (Sequenceof (Listof String)) (Listof String))]
+  [stream-map (-> (-> Natural (Listof String)) (Sequenceof Natural) (Sequenceof (Listof String)))]
 )
 
 ;; =============================================================================
@@ -99,29 +97,63 @@
              (cons str+ (in-reach str+ (sub1 L)))))
          (remove-duplicates (apply append res*) string=?)]))
 
+;; Goal: enumerate all lists of N strings (where N = length of argument)
+;;  such that the first string in each list is all zeroes and subsequent
+;;  elements have one 1 in a position where the previous had a 0.
 (: all-paths-from (-> Bitstring (Sequenceof (Listof Bitstring))))
 (define (all-paths-from str)
-  (define rest*
-    (for/list : (Listof (Sequenceof (Listof String)))
-              ([i : Integer (in-range (string-length str))]
-               #:when (and (<= 0 i)
-                           (bit-low? str i)))
-      (stream-map
-        (lambda ([rest : (Listof String)]) (cons str rest))
-        (all-paths-from (bitstring-flip str i)))))
-  (if (null? rest*)
-      (if (string=? "" str)
-          '(())
-          (list (list str)))
-      (apply stream-append rest*)))
+  (unless (all-low? str)
+    (error 'all-paths-from (format "Paths from '~a' not implemented (can only start from fully-untyped)" str)))
+  (define N (string-length str))
+  (stream-map
+    (lambda ([i : Natural])
+      (nat->path N i))
+    (in-range (factorial N))))
+
+;; Return one of the n! paths from fully-untyped to fully-typed
+(: nat->path (-> Natural Natural (Listof Bitstring)))
+(define (nat->path n i)
+  (define (new-bitstring) (make-string n #\0))
+  (cons (new-bitstring)
+  (for/list : (Listof Bitstring) ([level (in-range n)])
+    ;; At level i, need to flip i bits
+    (for/fold : Bitstring
+              ([S : Bitstring (new-bitstring)])
+              ([lvl : Natural (in-range (+ 1 level))])
+      ;; Invalid to flip an already-high position
+      (define flippable-posns
+        (for/vector : (Vectorof Natural)
+                    ([j : Natural (in-range n)] #:when (bit-low? S j)) j))
+      ;; Position to flip is determined by input index & level
+      (define pos-to-flip
+        (modulo i (- n lvl)))
+      (bitstring-flip S (vector-ref flippable-posns pos-to-flip))))))
+
+(: all-high? (-> Bitstring Boolean))
+(define (all-high? str)
+  (for/and ([i : Natural (in-range (string-length str))])
+    (bit-high? str i)))
+
+(: all-low? (-> Bitstring Boolean))
+(define (all-low? str)
+  (for/and ([i : Natural (in-range (string-length str))])
+    (bit-low? str i)))
 
 (: bit-high? (-> Bitstring Natural Boolean))
 (define (bit-high? str i)
-  (eq? #\1 (string-ref str i)))
+  (high? (string-ref str i)))
 
 (: bit-low? (-> Bitstring Natural Boolean))
 (define (bit-low? str i)
-  (eq? #\0 (string-ref str i)))
+  (low? (string-ref str i)))
+
+(: high? (-> Char Boolean))
+(define (high? c)
+  (eq? #\1 c))
+
+(: low? (-> Char Boolean))
+(define (low? c)
+  (eq? #\0 c))
 
 ;; =============================================================================
 
@@ -164,17 +196,22 @@
                p)
              out) ...))
   (check-all-paths
-   ["" '(())]
+   ;["" '(())]
    ["0" '(("0" "1"))]
-   ["1" '(("1"))]
+   ;["1" '(("1"))]
    ["00" '(("00" "10" "11")
            ("00" "01" "11"))]
    ["000" '(("000" "100" "110" "111")
-            ("000" "100" "101" "111")
-            ("000" "010" "110" "111")
             ("000" "010" "011" "111")
             ("000" "001" "101" "111")
+            ("000" "100" "101" "111")
+            ("000" "010" "110" "111")
             ("000" "001" "011" "111"))])
+
+  ;; If this doesn't return immediately, we have a bug
+  (let* ([all_10 (all-paths-from (make-string 20 #\0))]
+         [first_path (stream-first all_10)])
+    (check-equal? (length first_path) 21))
 
   ;; -- bitstring-flip
   (check-equal? (bitstring-flip "0" 0) "1")
@@ -182,6 +219,17 @@
   (check-equal? (bitstring-flip "0010" 2) "0000")
   (check-equal? (bitstring-flip "11011" 4) "11010")
   (check-equal? (bitstring-flip "000" 0) "100")
+
+  ;; -- all-high? / low
+  (check-true (all-high? "1111"))
+  (check-true (all-high? "1"))
+  (check-false (all-high? "0"))
+  (check-false (all-high? "00010"))
+
+  (check-false (all-low? "1101"))
+  (check-false (all-low? "1"))
+  (check-true  (all-low? "0"))
+  (check-true  (all-low? "00000"))
 
   ;; -- bit-high? bit-low?
   (check-true (bit-high? "1111" 0))
