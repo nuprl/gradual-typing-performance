@@ -20,4 +20,3 @@ EDGE-DECLS
 - `EDGE ::= ???`, valid TiKZ
 
 Whitespace and LaTeX comments don't matter.
-

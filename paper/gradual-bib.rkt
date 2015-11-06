@@ -29,21 +29,21 @@
 
   (define IEEE "IEEE ")
   (define ACM "ACM ")
-  (define International "Intl. ")
-  (define Conference "Conf. ")
-  (define Workshop "Wksp. ")
-  (define Journal "J. ")
-  (define Symposium "Sym. ")
-  (define Transactions "Trans. ")
+  (define International "International ")
+  (define Conference "Conference ")
+  (define Workshop "Workshop ")
+  (define Journal "Journal ")
+  (define Symposium "Symposium ")
+  (define Transactions "Transactions ")
 
   (define/short asplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
-  (define/short fpca "FPCA" (string-append ACM International Conference "Functional Programming Languages and Computer Architecture"))
-  (define/short icfp "ICFP" (string-append ACM International Conference "Functional Programming"))
-  (define/short pldi "PLDI" (string-append ACM Conference "Programming Language Design and Implementation"))
-  (define/short popl "POPL" (string-append ACM Symposium "Principles of Programming Languages"))
+  (define/short fpca "FPCA" (string-append ACM International Conference "on Functional Programming Languages and Computer Architecture"))
+  (define/short icfp "ICFP" (string-append ACM International Conference "on Functional Programming"))
+  (define/short pldi "PLDI" (string-append ACM Conference "on Programming Language Design and Implementation"))
+  (define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
   (define/short lncs "LNCS" "Lecture Notes in Computer Science")
   (define/short sigplan-notices "SIGPLAN Notices" (string-append ACM "SIGPLAN Notices"))
-  (define/short scheme-workshop "SFP" (string-append Workshop "Scheme and Functional Programming"))
+  (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
   (define/short ml-workshop "ML" (string-append Workshop "on ML"))
   (define/short jfp "JFP" (string-append Journal "Functional Programming"))
   (define/short hosc "HOSC" "Higher-Order and Symbolic Programming")
@@ -51,10 +51,10 @@
   (define/short lsc "LSC" "LISP and Symbolic Computation")
   (define/short ifl "IFL" (string-append International Symposium "Functional and Logic Programming"))
   (define/short tfp "TFP" (string-append Symposium "Trends in Functional Programming"))
-  (define/short ecoop "ECOOP" (string-append "European " Conference "Object-Oriented Programming"))
-  (define/short oopsla "OOPSLA" (string-append ACM Conference "Object-Oriented Programming, Systems, Languages and Applications"))
+  (define/short ecoop "ECOOP" (string-append "European " Conference "on Object-Oriented Programming"))
+  (define/short oopsla "OOPSLA" (string-append ACM Conference "on Object-Oriented Programming, Systems, Languages and Applications"))
   (define/short ieee-software (string-append IEEE "Software"))
-  (define/short toplas "TOPLAS" (string-append Transactions "Programming Languages and Systems"))
+  (define/short toplas "TOPLAS" (string-append Transactions "on Programming Languages and Systems"))
   (define/short dls "DLS" "Dynamic Languages Symposium")
   (define/short flops "FLOPS" (string-append Symposium "Functional and Logic Programming"))
   (define/short esop "ESOP" (string-append "European " Symposium "on Programming"))
@@ -78,8 +78,8 @@
   (make-bib
     #:title "Understanding TypeScript"
     #:author (authors "Gavin Bierman" "Martin Abadi" "Mads Torgersen")
-    #:location (proceedings-location ecoop)
-    #:url "http://dx.doi.org/10.1007/978-3-662-44202-9_11"
+    #:location (proceedings-location ecoop #:pages '(257 281))
+    ;#:url "http://dx.doi.org/10.1007/978-3-662-44202-9_11"
     #:date 2014))
 
 
@@ -393,7 +393,10 @@
   (make-bib
    #:author (authors "Esteban Allende" "Oscar Callaú" "Johan Fabry" "Éric Tanter" "Marcus Denker")
    #:title "Gradual typing for Smalltalk"
-   #:location (journal-location "Science of Computer Programming")
+   #:location (journal-location "Science of Computer Programming"
+                                #:volume 96
+                                #:number 1
+                                #:pages '(52 69))
    #:date 2013))
 
 (define aft-dls-2013
@@ -450,14 +453,14 @@
                      "Matthew Flatt" "Sam Tobin-Hochstadt"
                      "Matthias Felleisen")
    #:title "Towards Practical Gradual Typing"
-   #:location (proceedings-location ecoop)
+   #:location (proceedings-location ecoop #:pages '(4 27))
    #:date 2015))
 
 (define rnv-ecoop-2015
   (make-bib
    #:author (authors "Gregor Richards" "Francesco Zappa Nardelli" "Jan Vitek")
    #:title "Concrete Types for TypeScript"
-   #:location (proceedings-location ecoop)
+   #:location (proceedings-location ecoop #:pages '(76 100))
    #:date 2015))
 
 ;; ----------------------------------------

@@ -3,8 +3,8 @@
 ;; Convert a dataset to a spreadsheet.
 
 ;; Printed spreadsheets have:
-;; - A title row, counting the number of runs for each variation
-;; - A data row for each variation.
+;; - A title row, counting the number of runs for each configuration
+;; - A data row for each configuration.
 ;;   The leftmost column is the configuration's bitstring, the rest of the
 ;;   columns are experimental results.
 

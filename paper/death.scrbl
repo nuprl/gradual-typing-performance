@@ -25,40 +25,37 @@ The problem is that, according to our measurements, the cost of enforcing
  settings for @math{N} and @math{M}, few configurations are
  @math{N}-deliverable or @math{N/M}-usable. Worse, investing more effort
  into type annotation does not seem to pay off. In practice, converting a
- module takes a good portion of a workday, meaning that setting @math{L} to
- @math{2} is again a liberal choice. But even allowing the conversion of
- two additional modules @emph{and} the unrealistic assumption that the
- developer picks two modules best-suited to improve performance does not
- increase the number of acceptable configurations by much. Put differently,
- the number of @math{L}-step @math{N/M}-acceptable configurations remains
+ module takes a good amount of time, meaning that @math{L=2}
+ is again a liberal choice. But even this liberal choice does not
+ increase the number of acceptable configurations by much; worse, it
+ unrealistically assumes those two modules best-suited to improve performance.
+ Put differently, the number of @math{L}-step @math{N/M}-acceptable configurations remains
  small with liberal choices for all three parameters.
 
-Our use of the evaluation framework projects an extremely negative image of
- @emph{sound} gradual typing. While we are confident that the framework
- captures the proclaimed spirit of the goals of gradual typing, our
- particular application of the framework and its results must be put in
+The application of our evaluation method projects an extremely negative image of
+ @emph{sound} gradual typing. While we are confident that the method
+ captures the spirit of the goals of gradual typing, our
+ particular application of the method and its results must be put in
  perspective. @Secref{sec:threats} explains why the evaluation of Typed
- Racket---though not the framework itself---may look overly
- negative. @Secref{sec:postmortem} presents a detailed analysis of the
+ Racket may look overly
+ negative. @Secref{sec:postmortem} presents an analysis of the
  worst elements in the twelve lattices and highlights those kinds of
  contracts that impose the most significant cost.
+
+@exact{\vspace{-0.2em}}
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
-We have identified four threats to the validity of our measurements and our
- conclusions. 
-
+We have identified four threats to validity.
 First, our benchmarks are relatively small due to constraints on our
- computing infrastructure. The two largest ones consist of 13 and 16
- modules, respectively, and pose serious challenges because they require
- timing @math{2^13} and @math{2^16} configurations @math{30} times each.
- In order to obtain results for these large benchmarks in a reasonable
+ computing infrastructure, but even those consume considerable resources.
+ To obtain results for these benchmarks in a reasonable
  amount of time, they are run using multiple cores and the configurations
  are divided amongst the cores. Each configuration is put into a single
  process running a separate instance of the Racket VM pinned to a single
- core.  This parallelism may introduce confounding variables due to, for
- example, shared caches or main memory. We have attempted to control for
+ core.  This parallelism may introduce confounding variables due to,
+ e.g., shared caches or main memory. We have attempted to control for
  this case and, as far as we can tell, executing on an unloaded machine
  does not make a significant difference to our results.
 
@@ -72,23 +69,19 @@ Second, several of our benchmarks import some modules from Racket's suite of
  partially typed configurations. Regardless, given the low typed/untyped ratios, 
  these libraries are unlikely to affect our conclusions.
 
-Third, our method imagines a particularly @emph{free} approach to
- annotating programs with types. By ``free'' we mean that we do not expect
- software engineers to add types to modules in any particular
- order. Although this freedom is representative of some kind of maintenance
- work---add types when bugs are repaired and only then---a team may decide
- to add types to an entire project in a focused approach. In this case, they
- may come up with a particular kind of plan that avoids all of these
- performance traps. Roughly speaking, such a plan would correspond to a
- specific path from the bottom element of the performance lattice to the top
- element.  Sadly our current measurements suggest that almost all
- bottom-to-top paths in our performance lattices go through
- performance bottlenecks.  As the  @tt{suffixtree} example
- demonstrates, a path-based approach depends very much on the structure of
- the module graph.  We therefore conjecture that some of the ideas offered
- in the conclusion section may help such planned, path-based approaches.
+Third, the feasible set of type annotations for a program component is
+ rarely unique in a gradually typed system.  Since types are translated into
+ contracts in Typed Racket, the choice of type annotations may affect
+ performance. All of our case studies use reasonable type annotations, but
+ type annotations with superior performance may exist. For example, one
+ class-based benchmark (not included, completed after submission) exhibits
+ noticeable differences though the overall result remains the
+ same. Generally speaking, our results may not be fully representative.
+ Then again, it is still a failure of gradual typing if a programmer must
+ divine the best possible type annotations to obtain reasonable
+ performance.
 
-Fourth, we articulate our conclusions on the basis of current
+Finally, we articulate our conclusions on the basis of current
  implementation technology. Typed Racket compiles to Racket, which uses
  rather conventional JIT compilation technology. It makes no attempt to
  reduce the overhead of contracts or to exploit contracts for
@@ -99,6 +92,20 @@ Fourth, we articulate our conclusions on the basis of current
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:postmortem"]{What are the Bottlenecks?}
+
+To analyze the cost of contract checks, we used the
+ feature-specific profiler@~cite[saf-cc-2015] on each benchmark's
+ @emph{slowest} configuration.@note{We found no statistically
+ significant difference in the proportion of runtimes spent in garbage collection
+ between the untyped & slowest configurations of any benchmark.}
+ @Figure-ref{fig:postmortem} summarizes our findings.
+
+The leftmost data column (%C) gives the percent of each benchmark's total
+ running time that was spent checking contracts.  These percentages are the
+ average of ten trials; the numbers in parentheses (S.E.) represent the standard
+ error.  Except for the short-running benchmarks (@tt{gregor},
+ @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
+ As expected, the programs spend a substantial proportion of their running time checking contracts.
 
 @; Note: these results are for v6.2. On HEAD things are 30% better; see `postmortem/profile/contract-speedup.org`
 
@@ -127,7 +134,7 @@ Fourth, we articulate our conclusions on the basis of current
  @row[ sieve          92    2.33         0           46       0         0        54           31]
  @row[ morse-code     29    6.80         0            0       0         0       100            0]
  @row[ mbta           39    3.65         0            0      65         0        65            0]
- @row[ zo             95    0.10         0           55      45         0        99           43]
+ @row[ zordoz         95    0.10         0           55      45         0        99           43]
  @row[ suffixtree     94    0.18        98           <1       0         2        94           18]
  @row[ lnm            81    0.73         0            9      99        91         0            0]
  @row[ kcfa           91    0.26       100            0       0         0        54           31]
@@ -140,18 +147,6 @@ Fourth, we articulate our conclusions on the basis of current
 ]
 
 }
-
-To analyze the cost of dynamic contract checks, we used the
- feature-specific profiler@~cite[saf-cc-2015] on each benchmark's
- @emph{slowest} configuration in the lattice. @Figure-ref{fig:postmortem}
- summarizes our findings.  
-
-The leftmost data column (%C) gives the percent of each benchmark's total
- running time that was spent checking contracts.  These numbers are the
- average of ten trials; the numbers in parentheses represent the standard
- error.  Except for the short-running benchmarks (@tt{gregor},
- @tt{morse-code}, and @tt{mbta}), we see little variability across trials.
- As expected, the programs spend a huge proportion of their running time checking contracts.
 
 The remaining columns of @figure-ref{fig:postmortem} report what percentage
  of each benchmark's @emph{contract-checking} execution time is spent on a
@@ -167,9 +162,8 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
 @item{Library contracts separate an untyped library from typed modules
  or vice versa (in the case of @tt{lnm}).}
 
-@item{The shape @T->any[] refers to all those contracts with a protected
- argument and an unchecked co-domain.@note{In Racket, the @tt{any/c}
- contract is a no-op contract.}  Contracts of this shape typically guard
+@item{The shape @T->any[] refers to contracts with a protected
+ argument and an unchecked co-domain. Contracts of this shape typically guard
  typed functions called in untyped modules.}
 
 @item{Conversely, @any->T[] guards functions with (any number of)
@@ -183,7 +177,7 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
  subset of the @any->T[] column.}  
 ]
 @;
-Other columns overlap, too.  For example, the @tt{mbta} benchmark in
+Other columns overlap as well.  The @tt{mbta} benchmark in
 particular spends 65% of its contract-checking time on first-order
 library functions. These checks are always triggered by a typed module on
 immutable arguments, so Typed Racket optimizes them to @any->T[] contracts.
@@ -191,7 +185,7 @@ immutable arguments, so Typed Racket optimizes them to @any->T[] contracts.
 @; Non-overlapping pairs: (adaptor, library), (higher-order, any->T), (higher-order, any->bool), *(T->any, any->T)
 
 Most strikingly, the @any->bool[] column suggests that on average
-twenty percent (20%) of the time our benchmarks spend checking
+twenty percent of the time our benchmarks spend checking
 contracts goes towards checking that predicate functions satisfy
 the trivial @any->bool[] contract.  Moreover, nearly all of these
 predicates are generated by Racket structure definitions, so their
@@ -203,19 +197,18 @@ In contrast, the adaptor and library columns suggest that the
 apparently high cost of predicate contracts may just be a symptom
 of placing a typed/untyped boundary between a structure type
 definition and functions closely associated with the data.  One
-example of this is the @tt{zo} analyzer; indeed, the purpose of
+example of this is @tt{zordoz}; indeed, the purpose of
 that code is to provide an interface to native compiler data
-structures.  In nearly all worst-case measurememts for benchmarks
+structures.  In nearly all worst-case measurements for benchmarks
 using adaptor modules the adaptor and @any->bool[] contracts seem
-to account for a huge proportion of all contracts.  The apparent
-exceptions are @tt{synth} and @tt{quad}.  Only @tt{synth} is
-a true exception, though; it spends much more time creating
-structured data from raw vectors than accessing the data.  The
-@tt{quad} benchmark in fact spends 93% of its contract-checking
+to account for a huge proportion of all contracts.
+The @tt{quad} benchmark in fact spends 93% of its contract-checking
 time validating data structures, which are stored in fixed-length
 lists rather than in structure types.  These lists do not require
 an adaptor, but their types translate to contracts that are far
 more expensive than plain structure type predicates.
+The only exception is @tt{synth}. It spends much more time creating
+structured data from raw vectors than accessing the data.
 
 Higher-order contracts show up in only a few of the benchmark
 programs. Specifically, only @tt{synth}, @tt{sieve}, and
@@ -224,14 +217,14 @@ contract boundaries.  Unlike the cost of first-order contracts,
 the costs of these higher-order contracts is quite apparent in these programs.
 
 Finally, the @T->any[] and @any->T[] columns give a rough
-impression of whether untyped or typed modules trigger most
+impression of whether untyped or typed modules trigger more
 contract checks.  We confirmed these findings by inspecting the
 individual programs.  For all but three benchmarks, the high-cost
 contracts are triggered by calls from a typed module into an
 untyped library or data definition.  This includes @tt{kcfa},
 although half its calls from typed to untyped code used mutable
 arguments and hence could not be reduced to @tt{any/c}.  The
-exceptions are @tt{lnm}, @tt{synth}, and @tt{quad}, which all
-suffer more when untyped modules imported definitions from typed
+exceptions are @tt{lnm}, @tt{synth}, and @tt{quad}, which
+suffer from slowdowns when untyped modules import definitions from typed
 ones.
 

@@ -8,9 +8,13 @@
   ;; (->* [Path-String] [#:graph Path-String] Summary)
   ;; Convert a filepath to a summary object
 
-  get-num-variations
+  get-num-paths
   ;; (-> Summary Index)
-  ;; Get the number of variations from a Summary
+  ;; Count the number of possible paths through a lattice
+
+  get-num-configurations
+  ;; (-> Summary Index)
+  ;; Get the number of configurations from a Summary
 
   get-project-name
   ;; (-> Summary String)
@@ -19,36 +23,44 @@
   has-typed?
   ;; (-> Summary String (Listof String) Boolean)
   ;; (has-typed? S v name*)
-  ;; True if the module names `name*` are all typed in variation `v`
+  ;; True if the module names `name*` are all typed in configuration `v`
 
   has-untyped?
   ;; (-> Summary String (Listof String) Boolean)
   ;; (has-untyped? S v name*)
-  ;; True if all module names `name*` are untyped in variation `v`
+  ;; True if all module names `name*` are untyped in configuration `v`
 
   typed-modules
   ;; (-> Summary BitString (Listof String))
-  ;; Return a list of modules that are typed in this variation
+  ;; Return a list of modules that are typed in this configuration
 
   untyped-modules
   ;; (-> Summary BitString (Listof String))
-  ;; Return a list of modules that are untyped in this variation
+  ;; Return a list of modules that are untyped in this configuration
 
   untyped-mean
   ;; (-> Summary Real)
-  ;; Get the mean runtime of the Summary's untyped variation
+  ;; Get the mean runtime of the Summary's untyped configuration
 
-  variation->mean-runtime
+  configuration->mean-runtime
   ;; (-> Summary String Real)
-  ;; Get the mean runtime of a variation, represented as a bitstring
+  ;; Get the mean runtime of a configuration, represented as a bitstring
 
-  predicate->variations
+  predicate->configurations
   ;; (-> Summary (-> String Boolean) (Streamof String))
-  ;; Return a stream of variations satisfying the predicate
+  ;; Return a stream of configurations satisfying the predicate
 
-  all-variations
+  all-configurations
   ;; (-> Summary (Streamof String))
-  ;; Return a stream of all variations in the Summary
+  ;; Return a stream of all configurations in the Summary
+
+  all-paths
+  ;; (-> Summary (Sequenceof LatticePath))
+  ;; Return a stream of all paths through the lattice
+
+  path->max-runtime
+  ;; (-> Summary LatticePath Real)
+  ;; Get the max runtime of any lattice point along a path
 
   summary->pict
   ;; (-> Summary Pict)
@@ -62,8 +74,8 @@
 
 (require
   racket/path
-  racket/runtime-path
   math/statistics
+  (only-in math/number-theory factorial)
   (only-in racket/list range) ;; because in-range has the wrong type
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
@@ -72,11 +84,7 @@
   "modulegraph.rkt"
   "bitstring.rkt"
   "pict-types.rkt"
-)
-
-(require/typed racket/stream
-  [stream-map (-> (-> Index String) (Sequenceof Index) (Sequenceof String))]
-  [stream-filter (-> (-> String Boolean) (Sequenceof String) (Sequenceof String))]
+  "stream-types.rkt"
 )
 
 ;; =============================================================================
@@ -97,11 +105,13 @@
 
 (define-type Summary summary)
 
+(define-type LatticePath (Listof Bitstring))
+
 ;; -----------------------------------------------------------------------------
 ;; -- constants
 
 ;; Default location for TiKZ module graphs
-(define-runtime-path MODULE_GRAPH_DIR "../module-graphs")
+(define MODULE_GRAPH_DIR "module-graphs")
 
 ;; -----------------------------------------------------------------------------
 ;; -- parsing
@@ -109,8 +119,8 @@
 (define-syntax-rule (parse-error msg arg* ...)
   (error 'summary (format msg arg* ...)))
 
-(define-syntax-rule (strip-suffix fname)
-  (car (string-split fname ".")))
+(define-syntax-rule (strip-suffix str)
+  (car (string-split str ".")))
 
 ;; Create a summary from a raw dataset.
 ;; Infers the location of the module graph if #:graph is not given explicitly
@@ -119,10 +129,12 @@
   (define path (string->path filename))
   (define-values (dataset num-runs) (rktd->dataset path))
   (define gp (or graph-path (infer-graph path)))
-  (define mg (if (file-exists? gp)
-               (from-tex gp)
-               (from-directory
-                 (string->path (strip-suffix filename)))))
+  (define mg
+    (if gp
+      (from-tex gp)
+      (begin
+        (printf "Warning: could not find module graph for '~a'.\n" filename)
+        (from-directory (string->path (strip-suffix filename))))))
   (validate-modulegraph dataset mg)
   (summary path dataset mg num-runs))
 
@@ -150,7 +162,7 @@
     (define unboxed (unbox num-runs))
     (if (not unboxed)
         (set-box! num-runs (length inner))
-        (unless (= unboxed (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths (~a vs. ~a); all variations must describe the same number of runs.\n  Bad row: ~a" row-index unboxed (length inner) inner))))
+        (unless (= unboxed (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths (~a vs. ~a); all configurations must describe the same number of runs.\n  Bad row: ~a" row-index unboxed (length inner) inner))))
   (values vec (or (unbox num-runs) (error 'neverhappens))))
 
 ;; Check that the dataset and module graph agree
@@ -162,29 +174,57 @@
     (parse-error "Dataset and module graph represent different numbers of modules. The dataset says '~a' but the module graph says '~a'" ds-num-modules mg-num-modules)))
 
 ;; Guess the location of the module graph matching the dataset
-(: infer-graph (-> Path Path-String))
+(: infer-graph (-> Path (U #f Path-String)))
 (define (infer-graph path)
   ;; Get the prefix of the path
   (define tag (path->project-name path))
   ;; Search in the MODULE_GRAPH_DIR directory for a matching TeX file
-  (build-path MODULE_GRAPH_DIR
-              (string-append tag ".tex")))
+  (define relative-pathstring (format "../~a/~a.tex" MODULE_GRAPH_DIR tag))
+  (define gp (build-path (or (path-only path) (error 'infer-graph))
+                         (string->path relative-pathstring)))
+  (and (file-exists? gp) gp))
 
 ;; -----------------------------------------------------------------------------
 ;; -- querying
 
-(: all-variations (-> Summary (Sequenceof String)))
-(define (all-variations sm)
+(: all-configurations (-> Summary (Sequenceof String)))
+(define (all-configurations sm)
   (define M (get-num-modules sm))
   (stream-map (lambda ([n : Index]) (natural->bitstring n #:pad M))
-              (in-range (get-num-variations sm))))
+              (in-range (get-num-configurations sm))))
+
+(: all-paths (-> Summary (Sequenceof LatticePath)))
+(define (all-paths S)
+  (all-paths-from (natural->bitstring 0 #:pad (get-num-modules S))))
+
+(: path->max-runtime (-> Summary LatticePath Nonnegative-Real))
+(define (path->max-runtime S p*)
+  (for/fold ([worst : Nonnegative-Real 0])
+            ([c (in-list p*)])
+    (let ([t (configuration->mean-runtime S c)])
+      (max worst t))))
+
+;; This is a hack, until we have a REAL definition of configurations that's
+;; parameterized by the Summary object.
+(: assert-configuration-length (-> Summary String Void))
+(define (assert-configuration-length S v)
+  (define N (get-num-modules S))
+  (unless (= N (string-length v))
+    (error 'assert-configuration-length (format "Expected a configuration with ~a modules, got '~a'" N v))))
 
 (: get-module-names (-> Summary (Listof String)))
 (define (get-module-names sm)
   (module-names (summary-modulegraph sm)))
 
-(: get-num-variations (-> Summary Index))
-(define (get-num-variations sm)
+(: get-num-paths (-> Summary Index))
+(define (get-num-paths sm)
+  (let ([r (factorial (get-num-modules sm))])
+    (if (index? r)
+        r
+        (error 'get-num-paths "Factorial too large, not an index!\n"))))
+
+(: get-num-configurations (-> Summary Index))
+(define (get-num-configurations sm)
   (vector-length (summary-dataset sm)))
 
 (: get-num-runs (-> Summary Index))
@@ -202,31 +242,35 @@
 
 (: has-typed? (-> Summary String (Listof String) Boolean))
 (define (has-typed? S v names*)
+  (assert-configuration-length S v)
   (for/and ([name (in-list names*)])
     (bit-high? v (name->index (summary-modulegraph S) name))))
 
 (: has-untyped? (-> Summary String (Listof String) Boolean))
 (define (has-untyped? S v names*)
+  (assert-configuration-length S v)
   (for/and ([name (in-list names*)])
     (bit-low? v (name->index (summary-modulegraph S) name))))
 
 (: typed-modules (-> Summary String (Listof String)))
 (define (typed-modules S v)
+  (assert-configuration-length S v)
   (for/list ([i (in-list (range (string-length v)))]
              #:when (bit-high? v i))
     (index->name (summary-modulegraph S) i)))
 
 (: untyped-modules (-> Summary String (Listof String)))
 (define (untyped-modules S v)
+  (assert-configuration-length S v)
   (for/list ([i : Natural (in-list (range (string-length v)))]
              #:when (bit-low? v i))
     (index->name (summary-modulegraph S) i)))
 
-(: predicate->variations (-> Summary (-> String Boolean) (Sequenceof String)))
-(define (predicate->variations sm p)
-  (stream-filter p (all-variations sm)))
+(: predicate->configurations (-> Summary (-> String Boolean) (Sequenceof String)))
+(define (predicate->configurations sm p)
+  (stream-filter p (all-configurations sm)))
 
-;; Return all data for the untyped variation
+;; Return all data for the untyped configuration
 (: untyped-runtimes (-> Summary (Listof Index)))
 (define (untyped-runtimes sm)
   (vector-ref (summary-dataset sm) 0))
@@ -235,7 +279,7 @@
 (define (untyped-mean sm)
   (mean (untyped-runtimes sm)))
 
-;; Return all data for the typed variation
+;; Return all data for the typed configuration
 (: typed-runtimes (-> Summary (Listof Index)))
 (define (typed-runtimes sm)
   (define vec (summary-dataset sm))
@@ -245,9 +289,10 @@
 (define (typed-mean sm)
   (mean (typed-runtimes sm)))
 
-(: variation->mean-runtime (-> Summary String Real))
-(define (variation->mean-runtime sm var)
-  (index->mean-runtime sm (bitstring->natural var)))
+(: configuration->mean-runtime (-> Summary String Real))
+(define (configuration->mean-runtime S v)
+  (assert-configuration-length S v) ;; Is this going to be expensive?
+  (index->mean-runtime S (bitstring->natural v)))
 
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime sm i)
@@ -275,16 +320,13 @@
 
 (: avg-lattice-point (-> Summary Real))
 (define (avg-lattice-point sm)
-  (define N (- (get-num-variations sm) 2))
-  (cond
-   [(zero? N)
-    0]
-   [else
-    (: f (-> Real Real Real))
-    (define (f acc mean) (+ acc (* mean (/ 1 N))))
-    (fold-lattice sm f #:init 0)]))
+  (define N (- (get-num-configurations sm) 2))
+  (define 1/N (if (zero? N) 0 (/ 1 N)))
+  (: f (-> Real Real Real))
+  (define (f acc mean) (+ acc (* mean 1/N)))
+  (fold-lattice sm f #:init 0))
 
-;; Count the number of variations with performance no worse than N times untyped
+;; Count the number of configurations with performance no worse than N times untyped
 (: deliverable (-> Summary Index Natural))
 (define (deliverable sm N)
   (define baseline (* N (untyped-mean sm)))
@@ -338,8 +380,8 @@
   (define vpad (/ height 5))
   (define baseline (untyped-mean sm))
   (when (zero? baseline)
-    (raise-user-error 'summary "Untyped mean is 0ms. Cannot produce summary figures."))
-  (define numvars (get-num-variations sm))
+    (raise-user-error 'summary "Untyped runtime is 0ms. Cannot produce summary results."))
+  (define numvars (get-num-configurations sm))
   (: round2 (-> Real String))
   (define (round2 n) (string-append (~r n #:precision (list '= 2)) "x"))
   (: overhead (-> Real String))
@@ -352,13 +394,12 @@
   (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
   (define left-column
     (vr-append vspace
-               (text->title (or user-title (get-project-name sm))) ;; BOLDER
+               (text->title (or user-title (get-project-name sm)))
                (text->pict "typed/untyped ratio")
                (text->pict "max. overhead")
                (text->pict "mean overhead")
-               (text->pict (format "~a-deliverable" (* 100 PARAM-N)))
-               (text->pict (format "~a/~a-usable" (* 100 PARAM-N) (* 100 PARAM-M)))
-               ))
+               (text->pict (format "~a-deliverable" PARAM-N))
+               (text->pict (format "~a/~a-usable" PARAM-N PARAM-M))))
   (define right-column
     (vr-append vspace (text->pict (format "(~a modules)" (get-num-modules sm)))
     (ht-append (/ hspace 2) (vr-append vspace
@@ -372,3 +413,21 @@
              (hc-append hspace left-column right-column)
              (blank 1 vpad)))
 
+;; =============================================================================
+
+;(module+ test
+;  (require rackunit)
+;
+;  ;; -- infer-graph
+;  (check-equal? "foo/bar/../module-graphs/baz.tex"
+;                (path->string (infer-graph (string->path "foo/bar/baz.rktd"))))
+;  (check-equal? "foo/bar/../module-graphs/baz.tex"
+;                (path->string (infer-graph (string->path "foo/bar/baz-and-other-ignored-stuff.rktd"))))
+;
+;  ;; -- all configurations
+;
+;  ;; -- from rktd
+;  (define sm (from-rktd "../data/echo.rktd"))
+;  (check-equal? (stream->list (all-configurations sm))
+;                '("0000" "0001" "0010" "0011" "0100" "0101" "0110" "0111" "1000" "1001" "1010" "1011" "1100" "1101" "1110" "1111"))
+;)

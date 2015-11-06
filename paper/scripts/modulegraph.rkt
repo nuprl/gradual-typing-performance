@@ -9,7 +9,8 @@
 (provide
   from-directory
   ;; (-> Path ModuleGraph)
-  ;; Parse a directory into a module graph
+  ;; Parse a directory into a module graph.
+  ;; Does not collect module dependency information.
 
   from-tex
   ;; (-> Path-String ModuleGraph)
@@ -46,7 +47,6 @@
 
 (require
   racket/match
-  (only-in racket/list last)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
   (only-in racket/string string-split string-trim)
@@ -57,10 +57,10 @@
 
 ;; A module graph is represented as an adjacency list (all graphs are DAGs)
 ;; Invariant: names in the adjlist are kept in alphabetical order.
-(define-type AdjList (Listof (Listof String)))
 (struct modulegraph (
   [project-name : String]
   [adjlist : AdjList]) #:transparent)
+(define-type AdjList (Listof (Listof String)))
 (define-type ModuleGraph modulegraph)
 
 ;; Get the name of the project represented by a module graph
@@ -112,13 +112,15 @@
 
 (: rkt-file? (-> Path Boolean))
 (define (rkt-file? p)
-  (string=? "rkt"
-            (last (string-split (path->string p) "."))))
+  (regexp-match? #rx"\\.rkt$" (path->string p)))
 
 (: from-directory (-> Path ModuleGraph))
 (define (from-directory parent)
   (define name (path->project-name parent))
-  (define u-dir (build-path parent "untyped"))
+  ;; TODO works when we're in the paper/ directory, but nowhere else
+  (define u-dir (build-path ".." name "untyped"))
+  (unless (directory-exists? u-dir)
+    (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name)))
   ;; No edges, just nodes
   (: adjlist AdjList)
   (define adjlist
@@ -292,7 +294,7 @@
     (or (for/or : (U #f String) ([tx (in-list nodes)])
           (and (= id (texnode-id tx))
                (texnode-name tx)))
-        (error 'tex->modulegraph)))
+        (error 'tex->modulegraph (format "Could not convert tikz node id ~a to a module name" id))))
   ;; Create an adjacency list by finding the matching edges for each node
   (: adjlist (Listof (Pairof (Pairof Index String) (Listof String))))
   (define adjlist
@@ -325,3 +327,21 @@
     (for/list ([tag+neighbors (in-list sorted)])
       (cons (cdar tag+neighbors) (cdr tag+neighbors))))
   (modulegraph project-name untagged))
+
+;; =============================================================================
+
+(module+ test
+  ;; -- Simple test, just make sure all module graphs parse.
+  (require/typed glob [in-glob (-> String (Sequenceof String))])
+  (: test-file (-> String Void))
+  (define (test-file fn)
+    (define mg (from-tex fn))
+    (printf "Parsed '~a' from '~a'\n" mg fn))
+  (for ([fname (in-glob "../module-graphs/*.tex")])
+    (printf "TESTING ~a\n" fname)
+    (test-file fname))
+
+  ;; -- name->index
+  ;; -- index->name
+  ;; -- requires
+)

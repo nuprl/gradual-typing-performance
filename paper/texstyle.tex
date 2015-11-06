@@ -5,6 +5,7 @@
 % xcolor MUST come first!!! https://en.wikibooks.org/wiki/LaTeX/Colors
 \usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{tikz}
+\usetikzlibrary{shapes.geometric}
 \usepackage{graphicx}
 \usepackage{multicol}
 
@@ -13,7 +14,7 @@
 
 \hypersetup{hidelinks} 
 
-\usepackage{inconsolata}
+\usepackage[scaled=0.95]{zi4}
 \usepackage[T1]{fontenc}
 
 % For bib style
@@ -30,3 +31,21 @@
 \newcommand{\pict}[1]{\begin{tabular}{c}\scalebox{0.6}{\input{module-graphs/#1}}\end{tabular}}
 
 \newcommand{\rkt}[2]{$\bullet$}
+
+%% To show overfull, turn off for production!!!
+\overfullrule=1mm
+
+%% Artifact badge!
+\usepackage[firstpage]{draftwatermark}
+\SetWatermarkText{\hspace*{8in}\raisebox{7.0in}{\includegraphics[scale=0.1]{aec-badge-popl}}}
+\SetWatermarkAngle{0}
+
+%% balance last page columns
+\usepackage{flushend}
+
+%% for figure 2
+\let\ulcorner\relax
+\let\urcorner\relax
+\let\llcorner\relax
+\let\lrcorner\relax
+\usepackage{amssymb}
