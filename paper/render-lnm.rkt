@@ -6,6 +6,9 @@
 ;; - The paper (typed-racket.scrbl) calls 'data->pict' to create an image
 ;; - From the command-line, call `render-lnm.rkt -o FIG.png DATA.rktd ...`
 ;;   to create a figure named `FIG.png` from the data files `DATA.rktd ...`
+;; -- Use the -p option to count performant paths rather than lattice points
+;; -- If two .rktd files with the same module graph are given, plots those on
+;;     on the same graph
 
 (provide
  data->pict
@@ -129,26 +132,28 @@
       (get-new-lnm-pict rktd* #:show-paths? show-paths? #:tag tag #:titles title*)))
 
 ;; Create a summary and L-N/M picts for a data file.
-(: file->pict* (->* [String #:title (U String #f)]
+(: file->pict* (->* [(Listof String) #:title (U String #f)]
                     [#:show-paths? Boolean] (Listof Pict)))
-(define (file->pict* data-file #:title title #:show-paths? [show-paths? #f])
-  (define S (from-rktd data-file))
+(define (file->pict* data-file* #:title title #:show-paths? [show-paths? #f])
+  (define S* (for/list : (Listof Summary) ([d : String data-file*]) (from-rktd d)))
   (define S-pict : Pict
-    (let ([p (summary->pict S
-                   #:title title
-                   #:font-face FONT-FACE
-                   #:font-size TEXT-FONT-SIZE
-                   #:N PARAM-N
-                   #:M PARAM-M
-                   #:width (* 0.6 W)
-                   #:height H)])
-      (vc-append 0 p (blank 0 (- H (pict-height p))))))
+    (if (and (not (null? S*)) (null? (cdr S*)))
+      (let ([p (summary->pict (car S*)
+                     #:title title
+                     #:font-face FONT-FACE
+                     #:font-size TEXT-FONT-SIZE
+                     #:N PARAM-N
+                     #:M PARAM-M
+                     #:width (* 0.6 W)
+                     #:height H)])
+        (vc-append 0 p (blank 0 (- H (pict-height p)))))
+      (blank 0 0)))
   (define L-pict*
     ;; TODO there's only a 3-character difference between the branches...
     ;;  I tried making plot-fn = (if show-paths? path-plot lnm-plot),
     ;;  but a U-type can't be applied!
     (if show-paths?
-      (path-plot S
+      (path-plot S*
                #:L L*
                #:N PARAM-N
                #:M PARAM-M
@@ -159,7 +164,7 @@
                #:labels? #f
                #:plot-height H
                #:plot-width W) ;;TODO adjust, to keep figure sizes all equal?
-      (lnm-plot S
+      (lnm-plot S*
                #:L L*
                #:N PARAM-N
                #:M PARAM-M
@@ -211,13 +216,31 @@
 (define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f] #:show-paths? [show-paths? #f])
   (: title* (U (Listof String) (Listof #f)))
   (define title* (or maybe-title* (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
+  ;; Combine duplicate titles
+  ;(: title+rktd* )
+  (define title+rktd*
+    (for/fold : (Listof (Pairof (U String #f) (Listof String)))
+              ([acc : (Listof (Pairof (U String #f) (Listof String)))
+                      '()])
+              ([t (in-list title*)]
+               [r (in-list rktd*)])
+      (cond
+       [(and t ((inst assoc (U #f String) (Listof String)) t acc))
+        (for/list ([t+r (in-list acc)])
+          (define hd (car t+r))
+          (if (and (string? hd) (string=? hd t))
+            (list* t r (cdr t+r))
+            t+r))]
+       [else
+        (cons (list t r) acc)])))
   ;; Align all picts vertically first
   (define columns : (Listof Pict)
     (or (for/fold : (U #f (Listof Pict))
               ([prev* : (U #f (Listof Pict)) #f])
-              ([rktd (in-list rktd*)]
-               [title : (U #f String) (in-list title*)])
-      (define pict* (file->pict* rktd #:title title #:show-paths? show-paths?))
+              ([title+rktd : (Pairof (U #f String) (Listof String)) (in-list title+rktd*)])
+      (define title (car title+rktd))
+      (define rktd* (cdr title+rktd))
+      (define pict* (file->pict* rktd* #:title title #:show-paths? show-paths?))
       (if prev*
           ;; Right-align the old picts with the new ones
           (for/list : (Listof Pict)
@@ -260,7 +283,7 @@
 
   (: filename->tag (-> String String))
   (define (filename->tag fname)
-    (first (string-split (last (string-split fname "/")) ".")))
+    (first (string-split (first (string-split (last (string-split fname "/")) ".")) "-")))
 
   (: filter-valid-filenames (-> (Listof Any) (Listof String)))
   (define (filter-valid-filenames arg*)
@@ -298,7 +321,7 @@
    ;; -- Create a pict
    (define P
      (data->pict
-       #:tag (format "render-lnm-cmdline~a" (if (*show-paths*) "-path" ""))
+       #:tag (format "cmdline~a" (if (*show-paths*) "-path" ""))
        #:show-paths? (*show-paths*)
        (for/list : (Listof (List String String))
                  ([fname (in-list arg*)])

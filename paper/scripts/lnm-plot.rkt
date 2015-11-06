@@ -52,7 +52,7 @@
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
 
-(: lnm-plot (->* [Summary #:L (U Index (Listof Index))]
+(: lnm-plot (->* [(Listof Summary) #:L (U Index (Listof Index))]
                  [#:N Index #:M Index #:max-overhead Index
                   #:num-samples Positive-Integer
                   #:font-face String
@@ -63,7 +63,7 @@
                   #:plot-height Positive-Integer
                   ]
                   (Listof Pict)))
-(define (lnm-plot summary
+(define (lnm-plot S*
                   #:L L ;; (U Index (Listof Index)), L-values to plot
                   #:N [N DEFAULT_N]  ;; Index, recommened N limit
                   #:M [M DEFAULT_M] ;; Index, recommended M limit
@@ -75,8 +75,9 @@
                   #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF] ;; Flonum, between 0 and 1.
                   #:plot-width [width (plot-width)] ;; Index
                   #:plot-height [height (plot-height)]) ;; Index
+  (when (null? S*) (error 'lnm-plot "Cannot make picture for empty list of input"))
   (define L-list (or (and (list? L) L) (list L)))
-  (define num-vars (get-num-configurations summary))
+  (define num-vars (get-num-configurations (car S*)))
   (define cutoff-point (* cutoff-proportion num-vars))
   ;; Make renderers for the lines
   (define N-line (vertical-line N #:y-max num-vars
@@ -101,24 +102,39 @@
     [plot-font-size font-size])
     ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
-      (define F-configs
-        (function (count-configurations summary L #:cache-up-to xmax) 0 xmax
-                          #:samples num-samples
-                          #:color 'navy
-                          #:width THICK))
+      (define F-configs*
+        (if (null? (cdr S*))
+          (list
+           (function (count-configurations (car S*) L #:cache-up-to xmax) 0 xmax
+                            #:samples num-samples
+                            #:color 'navy
+                            #:width THICK))
+          (for/list : (Listof renderer2d)
+                    ([S : Summary (in-list S*)]
+                     [c (in-naturals)])
+            (function (count-configurations S L #:cache-up-to xmax) 0 xmax
+                              #:samples num-samples
+                              #:color c
+                              #:label (summary->label S)
+                              #:width THICK))))
       (define res
-        (plot-pict (list N-line M-line cutoff-line F-configs)
-                   #:x-min 1
-                   #:x-max xmax
-                   #:y-min 0
-                   #:y-max num-vars
-                   #:x-label (and labels? "Overhead (vs. untyped)")
-                   #:y-label (and labels? "Count")
-                   #:width width
-                   #:height height))
+        (if (null? (cdr S*))
+          (plot-pict (list* N-line M-line cutoff-line F-configs*)
+            #:x-min 1 #:x-max xmax
+            #:y-min 0 #:y-max num-vars
+            #:x-label (and labels? "Overhead (vs. untyped)")
+            #:y-label (and labels? "Count")
+            #:width width #:height height)
+          (plot-pict (list* N-line M-line cutoff-line F-configs*)
+            #:legend-anchor 'top-right
+            #:x-min 1 #:x-max xmax
+            #:y-min 0 #:y-max num-vars
+            #:x-label (and labels? "Overhead (vs. untyped)")
+            #:y-label (and labels? "Count")
+            #:width width #:height height)))
       (if (pict? res) res (error 'notapict)))))
 
-(: path-plot (->* [Summary #:L (U Index (Listof Index))]
+(: path-plot (->* [(Listof Summary) #:L (U Index (Listof Index))]
                  [#:N Index
                   #:M Index
                   #:max-overhead Index
@@ -131,7 +147,7 @@
                   #:plot-height Positive-Integer
                   ]
                   (Listof Pict)))
-(define (path-plot summary #:L L* ;; L* is ignored
+(define (path-plot S* #:L L* ;; L* is ignored
                   #:N [N DEFAULT_N]  ;; Index, recommened N limit
                   #:M [M DEFAULT_M] ;; Index, recommended M limit
                   #:max-overhead [xmax DEFAULT_XLIMIT] ;; Index, max. x-value
@@ -143,7 +159,8 @@
                   #:plot-width [width (plot-width)] ;; Index
                   #:plot-height [height (plot-height)]) ;; Index
   (define L-list (list 0)) ;; TODO eventually generalize
-  (define num-paths (get-num-paths summary))
+  (when (null? S*) (error 'path-plot "Expected at least one summary object"))
+  (define num-paths (get-num-paths (car S*)))
   (define ymax 50)
   (define cutoff-point (* cutoff-proportion ymax))
   ;; Make renderers for the lines
@@ -169,25 +186,32 @@
     [plot-font-size font-size])
     ;; Create 1 pict for each value of L
     (for/list ([L (in-list L-list)])
-      (define path-points
-        (let ([f (count-paths summary L #:cache-up-to xmax)])
-          (points (for/list : (Listof (List Real Real))
-                            ([n : Real (linear-seq 0 xmax num-samples)])
-                    (list n (f n)))
-                  #:x-min 0 #:x-max xmax
-                  #:y-min 0 #:y-max ymax
-                  #:color 'violet
-                  #:sym 'dot)))
+      (define path-points*
+        (for/list : (Listof renderer2d)
+                  ([S (in-list S*)] [c (in-naturals)])
+          (let ([f (count-paths S L #:cache-up-to xmax)])
+            (points (for/list : (Listof (List Real Real))
+                              ([n : Real (linear-seq 0 xmax num-samples)])
+                      (list n (f n)))
+                    #:x-min 0 #:x-max xmax
+                    #:y-min 0 #:y-max ymax
+                    #:color c
+                    #:sym 'dot))))
       (define res
-        (plot-pict (list N-line M-line cutoff-line path-points)
-                   #:x-min 1
-                   #:x-max xmax
-                   #:y-min 0
-                   #:y-max ymax
-                   #:x-label (and labels? "Overhead (vs. untyped)")
-                   #:y-label (and labels? "#Paths")
-                   #:width width
-                   #:height height))
+        (if (null? (cdr S*))
+          (plot-pict (list* N-line M-line cutoff-line path-points*)
+            #:x-min 1 #:x-max xmax
+            #:y-min 0 #:y-max ymax
+            #:x-label (and labels? "Overhead (vs. untyped)")
+            #:y-label (and labels? "#Paths")
+            #:width width #:height height)
+          (plot-pict (list* N-line M-line cutoff-line path-points*)
+            #:legend-anchor 'top-right
+            #:x-min 1 #:x-max xmax
+            #:y-min 0 #:y-max ymax
+            #:x-label (and labels? "Overhead (vs. untyped)")
+            #:y-label (and labels? "#Paths")
+            #:width width #:height height)))
       (if (pict? res) res (error 'notapict)))))
 
 
