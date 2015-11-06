@@ -117,8 +117,8 @@
 (: from-directory (-> Path ModuleGraph))
 (define (from-directory parent)
   (define name (path->project-name parent))
-  ;; TODO works when we're in the paper/ directory, but nowhere else
-  (define u-dir (build-path ".." name "untyped"))
+  ;; Note: hardcoded for being run in ~/Desktop for artifact
+  (define u-dir (build-path parent "untyped"))
   (unless (directory-exists? u-dir)
     (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name)))
   ;; No edges, just nodes
