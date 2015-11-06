@@ -67,6 +67,7 @@
   ;; Return a pict representation of the summary. A kind of TLDR.
 
   summary-modulegraph
+  summary->label
   Summary
 )
 
@@ -76,7 +77,7 @@
   racket/path
   math/statistics
   (only-in math/number-theory factorial)
-  (only-in racket/list range) ;; because in-range has the wrong type
+  (only-in racket/list last range) ;; because in-range has the wrong type
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
   (only-in racket/format ~r)
@@ -107,6 +108,13 @@
 
 (define-type LatticePath (Listof Bitstring))
 
+(: summary->label (-> Summary String))
+(define (summary->label S)
+  (define p (summary-source S))
+  (: s String)
+  (define s (if (path? p) (path->string p) (format "~a" p)))
+  (last (string-split (strip-suffix s) "/")))
+
 ;; -----------------------------------------------------------------------------
 ;; -- constants
 
@@ -132,9 +140,7 @@
   (define mg
     (if gp
       (from-tex gp)
-      (begin
-        (printf "Warning: could not find module graph for '~a'.\n" filename)
-        (from-directory (string->path (strip-suffix filename))))))
+      (from-directory (string->path (strip-suffix filename)))))
   (validate-modulegraph dataset mg)
   (summary path dataset mg num-runs))
 
