@@ -7,6 +7,11 @@
 ;; so this file provides a (brittle) parser.
 
 (provide
+  from-directory
+  ;; (-> Path ModuleGraph)
+  ;; Parse a directory into a module graph.
+  ;; Does not collect module dependency information.
+
   from-tex
   ;; (-> Path-String ModuleGraph)
   ;; Parse a tex file into a module graph
@@ -54,7 +59,8 @@
 ;; Invariant: names in the adjlist are kept in alphabetical order.
 (struct modulegraph (
   [project-name : String]
-  [adjlist : (Listof (Listof String))]) #:transparent)
+  [adjlist : AdjList]) #:transparent)
+(define-type AdjList (Listof (Listof String)))
 (define-type ModuleGraph modulegraph)
 
 ;; Get the name of the project represented by a module graph
@@ -103,6 +109,25 @@
 
 (define-syntax-rule (parse-error msg arg* ...)
   (error 'modulegraph (format msg arg* ...)))
+
+(: rkt-file? (-> Path Boolean))
+(define (rkt-file? p)
+  (regexp-match? #rx"\\.rkt$" (path->string p)))
+
+(: from-directory (-> Path ModuleGraph))
+(define (from-directory parent)
+  (define name (path->project-name parent))
+  ;; TODO works when we're in the paper/ directory, but nowhere else
+  (define u-dir (build-path ".." name "untyped"))
+  (unless (directory-exists? u-dir)
+    (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name)))
+  ;; No edges, just nodes
+  (: adjlist AdjList)
+  (define adjlist
+    (for/list ([p (in-list (directory-list u-dir))]
+               #:when (rkt-file? p))
+      (list (path->project-name p))))
+  (modulegraph name adjlist))
 
 ;; Interpret a .tex file containing a TiKZ picture as a module graph
 (: from-tex (-> Path-String ModuleGraph))
