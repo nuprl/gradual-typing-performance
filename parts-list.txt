@@ -8,9 +8,9 @@ Motherboard: Supermicro MBD-H8DG6-F-O E-ATX ($570)
 RAM:         2x Kingston ValueRAM ECC Reg 64GB (2x $431)
              http://www.amazon.com/Kingston-Technology-64-PC3-12800-KVR16R11D4K4/dp/B0088SSV6G
 Storage:     Use existing
-Case:        Fractal Design R4 ($80)
-             http://www.newegg.com/Product/Product.aspx?Item=N82E16811352038
+Case:        Fractal Design Define XL R2 ($160)
+             http://www.amazon.com/Fractal-Design-Define-Tower-FDCADEFXLR2BL/dp/B00ATXA4TA
 PSU:         Seasonic X-series 650W ($110)
              http://www.newegg.com/Product/Product.aspx?Item=N82E16817151088
 
-Total estimate: $3022
+Total estimate: $3102
