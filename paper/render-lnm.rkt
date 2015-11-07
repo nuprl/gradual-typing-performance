@@ -53,6 +53,7 @@
 (define PARAM-L 2)
 (define PARAM-MAX-OVERHEAD 20)
 (define PARAM-NUM-SAMPLES 60)
+(define PARAM-LABELS? #t)
 
 (: *show-paths?* (Parameterof Boolean))
 (define *show-paths?* (make-parameter #f))
@@ -71,7 +72,7 @@
              #:num-samples PARAM-NUM-SAMPLES
              #:font-face FONT-FACE
              #:font-size GRAPH-FONT-SIZE
-             #:labels? #f
+             #:labels? PARAM-LABELS?
              #:plot-height H
              #:plot-width W))
 
@@ -337,8 +338,8 @@
     "Location to save results" (*output* (cast o-param String))]
    [("-p" "--path" "--paths")
     "If set, draw a line for lattice paths" (*show-paths?* #t)]
-   [("-a" "--aggregate" "-d" "--death") a-param
-    "Combine all data into a single figure" (*aggregate* (string->symbol (assert a-param string?)))]
+   [("-a" "--aggregate" "-d" "--death")
+    "Combine all data into a single figure" (*aggregate* 'avg-prop)]
    #:args FNAME*
    ;; -- Filter valid arguments, assert that we got anything to render
    (define arg* (filter-valid-filenames FNAME*))

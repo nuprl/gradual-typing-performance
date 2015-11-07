@@ -54,8 +54,6 @@
 
 (define DEFAULT_FACE "bold")
 (define DEFAULT_SIZE 20)
-(plot-width (* 3 (plot-width)))
-(plot-height (* 3 (plot-height)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
@@ -199,7 +197,7 @@
                 (for/list : (Listof (-> Real Real))
                           ([S : Summary (in-list S*)])
                   (define counter (count-configurations S L #:cache-up-to xmax))
-                  (define vars (get-num-configurations (car S*)))
+                  (define vars (get-num-configurations S))
                   (lambda ([n : Real])
                     (/ (counter n) vars)))]
                [F
@@ -209,8 +207,7 @@
                      (for/list : (Listof Real)
                                ([gp : (-> Real Real) (in-list get-proportion*)])
                        (gp n)))
-                   (round (* 100 (/ (for/fold : Real ([acc : Real 0]) ([n : Real (in-list prop*)]) (+ acc n))
-                             (length prop*)))))])
+                   (round (* 100 (mean prop*))))])
           (function F
                   0 xmax
                   #:samples num-samples
@@ -220,9 +217,9 @@
         (plot-pict (list N-line M-line cutoff-line F-config)
             #:x-min 1 #:x-max xmax
             #:y-min 0 #:y-max ymax
-            #:x-label (and labels? "% Acceptable")
-            #:y-label (and labels? "Count")
-            #:width width #:height height) pict?))))
+            #:x-label (and labels? "Overhead (vs. untyped)")
+            #:y-label (and labels? "Avg. % Acceptable")
+            #:width (* 3 width) #:height (* 3 height)) pict?))))
 
 (: path-plot (->* [(Listof Summary) #:L (U Index (Listof Index))]
                  [#:N Index
