@@ -1,8 +1,17 @@
 #lang racket/base
 
 ;; Benchmark driver
+;;
+;; Usage:
+;;   run.rkt BENCHMARK
+;; This will:
+;; - Create directories `BENCHMARK/benchmark` and `BENCHMARK/benchmark/base`
+;; - Spawn jobs for each of the 2**n configurations
+;;   Each job will create a new directory & save results to a file
+;; - Aggregate the results from all sub-jobs
 
 (require "data-lattice.rkt"
+         (only-in glob in-glob)
          math/statistics
          mzlib/os
          pict
@@ -10,6 +19,8 @@
          racket/cmdline
          racket/date
          racket/draw
+         (only-in racket/format ~r)
+         (only-in racket/file file->value)
          racket/future
          racket/match
          racket/port
@@ -38,34 +49,46 @@
 (define min-max-config (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
 
+
 ;; Get paths for all variation directories
 ;; Path Path -> Listof Path
 (define (mk-variations basepath entry-point)
-  (for/list ([file (in-list (directory-list (build-path basepath "benchmark")))]
-             #:when (not (equal? "base" (path->string file))))
-    (build-path basepath "benchmark" file entry-point)))
+  (define num-modules
+    (for/sum ([fname (in-list (directory-list (build-path basepath "untyped")))]
+              #:when (regexp-match? "\\.rkt$" (path->string fname))) 1))
+  (for/list ([i (in-range (expt 2 num-modules))])
+    (define bits
+      (if (zero? i)
+        (make-string num-modules #\0)
+        (~r i #:base 2 #:min-width num-modules #:pad-string "0")))
+    (define var-str (format "variation~a" bits))
+    (build-path basepath "benchmark" var-str entry-point)))
 
 ;; Run the variations for each variation directory
 ;; Optional argument gives the exact variation to run.
-;; Default is to run all variations (either run all, or exactly one)
-;; (Listof Path) Path Nat Nat [(U (Listof String) #f)] -> Results
+;; Default is to run all variations
+;; (Listof Path) Path Nat Nat [(U (Listof String) #f)] -> Void
 (define (run-benchmarks basepath entry-point iters jobs
                         #:config [cfg #f]
                         #:min/max [min/max #f])
+  (define benchmark-dir (build-path basepath "benchmark"))
+  (unless (directory-exists? benchmark-dir)
+    (raise-user-error 'run (format "Directory '~a' does not exist, please run `setup.rkt ~a` and try again." benchmark-dir basepath)))
   (define variations
-    (cond [cfg
-           (list (build-path basepath "benchmark" (string-append "variation" cfg) entry-point))]
-          [min/max
-           (match-define (list min max) min/max)
-           (define all-vars (mk-variations basepath entry-point))
-           (define (in-range? var)
-             (match-define (list _ bits) (regexp-match "variation([10]*)/" var))
-             (define n (string->number bits 2))
-             (and (>= n (string->number min))
-                  (<= n (string->number max))))
-           (filter in-range? all-vars)]
-          [else (mk-variations basepath entry-point)]))
-  (define results (make-vector (length variations)))
+    (cond
+      [cfg
+      (list (build-path benchmark-dir (string-append "variation" cfg) entry-point))]
+      [min/max
+       (match-define (list min max) min/max)
+       (define all-vars (mk-variations basepath entry-point))
+       (define (in-range? var)
+         (match-define (list _ bits) (regexp-match "variation([10]*)/" var))
+         (define n (string->number bits 2))
+         (and (>= n (string->number min))
+              (<= n (string->number max))))
+       (filter in-range? all-vars)]
+      [else
+       (mk-variations basepath entry-point)]))
   ;; allocate a slice of the variations per job
   (define slice-size (ceiling (/ (length variations) jobs)))
   (define threads
@@ -80,7 +103,6 @@
            (match-define (list var var-idx) var-in-slice)
            (define-values (new-cwd file _2) (split-path var))
            (define times null)
-
            (parameterize ([current-directory new-cwd])
              ;; first compile the variation
              (unless (system (format "taskset -c ~a ~araco make -v ~a"
@@ -129,14 +151,15 @@
                  ;; we're reponsible for closing these
                  (close-input-port in)
                  (close-input-port err)
-                 (close-output-port out))))
-
-           ;; the order of runs doesn't really matter, but keep them in the order
-           ;; they were run anyway just in case
-           (vector-set! results var-idx (reverse times)))))))
+                 (close-output-port out)
+                 (write-results (reverse times))))))))))
   ;; synchronize on all jobs
   (for ([thd (in-list threads)]) (thread-wait thd))
-  results)
+  (void))
+
+(define (write-results times [dir (current-directory)])
+  (with-output-to-file (build-path dir (output-path))
+    (lambda () (write times))))
 
 (module+ main
   (define basepath
@@ -222,9 +245,9 @@
   ;; using CPU1 and above.
   (system (format "taskset -pc 0 ~a" (getpid)))
 
-  (define results (run-benchmarks basepath entry-point iters jobs
-                                  #:config (exclusive-config)
-                                  #:min/max (min-max-config)))
+  (run-benchmarks basepath entry-point iters jobs
+                  #:config (exclusive-config)
+                  #:min/max (min-max-config))
 
   (when (and (not (only-compile?)) (output-path))
     (with-output-to-file (output-path)
@@ -232,14 +255,20 @@
         ;; first write a comment that encodes the commandline args / version
         (printf ";; ~a~n" (current-command-line-arguments))
         (printf ";; ~a~n" (version))
-        (write results))
+        (displayln "#(")
+        (for ([result-file (in-glob (format "~a/benchmark/variation*/~a"
+                                     basepath
+                                     (output-path)))])
+          (with-input-from-file result-file
+            (lambda () (for ([ln (in-lines)]) (displayln ln)))))
+        (displayln ")"))
       #:mode 'text
       #:exists 'replace))
 
   ;; TODO: update lattice to account for empty-result startup time
   (when (lattice-path)
     (define averaged-results
-      (vector-map (λ (times) (cons (mean times) (stddev times))) results))
+      (vector-map (λ (times) (cons (mean times) (stddev times))) (file->value (output-path))))
     (send ;; default size is too small to see, so apply a scaling factor
           (pict->bitmap (scale (make-performance-lattice averaged-results) 3))
           save-file
