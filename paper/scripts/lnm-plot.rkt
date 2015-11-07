@@ -341,7 +341,7 @@
 ;; Make a predicate checking whether a configuration is good.
 ;; Good = no more than `L` steps away from a configuration
 ;;        with average runtime less than `good-threshold`.
-(: make-configuration->good? (->* [Summary Real] [#:L Index] (-> String Boolean)))
+(: make-configuration->good? (->* [Summary Real] [#:L Index] (-> Bitstring Boolean)))
 (define (make-configuration->good? summary good-threshold #:L [L 0])
   (lambda ([var : String])
     (for/or ([var2 (cons var (in-reach var L))])
@@ -350,13 +350,13 @@
 
 ;; -----------------------------------------------------------------------------
 ;; -- cache
-(define-type Cache (Vectorof (Listof String)))
+(define-type Cache (Vectorof (Listof Bitstring)))
 
 ;; Create a cache that saves the configurations between discrete overhead values
 (: cache-init (->* [Summary Index] [#:L Index] Cache))
 (define (cache-init summary max-overhead #:L [L 0])
   (define base-overhead (untyped-mean summary))
-  (: unsorted-configurations (Boxof (Sequenceof String)))
+  (: unsorted-configurations (Boxof (Sequenceof Bitstring)))
   (define unsorted-configurations (box (all-configurations summary)))
   ;; For each integer-overhead-range [0, 1] [1, 2] ... [max-1, max]
   ;; save the configurations within that overhead to a cache entry
@@ -369,7 +369,7 @@
 
 ;; Count the number of configurations with running time less than `overhead`.
 ;; Use `test-fun` to manually check configurations we aren't sure about
-(: cache-lookup (-> Cache Nonnegative-Real (-> String Boolean) Natural))
+(: cache-lookup (-> Cache Nonnegative-Real (-> Bitstring Boolean) Natural))
 (define (cache-lookup $$$ overhead test-fun)
   (: lo-overhead Natural)
   (define lo-overhead (exact-floor overhead))
@@ -386,9 +386,9 @@
          (for/sum : Natural ([var (in-list (vector-ref $$$ hi-overhead))]
                    #:when (test-fun var)) 1))))
 
-(: stream-partition (-> (-> String Boolean) (Sequenceof String) (Values (Sequenceof String) (Sequenceof String))))
+(: stream-partition (-> (-> Bitstring Boolean) (Sequenceof Bitstring) (Values (Sequenceof Bitstring) (Sequenceof Bitstring))))
 (define (stream-partition f stream)
-  (define not-f (lambda ([x : String]) (not (f x))))
+  (define not-f (lambda ([x : Bitstring]) (not (f x))))
   (values (stream-filter f stream)
           (stream-filter not-f stream)))
 
@@ -422,7 +422,7 @@
            (for/list : (Listof pre-tick) ([i (in-list (linear-seq 1 ax-max num-ticks))])
              (pre-tick (round i) #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (for/list : (Listof String) ([pt (in-list pre-ticks)])
+           (for/list : (Listof Bitstring) ([pt (in-list pre-ticks)])
              (format "~ax" (pre-tick-value pt))))))
 
 (: horizontal-line (->* [Real]
@@ -464,34 +464,6 @@
          #:style s))
 
 ;; =============================================================================
-
-;(module+ main
-;  (require
-;    racket/cmdline
-;    (only-in pict pict->bitmap)
-;    (only-in racket/class send)
-;    (only-in racket/sequence sequence->list)
-;  )
-;  (define l-param (box 2))
-;  (command-line #:program "l-n/m plotter"
-;                #:once-each
-;                [("-l") l-value
-;                        "Set max value of L"
-;                        (set-box! l-param (cast l-value Index))]
-;                #:args (filename)
-;    (define summary (from-rktd filename))
-;    (define name (get-project-name summary))
-;    (define l-list (sequence->list (in-range 0 (add1 l-param))))
-;    (define picts (lnm-plot summary #:L l-list
-;                                    #:plot-height 300
-;                                    #:plot-width 400))
-;    (for/list : (Listof Any) ([pic (in-list picts)]
-;               [i (in-list l-list)])
-;      (define fname (format "output/~a~a.png" name i))
-;      (send (pict->bitmap pic) save-file fname 'png)))
-;)
-
-;; -----------------------------------------------------------------------------
 
 ;(module+ test
 ;  (require typed/rackunit)

@@ -1,5 +1,8 @@
 #lang typed/racket
 
+;; A bitstring is a string of #\1 and #\0.
+;; Technically bitstrings of unequal length are incompatible,
+;;  but our scripts do nothing to enforce this.
 (define-type Bitstring String)
 (provide
   Bitstring
@@ -177,7 +180,7 @@
   ;; -- all-paths-from
   (define-syntax-rule (check-all-paths [in out] ...)
     (begin (check-equal?
-             (for/list : (Listof (Listof String))
+             (for/list : (Listof (Listof Bitstring))
                        ([p (all-paths-from in)])
                p)
              out) ...))
@@ -196,7 +199,7 @@
 
   ;; If this doesn't return immediately, we have a bug
   (let* ([all_10 (all-paths-from (make-string 20 #\0))]
-         [first_path (car (for/list : (Listof (Listof String))
+         [first_path (car (for/list : (Listof (Listof Bitstring))
                                     ([a all_10] [_i (in-range 1)]) a))])
     (check-equal? (length first_path) 21))
 

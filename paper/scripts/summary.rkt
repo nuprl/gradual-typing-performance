@@ -21,17 +21,17 @@
   ;; Get the project name from a Summary
 
   has-typed?
-  ;; (-> Summary String (Listof String) Boolean)
+  ;; (-> Summary Bitstring (Listof String) Boolean)
   ;; (has-typed? S v name*)
   ;; True if the module names `name*` are all typed in configuration `v`
 
   has-untyped?
-  ;; (-> Summary String (Listof String) Boolean)
+  ;; (-> Summary Bitstring (Listof String) Boolean)
   ;; (has-untyped? S v name*)
   ;; True if all module names `name*` are untyped in configuration `v`
 
   typed-modules
-  ;; (-> Summary BitString (Listof String))
+  ;; (-> Summary Bitstring (Listof String))
   ;; Return a list of modules that are typed in this configuration
 
   untyped-modules
@@ -43,15 +43,15 @@
   ;; Get the mean runtime of the Summary's untyped configuration
 
   configuration->mean-runtime
-  ;; (-> Summary String Real)
+  ;; (-> Summary Bitstring Real)
   ;; Get the mean runtime of a configuration, represented as a bitstring
 
   predicate->configurations
-  ;; (-> Summary (-> String Boolean) (Streamof String))
+  ;; (-> Summary (-> Bitstring Boolean) (Streamof Bitstring))
   ;; Return a stream of configurations satisfying the predicate
 
   all-configurations
-  ;; (-> Summary (Streamof String))
+  ;; (-> Summary (Streamof Bitstring))
   ;; Return a stream of all configurations in the Summary
 
   all-paths
@@ -195,7 +195,7 @@
 ;; -----------------------------------------------------------------------------
 ;; -- querying
 
-(: all-configurations (-> Summary (Sequenceof String)))
+(: all-configurations (-> Summary (Sequenceof Bitstring)))
 (define (all-configurations sm)
   (define M (get-num-modules sm))
   (stream-map (lambda ([n : Index]) (natural->bitstring n #:pad M))
@@ -214,7 +214,7 @@
 
 ;; This is a hack, until we have a REAL definition of configurations that's
 ;; parameterized by the Summary object.
-(: assert-configuration-length (-> Summary String Void))
+(: assert-configuration-length (-> Summary Bitstring Void))
 (define (assert-configuration-length S v)
   (define N (get-num-modules S))
   (unless (= N (string-length v))
@@ -248,33 +248,33 @@
 (define (get-project-name sm)
   (project-name (summary-modulegraph sm)))
 
-(: has-typed? (-> Summary String (Listof String) Boolean))
+(: has-typed? (-> Summary Bitstring (Listof String) Boolean))
 (define (has-typed? S v names*)
   (assert-configuration-length S v)
   (for/and ([name (in-list names*)])
     (bit-high? v (name->index (summary-modulegraph S) name))))
 
-(: has-untyped? (-> Summary String (Listof String) Boolean))
+(: has-untyped? (-> Summary Bitstring (Listof String) Boolean))
 (define (has-untyped? S v names*)
   (assert-configuration-length S v)
   (for/and ([name (in-list names*)])
     (bit-low? v (name->index (summary-modulegraph S) name))))
 
-(: typed-modules (-> Summary String (Listof String)))
+(: typed-modules (-> Summary Bitstring (Listof String)))
 (define (typed-modules S v)
   (assert-configuration-length S v)
   (for/list ([i (in-list (range (string-length v)))]
              #:when (bit-high? v i))
     (index->name (summary-modulegraph S) i)))
 
-(: untyped-modules (-> Summary String (Listof String)))
+(: untyped-modules (-> Summary Bitstring (Listof String)))
 (define (untyped-modules S v)
   (assert-configuration-length S v)
   (for/list ([i : Natural (in-list (range (string-length v)))]
              #:when (bit-low? v i))
     (index->name (summary-modulegraph S) i)))
 
-(: predicate->configurations (-> Summary (-> String Boolean) (Sequenceof String)))
+(: predicate->configurations (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
 (define (predicate->configurations sm p)
   (stream-filter p (all-configurations sm)))
 
@@ -297,7 +297,7 @@
 (define (typed-mean sm)
   (mean (typed-runtimes sm)))
 
-(: configuration->mean-runtime (-> Summary String Real))
+(: configuration->mean-runtime (-> Summary Bitstring Real))
 (define (configuration->mean-runtime S v)
   (assert-configuration-length S v) ;; Is this going to be expensive?
   (index->mean-runtime S (bitstring->natural v)))

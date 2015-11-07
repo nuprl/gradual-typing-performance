@@ -2,7 +2,6 @@
 
 (require/typed/provide pict
   [#:opaque Pict pict?]
-  ;[text (-> String (U String (cons Symbol String)) Natural Pict)]
   [frame (->* [Pict] [#:color String] Pict)]
   [text (-> String Any Natural Pict)]
   [vc-append (-> Real Pict * Pict)]

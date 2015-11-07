@@ -1,5 +1,7 @@
 #lang racket/base
 
+;; This is untyped to avoid typing bitmaps
+
 (provide
   pict->png
   ;; (-> Pict Path-String Boolean)
