@@ -18,6 +18,11 @@
   path-plot
   ;; Plots the number of acceptable paths.
   ;; Acceptable paths have no overhead greater than the cutoff along any point
+
+  death-plot
+  ;; Plot a bunch of summaries to the same grid.
+  ;; - y-axis is the proportion of good variations
+  ;; - aggregation is plain old (arithmetic) mean
 )
 
 ;; -----------------------------------------------------------------------------
@@ -27,6 +32,7 @@
   (only-in racket/math exact-floor)
   (only-in plot/utils linear-seq)
   (only-in racket/math exact-floor exact-ceiling)
+  (only-in math/statistics mean)
   (only-in racket/format ~r)
   "bitstring.rkt"
   "summary.rkt"
@@ -48,6 +54,8 @@
 
 (define DEFAULT_FACE "bold")
 (define DEFAULT_SIZE 20)
+(plot-width (* 3 (plot-width)))
+(plot-height (* 3 (plot-height)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
@@ -78,12 +86,13 @@
   (when (null? S*) (error 'lnm-plot "Cannot make picture for empty list of input"))
   (define L-list (or (and (list? L) L) (list L)))
   (define num-vars (get-num-configurations (car S*)))
-  (define cutoff-point (* cutoff-proportion num-vars))
+  (define ymax num-vars)
+  (define cutoff-point (* cutoff-proportion ymax))
   ;; Make renderers for the lines
-  (define N-line (vertical-line N #:y-max num-vars
+  (define N-line (vertical-line N #:y-max ymax
                                   #:color 'forestgreen
                                   #:width THIN))
-  (define M-line (vertical-line M #:y-max num-vars
+  (define M-line (vertical-line M #:y-max ymax
                                   #:color 'goldenrod
                                   #:width THIN))
   (define cutoff-line (horizontal-line cutoff-point #:x-max xmax
@@ -94,7 +103,7 @@
   ;; Set plot parameters ('globally', for all picts)
   (parameterize (
     [plot-x-ticks (compute-xticks 5)]
-    [plot-y-ticks (compute-yticks num-vars 6 #:exact (list cutoff-point num-vars))]
+    [plot-y-ticks (compute-yticks ymax 6 #:exact (list cutoff-point ymax))]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     [plot-tick-size 4]
@@ -121,18 +130,99 @@
         (if (null? (cdr S*))
           (plot-pict (list* N-line M-line cutoff-line F-configs*)
             #:x-min 1 #:x-max xmax
-            #:y-min 0 #:y-max num-vars
+            #:y-min 0 #:y-max ymax
             #:x-label (and labels? "Overhead (vs. untyped)")
             #:y-label (and labels? "Count")
             #:width width #:height height)
           (plot-pict (list* N-line M-line cutoff-line F-configs*)
             #:legend-anchor 'top-right
             #:x-min 1 #:x-max xmax
-            #:y-min 0 #:y-max num-vars
+            #:y-min 0 #:y-max ymax
             #:x-label (and labels? "Overhead (vs. untyped)")
             #:y-label (and labels? "Count")
             #:width width #:height height)))
       (if (pict? res) res (error 'notapict)))))
+
+(: death-plot (->* [(Listof Summary) #:L (U Index (Listof Index))]
+                   [#:N Index #:M Index #:max-overhead Index
+                    #:num-samples Positive-Integer
+                    #:font-face String
+                    #:font-size Positive-Integer
+                    #:labels? Boolean
+                    #:cutoff-proportion Real
+                    #:plot-width Positive-Integer
+                    #:plot-height Positive-Integer
+                    ]
+                    (Listof Pict)))
+(define (death-plot S*
+                  #:L L ;; (U Index (Listof Index)), L-values to plot
+                  #:N [N DEFAULT_N]  ;; Index, recommened N limit
+                  #:M [M DEFAULT_M] ;; Index, recommended M limit
+                  #:max-overhead [xmax DEFAULT_XLIMIT] ;; Index, max. x-value
+                  #:num-samples [num-samples DEFAULT_SAMPLES] ;; Index
+                  #:font-face [font-face DEFAULT_FACE]
+                  #:font-size [font-size DEFAULT_SIZE]
+                  #:labels? [labels? #t]
+                  #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF] ;; Flonum, between 0 and 1.
+                  #:plot-width [width (plot-width)] ;; Index
+                  #:plot-height [height (plot-height)]) ;; Index
+  (when (null? S*) (error 'lnm-plot "Cannot make picture for empty list of input"))
+  (define L-list (or (and (list? L) L) (list L)))
+  (define ymax 100)
+  (define cutoff-point (* ymax cutoff-proportion))
+  ;; Make renderers for the lines
+  (define N-line (vertical-line N #:y-max ymax
+                                  #:color 'forestgreen
+                                  #:width THIN))
+  (define M-line (vertical-line M #:y-max ymax
+                                  #:color 'goldenrod
+                                  #:width THIN))
+  (define cutoff-line (horizontal-line cutoff-point #:x-max xmax
+                                                    #:color 'orangered
+                                                    #:style 'short-dash
+                                                    #:width THICK))
+  ;; Get yticks
+  ;; Set plot parameters ('globally', for all picts)
+  (parameterize (
+    [plot-x-ticks (compute-xticks 5)]
+    [plot-y-ticks (compute-yticks ymax 6 #:exact (list cutoff-point ymax))]
+    [plot-x-far-ticks no-ticks]
+    [plot-y-far-ticks no-ticks]
+    [plot-tick-size 4]
+    [plot-font-face font-face]
+    [plot-font-size font-size])
+    ;; Create 1 pict for each value of L
+    (for/list ([L (in-list L-list)])
+      (define F-config
+        (let* ([get-proportion*
+                ;; For each Summary, count proportion of good configs
+                (for/list : (Listof (-> Real Real))
+                          ([S : Summary (in-list S*)])
+                  (define counter (count-configurations S L #:cache-up-to xmax))
+                  (define vars (get-num-configurations (car S*)))
+                  (lambda ([n : Real])
+                    (/ (counter n) vars)))]
+               [F
+                ;; Take the mean of all proportions for all configs
+                (lambda ([n : Real])
+                   (define prop*
+                     (for/list : (Listof Real)
+                               ([gp : (-> Real Real) (in-list get-proportion*)])
+                       (gp n)))
+                   (round (* 100 (/ (for/fold : Real ([acc : Real 0]) ([n : Real (in-list prop*)]) (+ acc n))
+                             (length prop*)))))])
+          (function F
+                  0 xmax
+                  #:samples num-samples
+                  #:color 'navy
+                  #:width THICK)))
+      (assert
+        (plot-pict (list N-line M-line cutoff-line F-config)
+            #:x-min 1 #:x-max xmax
+            #:y-min 0 #:y-max ymax
+            #:x-label (and labels? "% Acceptable")
+            #:y-label (and labels? "Count")
+            #:width width #:height height) pict?))))
 
 (: path-plot (->* [(Listof Summary) #:L (U Index (Listof Index))]
                  [#:N Index
@@ -214,6 +304,7 @@
             #:width width #:height height)))
       (if (pict? res) res (error 'notapict)))))
 
+;; =============================================================================
 
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of configurations
