@@ -1,0 +1,42 @@
+\begin{center}
+  \begin{tikzpicture}
+    %% Untyped world
+    \node (0) [star, inner sep=0.06cm, star point ratio=2, draw] {};
+    \node (p) [] {\phantom{Xa}};
+    \node (1) [below of=0] {\footnotesize Untyped};
+    %% Typed/Untyped boundary
+    \node (2) [right of=1,xshift=-0.15cm] {};
+    \node (3) [above of=2,yshift=1cm] {};
+    \draw[dashed] (2) -- (3);
+    %% Typed world
+    \node (4) [right of=1,xshift=0.7cm] {\footnotesize Typed};
+    \node (5) [above of=4,yshift=-0.5cm] {$\blacksquare$};
+    \node (6) [above of=5,yshift=-0.5cm] {$\nparallel$};
+    \node (7) [above of=6,yshift=-0.5cm] {$\blacksquare$};
+    %% Connecting untyped to typed
+    \draw[->] (p) -- (5);
+    \draw[->] (p) -- (7);
+  \end{tikzpicture}
+  \quad\quad
+  \begin{tikzpicture}
+    %% Untyped world
+    \node (0) [star, inner sep=0.06cm, star point ratio=2, draw] {};
+    \node (p) [] {\phantom{Xa}};
+    \node (1) [below of=0] {\footnotesize Untyped};
+    %% Typed/Untyped boundary
+    \node (2) [right of=1,xshift=-0.15cm] {};
+    \node (3) [above of=2,yshift=1cm] {};
+    \draw[dashed] (2) -- (3);
+    %% Typed world
+    \node (4) [right of=1,xshift=0.7cm] {\footnotesize Typed};
+    \node (5) [above of=4,yshift=-0.5cm,xshift=0.2cm] {$\blacksquare$};
+    \node (6) [above of=5,yshift=-0.5cm] {$\parallel$};
+    \node (7) [above of=6,yshift=-0.5cm] {$\blacksquare$};
+    \node (8) [left of=6,xshift=0.14cm] {$\blacksquare$};
+    %% Connecting untyped to typed
+    \draw[->] (p) -- (8);
+    \draw[->] (8) -- (5);
+    \draw[->] (8) -- (7);
+  \end{tikzpicture}
+\end{center}
+

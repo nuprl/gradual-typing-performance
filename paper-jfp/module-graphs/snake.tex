@@ -1,0 +1,55 @@
+%% Total contracts = 29
+%% Total checks = 145767614
+\begin{tikzpicture}
+
+  \node (00)               {};
+  \node (01) [below of=00,yshift=0.3cm] {\rkt{3}{data}};
+  \node (02) [below of=01,yshift=0.3cm] {};
+
+  \node (10) [left of=00] {\rkt{1}{const}};
+  \node (11) [left of=01] {};
+  \node (12) [left of=02] {\rkt{2}{cut-tail}};
+
+  \node (20) [left of=10] {\rkt{0}{collide}};
+  \node (21) [left of=11] {};
+  \node (22) [left of=12] {\rkt{6}{motion-help}};
+
+  \node (30) [left of=20] {};
+  \node (31) [left of=21] {};
+  \node (32) [left of=22] {\rkt{7}{motion}};
+
+  \node (40) [left of=30] {\rkt{4}{handlers}};
+  \node (41) [left of=31] {};
+  \node (42) [left of=32] {};
+
+  \node (51) [left of=41] {\rkt{5}{main}};
+
+  %% -- edges
+%% WARNING: no data for boundary 'data.rkt' ==> 'const.rkt'
+  \draw[->] (10) -- (01);
+%% WARNING: no data for boundary 'data.rkt' ==> 'cut-tail.rkt'
+  \draw[->] (12) -- (01);
+  %% collide
+  \draw[->,green!48!white, line width=1pt] (20) -- (01);
+  \draw[->,green!48!white, line width=1pt] (20) -- (10);
+  %% motion-help
+%% WARNING: no data for boundary 'data.rkt' ==> 'motion-help.rkt'
+  \draw[->] (22) -- (01);
+  \draw[->,red!87!black, line width=3.5pt] (22) -- (12);
+  %% motion
+  \draw[->,green!48!white, line width=1pt] (32) -- (01);
+  \draw[->,green!48!white, line width=1pt] (32) -- (10);
+  \draw[->,red!87!black, line width=3.5pt] (32) -- (22);
+  %% handlers
+%% WARNING: no data for boundary 'data.rkt' ==> 'handlers.rkt'
+  \draw[->] (40) -- (01);
+  \draw[->,purple!64!white, line width=3pt] (40) -- (32);
+  \draw[->,green!48!white, line width=1pt] (40) -- (20);
+  %% main
+%% WARNING: no data for boundary 'data.rkt' ==> 'main.rkt'
+  \draw[->] (51) -- (01);
+  \draw[->,green!48!white, line width=1pt] (51) -- (10);
+  \draw[->,purple!64!white, line width=3pt] (51) -- (40);
+  \draw[->,red!87!black, line width=3.5pt] (51) -- (32);
+  
+\end{tikzpicture}

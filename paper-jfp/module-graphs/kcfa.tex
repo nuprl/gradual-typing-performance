@@ -1,0 +1,47 @@
+%% Total contracts = 50
+%% Total checks = 877929229
+\begin{tikzpicture}
+
+  \node (0)             {\rkt{4}{structs}};
+  \node (1) [left of=0] {\rkt{1}{benv}};
+  \node (2) [left of=1] {\rkt{5}{time}};
+  \node (3) [left of=2] {\rkt{2}{denotable}};
+  \node (4) [left of=3] {\rkt{0}{ai}};
+  \node (5) [left of=4] {\rkt{6}{ui}};
+  \node (6) [left of=5] {\rkt{3}{main}};
+
+  %% -- edges
+%% WARNING: no data for boundary 'structs.rkt' ==> 'benv.rkt'
+  \draw[->] (1) -- (0);
+%% WARNING: no data for boundary 'benv.rkt' ==> 'time.rkt'
+  \draw[->] (2) -- (1);
+%% WARNING: no data for boundary 'structs.rkt' ==> 'time.rkt'
+  \draw[->] (2) edge[bend right=35] (0);
+%% WARNING: no data for boundary 'time.rkt' ==> 'denotable.rkt'
+  \draw[->] (3) -- (2);
+%% WARNING: no data for boundary 'structs.rkt' ==> 'denotable.rkt'
+  \draw[->] (3) edge[bend left=35] (0);
+%% WARNING: no data for boundary 'benv.rkt' ==> 'denotable.rkt'
+  \draw[->] (3) edge[bend left=35] (1);
+%% WARNING: no data for boundary 'denotable.rkt' ==> 'ai.rkt'
+  \draw[->] (4) -- (3);
+%% WARNING: no data for boundary 'structs.rkt' ==> 'ai.rkt'
+  \draw[->] (4) edge[bend right=35] (0);
+%% WARNING: no data for boundary 'benv.rkt' ==> 'ai.rkt'
+  \draw[->] (4) edge[bend right=35] (1);
+%% WARNING: no data for boundary 'time.rkt' ==> 'ai.rkt'
+  \draw[->] (4) edge[bend right=35] (2);
+  \draw[->,green!48!white, line width=1pt] (5) -- (4);
+%% WARNING: no data for boundary 'structs.rkt' ==> 'ui.rkt'
+  \draw[->] (5) edge[bend left=35] (0);
+%% WARNING: no data for boundary 'benv.rkt' ==> 'ui.rkt'
+  \draw[->] (5) edge[bend left=35] (1);
+%% WARNING: no data for boundary 'time.rkt' ==> 'ui.rkt'
+  \draw[->] (5) edge[bend left=35] (2);
+%% WARNING: no data for boundary 'denotable.rkt' ==> 'ui.rkt'
+  \draw[->] (5) edge[bend left=35] (3);
+  \draw[->,yellow!45!orange, line width=2pt] (6) -- (5);
+%% WARNING: no data for boundary 'structs.rkt' ==> 'main.rkt'
+  \draw[->] (6) edge[bend right=35] (0);
+
+\end{tikzpicture}
