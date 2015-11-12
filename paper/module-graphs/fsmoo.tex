@@ -1,0 +1,19 @@
+\begin{tikzpicture}
+
+  \node (00) {\rkt{0}{automata}};
+  \node (01) [below of=00] {\rkt{3}{utilities}};
+
+  \node (10) [left of=00] {\rkt{2}{population}};
+  \node (11) [left of=01] {};
+
+  \node (21) [left of=11] {\rkt{1}{main}};
+
+  %% -- edges
+  \draw[->] (21) -- (00);
+  \draw[->] (21) -- (01);
+  \draw[->] (21) -- (10);
+
+  \draw[->] (10) -- (00);
+  \draw[->] (10) -- (01);
+
+\end{tikzpicture}
