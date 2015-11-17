@@ -14,5 +14,9 @@ Case:        Fractal Design Define XL R2 ($160)
              http://www.amazon.com/Silverstone-GD08B-Aluminum-Extended-compatible/dp/B007X8TQYI
 PSU:         Seasonic X-series 650W ($110)
              http://www.newegg.com/Product/Product.aspx?Item=N82E16817151088
+UPS:         APC BE550G Back-UPS ($53.98)
+             http://www.amazon.com/APC-BE550G-Back-UPS-8-outlet-Uninterruptible/dp/B0019804U8
+CPU fans:    2x Noctua NH-U9DO ($64.99)
+             http://www.newegg.com/Product/Product.aspx?Item=N82E16835608022
 
-Total estimate: $3102
+Total estimate: $3285.96
