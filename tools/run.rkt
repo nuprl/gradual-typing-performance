@@ -151,14 +151,14 @@
                  ;; we're reponsible for closing these
                  (close-input-port in)
                  (close-input-port err)
-                 (close-output-port out)
-                 (write-results (reverse times))))))))))
+                 (close-output-port out))
+               (write-results (reverse times)))))))))
   ;; synchronize on all jobs
   (for ([thd (in-list threads)]) (thread-wait thd))
   (void))
 
 (define (write-results times [dir (current-directory)])
-  (with-output-to-file (build-path dir (output-path))
+  (with-output-to-file (build-path dir (output-path)) #:exists 'append
     (lambda () (write times))))
 
 (module+ main
