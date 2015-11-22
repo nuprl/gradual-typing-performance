@@ -12,6 +12,10 @@
   ;; (-> Summary Index)
   ;; Count the number of possible paths through a lattice
 
+  get-num-modules
+  ;; (-> Summary Index)
+  ;; Get the number of configurations from a Summary
+
   get-num-configurations
   ;; (-> Summary Index)
   ;; Get the number of configurations from a Summary
@@ -45,6 +49,10 @@
   configuration->mean-runtime
   ;; (-> Summary Bitstring Real)
   ;; Get the mean runtime of a configuration, represented as a bitstring
+
+  configuration->overhead
+  ;; (-> Summary Bitstring Real)
+  ;; Get the overhead of a configuration, relative to untyped
 
   predicate->configurations
   ;; (-> Summary (-> Bitstring Boolean) (Streamof Bitstring))
@@ -301,6 +309,10 @@
 (define (configuration->mean-runtime S v)
   (assert-configuration-length S v) ;; Is this going to be expensive?
   (index->mean-runtime S (bitstring->natural v)))
+
+(: configuration->overhead (-> Summary Bitstring Real))
+(define (configuration->overhead S v)
+  (/ (configuration->mean-runtime S v) (untyped-mean S)))
 
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime sm i)
