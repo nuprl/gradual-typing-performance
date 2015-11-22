@@ -236,7 +236,8 @@
               ([t (in-list title*)]
                [r (in-list rktd*)])
       (cond
-       [(and t ((inst assoc (U #f String) (Listof String)) t acc))
+       ;[(and t ((inst assoc (U #f String) (Listof String)) t acc))
+       [(and t (assoc t acc))
         (for/list ([t+r (in-list acc)])
           (define hd (car t+r))
           (if (and (string? hd) (string=? hd t))
