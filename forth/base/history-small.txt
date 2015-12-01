@@ -1,0 +1,200 @@
+push 5386
+push 7136
+*
+push 2009
+push 3273
+push 2408
+push 235
+-
+push 1562
+*
++
++
+*
+push 1790
+-
+push 7403
+*
+push 1944
+push 7289
+push 3959
+push 2785
+*
+push 2606
+-
+push 6381
+push 6411
+-
+push 519
+push 8705
+-
+*
+push 2341
+push 6145
+push 1455
+-
+*
+push 4519
+push 6833
+push 756
+push 4356
+*
+push 4412
+push 1240
+push 4456
+*
+*
+push 7692
+push 8983
++
+*
+push 6245
+push 772
+*
+push 6667
+push 5390
+push 2023
+*
+push 1487
+push 5243
+push 7458
+*
+-
+push 5076
++
+*
++
+-
++
+push 6152
+push 5938
++
+-
+push 6442
++
+push 4901
+push 2490
+push 5388
+*
+push 2384
+-
+push 2251
+push 5124
+*
+-
+push 8227
+push 925
+push 7825
+push 6410
++
+push 4410
+push 8022
+push 479
+push 2691
++
+push 1699
+*
+push 987
+push 1738
+push 380
+push 6224
+-
+push 6113
+push 3982
+-
+push 641
+push 2410
+push 60
+push 7246
+push 4785
+push 293
+push 5959
+push 8803
+push 1677
+push 8043
+push 8287
+push 8130
+-
+push 1820
+push 7394
+push 5481
+-
+push 7772
+push 7680
++
++
+push 7990
+-
+push 1347
+*
+push 7127
+*
+push 1928
+push 8349
+push 7134
++
+push 793
+*
+push 2878
+push 6163
+-
+-
+push 3584
+push 6705
+push 7509
+push 2387
+-
+push 775
+push 3480
++
+push 733
+push 7620
+push 4288
+*
+push 823
+*
+push 1551
+push 4677
++
+push 7911
+push 980
+push 2314
+-
+push 4211
+-
++
+push 3101
++
+push 4301
+push 6692
+-
+push 7280
+push 5900
+*
++
+push 5203
+push 1124
+push 7470
+push 5748
+push 37
++
+push 1031
++
+push 5654
+-
++
+-
+push 8351
+-
+push 4124
+-
++
+push 2343
+*
+-
+push 3120
+*
+push 3558
+-
+push 1856
+push 547
