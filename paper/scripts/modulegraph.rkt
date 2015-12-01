@@ -361,10 +361,109 @@
                  #:when (regexp-match/set! ln))
         (unbox match)))))
 
+(define-type AdjList/Level (Listof (Listof (Listof String))))
+
+(: group-by-level (-> AdjList AdjList/Level))
+(define (group-by-level A)
+  (let loop : AdjList/Level
+            ([A : AdjList A]
+             [level* : AdjList/Level '()]
+             [seen* : (Listof String) '()])
+    (if (null? A)
+      level*
+      (let* ([seen? : (-> String Boolean)
+              (lambda ([s : String]) (and (member s seen*) #t))]
+             [in-this-level
+              (for/list : (Listof (Listof String))
+                        ([name+req* (in-list A)]
+                         #:when (andmap seen? (cdr name+req*)))
+                name+req*)]
+             [this-level-names : (Listof String)
+               (map (inst car String (Listof String)) in-this-level)]
+             [A2 (for/list : AdjList
+                           ([name+req* (in-list A)]
+                            #:when (not (member (car name+req*) this-level-names)))
+                   name+req*)])
+
+        (loop
+          A2
+          (cons in-this-level level*)
+          (append this-level-names seen*))))))
+
+;; Print a modulegraph for a project.
+;; The layout should be approximately right
+;;  (may need to bend edges & permute a row's nodes)
+;;
+;; TODO failed for snake (only 1 level!!!) pls debug
+(: directory->tikz (-> Path Path-String Void))
+(define (directory->tikz p out-file)
+  (define N (path->project-name p))
+  (define A (directory->adjlist p))
+  (define MG (modulegraph N A))
+  (define A/level (reverse (group-by-level A)))
+  (with-output-to-file out-file #:exists 'replace
+    (lambda ()
+      (displayln "\\begin{tikzpicture}\n")
+      (: name+tikzid* (Listof (Pairof String String)))
+      (define name+tikzid*
+       (apply append
+        (for/list : (Listof (Listof (Pairof String String)))
+                  ([group (in-list A/level)]
+                   [g-id  (in-naturals)])
+          (for/list : (Listof (Pairof String String))
+                    ([name+req (in-list group)]
+                     [n-id (in-naturals)])
+            (define name (car name+req))
+            (define tikzid (format "~a~a" g-id n-id))
+            (define pos
+              (cond
+               [(and (zero? g-id) (zero? n-id)) ""]
+               [(zero? n-id) (format "[left of=~a]" (decr-left tikzid))]
+               [else (format "[below of=~a]" (decr-right tikzid))]))
+            (printf "  \\node (~a) ~a {\\rkt{~a}{~a}};\n"
+              tikzid pos (name->index MG name) name)
+            (cons name tikzid)))))
+      (newline)
+      (: get-tikzid (-> String String))
+      (define (get-tikzid name)
+        (cdr (or (assoc name name+tikzid*) (error 'NONAME))))
+      (for* ([group (in-list A/level)]
+             [name+req* (in-list group)]
+             [req (in-list (cdr name+req*))])
+        (printf "  \\draw[->] (~a) -- (~a);\n"
+          (get-tikzid (car name+req*))
+          (get-tikzid req)))
+      (displayln "\n\\end{tikzpicture}"))))
+
+(: decr-right (-> String String))
+(define (decr-right str)
+  (decr-str str #f #t))
+
+(: decr-left (-> String String))
+(define (decr-left str)
+  (decr-str str #t #f))
+
+(: decr-str (-> String Boolean Boolean String))
+(define (decr-str str left? right?)
+  (define left-char (string-ref str 0))
+  (define right-char (string-ref str 1))
+  (string (if left? (decr-char left-char) left-char)
+          (if right? (decr-char right-char) right-char)))
+
+(: decr-char (-> Char Char))
+(define (decr-char c)
+  (integer->char (sub1 (char->integer c))))
+
 ;; =============================================================================
 
 (module+ main
-  (displayln (directory->adjlist (string->path "../../forth/untyped")))
+  (unless (= 1 (vector-length (current-command-line-arguments)))
+    (raise-user-error "Usage: ./modulegraph.rkt PROJECT-NAME"))
+  (define out-file "modulegraph.tex")
+  (define u-path-str
+    (string-append (vector-ref (current-command-line-arguments) 0) "/untyped"))
+  (directory->tikz (string->path u-path-str) out-file)
+  (printf "Saved module graph to '~a'\n" out-file)
 )
 
 ;; =============================================================================
