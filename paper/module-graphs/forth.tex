@@ -1,0 +1,13 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{3}{stack}};
+  \node (10) [left of=00] {\rkt{0}{command}};
+  \node (20) [left of=10] {\rkt{1}{eval}};
+  \node (30) [left of=20] {\rkt{2}{main}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (20) edge[bend left=20] (10);
+  \draw[->] (20) -- (00);
+  \draw[->] (30) -- (20);
+
+\end{tikzpicture}

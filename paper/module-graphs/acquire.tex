@@ -1,0 +1,47 @@
+\begin{tikzpicture}
+
+  \node (00)                            {\rkt{1}{aux}};
+  \node (01) [below of=00,yshift=0.3cm] {};
+
+  \node (10) [left of=00] {\rkt{2}{basics}};
+  \node (11) [left of=01] {};
+
+  \node (20) [left of=10] {\rkt{3}{board}};
+  \node (21) [left of=11] {};
+
+  \node (30) [left of=20] {\rkt{7}{strategy}};
+  \node (31) [left of=21] {\rkt{6}{state}};
+
+  \node (40) [left of=30] {\rkt{5}{player}};
+  \node (41) [left of=31] {\rkt{0}{admin}};
+
+  \node (50) [left of=40] {\rkt{4}{main}};
+
+  %% -- edges
+  \draw[->] (10) -- (00);
+
+  \draw[->] (20) -- (10);
+  \draw[->] (20) edge[bend left=20] (00);
+
+  \draw[->] (30) -- (20);
+  \draw[->] (30) edge[bend right=20] (10);
+  \draw[->] (30) edge[bend left=20]  (00);
+
+  \draw[->] (31) -- (20);
+  \draw[->] (31) -- (10);
+  \draw[->] (31) -- (00);
+
+  \draw[->] (40) -- (31);
+  \draw[->] (40) -- (30);
+  \draw[->] (40) -- (41);
+  \draw[->] (40) edge[bend left=20] (10);
+
+  \draw[->] (41) -- (31);
+  \draw[->] (41) -- (10);
+  \draw[->] (41) -- (20);
+
+  \draw[->] (50) edge[bend left=20] (00);
+  \draw[->] (50) -- (40);
+  \draw[->] (50) -- (41);
+
+\end{tikzpicture}
