@@ -18,7 +18,7 @@
 
 (require
   racket/class
-  games/cards
+  "../base/cards.rkt"
 )
 (require (only-in "region.rkt"
   make-hand-region

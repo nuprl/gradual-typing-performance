@@ -4,7 +4,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  games/cards
+  "../base/cards.rkt"
   racket/class
 )
 (require (only-in "deck.rkt"

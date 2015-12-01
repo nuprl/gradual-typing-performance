@@ -56,7 +56,7 @@
 ))
 (define-type Table (Instance Table<%>))
 
-(require/typed games/cards
+(require/typed "../base/cards.rkt"
  [make-deck (-> Card*)]
  [#:opaque Region region?]
  ;; Because 'region' is not really a struct ...
