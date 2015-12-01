@@ -51,6 +51,8 @@
   (only-in racket/sequence sequence->list)
   (only-in racket/string string-split string-trim)
 )
+(require/typed glob
+  [glob (-> String (Listof String))])
 
 ;; =============================================================================
 ;; --- data definition: modulegraph
@@ -123,10 +125,7 @@
     (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name)))
   ;; No edges, just nodes
   (: adjlist AdjList)
-  (define adjlist
-    (for/list ([p (in-list (directory-list u-dir))]
-               #:when (rkt-file? p))
-      (list (path->project-name p))))
+  (define adjlist (directory->adjlist u-dir))
   (modulegraph name adjlist))
 
 ;; Interpret a .tex file containing a TiKZ picture as a module graph
@@ -327,6 +326,46 @@
     (for/list ([tag+neighbors (in-list sorted)])
       (cons (cdar tag+neighbors) (cdr tag+neighbors))))
   (modulegraph project-name untagged))
+
+(: directory->adjlist (-> Path AdjList))
+(define (directory->adjlist dir)
+  (define src-path-str* (glob (format "~a/*.rkt" (path->string dir))))
+  (define src-name*
+    (for/list : (Listof String)
+              ([path-str (in-list src-path-str*)])
+      (path->project-name (string->path path-str))))
+  (for/list ([path-str (in-list src-path-str*)]
+             [name     (in-list src-name*)])
+    (cons name
+          (for/list : (Listof String)
+                    ([name2 (in-list (parse-requires path-str))]
+                     #:when (member name2 src-name*))
+            name2))))
+
+(define RX-REQUIRE #rx"require.*\"(.*)\\.rkt\"")
+
+(: parse-requires (-> Path-String (Listof String)))
+(define (parse-requires fname)
+  (with-input-from-file fname
+    (lambda ()
+      (: match (Boxof String))
+      (define match (box ""))
+      (: regexp-match/set! (-> String (Option Void)))
+      (define (regexp-match/set! str)
+        (let ([m (regexp-match RX-REQUIRE str)])
+          (if m
+            (set-box! match (or (cadr m) (error 'parse-requires "internal")))
+            #f)))
+      (for/list : (Listof String)
+                ([ln (in-lines)]
+                 #:when (regexp-match/set! ln))
+        (unbox match)))))
+
+;; =============================================================================
+
+(module+ main
+  (displayln (directory->adjlist (string->path "../../forth/untyped")))
+)
 
 ;; =============================================================================
 
