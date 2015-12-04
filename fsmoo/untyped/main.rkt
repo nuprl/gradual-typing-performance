@@ -23,11 +23,12 @@
 ;; computes the list of average payoffs over the evolution of population p for
 ;; c cycles of of match-ups with r rounds per match and at birth/death rate of s
 (define (evolve p c s r)
+  (let evolve ([c c] [s s] [r r])
   (cond
     [(zero? c) '()]
-    [else (define p2 (send p match-up* r))
-          (define pp (send p2 payoffs))
-          (define p3 (send p2 death-birth s))
-          (cons (relative-average pp r) (evolve p3 (- c 1) s r))]))
+    [else (send p match-up* r)
+          (define pp (send p payoffs))
+          (send p death-birth s)
+          (cons (relative-average pp r) (evolve (- c 1) s r))])))
 
 (time (main))

@@ -27,19 +27,18 @@
 (define-type oAutomaton (Instance Automaton))
 (define-type Payoff Nonnegative-Real)
 
-(require "../base/type-utility.rkt")
+(provide automaton? defects cooperates tit-for-tat grim-trigger make-random-automaton)
 
-(provide/type
- (automaton? (-> Any Boolean))
- (defects (-> Payoff oAutomaton))
- (cooperates (-> Payoff oAutomaton))
- (tit-for-tat (-> Payoff oAutomaton))
- (grim-trigger (-> Payoff oAutomaton))
+(: automaton? (-> Any Boolean))
+ (: defects (-> Payoff oAutomaton))
+ (: cooperates (-> Payoff oAutomaton))
+ (: tit-for-tat (-> Payoff oAutomaton))
+ (: grim-trigger (-> Payoff oAutomaton))
  
- (make-random-automaton
+ (: make-random-automaton
   ;; (make-random-automaton n k) builds an n states x k inputs automaton
   ;; with a random transition table 
-  (-> Natural oAutomaton)))
+  (-> Natural oAutomaton))
 
 (define (automaton? v)
   (is-a? v automaton%))

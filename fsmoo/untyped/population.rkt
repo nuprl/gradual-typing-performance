@@ -56,7 +56,7 @@
         (define-values (a1 a2) (send p1 match-pair p2 rounds-per-match))
         (vector-set! a* i a1)
         (vector-set! a* (+ i 1) a2))
-      this)
+      (void))
     
     (define/public (death-birth rate #:random (q #false))
       (define payoffs (for/list ([x (in-vector a*)]) (send x pay)))
@@ -87,7 +87,7 @@
       (define tmp a*)
       (set! a* b*)
       (set! b* tmp)
-      this)))
+      (void))))
 
 ;; -----------------------------------------------------------------------------
 
