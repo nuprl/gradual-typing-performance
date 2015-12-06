@@ -459,9 +459,9 @@
 (module+ main
   (unless (= 1 (vector-length (current-command-line-arguments)))
     (raise-user-error "Usage: ./modulegraph.rkt PROJECT-NAME"))
-  (define out-file "modulegraph.tex")
+  (define out-file "output.tex")
   (define u-path-str
-    (string-append (vector-ref (current-command-line-arguments) 0) "/untyped"))
+    (string-append (vector-ref (current-command-line-arguments) 0) "/typed"))
   (directory->tikz (string->path u-path-str) out-file)
   (printf "Saved module graph to '~a'\n" out-file)
 )
