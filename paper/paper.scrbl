@@ -59,4 +59,12 @@
 @include-section{related.scrbl}
 @include-section{conclusion.scrbl}
 
+@section[#:style 'unnumbered]{Acknowledgments}
+
+The authors gratefully acknowledge support from the National Science
+Foundation (SHF 1518844). They also thank Matthew Butterick, John Clements,
+Matthew Might, Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon
+Zeppieri for providing benchmark code bases. Brian LaChance and Sam
+Tobin-Hochstadt provided valuable feedback on earlier drafts.
+
 @generate-bibliography[]

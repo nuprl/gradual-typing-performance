@@ -64,12 +64,3 @@ In sum, while we accept that the current implementation technology for
 Our benchmarks and measurements are available in
 our artifact:
 @url{http://www.ccs.neu.edu/racket/pubs/#popl15-tfgnvf}
-
-@section[#:style 'unnumbered]{Acknowledgments}
-
-The authors gratefully acknowledge support from the National Science
-Foundation (SHF 1518844). They also thank Matthew Butterick, John Clements,
-Matthew Might, Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon
-Zeppieri for providing benchmark code bases. Brian LaChance and Sam
-Tobin-Hochstadt provided valuable feedback on earlier drafts.
-
