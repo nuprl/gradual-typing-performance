@@ -1,43 +1,31 @@
-#lang typed/racket
+#lang racket
 
 ;; Populations of Automata
 
-(require "../base/type-utility.rkt")
-(require
-  "automata-adapted.rkt"
-  benchmark-util)
-(define-type Probability Nonnegative-Real)
-(require/typed/check "utilities.rkt"
- (choose-randomly
-  (-> [Listof Probability] Natural [#:random (U False Real)] [Listof Natural])))
+;; population-payoffs (-> [Listof Payoff])
 
-(define-type Population
-  (Class
-   (init-field (a* Automaton*) (b* Automaton* #:optional))
-   (payoffs (-> [Listof Payoff]))
-   (match-up*
-    ;; (match-ups p r) matches up neighboring pairs of
-    ;; automata in population p for r rounds 
-    (-> Natural oPopulation))
+;; match-up* (-> N Population)
+;; (match-ups p r) matches up neighboring pairs of
+;; automata in population p for r rounds 
+;; 
 
-   (death-birth
-    ;; (death-birth p r) replaces r elements of p with r "children" of 
-    ;; randomly chosen fittest elements of p, also shuffle 
-    ;; constraint (< r (length p))
-    (-> Natural [#:random (U False Payoff)] oPopulation))))
-(define-type oPopulation (Instance Population))
+;; death-birth N -> Population 
+;; (death-birth p r) replaces r elements of p with r "children" of 
+;; randomly chosen fittest elements of p, also shuffle 
+;; constraint (< r (length p))
 
-(define-type Automaton* (Vectorof oAutomaton))
-
-(provide/type
- (build-random-population
-  ;; (build-population n c) for even n, build a population of size n 
-  ;; with c constraint: (even? n)
-  (-> Natural oPopulation))
+(provide
+ ;; type Population
+ 
+ ;; N -> Population
+ ;; (build-population n c) for even n, build a population of size n 
+ ;; with c constraint: (even? n)
+ build-random-population
  
  )
 
 ;; =============================================================================
+(require "automata.rkt" "utilities.rkt")
 
 ;; Population = (Cons Automaton* Automaton*)
 ;; Automaton* = [Vectorof Automaton]
@@ -49,14 +37,13 @@
   (define v (build-vector n (lambda (_) (make-random-automaton DEF-COO))))
   (new population% [a* v]))
 
-(: population% Population)
 (define population%
   (class object%
     (init-field a* (b* a*))
     (super-new)
     
     (define/public (payoffs)
-      (for/list : [Listof Payoff] ([a : oAutomaton (in-vector a*)]) (send a pay)))
+      (for/list ([a a*]) (send a pay)))
     
     (define/public (match-up* rounds-per-match)
       ;; comment out this line if you want cummulative payoff histories:
@@ -69,28 +56,28 @@
         (define-values (a1 a2) (send p1 match-pair p2 rounds-per-match))
         (vector-set! a* i a1)
         (vector-set! a* (+ i 1) a2))
-      this)
+      (void))
     
     (define/public (death-birth rate #:random (q #false))
-      (define payoffs* (payoffs))
-      [define substitutes (choose-randomly payoffs* rate #:random q)]
+      (define payoffs (for/list ([x (in-vector a*)]) (send x pay)))
+      [define substitutes (choose-randomly payoffs rate #:random q)]
       (for ([i (in-range rate)][p (in-list substitutes)])
         (vector-set! a* i (send (vector-ref b* p) clone)))
       (shuffle-vector))
     
-    (: reset (-> Void))
-    ;; effect: reset all automata in a*
+    ;; -> Void
+    ;; effec: reset all automata in a*
     (define/private (reset)
-      (for ([x : oAutomaton (in-vector a*)][i : Natural (in-naturals)])
-        (vector-set! a* i (send x reset))))
+      (for ([x a*][i (in-naturals)]) (vector-set! a* i (send x reset))))
     
-    (: shuffle-vector (-> oPopulation))
+    ;; -> Population
     ;; effect: shuffle vector b into vector a
     ;; constraint: (= (vector-length a) (vector-length b))
     ;; Fisher-Yates Shuffle
+    
     (define/private (shuffle-vector)
       ;; copy b into a
-      (for ([x : oAutomaton (in-vector a*)][i : Natural (in-naturals)])
+      (for ([x (in-vector a*)][i (in-naturals)])
         (vector-set! b* i x))
       ;; now shuffle a 
       (for ([x (in-vector a*)] [i (in-naturals)])
@@ -100,7 +87,7 @@
       (define tmp a*)
       (set! a* b*)
       (set! b* tmp)
-      this)))
+      (void))))
 
 ;; -----------------------------------------------------------------------------
 

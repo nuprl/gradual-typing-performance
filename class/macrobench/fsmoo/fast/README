@@ -1,0 +1,4 @@
+'(("automata.rkt" #f)
+  ("main.rkt" #t)
+  ("population.rkt" #f)
+  ("utilities.rkt" #f))

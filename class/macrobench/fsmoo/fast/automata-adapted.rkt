@@ -1,14 +1,12 @@
 #lang typed/racket
 
 (provide
- ;Automaton
  oAutomaton
  Payoff
  make-random-automaton
 )
 
-(require benchmark-util)
-(require/typed/check "automata.rkt"
+(require/typed "automata.rkt"
  (make-random-automaton
   (-> Natural oAutomaton)))
 

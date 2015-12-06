@@ -8,9 +8,8 @@
 (require
   "automata-adapted.rkt"
   "population-adapted.rkt"
-  benchmark-util
 )
-(require/typed/check "utilities.rkt"
+(require/typed "utilities.rkt"
  (relative-average (-> [Listof Real] Real Real))
 )
 
@@ -32,17 +31,18 @@
 ;; computes the list of average payoffs over the evolution of population p for
 ;; c cycles of of match-ups with r rounds per match and at birth/death rate of s
 (define (evolve p c s r)
-  (cond
-    [(zero? c) '()]
-    [else (define p2 (send p match-up* r))
-          ;; Note: r is typed as State even though State is not exported 
-          (define pp (send p2 payoffs))
-          (define p3 (send p2 death-birth s))
-          ;; Note: s same as r
-          ({inst cons Payoff [Listof Payoff]}
-           (cast (relative-average pp r) Payoff)
-           ;; Note: evolve is assigned (-> ... [Listof Probability])
-           ;; even though it is explicitly typed ... [Listof Payoff]
-           (evolve p3 (- c 1) s r))]))
+  (let evolve : (Listof Payoff) ([c : Natural c] [s : Natural s] [r : Natural r])
+    (cond
+      [(zero? c) '()]
+      [else (send p match-up* r)
+            ;; Note: r is typed as State even though State is not exported 
+            (define pp (send p payoffs))
+            (send p death-birth s)
+            ;; Note: s same as r
+            ({inst cons Payoff [Listof Payoff]}
+             (cast (relative-average pp r) Payoff)
+             ;; Note: evolve is assigned (-> ... [Listof Probability])
+             ;; even though it is explicitly typed ... [Listof Payoff]
+             (evolve (- c 1) s r))])))
 
 (time (main))
