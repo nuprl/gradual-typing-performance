@@ -7,10 +7,9 @@
 ;; =============================================================================
 
 (define (main)
-  (call-with-input-file* (vector-ref (current-command-line-arguments) 0)
+  (call-with-input-file* "history.txt"
     (lambda (p)
       (let-values ([(_e _s) (forth-eval* p)]) (void))))
   (void))
 
-(require contract-profile)
-(contract-profile-thunk main)
+(time (main))

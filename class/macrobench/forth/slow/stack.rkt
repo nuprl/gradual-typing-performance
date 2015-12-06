@@ -1,8 +1,6 @@
-#lang typed/racket/base
+#lang racket/base
 
-(require typed/racket/class)
-
-;; TODO make stacks be objects ?
+(require racket/class)
 
 ;; Forth stacks,
 ;;  data definition & operations
@@ -12,16 +10,15 @@
 )
 
 (require
-  "../base/command-types.rkt")
+  "command-types.rkt")
 
 ;; =============================================================================
 
 
-(: stack% Stack%)
 (define stack%
   (class object%
     (super-new)
-    (field [S : (Listof Integer) '()])
+    (field [S '()])
     (define/public (stack-drop)
       (let ([v (send this stack-pop)])
         (void)))

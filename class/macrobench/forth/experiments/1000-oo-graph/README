@@ -1,2 +1,0 @@
-;; Slight modifications to the fast-running forth to permit graphing
-'(("command.rkt" #t) ("eval.rkt" #f) ("main.rkt" #f) ("stack.rkt" #f))

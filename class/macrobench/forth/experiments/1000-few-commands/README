@@ -1,2 +1,0 @@
-;; This version of FORTH has very few commands in the list. Does this reduce overhead?
-'(("command.rkt" #t) ("eval.rkt" #f) ("main.rkt" #f) ("stack.rkt" #f))

@@ -8,21 +8,11 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
  racket/match
  typed/racket/class
- "../base/command-types.rkt"
+ "command-types.rkt"
  (only-in racket/string string-join)
  (for-syntax racket/base racket/syntax syntax/parse)
-)
-(require/typed/check "stack.rkt"
-  (stack-drop (-> Stack Stack))
-  (stack-dup (-> Stack Stack))
-  (stack-init (-> Stack))
-  (stack-over (-> Stack Stack))
-  (stack-pop (-> Stack (Values Integer Stack)))
-  (stack-push (-> Stack Integer Stack))
-  (stack-swap (-> Stack Stack))
 )
 
 ;; =============================================================================
@@ -64,9 +54,10 @@
       (exec (lambda ([E : Env] [S : Stack] [v : Any])
         (if (singleton-list? v)
           (if (eq? (car v) (get-field id this))
-             (let*-values ([(v1 S1) (stack-pop S)]
-                           [(v2 S2) (stack-pop S1)])
-               (cons E (stack-push S2 (binop v2 v1))))
+             (let ([v1 (send S stack-pop)]
+                   [v2 (send S stack-pop)])
+               (send S stack-push (binop v2 v1))
+               (cons E S))
              #f)
            #f))))))
 
@@ -81,7 +72,8 @@
         (exec (lambda ([E : Env] [S : Stack] [v : Any])
           (and (singleton-list? v)
                (eq? '#,(syntax-e #'opcode) (car v))
-               (cons E (stack-cmd S))))))]))
+               (send S stack-cmd)
+               (cons E S)))))]))
 
 ;; Default environment of commands
 (: CMD* (Listof (Instance Command%)))
@@ -125,9 +117,11 @@
     (exec (lambda ([E : Env] [S : Stack] [v : Any])
       (match v
         [`(push ,(? exact-integer? n))
-         (cons E (stack-push S n))]
+         (send S stack-push n)
+         (cons E S)]
         [`(,(? exact-integer? n))
-         (cons E (stack-push S n))]
+         (send S stack-push n)
+         (cons E S)]
         [_ #f]))))
   (new command%
     (id 'show)

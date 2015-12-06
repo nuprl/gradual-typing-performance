@@ -1,3 +1,0 @@
-;; Slight modifications to variation 1000 to permit graphing
-
-'(("command.rkt" #t) ("eval.rkt" #f) ("main.rkt" #f) ("stack.rkt" #f))
