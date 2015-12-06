@@ -67,4 +67,4 @@ Matthew Might, Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jo
 Zeppieri for providing benchmark code bases. Brian LaChance and Sam
 Tobin-Hochstadt provided valuable feedback on earlier drafts.
 
-@generate-bibliography[]
+@generate-bibliography[#:sec-title "References"]
