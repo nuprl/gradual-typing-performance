@@ -53,7 +53,7 @@
 (define PARAM-L 2)
 (define PARAM-MAX-OVERHEAD 20)
 (define PARAM-NUM-SAMPLES 60)
-(define PARAM-LABELS? #t)
+(define PARAM-LABELS? #f)
 
 (: *show-paths?* (Parameterof Boolean))
 (define *show-paths?* (make-parameter #f))
@@ -219,7 +219,7 @@
 (: zip-title* (->* [(Listof String) (U #f (Listof String))]
                        [#:collapse? Boolean]
                        (Listof (Pairof (U #f String) (Listof String)))))
-(define (zip-title* rktd* maybe-title* #:collapse? [collapse? #t])
+(define (zip-title* rktd* maybe-title* #:collapse? [collapse? #f])
   (: title* (U (Listof String) (Listof #f)))
   (define title*
     (if maybe-title*
