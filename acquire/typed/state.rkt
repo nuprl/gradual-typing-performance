@@ -138,11 +138,11 @@
 ;; IMPLEMENTATION: 
 
 (require
- ;; 2htdp/image
+ benchmark-util
  "../base/types.rkt"
  "board-adapted.rkt"
  )
-(require/typed "basics.rkt"
+(require/typed/check "basics.rkt"
   (ALL-HOTELS (Listof Hotel))
   (CASH0 Cash)
   (FINAL# Natural)
@@ -162,8 +162,8 @@
   (shares-minus (-> Shares Shares Shares))
   (shares-plus (-> Shares Shares Shares))
 )
-(require/typed "auxiliaries.rkt"
- (aux:partition (-> (Listof Player) (-> Player Share) (Listof (Listof Player))))
+(require/typed/check "auxiliaries.rkt"
+  (aux:partition (All (A B) (-> (Listof A) (-> A Real) (-> A B) (Listof (Listof B)))))
  (distinct (-> (Listof Any) Boolean))
  )
 
@@ -466,7 +466,8 @@
   (cond
     [(empty? owners-of-acquired-sorted) s]
     [else
-     (define majority-minority (aux:partition owners-of-acquired-sorted selector))
+     (define majority-minority ((inst aux:partition Player Player)
+       owners-of-acquired-sorted selector (lambda ([x : Player]) x)))
      (define majority (first majority-minority))
      (define minority (if (empty? (rest majority-minority)) '() (second majority-minority)))
      (define majority-bonus (bonus 'majority acquired-hotel size-acquired))

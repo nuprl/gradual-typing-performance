@@ -10,9 +10,7 @@
 
 ;; ---------------------------------------------------------------------------------------------------
 (provide
- Board
- Tile
- 
+
  tile?
  ;; (-> Any Boolean)
 
@@ -104,16 +102,17 @@
 ;; IMPLEMENTATION: SPOTS
 
 (require
+ benchmark-util
  "../base/types.rkt"
  )
-(require/typed "basics.rkt"
+(require/typed/check "basics.rkt"
  (hotel? (-> Any Boolean))
  (SAFE# Natural)
  (price-per-share (-> Hotel Natural (Option Cash)))
  (shares-order? (-> Any Boolean))
 )
-(require/typed "auxiliaries.rkt"
-  (aux:partition (->* [(Listof (List Hotel Natural)) (-> (List Hotel Natural) Real)] [#:info (-> (List Hotel Natural) Hotel)] (Listof (Listof Hotel))))
+(require/typed/check "auxiliaries.rkt"
+  (aux:partition (All (A B) (-> (Listof A) (-> A Real) (-> A B) (Listof (Listof B)))))
   (distinct (-> (Listof Any) Boolean))
 )
 
@@ -315,26 +314,6 @@
 
   )
 
-(module tiles+spots typed/racket
-  ;; define and export: A1 ... I12 as names for matching tiles 
-  
-  (require (submod ".." tiles))
-  (provide A1) (define: A1 : Tile (ctile A 1))(provide A2) (define: A2 : Tile (ctile A 2))(provide A3) (define: A3 : Tile (ctile A 3))(provide A4) (define: A4 : Tile (ctile A 4))(provide A5) (define: A5 : Tile (ctile A 5))(provide A6) (define: A6 : Tile (ctile A 6))(provide A7) (define: A7 : Tile (ctile A 7))(provide A8) (define: A8 : Tile (ctile A 8))(provide A9) (define: A9 : Tile (ctile A 9))(provide A10) (define: A10 : Tile (ctile A 10))(provide A11) (define: A11 : Tile (ctile A 11))(provide A12) (define: A12 : Tile (ctile A 12))(provide A13) (define: A13 : Tile (ctile A 13))
-  (provide B1) (define: B1 : Tile (ctile B 1))(provide B2) (define: B2 : Tile (ctile B 2))(provide B3) (define: B3 : Tile (ctile B 3))(provide B4) (define: B4 : Tile (ctile B 4))(provide B5) (define: B5 : Tile (ctile B 5))(provide B6) (define: B6 : Tile (ctile B 6))(provide B7) (define: B7 : Tile (ctile B 7))(provide B8) (define: B8 : Tile (ctile B 8))(provide B9) (define: B9 : Tile (ctile B 9))(provide B10) (define: B10 : Tile (ctile B 10))(provide B11) (define: B11 : Tile (ctile B 11))(provide B12) (define: B12 : Tile (ctile B 12))(provide B13) (define: B13 : Tile (ctile B 13))
-  (provide C1) (define: C1 : Tile (ctile C 1))(provide C2) (define: C2 : Tile (ctile C 2))(provide C3) (define: C3 : Tile (ctile C 3))(provide C4) (define: C4 : Tile (ctile C 4))(provide C5) (define: C5 : Tile (ctile C 5))(provide C6) (define: C6 : Tile (ctile C 6))(provide C7) (define: C7 : Tile (ctile C 7))(provide C8) (define: C8 : Tile (ctile C 8))(provide C9) (define: C9 : Tile (ctile C 9))(provide C10) (define: C10 : Tile (ctile C 10))(provide C11) (define: C11 : Tile (ctile C 11))(provide C12) (define: C12 : Tile (ctile C 12))(provide C13) (define: C13 : Tile (ctile C 13))
-  (provide D1) (define: D1 : Tile (ctile D 1))(provide D2) (define: D2 : Tile (ctile D 2))(provide D3) (define: D3 : Tile (ctile D 3))(provide D4) (define: D4 : Tile (ctile D 4))(provide D5) (define: D5 : Tile (ctile D 5))(provide D6) (define: D6 : Tile (ctile D 6))(provide D7) (define: D7 : Tile (ctile D 7))(provide D8) (define: D8 : Tile (ctile D 8))(provide D9) (define: D9 : Tile (ctile D 9))(provide D10) (define: D10 : Tile (ctile D 10))(provide D11) (define: D11 : Tile (ctile D 11))(provide D12) (define: D12 : Tile (ctile D 12))(provide D13) (define: D13 : Tile (ctile D 13))
-  (provide E1) (define: E1 : Tile (ctile E 1))(provide E2) (define: E2 : Tile (ctile E 2))(provide E3) (define: E3 : Tile (ctile E 3))(provide E4) (define: E4 : Tile (ctile E 4))(provide E5) (define: E5 : Tile (ctile E 5))(provide E6) (define: E6 : Tile (ctile E 6))(provide E7) (define: E7 : Tile (ctile E 7))(provide E8) (define: E8 : Tile (ctile E 8))(provide E9) (define: E9 : Tile (ctile E 9))(provide E10) (define: E10 : Tile (ctile E 10))(provide E11) (define: E11 : Tile (ctile E 11))(provide E12) (define: E12 : Tile (ctile E 12))(provide E13) (define: E13 : Tile (ctile E 13))
-  (provide F1) (define: F1 : Tile (ctile F 1))(provide F2) (define: F2 : Tile (ctile F 2))(provide F3) (define: F3 : Tile (ctile F 3))(provide F4) (define: F4 : Tile (ctile F 4))(provide F5) (define: F5 : Tile (ctile F 5))(provide F6) (define: F6 : Tile (ctile F 6))(provide F7) (define: F7 : Tile (ctile F 7))(provide F8) (define: F8 : Tile (ctile F 8))(provide F9) (define: F9 : Tile (ctile F 9))(provide F10) (define: F10 : Tile (ctile F 10))(provide F11) (define: F11 : Tile (ctile F 11))(provide F12) (define: F12 : Tile (ctile F 12))(provide F13) (define: F13 : Tile (ctile F 13))
-  (provide G1) (define: G1 : Tile (ctile G 1))(provide G2) (define: G2 : Tile (ctile G 2))(provide G3) (define: G3 : Tile (ctile G 3))(provide G4) (define: G4 : Tile (ctile G 4))(provide G5) (define: G5 : Tile (ctile G 5))(provide G6) (define: G6 : Tile (ctile G 6))(provide G7) (define: G7 : Tile (ctile G 7))(provide G8) (define: G8 : Tile (ctile G 8))(provide G9) (define: G9 : Tile (ctile G 9))(provide G10) (define: G10 : Tile (ctile G 10))(provide G11) (define: G11 : Tile (ctile G 11))(provide G12) (define: G12 : Tile (ctile G 12))(provide G13) (define: G13 : Tile (ctile G 13))
-  (provide H1) (define: H1 : Tile (ctile H 1))(provide H2) (define: H2 : Tile (ctile H 2))(provide H3) (define: H3 : Tile (ctile H 3))(provide H4) (define: H4 : Tile (ctile H 4))(provide H5) (define: H5 : Tile (ctile H 5))(provide H6) (define: H6 : Tile (ctile H 6))(provide H7) (define: H7 : Tile (ctile H 7))(provide H8) (define: H8 : Tile (ctile H 8))(provide H9) (define: H9 : Tile (ctile H 9))(provide H10) (define: H10 : Tile (ctile H 10))(provide H11) (define: H11 : Tile (ctile H 11))(provide H12) (define: H12 : Tile (ctile H 12))(provide H13) (define: H13 : Tile (ctile H 13))
-  (provide I1) (define: I1 : Tile (ctile I 1))(provide I2) (define: I2 : Tile (ctile I 2))(provide I3) (define: I3 : Tile (ctile I 3))(provide I4) (define: I4 : Tile (ctile I 4))(provide I5) (define: I5 : Tile (ctile I 5))(provide I6) (define: I6 : Tile (ctile I 6))(provide I7) (define: I7 : Tile (ctile I 7))(provide I8) (define: I8 : Tile (ctile I 8))(provide I9) (define: I9 : Tile (ctile I 9))(provide I10) (define: I10 : Tile (ctile I 10))(provide I11) (define: I11 : Tile (ctile I 11))(provide I12) (define: I12 : Tile (ctile I 12))(provide I13) (define: I13 : Tile (ctile I 13))  
-  ;; (define-syntax (define-all-tiles stx)
-  ;;   #`(begin 
-        ;; (for* ((r ROWS) (c COLUMNS))
-        ;;      (define rc (format "~a~a" r c))
-        ;;      (printf "(provide ~a) (define: ~a : Tile (ctile ~a ~a))" rc rc r c))
-  )
-
 ;; ---------------------------------------------------------------------------------------------------
 ;; IMPLEMENTATION: BOARD
 
@@ -520,7 +499,8 @@
                         ([h : Hotel (in-list hotels)])
                 (list h (size-of-hotel board h)))])
       (sort x* (lambda ([x : (List Hotel Natural)] [y : (List Hotel Natural)]) (> (cadr x) (cadr y))))))
-  (define partitioned (aux:partition sorted second #:info (lambda ([x : (List Hotel Natural)]) (car x))))
+  (define partitioned ((inst aux:partition (List Hotel Natural) Hotel)
+    sorted second (lambda ([x : (List Hotel Natural)]) (car x))))
   (values (cast (first partitioned) (Pairof Hotel (Listof Hotel))) (apply append (rest partitioned))))
 
 (: deduplicate/hotel (-> (Listof Hotel) (Listof Hotel)))

@@ -12,11 +12,12 @@
 ;; IMPLEMENTATION
 
 (require
+ benchmark-util
  "../base/types.rkt"
  "board-adapted.rkt"
  "state-adapted.rkt"
  )
-(require/typed "basics.rkt"
+(require/typed/check "basics.rkt"
   (ALL-HOTELS (Listof Hotel))
   (SHARES-PER-TURN# Integer)
   (hotel<=? (-> Hotel Hotel Boolean))
@@ -25,7 +26,7 @@
   (shares-- (-> Shares Hotel Shares))
   (shares-available (-> Shares Hotel Share))
 )
-(require/typed "auxiliaries.rkt"
+(require/typed/check "auxiliaries.rkt"
   (randomly-pick (All (A) (-> (Listof A) A)))
   )
 

@@ -27,14 +27,14 @@
 (define (randomly-pick l)
   (list-ref l (random (length l))))
 
-(: ext:aux:partition (->* [(Listof Any) (-> Any Real)] [#:info (-> Any Any)] (Listof (Listof Any))))
-(define (ext:aux:partition lo-h-size selector #:info (info (lambda (x) x)))
+(: ext:aux:partition (All (A B) (-> (Listof A) (-> A Real) (-> A B) (Listof (Listof B)))))
+(define (ext:aux:partition lo-h-size selector info)
   (define s* (map selector lo-h-size))
   (define s1 (sort s* <=))
   (define s2 (sort s* <=))
   (unless (or (equal? s* s1) (equal? s* s2))
     (error 'aux:partition "Precondition: expected a sorted list"))
-  (aux:partition lo-h-size selector (or info (lambda ([x : Any]) x))))
+  ((inst aux:partition A B) lo-h-size selector info))
 
 (: aux:partition (All (A B) (-> (Listof A) (-> A Real) (-> A B) (Listof (Listof B)))))
 (define (aux:partition lo-h-size selector info)

@@ -12,20 +12,21 @@
 ;; IMPLEMENTATION 
 
 (require
+ benchmark-util
  "../base/types.rkt"
  "state-adapted.rkt"
 )
-(require/typed "admin.rkt"
+(require/typed/check "admin.rkt"
   (administrator% Administrator%)
   (turn% Turn%)
 )
-(require/typed "basics.rkt"
+(require/typed/check "basics.rkt"
   (player-shares0 Shares)
   (*combine-shares (-> (Listof Shares) Shares))
   (shares-minus (-> Shares Shares Shares))
   (banker-shares0 Shares)
 )
-(require/typed "strategy.rkt"
+(require/typed/check "strategy.rkt"
   (ordered-s Strategy)
   (random-s Strategy)
 )

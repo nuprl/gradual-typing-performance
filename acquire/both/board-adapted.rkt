@@ -31,11 +31,13 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+ benchmark-util
  "../base/types.rkt")
 
 (require/typed "board.rkt"
   (#:opaque Board board?)
-  (#:opaque Tile tile?)
+  (#:opaque Tile tile?))
+(require/typed/check "board.rkt"
   (tile<=? (-> Tile Tile Boolean))
   (tile->string (-> Tile String))
   (ALL-TILES (Listof Tile))

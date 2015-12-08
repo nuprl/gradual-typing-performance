@@ -7,14 +7,16 @@
 ;; including a data structure for internalizing the state of the players
 
 (require
+ benchmark-util
  "board-adapted.rkt"
  "../base/types.rkt"
  typed/racket/class)
 
 (define-type State state)
 (require/typed "state.rkt"
+  (#:opaque Player player?))
+(require/typed/check "state.rkt"
   (score? (-> Any Boolean))
-  (#:opaque Player player?)
   (player-name (-> Player String))
   (player-tiles (-> Player (Listof Tile)))
   (player-money (-> Player Cash))
