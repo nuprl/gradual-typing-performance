@@ -40,6 +40,7 @@
       (loop r (cdr h))])])))
 
 (define SMALL_TEST "../base/zombie-hist-small.rktd")
+(define MICRO_TEST "../base/zombie-hist-micro.rktd")
 
 (: main (-> Path-String Void))
 (define (main filename)
@@ -52,4 +53,4 @@
    [else
     (error "bad input")]))
 
-(time (main SMALL_TEST))
+(time (main MICRO_TEST))

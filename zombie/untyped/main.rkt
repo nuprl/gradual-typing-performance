@@ -32,6 +32,7 @@
       (loop r (cdr h))])])))
 
 (define SMALL_TEST "../base/zombie-hist-small.rktd")
+(define MICRO_TEST "../base/zombie-hist-micro.rktd")
 
 (define (main filename)
   (define raw-hist (with-input-from-file filename read))
@@ -43,4 +44,4 @@
    [else
     (error "bad input")]))
 
-(time (main SMALL_TEST))
+(time (main MICRO_TEST))
