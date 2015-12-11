@@ -108,30 +108,21 @@
  (SAFE# Natural)
  (price-per-share (-> Hotel Natural (Option Cash)))
  (shares-order? (-> Any Boolean))
+ (hotel->color (-> Hotel Color))
+ (hotel->label (-> Hotel String))
 )
 (require/typed/check "auxiliaries.rkt"
   (aux:partition (All (A B) (-> (Listof A) (-> A Real) (-> A B) (Listof (Listof B)))))
   (distinct (-> (Listof Any) Boolean))
+  (randomly-pick (All (A) (-> (Listof A) A)))
 )
 
 (define-type Board (HashTable Tile Content))
 (define-type HT (Listof Tile)) ;; Should have at least 2 members
 
 ;; =============================================================================
+;; the TILE submodule
 
-(module tiles typed/racket
-  (provide (all-defined-out))
-  (require
-   "../base/types.rkt")
-  (require/typed "basics.rkt"
-    (hotel->color (-> Hotel Color))
-    (hotel->label (-> Hotel String)))
-  (require/typed "auxiliaries.rkt"
-    (randomly-pick (All (A) (-> (Listof A) A))))
-  ;; (require 2htdp/image)
-  ;; (require (only-in srfi/1 list-index))
-  
-  ;; ---------------------------------------------------------------------------------------------------
   ;; ROWS and COLUMNS
 
 
@@ -310,12 +301,9 @@
   (define (tile->string t)
     (format "(~a,~a)" (tile-column t) (tile-row t)))
 
-  )
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; IMPLEMENTATION: BOARD
-
-(require (submod "." tiles))
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; data

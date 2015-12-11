@@ -62,7 +62,6 @@
    (show-players (-> (Listof String)))
    (run (->* (Natural) (#:show (-> Void)) RunResult))
    ))
-(define-type Administrator (Instance Administrator%))
 
 (define-type Turn%
   (Class
@@ -82,7 +81,6 @@
    ;; Precondition: (send this place-called)
    (place (-> Tile Hotel (U Void (Listof Player))))
    ))
-(define-type Turn (Instance Turn%))
 
 (define-type Player%
   (Class
@@ -92,7 +90,7 @@
    (field
     [*players (Listof Player)]
     [*bad (Listof Player)])
-   (go (-> Administrator Void))
+   (go (-> (Instance Administrator%) Void))
    (setup (-> State Void))
    (take-turn (-> (Instance Turn%) (Values (Option Tile) (Option Hotel) (Listof Hotel))))
    (keep (-> (Listof Hotel) (Listof Boolean)))
@@ -141,9 +139,7 @@
  Decisions
  ;; --
  Administrator%
- Administrator
  Turn%
- Turn
  Player%
  RunResult
  Strategy
