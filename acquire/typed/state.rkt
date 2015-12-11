@@ -8,20 +8,21 @@
 
 (provide
  score?
- player?
- ;; (-> Any Boolean)
 
- player-money
- ;; (-> Player Cash)
+ (struct-out player)
+ ; player?
+ ; ;; (-> Any Boolean)
+ ; player-money
+ ; ;; (-> Player Cash)
+ ; player-tiles
+ ; ;; (-> Player (Listof Tile))
+ ; player-shares
+ ; ;; (-> Player Shares)
+ ; player-external
+ ; ;; (-> Player Any)
+ ; player-name
+ ; ;; (-> Player String)
 
- player-tiles
- ;; (-> Player (Listof Tile))
- player-shares
- ;; (-> Player Shares)
- player-external
- ;; (-> Player Any)
- player-name
- ;; (-> Player String)
  player0
  ;; (->* (String Tile Tile Tile Tile Tile Tile) (Any) Player)
 

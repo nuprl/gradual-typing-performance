@@ -10,8 +10,10 @@
 
 ;; ---------------------------------------------------------------------------------------------------
 (provide
- tile?
- ;; (-> Any Boolean)
+
+ (struct-out tile)
+ ; tile?
+ ; ;; (-> Any Boolean)
 
  tile<=?
  ;; (-> Tile Tile Boolean)
@@ -28,9 +30,6 @@
 
  FOUNDING GROWING MERGING SINGLETON IMPOSSIBLE
  ;; Symbol
-
- board?
- ;; (-> Any Boolean)
 
  (rename-out [board make-board])
  ;; (-> Board)

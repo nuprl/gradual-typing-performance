@@ -49,7 +49,7 @@
                         (lambda (x)
                           (fail
                            (lambda () (failure 'X)))))) ;`(X ,(exn-message x))))))))
-                      (call-with-limits sec-limit #;"s" mb-limit #;"Mb" producer))])
+                      (call-with-limits sec-limit mb-limit producer))])
              (lambda () (consumer a))))))
 
 (struct hand-out (

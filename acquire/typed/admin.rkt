@@ -20,7 +20,7 @@
 )
 (require/typed racket/sandbox
   (call-with-limits (All (A) (-> Natural Natural (-> A) A)))
-  (exn:fail:resource? (-> Any Boolean))
+  (exn:fail:resource? (All (A) (-> A Boolean)))
 )
 (require/typed/check "basics.rkt"
   (ALL-HOTELS (Listof Hotel))
@@ -35,11 +35,11 @@
 (define-type Tree<%>
   (Class
    (to-state (-> State))
-   (next (-> Tile (Option Hotel) Decisions (Listof Hotel) (-> (Listof Tile) Tile) (Values (Option Tile) Tree)))
+   (next (-> Tile (Option Hotel) Decisions (Listof Hotel) (-> (Listof Tile) Tile) (Values (Option Tile) (Instance ATree%))))
    (founding (-> Natural (Listof (Listof Hotel)) Natural))
    ;; Precondition: share-order
    (traversal (-> Natural (Listof (Listof Hotel)) (-> (Instance Placed%) Natural) Natural))
-   (lookup-tile (-> (-> (Listof Tile) Tile) (Listof HandOut) (Values (Option Tile) Tree)))
+   (lookup-tile (-> (-> (Listof Tile) Tile) (Listof HandOut) (Values (Option Tile) (Instance ATree%))))
    (merging (-> Natural (Listof (Listof Hotel)) Natural))))
 
 (define-type ATree%
@@ -47,7 +47,7 @@
    #:implements Tree<%>
    (init-field (state State))))
 
-(define-type Tree (Instance ATree%))
+;(define-type Tree (Instance ATree%))
 
 (define-type Placed%
   (Class
@@ -57,9 +57,9 @@
     (hotel (Option Hotel))
     (state/tile State)
     (reason SpotType))
-   (purchase (-> Decisions (Listof Hotel) (U Tree (Listof HandOut))))
+   (purchase (-> Decisions (Listof Hotel) (U (Instance ATree%) (Listof HandOut))))
    ;; Precondition: share-order?
-   (to-trees (-> Decisions (Listof Hotel) (Listof Tree)))
+   (to-trees (-> Decisions (Listof Hotel) (Listof (Instance ATree%))))
    ;; Precondition: share-order?
    (acceptable-policies (-> (Listof (Listof Hotel)) (Listof (Listof Hotel))))))
 
@@ -98,12 +98,12 @@
                         (lambda ([x : Any])
                           (fail
                            (lambda () (failure 'X)))))) ;`(X ,(exn-message x))))))))
-                      ((inst call-with-limits A) sec-limit #;"s" mb-limit #;"Mb" producer))])
+                      ((inst call-with-limits A) sec-limit mb-limit producer))])
              (lambda () (consumer a))))))
 
 (struct hand-out (
   [tile : Tile]
-  [tree : Tree]))
+  [tree : (Instance ATree%)]))
 
 (define-type HandOut hand-out)
 ;; HandOut = (hand-out t st)
@@ -221,7 +221,7 @@
     
     (define/override (lookup-tile pick-tile lo-hand-out)
       (define tile (pick-tile (map hand-out-tile lo-hand-out)))
-      (define st (for/or : (Option Tree)
+      (define st (for/or : (Option (Instance ATree%))
                          ((p : HandOut lo-hand-out)
                           #:when (equal? (hand-out-tile p) tile))
                    (hand-out-tree p)))
@@ -242,7 +242,7 @@
                    0
                    (* (length a) 
                       (for/sum : Natural
-                               ((st : Tree (send branch to-trees d* (first a))))
+                               ((st : (Instance ATree%) (send branch to-trees d* (first a))))
                         (send st traversal (- n 1) policies p?))))))))))
 
 (: placed% Placed%)   
@@ -298,7 +298,7 @@
                              (affordable? board p budget)))
         p))))
 
-(: generate-tree (-> State Tree))
+(: generate-tree (-> State (Instance ATree%)))
 (define (generate-tree state)
   (cond
     [(state-final? state)
@@ -329,11 +329,11 @@
           (new lplaced% (state state) (lplaced lplaced))]))
 
 ;; ASSUME: current player has enough money to buy the desired shares
-(: tree-next (-> Tree Tile Hotel Decisions (Listof Hotel) (-> (Listof Tile) Tile) (Values (Option Tile) Tree)))
+(: tree-next (-> (Instance ATree%) Tile Hotel Decisions (Listof Hotel) (-> (Listof Tile) Tile) (Values (Option Tile) (Instance ATree%))))
 (define (tree-next current-tree tile hotel decisions shares-to-buy pick-tile)
   (send current-tree next tile hotel decisions shares-to-buy pick-tile))
 
-(: tree-state (-> Tree State))
+(: tree-state (-> (Instance ATree%) State))
 (define (tree-state t)
   (send t to-state))
 
@@ -378,7 +378,7 @@
       ;; generative recursion: n to 0, but terminate before if final state is reached
       ;; accumulator: states is reverese list of states encountered since tile distribution 
       (let loop : RunResult
-           ([tree   : Tree tree0]
+           ([tree   : (Instance ATree%) tree0]
             [n      : Integer turns#]
             [states : (Listof State) (list (tree-state tree0))])
         (define state (tree-state tree))
@@ -405,7 +405,7 @@
             (lambda ([arg : (List (Option Tile) (Option Hotel) (Listof Hotel))])
               (define-values (tile hotel-involved buy-shares)
                 (values (car arg) (cadr arg) (caddr arg)))
-                ;; (let ([arg+ (cast arg* (List Tile Hotel (-> Tree State Any)))])
+                ;; (let ([arg+ (cast arg* (List Tile Hotel (-> (Instance ATree%) State Any)))])
                 ;;   (values (car arg+) (cadr arg+) (caddr arg+))))
               (cond
                 [(boolean? tile) 
@@ -429,7 +429,7 @@
                     (define eliminate (send turn eliminated))
                     (cond
                       [(member (state-current-player state) eliminate)
-                       ((failure state states (lambda ([s : Tree]) (loop s  (- n 1) states)))
+                       ((failure state states (lambda ([s : (Instance ATree%)]) (loop s  (- n 1) states)))
                         `(S  "current player failed on keep"))]
                       [else 
                        (define tree/eliminate 
@@ -437,11 +437,11 @@
                              tree
                              (generate-tree (state-eliminate state eliminate))))
                        (exec external tree/eliminate tile hotel-involved d* buy-shares
-                             (lambda ([next-tree : Tree]
+                             (lambda ([next-tree : (Instance ATree%)]
                                       [state : State])
                                (inform-all 
                                 next-tree state
-                                (lambda ([next-tree : Tree]
+                                (lambda ([next-tree : (Instance ATree%)]
                                          [state : State])
                                   (cond
                                     [(empty? (state-tiles state))
@@ -450,16 +450,16 @@
                                     [else
                                      (loop next-tree (- n 1) (cons state states))]))))
                              ;; failure 
-                             (failure state states (lambda ([s : Tree]) (loop s  (- n 1) states))))])])]))
+                             (failure state states (lambda ([s : (Instance ATree%)]) (loop s  (- n 1) states))))])])]))
             ;; failure: 
-            (failure state states (lambda ([s : Tree]) (loop s  (- n 1) states))))
+            (failure state states (lambda ([s : (Instance ATree%)]) (loop s  (- n 1) states))))
            ])))
 
     ;; (-> State
     ;;     (Listof State)
     ;;     (-> State RunResult)
     ;;     (-> State RunResult))
-    (: failure (-> State (Listof State) (-> Tree RunResult) (-> Any RunResult)))
+    (: failure (-> State (Listof State) (-> (Instance ATree%) RunResult) (-> Any RunResult)))
     (define/private ((failure state states continue) status)
       ;; this should be a logging action
       (log status `(turn failure  ,(player-name (state-current-player state))))
@@ -471,8 +471,8 @@
     ;; [ (cons Tile [Listof Tile]) -> Tile ] -> Tree Tile [Maybe Hotel] Decisions [Listof Hotel]
     ;; (Any -> Any) -- success continuation 
     ;; (Any -> Any) -- failure continuation 
-    ;; -> Tree
-    (: exec (-> (Instance Player%) Tree Tile Hotel Decisions (Listof Hotel) (-> Tree State RunResult) (-> Any RunResult) RunResult))
+    ;; -> (Instance ATree%)
+    (: exec (-> (Instance Player%) (Instance ATree%) Tile Hotel Decisions (Listof Hotel) (-> (Instance ATree%) State RunResult) (-> Any RunResult) RunResult))
     (define/private (exec external tree0 placement hotel decisions shares-to-buy succ fail)
       (define-values (tile tree)
         (tree-next tree0 placement hotel decisions shares-to-buy next-tile))
@@ -485,7 +485,7 @@
        fail))
     
     ;; State (Tree State -> Any)  -> Any
-    (: inform-all (All (A) (-> Tree State (-> Tree State A) A)))
+    (: inform-all (All (A) (-> (Instance ATree%) State (-> (Instance ATree%) State A) A)))
     (define/private (inform-all tree state k)
       (define eliminate
         (for/fold : (Listof Player)
