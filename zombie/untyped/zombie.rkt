@@ -1,4 +1,4 @@
-#lang typed/racket/base
+#lang racket/base
 
 (provide
  w0
@@ -9,19 +9,18 @@
 (require
   (for-syntax racket/sequence racket/base syntax/parse racket/syntax))
 
-(require/typed "image.rkt"
-  (#:opaque Image image?)
-  (empty-scene (-> Real Real Image))
-  (place-image (-> Image Real Real Image Image))
-  (circle (-> Real String String Image))
-)
-(require/typed  "math.rkt"
-  (min (-> Real Real Real))
-  (max (-> Real Real Real))
-  (abs (-> Real Real))
-  (sqr (-> Real Real))
-  (sqrt (-> Real Real))
-)
+(require (only-in "image.rkt"
+  empty-scene
+  place-image
+  circle
+))
+(require (only-in "math.rkt"
+  min
+  max
+  abs
+  sqr
+  sqrt
+))
 
 ;; =============================================================================
 
@@ -37,15 +36,16 @@
 ;; Create an object type (-> Symbol (U (Pairof Symbol ?) ...))
 ;;  and getters for each member of the codomain union
 (define-syntax make-fake-object-type*
+  ;;bg; the untyped version ignores all types
   (syntax-parser
    [(_ ty [f* t*] ...)
     #:with (id* ...) (for/list ([f (in-syntax #'(f* ...))])
                        (format-id #'ty "~a-~a" (string-downcase (symbol->string (syntax-e #'ty))) f))
     #:with (f-sym* ...) (for/list ([f (in-syntax #'(f* ...))]) (syntax-e f))
     #'(begin
-        (define-type ty (-> Symbol (U (Pairof 'f-sym* t*) ...)))
+        ;(define-type ty (-> Symbol (U (Pairof 'f-sym* t*) ...)))
         (begin
-          (: id* (-> ty t*))
+          ;(: id* (-> ty t*))
           (define (id* v)
             (let ([r (v 'f-sym*)])
               (if (eq? 'f-sym* (car r))
@@ -155,13 +155,12 @@
   (to-draw (-> Image))
   (stop-when (-> Boolean)))
 
-(: new-world (-> Player Posn Horde World))
 (define (new-world player mouse zombies)
- (lambda ([msg : Symbol])
+ (lambda (msg)
   (cond
    [(equal? msg 'on-mouse)
    (cons 'on-mouse
-   (lambda ([x : Real] [y : Real] [me : String])
+   (lambda (x y me)
     (new-world player
      (if (equal? me "leave") ((player-posn player)) (new-posn x y))
      zombies)))]
@@ -181,63 +180,60 @@
     ((horde-touching? zombies) ((player-posn player)))))]
    [else (error 'world "unknown message")])))
 
-(: new-player (-> Posn Player))
 (define (new-player p)
-  (lambda ([msg : Symbol])
+  (lambda (msg)
    (cond
     [(equal? msg 'posn) (cons 'posn (lambda () p))]
     [(equal? msg 'move-toward)
     (cons 'move-toward
-     (lambda ([q : Posn])
+     (lambda (q)
      (new-player ((posn-move-toward/speed p) q PLAYER-SPEED))))]
     [(equal? msg 'draw-on)
     (cons 'draw-on
-     (lambda ([scn : Image])
+     (lambda (scn)
      ((posn-draw-on/image p) PLAYER-IMG scn)))]
     [else (error 'player "unknown message")])))
 
-(: new-horde (-> Zombies Zombies Horde))
 (define (new-horde undead dead)
- (lambda ([msg : Symbol])
+ (lambda (msg)
   (cond
    [(equal? msg 'dead) (cons 'dead (lambda () dead))]
    [(equal? msg 'undead) (cons 'undead (lambda () undead))]
    [(equal? msg 'draw-on)
    (cons 'draw-on
-     (lambda ([scn : Image])
+     (lambda (scn)
     ((zombies-draw-on/color undead) "yellow" ((zombies-draw-on/color dead) "black" scn))))]
    [(equal? msg 'touching?)
    (cons 'touching?
-    (lambda ([p : Posn])
+    (lambda (p)
     (or ((zombies-touching? undead) p) ((zombies-touching? dead) p))))]
    [(equal? msg 'move-toward)
    (cons 'move-toward
-    (lambda ([p : Posn])
+    (lambda (p)
     (new-horde ((zombies-move-toward undead) p) dead)))]
    [(equal? msg 'eat-brains)
     (cons 'eat-brains
      (lambda () ((zombies-kill-all undead) dead)))]
    [else (error 'horde "unknown message")])))
 
-(: new-cons-zombies (-> Zombie Zombies Zombies))
 (define (new-cons-zombies z r)
- (lambda ([msg : Symbol])
+ (lambda (msg)
   (cond
    [(equal? msg 'move-toward)
    (cons 'move-toward
-   (lambda ([p : Posn])
+   (lambda (p)
     (new-cons-zombies ((zombie-move-toward z) p) ((zombies-move-toward r) p))))]
    [(equal? msg 'draw-on/color)
    (cons 'draw-on/color
-    (lambda ([c : String] [s : Image])
+    (lambda (c s)
     ((zombie-draw-on/color z) c ((zombies-draw-on/color r) c s))))]
    [(equal? msg 'touching?)
    (cons 'touching?
-    (lambda ([p : Posn])
+    (lambda (p)
     (or ((zombie-touching? z) p) ((zombies-touching? r) p))))]
    [(equal? msg 'kill-all)
    (cons 'kill-all
-   (lambda ([dead : Zombies])
+   (lambda (dead)
     (cond
      [(or ((zombies-touching? r) ((zombie-posn z)))
          ((zombies-touching? dead) ((zombie-posn z))))
@@ -248,43 +244,40 @@
           ((horde-dead res))))])))]
    [else (error 'zombies "unknown message")])))
 
-(: new-mt-zombies (-> Zombies))
 (define (new-mt-zombies)
- (lambda ([msg : Symbol])
+ (lambda (msg)
   (cond
-   [(equal? msg 'move-toward) (cons 'move-toward (lambda ([p : Posn]) (new-mt-zombies)))]
-   [(equal? msg 'draw-on/color) (cons 'draw-on/color (lambda ([c : String] [s : Image]) s))]
-   [(equal? msg 'touching?) (cons 'touching? (lambda ([p : Posn]) #f))]
+   [(equal? msg 'move-toward) (cons 'move-toward (lambda (p) (new-mt-zombies)))]
+   [(equal? msg 'draw-on/color) (cons 'draw-on/color (lambda (c s) s))]
+   [(equal? msg 'touching?) (cons 'touching? (lambda (p) #f))]
    [(equal? msg 'kill-all)
    (cons 'kill-all
-    (lambda ([dead : Zombies])
+    (lambda (dead)
     (new-horde (new-mt-zombies) dead)))]
    [else (error 'zombies "unknown message")])))
 
-(: new-zombie (-> Posn Zombie))
 (define (new-zombie p)
- (lambda ([msg : Symbol])
+ (lambda (msg)
   (cond
    [(equal? msg 'posn) (cons 'posn (lambda () p))]
    [(equal? msg 'draw-on/color)
    (cons 'draw-on/color
-   (lambda ([c : String] [s : Image])
+   (lambda (c s)
     ((posn-draw-on/image p)
      (circle ZOMBIE-RADIUS "solid" c)
      s)))]
    [(equal? msg 'touching?)
    (cons 'touching?
-   (lambda ([q : Posn])
+   (lambda (q)
     (<= ((posn-dist p) q) ZOMBIE-RADIUS)))]
    [(equal? msg 'move-toward)
    (cons 'move-toward
-    (lambda ([q : Posn])
+    (lambda (q)
     (new-zombie ((posn-move-toward/speed p) q ZOMBIE-SPEED))))]
    [else (error 'zombie "unknown message")])))
 
-(: new-posn (-> Real Real Posn))
 (define (new-posn x y)
-     (lambda ([msg : Symbol])
+     (lambda (msg)
       (let ([this (new-posn x y)]) ; FIXME
        (cond
         [(equal? msg 'x) (cons 'x (lambda () x))]
@@ -292,7 +285,7 @@
         [(equal? msg 'posn) (cons 'posn (lambda () this))]
         [(equal? msg 'move-toward/speed)
         (cons msg
-        (lambda ([p : Posn] [speed : Real])
+        (lambda (p speed)
          (let* ([x2 (- ((posn-x p)) x)]
                 [y2 (- ((posn-y p)) y)]
                 [move-distance (min speed (max (abs x2) (abs y2)))])
@@ -307,20 +300,19 @@
             0)]))))]
         [(equal? msg 'move)
         (cons 'move
-         (lambda ([x2 : Real] [y2 : Real])
+         (lambda (x2 y2)
          (new-posn (+ x x2) (+ y y2))))]
         [(equal? msg 'draw-on/image)
          (cons 'draw-on/image
-          (lambda ([img : Image] [scn : Image])
+          (lambda (img scn)
            (place-image img x y scn)))]
         [(equal? msg 'dist)
          (cons 'dist
-           (lambda ([p : Posn])
+           (lambda (p)
             (sqrt (+ (sqr (- ((posn-y p)) y))
                    (sqr (- ((posn-x p)) x))))))]
         [else (error 'posn "unknown message")]))))
 
-(: w0 World)
 (define w0
  (new-world
   (new-player (new-posn 0 0))
