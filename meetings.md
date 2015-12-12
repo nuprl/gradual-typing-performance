@@ -49,3 +49,30 @@ Meeting notes
 ----------
   * Looked at and discussed a table for the profiling results. The goal for
     Friday is to begin some prose and discuss the reviews.
+
+2015-12-04
+----------
+  * Diagnosed issues with forth and fsmoo. Complex object types were being double-wrapped.
+    (In fsmoo, a method changed object state and returned 'this'. Returning 'void' would not add wraps.)
+  * samth visited and he ...
+    - Asked for more statistics (how many chaperones total? how many of each type? how many checks of each type? how many wraps?)
+    - Asked for a deeper explanation of suffixtree. Why does it use so much memory? What is being wrapped?
+    - Suggested we port Zombie because "it was slow for a different reason". It simulated objects with higher-order functions.
+
+2015-12-11
+----------
+  * Agreed to emphasize non-unique types in the journal paper, using quad as a leading example
+  * Discussed performance of Acquire and Zombie
+    - Acquire is very good, thanks to encapsulation
+    - Zombie is terrible, thanks to higher-order types like (-> Symbol (-> (U (List 'fst (-> Real)) (List 'snd (-> Real)))))
+  * Noticed issue that pinning 30 iterations to one core bottlenecks our benchmarking.
+  * Full run of v6.3 in progress since 2015-12-07
+
+
+2015-12-14 (TODO)
+----------
+  * Discuss contract statistics. How many double-wraps? How many times was each type checked?
+  * Acquire:
+    - try removing the preconditions & re-measuring
+    - try adding a boundary between player.rkt and player-factory.rkt
+  * Zombie: is the program accumulating wrappers? Or is the cost just repeated checks?
