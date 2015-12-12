@@ -22,7 +22,7 @@
 (: note-freq (-> Natural Float))
 (define (note-freq note)
   ;; A4 (440Hz) is 57 semitones above C0, which is our base.
-  (: res Nonnegative-Real)
+  (: res Real)
   (define res (* 440 (expt (expt 2 1/12) (- note 57))))
   (if (flonum? res) res (error "not real")))
 
