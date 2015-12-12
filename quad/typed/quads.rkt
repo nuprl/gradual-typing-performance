@@ -162,7 +162,7 @@
 
 (: quad-has-attr? (Quad QuadAttrKey -> Boolean))
 (define (quad-has-attr? q key)
-  (and ((inst member QuadAttrKey) key (quad-attr-keys (quad-attrs q))) #t))
+  (and (member key (quad-attr-keys (quad-attrs q))) #t))
 
 ;; -----------------------------------------------------------------------------
 
