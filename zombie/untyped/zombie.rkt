@@ -19,7 +19,7 @@
   max
   abs
   sqr
-  sqrt
+  msqrt
 ))
 
 ;; =============================================================================
@@ -309,7 +309,7 @@
         [(equal? msg 'dist)
          (cons 'dist
            (lambda (p)
-            (sqrt (+ (sqr (- ((posn-y p)) y))
+            (msqrt (+ (sqr (- ((posn-y p)) y))
                    (sqr (- ((posn-x p)) x))))))]
         [else (error 'posn "unknown message")]))))
 

@@ -1,8 +1,11 @@
 #lang typed/racket/base
 
-(require/typed "image.rkt"
-  (#:opaque Image image?))
-(require/typed "zombie.rkt"
+(require
+  benchmark-util
+  "image-adapted.rkt"
+)
+;(require (prefix-in t: benchmark-util/typed))
+(require/typed/check "zombie.rkt"
   (w0 World)
   (world-on-mouse (-> World (-> Real Real String World)))
   (world-on-tick (-> World (-> World)))
@@ -54,3 +57,4 @@
     (error "bad input")]))
 
 (time (main MICRO_TEST))
+;(t:count-chaps)

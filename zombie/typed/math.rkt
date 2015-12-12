@@ -6,6 +6,7 @@
  abs  ;(number? . -> . number?)]
  sqrt ;(number? . -> . number?)]
  sqr  ;(number? . -> . number?)]
+ msqrt
 )
 
 ;; =============================================================================
@@ -18,3 +19,5 @@
 (define (abs x) (if (>= x 0) x (- 0 x)))
 (: sqr (-> Real Real))
 (define (sqr x) (* x x))
+(: msqrt (-> Real Real))
+(define (msqrt x) (assert (sqrt x) real?))

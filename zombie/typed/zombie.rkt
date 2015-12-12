@@ -7,20 +7,16 @@
 )
 
 (require
-  (for-syntax racket/sequence racket/base syntax/parse racket/syntax))
-
-(require/typed "image.rkt"
-  (#:opaque Image image?)
-  (empty-scene (-> Real Real Image))
-  (place-image (-> Image Real Real Image Image))
-  (circle (-> Real String String Image))
+  benchmark-util
+  (for-syntax racket/sequence racket/base syntax/parse racket/syntax)
+  "image-adapted.rkt"
 )
-(require/typed  "math.rkt"
+(require/typed/check  "math.rkt"
   (min (-> Real Real Real))
   (max (-> Real Real Real))
   (abs (-> Real Real))
   (sqr (-> Real Real))
-  (sqrt (-> Real Real))
+  (msqrt (-> Real Real))
 )
 
 ;; =============================================================================
@@ -316,7 +312,7 @@
         [(equal? msg 'dist)
          (cons 'dist
            (lambda ([p : Posn])
-            (sqrt (+ (sqr (- ((posn-y p)) y))
+            (msqrt (+ (sqr (- ((posn-y p)) y))
                    (sqr (- ((posn-x p)) x))))))]
         [else (error 'posn "unknown message")]))))
 

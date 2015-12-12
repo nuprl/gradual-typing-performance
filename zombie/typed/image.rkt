@@ -4,7 +4,7 @@
 ;; Pretends to render data.
 
 (provide
- image?      ;(any/c . -> . boolean?)]
+ (struct-out image)
  empty-scene ;(number? number? . -> . image?)]
  place-image ;(image? number? number? image? . -> . image?)]
  circle      ;(number? string? string? . -> . image?)]
