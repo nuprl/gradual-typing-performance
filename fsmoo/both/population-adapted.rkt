@@ -21,10 +21,10 @@
    (match-up*
     ;; (match-ups p r) matches up neighboring pairs of
     ;; automata in population p for r rounds 
-    (-> Natural oPopulation))
+    (-> Natural Void))
 
    (death-birth
     ;; (death-birth p r) replaces r elements of p with r "children" of 
     ;; randomly chosen fittest elements of p, also shuffle 
     ;; constraint (< r (length p))
-    (-> Natural [#:random (U False Payoff)] oPopulation))))
+    (-> Natural [#:random (U False Payoff)] Void))))

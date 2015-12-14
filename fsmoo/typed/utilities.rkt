@@ -5,14 +5,14 @@
 (define-type Probability Nonnegative-Real)
 ;; constraint [0,1]
 
-(require "../base/type-utility.rkt")
-
 (provide Probability)
-(provide/type
- (sum (-> [Listof Real] Real))
- (relative-average (-> [Listof Real] Real Real))
- (choose-randomly
-  (-> [Listof Probability] Natural [#:random (U False Real)] [Listof Natural])))
+(provide
+  sum relative-average choose-randomly)
+
+(: sum (-> [Listof Real] Real))
+(: relative-average (-> [Listof Real] Real Real))
+(: choose-randomly
+ (-> [Listof Probability] Natural [#:random (U False Real)] [Listof Natural]))
 
 ;; =============================================================================
 
