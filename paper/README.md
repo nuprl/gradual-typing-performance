@@ -16,3 +16,11 @@ November 28, 2015
  and the few studies that are available don't show anything conclusive in this regard."
 
 Fine, but why are Google, Microsoft, FB, and Twitter migrating to typed languages?
+
+
+[Hackernews (front page)](https://news.ycombinator.com/item?id=10773457)
+---
+
+December 22, 2015
+
+See discussion in link.
