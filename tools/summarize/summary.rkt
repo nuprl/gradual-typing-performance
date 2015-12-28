@@ -438,8 +438,6 @@
 
 ;; =============================================================================
 
-(define-namespace-anchor this-ns)
-
 ;; Open a REPL with 
 (module+ main
   (require racket/cmdline)
@@ -447,7 +445,6 @@
    #:program "gtp-summarize"
    #:args (filename)
    (when (and (string? filename) (string-suffix? filename ".rktd"))
-     (define S (from-rktd filename))
      (parameterize ([current-namespace (make-base-namespace)])
        (printf "[INFO] Starting REPL ...\n")
        (namespace-require 'summarize/summary)
