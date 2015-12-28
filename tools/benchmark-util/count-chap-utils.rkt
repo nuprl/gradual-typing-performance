@@ -3,17 +3,65 @@
 (provide
   count-chaps
   ;; (-> Void)
+  ;; Saves chaperone counts to `chaps.rktd`, appends if file exists
 )
 
-(require (only-in ffi/unsafe _int get-ffi-obj))
+(require (only-in ffi/unsafe _array in-array _int get-ffi-obj))
+
+(struct chaps (
+  proc_makes
+  proc_apps
+  proc_wraps
+  proc_maxdepth
+  proc_depth*
+
+  struct_makes
+  struct_apps
+  struct_wraps
+  struct_maxdepth
+  struct_depth*
+
+  vec_makes
+  vec_apps
+  vec_wraps
+  vec_maxdepth
+  vec_depth*
+) #:prefab )
 
 (define (count-chaps)
-  (displayln "Chaperone Report:\n===")
-  (printf "proc_makes   : ~a\n" (get-ffi-obj 'proc_makes #f _int))
-  (printf "proc_apps    : ~a\n" (get-ffi-obj 'proc_apps #f _int))
-  (printf "proc_wraps   : ~a\n" (get-ffi-obj 'proc_wraps #f _int))
-  (printf "struct_makes : ~a\n" (get-ffi-obj 'struct_makes #f _int))
-  (printf "struct_apps  : ~a\n" (get-ffi-obj 'struct_apps #f _int))
-  (printf "struct_wraps : ~a\n" (get-ffi-obj 'struct_apps #f _int))
-  (printf "vec_makes    : ~a\n" (get-ffi-obj 'vec_makes #f _int))
-  (printf "vec_apps     : ~a\n" (get-ffi-obj 'vec_apps #f _int)))
+ (with-output-to-file "chaps.rktd" #:exists 'append
+   (lambda ()
+     (let ([v (make-vector 12 #f)])
+       (vector-set-performance-stats! v)
+       (displayln v)
+       (newline))
+     (writeln
+      (chaps
+        ;; -- fun
+        (get-ffi-obj 'proc_makes #f _int)
+        (get-ffi-obj 'proc_apps #f _int)
+        (get-ffi-obj 'proc_wraps #f _int)
+        (get-ffi-obj 'proc_maxdepth #f _int)
+        (for/vector ([c (in-array (get-ffi-obj 'proc_depth #f (_array _int 901)))]
+                   [i (in-naturals)]
+                   #:when (not (zero? c)))
+          (cons i c))
+        ;; -- struct
+        (get-ffi-obj 'struct_makes #f _int)
+        (get-ffi-obj 'struct_apps #f _int)
+        (get-ffi-obj 'struct_wraps #f _int)
+        (get-ffi-obj 'struct_maxdepth #f _int)
+        (for/vector ([c (in-array (get-ffi-obj 'struct_depth #f (_array _int 901)))]
+                   [i (in-naturals)]
+                   #:when (not (zero? c)))
+          (cons i c))
+        ;; -- vector
+        (get-ffi-obj 'vec_makes #f _int)
+        (get-ffi-obj 'vec_apps #f _int)
+        (get-ffi-obj 'vec_wraps #f _int)
+        (get-ffi-obj 'vec_maxdepth #f _int)
+        (for/vector ([c (in-array (get-ffi-obj 'vec_depth #f (_array _int 901)))]
+                   [i (in-naturals)]
+                   #:when (not (zero? c)))
+          (cons i c))))
+     (void))))
