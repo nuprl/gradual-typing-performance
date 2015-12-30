@@ -35,9 +35,9 @@
 (define-syntax make-fake-object-type*
   (syntax-parser
    [(_ ty [f* t*] ...)
-    #:with (id* ...) (for/list ([f (in-syntax #'(f* ...))])
+    #:with (id* ...) (for/list ([f (in-list (syntax->list #'(f* ...)))])
                        (format-id #'ty "~a-~a" (string-downcase (symbol->string (syntax-e #'ty))) f))
-    #:with (f-sym* ...) (for/list ([f (in-syntax #'(f* ...))]) (syntax-e f))
+    #:with (f-sym* ...) (for/list ([f (in-list (syntax->list #'(f* ...)))]) (syntax-e f))
     #'(begin
         (define-type ty (-> Symbol (U (Pairof 'f-sym* t*) ...)))
         (begin
