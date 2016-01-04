@@ -6,18 +6,20 @@ echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   for project in \
-    gregor \
-    kcfa \
     lnm \
     mbta \
     morsecode \
-    quad \
-    sieve \
     snake \
     suffixtree \
     synth \
     tetris \
     zordoz.6.2.900.15 \
+    zombie \
+    forth \
+    gregor \
+    kcfa \
+    quad \
+    sieve \
   ; do
     sh run.sh $project
   done

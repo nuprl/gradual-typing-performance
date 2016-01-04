@@ -159,7 +159,8 @@
 
 (define (write-results times [dir (current-directory)])
   (with-output-to-file (build-path dir (output-path)) #:exists 'append
-    (lambda () (write times))))
+    (lambda ()
+      (write times))))
 
 (module+ main
   (define basepath
