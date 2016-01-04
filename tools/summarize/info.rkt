@@ -11,4 +11,5 @@
 (define raco-commands '(
   ("render-lnm" (submod summarize/render-lnm main) "Build L-N/M plots" #f)
   ("gtp-summarize" (submod summarize/summary main) "Explore dataset" #f)
+  ("sort-configs" (submod summarize/sort-configurations main) "Sort configurations in a .rktd file" #f)
 ))
