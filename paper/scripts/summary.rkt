@@ -48,7 +48,11 @@
 
   configuration->mean-runtime
   ;; (-> Summary Bitstring Real)
-  ;; Get the mean runtime of a configuration, represented as a bitstring
+  ;; Get the mean runtime of a configuration
+
+  configuration->stddev
+  ;; (-> Summary Bitstring Real)
+  ;; Get the standard deviation of runtimes of a configuration
 
   configuration->overhead
   ;; (-> Summary Bitstring Real)
@@ -309,6 +313,12 @@
 (define (configuration->mean-runtime S v)
   (assert-configuration-length S v) ;; Is this going to be expensive?
   (index->mean-runtime S (bitstring->natural v)))
+
+(: configuration->stddev (-> Summary Bitstring Real))
+(define (configuration->stddev S v)
+  (let ([m (configuration->mean-runtime S v)]
+        [i (bitstring->natural v)])
+    (stddev/mean m (vector-ref (summary-dataset S) i))))
 
 (: configuration->overhead (-> Summary Bitstring Real))
 (define (configuration->overhead S v)
