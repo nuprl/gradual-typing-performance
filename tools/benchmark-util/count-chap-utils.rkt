@@ -1,6 +1,9 @@
 #lang racket/base
 
 (provide
+  *count-chaps-out*
+  (struct-out chaps)
+
   count-chaps
   ;; (-> Void)
   ;; Saves chaperone counts to `chaps.rktd`, appends if file exists
@@ -28,8 +31,10 @@
   vec_depth*
 ) #:prefab )
 
+(define *count-chaps-out* (make-parameter "chaps6.3.rktd"))
+
 (define (count-chaps)
- (with-output-to-file "chaps.rktd" #:exists 'append
+ (with-output-to-file (*count-chaps-out*) #:exists 'append
    (lambda ()
      (let ([v (make-vector 12 #f)])
        (vector-set-performance-stats! v)
