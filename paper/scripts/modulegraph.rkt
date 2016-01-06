@@ -39,6 +39,10 @@
   ;; (-> ModuleGraph String (Listof String))
   ;; List of modules required by the given one
 
+  strip-suffix
+  ;; (-> Path-String String)
+  ;; Remove the file extension from a path string
+
   (struct-out modulegraph)
   ModuleGraph
 )
@@ -47,6 +51,7 @@
 
 (require
   racket/match
+  (only-in racket/list last)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
   (only-in racket/string string-split string-trim)
@@ -155,8 +160,10 @@
 (: path->project-name (-> Path String))
 (define (path->project-name path)
   (define p (or (file-name-from-path path) (error 'path->project-name)))
+  (define without-dir
+    (last (string-split (path->string p) "/")))
   (define without-ext
-    (car (string-split (path->string p) ".")))
+    (strip-suffix without-dir))
   (define without-hyphen
     (car (string-split without-ext "-")))
   without-hyphen)
@@ -453,6 +460,19 @@
 (: decr-char (-> Char Char))
 (define (decr-char c)
   (integer->char (sub1 (char->integer c))))
+
+(: strip-suffix (-> String String))
+(define (strip-suffix p)
+  (let loop : String ([x* (string-split p "/")])
+    (cond
+     [(null? x*)
+      ;; Input was not even a string ...
+      (raise-user-error 'strip-suffix "Bad argument" p)]
+     [(or (null? (cdr x*)) (null? (cddr x*)))
+      ;; Input had one /, or we've finished looping
+      (car x*)]
+     [else
+      (loop (cdr x*))])))
 
 ;; =============================================================================
 

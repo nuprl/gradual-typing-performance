@@ -9,7 +9,7 @@
 (define version "0.2")
 (define pkg-authors '(ben))
 (define raco-commands '(
-  ("render-lnm" (submod summarize/render-lnm main) "Build L-N/M plots" #f)
-  ("gtp-summarize" (submod summarize/summary main) "Explore dataset" #f)
-  ("sort-configs" (submod summarize/sort-configurations main) "Sort configurations in a .rktd file" #f)
+  ("render-lnm" (submod gtp-summarize/render-lnm main) "Build L-N/M plots" #f)
+  ("gtp-summarize" (submod gtp-summarize/summary main) "Explore dataset" #f)
+  ("sort-configs" (submod gtp-summarize/sort-configurations main) "Sort configurations in a .rktd file" #f)
 ))

@@ -5,7 +5,7 @@
 ;; Usage: racket sort-configurations.rkt FILE.rktd
 
 (require
-  summarize/summary
+  gtp-summarize/summary
   (only-in racket/format ~r)
 )
 

@@ -39,6 +39,10 @@
   ;; (-> ModuleGraph String (Listof String))
   ;; List of modules required by the given one
 
+  strip-suffix
+  ;; (-> Path-String String)
+  ;; Remove the file extension from a path string
+
   (struct-out modulegraph)
   ModuleGraph
 )
@@ -475,6 +479,19 @@
   (directory->tikz (string->path u-path-str) out-file)
   (printf "Saved module graph to '~a'\n" out-file)
 )
+
+(: strip-suffix (-> String String))
+(define (strip-suffix p)
+  (let loop : String ([x* (string-split p "/")])
+    (cond
+     [(null? x*)
+      ;; Input was not even a string ...
+      (raise-user-error 'strip-suffix "Bad argument" p)]
+     [(or (null? (cdr x*)) (null? (cddr x*)))
+      ;; Input had one /, or we've finished looping
+      (car x*)]
+     [else
+      (loop (cdr x*))])))
 
 ;; =============================================================================
 
