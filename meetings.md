@@ -69,10 +69,20 @@ Meeting notes
   * Full run of v6.3 in progress since 2015-12-07
 
 
-2015-12-14 (TODO)
+2015-12-14
 ----------
   * Discuss contract statistics. How many double-wraps? How many times was each type checked?
   * Acquire:
-    - try removing the preconditions & re-measuring
-    - try adding a boundary between player.rkt and player-factory.rkt
+    - try removing the preconditions & re-measuring (no difference)
+    - try adding a boundary between player.rkt and player-factory.rkt (no difference)
   * Zombie: is the program accumulating wrappers? Or is the cost just repeated checks?
+    (accumulating wrappers, need to improve Typed Racket's case-> to dispatch both on
+     arities AND domain types that happen to be symbols)
+
+2016-01-06
+----------
+  * v6.3 still running (since 12-17)
+  * will start 6.4 (to have partial numbers for 01-17)
+  * TR slowly improving
+    - late-negs help stronger?
+    - learned that macros can change boundaries
