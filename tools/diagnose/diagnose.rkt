@@ -5,6 +5,9 @@
 ;; - remove hline when row removed
 ;; - plot on success, gracefull (return boolean, use that)
 ;; - infer row, if only one
+;; - label x-min
+;; - show ranges
+;; - normalize on same scale
 
 ;; Diagnosis tool.
 ;; Find the boundaries in common with bad configurations
@@ -368,8 +371,9 @@
   (plot-file
    (cons
     (points d*
-            #:color 0
-            #:fill-color 0
+            #:color 1
+            #:fill-color 1
+            #:sym 'fullcircle
             #:label (symbol->string r))
     (let ([lo+hi* (row->lo+hi* r)]
           [x-ivl (ivl (first c*) (last c*))])
