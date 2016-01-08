@@ -1,6 +1,10 @@
 #lang racket/base
 
-;; TODO scatterplot
+;; TODO
+;; - scatterplot
+;; - remove hline when row removed
+;; - plot on success, gracefull (return boolean, use that)
+;; - infer row, if only one
 
 ;; Diagnosis tool.
 ;; Find the boundaries in common with bad configurations
@@ -73,7 +77,8 @@
   (*active-rows*
     (append
       (for/list ([s (in-list sym*)] #:when (memq s r*)) s)
-      (*active-rows*))))
+      (*active-rows*)))
+  (plot))
 
 ;; Add a new hline, use to filter configurations
 ;; (: add-hline (->* [Symbol Real] [(U (U 'upper 'lower) Boolean)] Void))
@@ -82,11 +87,13 @@
       (cond
        [(exact-nonnegative-integer? n)
         ;;
-        (*active-hlines* (cons (list r n bnd-type) (*active-hlines*)))]
+        (*active-hlines* (cons (list r n bnd-type) (*active-hlines*)))
+        (plot)]
        [(and (< 0 n) (< n 1))
         ;; Assume n is a proportion
         (define M (max* (row->data r)))
-        (*active-hlines* (cons (list r (round (* n M)) bnd-type) (*active-hlines*)))]
+        (*active-hlines* (cons (list r (round (* n M)) bnd-type) (*active-hlines*)))
+        (plot)]
        [else
         (printf "Invalid input '~a', expected Natural or proportion" n)])
       (printf "Invalid row '~a'\n" r)))
@@ -126,7 +133,9 @@
       (printf "[[~a predicates]]\n" (length s))
       (for ([x s])
         (display "  ")
-        (displayln x))
+        (if (< (length (cdr x)) 200)
+          (displayln x)
+          (displayln (car x))))
       #t)
     (displayln "No covering")))
 
@@ -134,7 +143,9 @@
   (displayln (length (current-configurations/hline))))
 
 (define (covering* k)
-  (define c* (current-configurations/hline))
+  (covering*/configs k (current-configurations/hline)))
+
+(define (covering*/configs k c*)
   (define N (length c*))
   (sequence-filter
    (lambda (x) x)
@@ -185,7 +196,8 @@
   (*active-hlines*
     (for/list ([r+n (in-list (*active-hlines*))]
                #:when (not (eq? (car r+n) r)))
-      r+n)))
+      r+n))
+  (plot))
 
 (define (remove-predicate s)
   (define pred-eq?
@@ -200,7 +212,8 @@
       s+p)))
 
 (define (remove-row . sym*)
-  (*active-rows* (filter (lambda (r) (not (memq r sym*))) (*active-rows*))))
+  (*active-rows* (filter (lambda (r) (not (memq r sym*))) (*active-rows*)))
+  (plot))
 
 (define (reset)
   (reset-rows)
@@ -377,7 +390,7 @@
 
 ; (: plot-destination (-> (U Symbol (Listof Symbol)) (Values String Path-String)))
 (define (plot-destination r*)
-  (define title (format "Config vs. ~a" r*))
+  (define title (format "~a : Config vs. ~a" (strip-directory (current-project-name)) r*))
   (values title (string-append (tmp-destination r*) ".png")))
 
 (define (strip-directory str)
@@ -590,7 +603,8 @@
       (make-untyped-at? num-modules)
       (make-has-typed? num-modules)
       (make-typed-at? num-modules)))
-  (add-predicate "^boundary.*"))
+  (*active-predicates* (*current-predicates*)))
+  ;(add-predicate "^boundary.*"))
 
 ;; =============================================================================
 ;; === Prompting
