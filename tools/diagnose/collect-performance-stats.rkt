@@ -28,10 +28,10 @@
   (vector-ref v CPU-TIME))
 
 (define (get-gctime v)
-  (vector-ref v REAL-TIME))
+  (vector-ref v GC-TIME))
 
 (define (get-numgc v)
-  (vector-ref v GC-TIME))
+  (vector-ref v NUM-GC))
 
 (define (get-peak-bytes v)
   (vector-ref v PEAK-BYTES))
