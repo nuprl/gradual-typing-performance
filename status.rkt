@@ -1,5 +1,19 @@
 #lang racket/base
 
+;; Check the progress of a running benchmark.
+;;
+;; Usage:
+;;   racket status.rkt <PROJECT-NAME>
+;;   racket status.rkt <LOGFILE-NAME>
+;;
+;; Prints the number of configurations that have at least started to run.
+;;
+;; Preconditions:
+;; - <PROJECT-NAME> is the name of a benchmark folder,
+;;   and '<PROJECT-NAME>.log' is currently being used as a logfile
+;; - <LOGFILE-NAME> begins with the name of a benchmark folder + a hyphen, and ends with '.log'
+;;   Example: 'quad-12-06.log'
+
 (require
   glob
   (only-in racket/format
