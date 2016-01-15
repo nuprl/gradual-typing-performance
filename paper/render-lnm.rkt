@@ -11,6 +11,8 @@
 ;;     on the same graph
 
 (provide
+ render-lnm
+
  data->pict
  ;; Build a picture from a list of pairs:
  ;;   1st component labels a dataset
@@ -325,7 +327,6 @@
 (define-syntax-rule (reads l)
   (with-input-from-string (assert l string?) read))
 
-(module+ main
   (require
     racket/cmdline
     (only-in racket/list first last)
@@ -333,6 +334,8 @@
   (require/typed "scripts/show-pict.rkt"
    [pict->png (-> Pict Path-String Boolean)])
 
+(: render-lnm (-> (Vectorof String) Any))
+(define (render-lnm vec)
   (: filename->tag (-> String String))
   (define (filename->tag fname)
     (first (string-split (first (string-split (last (string-split fname "/")) ".")) "-")))
@@ -358,6 +361,7 @@
   (define *output* (make-parameter "./output.png"))
   (command-line
    #:program "view-pict"
+   #:argv vec
    #:once-each
    [("-o" "--output") o-param
     "Location to save results" (*output* (cast o-param String))]
@@ -366,7 +370,7 @@
    [("-a" "--aggregate" "-d" "--death")
     "Combine all data into a single figure" (*aggregate* 'avg-prop)]
    [("--legend") legend "#t/#f = show/hide legend" (PARAM-LEGEND? (assert (reads legend) boolean?))]
-   [("--split") split "#t/#f = put all lines on a single plot / no" (PARAM-SPLIT? (assert (reads split) boolean?))]
+   [("--split") "Put each L in a new plot" (PARAM-SPLIT? #t)]
    [("--stats") stats "#t/#f = show/hide summary statistics" (PARAM-STATS? (assert (reads stats) boolean?))]
    [("--ltitle") ltitle "#t/#f = show/hide L labels above plots" (PARAM-L-LABELS? (assert (reads ltitle) boolean?))]
    [("--labels") lbl "#t/#f = show/hide axis labels" (PARAM-AXIS-LABELS? (assert (reads lbl) boolean?))]
@@ -397,3 +401,6 @@
          (list (filename->tag fname) fname))))
    ;; TODO: pict->png should be typed, and defined in this module.
    (pict->png P (*output*))))
+
+(module+ main
+  (render-lnm (current-command-line-arguments)))
