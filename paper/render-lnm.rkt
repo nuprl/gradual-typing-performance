@@ -51,6 +51,7 @@
 (define PARAM-MAX-OVERHEAD 20)
 (define PARAM-NUM-SAMPLES 60)
 
+(define PARAM-PDF? : (Parameterof Boolean) (make-parameter #f))
 (define PARAM-SPLIT? : (Parameterof Boolean) (make-parameter #f))
 (define PARAM-STATS? : (Parameterof Boolean) (make-parameter #f))
 (define PARAM-AXIS-LABELS? : (Parameterof Boolean) (make-parameter #f))
@@ -83,6 +84,7 @@
              #:font-face FONT-FACE
              #:font-size GRAPH-FONT-SIZE
              #:split-plot? (PARAM-SPLIT?)
+             #:pdf? (PARAM-PDF?)
              #:labels? (PARAM-AXIS-LABELS?)
              #:cutoff-proportion (PARAM-CUTOFF)
              #:plot-height H
@@ -376,6 +378,7 @@
    [("--labels") lbl "#t/#f = show/hide axis labels" (PARAM-AXIS-LABELS? (assert (reads lbl) boolean?))]
    [("--cutoff") c "Set red line with a number in [0,1] (#f by default)"
                  (PARAM-CUTOFF (assert (reads c) real?))]
+   [("--pdf") "Plot derivative of L-N/M plot (instead of cumulative)" (PARAM-PDF? #t)]
    [("-N") n "Set line for N (#f by default)" (PARAM-N (assert (reads n) index?))]
    [("-M") m "Set line for M (#f by default)" (PARAM-M (assert (reads m) index?))]
    [("-L") l "Set L values, may be natural, (listof natural) or (listof (list natural pen-style))"

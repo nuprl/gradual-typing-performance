@@ -61,6 +61,7 @@
                   #:font-face String
                   #:font-size Positive-Integer
                   #:labels? Boolean
+                  #:pdf? Boolean
                   #:split-plot? Boolean
                   #:cutoff-proportion (U Real #f)
                   #:plot-width Positive-Integer
@@ -76,6 +77,7 @@
                   #:num-samples [num-samples DEFAULT_SAMPLES] ;; Index
                   #:font-face [font-face DEFAULT_FACE]
                   #:font-size [font-size DEFAULT_SIZE]
+                  #:pdf? [pdf? #f]
                   #:split-plot? [split-plot? #f]
                   #:labels? [labels? #t]
                   #:cutoff-proportion [cutoff-proportion #f]
@@ -117,7 +119,7 @@
     (define F-config*
       (for/list : (Listof renderer2d)
                 ([L+style (in-list L-list)])
-        (function (count-configurations summary (car L+style) #:cache-up-to xmax) 0 xmax
+        (function (count-configurations summary (car L+style) #:cache-up-to xmax #:pdf? pdf?) 0 xmax
                           #:samples num-samples
                           #:style (cadr L+style)
                           #:color 'navy
@@ -321,25 +323,31 @@
 ;;  that counts the number of configurations
 ;;  which can reach, in L or fewer steps,
 ;;  a configuration with overhead no more than `N`
-(: count-configurations (->* [Summary Index] [#:cache-up-to (U #f Index)] (-> Real Natural)))
-(define (count-configurations sm L #:cache-up-to [lim #f])
+(: count-configurations (->* [Summary Natural] [#:cache-up-to (U #f Natural) #:pdf? Boolean] (-> Real Natural)))
+(define (count-configurations sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f])
   (define baseline (untyped-mean sm))
   (define cache (and lim (cache-init sm lim #:L L)))
+  (: prev-good (Boxof Natural))
+  (define prev-good (box 0)) ;; For computing pdf graphs (instead of cumulative)
   (lambda ([N-raw : Real]) ;; Real, but we assume non-negative
     (: N Nonnegative-Real)
     (define N (if (>= N-raw 0) N-raw (error 'count-configurations)))
     (define good? (make-configuration->good? sm (* N baseline) #:L L))
-    (if (and cache lim (<= N lim))
-        ;; Use cache to save some work, only test the configurations
-        ;; in the next bucket
-        (cache-lookup cache N good?)
-        ;; No cache, need to test all configurations
-        (stream-length (predicate->configurations sm good?)))))
+    (define num-good
+      (if (and cache lim (<= N lim))
+          ;; Use cache to save some work, only test the configurations
+          ;; in the next bucket
+          (cache-lookup cache N good?)
+          ;; No cache, need to test all configurations
+          (stream-length (predicate->configurations sm good?))))
+    (if pdf?
+      (begin0 (assert (- num-good (unbox prev-good)) index?) (set-box! prev-good num-good))
+      num-good)))
 
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of acceptable paths
 ;; Parameter `L` is ignored for now
-(: count-paths (->* [Summary Index] [#:cache-up-to (U #f Index)] (-> Real Natural)))
+(: count-paths (->* [Summary Natural] [#:cache-up-to (U #f Natural)] (-> Real Natural)))
 (define (count-paths S L #:cache-up-to [lim #f])
   (define baseline (untyped-mean S))
   (define path-overheads
@@ -355,10 +363,10 @@
 ;; Make a predicate checking whether a configuration is good.
 ;; Good = no more than `L` steps away from a configuration
 ;;        with average runtime less than `good-threshold`.
-(: make-configuration->good? (->* [Summary Real] [#:L Index] (-> Bitstring Boolean)))
+(: make-configuration->good? (->* [Summary Real] [#:L Natural] (-> Bitstring Boolean)))
 (define (make-configuration->good? summary good-threshold #:L [L 0])
   (lambda ([var : String])
-    (for/or ([var2 (cons var (in-reach var L))])
+    (for/or ([var2 (cons var (in-reach var (assert L index?)))])
       (<= (configuration->mean-runtime summary var2)
          good-threshold))))
 
@@ -367,7 +375,7 @@
 (define-type Cache (Vectorof (Listof Bitstring)))
 
 ;; Create a cache that saves the configurations between discrete overhead values
-(: cache-init (->* [Summary Index] [#:L Index] Cache))
+(: cache-init (->* [Summary Natural] [#:L Natural] Cache))
 (define (cache-init summary max-overhead #:L [L 0])
   (define base-overhead (untyped-mean summary))
   (: unsorted-configurations (Boxof (Sequenceof Bitstring)))
