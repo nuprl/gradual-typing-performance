@@ -210,7 +210,7 @@
   (define filepath (format-filepath tag))
   (debug "Caching new pict at '~a'" filepath)
   (with-output-to-file filepath
-    (lambda () (write (cons rktd* (serialize pict))))
+    (lambda () (write (list rktd* (current-param-tag*) (serialize pict))))
     #:mode 'text
     #:exists 'replace))
 
@@ -220,7 +220,7 @@
   (and (file-exists? filepath)
        (read-cache rktd* filepath)))
 
-(define-type CachedPict (Pairof (Listof String) Any))
+(define-type CachedPict (List (Listof String) (Listof String) Any))
 (define-predicate cachedpict? CachedPict)
 
 (: read-cache (-> (Listof String) String (U #f Pict)))
@@ -229,10 +229,19 @@
   (cond
     [(cachedpict? tag+pict)
      (and (equal? rktd* (car tag+pict))
-     (debug "Reading cached pict from '~a'" filepath)
-     (deserialize (cdr tag+pict)))]
+          (equal? (current-param-tag*) (cadr tag+pict))
+          (debug "Reading cached pict from '~a'" filepath)
+          (deserialize (caddr tag+pict)))]
     [else
      (error 'render-lnm (format "Malformed data in cache file '~a'" filepath))]))
+
+(: current-param-tag* (-> (Listof String)))
+(define (current-param-tag*)
+  (for/list : (Listof String)
+      ([x (in-list (list (PARAM-PDF?) (PARAM-SPLIT?) (PARAM-STATS?)
+                         (PARAM-AXIS-LABELS?) (PARAM-L-LABELS?)
+                         (PARAM-LEGEND?) (PARAM-CUTOFF) (PARAM-N) (PARAM-M) (PARAM-L)))])
+    (format "~a" x)))
 
 (: zip-title* (->* [(Listof String) (U #f (Listof String))]
                        [#:collapse? Boolean]
