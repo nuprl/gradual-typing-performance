@@ -353,7 +353,7 @@
   (fold-lattice sm f #:init 0))
 
 ;; Count the number of configurations with performance no worse than N times untyped
-(: deliverable (-> Summary Index Natural))
+(: deliverable (-> Summary Natural Natural))
 (define (deliverable sm N)
   (define baseline (* N (untyped-mean sm)))
   (: count-N (-> Natural Real Natural))
@@ -366,7 +366,7 @@
      ;; Cast should be unnecessary, but can't do polymorphic keyword args in fold-lattice
      (cast (fold-lattice sm count-N #:init 0) Natural)))
 
-(: usable (-> Summary Index Index Natural))
+(: usable (-> Summary Natural Natural Natural))
 (define (usable sm N M)
   (define um (untyped-mean sm))
   (define lo (* N um))
@@ -387,8 +387,8 @@
 (: summary->pict (->* [Summary
                        #:font-face String
                        #:font-size Exact-Positive-Integer
-                       #:N Index
-                       #:M Index
+                       #:N Natural
+                       #:M Natural
                        #:height Real
                        #:width Real]
                       [#:title (U String #f)]

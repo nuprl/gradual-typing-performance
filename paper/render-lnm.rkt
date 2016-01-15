@@ -33,7 +33,9 @@
  (only-in "scripts/summary.rkt" from-rktd summary->pict Summary)
  (only-in racket/file file->value)
  (only-in racket/string string-join)
+ (only-in racket/port with-input-from-string)
  "scripts/pict-types.rkt"
+ (only-in plot/no-gui Plot-Pen-Style)
 )
 
 (require/typed racket/serialize
@@ -43,17 +45,19 @@
 ;; =============================================================================
 ;; --- constants
 
-(define DEBUG #t)
-(define-syntax-rule (debug msg arg* ...)
-  (when DEBUG (printf msg arg* ...) (newline)))
-
 ;; Experiment parameters
-(define PARAM-N 3)
-(define PARAM-M 10)
-(define PARAM-L 2)
 (define PARAM-MAX-OVERHEAD 20)
 (define PARAM-NUM-SAMPLES 60)
-(define PARAM-LABELS? #f)
+
+(define PARAM-SPLIT? : (Parameterof Boolean) (make-parameter #f))
+(define PARAM-STATS? : (Parameterof Boolean) (make-parameter #f))
+(define PARAM-AXIS-LABELS? : (Parameterof Boolean) (make-parameter #f))
+(define PARAM-L-LABELS? : (Parameterof Boolean) (make-parameter #f))
+(define PARAM-LEGEND? : (Parameterof Boolean) (make-parameter #f))
+(define PARAM-CUTOFF : (Parameterof (U #f Real)) (make-parameter #f))
+(define PARAM-N : (Parameterof (U #f Natural)) (make-parameter #f))
+(define PARAM-M : (Parameterof (U #f Natural)) (make-parameter #f))
+(define PARAM-L : (Parameterof (U Natural (Listof Natural) (Listof (List Natural Plot-Pen-Style)))) (make-parameter 0))
 
 (: *show-paths?* (Parameterof Boolean))
 (define *show-paths?* (make-parameter #f))
@@ -61,36 +65,26 @@
 (: *aggregate* (Parameterof (U Symbol #f)))
 (define *aggregate* (make-parameter #f))
 
+(define DEBUG #t)
+(define-syntax-rule (debug msg arg* ...)
+  (when DEBUG (printf msg arg* ...) (newline)))
+
 ;; =============================================================================
 
-(define-syntax-rule (make-plot plot-proc S*)
-  (plot-proc S*
-             #:L L*
-             #:N PARAM-N
-             #:M PARAM-M
+(define-syntax-rule (make-plot plot-proc S)
+  (plot-proc S
+             #:L (PARAM-L)
+             #:N (PARAM-N)
+             #:M (PARAM-M)
              #:max-overhead PARAM-MAX-OVERHEAD
              #:num-samples PARAM-NUM-SAMPLES
              #:font-face FONT-FACE
              #:font-size GRAPH-FONT-SIZE
-             #:labels? PARAM-LABELS?
+             #:split-plot? (PARAM-SPLIT?)
+             #:labels? (PARAM-AXIS-LABELS?)
+             #:cutoff-proportion (PARAM-CUTOFF)
              #:plot-height H
              #:plot-width W))
-
-(: l-index->string (-> Integer String))
-(define (l-index->string i)
-  (cond [(zero? i)
-         (format "L = ~a" i)]
-        [(= PARAM-L i)
-         (format "\t~a  (steps)" i)]
-        [else
-         (number->string i)]))
-(define L*+title*
-  (for/list : (Listof (Pairof Index String)) ([i (in-range (add1 PARAM-L))])
-    (cons (cast i Index) (l-index->string i))))
-(define L*
-  (for/list : (Listof Index) ([x (in-list L*+title*)]) (car x)))
-(define L-title*
-  (for/list : (Listof String) ([x (in-list L*+title*)]) (cdr x)))
 
 (define FONT-FACE "Liberation Serif")
 
@@ -106,45 +100,64 @@
 
 (define CACHE-PREFIX "./compiled/lnm-cache-")
 
-(define LEGEND
-  (let ()
-    (define VSHIM (/ TITLE-VSPACE 3))
-    (: mytext (->* (String) (Any) Pict))
-    (define (mytext str [mystyle #f])
-        (text str
-          (if mystyle (cons mystyle TITLE-STYLE) TITLE-STYLE)
-          (+ 1 TEXT-FONT-SIZE)))
-    ;; TODO spacing is sometimes wrong... recompiling fixes
-    (hc-append (* 6 GRAPH-HSPACE)
-      (vl-append VSHIM
-       (mytext "x-axis: overhead")
-       (mytext "y-axis: # configs"))
-      (vl-append VSHIM
-       (hc-append 0
-         (colorize (mytext "red") "orangered")
-         (mytext " line: 60% of configs."))
-       (hc-append 0
-         (colorize (mytext "blue") "navy")
-         (mytext " line: # ")
-         (mytext "L" 'italic)
-         (mytext "-step ")
-         (mytext "N" 'italic)
-         (mytext "/")
-         (mytext "M" 'italic)
-         (mytext "-usable")))
-      (vl-append VSHIM
-       (hc-append 0
-         (colorize (mytext "green") "forestgreen")
-         (mytext " line: ")
-         (mytext "N" 'italic)
-         (mytext "=3"))
-       (hc-append 0
-         (colorize (mytext "yellow") "goldenrod")
-         (mytext " line: ")
-         (mytext "M" 'italic)
-         (mytext "=10"))))))
-
 ;; =============================================================================
+
+(define (make-L-title*)
+  (error "cannot make L titles right now"))
+  ;(define x (PARAM-L))
+  ;(cond
+  ; [(list? 
+  ;(define num-l (length (PARAM-L)))
+  ;(: l-index->string (-> Integer String))
+  ;(define (l-index->string i)
+  ;  (cond [(zero? i)
+  ;         (format "L = ~a" i)]
+  ;        [(= num-l i)
+  ;         (format "\t~a  (steps)" i)]
+  ;        [else
+  ;         (number->string i)]))
+  ;(for/list : (Listof String)
+  ;          ([x (in-list (PARAM-L))])
+  ;  (l-index->string x)))
+
+(define (make-legend)
+  (define VSHIM (/ TITLE-VSPACE 3))
+  (: mytext (->* (String) (Any) Pict))
+  (define (mytext str [mystyle #f])
+      (text str
+        (if mystyle (cons mystyle TITLE-STYLE) TITLE-STYLE)
+        (+ 1 TEXT-FONT-SIZE)))
+  ;; TODO spacing is sometimes wrong... recompiling fixes
+  (hc-append (* 6 GRAPH-HSPACE)
+    (vl-append VSHIM
+     (mytext "x-axis: overhead")
+     (mytext "y-axis: # configs"))
+    (vl-append VSHIM
+     (hc-append 0
+       (colorize (mytext "red") "orangered")
+       (mytext (format " line: ~a% of configs." (round (* 100 (or (PARAM-CUTOFF) (error 'cutoff)))))))
+     (hc-append 0
+       (colorize (mytext "blue") "navy")
+       (mytext " line: # ")
+       (mytext "L" 'italic)
+       (mytext "-step ")
+       (mytext "N" 'italic)
+       (mytext "/")
+       (mytext "M" 'italic)
+       (mytext "-usable")))
+    (vl-append VSHIM
+     (hc-append 0
+       (colorize (mytext "green") "forestgreen")
+       (mytext " line: ")
+       (mytext "N" 'italic)
+       (mytext (format "=~a" (PARAM-N))))
+     (hc-append 0
+       (colorize (mytext "yellow") "goldenrod")
+       (mytext " line: ")
+       (mytext "M" 'italic)
+       (mytext (format "=~a" (PARAM-M)))))))
+
+;; -----------------------------------------------------------------------------
 
 ;; Try to read a cached pict, fall back to making a new one.
 (: data->pict (->* [(Listof (List String String))] [#:tag String] Pict))
@@ -154,7 +167,8 @@
   ;; TODO use options in tag -- new options should invalidate the cache
   (or (get-cached rktd* #:tag tag)
       (if (*aggregate*)
-        (get-deathscore-pict rktd* #:tag tag #:titles title*)
+        (error "deathscore not working right now")
+        ;(get-deathscore-pict rktd* #:tag tag #:titles title*)
         (get-new-lnm-pict rktd* #:tag tag #:titles title*))))
 
 ;; Create a summary and L-N/M picts for a data file.
@@ -162,13 +176,13 @@
 (define (file->pict* data-file* #:title title)
   (define S* (for/list : (Listof Summary) ([d : String data-file*]) (from-rktd d)))
   (define S-pict : Pict
-    (if (and (not (null? S*)) (null? (cdr S*)))
+    (if (and (not (null? S*)) (null? (cdr S*)) (PARAM-STATS?))
       (let ([p (summary->pict (car S*)
                      #:title title
                      #:font-face FONT-FACE
                      #:font-size TEXT-FONT-SIZE
-                     #:N PARAM-N
-                     #:M PARAM-M
+                     #:N (or (PARAM-N) (error "need N"))
+                     #:M (or (PARAM-M) (error "need M"))
                      #:width (* 0.6 W)
                      #:height H)])
         (vc-append 0 p (blank 0 (- H (pict-height p)))))
@@ -178,8 +192,8 @@
     ;;  I tried making plot-fn = (if show-paths? path-plot lnm-plot),
     ;;  but a U-type can't be applied!
     (if (*show-paths?*)
-      (make-plot path-plot S*)
-      (make-plot lnm-plot S*)))
+      (error "no pth plot");(make-plot path-plot S*)
+      (make-plot lnm-plot (car S*)))) ;; TODO 
   (cons S-pict L-pict*))
 
 (: format-filepath (-> (U #f String) String))
@@ -248,14 +262,14 @@
     (for/list ([t (in-list title*)] [r (in-list rktd*)])
       (list t r))))
 
-(: get-deathscore-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
-(define (get-deathscore-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
-  ;(define title+rktd* (zip-title* rktd* maybe-title* #:collapse? #f))
-  (define S*
-    (for/list : (Listof Summary)
-              ([d : String rktd*])
-      (from-rktd d)))
-  (car (make-plot death-plot S*)))
+;(: get-deathscore-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
+;(define (get-deathscore-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
+;  ;(define title+rktd* (zip-title* rktd* maybe-title* #:collapse? #f))
+;  (define S*
+;    (for/list : (Listof Summary)
+;              ([d : String rktd*])
+;      (from-rktd d)))
+;  (car (make-plot death-plot S*)))
 
 ;; Create a pict, cache it for later use
 (: get-new-lnm-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
@@ -276,30 +290,40 @@
                      [new (in-list pict*)])
             (vr-append GRAPH-VSPACE old new))
           ;; Generate titles. Be careful aligning the summary row
-          (cons (car pict*)
-           (for/list : (Listof Pict)
-                     ([l-str (in-list L-title*)]
-                      [new (in-list (cdr pict*))])
-             (vc-append TITLE-VSPACE (text l-str TITLE-STYLE TITLE-SIZE) new)))))
+          (if (PARAM-L-LABELS?)
+            (cons (car pict*)
+             (for/list : (Listof Pict)
+                       ([l-str (in-list (make-L-title*))]
+                        [new (in-list (cdr pict*))])
+               (vc-append TITLE-VSPACE (text l-str TITLE-STYLE TITLE-SIZE) new)))
+            pict*)))
          (error 'invariant)))
+  (define columns/stats
+    (if (PARAM-STATS?) columns (cdr columns)))
   ;; Paste the columns together, insert a little extra space to make up for
   ;;  the missing title in the first column
   (define pict0 : Pict
     (or (for/fold : (U #f Pict)
               ([prev-pict : (U #f Pict) #f])
-              ([c columns])
+              ([c columns/stats])
       (if prev-pict
           (hc-append GRAPH-HSPACE prev-pict c)
-          (vc-append TITLE-VSPACE (blank 0 10) c)))
+          (if (PARAM-L-LABELS?)
+            (vc-append TITLE-VSPACE (blank 0 10) c)
+            c)))
         (error 'invariant)))
-  (define pict
-    (vc-append (* 1 TITLE-VSPACE)
-      pict0
-      LEGEND))
-  (cache-pict pict rktd* tag)
-  pict)
+  (define pict/legend
+    (if (PARAM-LEGEND?)
+      (vc-append (* 1 TITLE-VSPACE)
+        pict0
+        (make-legend))
+      pict0))
+  (cache-pict pict/legend rktd* tag)
+  pict/legend)
 
 ;; =============================================================================
+(define-syntax-rule (reads l)
+  (with-input-from-string (assert l string?) read))
 
 (module+ main
   (require
@@ -341,6 +365,24 @@
     "If set, draw a line for lattice paths" (*show-paths?* #t)]
    [("-a" "--aggregate" "-d" "--death")
     "Combine all data into a single figure" (*aggregate* 'avg-prop)]
+   [("--legend") legend "#t/#f = show/hide legend" (PARAM-LEGEND? (assert (reads legend) boolean?))]
+   [("--split") split "#t/#f = put all lines on a single plot / no" (PARAM-SPLIT? (assert (reads split) boolean?))]
+   [("--stats") stats "#t/#f = show/hide summary statistics" (PARAM-STATS? (assert (reads stats) boolean?))]
+   [("--ltitle") ltitle "#t/#f = show/hide L labels above plots" (PARAM-L-LABELS? (assert (reads ltitle) boolean?))]
+   [("--labels") lbl "#t/#f = show/hide axis labels" (PARAM-AXIS-LABELS? (assert (reads lbl) boolean?))]
+   [("--cutoff") c "Set red line with a number in [0,1] (#f by default)"
+                 (PARAM-CUTOFF (assert (reads c) real?))]
+   [("-N") n "Set line for N (#f by default)" (PARAM-N (assert (reads n) index?))]
+   [("-M") m "Set line for M (#f by default)" (PARAM-M (assert (reads m) index?))]
+   [("-L") l "Set L values, may be natural, (listof natural) or (listof (list natural pen-style))"
+             (let ([val (reads l)])
+               (cond
+                [(exact-nonnegative-integer? val)
+                 (PARAM-L val)]
+                [(and (list? val) (andmap exact-nonnegative-integer? val))
+                 (PARAM-L (cast val (Listof Index)))]
+                [else
+                 (PARAM-L (cast val (Listof (List Index Plot-Pen-Style))))]))]
    #:args FNAME*
    ;; -- Filter valid arguments, assert that we got anything to render
    (define arg* (filter-valid-filenames FNAME*))
