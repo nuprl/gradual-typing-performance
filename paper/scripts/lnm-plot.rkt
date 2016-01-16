@@ -46,7 +46,7 @@
 (define THIN (* 0.8 (line-width)))
 (define THICK (* 1.25 (line-width)))
 
-(define DEFAULT_SAMPLES 60)
+(define DEFAULT_SAMPLES 100)
 (define DEFAULT_FACE "bold")
 (define DEFAULT_SIZE 20)
 (define DEFAULT_XMAX 20)
@@ -81,8 +81,8 @@
                   #:split-plot? [split-plot? #f]
                   #:labels? [labels? #t]
                   #:cutoff-proportion [cutoff-proportion #f]
-                  #:plot-width [width (plot-width)] ;; Index
-                  #:plot-height [height (plot-height)]) ;; Index
+                  #:plot-width [width (* 2 (plot-width))] ;; Index
+                  #:plot-height [height (* 2 (plot-height))]) ;; Index
   (define L-list
     (cond
      [(not (list? L))
@@ -110,7 +110,9 @@
   ;; Set plot parameters ('globally', for all picts)
   (parameterize (
     [plot-x-ticks (compute-xticks 5)]
-    [plot-y-ticks (compute-yticks num-vars 6 #:exact (if cutoff-point (list cutoff-point num-vars) (list num-vars)))]
+    [plot-y-ticks (if pdf?
+                    (plot-y-ticks)
+                    (compute-yticks num-vars 6 #:exact (if cutoff-point (list cutoff-point num-vars) (list num-vars))))]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     [plot-tick-size 4]
@@ -132,7 +134,7 @@
                            #:x-min 1
                            #:x-max xmax
                            #:y-min 0
-                           #:y-max num-vars
+                           #:y-max (if pdf? #f num-vars)
                            #:x-label (and labels? "Overhead (vs. untyped)")
                            #:y-label (and labels? "Count")
                            #:width width
@@ -145,7 +147,7 @@
                                #:x-min 1
                                #:x-max xmax
                                #:y-min 0
-                               #:y-max num-vars
+                               #:y-max (if pdf? #f num-vars)
                                #:x-label (and labels? "Overhead (vs. untyped)")
                                #:y-label (and labels? "Count")
                                #:width width
