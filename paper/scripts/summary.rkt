@@ -74,6 +74,7 @@
   ;; (-> Summary Pict)
   ;; Return a pict representation of the summary. A kind of TLDR.
 
+  path->project-name
   summary-modulegraph
   summary->label
   Summary
@@ -195,9 +196,7 @@
   ;; Get the prefix of the path
   (define tag (path->project-name path))
   ;; Search in the MODULE_GRAPH_DIR directory for a matching TeX file
-  (define relative-pathstring (format "../~a/~a.tex" MODULE_GRAPH_DIR tag))
-  (define gp (build-path (or (path-only path) (error 'infer-graph))
-                         (string->path relative-pathstring)))
+  (define gp (format "~a/~a.tex" MODULE_GRAPH_DIR tag))
   (and (file-exists? gp) gp))
 
 ;; -----------------------------------------------------------------------------

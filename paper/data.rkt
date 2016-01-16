@@ -21,3 +21,13 @@
   [TETRIS-DATA     "./data/tetris-2015-07-01T16:39:46.rktd"]
   [ZORDOZ-DATA     "./data/zordoz-04-09.rktd"]
 )
+
+(define+provide
+  [MBTA-6.4.0.3 "data/v6.4.0.3/mbta-2016-01-16T06:02:22.rktd"]
+  [SNAKE-6.4.0.3 "data/v6.4.0.3/snake-2016-01-16T06:03:19.rktd"]
+  [SUFFIXTREE-6.4.0.3 "data/v6.4.0.3/suffixtree-2016-01-16T06:19:37.rktd"]
+  [SYNTH-6.4.0.3 "data/v6.4.0.3/synth-2016-01-16T07:34:17.rktd"]
+  [TETRIS-6.4.0.3 "data/v6.4.0.3/tetris-2016-01-16T07:39:25.rktd"]
+  [ZORDOZ-6.4.0.3 "data/v6.4.0.3/zordoz.6.2.900.15-2016-01-16T08:22:50.rktd"]
+)
+
