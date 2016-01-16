@@ -32,7 +32,7 @@
 
 (require
  "scripts/lnm-plot.rkt"
- (only-in "scripts/summary.rkt" from-rktd summary->pict Summary)
+ (only-in "scripts/summary.rkt" from-rktd summary->pict path->project-name Summary)
  (only-in racket/file file->value)
  (only-in racket/string string-join)
  (only-in racket/port with-input-from-string)
@@ -48,19 +48,25 @@
 ;; --- constants
 
 ;; Experiment parameters
+;; TODO parameters for max, num-samples
 (define PARAM-MAX-OVERHEAD 20)
 (define PARAM-NUM-SAMPLES 60)
 
 (define PARAM-PDF? : (Parameterof Boolean) (make-parameter #f))
 (define PARAM-SPLIT? : (Parameterof Boolean) (make-parameter #f))
-(define PARAM-STATS? : (Parameterof Boolean) (make-parameter #f))
-(define PARAM-AXIS-LABELS? : (Parameterof Boolean) (make-parameter #f))
+(define PARAM-STATS? : (Parameterof Boolean) (make-parameter #t))
+(define PARAM-AXIS-LABELS? : (Parameterof Boolean) (make-parameter #t))
 (define PARAM-L-LABELS? : (Parameterof Boolean) (make-parameter #f))
-(define PARAM-LEGEND? : (Parameterof Boolean) (make-parameter #f))
-(define PARAM-CUTOFF : (Parameterof (U #f Real)) (make-parameter #f))
-(define PARAM-N : (Parameterof (U #f Natural)) (make-parameter #f))
-(define PARAM-M : (Parameterof (U #f Natural)) (make-parameter #f))
+(define PARAM-LEGEND? : (Parameterof Boolean) (make-parameter #t))
+(define PARAM-CUTOFF : (Parameterof (U #f Real)) (make-parameter 0.6))
+(define PARAM-N : (Parameterof (U #f Natural)) (make-parameter 3))
+(define PARAM-M : (Parameterof (U #f Natural)) (make-parameter 10))
 (define PARAM-L : (Parameterof (U Natural (Listof Natural) (Listof (List Natural Plot-Pen-Style)))) (make-parameter 0))
+
+;(define H 100)
+;(define W 130)
+(define H 200)
+(define W 250)
 
 (: *show-paths?* (Parameterof Boolean))
 (define *show-paths?* (make-parameter #f))
@@ -92,8 +98,6 @@
 
 (define FONT-FACE "Liberation Serif")
 
-(define H 100)
-(define W 130)
 (define GRAPH-FONT-SIZE 6)
 (define TEXT-FONT-SIZE 10)
 (define GRAPH-HSPACE 10)
@@ -340,16 +344,12 @@
 
   (require
     racket/cmdline
-    (only-in racket/list first last)
-    (only-in racket/string string-split))
+    (only-in racket/list first last))
   (require/typed "scripts/show-pict.rkt"
    [pict->png (-> Pict Path-String Boolean)])
 
 (: render-lnm (-> (Vectorof String) Any))
 (define (render-lnm vec)
-  (: filename->tag (-> String String))
-  (define (filename->tag fname)
-    (first (string-split (first (string-split (last (string-split fname "/")) ".")) "-")))
 
   (: filter-valid-filenames (-> (Listof Any) (Listof String)))
   (define (filter-valid-filenames arg*)
@@ -410,7 +410,7 @@
        #:tag (format "cmdline~a" (if (*show-paths?*) "-path" ""))
        (for/list : (Listof (List String String))
                  ([fname (in-list arg*)])
-         (list (filename->tag fname) fname))))
+         (list (path->project-name (string->path fname)) fname))))
    ;; TODO: pict->png should be typed, and defined in this module.
    (pict->png P (*output*))))
 
