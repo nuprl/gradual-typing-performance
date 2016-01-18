@@ -1,5 +1,11 @@
 #lang typed/racket/base
 
+;; 1. get working
+;;   - pdf use points
+;;   - aggregate
+;; 2. clean code
+;; 3. document
+
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
 ;; We currently use this two ways:
@@ -36,9 +42,13 @@
  (only-in racket/file file->value)
  (only-in racket/string string-join)
  (only-in racket/port with-input-from-string)
- "scripts/pict-types.rkt"
  (only-in plot/no-gui Plot-Pen-Style)
-)
+ racket/cmdline
+ typed/pict
+ typed/racket/class
+ (only-in racket/list first last))
+
+(define-type Pict pict)
 
 (require/typed racket/serialize
   [serialize (-> Pict Any)]
@@ -62,39 +72,12 @@
 (define PARAM-N : (Parameterof (U #f Natural)) (make-parameter 3))
 (define PARAM-M : (Parameterof (U #f Natural)) (make-parameter 10))
 (define PARAM-L : (Parameterof (U Natural (Listof Natural) (Listof (List Natural Plot-Pen-Style)))) (make-parameter 0))
+(define *show-paths?* : (Parameterof Boolean) (make-parameter #f))
+(define *aggregate* : (Parameterof (U #t 'mean #f)) (make-parameter #t))
+(define *output* (make-parameter "./output.png"))
 
-;(define H 100)
-;(define W 130)
-(define H 200)
-(define W 250)
-
-(: *show-paths?* (Parameterof Boolean))
-(define *show-paths?* (make-parameter #f))
-
-(: *aggregate* (Parameterof (U Symbol #f)))
-(define *aggregate* (make-parameter #f))
-
-(define DEBUG #t)
-(define-syntax-rule (debug msg arg* ...)
-  (when DEBUG (printf msg arg* ...) (newline)))
-
-;; =============================================================================
-
-(define-syntax-rule (make-plot plot-proc S)
-  (plot-proc S
-             #:L (PARAM-L)
-             #:N (PARAM-N)
-             #:M (PARAM-M)
-             #:max-overhead PARAM-MAX-OVERHEAD
-             #:num-samples PARAM-NUM-SAMPLES
-             #:font-face FONT-FACE
-             #:font-size GRAPH-FONT-SIZE
-             #:split-plot? (PARAM-SPLIT?)
-             #:pdf? (PARAM-PDF?)
-             #:labels? (PARAM-AXIS-LABELS?)
-             #:cutoff-proportion (PARAM-CUTOFF)
-             #:plot-height H
-             #:plot-width W))
+(define *W* : (Parameterof Positive-Integer) (make-parameter 200))
+(define *H* : (Parameterof Positive-Integer) (make-parameter 250))
 
 (define FONT-FACE "Liberation Serif")
 
@@ -107,6 +90,28 @@
 (define TITLE-VSPACE (/ GRAPH-VSPACE 2))
 
 (define CACHE-PREFIX "./compiled/lnm-cache-")
+
+;; =============================================================================
+
+(define-syntax-rule (make-plot plot-proc S*)
+  (plot-proc S*
+             #:L (PARAM-L)
+             #:N (PARAM-N)
+             #:M (PARAM-M)
+             #:max-overhead PARAM-MAX-OVERHEAD
+             #:num-samples PARAM-NUM-SAMPLES
+             #:font-face FONT-FACE
+             #:font-size GRAPH-FONT-SIZE
+             #:split-plot? (PARAM-SPLIT?)
+             #:pdf? (PARAM-PDF?)
+             #:labels? (PARAM-AXIS-LABELS?)
+             #:cutoff-proportion (PARAM-CUTOFF)
+             #:plot-height (*H*)
+             #:plot-width  (*W*)))
+
+(define DEBUG #t)
+(define-syntax-rule (debug msg arg* ...)
+  (when DEBUG (printf msg arg* ...) (newline)))
 
 ;; =============================================================================
 
@@ -130,10 +135,10 @@
 
 (define (make-legend)
   (define VSHIM (/ TITLE-VSPACE 3))
-  (: mytext (->* (String) (Any) Pict))
+  (: mytext (->* (String) ((U #f 'italic)) Pict))
   (define (mytext str [mystyle #f])
       (text str
-        (if mystyle (cons mystyle TITLE-STYLE) TITLE-STYLE)
+        (if mystyle ((inst cons 'italic String) mystyle TITLE-STYLE) TITLE-STYLE)
         (+ 1 TEXT-FONT-SIZE)))
   ;; TODO spacing is sometimes wrong... recompiling fixes
   (hc-append (* 6 GRAPH-HSPACE)
@@ -174,34 +179,38 @@
   (define rktd* (for/list : (Listof String) ([x (in-list data*)]) (cadr x)))
   ;; TODO use options in tag -- new options should invalidate the cache
   (or (get-cached rktd* #:tag tag)
-      (if (*aggregate*)
-        (error "deathscore not working right now")
+      (case (*aggregate*)
+       [(#t #f) ;; boolean
+        (get-new-lnm-pict rktd* #:tag tag #:titles title*)]
+       [else
+        (raise-user-error 'render-lnm "No deathscore for now")]
         ;(get-deathscore-pict rktd* #:tag tag #:titles title*)
-        (get-new-lnm-pict rktd* #:tag tag #:titles title*))))
+)))
 
 ;; Create a summary and L-N/M picts for a data file.
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
 (define (file->pict* data-file* #:title title)
   (define S* (for/list : (Listof Summary) ([d : String data-file*]) (from-rktd d)))
+  ;; TODO fix summary
   (define S-pict : Pict
     (if (and (not (null? S*)) (null? (cdr S*)) (PARAM-STATS?))
       (let ([p (summary->pict (car S*)
-                     #:title title
-                     #:font-face FONT-FACE
-                     #:font-size TEXT-FONT-SIZE
-                     #:N (or (PARAM-N) (error "need N"))
-                     #:M (or (PARAM-M) (error "need M"))
-                     #:width (* 0.6 W)
-                     #:height H)])
-        (vc-append 0 p (blank 0 (- H (pict-height p)))))
+                              #:title title
+                              #:font-face FONT-FACE
+                              #:font-size TEXT-FONT-SIZE
+                              #:N (or (PARAM-N) (error "need N"))
+                              #:M (or (PARAM-M) (error "need M"))
+                              #:width (* 0.6 (*W*))
+                              #:height (*H*))])
+        (vc-append 0 p (blank 0 (- (*H*) (pict-height p)))))
       (blank 0 0)))
-  (define L-pict*
+  (define L-pict* : (Listof Pict)
     ;; TODO there's only a 3-character difference between the branches...
     ;;  I tried making plot-fn = (if show-paths? path-plot lnm-plot),
     ;;  but a U-type can't be applied!
     (if (*show-paths?*)
       (error "no pth plot");(make-plot path-plot S*)
-      (make-plot lnm-plot (car S*)))) ;; TODO 
+      (make-plot lnm-plot S*)))
   (cons S-pict L-pict*))
 
 (: format-filepath (-> (U #f String) String))
@@ -267,7 +276,6 @@
               ([t (in-list title*)]
                [r (in-list rktd*)])
       (cond
-       ;[(and t ((inst assoc (U #f String) (Listof String)) t acc))
        [(and t (assoc t acc))
         (for/list ([t+r (in-list acc)])
           (define hd (car t+r))
@@ -291,15 +299,17 @@
 ;; Create a pict, cache it for later use
 (: get-new-lnm-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
 (define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
-  (define title+rktd* (zip-title* rktd* maybe-title*))
+  (define title+rktd* (zip-title* rktd* maybe-title* #:collapse? (assert (*aggregate*) boolean?)))
+  ;; Get all picts. (Each call to lnm-plot returns a list)
+  (define pict**
+    (for/list : (Listof (Listof Pict))
+              ([title+rktd : (Pairof (Option String) (Listof String)) (in-list title+rktd*)])
+      (file->pict* (cdr title+rktd) #:title (car title+rktd))))
   ;; Align all picts vertically first
   (define columns : (Listof Pict)
     (or (for/fold : (U #f (Listof Pict))
               ([prev* : (U #f (Listof Pict)) #f])
-              ([title+rktd : (Pairof (U #f String) (Listof String)) (in-list title+rktd*)])
-      (define title (car title+rktd))
-      (define rktd* (cdr title+rktd))
-      (define pict* (file->pict* rktd* #:title title))
+              ([pict* : (Listof Pict) (in-list pict**)])
       (if prev*
           ;; Right-align the old picts with the new ones
           (for/list : (Listof Pict)
@@ -320,7 +330,8 @@
   ;; Paste the columns together, insert a little extra space to make up for
   ;;  the missing title in the first column
   (define pict0 : Pict
-    (or (for/fold : (U #f Pict)
+    (or
+     (for/fold : (U #f Pict)
               ([prev-pict : (U #f Pict) #f])
               ([c columns/stats])
       (if prev-pict
@@ -328,7 +339,7 @@
           (if (PARAM-L-LABELS?)
             (vc-append TITLE-VSPACE (blank 0 10) c)
             c)))
-        (error 'invariant)))
+     (error 'invariant)))
   (define pict/legend
     (if (PARAM-LEGEND?)
       (vc-append (* 1 TITLE-VSPACE)
@@ -342,34 +353,30 @@
 (define-syntax-rule (reads l)
   (with-input-from-string (assert l string?) read))
 
-  (require
-    racket/cmdline
-    (only-in racket/list first last))
-  (require/typed "scripts/show-pict.rkt"
-   [pict->png (-> Pict Path-String Boolean)])
+(: filter-valid-filenames (-> (Listof Any) (Listof String)))
+(define (filter-valid-filenames arg*)
+  (for/list : (Listof String)
+            ([fname (in-list arg*)]
+             #:when (and (string? fname)
+                         (valid-filename? fname)))
+    fname))
+
+(: valid-filename? (-> String Boolean))
+(define (valid-filename? fname)
+  (cond
+   [(and (file-exists? fname)
+         (regexp-match? #rx"\\.rktd$" fname))
+    #t]
+   [else
+    (printf "Skipping invalid file '~a'\n" fname)
+    #f]))
+
+(: pict->png (-> Pict Path-String Boolean))
+(define (pict->png p path)
+  (send (pict->bitmap p) save-file path 'png))
 
 (: render-lnm (-> (Vectorof String) Any))
 (define (render-lnm vec)
-
-  (: filter-valid-filenames (-> (Listof Any) (Listof String)))
-  (define (filter-valid-filenames arg*)
-    (for/list : (Listof String)
-              ([fname (in-list arg*)]
-               #:when (and (string? fname)
-                           (valid-filename? fname)))
-      fname))
-
-  (: valid-filename? (-> String Boolean))
-  (define (valid-filename? fname)
-    (cond
-     [(and (file-exists? fname)
-           (regexp-match? #rx"\\.rktd$" fname))
-      #t]
-     [else
-      (printf "Skipping invalid file '~a'\n" fname)
-      #f]))
-
-  (define *output* (make-parameter "./output.png"))
   (command-line
    #:program "view-pict"
    #:argv vec
@@ -378,8 +385,11 @@
     "Location to save results" (*output* (cast o-param String))]
    [("-p" "--path" "--paths")
     "If set, draw a line for lattice paths" (*show-paths?* #t)]
-   [("-a" "--aggregate" "-d" "--death")
-    "Combine all data into a single figure" (*aggregate* 'avg-prop)]
+   [("-a" "--aggregate")
+    "Combine all data into a single figure" (*aggregate* #t)]
+   ;; TODO disable aggregation
+   ;[("-d" "--deathscore") sym
+   ; "Create a deathscore figure with specified y-axis" (*aggregate* sym)]
    [("--legend") legend "#t/#f = show/hide legend" (PARAM-LEGEND? (assert (reads legend) boolean?))]
    [("--split") "Put each L in a new plot" (PARAM-SPLIT? #t)]
    [("--stats") stats "#t/#f = show/hide summary statistics" (PARAM-STATS? (assert (reads stats) boolean?))]
@@ -406,13 +416,11 @@
      (raise-user-error "Usage: render-lnm.rkt DATA.rktd ..."))
    ;; -- Create a pict
    (define P
-     (data->pict
-       #:tag (format "cmdline~a" (if (*show-paths?*) "-path" ""))
-       (for/list : (Listof (List String String))
-                 ([fname (in-list arg*)])
-         (list (path->project-name (string->path fname)) fname))))
-   ;; TODO: pict->png should be typed, and defined in this module.
+      (data->pict
+        #:tag (format "cmdline~a" (if (*show-paths?*) "-path" ""))
+        (for/list : (Listof (List String String))
+                  ([fname (in-list arg*)])
+          (list (path->project-name (string->path fname)) fname))))
    (pict->png P (*output*))))
 
-(module+ main
-  (render-lnm (current-command-line-arguments)))
+(module+ main (render-lnm (current-command-line-arguments)))
