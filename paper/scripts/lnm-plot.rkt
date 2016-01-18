@@ -69,7 +69,6 @@
                   #:plot-height Positive-Integer
                   ]
                   (Listof Pict)))
-
 (define (lnm-plot summary
                   #:L L
                   #:N [N #f]  ;; Index, recommened N limit
@@ -137,15 +136,15 @@
       (for/list : (Listof (Listof renderer2d))
                 ([L+style (in-list L-list)])
         (for/list : (Listof renderer2d)
-                ([S (in-list S*)]
-                 [a (in-naturals)])
+                ([S (in-list ((inst sort Summary String) S* string<? #:key summary->version))]
+                 [c (in-naturals 1)])
           (function
             (count-configurations S (car L+style) #:cache-up-to xmax #:pdf? pdf?)
             0 xmax
             #:samples num-samples
             #:style (cadr L+style)
-            #:alpha (cast (- 1 (* a 0.1)) Nonnegative-Real)
-            #:color 'navy
+            #:color c
+            #:label (summary->version S)
             #:width THICK))))
     (define elem* (for/list : (Listof renderer2d)
                             ([x (list N-line M-line cutoff-line)] #:when x) x))
@@ -159,6 +158,8 @@
                            #:y-max (if pdf? #f num-vars)
                            #:x-label (and labels? "Overhead (vs. untyped)")
                            #:y-label (and labels? "Count")
+                           #:title (and labels? (get-project-name (car S*)))
+                           #:legend-anchor 'top-right
                            #:width width
                            #:height height)])
           (if res
@@ -172,6 +173,8 @@
                                #:y-max (if pdf? #f num-vars)
                                #:x-label (and labels? "Overhead (vs. untyped)")
                                #:y-label (and labels? "Count")
+                               #:title (and labels? (summary->label (car S*)))
+                               #:legend-anchor 'top-right
                                #:width width
                                #:height height))
         (if (pict? res) res (error 'notapict))))))
