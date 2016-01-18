@@ -97,9 +97,11 @@
   (only-in racket/string string-split)
   "modulegraph.rkt"
   "bitstring.rkt"
-  "pict-types.rkt"
+  typed/pict
   "stream-types.rkt"
 )
+
+(define-type Pict pict)
 
 ;; =============================================================================
 ;; -- data definition: summary
@@ -415,9 +417,9 @@
   (: num+percent (-> Real String))
   (define (num+percent n) (format "~a (~a%)" n (round (* 100 (/ n numvars)))))
   (: text->pict (-> String Pict))
-  (define (text->pict message) (text message face size))
+  (define (text->pict message) (text message face (assert size index?)))
   (: text->title (-> String Pict))
-  (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
+  (define (text->title message) (text message (cons 'bold face) (assert (+ 1 size) index?)))
   (define left-column
     (vr-append vspace
                (text->title (or user-title (get-project-name sm)))

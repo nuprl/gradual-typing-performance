@@ -34,11 +34,12 @@
   (only-in racket/math exact-floor exact-ceiling)
   (only-in math/statistics mean)
   (only-in racket/format ~r)
+  typed/pict
   "bitstring.rkt"
   "summary.rkt"
-  "pict-types.rkt"
   "stream-types.rkt"
 )
+(define-type Pict pict)
 
 ;; =============================================================================
 ;; --- constants
@@ -54,7 +55,7 @@
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
 
-(: lnm-plot (->* [Summary #:L (U Natural (Listof Natural) (Listof (List Natural Plot-Pen-Style)))]
+(: lnm-plot (->* [(U Summary (Listof Summary)) #:L (U Natural (Listof Natural) (Listof (List Natural Plot-Pen-Style)))]
                  [#:N (U Natural #f) #:M (U Natural #f)
                   #:max-overhead Index
                   #:num-samples Positive-Integer
@@ -81,8 +82,9 @@
                   #:split-plot? [split-plot? #f]
                   #:labels? [labels? #t]
                   #:cutoff-proportion [cutoff-proportion #f]
-                  #:plot-width [width (* 2 (plot-width))] ;; Index
-                  #:plot-height [height (* 2 (plot-height))]) ;; Index
+                  #:plot-width [width (plot-width)]
+                  #:plot-height [height (plot-height)])
+  (define S* : (Listof Summary) (if (list? summary) summary (list summary)))
   (define L-list
     (cond
      [(not (list? L))
@@ -93,7 +95,20 @@
        (for/list : (Listof (List Natural Plot-Pen-Style))
                  ([l (in-list L)])
          (list l (line-style)))]))
-  (define num-vars (get-num-configurations summary))
+  (define num-vars : Index
+    ;; Assert that all summaries have the same number of configurations
+    (or
+     (for/fold : (Option Index)
+               ([prev : (Option Index) #f])
+               ([S (in-list S*)]
+                [i (in-naturals)])
+       (define nv (get-num-configurations S))
+       (if (and prev (not (= prev nv)))
+         (let ([p1 (get-project-name (list-ref S* (assert (- i 1) index?)))]
+               [p2 (get-project-name S)])
+           (raise-user-error 'lnm (format "datasets for '~a' and '~a' have ~a and ~a modules, cannot plot on same graph" p1 p2 nv prev)))
+         (assert nv index?)))
+     (raise-user-error 'lnm "got 0 datasets to summarize")))
   (define cutoff-point (and cutoff-proportion (* cutoff-proportion num-vars)))
   ;; Make renderers for the lines
   (define N-line (and N (vertical-line N #:y-max num-vars
@@ -118,19 +133,26 @@
     [plot-tick-size 4]
     [plot-font-face font-face]
     [plot-font-size font-size])
-    (define F-config*
-      (for/list : (Listof renderer2d)
+    (define F-config**
+      (for/list : (Listof (Listof renderer2d))
                 ([L+style (in-list L-list)])
-        (function (count-configurations summary (car L+style) #:cache-up-to xmax #:pdf? pdf?) 0 xmax
-                          #:samples num-samples
-                          #:style (cadr L+style)
-                          #:color 'navy
-                          #:width THICK)))
+        (for/list : (Listof renderer2d)
+                ([S (in-list S*)]
+                 [a (in-naturals)])
+          (function
+            (count-configurations S (car L+style) #:cache-up-to xmax #:pdf? pdf?)
+            0 xmax
+            #:samples num-samples
+            #:style (cadr L+style)
+            #:alpha (cast (- 1 (* a 0.1)) Nonnegative-Real)
+            #:color 'navy
+            #:width THICK))))
     (define elem* (for/list : (Listof renderer2d)
                             ([x (list N-line M-line cutoff-line)] #:when x) x))
     (if (not split-plot?)
         (let ([res
-               (plot-pict (append F-config* elem*)
+               ;; Flatten the F-config**, this will look strange
+               (plot-pict (append (apply append F-config**) elem*)
                            #:x-min 1
                            #:x-max xmax
                            #:y-min 0
@@ -142,8 +164,8 @@
           (if res
             (cast (list res) (Listof Pict))
             (error 'pictfail)))
-      (for/list ([F-config (in-list F-config*)])
-        (define res (plot-pict (cons F-config elem*)
+      (for/list ([F-config* (in-list F-config**)])
+        (define res (plot-pict (append F-config* elem*)
                                #:x-min 1
                                #:x-max xmax
                                #:y-min 0
@@ -167,16 +189,16 @@
                     (Listof Pict)))
 (define (death-plot S*
                   #:L L ;; (U Index (Listof Index)), L-values to plot
-                  #:N [N #f]  ;; Index, recommened N limit
-                  #:M [M #f] ;; Index, recommended M limit
+                  #:N [N #f]
+                  #:M [M #f]
                   #:max-overhead [xmax DEFAULT_XMAX] ;; Index, max. x-value
-                  #:num-samples [num-samples DEFAULT_SAMPLES] ;; Index
+                  #:num-samples [num-samples DEFAULT_SAMPLES]
                   #:font-face [font-face DEFAULT_FACE]
                   #:font-size [font-size DEFAULT_SIZE]
                   #:labels? [labels? #t]
                   #:cutoff-proportion [cutoff-proportion #f] ;; Flonum, between 0 and 1.
-                  #:plot-width [width (plot-width)] ;; Index
-                  #:plot-height [height (plot-height)]) ;; Index
+                  #:plot-width [width (plot-width)]
+                  #:plot-height [height (plot-height)])
   (when (null? S*) (error 'lnm-plot "Cannot make picture for empty list of input"))
   (define L-list (or (and (list? L) L) (list L)))
   (define ymax 100)
@@ -249,16 +271,16 @@
                   ]
                   (Listof Pict)))
 (define (path-plot S* #:L L* ;; L* is ignored
-                  #:N [N #f]  ;; Index, recommened N limit
-                  #:M [M #f] ;; Index, recommended M limit
+                  #:N [N #f]
+                  #:M [M #f]
                   #:max-overhead [xmax DEFAULT_XMAX] ;; Index, max. x-value
                   #:num-samples [num-samples DEFAULT_XMAX] ;; Index
                   #:font-face [font-face DEFAULT_FACE]
                   #:font-size [font-size DEFAULT_SIZE]
                   #:labels? [labels? #t]
                   #:cutoff-proportion [cutoff-proportion #f] ;; Flonum, between 0 and 1.
-                  #:plot-width [width (plot-width)] ;; Index
-                  #:plot-height [height (plot-height)]) ;; Index
+                  #:plot-width [width (plot-width)]
+                  #:plot-height [height (plot-height)])
   (define L-list (list 0)) ;; TODO eventually generalize
   (when (null? S*) (error 'path-plot "Expected at least one summary object"))
   (define num-paths (get-num-paths (car S*)))
