@@ -76,8 +76,8 @@
 (define *aggregate* : (Parameterof (U #t 'mean #f)) (make-parameter #t))
 (define *output* (make-parameter "./output.png"))
 
-(define *W* : (Parameterof Positive-Integer) (make-parameter 200))
-(define *H* : (Parameterof Positive-Integer) (make-parameter 250))
+(define *H* : (Parameterof Positive-Integer) (make-parameter 220))
+(define *W* : (Parameterof Positive-Integer) (make-parameter 300))
 
 (define FONT-FACE "Liberation Serif")
 

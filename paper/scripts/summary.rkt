@@ -81,6 +81,7 @@
   path->project-name
   summary-modulegraph
   summary->label
+  summary->version
   Summary
 )
 
@@ -100,6 +101,8 @@
   typed/pict
   "stream-types.rkt"
 )
+(require/typed version/utils
+  (valid-version? (-> String Boolean)))
 
 (define-type Pict pict)
 
@@ -128,7 +131,19 @@
   (define p (summary-source S))
   (: s String)
   (define s (if (path? p) (path->string p) (format "~a" p)))
-  (last (string-split (strip-suffix s) "/")))
+  (car (string-split (last (string-split s "/")) ".")))
+
+(: summary->version (-> Summary String))
+(define (summary->version S)
+  (define p (summary-source S))
+  (: s String)
+  (define s (if (path? p) (path->string p) (format "~a" p)))
+  (or
+    (for/or : (Option String)
+               ([x (in-list (string-split s "/"))]
+                #:when (valid-version? x))
+      x)
+    (summary->label S)))
 
 ;; -----------------------------------------------------------------------------
 ;; -- constants
