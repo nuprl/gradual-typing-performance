@@ -1,48 +1,24 @@
-Notes on benchmakr iterations
+Notes on iterations
 ===
-
-Sources
----
-https://en.wikipedia.org/wiki/Anderson%E2%80%93Darling_test
-https://projecteuclid.org/download/pdf_1/euclid.aos/1176343411
-
-Notes
----
 
 Just read about & implemented a protocol for running trials (here).
 Instead of doing 30 iterations, we now:
 
 1. Run 10 iterations
 2. Use the Anderson-Darling test to check if the data is obviously not normal
-(Currently using 1% critical value; in English, "there is a 1% chance of
- seeing these numbers if the data is normal)
-3. If not-normal, run 4 iterations & check step 2, up to a max of 30 iterations
+    (Currently using 1% critical value; in English, "if the data came from
+     a normal dist., there is a 1% chance of seeing these numbers")
+3. If not-normal, run 4 more iterations & check step 2, up to a max of 30 iterations
 4. Otherwise, stop early
 
 Caveats:
-- Assumes our observations are normally distributed
-  (unless there's overwhelming counter-evidence)
+- Assumes our samples are normally distributed
 - Assumes each trial is independent
   (note: we ignore a warm-up run)
 - We accept 30 iters, no matter how weird the data is
 - We do not try to filter outliers
 
 But this should be good enough for our measurements.
+We just want to save time if we got a bunch of stable runs.
+
 (I'll write this up in detail in the journal paper.)
-
-Also, I spot-checked our v6.3 data from the new machine &
-found a few non-normal configurations.
-
-benchmark | num. not-normal after 30
-          |  runs + (% of total)
-------------------------------------
-   gregor | 1  (0.01)
-     kcfa | 5  (3.91)
-  quad-mb | 7  (0.01)
-  quad-bg | 2  (0.01)
-    snake | 4  (1.56)
-  suffix. | 4  (6.25)
-    synth | 2  (0.20)
-   tetris | 3  (0.59)
-
-These numbers are low enough to make me happy.

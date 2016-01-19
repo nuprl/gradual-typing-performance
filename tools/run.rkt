@@ -56,7 +56,6 @@
 (define min-max-config (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
 
-
 ;; Get paths for all variation directories
 ;; Path Path -> Listof Path
 (define (mk-variations basepath entry-point)
@@ -141,8 +140,8 @@
                      #:break (and (not exact-iters)
                                   (>= i (min-iterations))
                                   (zero? (modulo (- i (min-iterations)) (step-iterations)))
-                                  (or (anderson-darling? times) (and (printf "AD ~a\n" (anderson-darling times)) #f))
-                                  (printf "ENDING EARLY, at ~a\n  row = ~a\n  ad = ~a\n" i times (anderson-darling times))))
+                                  (anderson-darling? times)
+                                  (printf "STOP EARLY iteration ~a: ~a\n" i times))
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)

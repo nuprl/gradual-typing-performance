@@ -62,6 +62,8 @@
   ;; Modified statistic, because mean & stddev are unknown
   (modify A**2 n))
 
+;; Compute modified A-D statistic.
+;; Stephens (1974) claims this is slightly better. So why not.
 (define (modify x n)
   (* x
      (- (+ 1 (/ 4 n))
