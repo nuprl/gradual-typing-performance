@@ -11,6 +11,7 @@
 ;; - Aggregate the results from all sub-jobs
 
 (require "data-lattice.rkt"
+         "stats-helpers.rkt"
          (only-in glob in-glob)
          math/statistics
          mzlib/os
@@ -32,9 +33,15 @@
 ;; run, otherwise only compiles.
 (define only-compile? (make-parameter #f))
 
-;; The number of times to run the benchmark as a string (to
-;; be parsed later)
-(define num-iterations (make-parameter "1"))
+;; Number of iterations to run the benchmark
+;; - If `num-iterations` is given, run EXACTLY that
+;; - By default, run `min-iterations` then check for non-normality.
+;;   If non-normal, run `step-iterations` more & re-check.
+;;   Stop iterating after running `max-iterations`.
+(define num-iterations (make-parameter #f))
+(define min-iterations (make-parameter 10))
+(define step-iterations (make-parameter 4))
+(define max-iterations (make-parameter 30))
 
 ;; The number of jobs to spawn for the variations. When jobs is
 ;; greater than 1, the variation space is split evenly and allocated
@@ -68,7 +75,7 @@
 ;; Optional argument gives the exact variation to run.
 ;; Default is to run all variations
 ;; (Listof Path) Path Nat Nat [(U (Listof String) #f)] -> Void
-(define (run-benchmarks basepath entry-point iters jobs
+(define (run-benchmarks basepath entry-point jobs
                         #:config [cfg #f]
                         #:min/max [min/max #f])
   (define benchmark-dir (build-path basepath "benchmark"))
@@ -124,8 +131,18 @@
                (close-output-port out))
 
              ;; run the iterations that will count for the data
+             (define exact-iters (num-iterations))
              (unless (only-compile?)
-               (for ([i (in-range iters)])
+               (for ([i (if exact-iters
+                            (in-range exact-iters)
+                            (in-range (min-iterations)
+                                      (+ 1 (max-iterations))
+                                      (step-iterations)))]
+                     ;; Stop early if user did NOT give an exact iterations
+                     ;;  and Anderson-Darling does not reject null normality hypothesis
+                     #:break (and (not exact-iters)
+                                  (anderson-darling? times)
+                                  (printf "ENDING EARLY, at ~a\n  row = ~a\n  ad = ~a\n" i times (anderson-darling times))))
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
@@ -194,7 +211,9 @@
                   #:multi
                   [("-i" "--iterations") n-i
                                          "The number of iterations to run"
-                                         (num-iterations n-i)]
+                                         (let ([n (string->number n-i)])
+                                           (unless n (raise-user-error 'run (format "Expected natural number, got '~a'" n-i))
+                                           (num-iterations n)))]
                   #:args (basepath)
                   basepath))
   ;; Validate given entry-point, or fall back to default
@@ -216,9 +235,6 @@
   (unless (and (path-string? entry-point)
                (regexp-match? #rx"\\.rkt$" entry-point))
     (raise-user-error (format "expected a Racket file, given ~a" entry-point)))
-  (define iters (string->number (num-iterations)))
-  (unless (number? iters)
-    (raise-user-error (format "expected a number, given ~a" (num-iterations))))
   (define jobs (string->number (num-jobs)))
   (unless (number? jobs)
     (raise-user-error (format "expected a number, given ~a" (num-jobs))))
@@ -246,7 +262,7 @@
   ;; using CPU1 and above.
   (system (format "taskset -pc 0 ~a" (getpid)))
 
-  (run-benchmarks basepath entry-point iters jobs
+  (run-benchmarks basepath entry-point jobs
                   #:config (exclusive-config)
                   #:min/max (min-max-config))
 
