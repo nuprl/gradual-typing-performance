@@ -7,23 +7,16 @@
 )
 
 (require
-  (only-in math/statistics
-    mean)
+  math/statistics
   (only-in math/special-functions
     erf)
-  (only-in racket/list
-    take)
   (only-in racket/math
     nan?)
-  (only-in racket/string
-    string-suffix?)
-  (only-in racket/file
-    file->value)
 )
 
 ;; -----------------------------------------------------------------------------
 ;; Anderson-Darling normality test
-;; https://projecteuclid.org/download/pdf_1/euclid.aos/1176343411
+;; http://www.hep.caltech.edu/~fcp/statistics/hypothesisTest/PoissonConsistency/AndersonDarling1954.pdf
 
 (define (sample-variance/mean+length x* u n)
   (* (/ 1 (- n 1))
@@ -33,32 +26,80 @@
 (define (sample-stddev/mean+length x* u n)
   (sqrt (sample-variance/mean+length x* u n)))
 
-;; CDF for Normal Distribution
-(define ((make-phi u o) n)
+;; CDF for Normal Distribution with mean `u` and stddev `o`
+(define ((make-phi u o) x)
   (* (/ 1 2)
      (+ 1
-        (erf (/ (- n u)
+        (erf (/ (- x u)
                 (* o (sqrt 2)))))))
+
+(define phi (make-phi 0 1))
+
+(define (z-scores x*)
+  (define n (length x*))
+  ;; u = sample mean
+  (define u (mean x*))
+  ;; o = sample standard deviation
+  (define o (sample-stddev/mean+length x* u n))
+  (for/list ([x (in-list x*)])
+    (/ (- x u) o)))
 
 ;; Calculate Anderson-Darling statistic A**2
 (define (anderson-darling x*-unsorted)
-  (define n (length x*-unsorted))
+  ;; x* = samples, in increasing order
   (define x* (sort x*-unsorted <))
-  (define u (mean x*))
-  (define o (sample-stddev/mean+length x* u n))
-  (define phi (make-phi u o))
-  (define y* (for/vector ([x (in-list x*)])
-               (/ (- x u) o)))
-  (- (- n)
-     (* (/ 1 n)
-        (for/sum ([i (in-range n)])
-          (* (- (* 2 i) 1)
-             (+ (log (phi (vector-ref y* i)))
-                (log (- 1 (phi (vector-ref y* (- n 1 i)))))))))))
+  ;; z* = sample Z-scores, mapped through the standard normal CDF
+  (define z* (list->vector (map phi (z-scores x*))))
+  (define n (vector-length z*))
+  ;; E = main summation for the A**2 statistic
+  (define E
+    (for/sum ([i (in-range n)])
+      (* (- (* 2 (+ 1 i)) 1)
+         (+ (log (vector-ref z* i))
+            (log (- 1 (vector-ref z* (- n 1 i))))))))
+  ;; A-D critical value
+  (define A**2 (- (/ (- E) n) n))
+  ;; Modified statistic, because mean & stddev are unknown
+  (modify A**2 n))
 
+(define (modify x n)
+  (* x
+     (- (+ 1 (/ 4 n))
+        (/ 25 (expt n 2)))))
+
+;; Returns #t if the AD statistic is below the critical value
 (define (anderson-darling? x*)
   (with-handlers ([exn:fail? (lambda (e) #f)])
     (define A**2 (anderson-darling x*))
     (and (not (nan? A**2))
-         (not (> A**2 1.0)))))
+         (<= A**2 1.1))))
+
+;; -----------------------------------------------------------------------------
+;; Jarque-Bera normality test (needs many +20 samples)
+
+(define (jarque-bera x*)
+  (define u (mean x*))
+  (define n (length x*))
+  (define S (skewness/mean u x*))
+  (define K (kurtosis/mean u x*))
+  (* (/ 1 6)
+     (+ (expt S 2)
+        (* (/ 1 4)
+           (expt (- K 3) 2)))))
+
+(define (jarque-bera? x*)
+  (> 0.1 (jarque-bera x*)))
+
+;; -----------------------------------------------------------------------------
+
+;; For spot-checking existing data files
+(module+ main
+  (require glob racket/string racket/format racket/list racket/file)
+  (for ([fname (in-vector (current-command-line-arguments))])
+   (define num-bad
+    (for/sum ([x* (in-vector (file->value fname))]
+              [i (in-naturals)])
+      (if (anderson-darling? x*) 0 1)))
+   (define tag (car (string-split (last (string-split fname "/")) "-")))
+   (printf "~a : ~a (~a%)\n" fname x (~r #:precision 2 (* 100 (/ x (expt 2 (length (glob (format "~a/untyped/*.rkt" tag ))))))))))
 
