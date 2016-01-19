@@ -13,6 +13,8 @@
     erf)
   (only-in racket/list
     take)
+  (only-in racket/math
+    nan?)
   (only-in racket/string
     string-suffix?)
   (only-in racket/file
@@ -39,9 +41,9 @@
                 (* o (sqrt 2)))))))
 
 ;; Calculate Anderson-Darling statistic A**2
-(define (anderson-darling x*-raw)
-  (define n (length x*))
-  (define x* (sort (take x*-raw n) <))
+(define (anderson-darling x*-unsorted)
+  (define n (length x*-unsorted))
+  (define x* (sort x*-unsorted <))
   (define u (mean x*))
   (define o (sample-stddev/mean+length x* u n))
   (define phi (make-phi u o))
@@ -55,6 +57,8 @@
                 (log (- 1 (phi (vector-ref y* (- n 1 i)))))))))))
 
 (define (anderson-darling? x*)
-  (define A**2 (anderson-darling x*))
-  (not (> A**2 1.0)))
+  (with-handlers ([exn:fail? (lambda (e) #f)])
+    (define A**2 (anderson-darling x*))
+    (and (not (nan? A**2))
+         (not (> A**2 1.0)))))
 
