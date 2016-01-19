@@ -103,5 +103,5 @@
               [i (in-naturals)])
       (if (anderson-darling? x*) 0 1)))
    (define tag (car (string-split (last (string-split fname "/")) "-")))
-   (printf "~a : ~a (~a%)\n" fname x (~r #:precision 2 (* 100 (/ x (expt 2 (length (glob (format "~a/untyped/*.rkt" tag ))))))))))
+   (printf "~a : ~a (~a%)\n" fname num-bad (~r #:precision 2 (* 100 (/ num-bad (expt 2 (length (glob (format "~a/untyped/*.rkt" tag ))))))))))
 
