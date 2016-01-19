@@ -141,7 +141,7 @@
                                   (>= i (min-iterations))
                                   (zero? (modulo (- i (min-iterations)) (step-iterations)))
                                   (anderson-darling? times)
-                                  (printf "STOP EARLY iteration ~a: ~a\n" i times))
+                                  (printf "STOP EARLY iteration ~a: ~a\n" i times)))
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
