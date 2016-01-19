@@ -133,15 +133,15 @@
              ;; run the iterations that will count for the data
              (define exact-iters (num-iterations))
              (unless (only-compile?)
-               (for ([i (if exact-iters
-                            (in-range exact-iters)
-                            (in-range (min-iterations)
-                                      (+ 1 (max-iterations))
-                                      (step-iterations)))]
+               (for ([i (in-range 0
+                                  (or exact-iters (+ 1 (max-iterations)))
+                                  1)]
                      ;; Stop early if user did NOT give an exact iterations
                      ;;  and Anderson-Darling does not reject null normality hypothesis
                      #:break (and (not exact-iters)
-                                  (anderson-darling? times)
+                                  (>= i (min-iterations))
+                                  (zero? (modulo (- i (min-iterations)) (step-iterations)))
+                                  (or (anderson-darling? times) (and (printf "AD ~a\n" (anderson-darling times)) #f))
                                   (printf "ENDING EARLY, at ~a\n  row = ~a\n  ad = ~a\n" i times (anderson-darling times))))
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
