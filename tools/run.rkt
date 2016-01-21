@@ -177,6 +177,38 @@
   (with-output-to-file (build-path dir (output-path)) #:exists 'append
     (lambda () (write times))))
 
+;; Get the most recent commit hash for the chosen Racket install
+(define (racket-checksum)
+  (define rkt-dir
+    (if (zero? (string-length (*racket-bin*)))
+      ;; Hacks
+      (string-append
+        (with-output-to-string
+          (lambda () (system "which racket")))
+        "/..")
+      (*racket-bin*)))
+  (define str
+    (parameterize ([current-directory rkt-dir])
+      (with-output-to-string
+        (lambda ()
+          (system "git log | head -n 1")))))
+  (define m (regexp-match #px"commit ([a-z0-9]{8})" str))
+  (if (or (null? m) (null? (cdr m)))
+    (printf "WARNING: failed to get Racket checksum\n")
+    (cadr m)))
+
+;; Use the current `raco` to get the most-recent commit hash for typed-racket
+(define (typed-racket-checksum)
+  (define str
+    (with-output-to-string
+      (lambda ()
+        (system
+          (format "~araco pkg show -l typed-racket | grep 'typed-racket'" (*racket-bin*))))))
+  (define m (regexp-match " ([a-z0-9]+)\\.\\.\\. " str))
+  (when (or (null? m) (null? (cdr m)))
+    (printf "WARNING: failed to get typed racket checksum\n"))
+  (cadr m))
+
 (module+ main
   (define basepath
     (command-line #:program "benchmark-runner"
@@ -270,6 +302,8 @@
         ;; first write a comment that encodes the commandline args / version
         (printf ";; ~a~n" (current-command-line-arguments))
         (printf ";; ~a~n" (version))
+        (printf ";; base @ ~a~n" (racket-checksum))
+        (printf ";; typed-racket @ ~a~n" (typed-racket-checksum))
         (displayln "#(")
         (for ([result-file (in-glob (format "~a/benchmark/variation*/~a"
                                      basepath
