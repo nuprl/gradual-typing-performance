@@ -211,8 +211,8 @@
                   [("-i" "--iterations") n-i
                                          "The number of iterations to run"
                                          (let ([n (string->number n-i)])
-                                           (unless n (raise-user-error 'run (format "Expected natural number, got '~a'" n-i))
-                                           (num-iterations n)))]
+                                           (unless n (raise-user-error 'run (format "Expected natural number, got '~a'" n-i)))
+                                           (num-iterations n))]
                   #:args (basepath)
                   basepath))
   ;; Validate given entry-point, or fall back to default
