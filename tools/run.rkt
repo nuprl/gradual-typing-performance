@@ -21,7 +21,7 @@
          racket/cmdline
          racket/date
          racket/draw
-         (only-in racket/format ~r)
+         (only-in racket/format ~a ~r)
          (only-in racket/file file->value)
          racket/future
          racket/match
@@ -192,11 +192,8 @@
     (parameterize ([current-directory rkt-dir])
       (with-output-to-string
         (lambda ()
-          (system "git log | head -n 1")))))
-  (define m (regexp-match #px"commit ([a-z0-9]{8})" str))
-  (if (or (null? m) (null? (cdr m)))
-    (printf "WARNING: failed to get Racket checksum\n")
-    (cadr m)))
+          (system "git rev-parse HEAD")))))
+  (~a str #:max-width 8))
 
 ;; Use the current `raco` to get the most-recent commit hash for typed-racket
 (define (typed-racket-checksum)
@@ -205,9 +202,7 @@
     (let ([pkg (hash-ref tbl "typed-racket")])
       (if pkg
         (let ([chk (pkg-info-checksum pkg)])
-          (if (and (string? chk) (<= 8 (string-length chk)))
-            (substring chk 0 8)
-            (printf "Failed to parse checksum from '~a'\n" chk)))
+          (~a chk #:max-width 8))
         (printf "Failed to find package 'typed-racket' in 'installation pkg-table\n")))
     (printf "Failed to get 'installed-pkg-table'\n")))
 
