@@ -16,6 +16,7 @@
          math/statistics
          mzlib/os
          pict
+         pkg/lib
          racket/class
          racket/cmdline
          racket/date
@@ -200,15 +201,16 @@
 
 ;; Use the current `raco` to get the most-recent commit hash for typed-racket
 (define (typed-racket-checksum)
-  (define str
-    (with-output-to-string
-      (lambda ()
-        (system
-          (format "~araco pkg show -l typed-racket | grep 'typed-racket'" (*racket-bin*))))))
-  (define m (regexp-match " ([a-z0-9]+)\\.\\.\\. " str))
-  (when (or (null? m) (null? (cdr m)))
-    (printf "WARNING: failed to get typed racket checksum\n"))
-  (cadr m))
+  (define tbl (installed-pkg-table #:scope 'installation))
+  (if tbl
+    (let ([pkg (hash-ref tbl "typed-racket")])
+      (if pkg
+        (let ([chk (pkg-info-checksum pkg)])
+          (if (and (string? chk) (<= 8 (string-length chk)))
+            (substring chk 0 8)
+            (printf "Failed to parse checksum from '~a'\n" chk)))
+        (printf "Failed to find package 'typed-racket' in 'installation pkg-table\n")))
+    (printf "Failed to get 'installed-pkg-table'\n")))
 
 (module+ main
   (define basepath
