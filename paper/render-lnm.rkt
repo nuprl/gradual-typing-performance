@@ -59,8 +59,8 @@
 
 ;; Experiment parameters
 ;; TODO parameters for max, num-samples
-(define PARAM-MAX-OVERHEAD 20)
-(define PARAM-NUM-SAMPLES 60)
+(define PARAM-MAX-OVERHEAD 90)
+(define PARAM-NUM-SAMPLES 160)
 
 (define PARAM-PDF? : (Parameterof Boolean) (make-parameter #f))
 (define PARAM-SPLIT? : (Parameterof Boolean) (make-parameter #f))

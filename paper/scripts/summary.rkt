@@ -74,6 +74,9 @@
   ;; (-> Summary Pict)
   ;; Return a pict representation of the summary. A kind of TLDR.
 
+  max-lattice-point
+  ;; (-> Summary Natural)
+
   path->project-name
   summary-modulegraph
   summary->label
@@ -115,7 +118,6 @@
   [source : Path-String] ;; the data's origin
   [dataset : Dataset] ;; the underlying experimental data
   [modulegraph : ModuleGraph] ;; the adjacency list of the represented project
-  [num-runs : Index]
 ))
 
 (define-type Summary summary)
@@ -161,7 +163,7 @@
 (: from-rktd (->* [String] [#:graph (U Path #f)] Summary))
 (define (from-rktd filename #:graph [graph-path #f])
   (define path (string->path filename))
-  (define-values (dataset num-runs) (rktd->dataset path))
+  (define dataset (rktd->dataset path))
   (define gp (or graph-path (infer-graph path)))
   (define mg
     (if gp
@@ -170,10 +172,10 @@
         (printf "Warning: could not find module graph for '~a'.\n" filename)
         (from-directory (string->path (strip-suffix filename))))))
   (validate-modulegraph dataset mg)
-  (summary path dataset mg num-runs))
+  (summary path dataset mg))
 
 ;; Parse a dataset from a filepath.
-(: rktd->dataset (-> Path (Values Dataset Index)))
+(: rktd->dataset (-> Path Dataset))
 (define (rktd->dataset path)
   ;; Check .rktd
   (unless (bytes=? #"rktd" (or (filename-extension path) #""))
@@ -184,20 +186,18 @@
   (validate-dataset vec))
 
 ;; Confirm that the dataset `vec` is a well-formed vector of experiment results.
-(: validate-dataset (-> Any (Values Dataset Index)))
+(: validate-dataset (-> Any Dataset))
 (define (validate-dataset vec0)
   (define vec (dataset? vec0))
-  (unless (< 0 (vector-length vec)) (parse-error "Dataset is an empty vector, does not contain any entries"))
-  ;; Record the number of runs in the first vector, match against other lengths
-  (: num-runs (Boxof (U #f Index)))
-  (define num-runs (box #f))
+  ;; Make sure dataset has rows
+  (unless (< 0 (vector-length vec))
+    (parse-error "Dataset is an empty vector, does not contain any entries"))
+  ;; Make sure all rows have data
   (for ([row-index (in-range (vector-length vec))])
     (define inner (vector-ref vec row-index))
-    (define unboxed (unbox num-runs))
-    (if (not unboxed)
-        (set-box! num-runs (length inner))
-        (unless (= unboxed (length inner)) (parse-error "Rows 0 and ~a of dataset have different lengths (~a vs. ~a); all configurations must describe the same number of runs.\n  Bad row: ~a" row-index unboxed (length inner) inner))))
-  (values vec (or (unbox num-runs) (error 'neverhappens))))
+    (when (zero? (length inner))
+      (parse-error "Row ~a of dataset is empty.\n" row-index)))
+  vec)
 
 ;; Check that the dataset and module graph agree
 (: validate-modulegraph (-> Dataset ModuleGraph Void))
@@ -258,10 +258,6 @@
 (: get-num-configurations (-> Summary Index))
 (define (get-num-configurations sm)
   (vector-length (summary-dataset sm)))
-
-(: get-num-runs (-> Summary Index))
-(define (get-num-runs sm)
-  (summary-num-runs sm))
 
 (: get-num-modules (-> Summary Exact-Positive-Integer))
 (define (get-num-modules sm)

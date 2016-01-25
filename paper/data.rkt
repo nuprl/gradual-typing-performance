@@ -59,12 +59,3 @@
   [ZORDOZ-6.4.0.4   "data/v6.4.0.4/zordoz.6.2.900.15-2016-01-17T15:57:49.rktd"]
 )
 
-(require "render-lnm.rkt")
-(for ([tag (list "mbta" "snake" "suffixtree" "synth" "tetris" "zordoz")]
-      [v6.3 (list MBTA-6.3 SNAKE-6.3 SUFFIXTREE-6.3 SYNTH-6.3 TETRIS-6.3 ZORDOZ-6.3)]
-      [v6.4.0.3 (list MBTA-6.4.0.3 SNAKE-6.4.0.3  SUFFIXTREE-6.4.0.3  SYNTH-6.4.0.3  TETRIS-6.4.0.3  ZORDOZ-6.4.0.3)]
-      [v6.4.0.4 (list MBTA-6.4.0.4 SNAKE-6.4.0.4  SUFFIXTREE-6.4.0.4  SYNTH-6.4.0.4  TETRIS-6.4.0.4  ZORDOZ-6.4.0.4)]
-      [i (in-naturals)]
-      #:when (> i 2))
-  (render-lnm (vector "-o" (format "~a.png" tag) v6.3 v6.4.0.3 v6.4.0.4)))
-
