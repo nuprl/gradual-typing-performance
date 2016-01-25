@@ -39,7 +39,7 @@
     },
     {
       "type": "shell",
-      "scripts": [ "setup-32.sh" ]
+      "scripts": [ "setup.sh" ]
     }
   ],
   "post-processors": [
