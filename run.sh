@@ -1,16 +1,32 @@
 #!/bin/bash
 
 # Independent parameters
-JOBS=4
 RKT=/home/ben/code/racket/fork/racket/bin
-## Default iterations: try 10, run 30 if not-normal
 #RKT=$(dirname `which racket`)
 
-# Dependent parameters
+## Default iterations: try 10, run 30 if not-normal
+
+## Default jobs: compute number of cores, divide by 2
+if hash nproc 2>/dev/null; then
+  CORES=$(nproc)
+elif hash sysctl 2>/dev/null; then
+  CORES=$(sysctl -n hw.physicalcpu)
+else
+  CORES=2 # So we get 1 job
+fi
+JOBS=$((CORES / 2))
+echo "JOBS" $JOBS
+
+## Dependent parameters
 TARGET=${1%/}
 LOG=$TARGET.log
 
-echo "### Running benchmarks for '"$TARGET"' ("$NUMITERS" iterations per config.)"
+###############################################################################
+## Main script
+echo "### Running benchmarks for '"$TARGET"'"
+if test $NUMITERS; then
+ echo "### ("$NUMITERS" iterations per config.)"
+fi
 $RKT/raco make tools/data-lattice.rkt
 $RKT/racket tools/setup-benchmark.rkt $TARGET
 $RKT/racket tools/run.rkt -j $JOBS -r $RKT $TARGET | tee $LOG
