@@ -26,7 +26,7 @@
   (name->index (-> ModuleGraph String Natural))
   ;; Get the module's index into bitstrings
 
-  (index->name (-> ModuleGraph Index String))
+  (index->name (-> ModuleGraph Natural String))
 
   (provides (-> ModuleGraph String (Listof String)))
   ;; List of modules that require the given one; i.e., modules the current provides to
@@ -142,13 +142,21 @@
 ;; Blindly search for a directory called `name`.
 (: infer-untyped-dir (-> Path-String Path))
 (define (infer-untyped-dir name)
+  (define name-str (if (path? name) (path->string name) name))
   (or
     (for/or : (U #f Path)
-            ([n : Integer (in-range 0 4)])
-      (define prefix
-        (if (zero? n) name (build-path (string-join (make-list n "../") "") name)))
-      (define p (build-path name "untyped"))
-      (and (directory-exists? p) p))
+            ([n : Integer (in-list '(0 -1 1 -2 2))])
+      (define prefix : String
+        (cond
+         [(zero? n)
+          name-str]
+         [(< n 0)
+          (string-append (string-join (make-list (abs n) "*") "/") "/" name-str)]
+         [else ; (> n 0)
+          (string-append (string-join (make-list n "..") "/") "/" name-str)]))
+      (for/or : (U #f Path)
+              ([p (in-glob (string-append prefix "/untyped"))])
+        (and (directory-exists? p) (string->path p))))
     (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name))))
 
 ;; Interpret a .tex file containing a TiKZ picture as a module graph
@@ -518,8 +526,8 @@
     racket/port
     typed/rackunit)
 
-  (define SAMPLE-MG-FILE "sample-modulegraph.tex")
-  (define SAMPLE-MG-DIRECTORY (string->path "sample_modulegraph_dir"))
+  (define SAMPLE-MG-FILE "test/sample-modulegraph.tex")
+  (define SAMPLE-MG-DIRECTORY (string->path "test/sample_modulegraph_dir"))
 
   ;; -- Test parsing
 
