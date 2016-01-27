@@ -43,7 +43,6 @@
 @include-section{framework.scrbl}
 @include-section{benchmarks.scrbl}
 @include-section{typed-racket.scrbl}
-@;include-section{pycket.scrbl}
 @include-section{death.scrbl}
 @include-section{related.scrbl}
 @include-section{conclusion.scrbl}
