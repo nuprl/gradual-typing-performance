@@ -3,91 +3,104 @@
 ;; Data structure representing the results of one experiment.
 ;; Handles queries for raw data and statistical summary data.
 
-(provide
-  from-rktd
-  ;; (->* [Path-String] [#:graph Path-String] Summary)
+(provide Summary)
+(provide:
+  (from-rktd
+   (->* [Path-String] [#:graph (U Path #f)] Summary))
   ;; Convert a filepath to a summary object
 
-  get-num-paths
-  ;; (-> Summary Index)
+  (get-num-paths
+   (-> Summary Natural))
   ;; Count the number of possible paths through a lattice
 
-  get-num-modules
-  ;; (-> Summary Index)
+  (get-num-modules
+   (-> Summary Natural))
   ;; Get the number of configurations from a Summary
 
-  get-num-configurations
-  ;; (-> Summary Index)
+  (get-num-configurations
+   (-> Summary Natural))
   ;; Get the number of configurations from a Summary
 
-  get-project-name
-  ;; (-> Summary String)
+  (get-project-name
+   (-> Summary String))
   ;; Get the project name from a Summary
 
-  has-typed?
-  ;; (-> Summary Bitstring (Listof String) Boolean)
+  (has-typed?
+   (-> Summary Bitstring (Listof String) Boolean))
   ;; (has-typed? S v name*)
   ;; True if the module names `name*` are all typed in configuration `v`
 
-  has-untyped?
-  ;; (-> Summary Bitstring (Listof String) Boolean)
+  (has-untyped?
+   (-> Summary Bitstring (Listof String) Boolean))
   ;; (has-untyped? S v name*)
   ;; True if all module names `name*` are untyped in configuration `v`
 
-  typed-modules
-  ;; (-> Summary Bitstring (Listof String))
+  (typed-modules
+   (-> Summary Bitstring (Listof String)))
   ;; Return a list of modules that are typed in this configuration
 
-  untyped-modules
-  ;; (-> Summary BitString (Listof String))
+  (untyped-modules
+   (-> Summary Bitstring (Listof String)))
   ;; Return a list of modules that are untyped in this configuration
 
-  untyped-mean
-  ;; (-> Summary Real)
+  (untyped-mean
+   (-> Summary Real))
   ;; Get the mean runtime of the Summary's untyped configuration
 
-  configuration->mean-runtime
-  ;; (-> Summary Bitstring Real)
+  (configuration->mean-runtime
+   (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
-  configuration->stddev
-  ;; (-> Summary Bitstring Real)
+  (configuration->stddev
+   (-> Summary Bitstring Real))
   ;; Get the standard deviation runtime of a configuration
 
-  configuration->overhead
-  ;; (-> Summary Bitstring Real)
+  (configuration->overhead
+   (-> Summary Bitstring Real))
   ;; Get the overhead of a configuration, relative to untyped
 
-  predicate->configurations
-  ;; (-> Summary (-> Bitstring Boolean) (Streamof Bitstring))
+  (predicate->configurations
+   (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
   ;; Return a stream of configurations satisfying the predicate
 
-  all-configurations
-  ;; (-> Summary (Streamof Bitstring))
+  (all-configurations
+   (-> Summary (Sequenceof Bitstring)))
   ;; Return a stream of all configurations in the Summary
 
-  all-paths
-  ;; (-> Summary (Sequenceof LatticePath))
+  (all-paths
+   (-> Summary (Sequenceof LatticePath)))
   ;; Return a stream of all paths through the lattice
 
-  path->max-runtime
-  ;; (-> Summary LatticePath Real)
+  (path->max-runtime
+   (-> Summary LatticePath Real))
   ;; Get the max runtime of any lattice point along a path
 
-  summary->pict
-  ;; (-> Summary Pict)
+  (summary->pict
+   (->* [Summary
+         #:font-face String
+         #:font-size Index
+         #:N Index
+         #:M Index
+         #:height Real
+         #:width Real]
+        [#:title (U String #f)]
+        Pict))
   ;; Return a pict representation of the summary. A kind of TLDR.
 
-  summary-modulegraph
-  summary->label
-  Summary
+  (summary-modulegraph
+   (-> Summary ModuleGraph))
+
+  #;(summary->label
+   (-> Summary String))
 )
 
 ;; -----------------------------------------------------------------------------
 
 (require
-  racket/path
   math/statistics
+  racket/path
+  racket/sequence
+  typed/pict
   (only-in math/number-theory factorial)
   (only-in racket/list last range) ;; because in-range has the wrong type
   (only-in racket/file file->value)
@@ -96,12 +109,14 @@
   (only-in racket/string string-split)
   gtp-summarize/modulegraph
   gtp-summarize/bitstring
-  gtp-summarize/pict-types
-  gtp-summarize/stream-types
 )
 
+(require/typed version/utils
+  (valid-version? (-> String Boolean)))
 (require/typed racket/string
   [string-suffix? (-> String String Boolean)])
+
+(define-type Pict pict)
 
 ;; =============================================================================
 ;; -- data definition: summary
@@ -144,9 +159,9 @@
 
 ;; Create a summary from a raw dataset.
 ;; Infers the location of the module graph if #:graph is not given explicitly
-(: from-rktd (->* [String] [#:graph (U Path #f)] Summary))
+ (: from-rktd (->* [Path-String] [#:graph (U Path #f)] Summary))
 (define (from-rktd filename #:graph [graph-path #f])
-  (define path (string->path filename))
+  (define path (if (path? filename) filename (string->path filename)))
   (define-values (dataset num-runs) (rktd->dataset path))
   (define gp (or graph-path (infer-graph path)))
   (define mg
@@ -154,7 +169,10 @@
       (from-tex gp)
       (begin
         (printf "Warning: could not find module graph for '~a'.\n" filename)
-        (from-directory (string->path (strip-suffix filename))))))
+        (let ([pth (string->path (strip-suffix filename))])
+          (if pth
+            (from-directory pth)
+            (raise-user-error 'from-rktd (format "Error converting string '~a' to a path" filename)))))))
   (validate-modulegraph dataset mg)
   (summary path dataset mg num-runs))
 
@@ -194,14 +212,14 @@
     (parse-error "Dataset and module graph represent different numbers of modules. The dataset says '~a' but the module graph says '~a'" ds-num-modules mg-num-modules)))
 
 ;; Guess the location of the module graph matching the dataset
-(: infer-graph (-> Path (U #f Path-String)))
+(: infer-graph (-> Path (U #f Path)))
 (define (infer-graph path)
   ;; Get the prefix of the path
   (define tag (path->project-name path))
   ;; Search in the MODULE_GRAPH_DIR directory for a matching TeX file
-  (define relative-pathstring (format "./~a/~a.tex" MODULE_GRAPH_DIR tag))
-  (define gp (build-path (string->path relative-pathstring)))
-  (and (file-exists? gp) gp))
+  (define relative-pathstring (string->path (format "./~a/~a.tex" MODULE_GRAPH_DIR tag)))
+  (and (file-exists? relative-pathstring)
+       relative-pathstring))
 
 ;; -----------------------------------------------------------------------------
 ;; -- querying
@@ -209,8 +227,9 @@
 (: all-configurations (-> Summary (Sequenceof Bitstring)))
 (define (all-configurations sm)
   (define M (get-num-modules sm))
-  (stream-map (lambda ([n : Index]) (natural->bitstring n #:pad M))
-              (in-range (get-num-configurations sm))))
+  (sequence-map
+    (lambda ([n : Index]) (natural->bitstring n #:pad M))
+    (in-range (get-num-configurations sm))))
 
 (: all-paths (-> Summary (Sequenceof LatticePath)))
 (define (all-paths S)
@@ -287,7 +306,7 @@
 
 (: predicate->configurations (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
 (define (predicate->configurations sm p)
-  (stream-filter p (all-configurations sm)))
+  (sequence-filter p (all-configurations sm)))
 
 ;; Return all data for the untyped configuration
 (: untyped-runtimes (-> Summary (Listof Index)))
@@ -389,7 +408,7 @@
 
 (: summary->pict (->* [Summary
                        #:font-face String
-                       #:font-size Exact-Positive-Integer
+                       #:font-size Index
                        #:N Index
                        #:M Index
                        #:height Real
@@ -420,7 +439,7 @@
   (: text->pict (-> String Pict))
   (define (text->pict message) (text message face size))
   (: text->title (-> String Pict))
-  (define (text->title message) (text message (cons 'bold face) (+ 1 size)))
+  (define (text->title message) (text message (cons 'bold face) (assert (+ 1 size) index?)))
   (define left-column
     (vr-append vspace
                (text->title (or user-title (get-project-name sm)))
@@ -463,19 +482,104 @@
 
 ;; =============================================================================
 
-;(module+ test
-;  (require rackunit)
-;
-;  ;; -- infer-graph
-;  (check-equal? "foo/bar/../module-graphs/baz.tex"
-;                (path->string (infer-graph (string->path "foo/bar/baz.rktd"))))
-;  (check-equal? "foo/bar/../module-graphs/baz.tex"
-;                (path->string (infer-graph (string->path "foo/bar/baz-and-other-ignored-stuff.rktd"))))
-;
-;  ;; -- all configurations
-;
-;  ;; -- from rktd
-;  (define sm (from-rktd "../data/echo.rktd"))
-;  (check-equal? (stream->list (all-configurations sm))
-;                '("0000" "0001" "0010" "0011" "0100" "0101" "0110" "0111" "1000" "1001" "1010" "1011" "1100" "1101" "1110" "1111"))
-;)
+(module+ test
+  (require
+    typed/rackunit)
+
+  ;; -- infer-graph
+  (define-syntax-rule (check-infer-graph in out)
+    (let ([inferred (infer-graph (string->path in))])
+      (check-not-false inferred)
+      (check-equal? (path->string (or inferred (error 'test-fail))) out)))
+  ;(check-infer-graph "foo/bar/baz.tex" "foo/bar/../module-graphs/baz.tex")
+  ;(check-equal? "foo/bar/baz-and-other-ignored-stuff.rktd" "foo/bar/../module-graphs/baz.tex")
+
+  ;;; -- from rktd
+  (define S (from-rktd "test/echo-data.rktd"))
+
+  (check-equal? (get-num-paths S) 24)
+
+  (check-equal? (get-num-modules S) 4)
+
+  (check-equal? (get-num-configurations S) (expt 2 4))
+
+  (check-equal? (get-project-name S) "echo")
+
+  ;; -- has-typed?
+  (check-true (has-typed? S "1111" '("main")))
+  (check-true (has-typed? S "0110" '("main")))
+  (check-true (has-typed? S "1001" '("client" "server")))
+  (check-true (has-typed? S "0000" '()))
+
+  (check-false (has-typed? S "0001" '("constants")))
+  (check-false (has-typed? S "0000" '("main")))
+  (check-false (has-typed? S "0011" '("client" "main")))
+
+  ;; -- has-untyped?
+  (check-true (has-untyped? S "0001" '("constants")))
+  (check-true (has-untyped? S "0000" '("main")))
+  (check-true (has-untyped? S "0011" '("client" "constants")))
+
+  (check-false (has-untyped? S "1111" '("main")))
+  (check-false (has-untyped? S "1010" '("main")))
+  (check-false (has-untyped? S "1001" '("client" "server")))
+
+  ;; -- typed-modules
+  (check-equal? (typed-modules S "1111")
+                '("client" "constants" "main" "server"))
+  (check-equal? (typed-modules S "0000") '())
+  (check-equal? (typed-modules S "1001") '("client" "server"))
+
+  ;; -- untyped-modules
+  (check-equal? (untyped-modules S "0000")
+                '("client" "constants" "main" "server"))
+  (check-equal? (untyped-modules S "1111") '())
+  (check-equal? (untyped-modules S "1001") '("constants" "main"))
+
+  ;; -- untyped-mean
+  (check-equal? (untyped-mean S) 5666/3)
+  
+  ;; -- config->mean
+  (check-equal? (configuration->mean-runtime S "0000") (untyped-mean S))
+  (check-equal? (configuration->mean-runtime S "0010") 10563/5)
+
+  ;; -- config->stddev
+  (check-equal? (configuration->stddev S "0000") 59.43923133942953)
+  (check-equal? (configuration->stddev S "0111") 27.806394148748513)
+
+  ;; -- config->overhead
+  (check-equal? (configuration->overhead S "0000") 1)
+  (check-equal? (configuration->overhead S "0101") 15221/14165)
+
+  ;; -- predicate->configs
+  (check-equal?
+    (sort
+      (sequence->list (predicate->configurations S (lambda (cfg) (has-typed? S cfg '("main")))))
+      string<?)
+    '("0010" "0011" "0110" "0111" "1010" "1011" "1110" "1111"))
+
+  ;; -- all-configs
+  (check-equal?
+    (sequence->list (all-configurations S))
+    '("0000" "0001" "0010" "0011" "0100" "0101" "0110" "0111" "1000" "1001" "1010" "1011" "1100" "1101" "1110" "1111"))
+
+  ;; -- all-paths
+  (check-equal?
+    (sequence-ref (all-paths S) 0)
+    '("0000" "1000" "1100" "1110" "1111"))
+
+  ;; -- path->max
+  (check-equal?
+    (sequence->list
+      (sequence-map (lambda ([p : LatticePath]) (path->max-runtime S p)) (all-paths S)))
+   '(20883/10 20463/10 20883/10 62093/30 20463/10 62017/30 20883/10 20463/10 12703/6 12703/6 20463/10 31594/15 10563/5 10563/5 12703/6 12703/6 10563/5 10563/5 20463/10 62017/30 20463/10 31594/15 62777/30 31594/15))
+
+  ;; -- summary->pict
+  ;; -- summary-modulegraph
+
+  ;(check-equal? (sequence->list (all-configurations sm))
+  ;              '("0000" "0001" "0010" "0011" "0100" "0101" "0110" "0111" "1000" "1001" "1010" "1011" "1100" "1101" "1110" "1111"))
+
+  ;; -- all configurations
+
+)
