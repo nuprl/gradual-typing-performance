@@ -9,13 +9,14 @@
 ;;   columns are experimental results.
 
 (provide
+  rktd->spreadsheet
+  ;; (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String)
   ;; Convert a data file containing a vector to a spreadsheet
   ;; Vector must follow the format specified in the `data/` directory
-  ;; (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String)
-  rktd->spreadsheet
-  ;; Convert a data vector (probably from a data file) to a spreadsheet
-  ;; (-> (Vectorof (Listof Index)) Path-String String Void)
+
   vector->spreadsheet
+  ;; (-> (Vectorof (Listof Index)) Path-String String Void)
+  ;; Convert a data vector (probably from a data file) to a spreadsheet
 )
 ;; ----------------------------------------------------------------------------
 
