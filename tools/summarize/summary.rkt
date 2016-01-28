@@ -75,6 +75,12 @@
    (-> Summary LatticePath Real))
   ;; Get the max runtime of any lattice point along a path
 
+  (summary->label
+   (-> Summary String))
+
+  (summary->version
+   (-> Summary String))
+
   (summary->pict
    (->* [Summary
          #:font-face String
@@ -89,9 +95,10 @@
 
   (summary-modulegraph
    (-> Summary ModuleGraph))
-
-  #;(summary->label
-   (-> Summary String))
+)
+(provide
+  ;; -- re-provides from modulegraph.rkt
+  path->project-name
 )
 
 ;; -----------------------------------------------------------------------------
@@ -143,7 +150,19 @@
   (define p (summary-source S))
   (: s String)
   (define s (if (path? p) (path->string p) (format "~a" p)))
-  (last (string-split (strip-suffix s) "/")))
+  (car (string-split (last (string-split s "/")) ".")))
+
+(: summary->version (-> Summary String))
+(define (summary->version S)
+  (define p (summary-source S))
+  (: s String)
+  (define s (if (path? p) (path->string p) (format "~a" p)))
+  (or
+    (for/or : (Option String)
+               ([x (in-list (string-split s "/"))]
+                #:when (valid-version? x))
+      x)
+    (summary->label S)))
 
 ;; -----------------------------------------------------------------------------
 ;; -- constants
@@ -573,6 +592,12 @@
     (sequence->list
       (sequence-map (lambda ([p : LatticePath]) (path->max-runtime S p)) (all-paths S)))
    '(20883/10 20463/10 20883/10 62093/30 20463/10 62017/30 20883/10 20463/10 12703/6 12703/6 20463/10 31594/15 10563/5 10563/5 12703/6 12703/6 10563/5 10563/5 20463/10 62017/30 20463/10 31594/15 62777/30 31594/15))
+
+  ;; -- summary->label
+  (check-equal? (summary->label S) "echo-data")
+
+  ;; -- summary->version
+  (check-equal? (summary->version S) "echo-data")
 
   ;; -- summary->pict
   ;; -- summary-modulegraph
