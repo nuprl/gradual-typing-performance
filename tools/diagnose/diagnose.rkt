@@ -7,11 +7,11 @@
 
 
 (provide
+  dataset?
 )
 
 (require
   (only-in racket/file file->value)
-  "in-combinations.rkt" ;; Until merged
   racket/list
   racket/set
   racket/sequence
