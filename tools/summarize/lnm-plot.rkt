@@ -47,7 +47,7 @@
   plot/typed/utils
   typed/pict
   (only-in racket/list range)
-  (only-in racket/math exact-floor exact-ceiling)
+  (only-in racket/math exact-floor exact-ceiling exact-round)
   (only-in math/statistics mean)
   (only-in racket/format ~r)
   gtp-summarize/bitstring
@@ -199,6 +199,7 @@
                   ([S (in-list ((inst sort Summary String) S* string<? #:key summary->version))])
             (define f (count-configurations S (assert L index?)
                         #:cache-up-to (assert xmax index?)
+                        #:percent? (eq? (*Y-STYLE*) '%)
                         #:pdf? pdf?))
             (define lbl (and (*LINE-LABELS?*)
                              (format "~a (L=~a)" (summary->version S) L)))
@@ -209,10 +210,12 @@
                 #:x-min 0
                 #:x-max xmax
                 #:samples num-samples
+                #:label lbl
                 #:line-style st
                 #:line-color c
                 #:line-width w)
               (function f 0 xmax
+                #:label lbl
                 #:samples num-samples
                 #:style st
                 #:color c
@@ -225,7 +228,7 @@
         #:x-min 1
         #:x-max xmax
         #:y-min 0
-        #:y-max (if pdf? #f ymax)
+        #:y-max (if pdf? #f (if (eq? '% (*Y-STYLE*)) 100 ymax))
         #:x-label (and (*AXIS-LABELS?*) "Overhead (vs. untyped)")
         #:y-label (and (*AXIS-LABELS?*) y-label)
         #:title (and (*TITLE?*) (get-project-name (car S*)))
@@ -409,10 +412,11 @@
 ;;  that counts the number of configurations
 ;;  which can reach, in L or fewer steps,
 ;;  a configuration with overhead no more than `N`
-(: count-configurations (->* [Summary Index] [#:pdf? Boolean #:cache-up-to (U #f Index)] (-> Real Natural)))
-(define (count-configurations sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f])
+(: count-configurations (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (-> Real Natural)))
+(define (count-configurations sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
   (define baseline (untyped-mean sm))
   (define cache (and lim (cache-init sm lim #:L L)))
+  (define num-configs (get-num-configurations sm))
   (: prev-good (Boxof Natural))
   (define prev-good (box 0)) ;; For computing pdf graphs (instead of cumulative)
   (lambda ([N-raw : Real]) ;; Real, but we assume non-negative
@@ -426,9 +430,13 @@
         (cache-lookup cache N good?)
         ;; No cache, need to test all configurations
         (sequence-length (predicate->configurations sm good?))))
-    (if pdf?
-      (begin0 (assert (- num-good (unbox prev-good)) index?) (set-box! prev-good num-good))
-      num-good)))
+    (cond
+     [pdf?
+      (begin0 (assert (- num-good (unbox prev-good)) index?) (set-box! prev-good num-good))]
+     [percent?
+      (exact-round (* 100 (/ num-good num-configs)))]
+     [else
+      num-good])))
 
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of acceptable paths

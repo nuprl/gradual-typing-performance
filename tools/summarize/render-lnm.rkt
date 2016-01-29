@@ -78,7 +78,7 @@
                          (*AXIS-LABELS?*) (*L-LABELS?*) (*LINE-LABELS?*) (*TITLE?*)
                          (*LEGEND?*) (*SHOW-PATHS?*) (*LOG-TRANSFORM?*)
                          (*HISTOGRAM?*) (*MAX-OVERHEAD*) (*NUM-SAMPLES*)
-                         (*PLOT-WIDTH*) (*PLOT-HEIGHT*)
+                         (*PLOT-WIDTH*) (*PLOT-HEIGHT*) (*Y-STYLE*)
                          (*AGGREGATE*) (*N*) (*M*) (*L*)))])
     (format "~a" x)))
 
@@ -427,7 +427,7 @@
    [("--make-table")
     "Create summary tables for each dataset"
     (*MAKE-TABLE?* #t)]
-   [("--log --log-transform")
+   [("--log")
     "Plot x-axis on a log scale"
     (*LOG-TRANSFORM?* #t)]
    [("--labels")
@@ -460,6 +460,10 @@
    [("--pdf")
     "Plot derivative of L-N/M plot (instead of cumulative)"
     (*PDF?* #t)]
+   [("-y" "--y-style")
+    y
+    "Display 'count or '% on y-axis"
+    (*Y-STYLE* (cast (string->symbol (assert y string?)) Y-Style))]
    [("-N")
     n
     "Set line for N (#f by default)"

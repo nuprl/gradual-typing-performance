@@ -18,4 +18,7 @@
   ("gtp-sort"
     (submod gtp-summarize/sort-configurations main)
     "Sort configurations in a dataset" #f)
+  ("gtp-path"
+    (submod gtp-summarize/tabulate-paths main)
+    "Build a table of 'performant' paths through the lattice" #f)
 ))

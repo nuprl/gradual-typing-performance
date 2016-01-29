@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(provide defparam)
+(provide defparam Y-Style)
 ;; Calls to (defparam id ...) expand to a (provide id)
 
 (require
@@ -98,7 +98,8 @@
 (defparam *TICK-SIZE* Natural 4) ;; Dude IDK
 (defparam *X-NUM-TICKS* Natural 5)
 (defparam *Y-NUM-TICKS* Natural 6)
-(defparam *Y-STYLE* (U 'count '%) 'count)
+(define-type Y-Style (U 'count '%))
+(defparam *Y-STYLE* Y-Style 'count)
 
 ;; --- Boolean flags
 (defparam *AXIS-LABELS?*   Boolean #t) ;; If #t, label all plot axes
