@@ -1,0 +1,160 @@
+
+# -*-org-*-
+
+* Roll the log file over
+that is, don't let it grow without bound, but instead, once it gets to
+a certain size, rename it and start a new file.
+
+It might be easiest to invoke "multilog" from Dan Bernstein's
+"daemontools" (http://cr.yp.to/daemontools/daemontools-0.76.tar.gz ;
+available on Ubuntu 10.04 in the "daemontools" package)
+
+* Get rid of "in/on" in the output of the "seen" command
+surely I can figure out which preposition is appropriate.
+
+https://github.com/offby1/rudybot/issues/23 says more or less the same
+thing.
+
+* Run with "--warn info"
+... and fix the various lint-like warnings that come up
+
+* Put the persistent data someplace safe
+That's the big-log (which we mine for incubot-witticisms) and the
+userinfo db.  I keep accidentally deleting them, and losing months of
+accumulated data; they should be on S3 or something.
+
+Someone suggested Dropbox; that could work!
+
+* Incubot
+** Publish the last few "logs"
+
+For example, if someone says to him "you are clever" and he responds
+"I have a clever idea", there'll be messages like "incubot chose
+'clever'" in the log output ... make those messages accessible via
+HTTP so that people can tell why he said what he said.
+
+** A 'censor' command
+defverb #:master (censor objectionable_words) ...
+
+would eliminate rows in the incubot db that contain those words.
+
+delete from log where rowid in ( select log_word_map.log_id from log_word_map where word in 
+        ("Nasty", "nasty") );
+delete from log_word_map where word in ("Nasty", "nasty") ;
+delete from word_popularity where word in ("Nasty", "nasty") ;
+
+Also note that this will leave ghosts in log_word_map -- references to
+the deleted rows from "log".  This will nix those:
+
+        DELETE FROM log_word_map
+              WHERE log_id IN (
+                 SELECT DISTINCT log_id 
+                   FROM log_word_map 
+              LEFT JOIN log 
+                     ON log.rowid = log_word_map.log_id
+          WHERE text IS NULL );
+
+Note that such a command would be insanely dangerous; if I
+accidentally typed "censor the", I'd lose most of the corpus, since
+most log entries contain the word 'the'.
+
+Further, nixing stuff manually from the DB isn't perfect; it'd be good
+to then also nix it from the big-log; or (better) add some sort of
+blacklist so that if I recreate the db from the log, those nasty
+entries don't get re-added.
+
+** Omit leading nicks from utterances
+The original incubot does this.  E.g., if we find
+: ":offby1!n=user@pdpc/supporter/monthlybyte/offby1 PRIVMSG #scheme :rudybot: seen eli"
+in the log, then we currently reduce that to
+: "rudybot: seen eli"
+but we should really omit the leading nick and colon, yielding
+: "seen eli"
+That's because it looks odd for the bot to utter something that's
+directed at someone who probably isn't present.
+** Entirely omit, or at least trim, ACTION
+I just saw the bot respond with "\1ACTION does something or other\1",
+which was weird; it should have either said nothing, or else just
+"does something or other".
+** Use the same logic ...
+... to initially create "parsed-log", as to add individual utterances
+to it.
+
+For example, I'm pretty sure I omit utterances that are addressed to
+the bot, and begin with a command; i.e., when jordanb says "rudybot:
+quote", I don't add that, since it'd be dull.
+
+And yet when log-parser creates parsed-log, it blithely adds
+everything.
+
+** Rewrite "quote"
+
+Eliminate the "quotes" database, and just have "quote" find some
+random utternace by jordanb, and echo that.  I'm not saving the
+speaker's name in the db, though; so it might not be possible to tell
+what came from him.
+
+A super-simple hacky way would be for "quote" to simply turn around
+and do what "let's" would do.
+
+** Underweight recent utterances
+
+#+BEGIN_EXAMPLE
+<jordanb> Offby1 should make a lolbot.
+<offby1> already did
+<jordanb> Heh
+<jordanb> Have it join. ^_^
+<jordanb> rudybot: lol
+<rudybot> jordanb: lol
+<jordanb> rudybot: lolbot                                                                                           [16:19]
+<rudybot> jordanb: Offby1 should make a lolbot.
+<jordanb> O                                                                                                         [16:21]
+* offby1 makes a mental note to underweight recent utterances
+<jordanb> I'm using emacs over X because it's less broken than tramp.
+ERC> 
+#+END_EXAMPLE
+** Favor utterances whose target word appears early
+Imagine we've chosen the word "enhance", and we find the the DB these two strings:
+"Enhance your manhood with Presto Manhood Enlarger™"
+"I would have preferred to enhance that with soup"
+
+Those strings are about the same length, so the current code will
+weight them about the same.  But there's something to be said for
+giving the first one more weight, since when you read it, you see the
+word earlier ... those examples I just gave above don't really
+demonstrate the value, so let's take a real example:
+
+: 2013-09-08T18:27:18Z incubot-server:incubot chose "enhance", which appears 117 times
+: 2013-09-08T18:27:20Z => PRIVMSG #emacs :macrobat: how do I enable SLIME autocompletion in my lisp buffer? ideally using the auto-complete extension for a nice display of the completion options. I've installed ac-slime, but that only seems to enhance the auto-completion in my SLIME REPL, not the buffer in which I am editing my file.
+
+That utterance is so long that you could die of boredom before getting
+to the bit that uses the word "enhance".  _That_ is why we should
+favor utterances where the word appears early.
+
+* Replace minion
+
+<jcowan> Having IRC-based messaging is very nice
+<jcowan> I like phenny-style:  "rudybot: ask/tell <user> <message>", where the user is case insensitive
+         and ignores underscores.
+
+This is also github issue 12: https://github.com/offby1/rudybot/issues/12
+
+** Ideas
+- Prevent DOS.  Limit the total number of queued messages to something
+  reasonable, as well as their size.  New messages push out older
+  undelivered ones from the queue.
+- The queues live in a dictionary keyed by nick, or better yet, some
+  sort of canonicalized nick.  (canonicalize-nick in userinfo.rkt is
+  probably the right thing)
+- Every time rudybot sees a JOIN (or perhaps some other indication of
+  someone signing on) he'll check the dict to see if there are any
+  queued messages for that person
+- Messages should include who sent 'em, and when
+
+* Run as 'nobody' or some other user without permissions
+
+This hopefully won't require a code change, but it'd be good if it
+_didn't_ run as me, since if it did, it could conceivably read my
+Sekrit files.
+* Amend "quotes" list
+... with e.g., http://www.cyber.com.au/~twb/fortunes/emacs.quip

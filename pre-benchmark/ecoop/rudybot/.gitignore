@@ -1,0 +1,10 @@
+*.db
+*.db-journal
+*~
+TAGS
+big-log
+big-log.*
+compiled
+parsed-log
+sandbox-log
+/nohup.out

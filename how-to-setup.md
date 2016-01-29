@@ -3,22 +3,19 @@ Instructions on setting up an experiment
 
 The steps that you need to take to set up an experiment are:
 
-  * Install the "tools/benchmark-util" package.
+  * Install the `tools/benchmark-util` package.
   * Set up your project with a particular directory layout.
-  * Modify typed modules to require and use `require/typed/check`
-  * Run setup.rkt to generate all typed/untyped variations.
+  * Modify typed modules to require and use `require/typed/check` instead of `require/typed`
+  * Run `setup.rkt PROJECT-NAME` to generate all typed/untyped variations.
 
      ******************************************
      DO NOT MAKE CHANGES TO THE GENERATED FILES.
      ******************************************
 
-  * Run benchmarks
+  * Run `run.sh PROJECT-NAME` to benchmark all configurations
 
 These steps are detailed below in separate sections.
 
-See the "example" folder in the top-level of this repo
-for concrete examples for directory layout, how to modify typed
-modules, and so on.
 
 Install package
 ---------------
@@ -33,11 +30,12 @@ called [project]:
 
   * [project]
     * [project]/base (put original files that don't get ported here)
+    * [project]/both (files that are copied into each config)
     * [project]/typed (put typed ports of files here)
     * [project]/untyped (put original files here)
     * [project]/both (optional, put shared files that are copied into each variation)
 
-The `typed` and `untyped` folders should contain files with the same
+The `typed` and `untyped` folders must contain files with the same
 names. Additional libraries that shouldn't get ported (e.g., cannot add
 types, has macros that don't need to be ported, etc.) should go in
 `base`.
@@ -47,7 +45,8 @@ the relative require path structure required for `base`. This directory
 is optional.
 
 See below for how to arrange the typed modules so that they can import
-typed and untyped versions. 
+typed and untyped versions.
+
 
 Modifications to typed modules
 ------------------------------
@@ -70,7 +69,8 @@ Second, if a module "a" requires "b" then the typed version of
 The syntax of `require/typed/check` is the same as `require/typed`.
 
 Finally, get the typed and untyped program to run via relative [to base]
-paths. 
+paths.
+
 
 Run setup.rkt
 -------------
@@ -85,6 +85,7 @@ where files come from.
 
 If there is an existing `benchmark/` folder, it will be deleted.
 
+
 Compile all variations
 ----------------------
 
@@ -95,40 +96,43 @@ In the top directory, call the driver script in compile-mode:
 This will compile all variations to make sure that they build, but
 will not run any of them.
 
+
 Running the benchmark
 ---------------------
+[project]
+In the top directory, call the run script on the project:
 
-In the top directory, call the run script in the tools folder:
+  `sh run.sh [project]`
 
-  `racket tools/run.rkt -o [output.rktd] -i [num-iterations] [project] [main.rkt]`
-
-Arguments are:
-- `[project]` the project folder's name (the script searches for `[project]/benchmark/variation*` folders)
-- `[main.rkt]` the name of the project file to execute. Please call it `main.rkt`.
-- `[num-iterations]` number of times to run each variation. (optional flag)
 
 Presenting Results
 ------------------
 
-After generating experimental results with the run script, use the `summary`
-script to collect aggregate statistics and graphs.
+The folder `tools/summarize` is a Racket package with tools for exploring and graphing a dataset.
+To use, first install the package:
 
-    `./summary OUTPUT.rktd`
+```
+    raco pkg install tools/summarize
+```
 
-This script has two important dependencies:
-1. It is written in Python and uses `matplotlib`, `numpy`, and `networkx`.
-   Use `pip` to install these dependencies.
-2. It requires a `.graph` file summarizing the module dependence structure
-   of the project. See the folder `tools/data` for example `.graph` files.
+From the command-line, you now have a few options for processing `[dataset.rktd]`.
 
-Outputs are saved to a new folder, titled "output-summary" or something similar.
+```
+> raco gtp-explore [dataset.rktd]
+# Open a REPL with query functions like `untyped-mean`
+> raco gtp-sort [dataset.rktd]
+# List all configurations from slowest to fastest
+> raco gtp-lnm [dataset.rktd]
+# Create an L-M/N plot for the data
+```
+
+Check `tools/summarize/README.md` for further detail.
+
 
 Other notes
 -----------
 
 TODO:
-1. The various require/typed/* forms only work when both modules use #lang ...
+- The various require/typed/* forms only work when both modules use #lang ...
    rather than (module Foo ...) because module->language-info is not always
    reliable, making it hard to determing when the other module is typed or not.
-2. `create-benchmark-dirs` could be extended to handle special cases like
-   needed for Acquire.

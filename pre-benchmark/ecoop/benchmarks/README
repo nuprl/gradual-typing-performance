@@ -1,0 +1,13 @@
+Benchmarks
+----------
+
+To run these benchmarks, run the run-all script:
+
+  ./run-all.sh
+
+This will first compile all of the benchmark variations (this will take
+a few minutes) and then execute them for 30 iterations each.
+This will take many hours (12+).
+
+The resulting "acquire.png" and "gofish.png" files will show the
+lattice diagrams from the paper for the benchmark run.

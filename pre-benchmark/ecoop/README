@@ -1,0 +1,47 @@
+How to test out the artifact programs
+-------------------------------------
+
+All of the artifact programs that are libraries are installed into
+the Racket installation on this image. Therefore running most of
+the sample programs is easy.
+
+Note: the programs may run better if they are compiled first with
+      `raco make -v <the-file>.rkt`. Some of the programs are
+      pre-compiled already.
+
+Here are sample invocations that will test each program in this
+directory:
+
+  Letters/Tooltip: built into DrRacket
+
+  Big-bang:
+    racket big-bang-test.rkt
+
+  Esquire:
+    racket racket-esquire.rkt
+
+  Minesweeper: (will only work from that directory)
+    cd mines
+    racket typed-mines.rkt
+
+  Cards: (run Aces or Go-Fish benchmark to try out)
+
+  Markdown:
+    scribble --markdown test.scrbl
+
+  DB: testing this is more complicated, so we have provided an IRC
+      client that uses SQLite as a large test case.
+
+    cd rudybot
+    racket -tm freenode-main.rkt
+
+    (Note that this will run an IRC bot that connects to the
+     Freenode server. The bot will respond to messages with quotes
+     from its corpus database.)
+
+  Aces:
+    racket aces/aces.rkt
+
+  Slidey: run from `plt-games` executable 
+
+  Acquire/Go-Fish: see README in the benchmarks/ folder

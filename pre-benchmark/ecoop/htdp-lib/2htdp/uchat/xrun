@@ -1,0 +1,4 @@
+#!/bin/sh
+
+gracket server.rkt &
+gracket chatter.rkt -e"(run* 'go)" &
