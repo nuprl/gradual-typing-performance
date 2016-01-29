@@ -1,0 +1,9 @@
+;; TODO does this run without proc_makes, now that
+;; 'alloc' is moved out of 'time.rkt'?
+'(("ai.rkt" #f)
+  ("benv.rkt" #f)
+  ("denotable.rkt" #f)
+  ("main.rkt" #f)
+  ("structs.rkt" #f)
+  ("time.rkt" #t)
+  ("ui.rkt" #f))

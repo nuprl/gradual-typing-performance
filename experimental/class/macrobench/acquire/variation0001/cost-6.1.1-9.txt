@@ -1,0 +1,114 @@
+Running time is 93.96% contracts
+11604/12350 ms
+
+
+BY CONTRACT
+
+(-> (instanceof/c (recursive-contract State%676707 #:impersonator)) tile? (or/c #f hotel?) (listof (cons/c player? (cons/c (listof (cons/c hotel? (cons/c (or/c #f #t) ()))) ()))) shares-order? (-> any/c tile?) (values any/c (instanceof/c (recursive-contract State%692711 #:impersonator)))) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 13 12 446 9)
+  15907/2 ms
+
+(-> state? (instanceof/c (recursive-contract State%635650 #:impersonator))) @ #(struct:srcloc tree.rkt 12 22 420 13)
+  5371/2 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-wrapper.rkt 19 17 546 5)
+  919 ms
+
+(-> any/c (listof tile?)) @ #(struct:srcloc typed-wrapper.rkt 61 3 2246 12)
+  91/2 ms
+
+
+BY CALLEE
+
+(-> (instanceof/c (recursive-contract State%676707 #:impersonator)) tile? (or/c #f hotel?) (listof (cons/c player? (cons/c (listof (cons/c hotel? (cons/c (or/c #f #t) ()))) ()))) shares-order? (-> any/c tile?) (values any/c (instanceof/c (recursive-contract State%692711 #:impersonator)))) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 13 12 446 9)
+  tree-next
+  15907/2 ms
+
+(-> state? (instanceof/c (recursive-contract State%635650 #:impersonator))) @ #(struct:srcloc tree.rkt 12 22 420 13)
+  generate-tree
+  5371/2 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-wrapper.rkt 19 17 546 5)
+  tile?
+  909 ms
+  player?
+  10 ms
+
+(-> any/c (listof tile?)) @ #(struct:srcloc typed-wrapper.rkt 61 3 2246 12)
+  player-tiles
+  91/2 ms
+
+
+BY CALLER
+
+(-> (instanceof/c (recursive-contract State%676707 #:impersonator)) tile? (or/c #f hotel?) (listof (cons/c player? (cons/c (listof (cons/c hotel? (cons/c (or/c #f #t) ()))) ()))) shares-order? (-> any/c tile?) (values any/c (instanceof/c (recursive-contract State%692711 #:impersonator)))) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 13 12 446 9)
+  15627/2 ms
+
+(-> (instanceof/c (recursive-contract State%676707 #:impersonator)) tile? (or/c #f hotel?) (listof (cons/c player? (cons/c (listof (cons/c hotel? (cons/c (or/c #f #t) ()))) ()))) shares-order? (-> any/c tile?) (values any/c (instanceof/c (recursive-contract State%692711 #:impersonator)))) @ #(struct:srcloc tree.rkt 13 12 446 9)
+  exec method in administrator% @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/admin.rkt 114 4 5475 339)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 26 2 670 110)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/main.rkt #f #f #f #f)
+  163/2 ms
+
+(-> (instanceof/c (recursive-contract State%676707 #:impersonator)) tile? (or/c #f hotel?) (listof (cons/c player? (cons/c (listof (cons/c hotel? (cons/c (or/c #f #t) ()))) ()))) shares-order? (-> any/c tile?) (values any/c (instanceof/c (recursive-contract State%692711 #:impersonator)))) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 13 12 446 9)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 219 10 11022 154)
+  purchase method in placed% @ #f
+  next method in lplaced% @ #f
+  20 ms
+
+(-> (instanceof/c (recursive-contract State%676707 #:impersonator)) tile? (or/c #f hotel?) (listof (cons/c player? (cons/c (listof (cons/c hotel? (cons/c (or/c #f #t) ()))) ()))) shares-order? (-> any/c tile?) (values any/c (instanceof/c (recursive-contract State%692711 #:impersonator)))) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 13 12 446 9)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 265 16 13276 276)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 254 12 12664 938)
+  generate-tree @ #f
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 219 10 11022 154)
+  purchase method in placed% @ #f
+  next method in lplaced% @ #f
+  exec method in administrator% @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/admin.rkt 114 4 5475 339)
+  go @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 29 0 783 386)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 26 2 670 110)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/main.rkt #f #f #f #f)
+  37/2 ms
+
+(-> (instanceof/c (recursive-contract State%676707 #:impersonator)) tile? (or/c #f hotel?) (listof (cons/c player? (cons/c (listof (cons/c hotel? (cons/c (or/c #f #t) ()))) ()))) shares-order? (-> any/c tile?) (values any/c (instanceof/c (recursive-contract State%692711 #:impersonator)))) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 13 12 446 9)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree.rkt 219 10 11022 154)
+  purchase method in placed% @ #f
+  next method in lplaced% @ #f
+  exec method in administrator% @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/admin.rkt 114 4 5475 339)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 26 2 670 110)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/main.rkt #f #f #f #f)
+  20 ms
+
+(-> state? (instanceof/c (recursive-contract State%635650 #:impersonator))) @ #(struct:srcloc tree.rkt 12 22 420 13)
+  5095/2 ms
+
+(-> state? (instanceof/c (recursive-contract State%635650 #:impersonator))) @ #(struct:srcloc tree.rkt 12 22 420 13)
+  exec method in administrator% @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/admin.rkt 114 4 5475 339)
+  go @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 29 0 783 386)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 26 2 670 110)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/main.rkt #f #f #f #f)
+  73/2 ms
+
+(-> state? (instanceof/c (recursive-contract State%635650 #:impersonator))) @ #(struct:srcloc tree.rkt 12 22 420 13)
+  exec method in administrator% @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/admin.rkt 114 4 5475 339)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 26 2 670 110)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/main.rkt #f #f #f #f)
+  123/2 ms
+
+(-> state? (instanceof/c (recursive-contract State%635650 #:impersonator))) @ #(struct:srcloc tree.rkt 12 22 420 13)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/admin.rkt 42 6 1606 3221)
+  go @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 29 0 783 386)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 26 2 670 110)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/main.rkt #f #f #f #f)
+  15 ms
+
+(-> state? (instanceof/c (recursive-contract State%635650 #:impersonator))) @ #(struct:srcloc tree.rkt 12 22 420 13)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/admin.rkt 42 6 1606 3221)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/tree-game.rkt 26 2 670 110)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/variation0001/main.rkt #f #f #f #f)
+  25 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-wrapper.rkt 19 17 546 5)
+  919 ms
+
+(-> any/c (listof tile?)) @ #(struct:srcloc typed-wrapper.rkt 61 3 2246 12)
+  91/2 ms
+
