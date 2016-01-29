@@ -25,7 +25,7 @@
          #:typed [typed (build-path pwd "typed")]
          #:untyped [untyped (build-path pwd "untyped")]
          #:benchmark-dir [bdir (build-path pwd "benchmark")]
-         #:dir-base-name [variation "variation"])
+         #:dir-base-name [configuration "configuration"])
   
   ;; -------------------------------------------------------------------------------------------------
   ;; CONTRACT:
@@ -50,7 +50,7 @@
   
   (set-up-benchmark-directory bdir)
   (create-populate-base-directory base bdir)
-  (create-populate-variations-directories* variation bdir both typed untyped file-names*)
+  (create-populate-configurations-directories* configuration bdir both typed untyped file-names*)
   ;; throw them away: 
   (void))
 
@@ -64,11 +64,11 @@
   (filter is-source-path ps))
 
 ;; String Path Path Path Path [Listof String] -> [Listof String]
-(define (create-populate-variations-directories* name bdir both typed untyped file-names*)
+(define (create-populate-configurations-directories* name bdir both typed untyped file-names*)
   (for/list ([combination (in-list (build-combinations* (length file-names*)))])
-    (define cdir (build-path bdir (apply string-append "variation" (map number->string combination))))
+    (define cdir (build-path bdir (apply string-append "configuration" (map number->string combination))))
     (make-directory cdir)
-    (create-readme cdir (populate-variation cdir file-names* combination both typed untyped))
+    (create-readme cdir (populate-configuration cdir file-names* combination both typed untyped))
     cdir))
 
 ;; ---------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; Path [Listof String] Combination Path Path Path -> Void
-(define (populate-variation cdir file-names* combination both typed untyped)
+(define (populate-configuration cdir file-names* combination both typed untyped)
   (when (directory-exists? both) ; both is optional
     (for ([file-name (in-list (directory-list both))])
       (copy-file (build-path both file-name) (build-path cdir file-name))))

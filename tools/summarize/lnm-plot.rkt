@@ -32,7 +32,7 @@
                     #:plot-height Positive-Integer]
                     (Listof pict)))
   ;; Plot a bunch of summaries to the same grid.
-  ;; - y-axis is the proportion of good variations
+  ;; - y-axis is the proportion of good configs
   ;; - aggregation is plain old (arithmetic) mean
   ;; TODO try more kinds y-axes
 )
