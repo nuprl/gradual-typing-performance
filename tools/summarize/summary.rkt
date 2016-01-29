@@ -491,7 +491,7 @@
    (when (and (string? filename) (string-suffix? filename ".rktd"))
      (parameterize ([current-namespace (make-base-namespace)])
        (printf "[INFO] Starting REPL ...\n")
-       (namespace-require 'summarize/summary)
+       (namespace-require 'gtp-summarize/summary)
        (namespace-require 'xrepl) ;; Optional
        (printf "[INFO] (Command-line argument bound to variable FNAME)\n")
        (namespace-set-variable-value! 'FNAME filename)
