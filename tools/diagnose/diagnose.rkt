@@ -61,7 +61,8 @@
 ; (: *current-dataset* (Parameterof Dataset))
 (define *current-dataset* (make-parameter (empty-dataset)))
 
-(define PLOT-DIR "./_plot")
+(unless (directory-exists? "./compiled") (make-directory "./compiled"))
+(define PLOT-DIR "./compiled/_plot")
 (define DEFAULT-PLOT (string-append PLOT-DIR "/tmp.png"))
 (define CONFIG-FILE ".diagnose")
 
