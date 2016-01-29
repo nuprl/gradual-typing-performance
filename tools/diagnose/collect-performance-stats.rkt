@@ -1,6 +1,37 @@
 #lang racket/base
 
-;; Collect performance stats for 1 benchmark
+;; In-progress: script to build a data frame from a project folder.
+;;
+;; 0. Assumes the benchmark was instrumented to print performance stats
+;;    and run at least once on all configurations
+;; 1. Parses & collects data from each config.
+;; 2. Writes a data frame, for later use with diagnose.rkt
+;;
+;; This code is mostly ugly, just beautifying the raw data enough to explore
+
+(provide
+  ;; -- Indexes for parsing the result of a `vector-set-performance-stats!`
+  CPU-TIME
+  REAL-TIME
+  GC-TIME
+  NUM-GC
+  NUM-CTX
+  NUM-SO
+  NUM-THREADS
+  NUM-STX
+  NUM-HASH
+  NUM-HASH-EXTRA
+  NUM-EXTRA-BYTES
+  PEAK-BYTES
+
+  ;; -- 
+
+  mean/vec
+  ;; (-> (Vectorof Real) * (Vectorof Real))
+  ;; Takes the component-wise mean of its argument vectors
+)
+
+;; -----------------------------------------------------------------------------
 
 (require
   benchmark-util
@@ -8,6 +39,8 @@
   glob
   math/statistics
 )
+
+;; =============================================================================
 
 (define NUM-ITERS 4)
 
@@ -36,8 +69,8 @@
 (define (get-peak-bytes v)
   (vector-ref v PEAK-BYTES))
 
-(define (fname->variation f)
-  (cadr (regexp-match #rx"variation([01]*)" f)))
+(define (fname->configuration f)
+  (cadr (regexp-match #rx"configuration([01]*)" f)))
 
 ;; Precondition: even length
 (define (split-list x*)
@@ -128,7 +161,7 @@
              ;; Pair up the rest
              (split-list (for/list ([i (in-range (* 2 NUM-ITERS))]) (read))))))
        (values
-         (cons (fname->variation stat-file) var*)
+         (cons (fname->configuration stat-file) var*)
          (cons (mean (map get-time vec*)) time*)
          (cons (mean (map get-gctime vec*)) gctime*)
          (cons (mean (map get-numgc vec*)) num-gc*)
@@ -184,7 +217,7 @@
    ;; TODO doctor the 'main.rkt' scripts
    ;; TODO trigger a setup & run
    (for ([fname (in-list FNAME*)])
-     (define row* (glob->row* (format "~a/benchmark/variation*/chaps6.3.rktd" fname)))
+     (define row* (glob->row* (format "~a/benchmark/configuration*/chaps6.3.rktd" fname)))
      (with-output-to-file (format "perf/~a-6.3.rktd" fname) #:exists 'replace
        (lambda ()
          ;(displayln "#lang racket/base\n(provide (all-defined-out))")
