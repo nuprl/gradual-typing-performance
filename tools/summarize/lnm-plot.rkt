@@ -302,7 +302,7 @@
     (define yticks
       (case (*Y-STYLE*)
        [(count)
-        (compute-yticks (assert ymax index?) (assert (- ymax 1) index?)
+        (compute-yticks (assert ymax index?) (assert ymax index?)
                         #:exact (if cutoff-point
                                   (list cutoff-point ymax)
                                   (list ymax)))]
