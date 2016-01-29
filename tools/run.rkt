@@ -13,6 +13,8 @@
 (require "data-lattice.rkt"
          "stats-helpers.rkt"
          (only-in glob in-glob)
+         (only-in racket/file file->value)
+         (only-in racket/format ~a ~r)
          math/statistics
          mzlib/os
          pict
@@ -21,11 +23,11 @@
          racket/cmdline
          racket/date
          racket/draw
-         (only-in racket/format ~a ~r)
-         (only-in racket/file file->value)
          racket/future
          racket/match
+         racket/list
          racket/port
+         racket/string
          racket/system
          racket/vector
          unstable/sequence)
@@ -37,11 +39,9 @@
 ;; Number of iterations to run the benchmark
 ;; - If `num-iterations` is given, run EXACTLY that
 ;; - By default, run `min-iterations` then check for non-normality.
-;;   If non-normal, run `step-iterations` more & re-check.
-;;   Stop iterating after running `max-iterations`.
+;;   If non-normal, run more--until `max-iterations`
 (define num-iterations (make-parameter #f))
 (define min-iterations (make-parameter 10))
-(define step-iterations (make-parameter 4))
 (define max-iterations (make-parameter 30))
 
 ;; The number of jobs to spawn for the configurations. When jobs is
@@ -139,10 +139,8 @@
                      ;; Stop early if user did NOT give an exact iterations
                      ;;  and Anderson-Darling does not reject null normality hypothesis
                      #:break (and (not exact-iters)
-                                  (>= i (min-iterations))
-                                  (zero? (modulo (- i (min-iterations)) (step-iterations)))
-                                  (anderson-darling? times)
-                                  (printf "STOP EARLY iteration ~a: ~a\n" i times)))
+                                  (= i (min-iterations))
+                                  (anderson-darling? times)))
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
@@ -270,7 +268,7 @@
   ;; Set a default output path based on the "basepath" if one is not provided
   (unless (output-path)
     (date-display-format 'iso-8601)
-    (output-path (string-append basepath
+    (output-path (string-append (last (string-split basepath "/"))
                                 "-"
                                 (date->string (current-date) #t)
                                 ".rktd")))

@@ -1,8 +1,11 @@
 #!/bin/bash
-
+#############################################################################
 # Independent parameters
 RKT=/home/ben/code/racket/fork/racket/bin
 #RKT=$(dirname `which racket`)
+
+#############################################################################
+# Dependent Parameters
 
 ## Default iterations: try 10, run 30 if not-normal
 
@@ -15,9 +18,7 @@ else
   CORES=2 # So we get 1 job
 fi
 JOBS=$((CORES / 2))
-echo "JOBS" $JOBS
 
-## Dependent parameters
 TARGET=${1%/}
 LOG=$TARGET.log
 
