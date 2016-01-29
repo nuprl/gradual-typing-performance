@@ -69,6 +69,19 @@
     (raise-user-error 'render-lnm
       (format "Cannot make L-titles with parameter ~a is non-#f" (object-name PARAM)))))
 
+;; Important parameters.
+;; If these are changed, ignore cached pict
+(: current-param-tag* (-> (Listof String)))
+(define (current-param-tag*)
+  (for/list : (Listof String)
+      ([x (in-list (list (*PDF?*) (*SINGLE-PLOT?*) (*MAKE-TABLE?*)
+                         (*AXIS-LABELS?*) (*L-LABELS?*) (*LINE-LABELS?*) (*TITLE?*)
+                         (*LEGEND?*) (*SHOW-PATHS?*) (*LOG-TRANSFORM?*)
+                         (*HISTOGRAM?*) (*MAX-OVERHEAD*) (*NUM-SAMPLES*)
+                         (*PLOT-WIDTH*) (*PLOT-HEIGHT*)
+                         (*AGGREGATE*) (*N*) (*M*) (*L*)))])
+    (format "~a" x)))
+
 (: make-L-title* (-> (Listof String)))
 (define (make-L-title*)
   (assert-false/L *AGGREGATE*)
@@ -186,7 +199,7 @@
     ;;  but a U-type can't be applied!
     (parameterize ([*PLOT-FONT-SIZE* 6])
       (if (*SHOW-PATHS?*)
-        (error "cannot make path plot");(make-plot path-plot S*)
+        (path-plot S*)
         (lnm-plot S*))))
   (cons S-tbl L-pict*))
 
@@ -245,14 +258,6 @@
           (deserialize (caddr tag+pict)))]
     [else
      (error 'render-lnm (format "Malformed data in cache file '~a'" filepath))]))
-
-(: current-param-tag* (-> (Listof String)))
-(define (current-param-tag*)
-  (for/list : (Listof String)
-      ([x (in-list (list (*PDF?*) (*SINGLE-PLOT?*) (*MAKE-TABLE?*)
-                         (*LABELS?*) (*L-LABELS?*) (*LEGEND?*) (*SHOW-PATHS?*)
-                         (*AGGREGATE*) (*N*) (*M*) (*L*)))])
-    (format "~a" x)))
 
 (: zip-title* (->* [(Listof String) (U #f (Listof String))]
                    [#:collapse? Boolean]
@@ -391,13 +396,14 @@
    [("-o" "--output") o-param
     "Location to save results"
     (*OUTPUT* (cast o-param String))]
+   ;; TODO (here I am, testing)
    [("-p" "--path" "--paths")
     "Count paths instead of configurations"
     (*SHOW-PATHS?* #t)]
    [("-a" "--aggregate")
     "Combine all data into a single figure"
     (*AGGREGATE* #t)]
-   ;; TODO disable aggregation
+   ;; TODO enable aggregation
    ;[("-d" "--deathscore")
    ; sym
    ; "Create a deathscore, valid params: 'mean"
@@ -406,22 +412,47 @@
     legend
     "#t/#f = show/hide legend"
     (*LEGEND?* (assert (reads legend) boolean?))]
+   [("--split")
+    "Use different plot for each L"
+    (*SINGLE-PLOT?* #f)]
    [("--single")
     "Put all L on the same plot"
     (*SINGLE-PLOT?* #t)]
+   [("--hist" "--histogram" "-H")
+    "Show CDF as a histogram"
+    (*HISTOGRAM?* #t)]
    [("--split")
     "Put each L in a new plot"
     (*SINGLE-PLOT?* #f)]
    [("--make-table")
     "Create summary tables for each dataset"
     (*MAKE-TABLE?* #t)]
+   [("--log --log-transform")
+    "Plot x-axis on a log scale"
+    (*LOG-TRANSFORM?* #t)]
+   [("--labels")
+    lbl
+    "Enable / Disable all labels"
+    (let ([b (assert (reads lbl) boolean?)])
+     (*AXIS-LABELS?* b)
+     (*LINE-LABELS?* b)
+     (*L-LABELS?*    b)
+     (*TITLE?*       b))]
+   [("--axis-labels")
+    lbl
+    "#t/#f = show/hide axis labels"
+    (*AXIS-LABELS?* (assert (reads lbl) boolean?))]
+   [("--line-labels")
+    lbl
+    "#t/#f = show/hide line labels"
+    (*LINE-LABELS?* (assert (reads lbl) boolean?))]
    [("--l-label")
     "Show L labels above each plot"
     (*L-LABELS?* #t)]
-   [("--labels")
+   [("--title")
     lbl
-    "#t/#f = show/hide axis labels"
-    (*LABELS?* (assert (reads lbl) boolean?))]
+    "#t/#f = show/hide plot title"
+    (*TITLE?* (assert (reads lbl) boolean?))]
    [("--cutoff")
     c
     "Set red line with a number in [0,1] (#f by default)"
