@@ -13,7 +13,7 @@ We have a few scripts in the project root, but most of the content is in a subfo
 - `experimental`   : micro-benchmarks & unproven ideas
 - `paper`          : writings on gradual typing performance
 - `pre-benchmark`  : programs that are not yet ready to run
-- `post-benchmark` : obselete benchmarks
+- `post-benchmark` : obsolete benchmarks
 - `tools`          : scripts for understanding results & avoiding performance holes
 
 
