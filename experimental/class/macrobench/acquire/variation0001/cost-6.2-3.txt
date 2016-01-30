@@ -1,0 +1,22 @@
+Running time is 1.91% contracts
+10/523 ms
+
+
+BY CONTRACT
+
+(-> any/c boolean?) @ #(struct:srcloc typed-wrapper.rkt 37 18 1118 6)
+  10 ms
+
+
+BY CALLEE
+
+(-> any/c boolean?) @ #(struct:srcloc typed-wrapper.rkt 37 18 1118 6)
+  state?
+  10 ms
+
+
+BY CALLER
+
+(-> any/c boolean?) @ #(struct:srcloc typed-wrapper.rkt 37 18 1118 6)
+  10 ms
+

@@ -1,5 +1,0 @@
-MODULE	INDEX	REQUIRES
-client.rkt	0	constants.rkt
-constants.rkt	1	
-main.rkt	2	client.rkt,server.rkt
-server.rkt	3	constants.rkt

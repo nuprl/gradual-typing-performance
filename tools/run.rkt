@@ -10,9 +10,11 @@
 ;;   Each job will create a new directory & save results to a file
 ;; - Aggregate the results from all sub-jobs
 
-(require "data-lattice.rkt"
+(require benchmark-util/data-lattice
          "stats-helpers.rkt"
          (only-in glob in-glob)
+         (only-in racket/file file->value)
+         (only-in racket/format ~a ~r)
          math/statistics
          mzlib/os
          pict
@@ -25,7 +27,9 @@
          (only-in racket/file file->value)
          racket/future
          racket/match
+         racket/list
          racket/port
+         racket/string
          racket/system
          racket/vector
          unstable/sequence)
@@ -37,15 +41,13 @@
 ;; Number of iterations to run the benchmark
 ;; - If `num-iterations` is given, run EXACTLY that
 ;; - By default, run `min-iterations` then check for non-normality.
-;;   If non-normal, run `step-iterations` more & re-check.
-;;   Stop iterating after running `max-iterations`.
+;;   If non-normal, run more--until `max-iterations`
 (define num-iterations (make-parameter #f))
 (define min-iterations (make-parameter 10))
-(define step-iterations (make-parameter 4))
 (define max-iterations (make-parameter 30))
 
-;; The number of jobs to spawn for the variations. When jobs is
-;; greater than 1, the variation space is split evenly and allocated
+;; The number of jobs to spawn for the configurations. When jobs is
+;; greater than 1, the configuration space is split evenly and allocated
 ;; to the various jobs.
 (define num-jobs (make-parameter "1"))
 
@@ -57,9 +59,9 @@
 (define min-max-config (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
 
-;; Get paths for all variation directories
+;; Get paths for all configuration directories
 ;; Path Path -> Listof Path
-(define (mk-variations basepath entry-point)
+(define (mk-configurations basepath entry-point)
   (define num-modules
     (for/sum ([fname (in-list (directory-list (build-path basepath "untyped")))]
               #:when (regexp-match? "\\.rkt$" (path->string fname))) 1))
@@ -68,12 +70,12 @@
       (if (zero? i)
         (make-string num-modules #\0)
         (~r i #:base 2 #:min-width num-modules #:pad-string "0")))
-    (define var-str (format "variation~a" bits))
+    (define var-str (format "configuration~a" bits))
     (build-path basepath "benchmark" var-str entry-point)))
 
-;; Run the variations for each variation directory
-;; Optional argument gives the exact variation to run.
-;; Default is to run all variations
+;; Run the configurations for each configuration directory
+;; Optional argument gives the exact configuration to run.
+;; Default is to run all configurations
 ;; (Listof Path) Path Nat Nat [(U (Listof String) #f)] -> Void
 (define (run-benchmarks basepath entry-point jobs
                         #:config [cfg #f]
@@ -81,25 +83,25 @@
   (define benchmark-dir (build-path basepath "benchmark"))
   (unless (directory-exists? benchmark-dir)
     (raise-user-error 'run (format "Directory '~a' does not exist, please run `setup.rkt ~a` and try again." benchmark-dir basepath)))
-  (define variations
+  (define configurations
     (cond
       [cfg
-      (list (build-path benchmark-dir (string-append "variation" cfg) entry-point))]
+      (list (build-path benchmark-dir (string-append "configuration" cfg) entry-point))]
       [min/max
        (match-define (list min max) min/max)
-       (define all-vars (mk-variations basepath entry-point))
+       (define all-vars (mk-configurations basepath entry-point))
        (define (in-range? var)
-         (match-define (list _ bits) (regexp-match "variation([10]*)/" var))
+         (match-define (list _ bits) (regexp-match "configuration([10]*)/" var))
          (define n (string->number bits 2))
          (and (>= n (string->number min))
               (<= n (string->number max))))
        (filter in-range? all-vars)]
       [else
-       (mk-variations basepath entry-point)]))
-  ;; allocate a slice of the variations per job
-  (define slice-size (ceiling (/ (length variations) jobs)))
+       (mk-configurations basepath entry-point)]))
+  ;; allocate a slice of the configurations per job
+  (define slice-size (ceiling (/ (length configurations) jobs)))
   (define threads
-    (for/list ([var-slice (in-slice slice-size (in-values-sequence (in-indexed (in-list variations))))]
+    (for/list ([var-slice (in-slice slice-size (in-values-sequence (in-indexed (in-list configurations))))]
                [job# (in-range 1 (add1 jobs))])
       ;; Spawn a control thread for each job, which will in turn spawn an OS process.
       ;; Each job gets assigned to the CPU that is the same as the job# using
@@ -111,13 +113,13 @@
            (define-values (new-cwd file _2) (split-path var))
            (define times null)
            (parameterize ([current-directory new-cwd])
-             ;; first compile the variation
+             ;; first compile the configuration
              (unless (system (format "taskset -c ~a ~araco make -v ~a"
                                      job# (*racket-bin*) (path->string file)))
                (error (format "Compilation failed for '~a/~a', shutting down"
                               (current-directory) (path->string file))))
 
-             ;; run an extra run of the variation to throw away in order to
+             ;; run an extra run of the configuration to throw away in order to
              ;; avoid OS caching issues
              (unless (only-compile?)
                (printf "job#~a, throwaway build/run to avoid OS caching~n" job#)
@@ -139,10 +141,8 @@
                      ;; Stop early if user did NOT give an exact iterations
                      ;;  and Anderson-Darling does not reject null normality hypothesis
                      #:break (and (not exact-iters)
-                                  (>= i (min-iterations))
-                                  (zero? (modulo (- i (min-iterations)) (step-iterations)))
-                                  (anderson-darling? times)
-                                  (printf "STOP EARLY iteration ~a: ~a\n" i times)))
+                                  (= i (min-iterations))
+                                  (anderson-darling? times)))
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
@@ -176,7 +176,8 @@
 
 (define (write-results times [dir (current-directory)])
   (with-output-to-file (build-path dir (output-path)) #:exists 'append
-    (lambda () (write times))))
+    (lambda ()
+      (write times))))
 
 ;; Get the most recent commit hash for the chosen Racket install
 (define (racket-checksum)
@@ -269,7 +270,7 @@
   ;; Set a default output path based on the "basepath" if one is not provided
   (unless (output-path)
     (date-display-format 'iso-8601)
-    (output-path (string-append basepath
+    (output-path (string-append (last (string-split basepath "/"))
                                 "-"
                                 (date->string (current-date) #t)
                                 ".rktd")))
@@ -302,7 +303,7 @@
         (printf ";; base @ ~a~n" (racket-checksum))
         (printf ";; typed-racket @ ~a~n" (typed-racket-checksum))
         (displayln "#(")
-        (for ([result-file (in-glob (format "~a/benchmark/variation*/~a"
+        (for ([result-file (in-glob (format "~a/benchmark/configuration*/~a"
                                      basepath
                                      (output-path)))])
           (with-input-from-file result-file

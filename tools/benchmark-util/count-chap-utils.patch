@@ -1,0 +1,340 @@
+From 99643b0e41e179a5d169d991aef773d731aff295 Mon Sep 17 00:00:00 2001
+From: Matthew Flatt <mflatt@racket-lang.org>
+Date: Tue, 31 Jul 2012 05:21:53 -0600
+Subject: [PATCH] hooks for chaperone benchmarking
+
+---
+ .../guide/contracts-simple-function.scrbl          |    3 +-
+ src/racket/src/Makefile.in                         |   12 ++++----
+ src/racket/src/fun.c                               |   32 ++++++++++++++++++-
+ src/racket/src/jitcommon.c                         |   11 +++++++
+ src/racket/src/schchap.h                           |   19 ++++++++++++
+ src/racket/src/struct.c                            |   27 ++++++++++++++++
+ src/racket/src/vector.c                            |   18 +++++++++++
+ 7 files changed, 113 insertions(+), 9 deletions(-)
+ create mode 100644 src/racket/src/schchap.h
+
+diff --git a/collects/scribblings/guide/contracts-simple-function.scrbl b/collects/scribblings/guide/contracts-simple-function.scrbl
+index 242388c..4eafbe4 100644
+--- a/collects/scribblings/guide/contracts-simple-function.scrbl
++++ b/collects/scribblings/guide/contracts-simple-function.scrbl
+@@ -397,7 +397,8 @@ With this little change, the error message becomes quite readable:
+ @(begin
+    (set! str
+          (with-handlers ((exn:fail? exn-message))
+-           (contract-eval '(deposit -10))))
++           (contract-eval '(deposit -10))
++           "a\nb\nc\nd\ne\nf\n"))
+    "")
+ 
+ @ctc-section[#:tag "dissecting-contract-errors"]{Dissecting a contract error message}
+diff --git a/src/racket/src/Makefile.in b/src/racket/src/Makefile.in
+index c04180c..8150ae9 100644
+--- a/src/racket/src/Makefile.in
++++ b/src/racket/src/Makefile.in
+@@ -330,13 +330,13 @@ error.@LTO@: $(COMMON_HEADERS) \
+         $(srcdir)/../src/stypes.h  
+ eval.@LTO@: $(COMMON_HEADERS) \
+         $(srcdir)/../src/stypes.h $(srcdir)/mzmark_eval.inc \
+-          $(srcdir)/schmach.h $(srcdir)/mzstkchk.h $(srcdir)/schrunst.h \
+-				$(srcdir)/future.h
++        $(srcdir)/schmach.h $(srcdir)/mzstkchk.h $(srcdir)/schrunst.h \
++        $(srcdir)/future.h
+ file.@LTO@: $(COMMON_HEADERS) \
+         $(srcdir)/../src/stypes.h
+ fun.@LTO@: $(COMMON_HEADERS) \
+         $(srcdir)/../src/stypes.h $(srcdir)/mzmark_fun.inc $(srcdir)/schmap.inc \
+-				$(srcdir)/future.h
++        $(srcdir)/future.h $(srcdir)/schchap.h
+ future.@LTO@: $(COMMON_HEADERS) $(srcdir)/future.h $(SCONFIG) \
+         $(srcdir)/../src/stypes.h $(srcdir)/mzmark_future.inc \
+         $(srcdir)/jit_ts_future_glue.c $(srcdir)/jit_ts_runtime_glue.c $(srcdir)/jit_ts_protos.h
+@@ -346,7 +346,7 @@ jit.@LTO@: $(COMMON_HEADERS) $(JIT_HEADERS)  $(srcdir)/mzmark_jit.inc
+ jitalloc.@LTO@: $(COMMON_HEADERS) $(JIT_HEADERS)
+ jitarith.@LTO@: $(COMMON_HEADERS) $(JIT_HEADERS)
+ jitcall.@LTO@: $(COMMON_HEADERS) $(JIT_HEADERS)
+-jitcommon.@LTO@: $(COMMON_HEADERS) $(JIT_HEADERS)
++jitcommon.@LTO@: $(COMMON_HEADERS) $(JIT_HEADERS) $(srcdir)/schchap.h
+ jitinline.@LTO@: $(COMMON_HEADERS) $(JIT_HEADERS)
+ jitprep.@LTO@: $(COMMON_HEADERS) \
+         $(srcdir)/../src/stypes.h
+@@ -398,7 +398,7 @@ string.@LTO@: $(COMMON_HEADERS) \
+          $(srcdir)/../src/stypes.h    $(srcdir)/schvers.h $(srcdir)/mzmark_string.inc $(srcdir)/strops.inc \
+          $(srcdir)/schustr.inc
+ struct.@LTO@: $(COMMON_HEADERS) \
+-         $(srcdir)/../src/stypes.h $(srcdir)/mzmark_struct.inc
++         $(srcdir)/../src/stypes.h $(srcdir)/mzmark_struct.inc $(srcdir)/schchap.h
+ syntax.@LTO@: $(COMMON_HEADERS) \
+          $(srcdir)/../src/stypes.h $(srcdir)/schfd.h $(srcdir)/mzmark_syntax.inc
+ symbol.@LTO@: $(COMMON_HEADERS) \
+@@ -408,6 +408,6 @@ sema.@LTO@: $(COMMON_HEADERS) \
+ type.@LTO@: $(COMMON_HEADERS) \
+         $(srcdir)/../src/stypes.h $(srcdir)/mzmark_type.inc
+ vector.@LTO@: $(COMMON_HEADERS) \
+-         $(srcdir)/../src/stypes.h
++         $(srcdir)/../src/stypes.h $(srcdir)/schchap.h
+ validate.@LTO@: $(COMMON_HEADERS) \
+          $(srcdir)/../src/stypes.h $(srcdir)/mzmark_validate.inc
+diff --git a/src/racket/src/fun.c b/src/racket/src/fun.c
+index 39b5871..61b8b14 100644
+--- a/src/racket/src/fun.c
++++ b/src/racket/src/fun.c
+@@ -32,6 +32,7 @@
+ #include "schpriv.h"
+ #include "schexpobs.h"
+ #include "schmach.h"
++#include "schchap.h"
+ 
+ /* The implementations of the time primitives, such as
+    `current-seconds', vary a lot from platform to platform. */
+@@ -120,6 +121,12 @@ THREAD_LOCAL_DECL(static Scheme_Overflow *offstack_overflow);
+ THREAD_LOCAL_DECL(int scheme_cont_capture_count);
+ THREAD_LOCAL_DECL(static int scheme_prompt_capture_count);
+ 
++#if COUNT_CHAPS
++int proc_makes, proc_apps;
++int vec_makes, vec_apps;
++int struct_makes, struct_apps;
++#endif
++
+ /* locals */
+ static Scheme_Object *procedure_p (int argc, Scheme_Object *argv[]);
+ static Scheme_Object *apply (int argc, Scheme_Object *argv[]);
+@@ -3046,6 +3053,14 @@ static Scheme_Object *do_chaperone_procedure(const char *name, const char *whati
+   Scheme_Object *val = argv[0], *orig, *naya, *r;
+   Scheme_Hash_Tree *props;
+ 
++#if COUNT_CHAPS
++  proc_makes++;
++#endif
++  
++#if SHORT_CIRCUIT_CHAP_PROC
++  return argv[0];
++#endif
++
+   if (SCHEME_CHAPERONEP(val))
+     val = SCHEME_CHAPERONE_VAL(val);
+ 
+@@ -3177,6 +3192,17 @@ Scheme_Object *scheme_apply_chaperone(Scheme_Object *o, int argc, Scheme_Object
+   int need_pop_mark;
+   Scheme_Cont_Frame_Data cframe;
+ 
++#if COUNT_CHAPS
++  proc_apps++;
++#endif
++
++#if SHORT_CIRCUIT_CHAP_PROC_APPLY
++  if (checks)
++    return _scheme_apply_multi(SCHEME_CHAPERONE_VAL(o), argc, argv);
++  else
++    return scheme_tail_apply(SCHEME_CHAPERONE_VAL(o), argc, argv);
++#endif
++
+   if (argv == MZ_RUNSTACK) {
+     /* Pushing onto the runstack ensures that `(mcar px->redirects)' won't
+        modify argv. */
+@@ -3282,7 +3308,8 @@ Scheme_Object *scheme_apply_chaperone(Scheme_Object *o, int argc, Scheme_Object
+       memmove(argv2, argv2 + 1, sizeof(Scheme_Object*)*argc);
+     } else
+       post = NULL;
+-    if (!(SCHEME_CHAPERONE_FLAGS(px) & SCHEME_CHAPERONE_IS_IMPERSONATOR)) {
++    if (!(SCHEME_CHAPERONE_FLAGS(px) & SCHEME_CHAPERONE_IS_IMPERSONATOR)
++        && !SHORT_CIRCUIT_CHAP_RESULT) {
+       for (i = 0; i < argc; i++) {
+         if (!SAME_OBJ(argv2[i], argv[i])
+             && !scheme_chaperone_of(argv2[i], argv[i])) {
+@@ -3436,7 +3463,8 @@ Scheme_Object *scheme_apply_chaperone(Scheme_Object *o, int argc, Scheme_Object
+     }
+ 
+     if (c == argc) {
+-      if (!(SCHEME_CHAPERONE_FLAGS(px) & SCHEME_CHAPERONE_IS_IMPERSONATOR)) {
++      if (!(SCHEME_CHAPERONE_FLAGS(px) & SCHEME_CHAPERONE_IS_IMPERSONATOR)
++          && !SHORT_CIRCUIT_CHAP_RESULT) {
+         for (i = 0; i < argc; i++) {
+           if (!SAME_OBJ(argv2[i], argv[i])
+               && !scheme_chaperone_of(argv2[i], argv[i])) {
+diff --git a/src/racket/src/jitcommon.c b/src/racket/src/jitcommon.c
+index b2fa544..2a0a213 100644
+--- a/src/racket/src/jitcommon.c
++++ b/src/racket/src/jitcommon.c
+@@ -21,6 +21,7 @@
+ 
+ #include "schpriv.h"
+ #include "schmach.h"
++#include "schchap.h"
+ #include "future.h"
+ 
+ #ifdef MZ_USE_JIT
+@@ -943,6 +944,7 @@ static int generate_apply_proxy(mz_jit_state *jitter, int setter)
+    original chaperone and index on runstack;
+    for setter, put back result in R2, vec in R0, and index in V1 */
+ {
++#if !SHORT_CIRCUIT_CHAP_VEC_APPLY
+   GC_CAN_IGNORE jit_insn *ref, *ref1, *ref2, *refrts;
+ 
+   CHECK_LIMIT();
+@@ -985,6 +987,7 @@ static int generate_apply_proxy(mz_jit_state *jitter, int setter)
+   /* if impersonator, no chaperone-of check needed */
+   ref1 = jit_bmsi_ul(jit_forward(), JIT_R2, SCHEME_CHAPERONE_IS_IMPERSONATOR);
+ 
++#if !SHORT_CIRCUIT_CHAP_RESULT
+   if (setter)
+     jit_ldxi_p(JIT_R1, JIT_RUNSTACK, WORDS_TO_BYTES(-1)); /* saved value */
+   else
+@@ -999,11 +1002,13 @@ static int generate_apply_proxy(mz_jit_state *jitter, int setter)
+   JIT_UPDATE_THREAD_RSPTR();
+   (void)mz_finish_lwe(ts_vector_check_chaperone_of, refrts);
+   jit_retval(JIT_R0);
++#endif
+   CHECK_LIMIT();
+             
+   mz_patch_branch(ref);
+   mz_patch_branch(ref1);
+   mz_patch_branch(ref2);
++#endif
+   if (setter) {
+     jit_movr_p(JIT_R2, JIT_R0); /* result needed in R2 for setter */
+     jit_ldxi_p(JIT_V1, JIT_RUNSTACK, WORDS_TO_BYTES(1)); /* saved index */
+@@ -1013,6 +1018,12 @@ static int generate_apply_proxy(mz_jit_state *jitter, int setter)
+   jit_addi_p(JIT_RUNSTACK, JIT_RUNSTACK, WORDS_TO_BYTES(2)); /* don't need saved anymore */
+   JIT_UPDATE_THREAD_RSPTR();
+ 
++#if COUNT_CHAPS
++  jit_ldi_l(JIT_R1, &vec_apps);
++  jit_addi_l(JIT_R1, JIT_R1, 1);
++  jit_sti_l(&vec_apps, JIT_R1);
++#endif
++
+   return 1;
+ }
+ 
+diff --git a/src/racket/src/schchap.h b/src/racket/src/schchap.h
+new file mode 100644
+index 0000000..edc0e42
+--- /dev/null
++++ b/src/racket/src/schchap.h
+@@ -0,0 +1,19 @@
++/* Some flags to control experiments with chaperones: */
++#define COUNT_CHAPS 1
++
++#define SHORT_CIRCUIT_CHAP_RESULT 0
++
++#define SHORT_CIRCUIT_CHAP_PROC_APPLY 0
++#define SHORT_CIRCUIT_CHAP_PROC 0
++
++#define SHORT_CIRCUIT_CHAP_VEC_APPLY 0
++#define SHORT_CIRCUIT_CHAP_VEC 0
++
++#define SHORT_CIRCUIT_CHAP_STRUCT_APPLY 0
++#define SHORT_CIRCUIT_CHAP_STRUCT 0
++
++#if COUNT_CHAPS
++extern int proc_makes, proc_apps;
++extern int vec_makes, vec_apps;
++extern int struct_makes, struct_apps;
++#endif
+diff --git a/src/racket/src/struct.c b/src/racket/src/struct.c
+index 3d39257..183a018 100644
+--- a/src/racket/src/struct.c
++++ b/src/racket/src/struct.c
+@@ -21,6 +21,7 @@
+ 
+ #include "schpriv.h"
+ #include "schmach.h"
++#include "schchap.h"
+ 
+ #define PROP_USE_HT_COUNT 5
+ 
+@@ -1029,6 +1030,15 @@ static Scheme_Object *do_chaperone_prop_accessor(const char *who, Scheme_Object
+       Scheme_Object *v;
+       Scheme_Hash_Tree *ht;
+ 
++#if COUNT_CHAPS
++      struct_apps++;
++#endif
++
++#if SHORT_CIRCUIT_CHAP_STRUCT_APPLY
++      arg = SCHEME_CHAPERONE_VAL(arg);
++      continue;
++#endif
++
+       if (px->props) {
+         v = scheme_hash_tree_get(px->props, prop);
+         if (v)
+@@ -1948,6 +1958,15 @@ static Scheme_Object *chaperone_struct_ref(const char *who, Scheme_Object *o, in
+       Scheme_Chaperone *px = (Scheme_Chaperone *)o;
+       Scheme_Object *a[2], *red, *orig;
+ 
++#if COUNT_CHAPS
++      struct_apps++;
++#endif
++
++#if SHORT_CIRCUIT_CHAP_STRUCT_APPLY
++      o = SCHEME_CHAPERONE_VAL(o);
++      return ((Scheme_Structure *)o)->slots[i];
++#endif
++
+       if (!SCHEME_VECTORP(px->redirects)
+           || SCHEME_FALSEP(SCHEME_VEC_ELS(px->redirects)[PRE_REDIRECTS + i])) {
+         o = px->prev;
+@@ -5182,6 +5201,14 @@ static Scheme_Object *do_chaperone_struct(const char *name, int is_impersonator,
+ 
+   if (argc == 1) return argv[0];
+ 
++#if COUNT_CHAPS
++  struct_makes++;
++#endif
++
++#if SHORT_CIRCUIT_CHAP_STRUCT
++  return argv[0];
++#endif
++
+   if (SCHEME_CHAPERONEP(val)) {
+     props = ((Scheme_Chaperone *)val)->props;
+     val = SCHEME_CHAPERONE_VAL(val);
+diff --git a/src/racket/src/vector.c b/src/racket/src/vector.c
+index 6551285..42d8b77 100644
+--- a/src/racket/src/vector.c
++++ b/src/racket/src/vector.c
+@@ -25,6 +25,7 @@
+ 
+ #include "schpriv.h"
+ #include "schmach.h"
++#include "schchap.h"
+ 
+ /* globals */
+ READ_ONLY Scheme_Object *scheme_vector_proc;
+@@ -419,6 +420,15 @@ Scheme_Object *scheme_chaperone_vector_ref(Scheme_Object *o, int i)
+     Scheme_Chaperone *px = (Scheme_Chaperone *)o;
+     Scheme_Object *a[3], *red, *orig;
+ 
++#if COUNT_CHAPS
++    vec_apps++;
++#endif
++
++#if SHORT_CIRCUIT_CHAP_VEC_APPY
++    o = SCHEME_CHAPERONE_VAL(o);
++    return SCHEME_VEC_ELS(o)[i];
++#endif
++
+ #ifdef DO_STACK_CHECK
+     {
+ # include "mzstkchk.h"
+@@ -820,6 +830,14 @@ static Scheme_Object *do_chaperone_vector(const char *name, int is_impersonator,
+   Scheme_Object *redirects;
+   Scheme_Hash_Tree *props;
+ 
++#if COUNT_CHAPS
++  vec_makes++;
++#endif
++
++#if SHORT_CIRCUIT_CHAP_VEC
++  return val;
++#endif
++
+   if (SCHEME_CHAPERONEP(val))
+     val = SCHEME_CHAPERONE_VAL(val);
+ 
+-- 
+1.7.4.4
+

@@ -1,15 +1,29 @@
 #lang racket
-(provide require/typed/check
-         require/typed/if)
 
-(require (for-syntax 
-          typed/untyped-utils))
+;; BRITTLE macros for conditional requires,
+;;  depending on whether the current module is typed or not
 
-(require (for-syntax syntax/parse
-                     (only-in racket/base prefix-in)))
 
-(require (only-in typed/racket require/typed))
-(require (prefix-in typed: (only-in typed/racket require)))
+(provide
+  require/typed/check
+  ;; Same syntax as require/typed, but does not install contracts
+  ;;  if the current module AND providing module are typed.
+
+  require/typed/if
+  ;; (require/typed/if T E)
+  ;; Imports `T` if the current module is typed, and `E` otherwise.
+)
+
+(require
+  (for-syntax
+    typed/untyped-utils
+    syntax/parse
+    (only-in racket/base prefix-in))
+  (only-in typed/racket require/typed)
+  (prefix-in typed: (only-in typed/racket require))
+)
+
+;; =============================================================================
 
 (define-syntax (require/typed/check stx)
   (syntax-parse stx 
@@ -38,4 +52,4 @@
     [(_ t e) (if (syntax-local-typed-context?)
            #'(require t)
            #'(require e))]))
-     
+

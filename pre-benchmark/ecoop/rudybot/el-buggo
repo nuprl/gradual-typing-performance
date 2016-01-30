@@ -1,0 +1,2 @@
+<offby1> rudybot: eval dict?
+<rudybot> *offby1: error: current-directory: `exists' access denied for /usr/local/src/rudybot/

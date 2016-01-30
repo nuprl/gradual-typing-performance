@@ -1,0 +1,447 @@
+* abbrevs
+- completely determined
+  - suffixtree proc_makes
+    - polymorphic function
+  - zordoz vec_*
+    - main/string ... these files don't even communicate directly
+- synth: proc/vec similar
+- gregor: why so many (flat) vecs?
+
+* diagnosis notes
+- results from interactive sessions
+- Q: what do we learn about the lattices from the new (memory) stats?
+** suffixtree (v ???)
+*** module-names
+- 0 = data
+- 1 = label
+- 2 = lcs
+- 3 = main
+- 4 = structs
+- 5 = ukkonen
+*** time
+- ? > 83,000ms        =  8 = 0/4
+                      =  9 = 0 untyped
+- ? > 60,000ms        = 26 = 0/1 or 0/4
+                           = 0/1 or 1/4
+                           = 0/4 or 1/4
+                           = 0/1 or 2/4
+                           = 0/1 or 3/4
+- 60,000 > ? > 40,000 = 14 = 0/4
+- 40,000 > ? > 20,000 =  7 = not 0/1 | */5t and */4u
+- 20,000 > ? >  9,000 =  8 = not 0/1
+*** gctime
+- ? > 1450337500000            =  2 = 011001 100110 (opposites!)
+                                    = data/label label/structs structs/ukkonen lcs/main
+- ? > 1450337000000            =  7 = 0/1 and 0/2 (and 1/3 and 2/3)
+- ? > 1450335900000            = 16 = 0/1 and 0/2
+                                    = 0/1 and 1/2
+- 1450337000000 > ? > 1450335900000 = 0/1 and 0/2
+                                    = 0/2 and 1/2
+                                    = 0/1 and 0/3
+                                    = 0/3 and 1/4
+- these are still all over. Must be specific values
+- worst has most boundaries (based on modulegraph)
+- best is untyped
+- fully-typed still shitty
+*** numgc
+- ? > 350 = 2 = 000010 000011
+- 300 > ? > 230 = 13 = 1/4
+- is this randomized?
+- OOPS I'm using incremental GC
+*** maxbytes
+- ? > 9*10^7   = 7 = 0/1 or 1/4 or (not 0t/4t)
+- ? > 8.5*10^7 = 16 = 1/4
+- ? > 8*10^7   = 20 = 1/4
+- ? > 7.5*10^7 = 52 = ??? all over
+- worst is 10--1-
+*** procmakes
+- > 1000 = 32 = 4/5
+- only for node-follow/k
+- conclusion: unrelated to performance
+*** procapps
+- ? > 2*10^8    =  8 = 0/1 or 0/4
+- ? > 1.25*10^8 = 24 = 0/1 and 0/4
+                    or 0/1 and 1/4
+                    or 0/4 and 1/4
+- these are just the heavy boundaries
+- top 75% with time  = 11 = 
+** 6.3
+*** TODO gregor (13)
+**** time
+- U-shape
+- first fast one:  0011001100111
+  => last slow one 0011001100110
+  - index 12 = ymd.rkt
+- last fast one: 1100110011011
+  => 1100110011100
+**** gctime
+- 1451404770000 > ? = bottom 14 =
+  flips at 001* 011* 100* 110*, hmph
+- 20,000,000 ms delta (20 thousand seconds)
+**** numgc
+**** maxbytes
+- 5*10^7 > ? = 5 = -00000-0-0-00
+  - 1 2 3 4 5 7 9 11 12
+**** proc-makes
+- scatter
+**** proc-apps
+**** struct-makes
+- ? > 85 = 1024 = 0t/7u 7u/9t
+  - clock, main, moment
+  - okay, main is making all the structs
+**** struct-apps
+- 4-level
+- ? > 85 = 1024 = 0/7 7/9 (again, it's main's fault)
+**** vec-makes
+- flat (but high)
+**** vec-apps
+- flat (but high)
+*** TODO kcfa
+**** time
+- ? > .75 = top 7 = 0/2 1/2 2/3 1/6
+**** gctime
+**** numgc
+**** maxbytes
+- ? > .5 = top 64 = 0/2
+  - ai/denotable, is the store
+**** proc-makes
+- binary, 0/5 = higher-order alloc
+- TODO mvonig alloc helps?
+**** proc-apps
+- 3-way
+**** struct-makes
+- flat
+**** struct-apps
+- flat
+**** vec-makes
+- flat
+**** vec-apps
+- flat
+*** DONE lnm
+**** time
+- slowest: just main typed
+- 1600 > ? = 2t/5 = main/summary (of course)
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+- scatter
+**** proc-app7
+- scatter
+**** struct-makes
+- scatter
+**** struct-apps
+- scatter
+**** vec-makes
+- ? > 4.1 =
+- > ? 3.1 =
+- > ?     =
+- ... (5) summary untyped?
+**** vec-apps
+- flat
+*** TODO mbta
+0 main
+1 run-t
+2 t-graph
+3 t-view
+**** time
+- ? > 1800 = top 4 = 2t/3u = 0010 0110 1010 1110
+- > ? > 1600 = 2 = 1/2 or 1/3
+- 1400 > ? > 1200 = 2u/3t  = 0001 0101 1001 1101
+**** gctime
+- 
+**** numgc
+- these all look similar
+**** maxbytes
+- ? 
+**** proc-makes
+- ? scattered
+**** proc-apps
+- ? scattered
+**** struct-makes
+- ? scattered
+**** struct-apps
+- ? scattered
+**** vec-makes
+- flat
+**** vec-apps
+- flat
+*** TODO snake
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+- ? > 300 = top 7 = 2/6 and 3/6
+- 
+**** proc-apps
+- ? > 8*10^7 = top 26 = 3/7
+**** struct-makes
+- flat
+**** struct-apps
+- flat
+**** vec-makes
+- flat
+**** vec-apps
+- flat
+*** suffixtree (64)
+**** time
+- ? > 500000 = 32 = 0/1
+- ~ 200000   =  2 = 000010 000011
+**** gctime
+- less weird this time
+- ? > 1.45137*10^7 = 0/1 , 0/2
+              = (how many typed? 2, 3)
+- 1.45137*10^7 > ? > 1.451368*10^6 = 110000 ... 110011
+**** numgc
+- whoa, much higher (and simpler)
+- ? > 5000 = 32 = 0/1
+- highly correlated, maybe red herring (gc triggered every N seconds)
+**** maxbytes
+- ? > 1 * 10^8       = 36 = 0/1, besides 000010 ... 001110
+- 1*10^8 > ? 8*10^7  =  4 = 000011 ... 001111
+**** proc-makes
+- ? > 50000          = 32 = 4/5
+- same as before
+**** proc-apps
+- ? > 4*10^8               =  4 = 010010 ... 011110
+- 4*10^8 > ? > 3.6*10^8    =  4 = 010011 ... 011111
+- 3.6*10^8 > ? 3*10^8      = 16 = 1/4, and either 0u/1 or 0u/4
+- 3*10^8 > ? > 2*10^8      = 16 = 0t/1u
+**** proc-maxd
+- ? = 2                    = 20 = 0/4
+**** struct-makes
+- flat
+**** struct-apps
+- flat
+**** vec-makes HEY
+- ? > 40000 = 8 = 1/2, 1/4, and 0u/1t or 0t/4u
+**** vec-apps
+- ? > 125000 = 16 = 0/1, 1/2
+- uncorrelated with time
+*** DONE synth
+**** time
+- ? > 10000 = 1/4 or 0/4
+**** gctime
+- same ugly graph
+**** numgc
+- similar to time
+**** maxbytes
+- yeah idk
+**** proc-makes
+- makes & apps look the same
+**** proc-apps
+**** struct-makes
+- flat
+**** struct-apps
+- flat
+**** vec-makes
+- 
+**** vec-apps
+- 
+*** DONE tetris
+- same patterns
+**** time
+- ? > 60000 = 11010----
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+- binary, but no clear pattern
+**** proc-apps
+- binary, 1/2 or 1/4
+  block/bset     block/data
+- 
+**** struct-makes
+**** struct-apps
+- 50 > ? = 000000000 000010000 000100000 000110000
+**** vec-makes
+ flat
+**** vec-apps
+ flat
+*** DONE zordoz
+0. main
+1. find
+2. string
+3. shell
+4. transition
+**** time
+- untyped & typed are pretty bad.... intermediates do better
+- no apparent pattern tho
+**** gctime
+- 
+**** numgc
+- correlated with time
+**** maxbytes
+- 8.2 * 10^7 > ? = 00011 00101 00111 10001 10011 10111 = 1/4
+  - why? find/transition boundary doesn't make sense
+- very weird, 10000 has bad memory
+**** proc-makes
+- binary, 1/3 (find/shell)
+  maybe it's the result struct, there's no polymorphism
+**** proc-apps
+- 3-way
+  ? > 4250000   = 1/4 boundary
+  > ? > 3750000 = NO 1/4 boundary
+  > ? > 3750000 = everting else = ?
+**** struct-makes
+- 4 levels
+  ? > 19374   = 1/2 and 2/3 [-101-]
+  > ? > 19370 = ?
+  > ? > 19368 = 1/3 and 2/3 [-110-]
+  > ?         = [-XXX-] the same
+**** struct-apps
+- binary at 2270220, 1/2 (find/string)
+**** vec-makes
+- binary at 723, 0/2 (main/string)
+**** vec-apps
+- binary at 723, 0/2 (main/string)
+- because main makes a vector?
+*** DONE zombie (16) [beware 1/3]
+- 0 image
+- 1 main
+- 2 math
+- 3 zombie
+**** time
+- ? > 300 = 8 = 1/3
+**** gctime
+- ? > _ = 8 = 2t
+**** numgc
+- ? > 70 = 8 = 1/3
+**** maxbytes
+- ? > 5*10^7 = 4 = 1/3, 2t
+**** proc-makes
+- ? > 300 = 8 = 1/3
+- WHY
+**** proc-apps
+- ? > 5500 = 8 = 2/3
+**** struct-makes
+- flat
+**** struct-apps
+- flat
+**** vec-makes
+- flat
+**** vec-apps
+- flat
+** 6.2
+*** gregor
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** kcfa
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** lnm
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** mbta
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** snake
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** suffixtree (64)
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** proc-maxd
+**** struct-makes
+**** struct-apps
+**** vec-makes HEY
+**** vec-apps
+*** TODO synth
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** TODO tetris
+**** time
+**** gctime
+**** numgc
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** zordoz
+**** time
+- ? > 3000 = 9 configs, no 0/1 boundary... 9???
+**** gctime
+- these plots always suck
+- ? > 1451404700000 = top 4 =  00100 00101 00110 11111
+-
+**** numgc
+- hm
+**** maxbytes
+**** proc-makes
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps
+*** DONE zombie (16)
+**** time
+- ditto
+**** gctime
+- ditto
+**** numgc
+- ditto
+**** maxbytes
+- ? > 6*10^7 = 4 = 1/3, 2t
+**** proc-makes
+- binary, ditto
+**** proc-apps
+**** struct-makes
+**** struct-apps
+**** vec-makes
+**** vec-apps

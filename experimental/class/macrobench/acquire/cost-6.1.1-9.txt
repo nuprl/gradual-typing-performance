@@ -1,0 +1,27 @@
+Running time is 99.23% contracts
+124708/125677 ms
+
+
+BY CONTRACT
+
+(instanceof/c (recursive-contract Obj%3036 #:impersonator)) @ #(struct:srcloc class-contract-exponential.rkt 19 11 437 3)
+  249415/2 ms
+
+
+BY CALLEE
+
+(instanceof/c (recursive-contract Obj%3036 #:impersonator)) @ #(struct:srcloc class-contract-exponential.rkt 19 11 437 3)
+  obj
+  249415/2 ms
+
+
+BY CALLER
+
+(instanceof/c (recursive-contract Obj%3036 #:impersonator)) @ #(struct:srcloc class-contract-exponential.rkt 19 11 437 3)
+  124651 ms
+
+(instanceof/c (recursive-contract Obj%3036 #:impersonator)) @ #(struct:srcloc class-contract-exponential.rkt 19 11 437 3)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/class-contract-exponential.rkt 44 2 934 74)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/class/macrobench/acquire/class-contract-exponential.rkt #f #f #f #f)
+  113/2 ms
+

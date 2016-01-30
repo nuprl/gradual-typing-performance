@@ -86,3 +86,16 @@ Meeting notes
   * TR slowly improving
     - late-negs help stronger?
     - learned that macros can change boundaries
+
+2016-01-29
+----------
+  * Review data: L-N/M, paths, memory profiling
+    - Histogram = meh
+    - L-N/M looks good
+    - paths are not important
+    - need to carefully structure the prose
+  * Outline JFP paper
+    - outline torn apart, have advice for a new one
+  * Feb. meeting format will continue as usual, JFP due Feb 28
+  * For next time, Asumu & Ben & Max each have 1 paper to read
+    - While reading, look for ways to scale our technique to "large macro" or "micro" systems

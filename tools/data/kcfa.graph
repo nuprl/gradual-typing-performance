@@ -1,8 +1,0 @@
-MODULE	INDEX	REQUIRES
-ai.rkt	0	structs.rkt,benv.rkt,time.rkt,denotable.rkt
-benv.rkt	1	structs.rkt
-denotable.rkt	2	structs.rkt,benv.rkt,time.rkt
-main.rkt	3	structs.rkt,ui.rkt
-structs.rkt	4	
-time.rkt	5	structs.rkt,benv.rkt
-ui.rkt	6	structs.rkt,benv.rkt,denotable.rkt,time.rkt

@@ -3,7 +3,14 @@
 ;; Statistical helpers
 
 (provide
-  anderson-darling anderson-darling?
+  anderson-darling
+  ;; (-> (Listof Natural) Float)
+  ;; Compute the Anderson-Darling statistic for a list of numbers
+
+  anderson-darling?
+  ;; (-> (Listof Natural) Boolean)
+  ;; True if the input data is most-likely normal.
+  ;;  (p=1%, assuming at least 10 samples)
 )
 
 (require
