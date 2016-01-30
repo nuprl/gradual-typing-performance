@@ -2,7 +2,7 @@
 
 (require "bib.rkt"
          "gradual-bib.rkt" ; copied from the github repo
-         "../tools/data-lattice.rkt"
+         benchmark-util/data-lattice
          (except-in pict table)
          racket/file
          racket/require
@@ -26,7 +26,7 @@
 
 (provide (all-from-out "bib.rkt")
          (all-from-out "gradual-bib.rkt")
-         (all-from-out "../tools/data-lattice.rkt")
+         (all-from-out benchmark-util/data-lattice)
          (all-from-out pict)
          (all-from-out racket/file)
          (all-from-out scriblib/footnote)

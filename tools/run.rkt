@@ -10,7 +10,7 @@
 ;;   Each job will create a new directory & save results to a file
 ;; - Aggregate the results from all sub-jobs
 
-(require "data-lattice.rkt"
+(require benchmark-util/data-lattice
          "stats-helpers.rkt"
          (only-in glob in-glob)
          (only-in racket/file file->value)
