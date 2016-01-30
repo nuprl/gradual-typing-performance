@@ -15,6 +15,9 @@
   ("gtp-explore"
     (submod gtp-summarize/summary main)
     "Explore dataset" #f)
+  ("gtp-modulegraph"
+    (submod gtp-summarize/modulegraph main)
+    "Print a module graph" #f)
   ("gtp-sort"
     (submod gtp-summarize/sort-configurations main)
     "Sort configurations in a dataset" #f)
