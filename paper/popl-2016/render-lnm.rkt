@@ -1,24 +1,13 @@
 #lang typed/racket/base
 
-;; 1. get working
-;;   - pdf use points
-;;   - aggregate
-;; 2. clean code
-;; 3. document
-
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
 ;; We currently use this two ways:
 ;; - The paper (typed-racket.scrbl) calls 'data->pict' to create an image
 ;; - From the command-line, call `render-lnm.rkt -o FIG.png DATA.rktd ...`
 ;;   to create a figure named `FIG.png` from the data files `DATA.rktd ...`
-;; -- Use the -p option to count performant paths rather than lattice points
-;; -- If two .rktd files with the same module graph are given, plots those on
-;;     on the same graph
 
 (provide
- render-lnm
-
  data->pict
  ;; Build a picture from a list of pairs:
  ;;   1st component labels a dataset
@@ -38,17 +27,11 @@
 
 (require
  "scripts/lnm-plot.rkt"
- (only-in "scripts/summary.rkt" from-rktd summary->pict path->project-name Summary)
+ (only-in "scripts/summary.rkt" from-rktd summary->pict Summary)
  (only-in racket/file file->value)
  (only-in racket/string string-join)
- (only-in racket/port with-input-from-string)
- (only-in plot/no-gui Plot-Pen-Style)
- racket/cmdline
- typed/pict
- typed/racket/class
- (only-in racket/list first last))
-
-(define-type Pict pict)
+ "scripts/pict-types.rkt"
+)
 
 (require/typed racket/serialize
   [serialize (-> Pict Any)]
@@ -57,30 +40,37 @@
 ;; =============================================================================
 ;; --- constants
 
+(define DEBUG #t)
+(define-syntax-rule (debug msg arg* ...)
+  (when DEBUG (printf msg arg* ...) (newline)))
+
 ;; Experiment parameters
-;; TODO parameters for max, num-samples
-(define PARAM-MAX-OVERHEAD 90)
-(define PARAM-NUM-SAMPLES 160)
+(define PARAM-N 3)
+(define PARAM-M 10)
+(define PARAM-L 2)
+(define PARAM-MAX-OVERHEAD 20)
+(define PARAM-NUM-SAMPLES 60)
 
-(define PARAM-PDF? : (Parameterof Boolean) (make-parameter #f))
-(define PARAM-SPLIT? : (Parameterof Boolean) (make-parameter #f))
-(define PARAM-STATS? : (Parameterof Boolean) (make-parameter #t))
-(define PARAM-AXIS-LABELS? : (Parameterof Boolean) (make-parameter #t))
-(define PARAM-L-LABELS? : (Parameterof Boolean) (make-parameter #f))
-(define PARAM-LEGEND? : (Parameterof Boolean) (make-parameter #t))
-(define PARAM-CUTOFF : (Parameterof (U #f Real)) (make-parameter 0.6))
-(define PARAM-N : (Parameterof (U #f Natural)) (make-parameter 3))
-(define PARAM-M : (Parameterof (U #f Natural)) (make-parameter 10))
-(define PARAM-L : (Parameterof (U Natural (Listof Natural) (Listof (List Natural Plot-Pen-Style)))) (make-parameter 0))
-(define *show-paths?* : (Parameterof Boolean) (make-parameter #f))
-(define *aggregate* : (Parameterof (U #t 'mean #f)) (make-parameter #t))
-(define *output* (make-parameter "./output.png"))
-
-(define *H* : (Parameterof Positive-Integer) (make-parameter 220))
-(define *W* : (Parameterof Positive-Integer) (make-parameter 300))
+(: l-index->string (-> Integer String))
+(define (l-index->string i)
+  (cond [(zero? i)
+         (format "L = ~a" i)]
+        [(= PARAM-L i)
+         (format "\t~a  (steps)" i)]
+        [else
+         (number->string i)]))
+(define L*+title*
+  (for/list : (Listof (Pairof Index String)) ([i (in-range (add1 PARAM-L))])
+    (cons (cast i Index) (l-index->string i))))
+(define L*
+  (for/list : (Listof Index) ([x (in-list L*+title*)]) (car x)))
+(define L-title*
+  (for/list : (Listof String) ([x (in-list L*+title*)]) (cdr x)))
 
 (define FONT-FACE "Liberation Serif")
 
+(define H 100)
+(define W 130)
 (define GRAPH-FONT-SIZE 6)
 (define TEXT-FONT-SIZE 10)
 (define GRAPH-HSPACE 10)
@@ -91,126 +81,95 @@
 
 (define CACHE-PREFIX "./compiled/lnm-cache-")
 
+(define LEGEND
+  (let ()
+    (define VSHIM (/ TITLE-VSPACE 3))
+    (: mytext (->* (String) (Any) Pict))
+    (define (mytext str [mystyle #f])
+        (text str
+          (if mystyle (cons mystyle TITLE-STYLE) TITLE-STYLE)
+          (+ 1 TEXT-FONT-SIZE)))
+    (hc-append (* 6 GRAPH-HSPACE)
+      (vl-append VSHIM
+       (mytext "x-axis: overhead")
+       (mytext "y-axis: # configs"))
+      (vl-append VSHIM
+       (hc-append 0
+         (colorize (mytext "red") "orangered")
+         (mytext " line: 60% of configs."))
+       (hc-append 0
+         (colorize (mytext "blue") "navy")
+         (mytext " line: # ")
+         (mytext "L" 'italic)
+         (mytext "-step ")
+         (mytext "N" 'italic)
+         (mytext "/")
+         (mytext "M" 'italic)
+         (mytext "-usable")))
+      (vl-append VSHIM
+       (hc-append 0
+         (colorize (mytext "green") "forestgreen")
+         (mytext " line: ")
+         (mytext "N" 'italic)
+         (mytext "=3"))
+       (hc-append 0
+         (colorize (mytext "yellow") "goldenrod")
+         (mytext " line: ")
+         (mytext "M" 'italic)
+         (mytext "=10"))))))
+
 ;; =============================================================================
-
-(define-syntax-rule (make-plot plot-proc S*)
-  (plot-proc S*
-             #:L (PARAM-L)
-             #:N (PARAM-N)
-             #:M (PARAM-M)
-             #:max-overhead PARAM-MAX-OVERHEAD
-             #:num-samples PARAM-NUM-SAMPLES
-             #:font-face FONT-FACE
-             #:font-size GRAPH-FONT-SIZE
-             #:split-plot? (PARAM-SPLIT?)
-             #:pdf? (PARAM-PDF?)
-             #:labels? (PARAM-AXIS-LABELS?)
-             #:cutoff-proportion (PARAM-CUTOFF)
-             #:plot-height (*H*)
-             #:plot-width  (*W*)))
-
-(define DEBUG #t)
-(define-syntax-rule (debug msg arg* ...)
-  (when DEBUG (printf msg arg* ...) (newline)))
-
-;; =============================================================================
-
-(define (make-L-title*)
-  (error "cannot make L titles right now"))
-  ;(define x (PARAM-L))
-  ;(cond
-  ; [(list? 
-  ;(define num-l (length (PARAM-L)))
-  ;(: l-index->string (-> Integer String))
-  ;(define (l-index->string i)
-  ;  (cond [(zero? i)
-  ;         (format "L = ~a" i)]
-  ;        [(= num-l i)
-  ;         (format "\t~a  (steps)" i)]
-  ;        [else
-  ;         (number->string i)]))
-  ;(for/list : (Listof String)
-  ;          ([x (in-list (PARAM-L))])
-  ;  (l-index->string x)))
-
-(define (make-legend)
-  (define VSHIM (/ TITLE-VSPACE 3))
-  (: mytext (->* (String) ((U #f 'italic)) Pict))
-  (define (mytext str [mystyle #f])
-      (text str
-        (if mystyle ((inst cons 'italic String) mystyle TITLE-STYLE) TITLE-STYLE)
-        (+ 1 TEXT-FONT-SIZE)))
-  ;; TODO spacing is sometimes wrong... recompiling fixes
-  (hc-append (* 6 GRAPH-HSPACE)
-    (vl-append VSHIM
-     (mytext "x-axis: overhead")
-     (mytext "y-axis: # configs"))
-    (vl-append VSHIM
-     (hc-append 0
-       (colorize (mytext "red") "orangered")
-       (mytext (format " line: ~a% of configs." (round (* 100 (or (PARAM-CUTOFF) (error 'cutoff)))))))
-     (hc-append 0
-       (colorize (mytext "blue") "navy")
-       (mytext " line: # ")
-       (mytext "L" 'italic)
-       (mytext "-step ")
-       (mytext "N" 'italic)
-       (mytext "/")
-       (mytext "M" 'italic)
-       (mytext "-usable")))
-    (vl-append VSHIM
-     (hc-append 0
-       (colorize (mytext "green") "forestgreen")
-       (mytext " line: ")
-       (mytext "N" 'italic)
-       (mytext (format "=~a" (PARAM-N))))
-     (hc-append 0
-       (colorize (mytext "yellow") "goldenrod")
-       (mytext " line: ")
-       (mytext "M" 'italic)
-       (mytext (format "=~a" (PARAM-M)))))))
-
-;; -----------------------------------------------------------------------------
 
 ;; Try to read a cached pict, fall back to making a new one.
-(: data->pict (->* [(Listof (List String String))] [#:tag String] Pict))
-(define (data->pict data* #:tag [tag ""])
+(: data->pict (->* [(Listof (List String String))] [#:tag String #:show-paths? Boolean] Pict))
+(define (data->pict data* #:tag [tag ""] #:show-paths? [show-paths? #f])
   (define title* (for/list : (Listof String) ([x (in-list data*)]) (car x)))
   (define rktd* (for/list : (Listof String) ([x (in-list data*)]) (cadr x)))
-  ;; TODO use options in tag -- new options should invalidate the cache
   (or (get-cached rktd* #:tag tag)
-      (case (*aggregate*)
-       [(#t #f) ;; boolean
-        (get-new-lnm-pict rktd* #:tag tag #:titles title*)]
-       [else
-        (raise-user-error 'render-lnm "No deathscore for now")]
-        ;(get-deathscore-pict rktd* #:tag tag #:titles title*)
-)))
+      (get-new-lnm-pict rktd* #:show-paths? show-paths? #:tag tag #:titles title*)))
 
 ;; Create a summary and L-N/M picts for a data file.
-(: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
-(define (file->pict* data-file* #:title title)
-  (define S* (for/list : (Listof Summary) ([d : String data-file*]) (from-rktd d)))
-  ;; TODO fix summary
+(: file->pict* (->* [String #:title (U String #f)]
+                    [#:show-paths? Boolean] (Listof Pict)))
+(define (file->pict* data-file #:title title #:show-paths? [show-paths? #f])
+  (define S (from-rktd data-file))
   (define S-pict : Pict
-    (if (and (not (null? S*)) (null? (cdr S*)) (PARAM-STATS?))
-      (let ([p (summary->pict (car S*)
-                              #:title title
-                              #:font-face FONT-FACE
-                              #:font-size TEXT-FONT-SIZE
-                              #:N (or (PARAM-N) (error "need N"))
-                              #:M (or (PARAM-M) (error "need M"))
-                              #:width (* 0.6 (*W*))
-                              #:height (*H*))])
-        (vc-append 0 p (blank 0 (- (*H*) (pict-height p)))))
-      (blank 0 0)))
-  (define L-pict* : (Listof Pict)
+    (let ([p (summary->pict S
+                   #:title title
+                   #:font-face FONT-FACE
+                   #:font-size TEXT-FONT-SIZE
+                   #:N PARAM-N
+                   #:M PARAM-M
+                   #:width (* 0.6 W)
+                   #:height H)])
+      (vc-append 0 p (blank 0 (- H (pict-height p))))))
+  (define L-pict*
     ;; TODO there's only a 3-character difference between the branches...
     ;;  I tried making plot-fn = (if show-paths? path-plot lnm-plot),
     ;;  but a U-type can't be applied!
-    (if (*show-paths?*)
-      (error "no pth plot");(make-plot path-plot S*)
-      (make-plot lnm-plot S*)))
+    (if show-paths?
+      (path-plot S
+               #:L L*
+               #:N PARAM-N
+               #:M PARAM-M
+               #:max-overhead PARAM-MAX-OVERHEAD
+               #:num-samples PARAM-NUM-SAMPLES
+               #:font-face FONT-FACE
+               #:font-size GRAPH-FONT-SIZE
+               #:labels? #f
+               #:plot-height H
+               #:plot-width W) ;;TODO adjust, to keep figure sizes all equal?
+      (lnm-plot S
+               #:L L*
+               #:N PARAM-N
+               #:M PARAM-M
+               #:max-overhead PARAM-MAX-OVERHEAD
+               #:num-samples PARAM-NUM-SAMPLES
+               #:font-face FONT-FACE
+               #:font-size GRAPH-FONT-SIZE
+               #:labels? #f
+               #:plot-height H
+               #:plot-width W))) ;;TODO adjust, to keep figure sizes all equal?
   (cons S-pict L-pict*))
 
 (: format-filepath (-> (U #f String) String))
@@ -223,7 +182,7 @@
   (define filepath (format-filepath tag))
   (debug "Caching new pict at '~a'" filepath)
   (with-output-to-file filepath
-    (lambda () (write (list rktd* (current-param-tag*) (serialize pict))))
+    (lambda () (write (cons rktd* (serialize pict))))
     #:mode 'text
     #:exists 'replace))
 
@@ -233,7 +192,7 @@
   (and (file-exists? filepath)
        (read-cache rktd* filepath)))
 
-(define-type CachedPict (List (Listof String) (Listof String) Any))
+(define-type CachedPict (Pairof (Listof String) Any))
 (define-predicate cachedpict? CachedPict)
 
 (: read-cache (-> (Listof String) String (U #f Pict)))
@@ -242,74 +201,23 @@
   (cond
     [(cachedpict? tag+pict)
      (and (equal? rktd* (car tag+pict))
-          (equal? (current-param-tag*) (cadr tag+pict))
-          (debug "Reading cached pict from '~a'" filepath)
-          (deserialize (caddr tag+pict)))]
+     (debug "Reading cached pict from '~a'" filepath)
+     (deserialize (cdr tag+pict)))]
     [else
      (error 'render-lnm (format "Malformed data in cache file '~a'" filepath))]))
 
-(: current-param-tag* (-> (Listof String)))
-(define (current-param-tag*)
-  (for/list : (Listof String)
-      ([x (in-list (list (PARAM-PDF?) (PARAM-SPLIT?) (PARAM-STATS?)
-                         (PARAM-AXIS-LABELS?) (PARAM-L-LABELS?)
-                         (PARAM-LEGEND?) (PARAM-CUTOFF) (PARAM-N) (PARAM-M) (PARAM-L)))])
-    (format "~a" x)))
-
-(: zip-title* (->* [(Listof String) (U #f (Listof String))]
-                       [#:collapse? Boolean]
-                       (Listof (Pairof (U #f String) (Listof String)))))
-(define (zip-title* rktd* maybe-title* #:collapse? [collapse? #f])
-  (: title* (U (Listof String) (Listof #f)))
-  (define title*
-    (if maybe-title*
-      (begin
-        (unless (= (length maybe-title*) (length rktd*))
-          (error 'group-by-title (format "Have ~a datasets, but ~a titles: ~a" (length rktd*) (length maybe-title*) maybe-title*)))
-        maybe-title*)
-        (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
-  ;; Combine duplicate titles
-  (if collapse?
-    (for/fold : (Listof (Pairof (U String #f) (Listof String)))
-              ([acc : (Listof (Pairof (U String #f) (Listof String)))
-                      '()])
-              ([t (in-list title*)]
-               [r (in-list rktd*)])
-      (cond
-       [(and t (assoc t acc))
-        (for/list ([t+r (in-list acc)])
-          (define hd (car t+r))
-          (if (and (string? hd) (string=? hd t))
-            (list* t r (cdr t+r))
-            t+r))]
-       [else
-        (cons (list t r) acc)]))
-    (for/list ([t (in-list title*)] [r (in-list rktd*)])
-      (list t r))))
-
-;(: get-deathscore-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
-;(define (get-deathscore-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
-;  ;(define title+rktd* (zip-title* rktd* maybe-title* #:collapse? #f))
-;  (define S*
-;    (for/list : (Listof Summary)
-;              ([d : String rktd*])
-;      (from-rktd d)))
-;  (car (make-plot death-plot S*)))
-
 ;; Create a pict, cache it for later use
-(: get-new-lnm-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
-(define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
-  (define title+rktd* (zip-title* rktd* maybe-title* #:collapse? (assert (*aggregate*) boolean?)))
-  ;; Get all picts. (Each call to lnm-plot returns a list)
-  (define pict**
-    (for/list : (Listof (Listof Pict))
-              ([title+rktd : (Pairof (Option String) (Listof String)) (in-list title+rktd*)])
-      (file->pict* (cdr title+rktd) #:title (car title+rktd))))
+(: get-new-lnm-pict (->* [(Listof String)] [#:show-paths? Boolean #:tag String #:titles (U #f (Listof String))] Pict))
+(define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f] #:show-paths? [show-paths? #f])
+  (: title* (U (Listof String) (Listof #f)))
+  (define title* (or maybe-title* (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
   ;; Align all picts vertically first
   (define columns : (Listof Pict)
     (or (for/fold : (U #f (Listof Pict))
               ([prev* : (U #f (Listof Pict)) #f])
-              ([pict* : (Listof Pict) (in-list pict**)])
+              ([rktd (in-list rktd*)]
+               [title : (U #f String) (in-list title*)])
+      (define pict* (file->pict* rktd #:title title #:show-paths? show-paths?))
       (if prev*
           ;; Right-align the old picts with the new ones
           (for/list : (Listof Pict)
@@ -317,98 +225,71 @@
                      [new (in-list pict*)])
             (vr-append GRAPH-VSPACE old new))
           ;; Generate titles. Be careful aligning the summary row
-          (if (PARAM-L-LABELS?)
-            (cons (car pict*)
-             (for/list : (Listof Pict)
-                       ([l-str (in-list (make-L-title*))]
-                        [new (in-list (cdr pict*))])
-               (vc-append TITLE-VSPACE (text l-str TITLE-STYLE TITLE-SIZE) new)))
-            pict*)))
+          (cons (car pict*)
+           (for/list : (Listof Pict)
+                     ([l-str (in-list L-title*)]
+                      [new (in-list (cdr pict*))])
+             (vc-append TITLE-VSPACE (text l-str TITLE-STYLE TITLE-SIZE) new)))))
          (error 'invariant)))
-  (define columns/stats
-    (if (PARAM-STATS?) columns (cdr columns)))
   ;; Paste the columns together, insert a little extra space to make up for
   ;;  the missing title in the first column
   (define pict0 : Pict
-    (or
-     (for/fold : (U #f Pict)
+    (or (for/fold : (U #f Pict)
               ([prev-pict : (U #f Pict) #f])
-              ([c columns/stats])
+              ([c columns])
       (if prev-pict
           (hc-append GRAPH-HSPACE prev-pict c)
-          (if (PARAM-L-LABELS?)
-            (vc-append TITLE-VSPACE (blank 0 10) c)
-            c)))
-     (error 'invariant)))
-  (define pict/legend
-    (if (PARAM-LEGEND?)
-      (vc-append (* 1 TITLE-VSPACE)
-        pict0
-        (make-legend))
-      pict0))
-  (cache-pict pict/legend rktd* tag)
-  pict/legend)
+          (vc-append TITLE-VSPACE (blank 0 10) c)))
+        (error 'invariant)))
+  (define pict
+    (vc-append (* 1 TITLE-VSPACE)
+      pict0
+      LEGEND))
+  (cache-pict pict rktd* tag)
+  pict)
 
 ;; =============================================================================
-(define-syntax-rule (reads l)
-  (with-input-from-string (assert l string?) read))
 
-(: filter-valid-filenames (-> (Listof Any) (Listof String)))
-(define (filter-valid-filenames arg*)
-  (for/list : (Listof String)
-            ([fname (in-list arg*)]
-             #:when (and (string? fname)
-                         (valid-filename? fname)))
-    fname))
+(module+ main
+  (require
+    racket/cmdline
+    (only-in racket/list first last)
+    (only-in racket/string string-split))
+  (require/typed "scripts/show-pict.rkt"
+   [pict->png (-> Pict Path-String Boolean)])
 
-(: valid-filename? (-> String Boolean))
-(define (valid-filename? fname)
-  (cond
-   [(and (file-exists? fname)
-         (regexp-match? #rx"\\.rktd$" fname))
-    #t]
-   [else
-    (printf "Skipping invalid file '~a'\n" fname)
-    #f]))
+  (: filename->tag (-> String String))
+  (define (filename->tag fname)
+    (first (string-split (last (string-split fname "/")) ".")))
 
-(: pict->png (-> Pict Path-String Boolean))
-(define (pict->png p path)
-  (send (pict->bitmap p) save-file path 'png))
+  (: filter-valid-filenames (-> (Listof Any) (Listof String)))
+  (define (filter-valid-filenames arg*)
+    (for/list : (Listof String)
+              ([fname (in-list arg*)]
+               #:when (and (string? fname)
+                           (valid-filename? fname)))
+      fname))
 
-(: render-lnm (-> (Vectorof String) Any))
-(define (render-lnm vec)
+  (: valid-filename? (-> String Boolean))
+  (define (valid-filename? fname)
+    (cond
+     [(and (file-exists? fname)
+           (regexp-match? #rx"\\.rktd$" fname))
+      #t]
+     [else
+      (printf "Skipping invalid file '~a'\n" fname)
+      #f]))
+
+  (define *output* (make-parameter "./output.png"))
+  (: *show-paths* (Parameterof Boolean))
+  (define *show-paths* (make-parameter #f))
   (command-line
    #:program "view-pict"
-   #:argv vec
    #:once-each
    [("-o" "--output") o-param
     "Location to save results" (*output* (cast o-param String))]
-   [("-p" "--path" "--paths")
-    "If set, draw a line for lattice paths" (*show-paths?* #t)]
-   [("-a" "--aggregate")
-    "Combine all data into a single figure" (*aggregate* #t)]
-   ;; TODO disable aggregation
-   ;[("-d" "--deathscore") sym
-   ; "Create a deathscore figure with specified y-axis" (*aggregate* sym)]
-   [("--legend") legend "#t/#f = show/hide legend" (PARAM-LEGEND? (assert (reads legend) boolean?))]
-   [("--split") "Put each L in a new plot" (PARAM-SPLIT? #t)]
-   [("--stats") stats "#t/#f = show/hide summary statistics" (PARAM-STATS? (assert (reads stats) boolean?))]
-   [("--ltitle") ltitle "#t/#f = show/hide L labels above plots" (PARAM-L-LABELS? (assert (reads ltitle) boolean?))]
-   [("--labels") lbl "#t/#f = show/hide axis labels" (PARAM-AXIS-LABELS? (assert (reads lbl) boolean?))]
-   [("--cutoff") c "Set red line with a number in [0,1] (#f by default)"
-                 (PARAM-CUTOFF (assert (reads c) real?))]
-   [("--pdf") "Plot derivative of L-N/M plot (instead of cumulative)" (PARAM-PDF? #t)]
-   [("-N") n "Set line for N (#f by default)" (PARAM-N (assert (reads n) index?))]
-   [("-M") m "Set line for M (#f by default)" (PARAM-M (assert (reads m) index?))]
-   [("-L") l "Set L values, may be natural, (listof natural) or (listof (list natural pen-style))"
-             (let ([val (reads l)])
-               (cond
-                [(exact-nonnegative-integer? val)
-                 (PARAM-L val)]
-                [(and (list? val) (andmap exact-nonnegative-integer? val))
-                 (PARAM-L (cast val (Listof Index)))]
-                [else
-                 (PARAM-L (cast val (Listof (List Index Plot-Pen-Style))))]))]
+   [("-p" "--paths")
+    "If set, draw a line for lattice paths" (*show-paths* #t)]
    #:args FNAME*
    ;; -- Filter valid arguments, assert that we got anything to render
    (define arg* (filter-valid-filenames FNAME*))
@@ -416,11 +297,11 @@
      (raise-user-error "Usage: render-lnm.rkt DATA.rktd ..."))
    ;; -- Create a pict
    (define P
-      (data->pict
-        #:tag (format "cmdline~a" (if (*show-paths?*) "-path" ""))
-        (for/list : (Listof (List String String))
-                  ([fname (in-list arg*)])
-          (list (path->project-name (string->path fname)) fname))))
+     (data->pict
+       #:tag (format "render-lnm-cmdline~a" (if (*show-paths*) "-path" ""))
+       #:show-paths? (*show-paths*)
+       (for/list : (Listof (List String String))
+                 ([fname (in-list arg*)])
+         (list (filename->tag fname) fname))))
+   ;; TODO: pict->png should be typed, and defined in this module.
    (pict->png P (*output*))))
-
-(module+ main (render-lnm (current-command-line-arguments)))

@@ -8,7 +8,7 @@
          math/statistics
          (only-in racket/match match-define)
          "render-lnm.rkt"
-         "../tools/data-lattice.rkt"]
+         benchmark-util/data-lattice]
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket} @; , Classical
 

@@ -1,8 +1,5 @@
 #lang typed/racket
 
-;; A bitstring is a string of #\1 and #\0.
-;; Technically bitstrings of unequal length are incompatible,
-;;  but our scripts do nothing to enforce this.
 (define-type Bitstring String)
 (provide
   Bitstring
@@ -44,7 +41,10 @@
   (only-in racket/format ~r)
   (only-in racket/list remove-duplicates)
   (only-in math/number-theory factorial)
-  (only-in racket/sequence sequence-map)
+)
+(require/typed racket/stream
+  [stream-first (-> (Sequenceof (Listof String)) (Listof String))]
+  [stream-map (-> (-> Natural (Listof String)) (Sequenceof Natural) (Sequenceof (Listof String)))]
 )
 
 ;; =============================================================================
@@ -102,21 +102,32 @@
 ;;  elements have one 1 in a position where the previous had a 0.
 (: all-paths-from (-> Bitstring (Sequenceof (Listof Bitstring))))
 (define (all-paths-from str)
-  (sequence-map
-    permutation->path
-    (in-permutations (range (string-length str)))))
+  (unless (all-low? str)
+    (error 'all-paths-from (format "Paths from '~a' not implemented (can only start from fully-untyped)" str)))
+  (define N (string-length str))
+  (stream-map
+    (lambda ([i : Natural])
+      (nat->path N i))
+    (in-range (factorial N))))
 
-(: permutation->path (-> (Listof Natural) (Listof Bitstring)))
-(define (permutation->path index*)
-  (define L (length index*))
-  ;; Create the path in reverse order
-  (for/fold ([acc (list (bitstring-init L #:hi? #t))])
-            ([i (in-list index*)])
-    (cons (bitstring-flip (car acc) i) acc)))
-
-(: bitstring-init (->* [Natural] [#:hi? Boolean] Bitstring))
-(define (bitstring-init n #:hi? [hi? #f])
-  (make-string n (if hi? #\1 #\0)))
+;; Return one of the n! paths from fully-untyped to fully-typed
+(: nat->path (-> Natural Natural (Listof Bitstring)))
+(define (nat->path n i)
+  (define (new-bitstring) (make-string n #\0))
+  (cons (new-bitstring)
+  (for/list : (Listof Bitstring) ([level (in-range n)])
+    ;; At level i, need to flip i bits
+    (for/fold : Bitstring
+              ([S : Bitstring (new-bitstring)])
+              ([lvl : Natural (in-range (+ 1 level))])
+      ;; Invalid to flip an already-high position
+      (define flippable-posns
+        (for/vector : (Vectorof Natural)
+                    ([j : Natural (in-range n)] #:when (bit-low? S j)) j))
+      ;; Position to flip is determined by input index & level
+      (define pos-to-flip
+        (modulo i (- n lvl)))
+      (bitstring-flip S (vector-ref flippable-posns pos-to-flip))))))
 
 (: all-high? (-> Bitstring Boolean))
 (define (all-high? str)
@@ -180,7 +191,7 @@
   ;; -- all-paths-from
   (define-syntax-rule (check-all-paths [in out] ...)
     (begin (check-equal?
-             (for/list : (Listof (Listof Bitstring))
+             (for/list : (Listof (Listof String))
                        ([p (all-paths-from in)])
                p)
              out) ...))
@@ -191,16 +202,15 @@
    ["00" '(("00" "10" "11")
            ("00" "01" "11"))]
    ["000" '(("000" "100" "110" "111")
-            ("000" "100" "101" "111")
-            ("000" "010" "110" "111")
             ("000" "010" "011" "111")
             ("000" "001" "101" "111")
+            ("000" "100" "101" "111")
+            ("000" "010" "110" "111")
             ("000" "001" "011" "111"))])
 
   ;; If this doesn't return immediately, we have a bug
   (let* ([all_10 (all-paths-from (make-string 20 #\0))]
-         [first_path (car (for/list : (Listof (Listof Bitstring))
-                                    ([a all_10] [_i (in-range 1)]) a))])
+         [first_path (stream-first all_10)])
     (check-equal? (length first_path) 21))
 
   ;; -- bitstring-flip
