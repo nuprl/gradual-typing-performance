@@ -2,7 +2,11 @@
 (define collection "gtp-diagnose")
 (define deps '("base"
                "typed-racket-lib"
-               "typed-racket-more"))
+               "typed-racket-more"
+               "benchmark-util"
+               "glob"
+               "math-lib"
+               "plot-lib"))
 (define build-deps '("rackunit-lib"
                      "racket-doc"))
 (define pkg-desc "")
