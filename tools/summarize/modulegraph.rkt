@@ -14,6 +14,17 @@
   (from-tex (-> Path-String ModuleGraph))
   ;; Parse a tex file into a module graph
 
+  (boundaries (-> ModuleGraph (Listof (List String String (Listof Provided)))))
+  ;; Return a list of identifier-annotated edges in the program
+  ;; Each list is (TO FROM PROVIDED)
+  ;;  where PROVIDED is a list of type Provided (see the data definition below for 'struct provided')
+
+  (in-edges (-> ModuleGraph (Sequenceof (Pairof String String))))
+  ;; Iterate through the edges in a module graph.
+  ;; Each edges is a pair of (TO . FROM)
+  ;;  the idea is, each edges is a "require" from TO to FROM
+  ;; Order of edges is unspecified.
+
   (module-names (-> ModuleGraph (Listof String)))
   ;; Return a list of all module names in the project
 
@@ -41,6 +52,8 @@
 (provide
   (struct-out modulegraph)
   ModuleGraph
+  (struct-out provided)
+  Provided
 )
 
 ;; -----------------------------------------------------------------------------
@@ -95,6 +108,13 @@
     res
     (cons (list from to) res)))
 
+(: in-edges (-> ModuleGraph (Listof (Pairof String String))))
+(define (in-edges G)
+  (for*/list : (Listof (Pairof String String))
+             ([src+dst* (in-list (modulegraph-adjlist G))]
+              [dst (in-list (cdr src+dst*))])
+    (cons (car src+dst*) dst)))
+
 ;; Get the name of the project represented by a module graph
 (: project-name (-> ModuleGraph String))
 (define (project-name mg)
@@ -146,6 +166,72 @@
             ([node+neighbors : (Listof String) (in-list adj)]
              #:when (member name (cdr node+neighbors)))
     (car node+neighbors)))
+
+;; =============================================================================
+;; --- data definition: provided / required
+
+(struct provided (
+  [>symbol : Symbol] ;; Name of provided identifier
+  [syntax? : Boolean] ;; If #t, identifier is exported syntax or renamed
+  [history : (U #f (Listof Any))]
+  ;; If #f, means id was defined in the module
+  ;; Otherwise, is a flat list of id's history
+) #:transparent )
+(define-type Provided provided)
+
+;; Return a list of:
+;;   (FROM TO PROVIDED)
+;;  corresponding to the edges of modulegraph `G`.
+;; This decorates each edges with the identifiers provided from a module.
+(: boundaries (-> ModuleGraph (Listof (List String String (Listof Provided)))))
+(define (boundaries G)
+  ;; Reclaim source directory
+  (define src (infer-untyped-dir (modulegraph-project-name G)))
+  (define name* (module-names G))
+  (define from+provided**
+    (for/list : (Listof (Pairof String (Listof Provided)))
+              ([name (in-list name*)])
+      ((inst cons String (Listof Provided))
+        name
+        (absolute-path->provided* (build-path src (string-append name ".rkt"))))))
+  (for/list : (Listof (List String String (Listof Provided)))
+            ([to+from (in-edges G)])
+    (define to (car to+from))
+    (define from (cdr to+from))
+    (define maybe-provided* (assoc from from+provided**))
+    (if maybe-provided*
+      (list to from (cdr maybe-provided*))
+      (raise-user-error 'boundaries (format "Failed to get provides for module '~a'" from)))))
+
+(: absolute-path->provided* (-> Path (Listof Provided)))
+(define (absolute-path->provided* p)
+  (define cm (cast (compile (get-module-code p)) Compiled-Module-Expression))
+  (define-values (p* s*) (module-compiled-exports cm))
+  (append
+   (parse-provided p*)
+   (parse-provided s* #:syntax? #t)))
+
+(define-type RawProvided
+  (Pairof (U #f Integer)
+    (Listof (List Symbol History))))
+(define-type History (Listof Any)) ;; Lazy
+
+(: parse-provided (->* [(Listof RawProvided)] [#:syntax? Boolean] (Listof Provided)))
+(define (parse-provided p* #:syntax? [syntax? #f])
+  (define p0
+    (apply append
+      (for/list : (Listof (Listof (List Symbol History)))
+                ([p (in-list p*)] #:when (and (car p) (zero? (car p))))
+        (define p+ (cdr p))
+        (if (and (not (null? p+))
+                 (symbol? (car p+)))
+          (list p+)
+          p+))))
+  (for/list : (Listof Provided)
+            ([p : (List Symbol History) (in-list p0)])
+    (define name (car p))
+    (define history (cadr p))
+    (provided name syntax? (and (not (null? history)) history))))
 
 ;; -----------------------------------------------------------------------------
 ;; --- parsing TiKZ
@@ -415,12 +501,14 @@
   (for/list : AdjList
             ([abs-path (in-list abs-path*)]
              [src-name (in-list src-name*)])
-    (cons src-name (absolute-path->imports abs-path src-name*))))
+    (cons src-name
+          (filter (lambda (mod-name) (member mod-name src-name*))
+                  (absolute-path->imports abs-path)))))
 
 ;; '((0 #<module-path-index:(racket/base)> #<module-path-index:(benchmark-util)> #<module-path-index:(racket/file)> #<module-path-index:("lcs.rkt")>))
 
-(: absolute-path->imports (-> Path-String (Listof String) (Listof String)))
-(define (absolute-path->imports ps valid-name*)
+(: absolute-path->imports (-> Path-String (Listof String)))
+(define (absolute-path->imports ps)
   (define p (if (path? ps) ps (string->path ps)))
   (define mc (cast (compile (get-module-code p)) Compiled-Module-Expression))
   (for/fold : (Listof String)
@@ -431,7 +519,7 @@
         (let ([name+ (if (string? name)
                        (strip-suffix (strip-directory (string->path name)))
                        #f)])
-          (if (and (string? name+) (member name+ valid-name*))
+          (if (string? name+)
             (cons name+ acc)
             acc)))
       acc)))
@@ -608,6 +696,36 @@
   ;; -- adjlist
   (check-equal? (modulegraph-adjlist MGd)
     '(("client" "constants") ("constants") ("main" "server" "client") ("server" "constants")))
+
+  (: lex-pair<? (-> (Pairof String String) (Pairof String String) Boolean))
+  (define (lex-pair<? a b)
+    (or (string<? (car a) (car b))
+        (and (string=? (car a) (car b))
+             (string<? (cdr a) (cdr b)))))
+
+  (check-equal?
+    (sort (sequence->list (in-edges MGf)) lex-pair<?)
+    '(("collide" . "const") ("collide" . "data") ("const" . "data") ("cut-tail" . "data") ("handlers" . "collide") ("handlers" . "data") ("handlers" . "motion") ("main" . "const") ("main" . "data") ("main" . "handlers") ("main" . "motion") ("motion" . "const") ("motion" . "data") ("motion" . "motion-help") ("motion-help" . "cut-tail") ("motion-help" . "data")))
+
+  (check-equal?
+    (sort (sequence->list (in-edges MGd)) lex-pair<?)
+    '(("client" . "constants") ("main" . "client") ("main" . "server") ("server" . "constants")))
+
+  (let ([bd (boundaries MGd)])
+    (check-equal? (length bd) (length (sequence->list (in-edges MGd))))
+    (let ([b1 (car bd)])
+      (check-equal? (car b1) "client")
+      (check-equal? (cadr b1) "constants")
+      (let ([p* (caddr b1)])
+        (check-equal? (length p*) 2)
+        (check-equal? (provided->symbol (car p*)) 'DATA)
+        (check-equal? (provided->symbol (cadr p*)) 'PORT)))
+    (let ([b3 (caddr bd)])
+      (check-equal? (car b3) "main")
+      (check-equal? (cadr b3) "client")
+      (let ([p* (caddr b3)])
+        (check-equal? (length p*) 1)
+        (check-equal? (provided->symbol (car p*)) 'client))))
 
   ;; -- from-directory
   ;; -- from-tex
