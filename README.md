@@ -1,4 +1,4 @@
-[under construction] gradual-typing-performance
+gradual-typing-performance
 ===
 
 The purpose of this repo is to share work among the team members that study
