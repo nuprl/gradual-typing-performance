@@ -24,6 +24,7 @@
          usable
 
          id
+         todo ;; Remove this export before submission
          )
 
 (require "bib.rkt"
@@ -148,4 +149,7 @@
 ;; Usage: @id[x]
 (define (id x)
   (make-element plain @format["~a" x]))
+
+(define (todo x)
+  (make-element 'bold @string-append["TODO: " x]))
 
