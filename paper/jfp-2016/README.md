@@ -239,7 +239,12 @@ Matthias
    "benefits of comining static + dynamic"
 5. As before, more or less
 
->>>>>>> a41274f... [jfp] more README notes
+Memo
+---
+- experimental protocol (stop early)
+- adaptor
+- conversion lessons / usability
+- 
 
 Building
 ---

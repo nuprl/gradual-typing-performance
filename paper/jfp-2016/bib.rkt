@@ -1211,3 +1211,5 @@
 ; quad @note{Personal communication from the author of the @tt{quad} benchmark}
 ; tr-pfds https://groups.google.com/forum/#!searchin/racket-users/warning$20on$20using$20trie$20functions/racket-users/WBPCsdae5fs/XDgOdIZlAAAJ
 ; @note{http://docs.racket-lang.org/math/array.html}
+;; TODO
+;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
