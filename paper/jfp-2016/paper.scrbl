@@ -24,20 +24,25 @@
  checks. None of the publications on this topic comes with a
  comprehensive performance evaluation. Worse, a few report disastrous numbers.
 
- In response, this paper proposes a method for
+ In response, this article proposes a method for
  evaluating the performance of gradually-typed programming languages.
  The method hinges on exploring the space of partial conversions from
  untyped to typed. For each benchmark, the performance of the different
  versions is reported in a synthetic metric that associates runtime overhead
  to conversion effort.
- The paper reports on the results of applying the method to
+ The article reports on the results of applying the method to
  Typed Racket, a mature implementation of sound gradual typing, using a suite
  of real-world programs of various sizes and complexities.  Based on these
  results the paper concludes that, given the current state
  of implementation technologies, sound gradual typing faces significant
  challenges. Conversely, it raises the question of how implementations could 
  reduce the overheads associated with soundness and how
- tools could be used to steer programmers clear from pathological cases.}
+ tools could be used to steer programmers clear from pathological cases.
+
+@todo{6.2 vs 6.3 comparison}
+
+@todo{direct answer to the "is dead?" question}
+}
 
 @include-section{intro.scrbl}
 @include-section{framework.scrbl}

@@ -29,6 +29,13 @@ Matthias
    "benefits of comining static + dynamic"
 5. As before, more or less
 
+Memo
+---
+- experimental protocol (stop early)
+- adaptor
+- conversion lessons / usability
+- 
+
 
 Outline (NOPE)
 ---

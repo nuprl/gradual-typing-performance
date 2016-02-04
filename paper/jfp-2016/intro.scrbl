@@ -2,15 +2,18 @@
 
 @require["common.rkt"]
 
-@title[#:tag "sec:intro"]{Gradual Typing and Performance}
+@title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
-Over the past couple of decades dynamically-typed languages have become a
+Dynamically-typed languages have become a
  staple of the software engineering world. Programmers use these languages
- to build all kinds of software systems. In many cases, the systems start
+ to build all kinds of software systems, from .
+ @~cite[(in-bib pension)]
+ @~cite[(in-bib TODO)].
+ In many cases, the systems start
  as innocent prototypes. Soon enough, though, they grow into complex,
  multi-module programs, at which point the engineers realize that they are
  facing a maintenance nightmare, mostly due to the lack of reliable type
- information. 
+ information.
 
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
  solution to this pressing software engineering problem. The idea is to
