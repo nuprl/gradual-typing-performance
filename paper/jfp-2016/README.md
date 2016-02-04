@@ -11,6 +11,11 @@ You can't do a path in i.e. dr racket, with 20,000 (?) modules
 WE DONT KNOW. We really don't know! Really!
 
 
+---
+- What is to be done?
+- come to bury sound gradual typing
+- 
+
 Matthias
 ---
 
@@ -66,3 +71,12 @@ Outline (NOPE)
   - 3 ways: tools, implementation, language design
 
 
+Building
+---
+- Change `scribble/jfp` to look for `jfp.cls` instead of `jfp1.cls`
+- Download `ilfonts`, then `\usepackage{ilfonts}`
+
+
+Not used
+- `tlmgr --update self`
+- `tlmbr install ec`
