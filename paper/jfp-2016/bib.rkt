@@ -1038,3 +1038,5 @@
    #:title "MACLISP Reference Manual"
    #:date 1974))
 
+;; TODO
+;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
