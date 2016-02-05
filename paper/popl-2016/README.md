@@ -25,6 +25,15 @@ December 22, 2015
 
 See discussion in link.
 
+
+[The Morning Paper](http://blog.acolyer.org/2016/02/05/is-sound-gradual-typing-dead/)
+---
+
+February 5, 2016
+
+Nice review
+
+
 [Brian Mastenbrook on Twitter](https://twitter.com/bmastenbrook/status/695814043609780226)
 ---
 
