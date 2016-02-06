@@ -224,6 +224,8 @@ WE DONT KNOW. We really don't know! Really!
 ---
 - What is to be done?
 - come to bury sound gradual typing
+- adaptors vs. "DefinitelyTyped" d.ts
+- experience report, lessons
 - 
 
 Matthias
