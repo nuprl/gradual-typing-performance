@@ -3,133 +3,86 @@
 @; 2016-04-15
 @; Too staccato! Too dry! But otherwise ok and accurate.
 
-@; "The first challenge for computer science is to discover how to maintain
-@;  order in a finite, but very large, discrete universe that is intricately
-@;  intertwined."  -- Dijkstra, 1979 (from Emina's thesis)
-
-@require["common.rkt" "typed-racket.rkt"]
-
-@profile-point{sec:intro}
+@;@title[#:tag "sec:intro"]{Gradual Typing and Performance}
+@;@title[#:tag "sec:intro"]{Types of Untyped Languages}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
-@; Programmers use dynamic languages, dynamic languages don't scale super well
-Dynamically-typed languages have become a staple of the software
- engineering world.
-Programmers use these languages to build applications
- ranging from telecommunications software@~cite[armstrong-2007]
- to social networking websites
- to an entire country's pension system@~cite[v-aplwa-2010].
- @; TODO  why did Jan mark the citation?
-These software systems often begin as prototypes in which the flexibility of
- dynamic typing speeds development.
-But as programs grow in size and complexity, software maintenance
- becomes the bottleneck.
-When this happens, the assurance provided by a static type system becomes
- increasingly desirable; however, converting an existing untyped project to a
- typed language is a prohibitively large engineering investment.
+Dynamically-typed languages have become a
+ staple of the software engineering world.
+Programmers use these languages to build all kinds of software, from
+ @; TODO not the best example
+ social networking websites @todo{cite} @;@~cite[(in-bib TODO)]
+ to pension systems @todo{cite} @;@~cite[(in-bib pension)].
+In many cases, the systems start as innocent prototypes.
+Soon enough, though, they grow into complex,
+ multi-module programs, at which point the engineers realize that they are
+ facing a maintenance nightmare, mostly due to the lack of reliable type
+ information.
+@todo{nightmare?}
 
-@; Enter GT
-Gradual typing@~cite[st-sfp-2006] proposes a language-based
- solution to resolve the tradeoffs between dynamic and static typing.
-The idea is to extend an existing, dynamically-typed language to allow the incremental
- addition of static types.
-Programmers enable typechecking by writing type annotations.
-These annotations are checked and enforced by the compiler.
-Other, unannotated parts of the program are left untyped but may interact
- seamlessly with typed code.
+Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
+ solution to this pressing software engineering problem.
+ @todo{specific problem}
+The idea is to extend the language so that programmers can incrementally equip
+ programs with types.
+@; How to mediate the development benefits of dynamics and the maintenance benefits of types
+@; 'Course not this clear-cut,
+@; - types great for dev, catch many typos
+@; - untypes frequently better for highly reusable & concise code
+ @todo{fix}
+This gives the language user freedom to @emph{locally} decide where the benefits
+ of having a type system outweigh the tradeoffs.
+@todo{impedence mismatch}
 
-The border separating typed and untyped parts of a gradually typed
- program is called a @emph{type boundary}.
-So-called @emph{macro}-level gradual type systems implement type boundaries
- as module boundaries.
-That is, any module in the program is either fully typed or fully untyped.
-In contrast, @emph{micro}-level gradual type systems allow type boundaries
- between expressions within any module.
-Both systems are useful, but in this paper we focus on macro-level gradual typing.
-
-In the decade since gradual typing was first proposed, research groups have
- extended
- JavaScript@~cite[rnv-ecoop-2015 rsfbv-popl-2015],
- Python@~cite[vksb-dls-2014],
- Racket@~cite[TypedRacket],
- @; Ruby@~cite[furr-dissertation-2009],
- and
- Smalltalk@~cite[acftd-scp-2013]
- with gradual type systems.
-Each new extension must address challenges unique to its base language,
- but in general these gradual type systems have three broad goals:
+Many programming languages combine the benefits of static and dynamic typing;
+ in the past five years, we have seen new gradual type systems for
+ @todo{langs}.
+The systems have diverse goals and capabilities; we provide a survey in
+ @secref{sec:flavors}.
+In fact, the term
+ @emph{gradual typing} has become an umbrella term rather than a technical one.
+Nonetheless, there are three main criterion for evaluating gradual type systems:
  @itemlist[
-   @item{@emph{Expressiveness:} describe all untyped features with useful types}
-   @item{@emph{Safety:} preserve the semantics of types at run-time}
-   @item{@emph{Performance:} leverage type information in compiler optimizations}
+   @item{@emph{Expressiveness:} how many untyped features can the type system
+         validate?}
+   @item{@emph{Soundness:} are the semantics of types preserved at runtime?}
+   @item{@emph{Performance:} how do typed/untyped programs run, relative to
+         the untyped baseline?}
  ]
-Safety for gradual type systems is traditionally formulated as a
- type soundness theorem guaranteeing that typed parts of a program are never
- blamed for run-time type errors@~cite[thf-dls-2006].
-In other words, typed code may raise a type error at run-time, but
- only as a consequence of receiving untyped data that did not match a
- static assumption made by the type system.
-The source of the type error is always traced back
- to the type boundary that produced it, thereby helping programmers
- debug the impedence mismatch between the untyped value and its expected type.
+In the context of sound gradual typing, the first two evaluation criteria
+ are relatively well-studied.
+ @; Note on expressiveness: we specifically did NOT ask i.e. "dep. types?"
+ @; That's an indirect answer to the core question of "how many 'correct'
+ @;  untyped lambda terms does the system validate / understand
+The third has seen little attention; however, anecdotal evidence indicates
+ that slowdowns from 2x to 10x are common.
+ @todo{anecdote vs evaluation}.
 
-Type soundness is enforced with dynamic assertions inserted at type boundaries.
-Static types @exact|{$\RktMeta{T}$}| are compiled to dynamic checks
- @exact|{$\ctc{\RktMeta{T}}$}| that guarantee the run-time behavior of an
- untyped program component matches the component's static type@~cite[aft-dls-2013 TypedRacket sw-popl-2010].
-For example, if the type checker assumes that an untyped function has type
- @racket[(Int -> Int)] then every value returned by the function at run-time will
- be dynamically checked against specification @exact|{$\ctc{\RktMeta{Int}}$}|.
-Dynamic checks, however, introduce performance overhead and slowdowns of
- 4x@~cite[tfdffthf-ecoop-2015],
- 10x@~cite[vksb-dls-2014],
- and
- 72x@~cite[rsfbv-popl-2015]
- have been reported in the literature.
-@; Allende (DLS'13) dont seem to report a slowdown. Just,
-@;  "as type annotations are added to a library, performance tends to degrade"
+This article presents a framework for systematically evaluating the performance
+ of a gradual type system.
+Given a programming language @math{L}, the method is suitable for comparing two
+ different gradual type systems for @math{L} based on their performance
+ characteristics.
+In @Secref{sec:typed-racket} we apply the framework to Typed Racket, a
+ mature implementation of macro-level gradual typing, and compare three
+ different versions of the implementation.
+This evaluation serves a three-way purpose of evaluating our framework,
+ identifying serious performance issues with the current implementation of
+ Typed Racket, and demonstrating that recent changes to Typed Racket have
+ significantly improved.
 
-These preliminary slowdown factors imply a steep tradeoff between preserving type
- soundness and maintaining performance when adding types to an untyped program.
-The aim of this paper is to provide a foundation for measuring
- and understanding the tradeoff.
-
-
-@section{Contributions}
-
-This paper introduces a method for evaluating the performance of a macro-level
- gradual type system.
-Given an untyped program and a fixed type assignment for all modules in the
- program, the method considers the performance of every @emph{configuration}
- obtained by typing a subset of the modules.
-Hence a program with @exact{$N$} modules has @exact{$2^N$} configurations
- ranging from the configuration with zero typed modules to the @exact{$N$}
- configurations with one typed module to the fully-typed configuration.
-We apply our method to Typed Racket.
-The evaluation affirms that Typed Racket programs may suffer
- order-of-magnitude overhead, but also suggests concrete improvements.
-
-The method was originally presented in a conference publication@~cite[tfgnvf-popl-2016].
-We extend that prior work with:
+@section{Is Sound Gradual Typing Dead?}
+An earlier conference version of this article presented our evaluation framework
+ and evaluated Typed Racket version 6.2 @todo{cite}.
+That paper made two bold claims:
 @itemlist[
-  @item{
-    A comparative analysis of three versions of Typed Racket,
-     using the method to measure differences between versions.
-  }
-  @item{
-    Results for @id[(integer->word (count-new-oo-benchmarks))]
-     object-oriented benchmark programs, augmenting our previous suite of
-     @id[(- (count-benchmarks) (count-new-oo-benchmarks))]
-     mostly-functional benchmark programs.
-  }
-  @item{
-    In-depth discussions of performance bottlenecks in each benchmark and,
-     where applicable, their resolution.
-  }
-  @item{
-    Preliminary reports on a method for predicting the performance overhead for
-     any of a program's @exact{$2^N$} configurations after taking @exact{$O(N)$}
-     measurements.
-  }
+  @item{The performance cost of Typed Racket's gradual typing is not tolerable.}
+  @item{If applying our framework to other gradual type system implementations
+        yields similar results, then sound gradual typing is dead.}
 ]
+We stand by these claims.
+It remains to be seen whether a performant implementation of sound gradual
+ typing is possible.
+Until then, these systems fail to solve the original software maintenance
+ problem.
 
