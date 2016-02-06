@@ -2,100 +2,86 @@
 
 @require["common.rkt"]
 
+@;@title[#:tag "sec:intro"]{Gradual Typing and Performance}
+@;@title[#:tag "sec:intro"]{Types of Untyped Languages}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
 Dynamically-typed languages have become a
- staple of the software engineering world. Programmers use these languages
- to build all kinds of software systems, from .
- @~cite[(in-bib pension)]
- @~cite[(in-bib TODO)].
- In many cases, the systems start
- as innocent prototypes. Soon enough, though, they grow into complex,
+ staple of the software engineering world.
+Programmers use these languages to build all kinds of software, from
+ @; TODO not the best example
+ social networking websites @todo{cite} @;@~cite[(in-bib TODO)]
+ to pension systems @todo{cite} @;@~cite[(in-bib pension)].
+In many cases, the systems start as innocent prototypes.
+Soon enough, though, they grow into complex,
  multi-module programs, at which point the engineers realize that they are
  facing a maintenance nightmare, mostly due to the lack of reliable type
  information.
+@todo{nightmare?}
 
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
- solution to this pressing software engineering problem. The idea is to
- extend the language so that programmers can incrementally equip programs
- with types. In contrast to optional typing,
- gradual typing provide programmers with soundness guarantees.
+ solution to this pressing software engineering problem.
+ @todo{specific problem}
+The idea is to extend the language so that programmers can incrementally equip
+ programs with types.
+@; How to mediate the development benefits of dynamics and the maintenance benefits of types
+@; 'Course not this clear-cut,
+@; - types great for dev, catch many typos
+@; - untypes frequently better for highly reusable & concise code
+ @todo{fix}
+This gives the language user freedom to @emph{locally} decide where the benefits
+ of having a type system outweigh the tradeoffs.
+@todo{impedence mismatch}
 
-Realizing type soundness in this world requires run-time checks that watch
- out for potential impedance mismatches between the typed and untyped
- portions of the programs. The granularity of these checks determine
- the peformance overhead of gradual typing. To reduce the frequency of
- checks, @emph{macro-level} gradual typing forces programmers to annotate entire
- modules with types and relies on behavioral contracts@~cite[ff-icfp-2002]
- between typed and untyped modules to enforce soundness.
- In contrast, @emph{micro-level} gradual
- typing instead assigns an implicit type @tt{Dyn}@~cite[TypeDynamic] to all
- unannotated parts of a program; type annotations can then be added to any
- declaration. The implementation must insert casts at the
- appropriate points in the code. Different language designs use slightly
- different semantics with different associated costs and limitations.
+Many programming languages combine the benefits of static and dynamic typing;
+ in the past five years, we have seen new gradual type systems for
+ @todo{langs}.
+The systems have diverse goals and capabilities; we provide a survey in
+ @secref{sec:flavors}.
+In fact, the term
+ @emph{gradual typing} has become an umbrella term rather than a technical one.
+Nonetheless, there are three main criterion for evaluating gradual type systems:
+ @itemlist[
+   @item{@emph{Expressiveness:} how many untyped features can the type system
+         validate?}
+   @item{@emph{Soundness:} are the semantics of types preserved at runtime?}
+   @item{@emph{Performance:} how do typed/untyped programs run, relative to
+         the untyped baseline?}
+ ]
+In the context of sound gradual typing, the first two evaluation criteria
+ are relatively well-studied.
+ @; Note on expressiveness: we specifically did NOT ask i.e. "dep. types?"
+ @; That's an indirect answer to the core question of "how many 'correct'
+ @;  untyped lambda terms does the system validate / understand
+The third has seen little attention; however, anecdotal evidence indicates
+ that slowdowns from 2x to 10x are common.
+ @todo{anecdote vs evaluation}.
 
-Both approaches to gradual typing come with two implicit claims. First, the
- type systems accommodate common untyped programming idioms.  This allows
- programmers to add types with minimal changes to existing
- code. Second, the cost of soundness is tolerable, meaning programs remain
- performant even as programmers add type annotations. Ideally, types should
- improve performance as they provide invariants that an optimizing compiler
- can leverage. While almost every publication on
-@; The whole point of the Thorn/StrongScript design is to tackle that second
-@; claim. This done by adding restricitions (e.g. nominal...) but we definitely
-@; have no allocation of wrappers.  Tests boil down to constant time checks.
- gradual typing validates some version of the first claim, no projects
- tackle the second claim systematically. Most publications come with qualified remarks about the
- performance of partially typed programs. Some plainly admit that such mixed
- programs may suffer performance degradations of up to two orders of magnitude
- @~cite[vksb-dls-2014 rsfbv-popl-2015 tfdffthf-ecoop-2015].
+This article presents a framework for systematically evaluating the performance
+ of a gradual type system.
+Given a programming language @math{L}, the method is suitable for comparing two
+ different gradual type systems for @math{L} based on their performance
+ characteristics.
+In @Secref{sec:typed-racket} we apply the framework to Typed Racket, a
+ mature implementation of macro-level gradual typing, and compare three
+ different versions of the implementation.
+This evaluation serves a three-way purpose of evaluating our framework,
+ identifying serious performance issues with the current implementation of
+ Typed Racket, and demonstrating that recent changes to Typed Racket have
+ significantly improved.
 
-This paper presents a single result: a method for systematically evaluating the
-performance of a gradual type system. It is illustrated with an application
-to Typed Racket, a mature implementation of
-macro-level gradual typing. We find that Typed Racket's cost of soundness is @emph{not}
-tolerable. If applying our method to other gradual
-type system implementations yields similar results, then sound gradual typing is dead.
+@section{Is Sound Gradual Typing Dead?}
+An earlier conference version of this article presented our evaluation framework
+ and evaluated Typed Racket version 6.2 @todo{cite}.
+That paper made two bold claims:
+@itemlist[
+  @item{The performance cost of Typed Racket's gradual typing is not tolerable.}
+  @item{If applying our framework to other gradual type system implementations
+        yields similar results, then sound gradual typing is dead.}
+]
+We stand by these claims.
+It remains to be seen whether a performant implementation of sound gradual
+ typing is possible.
+Until then, these systems fail to solve the original software maintenance
+ problem.
 
-The insight behind the method is that to
- understand the performance of a gradual type system, it is necessary to
- simulate how a maintenance programmer chooses to add types to an existing
- software system. For practical reasons, such as limited developer resources or access to source
- code, it may be possible to add types to only a part of the system.
- Our method must therefore simulate all possibilities.
- Thus, applying our method to Typed Racket requires annotating
- all @exact{$n$} modules with types. The resulting collection of @exact{$2
- \cdot n$} modules is then used to create @exact{$2^n$}
- configurations. The collection of these configurations forms a complete
- lattice with the untyped configuration at the bottom and the fully typed one
- at the top. The points in between represent configurations in which some
- modules are typed and others are untyped. Adding types to an untyped module
- in one of these configurations yields a configuration at the next level of
- the lattice. In short, the lattice mimics all possible choices of single-module
- type conversions a programmer faces when a maintenance task comes up.
-
-A performance evaluation of a system for gradual typing must time these
- configurations of a benchmark and extract information from these
- timings. Section@secref{sec:fwk} introduces the evaluation method in
- detail, including the information we retrieve from the lattices and how we
- parameterize these retrievals.  The timings may answer basic questions
- such as how many of these configurations could be deployed without
- degrading performance too much.
-
-We apply our method to Typed Racket, the gradually typed sister language of
- Racket.  With nine years of development, Typed Racket is the oldest and
- probably most sophisticated implementation of gradual typing.
- Furthermore, Typed Racket has also acquired a fair number of users, which
- suggests adequate performance for these commercial and open source
- communities. The chosen benchmark programs originate from these
- communities and range from 150 to 7,500 lines of code. @Secref{sec:bm}
- presents these benchmarks in detail.
-
-Section@secref{sec:tr} presents the results from running all configurations
- of the Typed Racket benchmarks according to the metrics spelled out in
- section@secref{sec:fwk}.  We interpret the ramifications of these rather
- negative results in section@secref{sec:death} and discuss the threats to
- validity of these conclusions. The section also includes our report on a
- preliminary investigation into the possible causes of the slowdowns in our
- benchmark configurations.
