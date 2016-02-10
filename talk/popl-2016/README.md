@@ -11,8 +11,8 @@ This talk requires the following fonts to be installed:
 
 How to run:
 
-  raco make -v talk.rkt
-  slideshow talk.rkt
+    > raco make -v talk.rkt
+    > slideshow talk.rkt
 
 The talk code is licensed under the LGPL. The images are copyrighted by
 their respective authors.
