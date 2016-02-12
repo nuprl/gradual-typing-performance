@@ -6,8 +6,7 @@
 (define-type Point%
   (Class (field [x Real] [y Real])))
 
-(define-type Point
-  (Instance Point%))
+(define-type Point (Instance Point%))
 
 (: norm (-> Point Real))
 (define (norm p)
