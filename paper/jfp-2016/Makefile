@@ -6,7 +6,7 @@ compiled/paper_scrbl.zo: *.rkt *.scrbl
 	raco make -v $(PAPER).scrbl
 
 paper.pdf: pkg compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex scripts/*.rkt
-	scribble ++extra fig-adaptor.tex ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
+	scribble ++extra fig-adaptor.tex ++extra fig-tr-example.tex ++extra fig-ts-example.tex ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
 
 paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 	scribble ++style texstyle.tex --latex $(PAPER).scrbl
