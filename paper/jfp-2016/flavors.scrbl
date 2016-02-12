@@ -11,7 +11,7 @@
 
 @title[#:tag "sec:flavors"]{Flavors of Gradual Typing}
 ``Gradual Typing'' is an umbrella term that broadly classifies type systems
- allowing static and dynamic type checking.
+ allowing a mixture of static and dynamic type checking.
 This section briefly summarizes the history of gradual typing in order to
  disambiguate and motivate sound gradual type systems.
 
@@ -87,18 +87,18 @@ Types present in source code of optionally typed languages are
 Untyped code is free to call @racket[norm] or
  any other typed function with nonsense arguments.
 At runtime, these calls might trigger a dynamic error immediately, but they
- can also ``succeed'' silently and cause the program to produce the wrong output.
-If the compiler optimized using type information, then the resulting code would
- both type-unsafe and memory-unsafe---no better than C.
+ can also ``succeed'' silently and cause the program to produce incorrect results.
+If the compiler optimized based on static type information,
+ then the resulting code would both type-unsafe and
+ memory-unsafe---no better than C.
 
 In practice unit testing should catch dynamic type errors, but the fact remains
  that programmers using optional type systems cannot trust the type
  annotations for more than protection from typos or simple logical errors.
-On the other hand, simple type errors are extremely common and unsound types
- have zero run-time overhead.
-@; Performance alone is often cited as a reason to forgo soundness @todo{cite}.
+On the other hand, erased types have zero run-time overhead.
+Performance alone is often cited as a reason to forgo soundness @todo{cite}.
 
-@; Should TypeScript optimize with types?
+@; Should TypeScript optimize with types? [devs say no]
 @;   https://github.com/Microsoft/TypeScript/issues/1151
 @; TypeScript, votes for soundness
 @;   https://typescript.codeplex.com/discussions/428572
@@ -134,8 +134,8 @@ Sound gradual type systems statically check typed code for type errors,
  allow interaction between typed and untyped code, and additionally enforce
  the semantics of types at runtime.
 The enforcement is what separates gradual types from optional types.
-Whereas optional type systems erase the types at some point during compilation,
- all gradually typed languages convert static types into runtime assertions or
+Whereas optional type systems erase the types during compilation,
+ sound gradually typed languages convert static types into runtime assertions or
  casts.
 When two typed parts of a program interact, these runtime checks are skipped.
 But the boundary between typed and untyped code is always guarded.
@@ -194,7 +194,7 @@ Once a function's domain is typed, there is no way it can be called
 Similarly, any data structure invariants that can be encoded in the type system
  are automatically preserved at runtime.
 As the type system increases in scope and expressiveness, programmers
- can replace more informal or asserted properties with stronger types.
+ can replace informal or asserted properties with stronger types.
  @; Example?
 
 @; Eliminate errors
@@ -210,9 +210,9 @@ Therefore most of the work in debugging problems due to type errors is
 @; Optimize
 Lastly, sound types justify type-based optimizations.
 Compilers may use type information to generate faster code.
-@todo{cite promise of type optimizations}
+@todo{cite morrissett/spj}
 If optimizations outweight the cost of dynamic type checks, then sound
- typed can provide a net peformance improvement.
+ types can provide a net peformance improvement.
 
 @; Haskell https://ghc.haskell.org/trac/ghc/wiki/Commentary/Compiler/HscMain
 
@@ -228,7 +228,7 @@ Reason being, there are two schools of thought regarding the granularity at
  program be typed or untyped.
 As @Figure-ref{fig:ts-example} demonstrates, class fields, function parameters,
  and function return types can be annotated or left untyped.
-This gives enormous freedom when typing a program.
+This gives enormous freedom adding types to a program.
 Nearly all the languages mentioned above are examples of micro gradual typing
  @todo{cite}.
 
