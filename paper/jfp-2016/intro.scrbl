@@ -10,14 +10,12 @@
 Dynamically-typed languages have become a staple of the software
  engineering world.
 Programmers use these languages to build all kinds of software, from
- @; TODO not the best example
- social networking websites @todo{cite} @;@~cite[(in-bib TODO)]
- to pension systems @todo{cite} @;@~cite[(in-bib pension)].
+ data analysis libraries
+ to social networking websites
+ to pension systems @todo{cite}.
 In many cases, the systems start as innocent prototypes.
 Soon enough, though, small programs grow into complex,
- multi-module programs, at which point the engineers realize that they are
- facing a maintenance nightmare, mostly due to the lack of reliable type
- information.
+ multi-module programs, and software maintenance becomes a bottleneck.
 
 @; 1. In our opinion, benefits of static + dynamic types
 On one hand, dynamic languages offer unconstrained freedom to write
@@ -29,7 +27,7 @@ The language will faithfully do anything the programmer instructs it to---as
  hardware, and should therefore be cherished" @todo{cite}.
 That being said, a static type system helps validate a design, quickly catches
  common errors, provides documentation, and enables new optimizations.
-Sound type systems additionally protect against all type errors.
+Sound type systems additionally guarantee protection from type errors.
 Working with a type system seems a small price to pay for such a powerful
  debugging aid.
 
@@ -38,8 +36,8 @@ Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
  solution to resolve the tradeoffs of dynamic and static typing.
 The idea is to extend the language so that programmers can incrementally equip
  programs with types.
-This gives the language user freedom to @emph{locally} decide where the benefits
- of working with a type system outweigh the costs..
+This gives the language user freedom to decide where the benefits
+ of working with a type system outweigh the costs.
 
 Many programming languages combine the benefits of static and dynamic typing;
  in the past five years, we have seen new gradual type systems for
@@ -48,8 +46,8 @@ Each system has diverse goals and capabilities;
  in fact, the term
  @emph{gradual typing} has become an umbrella term rather than a technical one,
  applied equally to dynamic languages where type annotations encourage unsafe
- compiler optimizations @todo{cite} and safe languages where
- omitted type annotations are compensated by runtime casts.
+ compiler optimizations and safe languages where
+ omitted type annotations are compensated by runtime casts @todo{cite}.
 @Secref{sec:flavors} surveys this research and implementation landscape.
 Despite the variety, there are three equally-important criteria for
  evaluating any gradual type system:
@@ -79,14 +77,16 @@ Given a programming language @math{L}, the framework is suitable for comparing
 In @Secref{sec:typed-racket} we apply the framework to Typed Racket, a
  mature implementation of macro-level gradual typing, and compare three
  versions of the implementation.
-This evaluation serves to evaluate our framework,
- identify serious performance issues,
+This comparison serves to evaluate our framework,
+ identify serious performance issues (@Secref{sec:aftermath}),
  and demonstrate how recent changes to Typed Racket have
  significantly improved the performance of the system.
+We conclude by assessing weaknesses of our framework in @Secref{sec:death}
+ and suggesting future applications in @Secref{sec:conclusion}.
 
 @section{So, is Sound Gradual Typing Dead?}
 An earlier conference version of this article presented our evaluation framework
- and evaluated Typed Racket version 6.2 @todo{cite}.
+ and evaluated Typed Racket v6.2 @todo{cite}.
 That paper made two claims:
 @itemlist[
   @item{The performance cost of Typed Racket's gradual typing is not tolerable.}
@@ -95,10 +95,8 @@ That paper made two claims:
 ]
 We stand by these claims.
 Even after the performance improvements discussed
- in Section @todo{ref}, freely mixing typed and untyped code remains impractical.
-@;TODO impractical = ???
+ in @Secref{sec:aftermath}, freely mixing typed and untyped code remains impractical.
 It remains to be seen whether a performant implementation of sound gradual
  typing is possible or how the gradual typing promise should be amended
- to help developers avoid pathological slowdowns.
+ to help developers avoid order-of-magnitude slowdowns.
 
-@todo{road map?}
