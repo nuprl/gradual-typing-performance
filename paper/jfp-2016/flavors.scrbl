@@ -1,12 +1,5 @@
 #lang scribble/base
 
-@; What are the flavors?
-@; - sound
-@; - unsound = optional
-@; - pluggable
-@; - soft
-@; - 
-
 @require["common.rkt"]
 
 @title[#:tag "sec:flavors"]{Flavors of Gradual Typing}
@@ -65,7 +58,7 @@ The compiler statically checks all typed code for type errors and just accepts
  syntactically valid untyped code.
 There are no restrictions on how typed and untyped code may interact at runtime.
 
-@figure["fig:ts-example" "Typed (left) and untyped (right) Typescript code"
+@figure["fig:ts-example" "Typed (left) and untyped (right) TypeScript code"
   @exact|{\input{fig-ts-example.tex}}|
 ]
 
@@ -75,7 +68,7 @@ The version on the left is fully typed; the type annotations are preceded by
 Any or all of these annotations may be removed to produce a partially-untyped
  version of the program.
 Compiling any version of the program will produce the JavaScript code shown
- on the right---no matter which type annotations are present.
+ on the right---no matter what type annotations are present.
 When the parameter to @racket[norm] is annotated, however, the TypeScript
  compiler will warn the programmer of a type error.
 
@@ -86,17 +79,17 @@ Types present in source code of optionally typed languages are
  not enforced at runtime.
 Untyped code is free to call @racket[norm] or
  any other typed function with nonsense arguments.
-At runtime, these calls might trigger a dynamic error immediately, but they
+At runtime, these calls might trigger a dynamic error, but they
  can also ``succeed'' silently and cause the program to produce incorrect results.
 If the compiler optimized based on static type information,
- then the resulting code would both type-unsafe and
+ then the resulting code would be both type-unsafe and
  memory-unsafe---no better than C.
 
 In practice unit testing should catch dynamic type errors, but the fact remains
  that programmers using optional type systems cannot trust the type
  annotations for more than protection from typos or simple logical errors.
-On the other hand, erased types have zero run-time overhead.
-Performance alone is often cited as a reason to forgo soundness @todo{cite}.
+On the other hand, erased types have zero run-time overhead;
+ performance alone is often cited as a reason to forgo soundness @todo{cite}.
 
 @; Should TypeScript optimize with types? [devs say no]
 @;   https://github.com/Microsoft/TypeScript/issues/1151

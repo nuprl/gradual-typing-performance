@@ -226,6 +226,7 @@ WE DONT KNOW. We really don't know! Really!
 - come to bury sound gradual typing
 - adaptors vs. "DefinitelyTyped" d.ts
 - experience report, lessons
+- prediction -- we tried something, works pretty bad, take what you will
 - 
 
 Matthias

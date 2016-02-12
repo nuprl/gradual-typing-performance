@@ -1,33 +1,57 @@
 #lang scribble/base
 
-@require["common.rkt" benchmark-util/data-lattice]
+@; TODO lattice
+@;@figure["fig:fsm-lattice" "FSM performance lattice (labels are speedup/slowdown factors)"
+@;  @(let ([vec (file->value "src/fsm-lattice-data.rktd")])
+@;     (make-performance-lattice vec))
+@;]
 
-@profile-point{sec:framework}
-@title[#:tag "sec:framework"]{Evaluation Framework}
-
-Performance evaluation for gradually typed languages must reflect how
- developers use such languages.
-Migrating an entire project from untyped to typed is rarely the initial goal,
- but rather a symptom of an exceptional initiative or a need to remove type
- boundaries.
-Consequently, the question of whether there exists a
- smooth conversion path from fully-untyped to fully-typed that avoids
- performance overhead is purely academic.
-In practice, a subset of modules are given types for
- reasons known only to the original developers.
-The overall performance of the hybrid program is then compared to the previous
- version of the program.
-If type-driven optimizations result in a performance improvement, all is well.
-Otherwise, the developers may either accept the performance of the hybrid system
- or seek ways to reduce the cost of type boundaries.
-This process repeats over time as the program evolves.
-
-We formalize these lessons in two stages: first by describing the @emph{space}
- over which a performance evaluation must take place and second by giving
- @emph{metrics} for judging the performance of a gradually typed program.
-
+@require["common.rkt"]
 
 @; -----------------------------------------------------------------------------
+@title[#:tag "sec:frameworkfwk"]{Evaluation Framework}
+
+@; @section{Criteria for Performance Evaluation}
+Our experience with Typed Racket demonstrates two essential points:
+  @itemlist[
+    @item{
+      Racket programmers are not seeking "ideal" conversion paths
+       from untyped to typed.
+      More often, they arrive at a completely random lattice point through
+       some combination of existing code, necessity, and curiosity.
+    }
+    @item{
+      Performance can fluctuate wildly depending on what subset of modules
+       are typed due to the complex interaction between modules.
+    }
+  ]
+These observations convince us that performance evaluation for gradual type
+ systems needs to consider @emph{all possible} ways of gradually typing a
+ program.
+
+@; -----------------------------------------------------------------------------
+
+@section{Performance Lattice}
+
+Our evaluation framework is inspired by our previous work on extending functional
+ Typed Racket to the object-oriented aspects of Racket, in which we
+ use a lattice-style approach for a preliminary performance evaluation@~cite[tfdffthf-ecoop-2015].
+By inspecting all possible ways of typing two small
+ game systems, we identified and then eliminated a major
+ performance bottleneck from the implementation.
+Our previous performance evaluation was conducted in tandem with the
+ design and implementation of Typed Racket, and thus the final results were
+ relatively positive.
+In contrast, we conduct our current evaluation completely @emph{independently} of
+ Typed Racket's implementation efforts.@note{In terminology
+  borrowed from the
+  education community@~cite[scriven-chapter-1967], we conducted a @italic{formative
+  evaluation} while this paper conducts a @italic{summative
+  evaluation} to assess the post-intervention state of the system.}
+Thus our framework is directly applicable to other sound gradual type systems.
+
+Let us re-articulate the salient points from our previous work:
+@itemlist[
 
 @section{Performance Lattice}
 
@@ -77,52 +101,96 @@ This lattice-based approach to performance measurements was introduced in our
   }
 ]
 
-A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|
- generated from a sequence of modules.
-After framing the lattice for a given program, language evaluators must measure
- the performance of each configuration and generate a labeling @exact{$l$}
- such that @exact{$\forall c \in S$} the performance of
- configuration @math{c} is expressed by @exact{$l(c)$}.
-Once the data is aggregated, we can draw lessons and make comparisons
- using the lattice and labeling.
+@item{Each module@note{For micro gradual typing, each variable is either typed or untyped}
+  in a software system configuration is either typed or untyped.}
+
+@item{For a fixed sequence of @math{n} modules there are @math{2^n} possible
+ configurations.}
+
+@item{
+ Let @math{S} be the set of all configurations for a sequence of @math{n} modules.
+ For @exact|{$c \in S$}| and @exact|{$i \in [0, n)$}|,
+  let @exact|{$c(i) = 1 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is typed
+  and
+  let @exact|{$c(i) = 0 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is untyped.}
+
+@item{Define @exact|{$\leq\,\subseteq S \times S$}| as:
+ @exact|{$c_1 \leq c_2 \iff \forall i\,. c_1(i) = 1 \Rightarrow c_2(i) = 1$}|}
+
+@item{@emph{Proposition:} @exact|{$(S, \leq)$}| is a complete lattice.
+ Proof is trivial. We remark that the fully untyped configuration is the
+ bottom element and the fully-typed configuration is the top}
+]
+ We speak of a @italic{performance lattice} to describe a pair @exact|{$(S, \leq)$}|.
 
 
-@; -----------------------------------------------------------------------------
-@section[#:tag "sec:measurements"]{Measuring Performance}
+Our contribution is to exploit the lattice-oriented approach to benchmarking
+ for a @emph{summative} evaluation.
+To this end, we imagine software engineers who are considering the use of
+ gradual typing for some program and consider what kinds of questions may
+ influence their decision.
+Based on this first step, we formulate a small number of parameterized,
+ quantitative measures that capture possible answers to these questions.
+Our criteria for gradual type system design is thereby in sync with the
+ performance properties most useful to developers.
 
-The most basic question one might ask about a gradually typed language is
- whether fully-typed programs can be faster than untyped programs.
-In principle, static types enable optimizations and can serve in place of the
- run-time tags used in safe dynamic languages, so one would expect a speedup.
-But the net effect of these improvements may be offset in programs
- that rely heavily on an untyped library.
-Hence we characterize the relative performance of fully-typed programs
- using a ratio to capture the possibility of speedups and slowdowns.
+@section{Measurements}
 
-    @def[#:term "typed/untyped ratio"]{
-     The typed/untyped ratio of a performance
-      lattice is the time needed to run the top configuration divided by the
-      time needed to run the bottom configuration.
-    }
+When the configuration consists of a small number of modules, the software engineers
+ might be able to equip the entire program with type annotations in one fell
+ swoop.
+Such a fully annotated system should perform as well as
+ the original, untyped version---and if the gradual type system is
+ integrated with the compiler, it may even run faster because the compiler
+ can apply standard type-based optimization techniques.
+@; YUCK we just said developers will never reach the top.
 
-Determining whether speedups or slowdowns are the norm for fully typed programs
- may influence a software team's decision to experiment with gradual typing.
-But once a team is already using gradual typing, the important performance
- question is how much overhead their current configuration suffers due
- to gradual typing.
-If the performance overhead is low enough, the configuration can be
- released and used by clients.
-Depending on the nature of the software and clients' expectations,
- an appropriate substitute for "low enough" might take any value between zero overhead
- and an order-of-magnitude slowdown.
-To account for the varying requirements of software teams, we formulate
- the following parameterized definition of deliverable configurations.
+@def[#:term "typed/untyped ratio"]{The typed/untyped ratio of a performance
+ lattice is the time needed to run the top configuration divided by the
+ time needed to run the bottom configuration.}
 
-    @def[#:term @list{@deliverable{}}]{
-     A configuration in a performance
-      lattice is @deliverable{} if its performance is no worse than a
-      @math{D}x slowdown compared to the untyped configuration.
-    }
+Unfortunately, this assumption overlooks the realities of implementations
+ of gradual typing. Some modules simply cannot be equipped with types
+ because they use linguistic constructs that the type system does not support.
+ Furthermore, completely typed configurations still use the
+ run-time libraries of the underlying untyped language. In particular,
+ Typed Racket's run-time system remains largely untyped. As a result, even
+ the completely typed configurations of our benchmarks usually import
+ constants, functions, and classes from an untyped module in the run-time
+ system. When these values cross this boundary at run-time, the contract
+ system performs checks, and that imposes additional costs. To address this
+ issue, the implementors of Typed Racket have enlarged their trusted code
+ base with unchecked type environments that cover frequently imported parts
+ of the run-time system. The next
+ section explains what ``completely typed'' means for the individual
+ benchmarks. 
+
+When the software system configuration consists of a reasonably large
+ number of modules, no software engineering team can annotate the entire
+ system with types all at once. Every effort is bound to leave the configuration
+ in a state in which some modules are typed and some others are untyped. As a
+ result, the configuration is likely to suffer from the software contracts
+ that the gradual type system injects at the boundaries between the typed and
+ the untyped portions. If the cost is tolerable, the configuration can be
+ released and can replace the currently deployed version. 
+ The run-time costs may not be tolerable,
+ however, as our previous work observes. In that case, the question is how
+ much more effort the software engineers have to invest to reach a releasable
+ configuration. That is, how many more modules must be converted before the
+ performance is good enough for the new configuration to replace the
+ running one.
+
+To capture this idea, we formulate the following definition of
+ ``deliverable configurations.''
+
+@def[#:term @list{@deliverable{N}}]{A configuration in a performance
+ lattice is @deliverable{N} if its performance is no worse than an @math{N}x slowdown
+ compared to the completely untyped configuration.}
+
+ We parameterize this definition over the slowdown factor that a team
+ may consider acceptable. One team may think of a 1.1x slowdown as barely
+ acceptable, while another one may tolerate a slowdown of an order of
+ magnitude@~cite[tfdffthf-ecoop-2015].
 
 Even if a configuration is not deliverable, it might be suitably fast to
  run the test suites and prototype designs.
