@@ -1,0 +1,46 @@
+\begin{minipage}[t]{0.5\textwidth}
+\flushleft
+\begin{verbatim}
+#lang racket
+
+(require
+ "automata.rkt"
+ "population.rkt"
+ "utilities.rkt")
+
+....
+
+(define (evolve pop count)
+  (if (zero? count)
+    null
+    (evolve (step pop)
+            (- count 1))))
+
+(evolve (create 100) 5)
+\end{verbatim}
+\end{minipage}%
+\hspace{0.4cm}%
+\begin{minipage}[t]{0.4\textwidth}
+  \flushleft
+  \begin{verbatim}
+#lang typed/racket
+
+(require/typed "automata.rkt"
+  [#:opaque Automaton automaton?]
+  [payoff (Automaton -> Natural)]
+  ....)
+(require/typed "utilities.rkt"
+  [choose-randomly
+   ((Listof Probability) Natural
+    -> (Listof Natural))])
+
+(define-type Population
+  (Vectorof (Vectorof Automaton)))
+
+....
+
+(provide
+  [step (Population -> Population)]
+  [create (Natural -> Population)])
+\end{verbatim}
+\end{minipage}
