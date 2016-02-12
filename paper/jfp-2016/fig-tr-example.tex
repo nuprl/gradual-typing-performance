@@ -1,0 +1,29 @@
+\begin{minipage}[t]{0.4\textwidth}
+\flushleft
+\begin{verbatim}
+#lang typed/racket
+
+(define-type Point%
+  (Class (field [x Real] [y Real])))
+
+(define-type Point (Instance Point%))
+
+(: norm (-> Point Real))
+(define (norm p)
+  (+ (abs (get-field x p))
+     (abs (get-field y p))))
+
+(provide norm)
+\end{verbatim}
+\end{minipage}%
+\hfill%
+\begin{minipage}[t]{0.4\textwidth}
+  \flushright
+  \begin{verbatim}
+#lang racket
+
+(require norm)
+
+(norm 3)
+\end{verbatim}
+\end{minipage}
