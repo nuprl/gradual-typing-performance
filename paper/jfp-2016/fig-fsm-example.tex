@@ -16,10 +16,10 @@
     (evolve (step pop)
             (- count 1))))
 
-(evolve (create 100) 5)
+(evolve (create 100) 1000)
 \end{verbatim}
 \end{minipage}%
-\hspace{0.4cm}%
+%\hspace{0.4cm}%
 \begin{minipage}[t]{0.4\textwidth}
   \flushleft
   \begin{verbatim}
@@ -32,7 +32,7 @@
 (require/typed "utilities.rkt"
   [choose-randomly
    ((Listof Probability) Natural
-    -> (Listof Natural))])
+     -> (Listof Natural))])
 
 (define-type Population
   (Vectorof (Vectorof Automaton)))
@@ -40,7 +40,7 @@
 ....
 
 (provide
-  [step (Population -> Population)]
-  [create (Natural -> Population)])
+  [create (Natural -> Population)]
+  [step (Population -> Population)])
 \end{verbatim}
 \end{minipage}
