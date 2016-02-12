@@ -1,25 +1,54 @@
 #lang scribble/base
 
+@; TODO lattice
+@;@figure["fig:fsm-lattice" "FSM performance lattice (labels are speedup/slowdown factors)"
+@;  @(let ([vec (file->value "src/fsm-lattice-data.rktd")])
+@;     (make-performance-lattice vec))
+@;]
+
 @require["common.rkt"]
 
 @; -----------------------------------------------------------------------------
-@title[#:tag "sec:fwk"]{Benchmarking Software Evolution}
+@title[#:tag "sec:frameworkfwk"]{Evaluation Framework}
 
-Our evaluation method is inspired by our previous work on extending functional
+@; @section{Criteria for Performance Evaluation}
+Our experience with Typed Racket demonstrates two essential points:
+  @itemlist[
+    @item{
+      Racket programmers are not seeking "ideal" conversion paths
+       from untyped to typed.
+      More often, they arrive at a completely random lattice point through
+       some combination of existing code, necessity, and curiosity.
+    }
+    @item{
+      Performance can fluctuate wildly depending on what subset of modules
+       are typed due to the complex interaction between modules.
+    }
+  ]
+These observations convince us that performance evaluation for gradual type
+ systems needs to consider @emph{all possible} ways of gradually typing a
+ program.
+
+@; -----------------------------------------------------------------------------
+
+@section{Performance Lattice}
+
+Our evaluation framework is inspired by our previous work on extending functional
  Typed Racket to the object-oriented aspects of Racket, in which we
  use a lattice-style approach for a preliminary performance evaluation@~cite[tfdffthf-ecoop-2015].
- By inspecting the entire lattices of typed/untyped configurations of two small
+By inspecting all possible ways of typing two small
  game systems, we identified and then eliminated a major
  performance bottleneck from the implementation.
- Our previous performance evaluation was conducted in tandem with the
+Our previous performance evaluation was conducted in tandem with the
  design and implementation of Typed Racket, and thus the final results were
  relatively positive.
- In contrast, we conduct our current evaluation completely @emph{independently} of
+In contrast, we conduct our current evaluation completely @emph{independently} of
  Typed Racket's implementation efforts.@note{In terminology
- borrowed from the
- education community@~cite[scriven-chapter-1967], we conducted a @italic{formative
- evaluation} while this paper conducts a @italic{summative
- evaluation} to assess the post-intervention state of the system.}
+  borrowed from the
+  education community@~cite[scriven-chapter-1967], we conducted a @italic{formative
+  evaluation} while this paper conducts a @italic{summative
+  evaluation} to assess the post-intervention state of the system.}
+Thus our framework is directly applicable to other sound gradual type systems.
 
 Let us re-articulate the salient points from our previous work:
 @itemlist[
@@ -27,35 +56,49 @@ Let us re-articulate the salient points from our previous work:
 @item{A (@italic{software system}) @italic{configuration} is a sequence of
  @math{n} modules.}
 
-@item{Each module in a software system configuration is either typed or
- untyped.}
+@item{Each module@note{For micro gradual typing, each variable is either typed or untyped}
+  in a software system configuration is either typed or untyped.}
 
-@item{A configuration @math{c_t} is greater than a configuration @math{c_u}
- (or equal) if @math{c_t} uses a typed module for every position in the
- sequence for which @math{c_u} uses a typed module.}
+@item{For a fixed sequence of @math{n} modules there are @math{2^n} possible
+ configurations.}
 
-@item{The collection of all configurations of length
- @math{n} forms a complete lattice of size @math{2^n}. The bottom element
- is the completely untyped configuration; the top element is the completely
- typed one.}
+@item{
+ Let @math{S} be the set of all configurations for a sequence of @math{n} modules.
+ For @exact|{$c \in S$}| and @exact|{$i \in [0, n)$}|,
+  let @exact|{$c(i) = 1 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is typed
+  and
+  let @exact|{$c(i) = 0 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is untyped.}
+
+@item{Define @exact|{$\leq\,\subseteq S \times S$}| as:
+ @exact|{$c_1 \leq c_2 \iff \forall i\,. c_1(i) = 1 \Rightarrow c_2(i) = 1$}|}
+
+@item{@emph{Proposition:} @exact|{$(S, \leq)$}| is a complete lattice.
+ Proof is trivial. We remark that the fully untyped configuration is the
+ bottom element and the fully-typed configuration is the top}
 ]
- We speak of a @italic{performance lattice} to describe this idea. 
- 
+ We speak of a @italic{performance lattice} to describe a pair @exact|{$(S, \leq)$}|.
+
 
 Our contribution is to exploit the lattice-oriented approach to benchmarking
- for a @emph{summative} evaluation. To this end, we
- imagine software engineers who are considering the use of gradual typing
- for some program and consider what kinds of questions may influence their
- decision.  Based on this first step, we formulate a small number of
- parameterized, quantitative measures that capture possible answers to these
- questions.
+ for a @emph{summative} evaluation.
+To this end, we imagine software engineers who are considering the use of
+ gradual typing for some program and consider what kinds of questions may
+ influence their decision.
+Based on this first step, we formulate a small number of parameterized,
+ quantitative measures that capture possible answers to these questions.
+Our criteria for gradual type system design is thereby in sync with the
+ performance properties most useful to developers.
+
+@section{Measurements}
 
 When the configuration consists of a small number of modules, the software engineers
  might be able to equip the entire program with type annotations in one fell
- swoop. Such a fully annotated system should perform as well as
+ swoop.
+Such a fully annotated system should perform as well as
  the original, untyped version---and if the gradual type system is
  integrated with the compiler, it may even run faster because the compiler
  can apply standard type-based optimization techniques.
+@; YUCK we just said developers will never reach the top.
 
 @def[#:term "typed/untyped ratio"]{The typed/untyped ratio of a performance
  lattice is the time needed to run the top configuration divided by the

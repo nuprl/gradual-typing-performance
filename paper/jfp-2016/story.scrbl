@@ -5,7 +5,7 @@
 @require["common.rkt"]
 @(require racket/file benchmark-util/data-lattice)
 
-@title[#:tag "sec:story"]{Our Story / Programming in Typed Racket}
+@title[#:tag "sec:story"]{All About Typed Racket}
 
 Our research is motivated by practical experience with Typed Racket,
  the gradually-typed sister language of Racket @todo{cite}.
@@ -15,7 +15,7 @@ Developed since 2006, Typed Racket is the oldest and most mature implementation
 Typed Racket's users have built
  graphing libraries,
  web servers,@note{https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ}@note{https://twitter.com/ID_AA_Carmack/status/695702976745381889}@note{https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ}
- probabilistic programming languages @todo{cite drbayes},
+ probabilistic programming languages, @; @todo{cite drbayes},
  and music studios.@note{https://con.racket-lang.org/2015/burns.pdf}
 They have used Typed Racket both to improve existing untyped code and to
  write new applications from scratch @todo{cite}.
@@ -46,7 +46,7 @@ But then so would the benefits of combining typed and untyped code,
 In fact, some untyped code cannot faithfully be expressed in Typed Racket
  due to limitations in the type system.
 Lastly, what should happen when dependently typed Racket arrives in
- 20XX---can we afford a second great migration?
+ 20XX---can we afford a second migration?
 
 Thus we conclude that the Typed Racket language has implementation
  issues that must be addressed.
@@ -55,6 +55,11 @@ Once the worst slowdowns are accounted for, we need to shift focus to building
 
 @; TODO not about paths!
 @; TODO can't predict where you'll end up
+
+
+@;;; Some teams maybe type all the easy stuff
+@;;; Others maybe fix a blibrary and get stuck building it.
+
 
 
 @section{Typed Racket, in depth}
