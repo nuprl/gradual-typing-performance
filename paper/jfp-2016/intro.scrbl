@@ -69,21 +69,22 @@ We have found, however, that commercial implementations of gradual typing
 In fact, the few performance studies mentioned in the literature
  report order-of-magnitude slowdowns.
 
-As a first step towards expressive, safe, and performant gradual typing,
- this article presents a framework for systematically evaluating the performance
+As a first step towards expressive, safe, and performant gradual typing, this
+ article motivates (@Secref{sec:story}) and presents (@Secref{sec:framework})
+ a framework for systematically evaluating the performance
  of a gradual type system.
 Given a programming language @math{L}, the framework is suitable for comparing
  two different gradual type systems for @math{L} based on their performance
  characteristics.
 In @Secref{sec:typed-racket} we apply the framework to Typed Racket, a
  mature implementation of macro-level gradual typing, and compare three
- different versions of the implementation.
+ versions of the implementation.
 This evaluation serves to evaluate our framework,
  identify serious performance issues,
  and demonstrate how recent changes to Typed Racket have
  significantly improved the performance of the system.
 
-@section{Is Sound Gradual Typing Dead?}
+@section{So, is Sound Gradual Typing Dead?}
 An earlier conference version of this article presented our evaluation framework
  and evaluated Typed Racket version 6.2 @todo{cite}.
 That paper made two claims:
