@@ -13,14 +13,18 @@ then
     suffixtree \
     synth \
     tetris \
-    zordoz.6.2.900.15 \
+    zordoz.6.3 \
     zombie \
-    forth \
-    gregor \
     kcfa \
+    gregor \
+    acquire \
+    quadU \
+    fsmv2 \
+    fsmoo \
+    forth \
     quad \
     sieve \
   ; do
-    sh run.sh $project
+    sh run.sh benchmark/$project
   done
 fi
