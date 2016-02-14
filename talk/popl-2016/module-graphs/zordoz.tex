@@ -1,0 +1,29 @@
+%% Total contracts = 277
+%% Total checks = 584186
+\begin{tikzpicture}
+
+  \node (00)               {\rkt{3}{zo-string}};
+  \node (01) [below of=00,yshift=0.3cm] {};
+  \node (02) [below of=01,yshift=0.3cm] {\rkt{4}{zo-transition}};
+
+  \node (10) [left of=00] {};
+  \node (11) [left of=01] {\rkt{1}{zo-find}};
+  \node (12) [left of=02] {};
+
+  \node (20) [left of=10] {};
+  \node (21) [left of=11] {\rkt{2}{zo-shell}};
+  \node (22) [left of=12] {};
+
+  \node (30) [left of=20] {};
+  \node (31) [left of=21] {\rkt{0}{main}};
+  \node (32) [left of=22] {};
+
+  %% -- edges
+  \draw[->,green!48!white, line width=1pt] (11) -- (00);
+  \draw[->,green!48!white, line width=1pt] (11) -- (02);
+  \draw[->,green!48!white, line width=1pt] (21) edge[bend left=35] (00);
+  \draw[->,green!48!white, line width=1pt] (21) edge[bend right=35] (02);
+  \draw[->,yellow!45!orange, line width=2pt] (21) -- (11);
+  \draw[->,green!48!white, line width=1pt] (31) -- (21);
+
+\end{tikzpicture}

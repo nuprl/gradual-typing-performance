@@ -1,0 +1,34 @@
+%% Total contracts = 66
+%% Total checks = 509650306
+\begin{tikzpicture}
+
+  \node (0)             {\rkt{0}{data}};
+  \node (1) [left of=0] {\rkt{1}{label}};
+  \node (2) [left of=1] {\rkt{4}{structs}};
+  \node (3) [left of=2] {\rkt{5}{ukkonen}};
+  \node (4) [left of=3] {\rkt{2}{lcs}};
+  \node (5) [left of=4] {\rkt{3}{main}};
+
+  %% -- edges
+  %% label
+%% WARNING: no data for boundary 'data.rkt' ==> 'label.rkt'
+  \draw[->] (1) -- (0);
+  %% structs
+%% WARNING: no data for boundary 'data.rkt' ==> 'structs.rkt'
+  \draw[->] (2) edge[bend right=35] (0);
+  \draw[->,red!87!black, line width=3.5pt] (2) -- (1);
+  %% ukkonen
+%% WARNING: no data for boundary 'data.rkt' ==> 'ukkonen.rkt'
+  \draw[->] (3) edge[bend left=35] (0);
+  \draw[->,red!87!black, line width=3.5pt] (3) edge[bend left=35] (1);
+  \draw[->,red!87!black, line width=3.5pt] (3) -- (2);
+  %% lcs
+%% WARNING: no data for boundary 'data.rkt' ==> 'lcs.rkt'
+  \draw[->] (4) edge[bend right=35] (0);
+  \draw[->,red!87!black, line width=3.5pt] (4) edge[bend right=35] (1);
+  \draw[->,blue!43!white, line width=2.5pt] (4) edge[bend right=35] (2);
+  \draw[->,blue!43!white, line width=2.5pt] (4) -- (3);
+  %% main
+  \draw[->,blue!43!white, line width=2.5pt] (5) -- (4);
+
+\end{tikzpicture}

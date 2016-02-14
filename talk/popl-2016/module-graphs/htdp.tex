@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+
+  \node (0)              {\rkt{1}{x-info}};
+  \node (1) [below of=0] {\rkt{3}{xnotes}};
+  \node (2) [below of=1] {\rkt{2}{xhtml}};
+  \node (3) [below of=2] {\rkt{0}{main}};
+
+  %% -- edges
+  \draw[->] (1) -- (0);
+  \draw[->] (2) edge[bend right=65] (0);
+  \draw[->] (2) -- (1);
+  \draw[->] (3) -- (2);
+
+\end{tikzpicture}

@@ -1,0 +1,25 @@
+%% Total contracts = 241
+%% Total checks = 25301
+\begin{tikzpicture}
+
+  \node (00) {\rkt{0}{bitstring}};
+  \node (01) [below of=00] {\rkt{3}{modulegraph}};
+  \node (10) [left of=00] {\rkt{4}{spreadsheet}};
+  \node (11) [left of=01] {\rkt{5}{summary}};
+  \node (20) [left of=11] {\rkt{1}{lnm-plot}};
+  \node (21) [left of=10] {};
+  \node (30) [left of=21] {\rkt{2}{main}};
+
+  \draw[->,green!48!white, line width=1pt] (10) -- (00);
+  \draw[->,blue!43!white, line width=2.5pt] (11) -- (00);
+%% WARNING: no data for boundary 'modulegraph.rkt' ==> 'summary.rkt'
+  \draw[->] (11) -- (01);
+  \draw[->,blue!43!white, line width=2.5pt] (20) -- (00);
+%% WARNING: no data for boundary 'summary.rkt' ==> 'lnm-plot.rkt'
+  \draw[->] (20) -- (11);
+  \draw[->,green!48!white, line width=1pt] (30) -- (10);
+%% WARNING: no data for boundary 'summary.rkt' ==> 'main.rkt'
+  \draw[->] (30) -- (11);
+  \draw[->,green!48!white, line width=1pt] (30) -- (20);
+
+\end{tikzpicture}

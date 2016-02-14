@@ -1,0 +1,15 @@
+%% Total contracts = 159
+%% Total checks = 448
+\begin{tikzpicture}
+
+  \node (0) {\rkt{2}{t-graph}};
+  \node (1) [left of=0] {\rkt{3}{t-view}};
+  \node (2) [left of=1] {\rkt{1}{run-t}};
+  \node (3) [left of=2] {\rkt{0}{main}};
+
+  %% -- edges
+  \draw[->,green!48!white, line width=1pt] (1) -- (0);
+  \draw[->,green!48!white, line width=1pt] (2) -- (1);
+  \draw[->,yellow!45!orange, line width=2pt] (3) -- (2);
+
+\end{tikzpicture}
