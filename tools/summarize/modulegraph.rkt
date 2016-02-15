@@ -14,6 +14,9 @@
   (from-tex (-> Path-String ModuleGraph))
   ;; Parse a tex file into a module graph
 
+  (to-tex (-> ModuleGraph Output-Port Void))
+  ;; Print a modulegraph to .tex
+
   (boundaries (-> ModuleGraph (Listof (List String String (Listof Provided)))))
   ;; Return a list of identifier-annotated edges in the program
   ;; Each list is (TO FROM PROVIDED)
@@ -561,41 +564,46 @@
 ;;  (may need to bend edges & permute a row's nodes)
 (: directory->tikz (-> Path Path-String Void))
 (define (directory->tikz p out-file)
-  (define N (path->project-name p))
   (define MG (from-directory p))
-  (define tsort (topological-sort (modulegraph-adjlist MG)))
   (with-output-to-file out-file #:exists 'replace
-    (lambda ()
-      (displayln "\\begin{tikzpicture}\n")
-      (: name+tikzid* (Listof (Pairof String String)))
-      (define name+tikzid*
-       (apply append
-        (for/list : (Listof (Listof (Pairof String String)))
-                  ([group (in-list tsort)]
-                   [g-id  (in-naturals)])
-          (for/list : (Listof (Pairof String String))
-                    ([name (in-list group)]
-                     [n-id (in-naturals)])
-            (define tikzid (format "~a~a" g-id n-id))
-            (define pos
-              (cond
-               [(and (zero? g-id) (zero? n-id)) ""]
-               [(zero? n-id) (format "[left of=~a,xshift=-2cm]" (decr-left tikzid))]
-               [else (format "[below of=~a,yshift=-1cm]" (decr-right tikzid))]))
-            (printf "  \\node (~a) ~a {\\rkt{~a}{~a}};\n"
-              tikzid pos (name->index MG name) name)
-            (cons name tikzid)))))
-      (newline)
-      (: get-tikzid (-> String String))
-      (define (get-tikzid name)
-        (cdr (or (assoc name name+tikzid*) (error 'NONAME))))
-      (for* ([group (in-list tsort)]
-             [name (in-list group)]
-             [req (in-list (requires MG name))])
-        (printf "  \\draw[->] (~a) -- (~a);\n"
-          (get-tikzid name)
-          (get-tikzid req)))
-      (displayln "\n\\end{tikzpicture}"))))
+    (lambda () (to-tex MG (current-output-port)))))
+
+(: to-tex (-> ModuleGraph Output-Port Void))
+(define (to-tex MG out)
+  (define tsort (topological-sort (modulegraph-adjlist MG)))
+  (parameterize ([current-output-port out])
+    (displayln "\\begin{tikzpicture}\n")
+    ;; -- draw nodes
+    (: name+tikzid* (Listof (Pairof String String)))
+    (define name+tikzid*
+     (apply append
+      (for/list : (Listof (Listof (Pairof String String)))
+                ([group (in-list tsort)]
+                 [g-id  (in-naturals)])
+        (for/list : (Listof (Pairof String String))
+                  ([name (in-list group)]
+                   [n-id (in-naturals)])
+          (define tikzid (format "~a~a" g-id n-id))
+          (define pos
+            (cond
+             [(and (zero? g-id) (zero? n-id)) ""]
+             [(zero? n-id) (format "[left of=~a,xshift=-2cm]" (decr-left tikzid))]
+             [else (format "[below of=~a,yshift=-1cm]" (decr-right tikzid))]))
+          (printf "  \\node (~a) ~a {\\rkt{~a}{~a}};\n"
+            tikzid pos (name->index MG name) name)
+          (cons name tikzid)))))
+    (newline)
+    ;; -- draw edges
+    (: get-tikzid (-> String String))
+    (define (get-tikzid name)
+      (cdr (or (assoc name name+tikzid*) (error 'NONAME))))
+    (for* ([group (in-list tsort)]
+           [name (in-list group)]
+           [req (in-list (requires MG name))])
+      (printf "  \\draw[->] (~a) -- (~a);\n"
+        (get-tikzid name)
+        (get-tikzid req)))
+    (displayln "\n\\end{tikzpicture}")))
 
 (: decr-right (-> String String))
 (define (decr-right str)
