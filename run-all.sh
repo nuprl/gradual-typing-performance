@@ -6,21 +6,20 @@ echo ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
   for project in \
-    lnm \
-    mbta \
-    morsecode \
-    snake \
-    suffixtree \
-    synth \
-    tetris \
-    zordoz.6.2.900.15 \
-    zombie \
+    acquire \
     forth \
-    gregor \
+    fsm \
+    fsmoo \
+    zordoz.6.2 \
+    zombie \
+    tetris \
+    synth \
     kcfa \
-    quad \
+    gregor \
+    quadBG \
+    quadMB \
     sieve \
   ; do
-    sh run.sh $project
+    sh run.sh benchmark/$project
   done
 fi

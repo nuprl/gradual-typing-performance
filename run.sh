@@ -1,13 +1,7 @@
 #!/bin/bash
 #############################################################################
-# Independent parameters
-RKT=/Users/ben/code/racket/fork/racket/bin
-#RKT=$(dirname `which racket`)
-
-#############################################################################
-# Dependent Parameters
-
-## Default iterations: try 10, run 30 if not-normal
+# Parameters
+RKT=/home/ben/code/racket/6.2/bin
 
 ## Default jobs: compute number of cores, divide by 2
 if hash nproc 2>/dev/null; then
