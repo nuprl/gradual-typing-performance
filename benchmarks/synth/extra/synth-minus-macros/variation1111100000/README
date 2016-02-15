@@ -1,0 +1,12 @@
+;; TODO remove macros
+
+'(("array-broadcast.rkt" #t)
+  ("array-struct.rkt" #t)
+  ("array-transform.rkt" #t)
+  ("array-utils.rkt" #t)
+  ("data.rkt" #t)
+  ("drum.rkt" #f)
+  ("main.rkt" #f)
+  ("mixer.rkt" #f)
+  ("sequencer.rkt" #f)
+  ("synth.rkt" #f))
