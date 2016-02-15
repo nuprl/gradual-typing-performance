@@ -20,7 +20,7 @@
   (command-line
    #:program "sort-configurations"
    #:once-each
-   [("-o" "--output") o-p "Location to save results (default is current directory)" (*output-dir* o-p)]
+   [("-o" "--output") o-p "Directory to save results in (default is current directory)" (*output-dir* o-p)]
    #:args ARG*
   (for ([pn (in-list ARG*)])
     (define S (from-rktd pn))
