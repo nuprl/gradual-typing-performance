@@ -24,3 +24,9 @@ Fine, but why are Google, Microsoft, FB, and Twitter migrating to typed language
 December 22, 2015
 
 See discussion in link.
+
+[Brian Mastenbrook on Twitter](https://twitter.com/bmastenbrook/status/695814043609780226)
+---
+
+Sad panda
+February 9 2016
