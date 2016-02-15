@@ -28,4 +28,7 @@
   ("gtp-path"
     (submod gtp-summarize/tabulate-paths main)
     "Build a table of 'performant' paths through the lattice" #f)
+  ("gtp-trace"
+    (submod gtp-summarize/trace main)
+    "Build a dynamic module graph for a benchmark" #f)
 ))
