@@ -270,8 +270,8 @@
 
 (: from-directory (-> Path-String ModuleGraph))
 (define (from-directory parent)
+  ;; TODO duplicating work right now, should have project-name->MG
   (define name (path->project-name parent))
-  ;; TODO works when we're in the paper/ directory, but nowhere else
   (define u-dir (infer-untyped-dir name))
   ;; No edges, just nodes
   (: adjlist AdjList)
@@ -299,7 +299,7 @@
 
 (: infer-untyped-dir (-> Path-String Path))
 (define (infer-untyped-dir name)
-  (define u-dir (build-path (infer-project-dir name) "/untyped"))
+  (define u-dir (build-path (infer-project-dir name) "untyped"))
   (if (directory-exists? u-dir)
     u-dir
     (raise-user-error 'modulegraph "Failed to find untyped code for '~a', cannot summarize data" name)))
@@ -876,9 +876,16 @@
     '(("array-utils" "data") ("array-struct") ("array-broadcast" "synth") ("array-transform" "mixer") ("drum" "sequencer") ("main")))
 
 
+  (check-equal?
+    (map (lambda ([b : Boundary])
+           (list (boundary-to b)
+                 (boundary-from b)
+                 (map provided->symbol (boundary-provided* b))))
+         (boundaries MGd))
+    '(("client" "constants" (DATA PORT)) ("main" "server" (server)) ("main" "client" (client)) ("server" "constants" (DATA PORT))))
+
   ;; -- string->texedge TODO
   ;; -- tex->modulegraph TODO
-
   ;; -- directory->adjlist TODO
 )
 
