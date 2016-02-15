@@ -17,10 +17,14 @@
   (to-tex (-> ModuleGraph Output-Port Void))
   ;; Print a modulegraph to .tex
 
-  (boundaries (-> ModuleGraph (Listof (List String String (Listof Provided)))))
+  (boundaries (-> ModuleGraph (Listof Boundary)))
   ;; Return a list of identifier-annotated edges in the program
-  ;; Each list is (TO FROM PROVIDED)
+  ;; Each boundary is a list (TO FROM PROVIDED)
   ;;  where PROVIDED is a list of type Provided (see the data definition below for 'struct provided')
+
+  (boundary-to (-> Boundary String))
+  (boundary-from (-> Boundary String))
+  (boundary-provided* (-> Boundary (Listof Provided)))
 
   (in-edges (-> ModuleGraph (Sequenceof (Pairof String String))))
   ;; Iterate through the edges in a module graph.
@@ -182,11 +186,18 @@
 ) #:transparent )
 (define-type Provided provided)
 
+(define-type Boundary (List String String (Listof Provided)))
+(define boundary-to car)
+(define boundary-from cadr)
+(define boundary-provided* caddr)
+;; For now, I guess we don't need a struct
+
 ;; Return a list of:
-;;   (FROM TO PROVIDED)
+;;   (TO FROM PROVIDED)
 ;;  corresponding to the edges of modulegraph `G`.
-;; This decorates each edges with the identifiers provided from a module.
-(: boundaries (-> ModuleGraph (Listof (List String String (Listof Provided)))))
+;; This decorates each edges with the identifiers provided from a module
+;;  and required into another.
+(: boundaries (-> ModuleGraph (Listof Boundary)))
 (define (boundaries G)
   ;; Reclaim source directory
   (define src (infer-untyped-dir (modulegraph-project-name G)))
@@ -197,7 +208,7 @@
       ((inst cons String (Listof Provided))
         name
         (absolute-path->provided* (build-path src (string-append name ".rkt"))))))
-  (for/list : (Listof (List String String (Listof Provided)))
+  (for/list : (Listof Boundary)
             ([to+from (in-edges G)])
     (define to (car to+from))
     (define from (cdr to+from))
