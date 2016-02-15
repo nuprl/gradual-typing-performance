@@ -55,6 +55,9 @@
 
   (strip-suffix (-> Path-String String))
   ;; Remove the file extension from a path string
+
+  (infer-project-dir (-> String Path-String))
+  ;; Guess where the project is located in the GTP repo
 )
 (provide
   (struct-out modulegraph)
@@ -287,12 +290,19 @@
     (raise-user-error 'modulegraph "Must be in `gradual-typing-performance` repo to use script")))
 
 ;; Blindly search for a directory called `name`.
+(: infer-project-dir (-> Path-String Path))
+(define (infer-project-dir name)
+  (define p-dir (build-path (get-git-root) "benchmark" name))
+  (if (directory-exists? p-dir)
+    p-dir
+    (raise-user-error 'modulegraph "Failed to find project directory for '~a', cannot summarize data" name)))
+
 (: infer-untyped-dir (-> Path-String Path))
 (define (infer-untyped-dir name)
-  (define u-dir (build-path (get-git-root) "benchmarks" name "untyped"))
+  (define u-dir (build-path (infer-project-dir name) "/untyped"))
   (if (directory-exists? u-dir)
     u-dir
-    (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name))))
+    (raise-user-error 'modulegraph "Failed to find untyped code for '~a', cannot summarize data" name)))
 
 ;; Interpret a .tex file containing a TiKZ picture as a module graph
 (: from-tex (-> Path-String ModuleGraph))
