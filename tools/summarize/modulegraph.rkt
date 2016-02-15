@@ -189,7 +189,7 @@
 ;; Blindly search for a directory called `name`.
 (: infer-untyped-dir (-> Path-String Path))
 (define (infer-untyped-dir name)
-  (define u-dir (build-path (get-git-root) "benchmark" name "untyped"))
+  (define u-dir (build-path (get-git-root) "benchmarks" name "untyped"))
   (if (directory-exists? u-dir)
     u-dir
     (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name))))
@@ -616,7 +616,7 @@
   ;; -- infer-untyped-dir
   (check-equal?
     (infer-untyped-dir SAMPLE-MG-DIRECTORY)
-    (build-path (get-git-root) "benchmark" SAMPLE-MG-DIRECTORY "untyped"))
+    (build-path (get-git-root) "benchmarks" SAMPLE-MG-DIRECTORY "untyped"))
   (check-exn exn:fail:user?
     (lambda () (infer-untyped-dir "nasdhoviwr")))
 
