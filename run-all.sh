@@ -20,6 +20,6 @@ then
     quadMB \
     sieve \
   ; do
-    sh run.sh benchmark/$project
+    sh run.sh benchmarks/$project
   done
 fi
