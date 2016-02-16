@@ -189,6 +189,7 @@
 ) #:transparent )
 (define-type Provided provided)
 
+;; TODO should to/from by symbols?
 (define-type Boundary (List String String (Listof Provided)))
 (define boundary-to car)
 (define boundary-from cadr)
