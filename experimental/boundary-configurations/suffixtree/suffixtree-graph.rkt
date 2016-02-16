@@ -1,8 +1,9 @@
 #lang racket/base
 
 (require graph
-         math
-         racket/dict)
+         (only-in math mean)
+         racket/dict
+         racket/list)
 
 (define suffixtree-graph
   ;; A -> B means A depends on B
@@ -85,8 +86,6 @@
               (dict-ref config-boundary-mapping `(out ,export ,mod)))
             (define delta
               (- (mean (hash-ref costs bconfig)) baseline-cost))
-            (printf "adding ~a -> ~a (out) with Δ ~a, bconfig ~a~n"
-                    export mod delta bconfig)
             delta)
           (for/sum ([import (in-list imports)]
                     #:unless (member import typed-mods))
@@ -94,8 +93,16 @@
               (dict-ref config-boundary-mapping `(in ,mod ,import)))
             (define delta
               (- (mean (hash-ref costs bconfig)) baseline-cost))
-            (printf "adding ~a -> ~a (in) with Δ ~a, bconfig ~a~n"
-                    mod import delta bconfig)
             delta)))))
 
-(prediction '(ukkonen label main))
+(define labels '(data label lcs main structs ukkonen))
+(for ([config (in-combinations labels)])
+  (printf "~a~a~a~a~a~a : ~a~n"
+          ;; FIXME: better abstraction for this
+          (if (member 'data config) 1 0)
+          (if (member 'label config) 1 0)
+          (if (member 'lcs config) 1 0)
+          (if (member 'main config) 1 0)
+          (if (member 'structs config) 1 0)
+          (if (member 'ukkonen config) 1 0)
+          (prediction config)))
