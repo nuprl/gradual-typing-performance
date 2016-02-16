@@ -79,7 +79,8 @@
          (get-neighbors (transpose suffixtree-graph) mod))
        ;; FIXME: abstract these two loops
        (+ 0.0
-          (for/sum ([export (in-list exports)])
+          (for/sum ([export (in-list exports)]
+                    #:unless (member export typed-mods))
             (define bconfig
               (dict-ref config-boundary-mapping `(out ,export ,mod)))
             (define delta
@@ -87,7 +88,8 @@
             (printf "adding ~a -> ~a (out) with Δ ~a, bconfig ~a~n"
                     export mod delta bconfig)
             delta)
-          (for/sum ([import (in-list imports)])
+          (for/sum ([import (in-list imports)]
+                    #:unless (member import typed-mods))
             (define bconfig
               (dict-ref config-boundary-mapping `(in ,mod ,import)))
             (define delta
