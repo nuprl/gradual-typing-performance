@@ -1,23 +1,43 @@
 #lang scribble/base
 
+@; TODO
+@; emphasize the theorem. The theorem is why sound is slow. Do you like the theorem?
+
 @require["common.rkt"]
 
 @title[#:tag "sec:flavors"]{Flavors of Gradual Typing}
-``Gradual Typing'' is an umbrella term that broadly classifies type systems
- allowing a mixture of static and dynamic type checking.
-This section briefly summarizes the history of gradual typing in order to
- disambiguate and motivate sound gradual type systems.
+The term @emph{gradual typing} originates in a 2006 paper by Siek \& Taha.
+In the past decade, its meaning has stretched, in both formal and colloquial
+ settings, to refer to a variety of languages allowing some mix of static
+ and dynamic type checking.
+This section briefly summarizes the history of typed/untyped languages
+ for the purpose of motivating and disambiguating @emph{sound} gradual typing
+ relative to similar systems.
 
 
 @section{Origins}
 
-Work on gradual typing can be traced back to Abadi, Cardelli, Pierce,
- and Plotkin @todo{cite}, who proposed a type @tt{Dynamic} for reasoning about
- run-time input.
-Values of type @tt{Dynamic} flow into a program at runtime with an explicit
- type tag, and may be analyzed by dispatching on the value of their tag.
+@; Dynamic ~ 1989
+Work on gradual typing can be traced back to the type @tt{Dynamic} proposed
+ for simply-typed and polymorphic languages @todo{abadi + mauny}.
+Values of type @tt{Dynamic} have an unknown compile-time type, but flow into a
+ program at runtime---perhaps by reading a file---with an explicit type tag.
+To use a @tt{Dynamic} value, one must dispatch on the value of its tag.
+Protected by a suitable guard, the untrusted value is safe to use in a typed
+ program.
 
-@todo{soft types, hybrid types}
+@; Soft ~ 1992
+Soft typing @todo{cite} was an attempt to convert dynamic code into a statically
+ typed language.
+The key tenet of soft typing is that the type checker does not reject any
+ programs it cannot prove correct.
+Instead, the checker inserts runtime casts to validate properties that must
+ hold in a safe execution.
+The end result is improved static error detection and types that may be used
+ to guide optimizations, all without imposing syntactic restrictions on the
+ language user.
+@; Theorems?
+@; Where are we now?
 
 
 @section{Optional Types}

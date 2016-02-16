@@ -21,20 +21,23 @@ Soon enough, though, small programs grow into complex,
 @; 1. In our opinion, benefits of static + dynamic types
 On one hand, dynamic languages offer unconstrained freedom to write
  reusable and flexible code.
-The language will faithfully do anything the programmer instructs it to---as
+The language will faithfully do nearly anything the programmer instructs it to---as
  C.A.R. Hoare wrote in his @emph{Hints on Programming Language Design}, this
  willingness of computer hardware to "accept almost any sequence of instructions"
  is "the secret of the power, flexibility, and simplicity ... of computer
  hardware, and should therefore be cherished" @todo{cite}.
-That being said, a static type system helps validate a design, quickly catches
- common errors, provides documentation, and enables new optimizations.
-Sound type systems additionally guarantee protection from type errors.
-Working with a type system seems a small price to pay for such a powerful
- debugging aid.
+That being said, a static type system guarantees protection from so-called
+ type errors, provides a form of documentation via type signatures, and
+ enables type-driven compiler optimizations @todo{cite}.
+Given these benefits, having to annotate some programs or redesign others
+ to satisfy a type checker seems a small price to pay for the maintenance
+ benefits.
+@; Type systems also useful for writing new code, though popular
+@;  opinion seems to like untyped better.
 
 @; 2. Enter GT
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
- solution to resolve the tradeoffs of dynamic and static typing.
+ solution to resolve the tradeoffs between dynamic and static typing.
 The idea is to extend the language so that programmers can incrementally equip
  programs with types.
 This gives the language user freedom to decide where the benefits
@@ -46,9 +49,13 @@ Many programming languages combine the benefits of static and dynamic typing;
 Each system has diverse goals and capabilities;
  in fact, the term
  @emph{gradual typing} has become an umbrella term rather than a technical one,
- applied equally to dynamic languages where type annotations encourage unsafe
- compiler optimizations and safe languages where
- omitted type annotations are compensated by runtime casts @todo{cite}.
+ applied equally to dynamic languages where type hints are used as an excuse
+ for unsafe compiler optimizations and theoretical calculi with correctness
+ theorems about the interaction of typed and untyped@note{We frequently use
+ ``typed'' and ``untyped'' as shorthand for ``statically typed'' and ``dynamically typed''.
+ To be clear: our ``untyped'' code is memory-safe and will catch type errors at runtime.}
+ components@todo{cite}
+@; fair to compare industry / calculi and deduce "umbrella"?
 @Secref{sec:flavors} surveys this research and implementation landscape.
 Despite the variety, there are three equally-important criteria for
  evaluating any gradual type system:
@@ -63,7 +70,7 @@ To date, there is no language that excels along all three dimensions.
 Therefore one would expect that expressiveness, safety, and performance
  are treated equally in the development of new gradually typed languages.
 We have found, however, that commercial implementations of gradual typing
- ignore type safety and research languages with a type soundness guarantee
+ ignore type safety and research languages with type soundness guarantees
  do not systematically evaluate performance.
 In fact, the few performance studies mentioned in the literature
  report order-of-magnitude slowdowns.
@@ -81,14 +88,14 @@ In @Secref{sec:typed-racket} we apply the framework to Typed Racket, a
 This comparison serves to evaluate our framework,
  identify serious performance issues (@Secref{sec:aftermath}),
  and demonstrate how recent changes to Typed Racket have
- significantly improved the performance of the system.
+ significantly improved the performance of the system (@todo{secref}).
 We conclude by assessing weaknesses of our framework in @Secref{sec:death}
  and suggesting future applications in @Secref{sec:conclusion}.
 
 @section{So, is Sound Gradual Typing Dead?}
 An earlier conference version of this article presented our evaluation framework
  and evaluated Typed Racket v6.2 @todo{cite}.
-That paper made two claims:
+That paper made two claims regarding the evaluation:
 @itemlist[
   @item{The performance cost of Typed Racket's gradual typing is not tolerable.}
   @item{If applying our framework to other gradual type system implementations
