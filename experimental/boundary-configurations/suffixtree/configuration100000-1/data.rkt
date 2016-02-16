@@ -5,7 +5,7 @@
   (struct-out suffix-tree)
   (struct-out node))
 
-(module unsafe #f
+(module* unsafe #f
   (require typed/racket/unsafe)
   (provide (struct-out label)
            (struct-out suffix-tree)

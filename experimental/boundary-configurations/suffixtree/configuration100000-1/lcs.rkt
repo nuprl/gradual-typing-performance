@@ -2,7 +2,7 @@
 ;; Some utilities.
 
 (require
- (except-in "data.rkt" make-label)
+ (except-in "data.rkt" make-label set-node-suffix-link! node-suffix-link)
  "label.rkt"
  "structs.rkt"
  "ukkonen.rkt")
