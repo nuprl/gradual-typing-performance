@@ -3,6 +3,8 @@
 ;; TODO
 ;; - typed racket 
 ;; - unit tests
+;; - morsecode is not running
+;; - 
 
 (provide
 )
@@ -257,11 +259,13 @@
   (newline)
   ;; For each module, print info about its requires
   (for ([to (in-list (dmg->module-names dmg))])
-    (printf "Requires for: ~a.rkt\n" to)
-    (define indent "  - ")
-    (for ([b (in-list (to->dyn-boundary* dmg to))])
-      (printf "  - ~a.rkt : ~a\n" (dyn-boundary-from b) (dyn-boundary-count b)))
-    (newline)))
+    (define b* (to->dyn-boundary* dmg to))
+    (when (not (null? b*))
+      (printf "Requires for: ~a.rkt\n" to)
+      (define indent "  - ")
+      (for ([b (in-list b*)])
+        (printf "  - ~a.rkt : ~a\n" (dyn-boundary-from b) (dyn-boundary-count b)))
+      (newline))))
 
 ;; (-> String Void)
 (define (assert-rkt-bin r)
