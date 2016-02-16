@@ -293,7 +293,7 @@
 ;; Blindly search for a directory called `name`.
 (: infer-project-dir (-> Path-String Path))
 (define (infer-project-dir name)
-  (define p-dir (build-path (get-git-root) "benchmark" name))
+  (define p-dir (build-path (get-git-root) "benchmarks" name))
   (if (directory-exists? p-dir)
     p-dir
     (raise-user-error 'modulegraph "Failed to find project directory for '~a', cannot summarize data" name)))
