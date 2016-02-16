@@ -1,9 +1,13 @@
 #lang racket/base
 
-(require graph
+(require data/bit-vector
+         graph
          (only-in math mean)
          racket/dict
-         racket/list)
+         racket/file
+         racket/format
+         racket/list
+         racket/math)
 
 (define suffixtree-graph
   ;; A -> B means A depends on B
@@ -96,13 +100,26 @@
             delta)))))
 
 (define labels '(data label lcs main structs ukkonen))
-(for ([config (in-combinations labels)])
-  (printf "~a~a~a~a~a~a : ~a~n"
-          ;; FIXME: better abstraction for this
-          (if (member 'data config) 1 0)
-          (if (member 'label config) 1 0)
-          (if (member 'lcs config) 1 0)
-          (if (member 'main config) 1 0)
-          (if (member 'structs config) 1 0)
-          (if (member 'ukkonen config) 1 0)
-          (prediction config)))
+(define data (file->value "suffixtree-2016-02-16T00:13:52.rktd"))
+
+(for ([i (in-range 64)])
+  (define bitstring
+    (~r #:base 2
+        #:min-width 6
+        #:pad-string "0"
+        i))
+  (define bv (string->bit-vector bitstring))
+  (define config
+    (for/list ([on? (in-bit-vector bv)]
+               [label (in-list labels)]
+               #:when on?)
+      label))
+  (define actual (vector-ref data i))
+  (define actual-mean (mean actual))
+  (define the-prediction (prediction config))
+  (printf "~a : prediction ~a actual ~a error ~a%~n"
+          bitstring
+          (~a #:min-width 7 (exact-round the-prediction))
+          (~a #:min-width 7 (exact-round actual-mean))
+          (exact-round
+           (* 100 (- (/ the-prediction actual-mean) 1)))))
