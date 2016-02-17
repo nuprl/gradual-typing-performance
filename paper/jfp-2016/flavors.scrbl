@@ -6,13 +6,23 @@
 @require["common.rkt"]
 
 @title[#:tag "sec:flavors"]{Flavors of Gradual Typing}
-The term @emph{gradual typing} originates in a 2006 paper by Siek \& Taha.
-In the past decade, its meaning has stretched, in both formal and colloquial
- settings, to refer to a variety of languages allowing some mix of static
- and dynamic type checking.
-This section briefly summarizes the history of typed/untyped languages
- for the purpose of motivating and disambiguating @emph{sound} gradual typing
- relative to similar systems.
+The term @emph{gradual typing} was introduced by Siek & Taha to describe
+ type systems that performed sound, static type checking only when function
+ parameters were type annotated @todo{cite}.
+Over the past decade, the restriction on function parameters has been lifted
+ so that any sound, static type system that does not reject untyped code is
+ a gradual type system.
+
+Although there is variety among gradual type systems, @emph{gradual typing}
+ is still a technical term; however, it is often applied to any language
+ mixing some amount of static and dynamic type checking.
+This section briefly summarizes the history of typed/untyped languages,
+ shows where gradual typing entered the design space,
+ and describes the various gradual type systems in use today.
+Here, as in the introduction, we prefer to say ``sound gradual typing''
+ to distinguish gradual typing (which is type sound) from optional type systems.
+
+@; whatever man. Still bad but whatever
 
 
 @section{Origins}
@@ -39,6 +49,16 @@ The end result is improved static error detection and types that may be used
 @; Theorems?
 @; Where are we now?
 
+@; Quasi-Static 1990
+A third research direction combining static and dynamic types is Thatte's
+ \emphquasi-static} typing @todo{cite}, which essentially removed the
+ type tags from the previous work on type {\tt Dynamic}.
+Instead of requiring the programmer to dispatch on the exact tag attached
+ to values of unknown type, the quasi-static type system would infer or
+ cast values automatically.
+Only impossible type casts would result in a compile-time {\tt Dynamic} type error.
+@; Kinda pointless paragraph, no?
+
 
 @section{Optional Types}
 
@@ -51,7 +71,8 @@ The first language with optional type annotations was
  MACLISP@~cite[(in-bib moon-maclisp-1974 ", §14.2")].
 MACLISP annotations were not statically checked, but nonetheless some compilers
  would optimize based on the types @todo{cite}.
-Many contemporary languages support or have extensions for optional types
+Many contemporary languages support or have extensions for optional types,
+ including Common LISP, VB.NET, Python, and JavaScript
  @todo{cite}.
 @;Common LISP
 @;Dylan
@@ -63,20 +84,19 @@ Many contemporary languages support or have extensions for optional types
 @;PHP,@note[@url{http://hacklang.org}]
 @;ActionScript,@note[@url{http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7f8a.html}]
 @;Dart@note[@url{http://dartlang.org}] and
-@;JavaScript @~cite[bat-ecoop-2014].
+@;JavaScript @~cite[bat-ecoop-2014]. @; Purescript
 @;StrongTalk
 @;BabyJ
 
-The most common variety of optional type systems@note{These languages are
- sometimes called "gradually typed", but true gradually typed languages
- preserve runtime type soundness.}
- are strong, static type
+The most common variety of optional type systems are strong, static type
  systems that accept untyped code @todo{cite TypeScript, Hack, etc}.
 Typically, programmers using these languages can opt-in to static typing by
  writing type annotations.
 The compiler statically checks all typed code for type errors and just accepts
  syntactically valid untyped code.
-There are no restrictions on how typed and untyped code may interact at runtime.
+Note that this form of optional typing is @emph{not} sound gradual typing
+ because there is no guarantee that the runtime behavior of a program
+ follows its type.
 
 @figure["fig:ts-example" "Typed (left) and untyped (right) TypeScript code"
   @exact|{\input{fig-ts-example.tex}}|
@@ -99,17 +119,16 @@ Types present in source code of optionally typed languages are
  not enforced at runtime.
 Untyped code is free to call @racket[norm] or
  any other typed function with nonsense arguments.
-At runtime, these calls might trigger a dynamic error, but they
- can also ``succeed'' silently and cause the program to produce incorrect results.
-If the compiler optimized based on static type information,
- then the resulting code would be both type-unsafe and
- memory-unsafe---no better than C.
+At runtime, these calls might trigger a dynamic error, but even that is not guaranteed.
+Illegal calls can also ``succeed'' silently and cause the program to produce
+ incorrect results or diverge.
 
-In practice unit testing should catch dynamic type errors, but the fact remains
+In practice unit testing should reveal dynamic type errors, but the fact remains
  that programmers using optional type systems cannot trust the type
- annotations for more than protection from typos or simple logical errors.
-On the other hand, erased types have zero run-time overhead;
- performance alone is often cited as a reason to forgo soundness @todo{cite}.
+ annotations for more than protection from mis-spellings or simple logical errors.
+As a corollary, type-based optimizations are unsafe because they rely
+ on information that may not be valid at runtime. @; memory error
+On the other hand, erased types have zero run-time overhead.
 
 @; Should TypeScript optimize with types? [devs say no]
 @;   https://github.com/Microsoft/TypeScript/issues/1151
@@ -118,13 +137,12 @@ On the other hand, erased types have zero run-time overhead;
 @; Why is Dart unsound?
 @;   https://www.dartlang.org/support/faq.html#q-why-is-the-type-system-designed-to-be-unsound
 
-@todo{where does PureScript fit?}
 
 @subsection{Pluggable Types}
 
 Pluggable type systems are closely related to optional types, but
  require that type annotations have no impact on a program's dynamic behavior.
-Type checking is completely independent of the underlying language runtime and 
+Type checking is completely independent of the underlying language runtime and
  functions only as a static analysis that rejects certain programs.
 This design makes writing a new type system for an existing language
  straightforward.
@@ -159,23 +177,19 @@ But the boundary between typed and untyped code is always guarded.
 
 In short, a gradual type system includes both static and dynamic components.
 Converting the typed program from @Figure-ref{fig:ts-example} into Typed Racket
- gives the code in @Figure-ref{fig:tr-example}.
-Here the code is divided into two modules: typed on the left and untyped on
- the right.
+ gives the code on the left side of @Figure-ref{fig:tr-example}.
 If the call to @racket[norm] was part of the typed module, the program would
  fail to compile due to a static type error.
-When the call is in an untyped module, as we have written it, compilation
+When the call is in an untyped module, as we have written it on the right
+ half of @Figure-ref{fig:tr-example}, compilation
  succeeds and running the program raises an exception
  at the call site for @racket[norm] detailing the type error.
-In more subtle situations---for instance, calling a function with a real
- number where an integer is required---similarly raises a runtime type
- error thanks to Typed Racket's type soundness.
-Runtime type errors are
- detected immediately and accurately diagnosed @todo{cite samth}.
+This type error is guaranteed by Typed Racket's soundness: run-time
+ type errors are detected immediately and attributed to a
+ responsible party @todo{cite}.
 
 @;
-Unfortunately, these runtime checks can have an arbitrarily large performance
- cost.
+Unfortunately, these runtime checks can have a large performance cost.
 For small or simple values the cost is relatively low, though frequent checks
  will add up to a large slowdown.
 More sophisticated values entail larger costs.
@@ -184,7 +198,7 @@ For instance, untyped lists require a linear-time check and untyped functions
 Conversely, if a mutable value flows from typed to untyped parts of the program,
  the value must be proxied to protect against updates that would change the
  value's type.
-One would hope that the cost of dynamic checks remains small in practice,
+One would hope that the cost of dynamic checks is relatively small in practice,
  but gradually typed languages have reported slowdowns ranging from
  2x to 70x @todo{cite}.
 
@@ -195,8 +209,8 @@ Given the obvious performance cost of type soundness, it seems more sensible
  to forget it.
 Indeed, this is the approach taken by every optionally typed language
  developed in industry @todo{cite hack flow dart ts mypy}.
-These languages use types to catch shallow, common errors; build IDE tools
- like type-based autocompletion; and document programs.
+These languages use types to catch shallow yet common errors; build IDE tools
+ like type-based autocompletion; and serve as checked documentation.
 
 We believe that type systems---even gradual type systems---can offer much
  more to the working programmer.
@@ -211,7 +225,7 @@ As the type system increases in scope and expressiveness, programmers
  @; Example?
 
 @; Eliminate errors
-Sound types also @emph{eliminate} a whole class of errors.
+Sound types also eliminate a whole class of errors.
 Milner's slogan "well typed programs do not go wrong" @todo{cite} is more
  formally a claim that runtime type errors are impossible in a language with
  a strong, static type system.
