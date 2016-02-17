@@ -7,14 +7,15 @@
 ;; so this file provides a (brittle) parser.
 
 (provide:
-  (from-directory (-> Path-String ModuleGraph))
+  (project-name->modulegraph (-> String ModuleGraph))
+  (directory->modulegraph (-> Path-String ModuleGraph))
   ;; Parse a directory into a module graph.
   ;; Does not collect module dependency information.
 
-  (from-tex (-> Path-String ModuleGraph))
+  (tex->modulegraph (-> Path-String ModuleGraph))
   ;; Parse a tex file into a module graph
 
-  (to-tex (-> ModuleGraph Output-Port Void))
+  (modulegraph->tex (-> ModuleGraph Output-Port Void))
   ;; Print a modulegraph to .tex
 
   (boundaries (-> ModuleGraph (Listof Boundary)))
@@ -91,7 +92,9 @@
 ;; Invariant: names in the adjlist are kept in alphabetical order.
 (struct modulegraph (
   [project-name : String]
-  [adjlist : AdjList]) #:transparent)
+  [adjlist : AdjList]
+  [src : (U #f Path-String)]
+) #:transparent)
 (define-type AdjList (Listof (Listof String)))
 (define-type ModuleGraph modulegraph)
 
@@ -204,7 +207,8 @@
 (: boundaries (-> ModuleGraph (Listof Boundary)))
 (define (boundaries G)
   ;; Reclaim source directory
-  (define src (infer-untyped-dir (modulegraph-project-name G)))
+  (define src (infer-untyped-dir
+    (or (modulegraph-src G) (infer-project-dir (modulegraph-project-name G)))))
   (define name* (module-names G))
   (define from+provided**
     (for/list : (Listof (Pairof String (Listof Provided)))
@@ -269,15 +273,17 @@
 (define (rkt-file? p)
   (regexp-match? #rx"\\.rkt$" (if (string? p) p (path->string p))))
 
-(: from-directory (-> Path-String ModuleGraph))
-(define (from-directory parent)
-  ;; TODO duplicating work right now, should have project-name->MG
-  (define name (path->project-name parent))
-  (define u-dir (infer-untyped-dir name))
+(: project-name->modulegraph (-> String ModuleGraph))
+(define (project-name->modulegraph name)
+  (directory->modulegraph (infer-project-dir name)))
+
+(: directory->modulegraph (-> Path-String ModuleGraph))
+(define (directory->modulegraph dir)
+  (define u-dir (infer-untyped-dir dir))
   ;; No edges, just nodes
   (: adjlist AdjList)
   (define adjlist (directory->adjlist u-dir))
-  (modulegraph name adjlist))
+  (modulegraph (path->project-name dir) adjlist dir))
 
 (: get-git-root (-> String))
 (define (get-git-root)
@@ -291,7 +297,7 @@
     (raise-user-error 'modulegraph "Must be in `gradual-typing-performance` repo to use script")))
 
 ;; Blindly search for a directory called `name`.
-(: infer-project-dir (-> Path-String Path))
+(: infer-project-dir (-> String Path))
 (define (infer-project-dir name)
   (define p-dir (build-path (get-git-root) "benchmarks" name))
   (if (directory-exists? p-dir)
@@ -299,22 +305,22 @@
     (raise-user-error 'modulegraph "Failed to find project directory for '~a', cannot summarize data" name)))
 
 (: infer-untyped-dir (-> Path-String Path))
-(define (infer-untyped-dir name)
-  (define u-dir (build-path (infer-project-dir name) "untyped"))
+(define (infer-untyped-dir dir)
+  (define u-dir (build-path dir "untyped"))
   (if (directory-exists? u-dir)
     u-dir
-    (raise-user-error 'modulegraph "Failed to find untyped code for '~a', cannot summarize data" name)))
+    (raise-user-error 'modulegraph "Failed to find untyped code for '~a', cannot summarize data" dir)))
 
 ;; Interpret a .tex file containing a TiKZ picture as a module graph
-(: from-tex (-> Path-String ModuleGraph))
-(define (from-tex filename)
+(: tex->modulegraph (-> Path-String ModuleGraph))
+(define (tex->modulegraph filename)
   (define-values (path project-name) (ensure-tex filename))
   (call-with-input-file* filename
     (lambda ([port : Input-Port])
       (ensure-tikz port)
       (define-values (edge1 tex-nodes) (parse-nodes port))
       (define tex-edges (cons edge1 (parse-edges port)))
-      (tex->modulegraph project-name tex-nodes tex-edges))))
+      (texnode->modulegraph project-name tex-nodes tex-edges))))
 
 ;; Verify that `filename` is a tex file, return the name of
 ;; the project it describes.
@@ -473,15 +479,15 @@
      (parse-error "Cannot parse edge declaration '~a'" str)]))
 
 ;; Convert nodes & edges parsed from a .tex file to a modulegraph struct
-(: tex->modulegraph (-> String (Listof texnode) (Listof texedge) ModuleGraph))
-(define (tex->modulegraph project-name nodes edges)
+(: texnode->modulegraph (-> String (Listof texnode) (Listof texedge) ModuleGraph))
+(define (texnode->modulegraph project-name nodes edges)
   ;; Convert a TiKZ node id to a module name
   (: id->name (-> Index String))
   (define (id->name id)
     (or (for/or : (U #f String) ([tx (in-list nodes)])
           (and (= id (texnode-id tx))
                (texnode-name tx)))
-        (error 'tex->modulegraph (format "Could not convert tikz node id ~a to a module name" id))))
+        (error 'texnode->modulegraph (format "Could not convert tikz node id ~a to a module name" id))))
   ;; Create an adjacency list by finding the matching edges for each node
   (: adjlist (Listof (Pairof (Pairof Index String) (Listof String))))
   (define adjlist
@@ -513,7 +519,7 @@
   (define untagged : (Listof (Listof String))
     (for/list ([tag+neighbors (in-list sorted)])
       (cons (cdar tag+neighbors) (cdr tag+neighbors))))
-  (modulegraph project-name untagged))
+  (modulegraph project-name untagged #f))
 
 (: directory->adjlist (-> Path AdjList))
 (define (directory->adjlist dir)
@@ -586,12 +592,12 @@
 ;;  (may need to bend edges & permute a row's nodes)
 (: directory->tikz (-> Path Path-String Void))
 (define (directory->tikz p out-file)
-  (define MG (from-directory p))
+  (define MG (directory->modulegraph p))
   (with-output-to-file out-file #:exists 'replace
-    (lambda () (to-tex MG (current-output-port)))))
+    (lambda () (modulegraph->tex MG (current-output-port)))))
 
-(: to-tex (-> ModuleGraph Output-Port Void))
-(define (to-tex MG out)
+(: modulegraph->tex (-> ModuleGraph Output-Port Void))
+(define (modulegraph->tex MG out)
   (define tsort (topological-sort (modulegraph-adjlist MG)))
   (parameterize ([current-output-port out])
     (displayln "\\begin{tikzpicture}\n")
@@ -677,19 +683,19 @@
     typed/rackunit)
 
   (define SAMPLE-MG-FILE "test/sample-modulegraph.tex")
-  (define SAMPLE-MG-DIRECTORY "echo")
+  (define SAMPLE-MG-PROJECT-NAME "echo")
 
   ;; -- Test parsing
 
   ;; -- Parse all module graphs
-  (define MGf (from-tex SAMPLE-MG-FILE))
-  (define MGd (from-directory SAMPLE-MG-DIRECTORY))
+  (define MGf (tex->modulegraph SAMPLE-MG-FILE))
+  (define MGd (project-name->modulegraph SAMPLE-MG-PROJECT-NAME))
 
   ;; --- project-name
   (check-false (string-contains? (project-name MGf) "-"))
   (check-equal? (project-name MGf) "sample") ;; Hyphen is stripped
 
-  (check-equal? (project-name MGd) SAMPLE-MG-DIRECTORY)
+  (check-equal? (project-name MGd) SAMPLE-MG-PROJECT-NAME)
 
   ;; -- module-names
   (check-equal? (sort (module-names MGf) string<?)
@@ -757,14 +763,16 @@
         (check-equal? (length p*) 1)
         (check-equal? (provided->symbol (car p*)) 'client))))
 
-  ;; -- from-directory
-  ;; -- from-tex
+  ;; -- directory->modulegraph
+  ;; -- tex->modulegraph
   ;; TESTED ABOVE
 
   ;; -- infer-untyped-dir
   (check-equal?
-    (infer-untyped-dir SAMPLE-MG-DIRECTORY)
-    (build-path (get-git-root) "benchmarks" SAMPLE-MG-DIRECTORY "untyped"))
+    (infer-untyped-dir (infer-project-dir SAMPLE-MG-PROJECT-NAME))
+    (build-path (get-git-root) "benchmarks" SAMPLE-MG-PROJECT-NAME "untyped"))
+  (check-exn exn:fail:user?
+    (lambda () (infer-project-dir "nasdhoviwr")))
   (check-exn exn:fail:user?
     (lambda () (infer-untyped-dir "nasdhoviwr")))
 
@@ -865,15 +873,15 @@
     '(("constants") ("client" "server") ("main")))
 
   (check-equal?
-    (topological-sort (modulegraph-adjlist (from-directory "suffixtree")))
+    (topological-sort (modulegraph-adjlist (project-name->modulegraph "suffixtree")))
     '(("data") ("label") ("structs") ("ukkonen") ("lcs") ("main")))
 
   (check-equal?
-    (modulegraph-adjlist (from-directory "synth"))
+    (modulegraph-adjlist (project-name->modulegraph "synth"))
     '(("array-broadcast" "data" "array-utils" "array-struct") ("array-struct" "data" "array-utils") ("array-transform" "data" "array-utils" "array-broadcast" "array-struct") ("array-utils") ("data") ("drum" "data" "synth" "array-transform" "array-utils" "array-struct") ("main" "synth" "mixer" "drum" "sequencer") ("mixer" "array-broadcast" "array-struct") ("sequencer" "mixer" "synth" "array-transform" "array-struct") ("synth" "array-utils" "array-struct")))
 
   (check-equal?
-    (topological-sort (modulegraph-adjlist (from-directory "synth")))
+    (topological-sort (modulegraph-adjlist (project-name->modulegraph "synth")))
     '(("array-utils" "data") ("array-struct") ("array-broadcast" "synth") ("array-transform" "mixer") ("drum" "sequencer") ("main")))
 
 
@@ -886,7 +894,7 @@
     '(("client" "constants" (DATA PORT)) ("main" "server" (server)) ("main" "client" (client)) ("server" "constants" (DATA PORT))))
 
   ;; -- string->texedge TODO
-  ;; -- tex->modulegraph TODO
+  ;; -- texnode->modulegraph TODO
   ;; -- directory->adjlist TODO
 )
 
