@@ -68,6 +68,16 @@
 (define dyn-boundary-from cadr)
 (define dyn-boundary-provided+count* caddr)
 
+(define (dyn-boundary*-ref b* to from)
+  (for/or ([b (in-list b*)])
+    (and (string=? to (dyn-boundary-to b))
+         (string=? from (dyn-boundary-from b))
+         (dyn-boundary-provided+count* b))))
+
+(define (dyn-boundary*-ref/fail b* to from)
+  (or (dyn-boundary*-ref b* to from)
+      (raise-user-error 'trace "No info for boundary (~a ~a) in\n    ~a" to from b*)))
+
 ;; -----------------------------------------------------------------------------
 
 (define (to->dyn-boundary* dmg to)
@@ -240,7 +250,7 @@
 
 ;; (: directory->dmg (-> Path-String Dynamic-ModuleGraph))
 (define (directory->dmg dir)
-  (define MG (from-directory dir))
+  (define MG (directory->modulegraph dir))
   (define B* (boundaries MG))
   (define trace-dir (setup-trace-dir/check dir B*))
   (define dyn-B* (trace-run trace-dir B*))
@@ -357,4 +367,32 @@
     '("to" "from" id)]
    ["A\tB\tC\tD\tE\n"
     '("B" "C" D)])
+
+  ;; -- 
+  (let ([b* '(("A" "B" ((DATA . 400001) (PORT . 1))))])
+    (check-equal?
+      (dyn-boundary*-ref/fail b* "A" "B")
+      '((DATA . 400001) (PORT . 1)))
+    (check-false
+      (dyn-boundary*-ref b* "YO" "LO")))
+
+  ;; -- end-to-end
+  (let* ([_void (printf "[TEST] Building dynamic graph... \n")]
+         [DMG (directory->dmg (build-path (current-directory) "test" "sample_modulegraph_dir"))]
+         [B*  (dynamic-modulegraph-boundary* DMG)]
+         [_void+ (printf "[TEST] finished building dynamic graph\n")])
+    (check-equal? (length B*) 4)
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "main" "client")
+      '((client . 1)))
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "main" "server")
+      '((server . 1)))
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "server" "constants")
+      '((DATA . 1) (PORT . 1)))
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "client" "constants")
+      '((DATA . 400001) (PORT . 1)))
+  )
 )
