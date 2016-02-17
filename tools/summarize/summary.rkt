@@ -184,10 +184,10 @@
   (define gp (or graph-path (infer-graph path)))
   (define mg
     (if gp
-      (from-tex gp)
+      (tex->modulegraph gp)
       (begin
         (printf "Inferring module graph for '~a'.\n" filename)
-        (from-directory filename))))
+        (project-name->modulegraph (path->project-name filename)))))
   (validate-modulegraph dataset mg)
   (summary path dataset mg))
 
