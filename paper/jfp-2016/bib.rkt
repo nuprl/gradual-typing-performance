@@ -1213,3 +1213,4 @@
 ; @note{http://docs.racket-lang.org/math/array.html}
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
+;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
