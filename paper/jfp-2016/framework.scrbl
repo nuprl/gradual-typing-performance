@@ -38,7 +38,7 @@ We use take these observations as guiding principles for a @emph{language agnost
 Our evaluation framework is inspired by our previous work on extending functional
  Typed Racket to the object-oriented aspects of Racket, in which we
  use a lattice-style approach for a preliminary performance evaluation
- conducted in tandem with the design and implementation of Typed Racket@~cite[tfdffthf-ecoop-2015].
+ conducted in tandem with the design and implementation@~cite[tfdffthf-ecoop-2015].
 By inspecting all possible ways of typing two small
  game systems, we identified and then eliminated a major
  performance bottleneck from the implementation.
@@ -122,6 +122,9 @@ This lattice-based approach to performance measurements was introduced in our
 ]
  We speak of a @italic{performance lattice} to describe a pair @exact|{$(S, \leq)$}|
   generated from a sequence of modules.
+ Note that a performance lattice does not actually contain performance numbers.
+ It is a static artifact representing the possible ways of running the program.
+ Actually testing the configurations and recording the time taken is a second step.
 
 Our contribution is to exploit the lattice-oriented approach to benchmarking
  for a @emph{summative} evaluation.
@@ -130,8 +133,8 @@ To this end, we imagine software engineers who are considering the use of
  influence their decision.
 Based on this first step, we formulate a small number of parameterized,
  quantitative measures that capture possible answers to these questions.
-The goal is that we as language designers evaluate performance using the
- same criteria that our users value.
+The goal is that we as language designers evaluate performance using
+ criteria that our users find valuable.
 
 
 @section{Measurements}
@@ -157,7 +160,7 @@ In particular, Typed Racket relies on Racket's untyped runtime system, hence
 Thus improper typed/untyped ratios are possible even for optimizing gradual
  type systems.
 
-Sufficiently large system cannot be fully converted all at
+Sufficiently large systems cannot be fully converted all at
  once and may never even reach the top configuration.
 In theory this is not a problem, as gradual typing promises to safely run
  any combination of typed and untyped modules.
