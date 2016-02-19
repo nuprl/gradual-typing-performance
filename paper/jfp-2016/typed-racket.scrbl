@@ -1,691 +1,709 @@
 #lang scribble/base
 
-@require[
-  "common.rkt"
-  "typed-racket.rkt"
-  (except-in gtp-summarize/lnm-parameters defparam)
-]
+@; To address this issue, the implementors of Typed Racket  included a small
+@;  number of run-time libraries as trusted code with unchecked type environments.
+@; The next section explains what ``completely typed'' means for the individual
+@;  benchmarks.
 
-@profile-point{sec:tr}
+@require["common.rkt"]
+
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-To validate our framework, we apply it to a suite of
- @id[(count-benchmarks)] Typed Racket programs.
-For each program we have collected running times over a full performance lattice.
-In general the lattices are too large to print or analyze, so we present
- our results using a graphical shorthand quantifying the number of deliverable
- and usable configurations.
-
-
-@; -----------------------------------------------------------------------------
-@section[#:tag "sec:bm"]{The Benchmark Programs}
-
+For our evaluation of Typed Racket, we use a suite of @(id (length benchmarks)) programs
+ and generate timings over the whole performance lattice for each.
+As lattices for projects with more than 6 modules are too large to analyze at
+ a glance, we present our results in terms of @step["L" "N" "M"].
 The benchmarks themselves are representative of actual user code yet
  small enough that exhaustive performance evaluation remains tractable.
-The following descriptions briefly explain the purpose and history of
- each benchmark.
-Most benchmarks are self-contained, but where relevant we note their external
- dependencies.
 
 
-@; -----------------------------------------------------------------------------
-@subsection{Benchmark Descriptions}
+@section[#:tag "sec:bm"]{The Benchmark Programs}
 
-@profile-point{sec:tr:descriptions}
-@render-benchmark-descriptions[
-@(benchmark
-  #:name 'sieve
+@benchmark[
+  #:name "sieve"
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
-  #:purpose "Generate prime numbers"
-  @elem{
-    Demonstrates a scenario where user
-     code closely interacts with higher-order library code.
-    In this case, the library implements a stream data structure.
-    When fully typed or untyped, @bm{sieve} computes quickly; however,
-     introducing a type boundary between the two modules adds
-     significant overhead.
-  }
-)
-@(benchmark
-  #:name 'morsecode
-  #:author "John Clements and Neil Van Dyke"
-  #:num-adaptor 0
-  #:origin @hyperlink["https://github.com/jbclements/morse-code-trainer/tree/master/morse-code-trainer"]{Library}
-  #:purpose "Morse code Trainer"
+  #:purpose "Finds prime numbers using the Sieve of Eratosthenes."
+]{
+  We created the @tt{sieve} benchmark to demonstrate a scenario where user
+   code closely interacts with higher-order library code---in this case, a stream
+   library.
+  When fully typed or untyped, @tt{sieve} runs quickly.
+  Otherwise performance is significantly worse.
+}
 
-  @elem{
-    The morse code benchmark is derived from a training program that
-     converts a random word to morse code, gives the codeword to the user,
-     accepts keyboard input, then prints the Levenshtein distance of the
-     input from the original word.
-    For our benchmark we remove the I/O and random features but otherwise
-     compute morse code and distances for a fixed sequence of word pairs.
-  }
-)
-@(benchmark
-  #:name 'mbta
+@benchmark[
+  #:name "morsecode"
+  #:author "John Clements & Neil Van Dyke"
+  #:num-adaptor 0
+  #:origin "Library"
+  #:purpose "Generate morse code strings, compare against user input"
+]{
+  The original program plays an audio clip, waits for keyboard input,
+   then scores the input based on its Levenshtein distance from the
+   correct answer.
+  Our benchmark uses a list of common English words as input.
+}
+
+@benchmark[
+  #:name "mbta"
   #:author "Matthias Felleisen"
   #:num-adaptor 0
   #:origin "Educational"
-  #:purpose "Interactive map"
-  #:external-libraries (list @hyperlink["http://github.com/stchang/graph"]{graph})
+  #:purpose "Answer reachability queries about Boston's transit system"
+]{
+  Builds a graph representation of Boston's public transit system and
+   answers a series of reachability queries.
+  The original program ran an asynchronous server, but our benchmark is
+   single-threaded to cooperate with Racket's profiling tools.
+}
 
-  @elem{
-    Builds a map of Boston's subway system and
-     answers a series of reachability queries.
-    The map is represented as an object and encapsulates a boundary to Racket's untyped
-     @tt{graph} library; when the map is typed, the boundary to @tt{graph}
-     causes noticable overhead.
-    Although the original program ran an asynchronous client/server framework,
-     our benchmark is single-threaded to cooperate with Racket's sampling
-     profiler.
-  }
-)
-@(benchmark
-  #:name 'zordoz
+@benchmark[
+  #:name "zordoz"
   #:author "Ben Greenman"
   #:num-adaptor 0
-  #:origin @hyperlink["http://github.com/bennn/zordoz"]{Library}
-  #:purpose "Explore Racket bytecode"
-  #:external-libraries (list @hyperlink["http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29"]{compiler-lib})
+  #:origin "Library"
+  #:purpose "Explore bytecode (.zo) files"
+]{
+  Decompiles a Racket bytecode file and counts the frequency of AST nodes
+   in the result.
+  The decompile API is untyped, so @tt{zordoz} suffers overhead when completely
+   typed.
+}
 
-  @elem{
-    Provides a shell-style interface for traversing
-     Racket bytecode (@tt{.zo} files).
-    Our benchmark decompiles its own bytecode and
-     counts the number of branch instructions in the resulting tree structure.
-
-    The Racket bytecode format changed between versions 6.2 and 6.3 with
-     the release of the set-of-scopes macro expander@~cite[f-popl-2016].
-    Consequently, our benchmark is slightly modified after version 6.2 to
-     accomodate the new format.
-    As it turns out, the changes improved the typed/untyped ratio from
-     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.2"))]x in v6.2 to
-     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.3"))]x in v6.3 because
-     the more recent bytecode structures generate less expensive type contracts.
-  }
-)
-@(benchmark
-  #:name 'suffixtree
+@benchmark[
+  #:name "suffixtree"
   #:author "Danny Yoo"
   #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/dyoo/suffixtree"]{Library}
-  #:purpose "Ukkonen's suffix tree algorithm"
+  #:origin "Library"
+  #:purpose "Implement Ukkonen's suffix tree algorithm"
+]{
+  Runs a longest-common-substring algorithm on all pairs of words in a small
+   text file.
+}
 
-  @elem{
-    Computes longest common subsequences by converting strings to a suffix
-     tree representation and comparing the trees.
-    The benchmark compares lines of text; each line is no
-     more than 80 characters long.
-
-    All @bm{suffixtree} datatype definitions are in a single module, separate
-     from the functions that manipulate and traverse the data.
-    The data are also mutable, therefore the frequently-crossed type boundary
-     between data definitions and their core functionality is protected by expensive
-     contracts.
-  }
-)
-@(benchmark
-  #:name 'lnm
+@benchmark[
+  #:name "lnm"
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
-  #:purpose "Graphing"
-  #:external-libraries (list @hyperlink["https://docs.racket-lang.org/plot/"]{plot}
-                             ", "
-                             @hyperlink["https://docs.racket-lang.org/math/stats.html"]{math/statistics})
+  #:purpose "Produce L-N/M plots"
+  #:external-libraries '("plot" "racket/statistics")
+]{
+  Creates the @math{L-N/M} plots for the @tt{gregor} benchmark.
+  This program is an early revision of the script we use to compile this article.
+}
 
-  @elem{
-    While writing this paper, we built a small library of scripts to analyze
-     and graph the data shown in @Secref{sec:plots}.
-    The @bm{lnm} benchmark creates one such graph for a 13-module benchmark.
-    Most of the computation time is spent in calls to Racket's
-     typed statistics and plotting libraries, so performance typically
-     improves as more @bm{lnm} modules are typed.
-  }
-)
-@(benchmark
-  #:name 'kcfa
+@benchmark[
+  #:name "kcfa"
   #:author "Matt Might"
   #:num-adaptor 4
-  #:origin @hyperlink["http://matt.might.net/articles/implementation-of-kcfa-and-0cfa/"]{Blog post}
-  #:purpose "Demo k-CFA algorithm"
+  #:origin "Blog post"
+  #:purpose "Demo of k-CFA algorithm"
+]{
+  Runs a na\"ive control-flow analysis on a small lambda calculus term.
+}
 
-  @elem{
-    Simple, inefficient implementation of k-CFA@~cite[shivers-dissertation-1991].
-    Our benchmark runs 1-CFA on a lambda calculus term
-     that computes @exact|{~$\RktMeta{2*(1+3) = 2*1 + 2*3}$}|.
-    The performance overhead in this benchmark comes primarily from contracts
-     protecting the binding environment, which is implemented as a hashtable
-     and threaded across the program.
-  }
-)
-@(benchmark
-  #:name 'zombie
+@benchmark[
+  #:name "snake"
   #:author "David Van Horn"
   #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
+  #:origin "Educational"
   #:purpose "Game"
+]{
+  Implements a small game where a growing and moving snake avoids walls and
+   its own tail.
+  Our benchmark runs a pre-recorded history of moves, altering the game state
+   but not producing GUI output.
+  Based on a contract verificationbenchmark@note{@url["http://github.com/philnguyen/soft-contract"]}
+   by Nguyễn @|etal|@~cite[nthvh-icfp-2014].
+}
 
-  @elem{
-    A game where players must keep their marker away from
-     computer-controlled "zombie" markers.
-    We benchmark the game on a pre-defined sequence of commands and remove the
-     I/O features.
-
-    The original program was implemented in an object-oriented style but converted
-     to a functional encoding as a test case for soft contract verification@~cite[nthvh-icfp-2014].
-    We benchmark a typed version of the functional game on a small input
-     (100 lines) because repeatedly sending one of the encoded objects across
-     a type boundary leads to an exponential slowdown.
-
-    @; --- 2016-04-22 : this type is a little too awkward to talk about
-    @;As an example of the encoding, the following type signature implements a
-    @; point object.
-    @;By supplying a symbol, clients get access to a (tagged) method.
-    @;
-    @;@codeblock{
-    @;  (define-type Point
-    @;    ((U 'x 'y 'move)
-    @;     ->
-    @;     (U (Pairof 'x (-> Real))
-    @;        (Pairof 'y (-> Real))
-    @;        (Pairof 'move (Real Real -> Point)))))
-    @;}
-    @;Intersection
-    @; types would be more straightforward than the tagged codomains used here,
-    @; but Typed Racket does not yet support intersections.
-
-  }
-)
-@(benchmark
-  #:name 'snake
+@benchmark[
+  #:name "tetris"
   #:author "David Van Horn"
   #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
+  #:origin "Educational"
   #:purpose "Game"
+]{
+  Implements a game of tetris.
+  Like @tt{snake}, runs a pre-recorded set of moves.
+}
 
-  @elem{
-    Game in which a growing and moving snake avoids walls and its own tail.
-    Our benchmark is a gradually typed version of the @bm{snake} game from
-     @PHIL{} @|etal| and runs a pre-recorded sequence of state-changing moves
-     simulating user input@~cite[nthvh-icfp-2014].
-  }
-)
-@(benchmark
-  #:name 'tetris
-  #:author "David Van Horn"
-  #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
-  #:purpose "Game"
-
-  @elem{
-    Implements the eponymous game.
-    The benchmark runs a deterministic sequence of moves and is
-     adapted from @PHIL{} @|etal|@~cite[nthvh-icfp-2014].
-    Most of the overhead in @bm{tetris}, and also @bm{snake}, is due
-     to repeatedly passing the game state and subsidary data structures
-     across type boundaries.
-  }
-)
-@(benchmark
-  #:name 'synth
+@benchmark[
+  #:name "synth"
   #:author "Vincent St. Amour and Neil Toronto"
   #:num-adaptor 1
   #:origin @hyperlink["http://github.com/stamourv/synth"]{Library}
   #:purpose "Music synthesis DSL"
+]{
+  Converts a description of music to a playable @tt{.wav} file.
+  This benchmark incorporates 5 modules from Racket's typed @tt{math/array} library,
+   which is known to cause performance issues for untyped clients.
+}
 
-  @elem{
-    Converts a description of notes and drum beats to a playable @tt{.wav} format.
-    The original program was known to suffer overhead from a type boundary
-     to Typed Racket's @hyperlink["https://docs.racket-lang.org/math/array.html"]{@exact{\RktMeta{math/array}}}
-     library@~cite[saf-cc-2015].
-    Our benchmark incorporates the relevant library modules to form a
-     self-contained program; however,
-     we monomorphized the core array data structure because Typed Racket v6.2
-     could not convert its type to a contract.
-  }
-)
-@(benchmark
-  #:name 'gregor
+@benchmark[
+  #:name "gregor"
   #:author "Jon Zeppieri"
   #:num-adaptor 2
   #:origin @hyperlink["https://docs.racket-lang.org/gregor/index.html"]{Library}
-  #:purpose "Date and time library"
-  #:external-libraries
-    (list @hyperlink["https://docs.racket-lang.org/cldr-core/index.html"]{cldr}
-          ", "
-          @hyperlink["https://docs.racket-lang.org/tzinfo/index.html"]{tzinfo})
+  #:purpose "Date & time library"
+  #:external-libraries '("cldr")
+]{
+  The original library an untyped mechanism for ad-hoc polymorphism
+   that is not supported by Typed Racket.
+  Our adaptation instead uses monomorphic types and removes a string parsing
+   front-end.
+}
 
-  @elem{
-    Provides tools for manipulating date objects.
-    For the benchmark, we build a range of date values and use them to run
-     unit tests.
-    Notably, the benchmark does not test @bm{gregor}'s string-parsing
-     functions because those functions rely on an untyped library for
-     ad-hoc polymorphism that is not yet supported by Typed Racket.
-  }
-)
-@(benchmark
-  #:name 'dungeon
-  #:author "Vincent St. Amour"
-  #:num-adaptor 0
-  #:origin "Game"
-  #:purpose "Maze generator"
-  @elem{
-    Builds a grid of wall and floor objects by selecting first-class classes
-     from a map of ``template'' pieces.
-    Originally, the program used two external libraries: the math library
-     for array operations and @tt{racket/dict} for a generic dictionary interface.
-    We removed both these dependencies.
-    Replacing the array library with vectors was necessary because Typed Racket
-     v6.2 could not compile the type @racket[(Mutable-Array (Class))] to a contract.
-    Replacing the dict interface was a choice made so that the results for
-     @bm{dungeon} describe internal type boundaries rather than the type
-     boundary to the untyped dict interface.
-  }
-)
-@(benchmark
-  #:name 'take5
-  #:author "Matthias Felleisen"
-  #:num-adaptor 1
-  #:origin "Game"
-  #:purpose "Card game"
-  @elem{
-    Object-oriented implementation of a classic German card game.
-    The AI players we use implement a greedy strategy, playing locally optimal
-     cards in each turn.
-    Much of the functionality is encapsulated within objects that seldom
-     communicate, so gradual typing imposes fairly low overhead.
-  }
-)
-@(benchmark
-  #:name 'forth
-  #:author "Ben Greenman"
-  #:num-adaptor 0
-  #:origin @hyperlink["http://docs.racket-lang.org/forth/index.html"]{Library}
-  #:purpose "Forth interpreter"
-
-  @elem{
-    Object-oriented calculator for Forth programs.
-    The interpreter maintains an list of first-class objects representing
-     calculator commands.
-    If this list repeatedly crosses type boundaries it accumulates
-     higher-order contract wrappers.
-    These wrappers lead to an exponential slowdown in some configurations.
-  }
-)
-@(benchmark
-  #:name 'acquire
-  #:author "Matthias Felleisen"
-  #:num-adaptor 2
-  #:origin @hyperlink["https://github.com/mfelleisen/Acquire"]{Educational}
-  #:purpose "Game"
-
-  @elem{
-    Simulates a board game where players invest in real estate.
-    The program is written in a stateful, object-oriented style.
-    For the benchmark, we run a game between AI players.
-    Overhead is low because only small, first-order values cross type
-     boundaries.
-  }
-)
-@(benchmark
-  #:name 'fsm
-  #:author "Matthias Felleisen"
-  #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/mfelleisen/sample-fsm"]{Educational}
-  #:purpose "Economy Simulator"
-
-  @elem{
-    Simulates the interactions of a population of finite-state automata.
-    We measure two versions of this benchmark, one functional (@bm{fsm}) and
-     one object-oriented (@tt{fsmoo}).
-    The object-oriented verion frequently sends first-class
-     objects across type boundaries; the functional version does the same
-     with a mutable vector.
-  }
-)
-@(benchmark
-  #:name 'quad
+@benchmark[
+  #:name "quad"
   #:author "Matthew Butterick"
   #:num-adaptor 2
-  #:origin @hyperlink["https://github.com/mbutterick/quad"]{Library}
-  #:purpose "Typesetting"
-  #:external-libraries (list @hyperlink["https://github.com/mbutterick/csp"]{csp})
+  #:origin "Library"
+  #:purpose @hyperlink["https://github.com/mbutterick/quad"]{Typesetting library}
+]{
+  
+  Our evalutation uses two v
+  (Hm, just make 2 descriptions?)
+}
 
-  @elem{
-    Converts S-expression source code to @tt{.pdf} format.
-    We have two versions of @bm{quad}:
-     the first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
-     provided by the original author.
-    This version has a high typed/untyped ratio
-     (@add-commas[(rnd (typed/untyped-ratio 'quadMB "6.2"))]x in v6.2)
-     because it uses the type system
-     to enforce more datatype invariants than the untyped program.
-    In other words, the typed version is slower because it does more work.
-    Our second version, @tt{quadBG}, uses types as weak as the untyped
-     program and is therefore suitable for judging the implementation
-     of Typed Racket rather than the user experience of Typed Racket.
-    The conference version of this paper gave data only for
-     @tt{quadMB}@~cite[tfgnvf-popl-2016].
+@; TODO forth, fsm, etc
 
-    To give a concrete example of different types, here are the definitions
-     for the core @tt{Quad} datatype from both @tt{quadMB} and @tt{quadBG}.
-
-    @racket[(define-type QuadMB (Pairof Symbol (Listof QuadMB)))]
-
-    @racket[(define-type QuadBG (Pairof Symbol (Listof Any)))]
-
-    The former is a homogenous, recursive type.
-    As such, the predicate asserting that an untyped value has type @racket[QuadMB]
-     is a linear-time tree traversal.
-    On the other hand, the predicate for @racket[QuadBG] is significantly faster.
-  }
-)
-]
+@;@benchmark[
+@;  #:name ""
+@;  #:author ""
+@;  #:num-adaptor 0
+@;  #:origin ""
+@;  #:purpose ""
+@;]{
+@;  yolo
+@;}
 
 
-@; -----------------------------------------------------------------------------
-@profile-point{sec:tr:characteristics}
-@subsection{Static Benchmark Characteristics}
-
-@Figure-ref{fig:bm} gives static characteristics
- of our benchmark programs as a coarse measure of their size and diversity.
-Program size is measured by the lines of code (LOC) and number of modules.
-Of these two measures, the number of modules is a slightly better indicator
- as it also determines the size of our gradual typing experiment:
- given @exact{$N$} modules, there are @exact{$2^N$} configurations.
-Adaptor modules (discussed in @Secref{sec:adaptor}) roughly correspond
- to the number of user-defined datatypes in each benchmark.
-Regarding lines of code, the ``Annotation'' column is an
- upper bound on the number of type annotations needed to fully type each program.
-This column is an over-approximation because it includes type annotatons for
- each import in a benchmark; in practice,
- only imports from untyped modules into typed modules need annotations.
-Lastly, the ``Boundaries'' and ``Exports'' columns describe the graph
- structure of each benchmark.
-Boundaries are import statements from one module in the benchmark to another.
-This count does not include external boundaries.
-The exports count the total number of unique identifiers that cross any
- of a benchmark's boundaries.
-
-@figure*["fig:bm" "Static characteristics of the benchmarks"
-  @render-benchmarks-table{}
-]
-
-
-@; -----------------------------------------------------------------------------
-@profile-point{sec:tr:protocol}
-@section[#:tag "sec:protocol"]{Experimental Protocol}
-
-Our experiment measured the running time of all
- configurations in each benchmark's performance lattice.
-We performed the same experiment on @integer->word[(length (*RKT-VERSIONS*))]
- versions of Racket: version 6.2,
- version 6.3, and a development build of version 6.4.
-@; {In particular,
-@;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
-The machine we used to take measurements was a Linux machine with
- two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
-Each processor has 16 cores, giving us a total of 32 cores.
-We dedicated at most 29 of the machine's cores to running our experiment;
- each configuration was pinned to a single core and each benchmark program
- was run to completion before starting the next benchmark.
-
-Timing information for a single configuration was obtained by compiling the
- code ahead of time and then running the configuration's main module repeatedly.
-Each run used a fresh instance of the Racket VM with the JIT compiler
- enabled.
-After discarding one preliminary run, we collected timings
- for 10 runs of the configuration.
-If these 10 timings were not normally distributed, we ran an additional 20
- timings and reported all 30 runs.
-Otherwise, we reported the 10 runs and began the next configuration.
-The means and standard errors in our analysis are computed from these sequences
- of 10 or 30 timings.
-All scripts we used to run our experiments and the data we collected
- are available in the online supplement to this paper.
-For threats to validity regarding our experimental protocol,
- see @Secref{sec:threats:protocol}.
-
-
-@; -----------------------------------------------------------------------------
-@subsection[]{Detecting Stable Measurements with the Anderson-Darling test}
-
-The running time of a configuration depends on many factors, ranging
- from heuristics in the Racket JIT compiler@~cite[kff-hosc-2013] to machine-level caching and
- environment variable layout@~cite[cb-asplos-2013 kj-ismm-2013]
-We hope to mitigate these confounding effects by running our experiments on
- a single core and taking the average of repeated runs.
-To be precise, we assume that back-to-back runs of a configuration pinned to
- a single core are independent samples from a normal distribution.
-We further assume by the law of large numbers that our sample mean after
- 30 trials is close to the configuration's true average runtime.
-    @; LLN : Jakob Bernoulli,
-    @;       Ars Conjectandi: Usum & Applicationem Praecedentis Doctrinae in
-    @;       Civilibus, Moralibus & Oeconomicis,
-    @;       1713, Chapter 4, (Translated into English by Oscar Sheynin)
-None of these assumptions are clearly valid@~cite[kj-tr-2013], but we believe the
- relative differences we observed between configurations in a lattice are correct,
- especially since we have observed similar differences on other machines@~cite[tfgnvf-popl-2016].
-@; TODO cite samth
-
-Running even 30 iterations, however, is prohibitive given the size of our experiment.
-In total, we measured @add-commas[(count-all-configurations)] configurations
- under each version of Racket.
-To finish the experiment in a timely manner, we applied the Anderson-Darling
- normality test@~cite[ad-asa-1954] after taking 10 measurements with a critical value
- determined experimentally by Stephens@~cite[s-asa-1974].
-The judgment we made was about the likelihood of seeing a particular sequence
- of 10 runtimes assuming the data were from a normal distribution.
-If the odds were less than @math{1%}, we ran an additional 20 iterations.
-@(let* ([s+t (count-savings)]
-        [num-skip-runs (car s+t)]
-        [num-runs (cadr s+t)])
-  @elem{
-    This led us to skip @add-commas[num-skip-runs] runs in total
-     (@id[(round (* 100 (/ (- num-runs num-skip-runs) num-runs)))]% of all runs)
-     and led to no statistically
-     significant differences in benchmarks that we tested exhaustively.
-  })
-
-In order to explain our methodology precisely, we now summarize the key points from
- Stephens@~cite[s-asa-1974] regarding the Anderson-Darling test.
-Our underlying distribution @math{F} is the distribution of runtimes obtained
- for one configuration run repeatedly on a single core.
-We assume that @math{F} is normally distributed with an unknown mean
- and variance.
-Let @exact|{$\vec{x}$}| denote our vector of 10 runtimes, sorted in increasing
- order.
-We approximate the true mean @exact|{$\mu$}| and variance @exact|{$\sigma^2$}|
- of @math{F} by the sample mean and variance:
-
-   @exact|{$$
-     \myhat{\mu} = \Sigma_{i=0}^{9} \vec{x}_i~/ 10
-     \hspace{2cm}
-     \myhat{\sigma}^2 = \Sigma_{i=0}^{9} (x_i - \myhat{\mu})^2~/ 9
-   $$}|
-
-Next we take the samples' z-scores and
- compute a probability vector @exact|{$\vec{h}$}| by mapping the standard
- normal CDF @exact|{$\Phi$}| over the z-scores.
-
-    @exact|{$$\vec{h}_i = \Phi(\frac{x_i - \myhat{\mu}}{\myhat{\sigma}})$$}|
-    @; Not \sigma^2
-
-Intuitively, this vector is a histogram generated by our samples.
-Each @exact|{$\vec{h}_i$}| is the probability that a new sample from the
- sample distribution we have observed from @exact|{$\vec{x}$}|
- will have a z-score less than or equal
- to the z-score of @exact|{$\vec{x}_i$}|.
-The Anderson-Darling statistic is expressed in terms of @exact|{$\vec{h}$}|
- and essentially measures the symmetry of @exact|{$\vec{h}$}| with
- emphasis on the smallest and largest buckets.
-
-    @exact|{$$
-      A^2 = \frac{- [\Sigma_{i=0}^{9}
-                      (2(i + 1) - 1)
-                      * \ln{\vec{h}_i}
-                      * \ln{(1 - \vec{h}_{9 - i})}
-                    ] }{10} - 10
-    $$}|
-
-Following Stephens, we modify @exact|{$A^2$}| to compensate for the fact that
- the true @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown@~cite[s-asa-1974].
-
-    @exact|{$$ A^{2}_{+} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
-
-Finally, we declare the samples non-normal if @exact|{$A^{2}_{+}$}| is greater than 1.
-The value 1 was determined experimentally by Stephens for a @math{p}-value of
- @math{1%} given 10 samples and an unknown underlying mean and variance.
-
-
-@; -----------------------------------------------------------------------------
-@profile-point{sec:tr:plots}
-@section[#:tag "sec:plots"]{Results}
-
-@(render-lnm-plot
-  (lambda (pict*)
-    (define name*
-      (for/list ([p (in-list pict*)]
-                 [i (in-naturals)])
-        (format "fig:lnm:~a" i)))
-    (define get-caption
-      (let ([N (length name*)])
-        (lambda (i) (format "Performance Graphs (~a/~a)" i N))))
-    (define NUMV (integer->word (length (*RKT-VERSIONS*))))
-    (cons
-      @elem{
-        @; -- Quickly, just the basics
-        @(apply Figure-ref name*) present our experimental results in
-         a series of performance graphs.
-        Each graph is a cumulative distribution function showing the number
-         of @deliverable{D} configurations for real-valued @math{D}
-         between 1x and @id[(*MAX-OVERHEAD*)]x.
-        Specifically, the x-axes represent overhead factors
-         relative to the untyped configuration of each benchmark.
-        The y-axes count the percentage of each benchmark's configurations
-         that run within the overhead shown on the x-axes.
-        On each plot we give @id[NUMV]
-         lines corresponding to the @id[NUMV]
-         versions of Racket we tested; finally, figures are partitioned
-         across two columns to compare the number of @step["0" "D" "U"]
-         configurations against the number @step["1" "D" "U"] configurations.
-
-        @; -- choice of x-axis, log scale, bode diagrams, picking D/U
-        The range of values on the x-axes were chosen as plausible bounds
-         for the overhead users of gradual type systems are willing to
-         accept.
-        Granted, there may be software teams that require overhead
-         under 1x---that is, a speedup relative to the untyped program---or
-         can work with slowdowns exceeding 20x, but we expect most users
-         will tolerate only a small performance overhead.
-        As such we use a log scale on the x-axis to emphasize the practical
-         value of low overheads.
-        Minor tick lines are drawn at 1.2x, 1.4x, etc. and again at 4x, 6x, etc.
-         for ease of reference.
-        For example, the number of @deliverable{1.2} configurations can be found
-         by studying the first minor tick and the number of @usable["1.2" "1.4"]
-         configurations
-         by subtracting the number of @deliverable{1.2} configurations from
-         the number of configurations deliverable at the second minor tick.
-
-        @; -- choice of y-axis
-        To encourage comparisons across benchmarks, the y-axes show
-         the percentage of deliverable configurations rather than an absolute count.
-        For readers interested in the number of configurations a given percentage
-         represents, we list the total configurations in each benchmark
-         along the right column of the figures.
-
-        @; -- data lines
-        A data point @math{(X,Y)} along any of the @id[NUMV] curves in a plot
-         along the left column
-         represents the percentage @math{Y} of configurations
-         that run at most @math{X} times slower than the benchmark's
-         untyped configuration.
-        Taking @bm{sieve} as an example, 50% of configurations run at most
-         2x slower than the untype configuration.
-        On Racket versions 6.2 and 6.3, the same 50% of configurations
-         are all that run within a 20x overhead.
-        The situation is improved in Racket 6.4, where 75% of configurations
-         exhibit less than 20x overhead.
-
-        The right column of plots shows the effect of adding types
-         to at most @math{k=1} additional untyped modules.
-        A point @math{(X,Y)} on these curves represents the percentage @math{Y}
-         of configurations @exact{$c_1$} such that there exists a configuration
-         @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
-         runs at most @math{X} times slower than the untyped configuration.
-        Note that @exact{$c_1$} and @exact{$c_2$} may be the same---they
-         are certainly the same when @exact{$c_1$} is the fully-typed configuration.
-        Again using @bm{sieve} as an example, 100% of configurations can
-         reach a configuration with at most 1x overhead after at most one
-         type conversion step.
-        This is because the fully-typed configuration happens to be
-         @deliverable{1} and both of the gradually typed configurations
-         become fully-typed after one conversion step.
-        For a larger example, consider the plots for @bm{mbta}.
-        Freedom to type one extra module has no effect on the number of
-         @deliverable{1.2} configurations.
-        In other words, even if the programmer at a @deliverable{1.2} configuration
-         happens to convert the untyped module best-suited to improve performance,
-         their next configuration will be no better than @deliverable{1.2}.
-        @; Theoretically, a developer might try every way of typing the next
-        @;  one module, but at that point they have all the annotations to go
-        @;  anywhere in the lattice.
-
-        @; -- all about data, ideal shape
-        Ideally, every curve in the left column would be a flat line at the
-         top of the plot, meaning that all configurations on all tested versions
-         of Racket run no slower than each benchmark's untyped configuration.
-        If this were true, the right column would be identical to the left
-         because every @deliverable{1} configuration can reach a @deliverable{1}
-         configuration (itself) in at most one type conversion step.
-        Conversely, the worst scenario would have flat lines at the bottom of every
-         plot, indicating that any configuration with at least one typed module
-         is more than 20x slower than the untyped configuration.
-        Here too, freedom to type an additional module will not change performance
-         and so the @math{k=0} and @math{k=1} plots will be identical.
-
-        The reality is that each benchmark determines a unique curve.
-        Using a different version of Racket or moving from @math{k=0} to @math{k=1}
-         shifts the curve horizontally, but does not change the overall shape
-         i.e. the relative cost of type boundaries in a program.
-        Keep in mind that a steep slope implies a good tradeoff between
-         accepting a larger overhead and increasing the number of
-         deliverable configurations.
-        A shallow slope or flat line is a poor tradeoff and evidence that
-         the majority of configurations suffer very large performance overhead.
-        Where large overheads are due to a pathological boundary between two
-         tightly-coupled modules, the associated @math{k=1} graph should
-         exhibit much better performance, as is the case for @bm{sieve}.
-      }
-      (for/list ([p (in-list pict*)]
-                 [name (in-list name*)]
-                 [i (in-naturals 1)])
-        (figure name (get-caption i) p)))))
-
-
-@; -----------------------------------------------------------------------------
-@section[#:tag "sec:compare"]{Comparing Typed Rackets}
-
-There are small but statistically significant variations in the untyped running
- times of a few benchmark programs.
-Strictly speaking this means that overheads from one version of Racket are
- not directly comparable to another for those benchmarks, but such are the hazards of benchmarking
- a large system.
-At any rate, we hold that users' decision to invest in gradual typing will
- be influenced mostly by the overhead they witness---regardless of whether
- that overhead is due to enforcing type soundness or because untyped Racket
- is magically faster than all of Typed Racket.
-For completeness we list all untyped runtimes in Appendix @todo{ref}.
-
-@; what else to say?
-@; - how to compare curves?
-@; - exciting changes?
-@; - the problem with OO?
-@; - why did zombie get worse?
-@; - why did quadMB get worse?
+@; The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark programs.
+@; For each, we give an approximate measure of the program's size,
+@;  a diagram of its module structure, and @todo{colors?}.
+@; 
+@; Size is measured by the number of modules and lines of code (LOC) in a program.
+@; Crucially, the number of modules also determines the number of gradually-typed
+@; configurations to be run when testing the benchmark, as a program with @math{n} modules
+@; can be gradually-typed in @exact{$2^n$} possible configurations.
+@; Lines of code is less important for evaluating macro-level gradual typing,
+@; but gives a sense of the overall complexity of each benchmark.
+@; Moreover, the Type Annotations LOC numbers are an upper bound on the annotations required
+@; at any stage of gradual typing because each typed module in our experiment
+@; fully annotates its import statements.
+@; 
+@; The column labeled ``Other LOC'' measures the additional infrastructure required
+@; to run each project for all typed-untyped configurations. This count includes
+@; project-wide type definitions, typed interfaces to untyped libraries, and
+@; any so-called type adaptor modules (see below).
+@; 
+@; The module structure graphs show a dot for each module in the program.
+@; An arrow is drawn from module A to module B when module A imports definitions
+@; from module B.
+@; When one of these modules is typed and the other untyped, the imported definitions
+@; are wrapped with a contract to ensure type soundness. To give a sense of how
+@; ``expensive'' the contracts at each boundary are, we color
+@; arrows to match the absolute number of times contracts at a given boundary
+@; are checked. These numbers are independent from the actual configurations.
+@; 
+@; The colors fail to show the cost of checking data structures
+@; imported from another library or factored through an adaptor module.
+@; For example, the @tt{kcfa} graph has many thin black edges because the modules
+@; only share data definitions. The column labeled ``Adaptors + Libraries''
+@; reports the proportion of observed contract checks due to adaptor modules and
+@; libraries.
+@; 
+@; @; This stupid figure placement is necessary to make it show up in the right place in paper
+@; @figure-here["fig:adaptor" "Inserting a type adaptor"
+@; @exact|{
+@; \input{fig-adaptor.tex}
+@; }|
+@; ]
+@; 
+@; 
+@; 
+@; @figure*["fig:bm" "Characteristics of the benchmarks"
+@;   @exact|{\input{fig-characteristics.tex}}|
+@; ]
+@; 
+@; @section{Adaptor Modules}
+@; 
+@; A quirk in Racket's structure-type definitions calls for one twist to
+@; an otherwise straightforward setup of benchmark configurations. Consider
+@; the following structure-type definition from @tt{gregor}, one of the
+@; benchmark programs: 
+@; @;%
+@; @(begin
+@; #reader scribble/comment-reader
+@; (racketblock
+@; (struct DateTime [date time jd])
+@; ))
+@; @;%
+@; Its evaluation introduces a new class of data structures via a constructor
+@; (@racket[DateTime]), a predicate (@racket[DateTime?]), and a number of
+@; selectors. A second evaluation creates a disjoint
+@; class of structures, meaning the selectors for the
+@; first class do not work on the second and vice versa.
+@; 
+@; If a structure-type definition is exported, a configuration may place the definition
+@; in an untyped module and its clients into the typed portion of the program.
+@; As explained below, importing a @racket[struct] demands that each client
+@; assigns a type to the structure-type definition. Now, when these typed
+@; clients wish to exchange instances of these structure types, the type
+@; checker must prove that the static types match. But due to the above
+@; quirk, the type system assigns generative static types to imported structure
+@; types. Thus, even if the developers who annotate the two clients with types choose
+@; the same names for the imported structure types, the two clients actually have
+@; mutually incompatible static types.
+@; 
+@; @Figure-ref{fig:adaptor} illuminates the problems with the left-hand
+@; diagram. An export of a structure-type definition from the untyped module
+@; (star-shaped) to the two typed clients (black squares) ensures that the
+@; type checker cannot equate the two assigned static types. The right-hand
+@; side of the figure explains the solution. We manually add a @emph{type
+@; adaptor module}. Such adaptor modules are specialized typed interfaces to
+@; untyped code. The typed clients import structure-type definitions and the
+@; associated static types exclusively from the type adaptor, ensuring that
+@; only one canonical type is generated for each structure type.  Untyped
+@; clients remain untouched and continue to use the original untyped file.
+@; 
+@; Adaptor modules also reduce the number of type annotations needed at
+@; boundaries because all typed clients can reference a single point of
+@; control.@note{In our experimental setup, type adaptors are available to
+@; all configurations as library files.}  Therefore we expect type adaptor
+@; modules to be of independent use to practitioners, rather than just a
+@; synthetic byproduct of our setup.
+@; 
+@; @section{Program Descriptions}
+@; 
+@; This section briefly describes each benchmark, noting the dependencies and required adaptor
+@; modules.  Unless otherwise noted, the benchmarks rely
+@; only on core Racket libraries and do not use adaptor modules.
+@; We credit program authors in parentheses; except for @tt{sieve}, all programs
+@; are independently useful.
+@; 
+@; @parag{Sieve (Ben Greenman)}
+@; This program finds prime numbers using the Sieve of Eratosthenes and is our
+@; smallest benchmark. It contains two modules: a streams library and the
+@; sieve code.
+@; We wrote this benchmark to illustrate the pitfalls of sound gradual typing.
+@; 
+@; @parag{Morse code (John Clements & Neil Van Dyke)}
+@; This script is adapted from a morse code training program.@note{@url["http://github.com/jbclements/morse-code-trainer"]}
+@; The original program plays a morse code audio clip, 
+@; reads keyboard input, and scores the input based on its
+@; Levenshtein distance from the correct answer.
+@; Our benchmark setup generates morse code strings and runs the
+@; Levenshtein algorithm on a list of frequently used words.
+@; 
+@; @parag{MBTA (Matthias Felleisen)}
+@; The @tt{mbta} program builds a representation of Boston's public transit system
+@; and answers reachability queries.
+@; It relies on an untyped graph library.
+@; The original program responded asynchronously to queries with a server thread.
+@; We instead measure a synchronous version of the program to ensure compatibility
+@; with Racket's stack-based profiling tools.
+@; 
+@; @parag{Zordoz (Ben Greenman)}
+@; This tool is used for exploring and counting the frequency of
+@; Racket bytecode structures.
+@; It operates on the Racket compiler's untyped zo data structures.
+@; Since these data structures are not natively supported in Typed Racket, even the
+@; completely typed program incurs some dynamic overhead.
+@; 
+@; @parag{Suffixtree (Danny Yoo)}
+@; This library implements a longest common substring algorithm
+@; using Ukkonen's suffix tree algorithm. While the library has
+@; minimal external dependencies, it calls for one adaptor module for the
+@; algorithm's internal data structures.
+@; 
+@; @parag{LNM (Ben Greenman)}
+@; This script analyzes the measurements included in this paper
+@; and generates figures 4 and 5. @; @figure-ref{fig:lnm1} and @figure-ref:lnm2}.
+@; Most of this benchmark's running time is spent generating figures using Typed Racket's @tt{plot} library, so the @emph{untyped} version of this program is noticeably less performant.
+@; This program relies on an untyped image rendering library and uses two adaptor modules.
+@; 
+@; @parag{KCFA (Matt Might)}
+@; The @tt{kcfa} program implements a simple control flow analysis for a
+@; lambda calculus.
+@; The language definitions and analysis are spread across seven modules, four of
+@; which require adaptors because they introduce new datatypes.
+@; 
+@; @parag{Snake (David Van Horn)} This program is based on a contract verification
+@; benchmark@note{@url["http://github.com/philnguyen/soft-contract"]} by
+@; Nguyễn @|etal|@~cite[nthvh-icfp-2014].  It implements a game where a growing
+@; and moving snake tries to eat apples while avoiding walls and its own tail.
+@; Our benchmark runs a pre-recorded history of moves altering
+@; the game state and does not display a GUI.  We use one adaptor module to
+@; represent the game datatypes, but otherwise the program is self-contained.
+@; 
+@; @parag{Tetris (David Van Horn)}
+@; This program is taken from the same benchmark suite as @tt{snake}@~cite[nthvh-icfp-2014]
+@; and implements the eponymous game.
+@; Like @tt{snake}, the benchmark runs a pre-recorded set of moves. Using it here requires
+@; one adaptor module.
+@; 
+@; @parag{Synth (Vincent St-Amour & Neil Toronto)}
+@; The @tt{synth} benchmark@note{@url["http://github.com/stamourv/synth"]}
+@; is a sound synthesis example from St-Amour @|etal|'s work on
+@; feature-specific profiling@~cite[saf-cc-2015].
+@; The program consists of nine modules, half of which are from Typed Racket's array library.
+@; In order to run these library modules in all typed-untyped configurations we create an adaptor module
+@; for the underlying array data structure.
+@; 
+@; @parag{Gregor (Jon Zeppieri)}
+@; This benchmark consists of thirteen modules and stress-tests a date and time library.
+@; The original library uses a
+@; library for ad-hoc polymorphism that is not supported by Typed Racket.
+@; Our adaptation instead uses a mono-typed variant of this code and removes
+@; the string parsing component.
+@; The benchmark uses two adaptor modules and relies on a small, untyped library for
+@; acquiring data on local times.
+@; 
+@; @parag{Quad (Matthew Butterick)}
+@; This project implements a type-setting library.
+@; It depends on an external constraint satisfaction solver
+@; library (to divide lines of text across multiple columns) and uses two adaptor modules.
+@; The original author provided both untyped and fully typed variants.
+@; 
+@; @; -----------------------------------------------------------------------------
+@; 
+@; @; @title[#:tag "sec:tr"]{Evaluating Typed Racket} @; , Classical
+@; @; 
+@; @; Measuring the running time for the performance lattices of our
+@; @; benchmarks means compiling, running, and timing thousands of
+@; @; configurations. Each configuration is run 30 times to ensure that the
+@; @; @;
+@; @; @;@margin-note*{cite the random number paper?}
+@; @; @;
+@; @; timing is not affected by random factors; some configurations take minutes
+@; @; to run.
+@; @; 
+@; @; Here we present our measurements in terms of the metrics of section@secref["sec:fwk"].
+@; @; The first subsection discusses one benchmark in detail, demonstrating how we
+@; @;  create the configurations, how the boundaries affect the performance of
+@; @;  various configurations, and how the Typed Racket code base limits the
+@; @;  experiment.  The second subsection explains our findings.
+@; @;  The last subsection interprets them.
+@; @; 
+@; @; @parag{Experimental setup}
+@; @; Due to the high resource requirements of evaluating 
+@; @; the performance lattices, experiments were run on multiple machines.
+@; @; Machine A with 12 physical Xeon E5-2630 2.30GHz cores and 64GB RAM, Machine B
+@; @; with 4 physical Core i7-4790 3.60GHz cores and 16GB RAM, Machine C with
+@; @; with 4 physical Core i7-3770K 3.50GHz cores and 32GB RAM,
+@; @; and a set of Machines D
+@; @; @;from the Northeastern University Discovery Cluster@note{@url{nuweb12.neu.edu/rc/?page_id=27}}
+@; @; with identical configurations of 20 physical Xeon E5-2680 2.8GHz cores
+@; @; with 64GB RAM. All machines run a variant of Linux and all benchmarks were run
+@; @; on Racket v6.2.
+@; @; The following benchmarks were run on machine A: @tt{sieve}, @tt{kcfa}, and @tt{gregor}.
+@; @; On machine B: @tt{suffixtree}, @tt{morse-code}, @tt{mbta}, and @tt{lnm}.
+@; @; On machine C: @tt{zordoz} and @tt{quad}.
+@; @; On machine D: @tt{snake}, @tt{synth}, and @tt{tetris}.
+@; @; For each configuration we report the average of 30 runs.
+@; @; All of our runs use a single core for each configuration.
+@; @; We performed sanity checks to validate that performance differentials reported
+@; @; in the paper were not affected by the choice of machine.@;
+@; @; @note{The scripts that we use to run the experiments are available in
+@; @; our artifact: @url{http://www.ccs.neu.edu/racket/pubs/#popl15-tfgnvf}}
+@; @; 
+@; @; @; -----------------------------------------------------------------------------
+@; @; @section{Suffixtree in Depth}
+@; @; 
+@; @; To illustrate the key points of the evaluation, this section describes
+@; @; one of the benchmarks, @tt{suffixtree}, and explains the setup and
+@; @; its timing results in detail.
+@; @; 
+@; @; @tt{Suffixtree} consists of six modules: @tt{data} to define label and
+@; @; tree nodes, @tt{label} with functions on suffixtree node labels,
+@; @; @tt{lcs} to compute longest common substrings, @tt{main} to apply
+@; @; @tt{lcs} to @tt{data}, @tt{structs} to create and traverse suffix tree nodes,
+@; @; @tt{ukkonen} to build suffix trees via Ukkonen's algorithm. Each
+@; @; module is available with and without type annotations.  Each configuration
+@; @; thus links six modules, some of them typed and others untyped.
+@; @; 
+@; @; @; @figure["fig:purpose-statements" "Suffixtree Modules"
+@; @; @; @tabular[#:sep @hspace[2]
+@; @; @; (list (list @bold{Module} @bold{Purpose})
+@; @; @; (list @tt{data.rkt}    "Label and tree node data definitions")
+@; @; @; (list @tt{label.rkt}   "Functions on suffixtree node labels")
+@; @; @; (list @tt{lcs.rkt}     "Longest-Common-Subsequence implementation")
+@; @; @; (list @tt{main.rkt}    "Apply lcs to benchmark data")
+@; @; @; (list @tt{structs.rkt} "Create and traverse suffix tree nodes")
+@; @; @; (list @tt{ukkonen.rkt} "Build whole suffix trees via Ukkonen's algorithm"))]]
+@; @; 
+@; @; 
+@; @; @figure*["fig:suffixtree" 
+@; @;           @list{Performance lattice (labels are speedup/slowdown factors)}
+@; @;   @(let* ([vec (file->value SUFFIXTREE-DATA)]
+@; @;           [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
+@; @;      (make-performance-lattice vec*))
+@; @; ]
+@; @; 
+@; @; Typed modules require type annotations on their data definitions and functions.
+@; @; Modules provide their exports with types, so that the
+@; @; type checker can cross-check modules. A typed module may import
+@; @; values from an untyped module, which forces the
+@; @; corresponding @racket[require] specifications to come with
+@; @; types. Consider this example:
+@; @; @;%
+@; @; @(begin
+@; @; #reader scribble/comment-reader
+@; @; (racketblock
+@; @; (require (only-in "label.rkt" make-label ...))
+@; @; ))
+@; @; @;%
+@; @; The server module is called @tt{label.rkt}, and the client imports specific
+@; @;  values, e.g., @tt{make-label}.  This specification is replaced with a
+@; @;  @racket[require/typed] specification where each imported identifier is
+@; @;  typed:
+@; @; @;%
+@; @; @(begin
+@; @; #reader scribble/comment-reader
+@; @; (racketblock
+@; @; (require/typed "label.rkt" 
+@; @;  [make-label
+@; @;   (-> (U String (Vectorof (U Char Symbol))) Label)]
+@; @;  ...)
+@; @; ))
+@; @; @; 
+@; @; 
+@; @; The types in a
+@; @; @racket[require/typed] form are compiled into contracts for
+@; @; the imported values. For example, if some
+@; @; imported variable is declared to be a @tt{Char}, the check @racket[char?]
+@; @; is performed as the value flows across the module boundary. Higher-order
+@; @; types (functions, objects, or classes) become contracts that wrap
+@; @; the imported value and which check future interactions of this
+@; @; value with its context.
+@; @; 
+@; @; The performance costs of gradual typing thus consist of wrapper allocation
+@; @; and run-time checks. Moreover, the compiler must assume that
+@; @; any value could be wrapped, so it cannot generate direct field access code
+@; @; as would be done in a statically typed language.
+@; @; 
+@; @; Since our evaluation setup calls for linking typed modules to both typed
+@; @; and untyped server modules, depending on the configuration, we replace
+@; @; @racket[require/typed] specifications with @racket[require/typed/check]
+@; @; versions. This new syntax can determine whether the server module is typed
+@; @; or untyped. It installs contracts if the server module
+@; @; is untyped, and it ignores the annotation if the server module is typed.
+@; @; As a result, typed modules function independently of the rest of the
+@; @; modules in a configuration.
+@; @; 
+@; @; 
+@; @; @; -----------------------------------------------------------------------------
+@; @; @parag{Performance Lattice.}
+@; @; 
+@; @; @Figure-ref{fig:suffixtree} shows the performance lattice annotated with the
+@; @;   timing measurements. The lattice displays each of the modules in the
+@; @;   program with a shape.  A filled black shape means the module is typed, an
+@; @;   open shape means the module is untyped. The shapes are ordered from left
+@; @;   to right and correspond to the modules of @tt{suffixtree} in alphabetical
+@; @;   order: @tt{data}, @tt{label}, @tt{lcs}, @tt{main}, @tt{structs}, and
+@; @;   @tt{ukkonen}.
+@; @; 
+@; @;  For each configuration in the lattice, the ratio is
+@; @;  computed by dividing the average timing of the typed program by
+@; @;  the untyped average. The figure omits standard deviations
+@; @;  as they are small enough to not affect the discussion.
+@; @; 
+@; @; The fully typed configuration (top) is @emph{faster} than the fully untyped
+@; @;  (bottom) configuration by around 30%, which puts the typed/untyped ratio at 0.7. This can
+@; @;  be explained by Typed Racket's optimizer, which performs specialization of
+@; @;  arithmetic operations and field accesses, and can eliminate some
+@; @;  bounds checks@~cite[thscff-pldi-2011]. When the optimizer is turned off,
+@; @;  the ratio goes back up to 1. 
+@; @; 
+@; @; 
+@; @; Sadly, the performance improvement of the typed configuration is the
+@; @;  only good part of this benchmark. Almost all partially typed configurations
+@; @;  exhibit slowdowns of up to 105x. Inspection of the lattice
+@; @;  suggests several points about these slowdowns: @itemlist[
+@; @; 
+@; @; @item{Adding type annotations to the @tt{main} module neither subtracts nor
+@; @;  adds overhead because it is a driver module.}
+@; @; 
+@; @; 
+@; @; @item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
+@; @;  or @tt{structs}---while leaving all other modules untyped causes slowdown of
+@; @;  at least 35x. This group of modules are tightly coupled.
+@; @;  Laying down a type-untyped boundary to separate
+@; @;  elements of this group causes many crossings of values, with associated
+@; @;  contract-checking cost.}
+@; @; 
+@; @; @item{Inspecting @tt{data} and @tt{label} further reveals that the latter
+@; @;  depends on the former through an adaptor module. This adaptor introduces a
+@; @;  contract boundary when either of the two modules is untyped. When both
+@; @;  modules are typed but all others remain untyped, the slowdown is reduced
+@; @;  to about 13x.
+@; @; 
+@; @;  The @tt{structs} module depends on @tt{data} in the same fashion and
+@; @;  additionally on @tt{label}. Thus, the configuration in which both
+@; @;  @tt{structs} and @tt{data} are typed still has a large slowdown. When all
+@; @;  three modules are typed, the slowdown is reduced to 5x.}
+@; @; 
+@; @; @item{Finally, the configurations close to the worst slowdown case are
+@; @;  those in which the @tt{data} module is left untyped but several of the
+@; @;  other modules are typed. This makes sense given the coupling noted
+@; @;  above; the contract boundaries induced between the untyped @tt{data} and
+@; @;  other typed modules slow down the program.  The module structure diagram
+@; @;  for @tt{suffixtree} in @figure-ref{fig:bm} corroborates the presence of
+@; @;  this coupling. The rightmost node in that diagram corresponds to the
+@; @;  @tt{data} module, which has the most in-edges in that particular
+@; @;  graph. We observe a similar kind of coupling in the simpler @tt{sieve}
+@; @;  example, which consists of just a data module and its client.}
+@; @; ]
+@; @; 
+@; @; The performance lattice for @tt{suffixtree} is bad news for gradual typing.
+@; @; It exhibits performance ``valleys'' in which a maintenance programmer can get stuck.
+@; @; Consider starting with the untyped program, and for some reason choosing
+@; @; to add types to @tt{label}. The program slows down by a factor of 88x. Without any
+@; @; guidance, a developer may choose to then add types to @tt{structs} and see the
+@; @; program slow down to 104x.  After that, typing @tt{main} (104x), @tt{ukkonen}
+@; @; (99x), and @tt{lcs} (103x) do little to improve performance. It is only
+@; @; when all the modules are typed that performance becomes acceptable again (0.7x).
+@; @; 
+@; @; 
+@; @; @figure*["fig:lnm1"
+@; @;   @list{@step["L" "N" "M"] results for the first six benchmarks}
+@; @;   @(let* ([data `(("sieve"        ,SIEVE-DATA)
+@; @;                   ("morse-code"   ,MORSECODE-DATA)
+@; @;                   ("mbta"         ,MBTA-DATA)
+@; @;                   ("zordoz"       ,ZORDOZ-DATA)
+@; @;                   ("suffixtree"   ,SUFFIXTREE-DATA)
+@; @;                   ("lnm"          ,LNM-DATA)
+@; @;                   )])
+@; @;      (data->pict data #:tag "1"))
+@; @; ]
+@; @; 
+@; @; @figure*["fig:lnm2"
+@; @;   @list{@step["L" "N" "M"] results for the remaining benchmarks}
+@; @;   @(let* ([data `(("kcfa"       ,KCFA-DATA)
+@; @;                   ("snake"      ,SNAKE-DATA)
+@; @;                   ("tetris"     ,TETRIS-DATA)
+@; @;                   ("synth"      ,SYNTH-DATA)
+@; @;                   ("gregor"     ,GREGOR-DATA)
+@; @;                   ("quad"       ,QUAD-DATA))])
+@; @;      (data->pict data #:tag "2"))
+@; @; ]
+@; @; 
+@; @; 
+@; @; @; -----------------------------------------------------------------------------
+@; @; @section{Reading the Figures}
+@; @; 
+@; @; Our method defines the number of @step["L" "N" "M"] configurations as the key metric for measuring the quality of a gradual type system.
+@; @; For this experiment we have chosen values of 3x and 10x for @math{N} and @math{M}, respectively, and allow up to 2 additional type conversion steps.
+@; @; These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 2x, if that much.} but serve to ground our discussion.
+@; @; 
+@; @; The twelve rows of graphs in @Figure-ref["fig:lnm1" "fig:lnm2"] summarize the results from exhaustively exploring the performance lattices of our benchmarks.
+@; @; Each row contains a table of summary statistics and one graph for each value of @math{L} between 0 and 2.
+@; @; 
+@; @; The typed/untyped ratio is the slowdown or speedup of fully typed code over untyped code.
+@; @; Values smaller than @math{1.0} indicate a speedup due to Typed Racket optimizations.
+@; @; Values larger than @math{1.0} are slowdowns caused by interaction with untyped libraries or untyped parts of the underlying Racket runtime.
+@; @; The ratios range between 0.28x (@tt{lnm}) and 3.22x (@tt{zordoz}).
+@; @; 
+@; @; The maximum overhead is computed by finding the running time of the slowest configuration and dividing it by the running time of the untyped configuration.
+@; @; The average overhead is obtained by computing the average over all configurations (excluding the fully-typed and untyped configurations) and dividing it by the running time of the untyped configuration.
+@; @; Maximum overheads range from 1.25x (@tt{lnm}) to 168x (@tt{tetris}).
+@; @; Average overheads range from 0.6x (@tt{lnm}) to 68x (@tt{tetris}).
+@; @; 
+@; @; The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
+@; @; In parentheses, we express these counts as a percentage of all configurations for the program.
+@; @; 
+@; @; The three cumulative performance graphs are read as follows.
+@; @; The x-axis represents the slowdown over the untyped program (from 1x to @id[PARAM-MAX-OVERHEAD]x).
+@; @; The y-axis is a count of the number of configurations (from @math{0} to @math{2^n}) scaled so that all graphs are the same height.
+@; @; If @math{L} is zero, the blue line represents the total number of configurations with performance no worse than the overhead on the x-axis.
+@; @; For arbitrary @math{L}, the blue line gives the number of configurations that can reach a configuration with performance no worse than the overhead on the x-axis in at most @math{L} conversion steps.
+@; @; 
+@; @; The ideal result would be a flat line at a graph's top.
+@; @; Such a result would mean that all configurations are as fast as (or faster than) the untyped one.
+@; @; The worst scenario is a flat line at the graph's bottom, indicating that all configurations are more than 20x slower than the untyped one.
+@; @; For ease of comparison between graphs, a dashed (@exact{\color{red}{red}}) horizontal line indicates the 60% point along each project's y-axis.
+@; @; 
+@; @; 
+@; @; @; -----------------------------------------------------------------------------
+@; @; @section[#:tag "sec:all-results"]{Interpretation}
+@; @; 
+@; @; The ideal shape is difficult to achieve because of the overwhelming cost of the
+@; @; dynamic checks inserted at the boundaries between typed and untyped code.
+@; @; The next-best shape is a nearly-vertical line that reaches the top at a low x-value.
+@; @; All else being equal, a steep slope anywhere on the graph is desirable because
+@; @; the number of acceptable programs quickly increases at that point.
+@; @; 
+@; @; For each benchmark, we evaluate the actual graphs against these expectations.
+@; @; Our approach is to focus on the left column, where @math{L}=0, and to consider the
+@; @; center and right column as rather drastic countermeasures to recover
+@; @; performance.@note{Increasing @math{L} should remove pathologically-bad cases.} 
+@; @; 
+@; @; @parag{Sieve}
+@; @; The flat line at @math{L}=0 shows that half of all configurations suffer
+@; @; unacceptable overhead. As there are only 4 configurations in the lattice
+@; @; for @tt{sieve}, increasing @math{L} improves performance.
+@; @; 
+@; @; @parag{Morse code}
+@; @; The steep lines show that a few configurations suffer modest overhead (below 2x),
+@; @; otherwise @tt{morse-code} performs well.
+@; @; Increasing @math{L} improves the worst cases.
+@; @; 
+@; @; @parag{MBTA}
+@; @; These lines are also steep, but flatten briefly at 2x.
+@; @; This coincides with the performance of the fully-typed
+@; @; configuration.
+@; @; As one would expect, freedom to type additional modules adds configurations
+@; @; to the @deliverable{2} equivalence class.
+@; @; 
+@; @; @parag{Zordoz}
+@; @; Plots here are similar to @tt{mbta}.
+@; @; There is a gap between the performance of the fully-typed
+@; @; configuration and the performance of the next-fastest lattice point.
+@; @; 
+@; @; @parag{Suffixtree}
+@; @; The wide horizontal areas are explained by the performance lattice in
+@; @; @figure-ref{fig:suffixtree}: configurations' running times are not evenly
+@; @; distributed but instead vary drastically when certain boundaries exist.
+@; @; Increasing @math{L} significantly improves the number of acceptable configuration
+@; @; at 10x and even 3x overhead.
+@; @; 
+@; @; @parag{LNM}
+@; @; These results are ideal.
+@; @; Note the large y-intercept at @math{L}=0.
+@; @; This shows that very few configurations suffer any overhead.
+@; @; 
+@; @; @parag{KCFA}
+@; @; The most distinctive feature at @math{L}=0 is the flat portion between 1x
+@; @; and 6x. This characteristic remains at @math{L}=1, and overall performance
+@; @; is very good at @math{L}=2.
+@; @; 
+@; @; @parag{Snake}
+@; @; The slope at @math{L}=0 is very low.
+@; @; Allowing @math{L}=1 brings a noticeable improvement above the 5x mark,
+@; @; but the difference between @math{L}=1 and @math{L}=2 is small.
+@; @; 
+@; @; @parag{Tetris}
+@; @; Each @tt{tetris} plot is essentially a flat line.
+@; @; At @math{L}=0 roughly 1/3 of configurations lie below the line.
+@; @; This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
+@; @; when @math{L}=2.
+@; @; 
+@; @; @parag{Synth}
+@; @; Each slope is very low.
+@; @; Furthermore, some configurations remain unusable even at @math{L}=2.
+@; @; These plots have few flat areas, which implies that overheads are spread
+@; @; evenly throughout possible boundaries in the program.
+@; @; 
+@; @; @parag{Gregor}
+@; @; These steep curves are impressive given that @tt{gregor} has 13 modules.
+@; @; Increasing @math{L} brings consistent improvements.
+@; @; 
+@; @; @parag{Quad}
+@; @; The @tt{quad} plots follow the same pattern as @tt{mbta} and @tt{zordoz}, despite being visually distinct.
+@; @; In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
+@; @; The high typed/untyped ratio is explained by small differences in the original author-supplied variants.

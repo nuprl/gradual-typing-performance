@@ -59,7 +59,7 @@
 @include-section{flavors.scrbl}
 @include-section{story.scrbl}
 @include-section{framework.scrbl}
-@;@include-section{benchmarks.scrbl}
+@include-section{typed-racket.scrbl}
 @;@include-section{typed-racket.scrbl}
 @;@include-section{aftermath.scrbl}
 @;@include-section{death.scrbl}
