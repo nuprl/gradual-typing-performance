@@ -18,11 +18,9 @@ Although there is variety among gradual type systems, @emph{gradual typing}
  mixing some amount of static and dynamic type checking.
 This section briefly summarizes the history of typed/untyped languages,
  shows where gradual typing entered the design space,
- and describes the various gradual type systems in use today.
+ and describes the various similar type systems in use today.
 Here, as in the introduction, we prefer to say ``sound gradual typing''
- to distinguish gradual typing (which is type sound) from optional type systems.
-
-@; whatever man. Still bad but whatever
+ to distinguish gradual type systems from similar unsound designs.
 
 
 @section{Origins}
@@ -51,12 +49,12 @@ The end result is improved static error detection and types that may be used
 
 @; Quasi-Static 1990
 A third research direction combining static and dynamic types is Thatte's
- \emphquasi-static} typing @todo{cite}, which essentially removed the
- type tags from the previous work on type {\tt Dynamic}.
+ @emph{quasi-static} typing @todo{cite}, which essentially removed the
+ type tags from the previous work on type @tt{Dynamic}.
 Instead of requiring the programmer to dispatch on the exact tag attached
  to values of unknown type, the quasi-static type system would infer or
  cast values automatically.
-Only impossible type casts would result in a compile-time {\tt Dynamic} type error.
+Only impossible type casts would result in a compile-time @tt{Dynamic} type error.
 @; Kinda pointless paragraph, no?
 
 
@@ -164,11 +162,12 @@ These restrictions may not be appropriate in all situations, hence the
 Sound gradual type systems statically check typed code for type errors,
  allow interaction between typed and untyped code, and additionally enforce
  the semantics of types at runtime.
-The enforcement is what separates gradual types from optional types.
-Whereas optional type systems erase the types during compilation,
- sound gradually typed languages convert static types into runtime assertions or
- casts.
-When two typed parts of a program interact, these runtime checks are skipped.
+The enforcement is what separates gradual types from optional types,
+ as the latter make no guarantee about the behavior of typed terms at runtime.
+In contrast, a gradual type system compiles types to run-time assertions
+ that preserve the compile-time semantics of typed terms.
+When two typed parts of a program interact, the runtime assertions
+ are skpped.
 But the boundary between typed and untyped code is always guarded.
 
 @figure["fig:tr-example" "Typed and untyped Racket code"
@@ -184,8 +183,8 @@ When the call is in an untyped module, as we have written it on the right
  half of @Figure-ref{fig:tr-example}, compilation
  succeeds and running the program raises an exception
  at the call site for @racket[norm] detailing the type error.
-This type error is guaranteed by Typed Racket's soundness: run-time
- type errors are detected immediately and attributed to a
+This type error is guaranteed to occur by Typed Racket's soundness: run-time
+ type errors are detected immediately and attributed to the
  responsible party @todo{cite}.
 
 @;
@@ -206,13 +205,13 @@ One would hope that the cost of dynamic checks is relatively small in practice,
 @subsection{The Case for Soundness}
 
 Given the obvious performance cost of type soundness, it seems more sensible
- to forget it.
+ to be unsound.
 Indeed, this is the approach taken by every optionally typed language
  developed in industry @todo{cite hack flow dart ts mypy}.
 These languages use types to catch shallow yet common errors; build IDE tools
  like type-based autocompletion; and serve as checked documentation.
 
-We believe that type systems---even gradual type systems---can offer much
+We believe that type systems---even gradual type systems---should offer much
  more to the working programmer.
 First, sound types help developers reason about how code will execute
  in any context.
@@ -255,7 +254,7 @@ Reason being, there are two schools of thought regarding the granularity at
  program be typed or untyped.
 As @Figure-ref{fig:ts-example} demonstrates, class fields, function parameters,
  and function return types can be annotated or left untyped.
-This gives enormous freedom adding types to a program.
+This gives enormous freedom when adding types to a program.
 Nearly all the languages mentioned above are examples of micro gradual typing
  @todo{cite}.
 

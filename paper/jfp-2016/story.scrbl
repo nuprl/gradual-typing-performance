@@ -43,7 +43,7 @@ Likewise if all code was untyped, though removing the types would also
 So why bother with gradual typing?
 Surely the convenience of switching between static and dynamic type checking
  at a whim is not worth the performance overhead or language design challenges.
-We have two replies: one practical, one theoretical.
+To this we have two replies: one practical, one theoretical.
 
 
 @subsection{Pragmatics of Gradual Typing}
@@ -66,7 +66,7 @@ This low payoff is underscored by the opportunity cost of migrating existing
 Instead of requiring a full conversion, gradual typing makes it possible
  to typecheck only core or mission-critical parts of an application.
 The converted modules fit into the software system exactly as before,
- but now benefit from static type checking and dynamic enforcement of type
+ but now strengthened with static type checking and dynamic enforcement of type
  signatures.
 In short, we gain increased protection from bugs in important parts of the
  codebase and leave the rest alone---without compomising the safety of
@@ -82,17 +82,17 @@ In a gradual type system, the developer can leave these types in the code
  so that after the buggy module is fixed, type annotations harden it against
  future bugs and regressions.
 
-Ultimately, the stable point for a large project that was initally built in a
- dynamic language is somewhere between fully-typed and fully-untyped.
-Essential services and various other components will become typed, but the
- rest of the product will stay untyped.
-As the program evolves some new untyped components will appear.
-Conversely, as the type system improves, new and existing components can take
- advantage of stronger guarantees; again, without forcing a rewrite of neighboring
- components.
+Ultimately, the stable point for a large project initally written in a
+ dynamic language is somewhere between fully-typed and fully-untyped,
+ where the essential services are statically typed and all other code
+ may or may not be typed.
+As the program evolves, some new untyped components will appear.
+So too will new typed components, and if the type system grows to add
+ a new feature then parts of the project may opt-in to the feature without
+ forcing a rewrite of neighboring components.
 All this is to say that gradual typing is not about making it easy to flip
- a switch from untyped to typed, but rather to make the decision of whether
- to switch a local choice.
+ a switch from untyped to typed, but rather to turn the decision of whether
+ to switch a local choice instead of a global one.
 
 
 @subsection{Beyond Typed Racket}
@@ -108,7 +108,7 @@ How can we ensure safety when data flows across a boundary?
 To date, the solution has been ``by assumption'': we assert that the boundary is correct.
 For a runtime system, this approach is justifiable.
 Checking every interaction between the runtime and the language would
- incur tremendous overhead, and besides the runtime is small enough to
+ incur a large overhead, and besides the runtime is small enough to
  consider it a trusted computing base.
 Assuming safety is less valid, however, when reasoning about FFI calls.
 It is usually not reasonable to trust that every foreign function is correct.
@@ -153,14 +153,14 @@ The program consists of four modules:
      @tt{main.rkt} is a driver module that creates a population and triggers updates;
    } @item{
      @tt{population.rkt} defines a (mutable) datatype for populations;
+   } @item{
      and @tt{utilities.rkt} provides functions for working with probability vectors.
    }]
 All told, there are @exact|{$2^4$}| ways of choosing a subset of these four
- modules to type, but to ground our discussion we focus on the configuration
- where only @tt{population.rkt} is typed.
-To illustrate exactly how boundaries can occur in a Typed Racket program,
- we focus on the fragments of @tt{main.rkt} and @tt{population.rkt} shown
- in @Figure-ref{fig:fsm-example}.
+ modules to type.
+To ground our discussion we focus on the configuration
+ where only @tt{population.rkt} is typed; specifically the fragments of
+ @tt{main.rkt} and @tt{population.rkt} shown in @Figure-ref{fig:fsm-example}.
 
 @figure["fig:fsm-example" "Example typed/untyped interaction"
 @exact|{\input{fig-fsm-example}}|
