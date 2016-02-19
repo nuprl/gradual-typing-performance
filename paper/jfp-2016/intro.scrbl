@@ -10,8 +10,7 @@
 Dynamically-typed languages have become a staple of the software
  engineering world.
 Programmers use these languages to build all kinds of software, from
- data analysis libraries
- to social networking websites
+ from social networking websites
  to pension systems @todo{cite}.
 In many cases, the systems start as innocent prototypes.
 Soon enough, though, small programs grow into complex,
@@ -28,8 +27,8 @@ The language will faithfully do nearly anything the programmer instructs it to--
 That being said, a static type system guarantees protection from so-called
  type errors, provides a form of documentation via type signatures, and
  enables type-driven compiler optimizations @todo{cite}.
-Given these benefits, having to annotate some programs or redesign others
- to satisfy a type checker seems a small price to pay for the maintenance
+Given these benefits, needing to satisfy a type checker by giving some annotations
+ or datatypes seems a small price to pay for the maintenance
  benefits.
 @; Type systems also useful for writing new code, though popular
 @;  opinion seems to like untyped better.
@@ -43,21 +42,15 @@ This gives the language user freedom to decide where the benefits
  of working with a type system outweigh the costs.
 
 Many programming languages combine the benefits of static and dynamic typing;
- in the past five years, we have seen new gradual type systems for
+ in the past five years, we have seen new ``gradual'' type systems for
  @todo{cite langs}.
-Each system has diverse goals and capabilities;
- in fact, the term
- @emph{gradual typing} has become an umbrella term rather than a technical one,
- applied equally to dynamic languages where type hints are used as an excuse
- for unsafe compiler optimizations and theoretical calculi with correctness
- theorems about the interaction of typed and untyped@note{We frequently use
- ``typed'' and ``untyped'' as shorthand for ``statically typed'' and ``dynamically typed''.
- To be clear: our ``untyped'' code is memory-safe and will catch type errors at runtime.}
- components@todo{cite}
-@; fair to compare industry / calculi and deduce "umbrella"?
-@Secref{sec:flavors} surveys this research and implementation landscape.
-Despite the variety, there are three equally-important criteria for
- evaluating any gradual type system:
+Each system has unique goals and capabilities.
+In @Secref{sec:flavors} we survey this research and implementation landscape,
+ but despite the variety, there are three equally-important criteria for
+ evaluating any typed/untyped@note{We frequently use
+   ``typed'' and ``untyped'' as shorthand for ``statically typed'' and ``dynamically typed''.
+   To be clear: our ``untyped'' code is memory-safe and will catch type errors at runtime.}
+ language.
  @itemlist[
    @item{@emph{Expressiveness:} how many untyped features can the type system
          validate?}
@@ -71,7 +64,7 @@ Therefore one would expect that expressiveness, safety, and performance
 We have found, however, that commercial implementations of gradual typing
  ignore type safety and research languages with type soundness guarantees
  do not systematically evaluate performance.
-In fact, the few performance studies mentioned in the literature
+Moreover, the few performance studies mentioned in the literature
  report order-of-magnitude slowdowns.
 
 As a first step towards expressive, safe, and performant gradual typing, this
@@ -104,6 +97,6 @@ We stand by these claims.
 Even after the performance improvements discussed
  in @Secref{sec:aftermath}, freely mixing typed and untyped code remains impractical.
 It remains to be seen whether a performant implementation of sound gradual
- typing is possible or how the gradual typing promise should be amended
+ typing is possible, or how the gradual typing promise should be amended
  to help developers avoid order-of-magnitude slowdowns.
 
