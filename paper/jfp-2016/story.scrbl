@@ -5,7 +5,7 @@
 @require["common.rkt"]
 @(require racket/file benchmark-util/data-lattice)
 
-@title[#:tag "sec:story"]{Our Story: Typed Racket}
+@title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
 Our research is motivated by practical experience with Typed Racket,
  the gradually-typed sister language of Racket @todo{cite}.
@@ -155,7 +155,7 @@ The program consists of four modules:
      @tt{population.rkt} defines a (mutable) datatype for populations;
      and @tt{utilities.rkt} provides functions for working with probability vectors.
    }]
-All told, there are @exact|{$2^4 = 16$}| ways of choosing a subset of these four
+All told, there are @exact|{$2^4$}| ways of choosing a subset of these four
  modules to type, but to ground our discussion we focus on the configuration
  where only @tt{population.rkt} is typed.
 To illustrate exactly how boundaries can occur in a Typed Racket program,
@@ -228,7 +228,7 @@ In the case of @tt{step} (line 13), two checks happen.
      and rejects type-changing updates.}
 ]
 When @tt{step} is called a second time with the result of the first call,
- it performs these steps again, validating and re-wrapping the proxied vector.
+ it performs these checks again, validating and re-wrapping the proxied vector.
 Every successive call adds another proxy; each proxy slows down vector reference
  and update operations.
 
