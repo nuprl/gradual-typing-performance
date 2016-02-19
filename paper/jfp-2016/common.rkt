@@ -24,6 +24,8 @@
          usable
 
          id
+         benchmark
+         benchmarks
          todo ;; Remove this export before submission
          )
 
@@ -152,4 +154,35 @@
 
 (define (todo x)
   (make-element 'bold @string-append["TODO: " x]))
+
+(define (benchmark #:name name
+                   #:author author
+                   #:num-adaptor num-adaptor
+                   #:origin origin
+                   #:purpose purpose
+                   #:external-libraries [library #f]
+                   . description*)
+  ;(define MG (project-name->modulegraph MG))
+  ;(define loc (modulegraph->untyped-loc MG))
+  ;(define ann-loc (modulegraph->ann-loc MG))
+  ;(define other-loc (modulegraph->other-loc MG))
+  ;(define num-modules (modulegraph->num-modules MG))
+  (apply elem
+    (list*
+     (bold name)
+     (element 'newline "")
+     (elem (list "Author : \n" author))
+     (element 'newline "")
+     (elem (list "Origin : \n" origin))
+     (element 'newline "")
+     (elem (list "Purpose : \n" purpose))
+     (element 'newline "")
+     (append
+      (if library
+        (list (make-element plain library) (element 'newline ""))
+        '())
+      (list
+        (make-element plain description*))))))
+
+(define benchmarks '(0 0 0 0 0 0 0 0 0 0 0 0))
 
