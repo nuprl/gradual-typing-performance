@@ -9,20 +9,23 @@
 @require["common.rkt"]
 
 @; -----------------------------------------------------------------------------
-@title[#:tag "sec:frameworkfwk"]{Evaluation Framework}
+@title[#:tag "sec:framework"]{Evaluation Framework}
 
 @; @section{Criteria for Performance Evaluation}
 Our experience with Typed Racket demonstrates two essential points:
   @itemlist[
     @item{
-      Racket programmers are not seeking "ideal" conversion paths
+      Programmers are not seeking "ideal" conversion paths
        from untyped to typed.
       More often, they create a mixed typed/untyped program through
        some combination of existing code, necessity, and convenience.
     }
     @item{
-      Performance can fluctuate wildly depending on what subset of modules
-       are typed due to the complex interaction between modules.
+      Performance can fluctuate wildly depending on the number of typed modules
+       and the nature of their interactions.
+      These fluctuations are difficult to predict
+       even for the program's original author.
+      @todo{is this claim supported by the text?}
     }
   ]
 These observations convince us that performance evaluation for gradual type
