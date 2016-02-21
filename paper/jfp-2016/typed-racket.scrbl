@@ -1,11 +1,6 @@
 #lang scribble/base
 
 
-@; To address this issue, the implementors of Typed Racket  included a small
-@;  number of run-time libraries as trusted code with unchecked type environments.
-@; The next section explains what ``completely typed'' means for the individual
-@;  benchmarks.
-
 @require["common.rkt" "typed-racket.rkt"]
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
@@ -14,7 +9,8 @@ For our evaluation of Typed Racket, we use a suite of
  @id[NUM-BENCHMARKS] programs
  and generate timings over the whole performance lattice for each.
 As lattices for projects with more than 6 modules are too large to analyze at
- a glance, we present our results in terms of @step["L" "N" "M"].
+ a glance, we present our results in terms of the proportion of
+ @step["L" "N" "M"] configurations.
 
 @section[#:tag "sec:bm"]{The Benchmark Programs}
 
@@ -317,8 +313,7 @@ In most cases our documented input size is a compromise between having an
      of the built-in @racket[list?] and @racket[symbol?] functions.@note{In particular,
        @racket[(lambda (v) (and (list? v) (symbol? (car v))))].}
   }
-)
-)
+))
 
 @subsection{Benchmark Characteristics}
 
@@ -340,7 +335,7 @@ Moreover, the Type Annotations LOC numbers are an upper bound on the annotations
 The column labeled ``Other LOC'' measures the additional infrastructure required
  to run each project for all typed-untyped configurations.
 This count includes project-wide type definitions, typed interfaces to
- untyped libraries, and any so-called type adaptor modules (@Secref{todo})
+ untyped libraries, and any so-called type adaptor modules (@todo{secref})
  we used in our experiment.
 
 The module structure graphs show a dot for each module in the program.
@@ -366,16 +361,37 @@ When one of these modules is typed and the other untyped, the imported definitio
 
 @section[#:tag "sec:tr"]{Experimental Protocol}
 
-@todo{}
+Our experiment measures the running time of all
+ configurations in each benchmark's performance lattice.
+The machine we used to generate these numbers was a 64GB RAM Linux machine with
+ 32 physical AMD Opteron 6376 2.3GHz cores.
+We dedicated 29 of the machine's cores to running our experiment;
+ each configuration was pinned to a single core and each benchmark program
+ was run to completion before starting configurations for the next benchmark.
 
-We ran our experiments using 29 physical AMD Opteron 6376 2.3GHz cores on
- as 32-core, 64GB RAM Linux machine.
+Timing information for a single configuration was obtained by running the
+ configuration's @tt{main} function repeatedly.
+Each run took place on a new instance of the Racket VM.@note{The exact command
+ we used was @tt{raco make main.rkt; racket main.rkt}}.
+After running and ignoring one preliminary run, we would collect timings
+ for 10 runs of the configuration.
+If these 10 timings were not normally distributed, we ran an additional 20
+ timings and reported all 30 runs.
+Otherwise, we reported the 10 runs and began the next configuration.
+The means and standard errors in our analysis are computed from these sequences
+ of 10 or 30 timings.
 
-For each configuration we report the average of 30 runs.
-All of our runs use a single core for each configuration.
-@note{The scripts that we use to run the experiments are available in
-our artifact: @todo{update artifact}
- @url{http://www.ccs.neu.edu/racket/pubs/#popl15-tfgnvf}}
+The scripts we used to run our experiments and the data we collected
+ are available in the online supplement to this article: @todo{update artifact}.
+
+
+@subsection[]{Detecting Non-Normal Distributions: Anderson-Darling test}
+
+Frankly, we would have preferred to run a complete set of timings for all
+ our benchmark programs.
+However the large number of configurations (@todo{total}) and our decision to
+ compare three versions of Racket made this impractical.
+To compromise, we applied the Anderson-Darling @todo{doc}
 
 
 @section[]{Example: suffixtree}
