@@ -78,11 +78,11 @@ Let us re-articulate the salient points from our previous work:
  The fully untyped configuration is the
  bottom element and the fully-typed configuration is the top}
 ]
- We speak of a @italic{performance lattice} to describe a pair @exact|{$(S, \leq)$}|
-  generated from a sequence of modules.
- Note that a performance lattice does not actually contain performance numbers.
- It is a static artifact representing the possible ways of running the program.
- Actually testing the configurations and recording the time taken is a second step.
+We speak of a @italic{performance lattice} to describe a pair @exact|{$(S, \leq)$}|
+ generated from a sequence of modules.
+Note that a performance lattice does not actually contain performance numbers.
+It is a static artifact representing the possible ways of running the program.
+Actually testing the configurations and recording the time taken is next.
 
 Our contribution is to exploit the lattice-oriented approach to benchmarking
  for a @emph{summative} evaluation.
@@ -104,19 +104,16 @@ Such a fully annotated system should perform as well as
  the original, untyped program---and if the gradual type system is
  integrated with the compiler, it may even run faster because the compiler
  can apply type-based optimization techniques.
-
-@def[#:term "typed/untyped ratio"]{The typed/untyped ratio of a performance
- lattice is the time needed to run the top configuration divided by the
- time needed to run the bottom configuration.}
-
 Unfortunately, completely typed configurations may still rely on untyped
  libraries or core services.
 In particular, Typed Racket relies on Racket's untyped runtime system, hence
  programs almost always use an untyped constant, function, or class across
  a type boundary.@note{To mitigate the cost of this boundary,
   part of Racket's runtime is put in an unchecked type environment.}
-Thus improper typed/untyped ratios are possible even for optimizing gradual
- type systems.
+
+@def[#:term "typed/untyped ratio"]{The typed/untyped ratio of a performance
+ lattice is the time needed to run the top configuration divided by the
+ time needed to run the bottom configuration.}
 
 Sufficiently large systems cannot be fully converted all at
  once and may never even reach the top configuration.
@@ -157,6 +154,7 @@ Using the first parameter, we exclude deliverable configurations from the count.
 The second parameter specifies the positive boundary, i.e., the acceptable
  slowdown factor for a usable configuration.
 Conversely:
+@; TODO define 'acceptable', inline 'unacceptable'?
 
 @def[#:term "unacceptable"]{A
  configuration is unacceptable if it is neither @deliverable{N} nor
