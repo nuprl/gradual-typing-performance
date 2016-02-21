@@ -1,185 +1,321 @@
 #lang scribble/base
 
+
 @; To address this issue, the implementors of Typed Racket  included a small
 @;  number of run-time libraries as trusted code with unchecked type environments.
 @; The next section explains what ``completely typed'' means for the individual
 @;  benchmarks.
 
-@require["common.rkt"]
+@require["common.rkt" "typed-racket.rkt"]
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-For our evaluation of Typed Racket, we use a suite of @(id (length benchmarks)) programs
+For our evaluation of Typed Racket, we use a suite of
+ @(id (length benchmark-name*)) programs
  and generate timings over the whole performance lattice for each.
 As lattices for projects with more than 6 modules are too large to analyze at
  a glance, we present our results in terms of @step["L" "N" "M"].
-The benchmarks themselves are representative of actual user code yet
- small enough that exhaustive performance evaluation remains tractable.
-
 
 @section[#:tag "sec:bm"]{The Benchmark Programs}
 
-@benchmark[
-  #:name "sieve"
+The benchmarks themselves are representative of actual user code yet
+ small enough that exhaustive performance evaluation remains tractable.
+Where relevant, we include hyperlinks to external libraries used by a benchmark.
+Other benchmarks are self-contained, aside from dependencies on core Racket
+ libraries.
+
+Although we give specific descriptions of the inputs we ran each benchmark on,
+ these inputs are more-or-less arbitrary.
+That is, we have experimented with inputs of various size and content but found
+ the relative overheads due to type boundaries remained the same.
+In most cases our documented input size is a compromise between having an
+ untyped runtime long enough to be stable against OS effects but short enough
+ that the slowest typed/untyped configurations finished reasonably quickly.
+
+@todo{why do snake & tetris have different num. of moves?}
+@todo{descriptions look very bad}
+
+@(benchmark-descriptions
+@(benchmark
+  #:name 'sieve
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
   #:purpose "Finds prime numbers using the Sieve of Eratosthenes."
-]{
+
+  @elem{
   We created the @tt{sieve} benchmark to demonstrate a scenario where user
    code closely interacts with higher-order library code---in this case, a stream
    library.
-  When fully typed or untyped, @tt{sieve} runs quickly.
-  Otherwise performance is significantly worse.
-}
+  When fully typed or untyped, @tt{sieve} quickly computes the ten-thousandth
+   prime number.}
+)
 
-@benchmark[
-  #:name "morsecode"
+@(benchmark
+  #:name 'morsecode
   #:author "John Clements & Neil Van Dyke"
   #:num-adaptor 0
-  #:origin "Library"
+  #:origin @hyperlink["https://github.com/jbclements/morse-code-trainer/tree/master/morse-code-trainer"]{Library}
   #:purpose "Generate morse code strings, compare against user input"
-]{
-  The original program plays an audio clip, waits for keyboard input,
+
+  @elem{
+  The original program is a plays an audio clip, waits for keyboard input,
    then scores the input based on its Levenshtein distance from the
    correct answer.
-  Our benchmark uses a list of common English words as input.
-}
+  Our benchmark takes the cartesian product of 300 common English words,
+   translates each pair to morse code, and finds the Levenshtein distance
+   between words.}
+)
 
-@benchmark[
-  #:name "mbta"
+@(benchmark
+  #:name 'mbta
   #:author "Matthias Felleisen"
   #:num-adaptor 0
   #:origin "Educational"
   #:purpose "Answer reachability queries about Boston's transit system"
-]{
-  Builds a graph representation of Boston's public transit system and
-   answers a series of reachability queries.
-  The original program ran an asynchronous server, but our benchmark is
-   single-threaded to cooperate with Racket's profiling tools.
-}
+  #:external-libraries (list @elem{graph@note{@url["http://github.com/stchang/graph"]}})
 
-@benchmark[
-  #:name "zordoz"
+  @elem{
+  Builds a graph representation of Boston's subway system and
+   answers a series of reachability queries.
+  The original program ran an asynchronous client/server framework
+   but our benchmark is single-threaded to cooperate with Racket's sampling
+   profiler, which we use in @Secref{sec:postmortem} to analyze the cause
+   of performance overhead.
+  }
+)
+
+@(benchmark
+  #:name 'zordoz
   #:author "Ben Greenman"
   #:num-adaptor 0
-  #:origin "Library"
+  #:origin @hyperlink["http://github.com/bennn/zordoz"]{Library}
   #:purpose "Explore bytecode (.zo) files"
-]{
-  Decompiles a Racket bytecode file and counts the frequency of AST nodes
-   in the result.
-  The decompile API is untyped, so @tt{zordoz} suffers overhead when completely
-   typed.
-}
+  #:external-libraries (list @elem{compiler-lib@note{@url["http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29"]}})
 
-@benchmark[
-  #:name "suffixtree"
+  @elem{
+  This program gives a shell-style interface for incrementally traversing
+   Racket bytecode.
+  Our benchmark decompiles its own bytecode files and
+   counts the number of branch instructions in the result.
+
+  The Racket bytecode format changed between versions 6.2 and 6.3 with
+   the release of the set-of-scopes macro expander@~cite[f-popl-2016].
+  Consequently, our @tt{zordoz} benchmark is slightly different before and
+   after version 6.2; however, the relative difference between configurations
+   in the performance lattice is the same across bytecode formats.
+  }
+)
+
+@(benchmark
+  #:name 'suffixtree
   #:author "Danny Yoo"
   #:num-adaptor 1
-  #:origin "Library"
+  #:origin @hyperlink["https://github.com/dyoo/suffixtree"]{Library}
   #:purpose "Implement Ukkonen's suffix tree algorithm"
-]{
-  Runs a longest-common-substring algorithm on all pairs of words in a small
-   text file.
-}
 
-@benchmark[
-  #:name "lnm"
+  @elem{
+    We use a longest-common-subsequence algorithm provided by this library
+     to compare one million pairs of English words.}
+)
+
+@(benchmark
+  #:name 'lnm
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
   #:purpose "Produce L-N/M plots"
-  #:external-libraries '("plot" "racket/statistics")
-]{
-  Creates the @math{L-N/M} plots for the @tt{gregor} benchmark.
-  This program is an early revision of the script we use to compile this article.
-}
+  #:external-libraries (list @elem{plot@note{@url["https://docs.racket-lang.org/plot/"]}}
+                             @elem{@tt{racket/statistics}@note{@url["https://docs.racket-lang.org/math/stats.html"]}})
 
-@benchmark[
-  #:name "kcfa"
+  @elem{
+    We developed the @tt{lnm} program to summarize data lattices and generate
+     the figures in @Secref{sec:lnm-plot}.
+    Our benchmark creates, but does not render, plots for the @tt{gregor} benchmark.}
+)
+
+@(benchmark
+  #:name 'kcfa
   #:author "Matt Might"
   #:num-adaptor 4
-  #:origin "Blog post"
-  #:purpose "Demo of k-CFA algorithm"
-]{
-  Runs a na\"ive control-flow analysis on a small lambda calculus term.
-}
+  #:origin @hyperlink["http://matt.might.net/articles/implementation-of-kcfa-and-0cfa/"]{Blog post}
+  #:purpose "Demo of the k-CFA algorithm"
 
-@benchmark[
-  #:name "snake"
+  @elem{
+    Simple, inefficient implementation of k-CFA.
+    Our benchmark runs the analysis on a lambda calculus term
+     that computes @tt{2 * (1 + 3) = 2 * 1 + 2 * 3}.
+  }
+)
+
+@(benchmark
+  #:name 'zombie
   #:author "David Van Horn"
   #:num-adaptor 1
-  #:origin "Educational"
+  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
   #:purpose "Game"
-]{
+
+  @elem{
+    In this game, the player must keep his marker away from
+     computer-controlled "zombie" markers.
+    We run the game on a pre-defined list of @todo{how many?} commands.
+
+    As noted by Nguyễn @|etal|@~cite[nthvh-icfp-2014], the original
+     program was implemented in an object-oriented style but converted
+     to a functional version to evaluate soft contract verification.
+    Our benchmark is based on a typed version of their functional game.
+  }
+)
+
+@(benchmark
+  #:name 'snake
+  #:author "David Van Horn"
+  #:num-adaptor 1
+  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
+  #:purpose "Game"
+
+  @elem{
   Implements a small game where a growing and moving snake avoids walls and
    its own tail.
-  Our benchmark runs a pre-recorded history of moves, altering the game state
-   but not producing GUI output.
-  Based on a contract verificationbenchmark@note{@url["http://github.com/philnguyen/soft-contract"]}
-   by Nguyễn @|etal|@~cite[nthvh-icfp-2014].
-}
+  Our benchmark runs a pre-recorded history of 50,000 moves.
+  These moves update the game state, but do not produce GUI output.
+  Our benchmark is a gradually typed version of the @tt{snake} game from
+   Nguyễn @|etal|@~cite[nthvh-icfp-2014].
+  }
+)
 
-@benchmark[
-  #:name "tetris"
+@(benchmark
+  #:name 'tetris
   #:author "David Van Horn"
   #:num-adaptor 1
-  #:origin "Educational"
+  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
   #:purpose "Game"
-]{
-  Implements a game of tetris.
-  Like @tt{snake}, runs a pre-recorded set of moves.
-}
 
-@benchmark[
-  #:name "synth"
+  @elem{
+    This version of tetris is also adapted from Nguyễn @|etal|@~cite[nthvh-icfp-2014].
+    Our benchmark run a pre-recorded set of 5,000 moves and does not include
+     a GUI.}
+)
+
+@(benchmark
+  #:name 'synth
   #:author "Vincent St. Amour and Neil Toronto"
   #:num-adaptor 1
   #:origin @hyperlink["http://github.com/stamourv/synth"]{Library}
   #:purpose "Music synthesis DSL"
-]{
-  Converts a description of music to a playable @tt{.wav} file.
-  This benchmark incorporates 5 modules from Racket's typed @tt{math/array} library,
-   which is known to cause performance issues for untyped clients.
-}
 
-@benchmark[
-  #:name "gregor"
+  @elem{
+    Converts a description of notes and drum beats to a playable @tt{.wav} format;
+     specifically, a 10-second clip from @hyperlink["https://en.wikipedia.org/wiki/Funkytown"]{Funkytown}.
+    The original program was known to suffer overhead from a type boundary
+     to Typed Racket's @hyperlink["https://docs.racket-lang.org/math/array.html"]{math/array}
+     library, so our benchmark incorporates 5 modules from
+     the library.
+    Notably, we had to monomorphize these math library modules because of
+     restrictions sending polymorphic data structures across type boundaries.
+    Otherwise, this benchmark is the same used by St. Amour @|etal|@~cite[saf-cc-2015].}
+)
+
+@(benchmark
+  #:name 'gregor
   #:author "Jon Zeppieri"
   #:num-adaptor 2
   #:origin @hyperlink["https://docs.racket-lang.org/gregor/index.html"]{Library}
   #:purpose "Date & time library"
-  #:external-libraries '("cldr")
-]{
-  The original library an untyped mechanism for ad-hoc polymorphism
-   that is not supported by Typed Racket.
-  Our adaptation instead uses monomorphic types and removes a string parsing
-   front-end.
-}
+  #:external-libraries
+    (list @elem{cldr@note{@url["https://docs.racket-lang.org/cldr-core/index.html"]}}
+          @elem{tzinfo@note{@url["https://docs.racket-lang.org/tzinfo/index.html"]}})
 
-@benchmark[
-  #:name "quad"
+  @elem{
+    The @hyperlink["https://docs.racket-lang.org/gregor/index.html"]{gregor}
+     library provides a variety of tools for working with date objects.
+    Our benchmark creates a list of 40 dates---half historic, half arbitrary---and
+     runs comparison and conversion operators on each.
+    We omit @tt{gregor}'s string-parsing utilities because they use an
+     untyped mechanism for ad-hoc polymorphism that is not supported by
+     Typed Racket.}
+)
+
+@(benchmark
+  #:name 'forth
+  #:author "Ben Greenman"
+  #:num-adaptor 0
+  #:origin @hyperlink["http://docs.racket-lang.org/forth/index.html"]{Library}
+  #:purpose "Forth interpreter"
+
+  @elem{
+    This Forth interpreter began as a purely functional calculator
+     that let the user define new commands at run-time.
+    We converted the program to an object-oriented style and found the
+     cost of sharing first-class objects over a type boundary prohibitive.
+    In fact, our benchmark runs only @todo{how many?} commands---the worst
+     configurations in Racket version 6.2 are exponentially slower as
+     this number increases.
+  }
+)
+
+@(benchmark
+  #:name 'fsm
+  #:author "Matthias Felleisen"
+  #:num-adaptor 1
+  #:origin @hyperlink["https://github.com/mfelleisen/sample-fsm"]{Educational}
+  #:purpose "Economy Simulator"
+
+  @elem{
+    Simulates the interactions of a group of automata.
+    Each participant employs a pre-determined strategy to maximize its
+     payoff in a sequence of interaction rounds.
+
+    Our benchmark uses a population of 100 automata and simulates 1000 rounds.
+    We measure two versions of this benchmark, one functional (@tt{fsm}) and
+     one object-oriented (@tt{fsmoo}).
+    Like our @tt{forth} benchmark, the object-oriented verion uses first-class
+     classes across a type boundary.
+  }
+)
+
+@(benchmark
+  #:name 'quad
   #:author "Matthew Butterick"
   #:num-adaptor 2
-  #:origin "Library"
-  #:purpose @hyperlink["https://github.com/mbutterick/quad"]{Typesetting library}
-]{
-  
-  Our evalutation uses two v
-  (Hm, just make 2 descriptions?)
-}
+  #:origin @hyperlink["https://github.com/mbutterick/quad"]{Library}
+  #:purpose "Typesetting"
+  #:external-libraries (list @elem{csp@note{@url["https://github.com/mbutterick/csp"]}})
 
-@; TODO forth, fsm, etc
+  @elem{
+    @hyperlink["http://github.com/mbutterick/quad"]{Quad} is an experimental
+     document processor.
+    It converts S-expression source code to @tt{pdf}.
 
-@;@benchmark[
-@;  #:name ""
-@;  #:author ""
-@;  #:num-adaptor 0
-@;  #:origin ""
-@;  #:purpose ""
-@;]{
-@;  yolo
-@;}
+    We measure two versions of @tt{quad}.
+    The first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
+     provided by the original author.
+    This version has a high typed/untyped ratio because it uses the type system
+     enforces more properties than the untyped program---the Typed version is
+     slower because it is doing more work.
+    Hence our second version, @tt{quadBG}, which uses types as weak as the untyped
+     program and is therefore suitable for judging the @emph{implementation}
+     of Typed Racket rather than the @emph{user experience} of Typed Racket.@note{Our
+       conference paper gave data only for @tt{quadMB}@~cite[tfgnvf-popl-2016]}
+
+    To give a concrete example of different types, here are the definitions
+     for the core @tt{Quad} datatype from both @tt{quadMB} and @tt{quadBG}.
+
+    @;@racketblock[
+    @tt{ (define-type QuadMB (Pairof Symbol (Listof Quad))) }
+
+    @tt{ (define-type QuadBG (Pairof Symbol (Listof Any))) }
+    @;]
+
+    The former is a homogenous, recursive type.
+    As such, the predicate asserting that an untyped value has type @tt{Quad}
+     is a linear-time tree traversal.
+    On the other hand, the predicate for @tt{QuadBG} is simply the composition
+     of the built-in @racket[list?] and @racket[symbol?] functions.@note{In particular,
+       @racket[(lambda (v) (and (list? v) (symbol? (car v))))].}
+  }
+)
+)
 
 
 @; The table in @figure-ref{fig:bm} lists and summarizes our twelve benchmark programs.
