@@ -96,7 +96,7 @@ That paper made two claims regarding the evaluation:
 ]
 We stand by these claims.
 Even after the performance improvements discussed
- in @Secref{sec:aftermath}, freely mixing typed and untyped code remains impractical.
+ in @todo{secref}, freely mixing typed and untyped code remains impractical.
 It remains to be seen whether a performant implementation of sound gradual
  typing is possible, or how the gradual typing promise should be amended
  to help developers avoid order-of-magnitude slowdowns.
