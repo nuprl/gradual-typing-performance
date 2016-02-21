@@ -1,8 +1,17 @@
 #lang racket/base
 
+;; Supporting code for `typed-racket.scrbl`
+;; - Render & organize benchmarks
+;; - Make L-N/M figures
+
 (provide
   benchmark-name*
+  ;; (Listof Symbol)
   ;; Names of all benchmarks used in the paper
+
+  NUM-BENCHMARKS
+  ;; Natural
+  ;; Not really a constant -- length of `benchmark-name*`
 
   (rename-out [make-benchmark benchmark])
   ;; (->* [] [#:name String
@@ -16,6 +25,12 @@
 
   benchmark-descriptions
   ;; (-> (Listof Benchmark) Any)
+  ;; Render a list of Benchmark structures.
+  ;; Use the `benchmark` constructor to make a `Benchmark`
+
+  benchmark-characteristics
+  ;; (-> Any)
+  ;; 
 )
 
 (require
@@ -44,6 +59,7 @@
   zombie
   zordoz
 ))
+(define NUM-BENCHMARKS (length benchmark-name*))
 
 ;; -----------------------------------------------------------------------------
 
@@ -63,7 +79,6 @@
   (match-define
     (benchmark name author num-modules num-adaptor origin purpose lib* description)
     b)
-  (printf "rendering ~a\n" name)
   (paragraph plain
    (list
     (elem #:style 'bold (symbol->string name))
@@ -119,8 +134,9 @@
   (check-missing-benchmarks b*)
   (map render-benchmark (sort b* benchmark<?)))
 
-(define (benchmark-table)
-  'TODO)
+(define (benchmark-characteristics)
+  (elem "TODO"))
+
   ;(define MG (project-name->modulegraph MG))
   ;(define loc (modulegraph->untyped-loc MG))
   ;(define ann-loc (modulegraph->ann-loc MG))
