@@ -1,6 +1,17 @@
 jfp
 ===
 
+quarantine the refs. to "typed racket"
+run-time vs runtime vs run time
+typecheck vs type-check vs type check
+vary inputs, confirm the same lattice
+
+
+
+TR what is fully-typed
+
+--- 
+
 It's not about paths. It's a random walk.
 You can't do a path in i.e. dr racket, with 20,000 (?) modules
 - "no paths if we do not tolerate overhead along the path"
