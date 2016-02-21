@@ -363,16 +363,19 @@ When one of these modules is typed and the other untyped, the imported definitio
 
 Our experiment measures the running time of all
  configurations in each benchmark's performance lattice.
+This experiment was repeated for three versions of Racket: the 6.2 release,
+ the 6.3 release, and a pre-release candidate for version 6.4.@note{In particular,
+  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
 The machine we used to generate these numbers was a 64GB RAM Linux machine with
  32 physical AMD Opteron 6376 2.3GHz cores.
 We dedicated 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
  was run to completion before starting configurations for the next benchmark.
 
-Timing information for a single configuration was obtained by running the
- configuration's @tt{main} function repeatedly.
+Timing information for a single configuration was obtained by compiling the
+ code ahead of time and then running the configuration's @tt{main} function repeatedly.
 Each run took place on a new instance of the Racket VM.@note{The exact command
- we used was @tt{raco make main.rkt; racket main.rkt}}.
+ we used was @tt{racket main.rkt}}.
 After running and ignoring one preliminary run, we would collect timings
  for 10 runs of the configuration.
 If these 10 timings were not normally distributed, we ran an additional 20
@@ -385,13 +388,91 @@ The scripts we used to run our experiments and the data we collected
  are available in the online supplement to this article: @todo{update artifact}.
 
 
-@subsection[]{Detecting Non-Normal Distributions: Anderson-Darling test}
+@subsection[]{Detecting Stable Measurements with the Anderson-Darling test}
 
-Frankly, we would have preferred to run a complete set of timings for all
- our benchmark programs.
-However the large number of configurations (@todo{total}) and our decision to
- compare three versions of Racket made this impractical.
-To compromise, we applied the Anderson-Darling @todo{doc}
+The running time of a configuration is dependent on many factors, ranging
+ from heuristics in the Racket JIT compiler to machine-level caching and
+ environment variable layout.
+    @; http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
+    @; http://www-plan.cs.colorado.edu/diwan/asplos09.pdf
+    @; http://janvitek.org/pubs/r3.pdf
+    @; https://people.cs.umass.edu/~emery/pubs/Stabilizer-UMass-CS-TR2011-43.pdf
+We hope to mitigate these confounding effects by running our experiments on
+ a single machine and taking the average of repeated runs.
+To be precise, we assume that back-to-back runs of a configuration pinned to
+ a single core are independent samples from a normal distribution.
+We further assume by the law of large numbers that our sample mean after
+ 30 trials is close to the configuration's true average runtime.
+    @; LLN : Jakob Bernoulli,
+    @;       Ars Conjectandi: Usum & Applicationem Praecedentis Doctrinae in
+    @;       Civilibus, Moralibus & Oeconomicis,
+    @;       1713, Chapter 4, (Translated into English by Oscar Sheynin)
+Frankly none of these assumptions are obviously valid, but we believe the
+ relative differences we observed between configurations in a lattice are correct.
+
+Running even 30 iterations, however, is prohibitive given the size of our
+ experiment.
+In total, we measured @todo{total} configurations each on three versions of Racket.
+To finish the experiment in a timely manner, we applied the Anderson-Darling
+ test @todo{cite} after taking 10 measurements with a critical value experimentally
+   @; http://www.hep.caltech.edu/~fcp/statistics/hypothesisTest/PoissonConsistency/AndersonDarling1954.pdf
+ shown by Stephens @todo{cite} to give a @math{p} value of @math{1%}.
+   @; http://www.math.utah.edu/~morris/Courses/6010/p1/writeup/ks.pdf
+The judgment we made was about the likelihood of seeing a particular sequence
+ of 10 runtimes assuming the data were from a normal distribution.
+If the odds were less than @math{1%}, we ran an additional 20 iterations.
+This led us to skip @todo{total} runs in total and led to no observable
+ differences in the overall timings taken from the same machine.
+
+For readers hoping to reproduce our setup, we now summarize the key points from
+ Stephens @todo{cite}.
+Our underlying distribution @math{F} is the distribution of runtimes obtained
+ for one configuration run repeatedly on a single core.
+We assume that @math{F} is normally distributed, but do not assume its mean
+ or variance.
+Let @exact|{$\vec{x}$}| denote our vector of 10 runtimes, sorted in increasing
+ order.
+We approximate the true mean @exact|{$\mu$}| and variance @exact|{$\sigma^2$}|
+ of @math{F} by the statistics:
+
+   @exact|{$$
+     \hat{\mu} = \Sigma_{i=0}^{9} \vec{x}_i / 10
+     \hspace{2cm}
+     \hat{\sigma}^2 = \Sigma_{i=0}^{9} (\mu_i - \hat{\mu})^2 / 9
+   $$}|
+
+Next we take the samples' z-scores and
+ compute a probability vector @exact|{$\vec{h}$}| by mapping the standard
+ normal CDF @exact|{$\Phi$}| (i.e. with parameters @exact|{$\mu = 0$}| and
+ @exact|{$\sigma = 1$}|) over the z-scores.
+
+    @exact|{$$\vec{h}_i = \Phi(\frac{\hat{x}_i - \hat{\mu}}{\hat{\sigma}})$$}|
+    @; Not \sigma^2
+
+Intuitively, this vector is a histogram generated by our samples.
+Each @exact|{$\vec{h}_i$}| is the probability that a new sample from the
+ sample distribution we have observed will have a z-score less than or equal
+ to the z-score of @exact|{$\vec{x}_i$}|.
+The Anderson-Darling statistic is expressed in terms of @exact|{$\vec{h}$}|
+ and essentially measures how symmetric @exact|{$\vec{h}$}| is with
+ emphasis on the smallest and largest buckets.
+
+    @exact|{$$
+      A^2 = \frac{- [\Sigma_{i=0}^{9}
+                      (2(i + 1) - 1)
+                      * \ln{\vec{h}_i}
+                      * \ln{(1 - \vec{h}_{9 - i})}
+                    ] }{10} - 10
+    $$}|
+
+Following Stephens, we modify @exact|{$A^2$}| to compensate for the fact that
+ @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown @todo{cite}.
+
+    @exact|{$$ A^{*\,2} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
+
+Finally, we declare the samples non-normal if @exact|{$A^{*\,2}$}| is greater than 1.
+The value 1 was determined experimentally by Stephens for a @math{p}-value of
+ @math{1%} given 10 samples and an unknown underlying mean and variance @todo{cite}.
 
 
 @section[]{Example: suffixtree}

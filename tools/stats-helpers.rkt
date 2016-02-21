@@ -64,7 +64,6 @@
       (* (- (* 2 (+ 1 i)) 1)
          (+ (log (vector-ref z* i))
             (log (- 1 (vector-ref z* (- n 1 i))))))))
-  ;; A-D critical value
   (define A**2 (- (/ (- E) n) n))
   ;; Modified statistic, because mean & stddev are unknown
   (modify A**2 n))
