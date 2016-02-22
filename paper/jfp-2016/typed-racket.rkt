@@ -5,9 +5,21 @@
 ;; - Make L-N/M figures
 
 (provide
+  bm
+  ;; (-> String Any)
+  ;; Use to format benchmark names.
+  ;; Asserts that its argument is a correctly-spelled benchmark name.
+
   benchmark-name*
   ;; (Listof Symbol)
   ;; Names of all benchmarks used in the paper
+
+  data-lattice
+  ;; (-> Benchmark-Name Version-String Any)
+  ;;   where Benchmark-Name = (U String Symbol)
+  ;;     and Version-String = String
+  ;; Finds the data file corresponding to the benchmark
+  ;;  at the specific version and renders a data lattice.
 
   NUM-BENCHMARKS
   ;; Natural
@@ -31,12 +43,19 @@
   benchmark-characteristics
   ;; (-> Any)
   ;; 
+
+  lnm-plots
+  ;; (-> Any)
 )
 
 (require
+ glob
+ gtp-summarize/modulegraph
  racket/match
+ (only-in racket/file file->value)
  scribble/core
  scribble/base
+ version/utils
 )
 
 ;; -----------------------------------------------------------------------------
@@ -60,6 +79,32 @@
   zordoz
 ))
 (define NUM-BENCHMARKS (length benchmark-name*))
+
+(define (bm name)
+  (unless (memq (string->symbol name) benchmark-name*)
+    (unknown-benchmark-error name))
+  (tt name))
+
+(define (data-lattice bm-raw v #:tag [tag "*"])
+  (unless (valid-version? v)
+    (raise-user-error 'data-path "Invalid version string '~a'" v))
+  (define bm (if (string? bm) (string->symbol bm-raw) bm-raw))
+  (unless (memq bm benchmark-name*)
+    (unknown-benchmark-error bm))
+  (raise-user-error 'NOT-IMPLEMENTED)
+  ;@(let* ([vec (file->value (data-path 'fsm "6.2"))]
+  ;        [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
+  ;   (make-performance-lattice vec*))
+  ;;; --- do search
+  ;(define path-str (format "~a/data/~a/~a*~a*.rktd" (get-git-root) v bm tag))
+  ;(match (glob path-str)
+  ; [(cons p '())
+  ;  p]
+  ; ['()
+  ;  (raise-user-error 'data-path "No matches for '~a'" path-str)]
+  ; [p*
+  ;  (raise-user-error 'data-path "Path '~a' returned multiple results. Try again with a #:tag parameter to filter the search: (data-path BENCHMARK VERSION #:tag STR).\n    All results: ~a" path-str p*)]))
+)
 
 ;; -----------------------------------------------------------------------------
 
@@ -142,3 +187,9 @@
   ;(define ann-loc (modulegraph->ann-loc MG))
   ;(define other-loc (modulegraph->other-loc MG))
   ;(define num-modules (modulegraph->num-modules MG))
+
+(define (lnm-plots)
+  ;; Map over benchmark names,
+  ;; Sort & make figures of with 6 plots each or whatever
+  (elem "TODO"))
+
