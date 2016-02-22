@@ -1,7 +1,10 @@
 #lang scribble/base
 
 
-@require["common.rkt" "typed-racket.rkt"]
+@require[
+  "common.rkt"
+  "typed-racket.rkt"
+]
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
@@ -12,6 +15,8 @@ As lattices for projects with more than 6 modules are too large to analyze at
  a glance, we present our results in terms of the proportion of
  @step["L" "N" "M"] configurations.
 
+
+@; -----------------------------------------------------------------------------
 @section[#:tag "sec:bm"]{The Benchmark Programs}
 
 The benchmarks themselves are representative of actual user code yet
@@ -29,6 +34,8 @@ In most cases our documented input size is a compromise between having an
  but short enough that the slowest typed/untyped configurations finished
  reasonably quickly.
 
+
+@; -----------------------------------------------------------------------------
 @subsection{Benchmark Descriptions}
 @todo{why do snake & tetris have different num. of moves?}
 @todo{descriptions look very bad}
@@ -43,10 +50,10 @@ In most cases our documented input size is a compromise between having an
   #:purpose "Finds prime numbers using the Sieve of Eratosthenes."
 
   @elem{
-  We created the @tt{sieve} benchmark to demonstrate a scenario where user
+  We created the @bm{sieve} benchmark to demonstrate a scenario where user
    code closely interacts with higher-order library code---in this case, a stream
    library.
-  When fully typed or untyped, @tt{sieve} quickly computes the ten-thousandth
+  When fully typed or untyped, @bm{sieve} quickly computes the ten-thousandth
    prime number.}
 )
 
@@ -100,7 +107,7 @@ In most cases our documented input size is a compromise between having an
 
   The Racket bytecode format changed between versions 6.2 and 6.3 with
    the release of the set-of-scopes macro expander@~cite[f-popl-2016].
-  Consequently, our @tt{zordoz} benchmark is slightly different before and
+  Consequently, our @bm{zordoz} benchmark is slightly different before and
    after version 6.2; however, the relative difference between configurations
    in the performance lattice is the same across bytecode formats.
   }
@@ -128,9 +135,9 @@ In most cases our documented input size is a compromise between having an
                              @elem{@tt{racket/statistics}@note{@url["https://docs.racket-lang.org/math/stats.html"]}})
 
   @elem{
-    We developed the @tt{lnm} program to summarize data lattices and generate
+    We developed the @bm{lnm} program to summarize data lattices and generate
      the figures in @Secref{sec:lnm-plot}.
-    Our benchmark creates, but does not render, plots for the @tt{gregor} benchmark.}
+    Our benchmark creates, but does not render, plots for the @bm{gregor} benchmark.}
 )
 
 @(benchmark
@@ -178,7 +185,7 @@ In most cases our documented input size is a compromise between having an
    its own tail.
   Our benchmark runs a pre-recorded history of 50,000 moves.
   These moves update the game state, but do not produce GUI output.
-  Our benchmark is a gradually typed version of the @tt{snake} game from
+  Our benchmark is a gradually typed version of the @bm{snake} game from
    Nguyễn @|etal|@~cite[nthvh-icfp-2014].
   }
 )
@@ -230,7 +237,7 @@ In most cases our documented input size is a compromise between having an
      library provides a variety of tools for working with date objects.
     Our benchmark creates a list of 40 dates---half historic, half arbitrary---and
      runs comparison and conversion operators on each.
-    We omit @tt{gregor}'s string-parsing utilities because they use an
+    We omit @bm{gregor}'s string-parsing utilities because they use an
      untyped mechanism for ad-hoc polymorphism that is not supported by
      Typed Racket.}
 )
@@ -266,9 +273,9 @@ In most cases our documented input size is a compromise between having an
      payoff in a sequence of interaction rounds.
 
     Our benchmark uses a population of 100 automata and simulates 1000 rounds.
-    We measure two versions of this benchmark, one functional (@tt{fsm}) and
+    We measure two versions of this benchmark, one functional (@bm{fsm}) and
      one object-oriented (@tt{fsmoo}).
-    Like our @tt{forth} benchmark, the object-oriented verion uses first-class
+    Like our @bm{forth} benchmark, the object-oriented verion uses first-class
      classes across a type boundary.
   }
 )
@@ -286,7 +293,7 @@ In most cases our documented input size is a compromise between having an
      document processor.
     It converts S-expression source code to @tt{pdf}.
 
-    We measure two versions of @tt{quad}.
+    We measure two versions of @bm{quad}.
     The first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
      provided by the original author.
     This version has a high typed/untyped ratio because it uses the type system
@@ -315,6 +322,8 @@ In most cases our documented input size is a compromise between having an
   }
 ))
 
+
+@; -----------------------------------------------------------------------------
 @subsection{Benchmark Characteristics}
 
 The table in @figure-ref{fig:bm} lists and summarizes our @id[NUM-BENCHMARKS]
@@ -349,7 +358,7 @@ When one of these modules is typed and the other untyped, the imported definitio
 @; are checked. These numbers are independent from the actual configurations.
 @;The colors fail to show the cost of checking data structures
 @;imported from another library or factored through an adaptor module.
-@;For example, the @tt{kcfa} graph has many thin black edges because the modules
+@;For example, the @bm{kcfa} graph has many thin black edges because the modules
 @;only share data definitions. The column labeled ``Adaptors + Libraries''
 @;reports the proportion of observed contract checks due to adaptor modules and
 @;libraries.
@@ -359,6 +368,7 @@ When one of these modules is typed and the other untyped, the imported definitio
 ]
 
 
+@; -----------------------------------------------------------------------------
 @section[#:tag "sec:tr"]{Experimental Protocol}
 
 Our experiment measures the running time of all
@@ -373,10 +383,10 @@ We dedicated 29 of the machine's cores to running our experiment;
  was run to completion before starting configurations for the next benchmark.
 
 Timing information for a single configuration was obtained by compiling the
- code ahead of time and then running the configuration's @tt{main} function repeatedly.
+ code ahead of time and then running the configuration's main module repeatedly.
 Each run took place on a new instance of the Racket VM.@note{The exact command
- we used was @tt{racket main.rkt}}.
-After running and ignoring one preliminary run, we would collect timings
+ we used was @tt{racket main}}.
+After discarding one preliminary run, we collected timings
  for 10 runs of the configuration.
 If these 10 timings were not normally distributed, we ran an additional 20
  timings and reported all 30 runs.
@@ -388,6 +398,7 @@ The scripts we used to run our experiments and the data we collected
  are available in the online supplement to this article: @todo{update artifact}.
 
 
+@; -----------------------------------------------------------------------------
 @subsection[]{Detecting Stable Measurements with the Anderson-Darling test}
 
 The running time of a configuration is dependent on many factors, ranging
@@ -412,7 +423,7 @@ Frankly none of these assumptions are obviously valid, but we believe the
 
 Running even 30 iterations, however, is prohibitive given the size of our
  experiment.
-In total, we measured @todo{total} configurations each on three versions of Racket.
+In total, we measured @todo{total} configurations on three versions of Racket.
 To finish the experiment in a timely manner, we applied the Anderson-Darling
  test @todo{cite} after taking 10 measurements with a critical value experimentally
    @; http://www.hep.caltech.edu/~fcp/statistics/hypothesisTest/PoissonConsistency/AndersonDarling1954.pdf
@@ -421,15 +432,15 @@ To finish the experiment in a timely manner, we applied the Anderson-Darling
 The judgment we made was about the likelihood of seeing a particular sequence
  of 10 runtimes assuming the data were from a normal distribution.
 If the odds were less than @math{1%}, we ran an additional 20 iterations.
-This led us to skip @todo{total} runs in total and led to no observable
- differences in the overall timings taken from the same machine.
+This led us to skip @todo{total} runs in total and led to no apparent
+ differences in the overall timings.
 
 For readers hoping to reproduce our setup, we now summarize the key points from
  Stephens @todo{cite}.
 Our underlying distribution @math{F} is the distribution of runtimes obtained
  for one configuration run repeatedly on a single core.
-We assume that @math{F} is normally distributed, but do not assume its mean
- or variance.
+We assume that @math{F} is normally distributed with an unknown mean
+ and variance.
 Let @exact|{$\vec{x}$}| denote our vector of 10 runtimes, sorted in increasing
  order.
 We approximate the true mean @exact|{$\mu$}| and variance @exact|{$\sigma^2$}|
@@ -451,10 +462,11 @@ Next we take the samples' z-scores and
 
 Intuitively, this vector is a histogram generated by our samples.
 Each @exact|{$\vec{h}_i$}| is the probability that a new sample from the
- sample distribution we have observed will have a z-score less than or equal
+ sample distribution we have observed from @exact|{$\vec{x}$}|
+ will have a z-score less than or equal
  to the z-score of @exact|{$\vec{x}_i$}|.
 The Anderson-Darling statistic is expressed in terms of @exact|{$\vec{h}$}|
- and essentially measures how symmetric @exact|{$\vec{h}$}| is with
+ and essentially measures the symmetry of @exact|{$\vec{h}$}| with
  emphasis on the smallest and largest buckets.
 
     @exact|{$$
@@ -475,97 +487,35 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
  @math{1%} given 10 samples and an unknown underlying mean and variance @todo{cite}.
 
 
-@section[]{Example: suffixtree}
+@; -----------------------------------------------------------------------------
+@section[]{Results}
+
+This section presents the results of our experiment in terms of the
+ measurements described in @Secref{sec:measurements}.
+In the first subsection we explore full performance lattices and show
+ the limitations of using a performance lattice to critically assess performance.
+The second subsection presents our full results graphically.
 
 
 @; -----------------------------------------------------------------------------
-@; @section{Suffixtree in Depth}
-@; 
-@; To illustrate the key points of the evaluation, this section describes
-@; one of the benchmarks, @tt{suffixtree}, and explains the setup and
-@; its timing results in detail.
-@; 
-@; @tt{Suffixtree} consists of six modules: @tt{data} to define label and
-@; tree nodes, @tt{label} with functions on suffixtree node labels,
-@; @tt{lcs} to compute longest common substrings, @tt{main} to apply
-@; @tt{lcs} to @tt{data}, @tt{structs} to create and traverse suffix tree nodes,
-@; @tt{ukkonen} to build suffix trees via Ukkonen's algorithm. Each
-@; module is available with and without type annotations.  Each configuration
-@; thus links six modules, some of them typed and others untyped.
-@; 
-@; @; @figure["fig:purpose-statements" "Suffixtree Modules"
-@; @; @tabular[#:sep @hspace[2]
-@; @; (list (list @bold{Module} @bold{Purpose})
-@; @; (list @tt{data.rkt}    "Label and tree node data definitions")
-@; @; (list @tt{label.rkt}   "Functions on suffixtree node labels")
-@; @; (list @tt{lcs.rkt}     "Longest-Common-Subsequence implementation")
-@; @; (list @tt{main.rkt}    "Apply lcs to benchmark data")
-@; @; (list @tt{structs.rkt} "Create and traverse suffix tree nodes")
-@; @; (list @tt{ukkonen.rkt} "Build whole suffix trees via Ukkonen's algorithm"))]]
-@; 
-@; 
-@; @figure*["fig:suffixtree" 
-@;           @list{Performance lattice (labels are speedup/slowdown factors)}
-@;   @(let* ([vec (file->value SUFFIXTREE-DATA)]
-@;           [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
-@;      (make-performance-lattice vec*))
-@; ]
-@; 
-@; Typed modules require type annotations on their data definitions and functions.
-@; Modules provide their exports with types, so that the
-@; type checker can cross-check modules. A typed module may import
-@; values from an untyped module, which forces the
-@; corresponding @racket[require] specifications to come with
-@; types. Consider this example:
-@; @;%
-@; @(begin
-@; #reader scribble/comment-reader
-@; (racketblock
-@; (require (only-in "label.rkt" make-label ...))
-@; ))
-@; @;%
-@; The server module is called @tt{label.rkt}, and the client imports specific
-@;  values, e.g., @tt{make-label}.  This specification is replaced with a
-@;  @racket[require/typed] specification where each imported identifier is
-@;  typed:
-@; @;%
-@; @(begin
-@; #reader scribble/comment-reader
-@; (racketblock
-@; (require/typed "label.rkt" 
-@;  [make-label
-@;   (-> (U String (Vectorof (U Char Symbol))) Label)]
-@;  ...)
-@; ))
-@; @; 
-@; 
-@; The types in a
-@; @racket[require/typed] form are compiled into contracts for
-@; the imported values. For example, if some
-@; imported variable is declared to be a @tt{Char}, the check @racket[char?]
-@; is performed as the value flows across the module boundary. Higher-order
-@; types (functions, objects, or classes) become contracts that wrap
-@; the imported value and which check future interactions of this
-@; value with its context.
-@; 
-@; The performance costs of gradual typing thus consist of wrapper allocation
-@; and run-time checks. Moreover, the compiler must assume that
-@; any value could be wrapped, so it cannot generate direct field access code
-@; as would be done in a statically typed language.
-@; 
-@; Since our evaluation setup calls for linking typed modules to both typed
-@; and untyped server modules, depending on the configuration, we replace
-@; @racket[require/typed] specifications with @racket[require/typed/check]
-@; versions. This new syntax can determine whether the server module is typed
-@; or untyped. It installs contracts if the server module
-@; is untyped, and it ignores the annotation if the server module is typed.
-@; As a result, typed modules function independently of the rest of the
-@; modules in a configuration.
-@; 
-@; 
-@; @; -----------------------------------------------------------------------------
-@; @parag{Performance Lattice.}
-@; 
+@subsection{Lattice-Based Evaluation}
+
+@Secref{sec:fsm} described a 4-module benchmark, @bm{fsm}, and remarked that
+ although the fully-typed configuration ran faster than the untyped program,
+ a configuration with one typed module experienced an @todo{8,500x} slowdown.
+The modules in @bm{fsm} were named @tt{automata}, @tt{main},
+ @tt{population}, and @tt{utilities};
+ the above-noted slow configuration assigned types only in @tt{population}.
+Henceforth, we will represent configurations of @bm{fsm} as 4-bit strings
+ corresponding to the module names in alphabetic order.
+Using this notation, the configuration where only @tt{population} typed
+ has the bitstring @tt{0010}.
+
+@figure*["fig:fsm-lattice-6.2"
+  @list{Annotated performance lattice for @bm{fsm}}
+  @todo{(data-lattice 'fsm "6.2")}
+]
+
 @; @Figure-ref{fig:suffixtree} shows the performance lattice annotated with the
 @;   timing measurements. The lattice displays each of the modules in the
 @;   program with a shape.  A filled black shape means the module is typed, an
@@ -574,94 +524,174 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @;   order: @tt{data}, @tt{label}, @tt{lcs}, @tt{main}, @tt{structs}, and
 @;   @tt{ukkonen}.
 @; 
-@;  For each configuration in the lattice, the ratio is
-@;  computed by dividing the average timing of the typed program by
-@;  the untyped average. The figure omits standard deviations
-@;  as they are small enough to not affect the discussion.
-@; 
-@; The fully typed configuration (top) is @emph{faster} than the fully untyped
-@;  (bottom) configuration by around 30%, which puts the typed/untyped ratio at 0.7. This can
-@;  be explained by Typed Racket's optimizer, which performs specialization of
-@;  arithmetic operations and field accesses, and can eliminate some
-@;  bounds checks@~cite[thscff-pldi-2011]. When the optimizer is turned off,
-@;  the ratio goes back up to 1. 
-@; 
-@; 
-@; Sadly, the performance improvement of the typed configuration is the
-@;  only good part of this benchmark. Almost all partially typed configurations
-@;  exhibit slowdowns of up to 105x. Inspection of the lattice
-@;  suggests several points about these slowdowns: @itemlist[
-@; 
-@; @item{Adding type annotations to the @tt{main} module neither subtracts nor
-@;  adds overhead because it is a driver module.}
-@; 
-@; 
-@; @item{Adding types to any of the workhorse modules---@tt{data}, @tt{label},
-@;  or @tt{structs}---while leaving all other modules untyped causes slowdown of
-@;  at least 35x. This group of modules are tightly coupled.
-@;  Laying down a type-untyped boundary to separate
-@;  elements of this group causes many crossings of values, with associated
-@;  contract-checking cost.}
-@; 
-@; @item{Inspecting @tt{data} and @tt{label} further reveals that the latter
-@;  depends on the former through an adaptor module. This adaptor introduces a
-@;  contract boundary when either of the two modules is untyped. When both
-@;  modules are typed but all others remain untyped, the slowdown is reduced
-@;  to about 13x.
-@; 
-@;  The @tt{structs} module depends on @tt{data} in the same fashion and
-@;  additionally on @tt{label}. Thus, the configuration in which both
-@;  @tt{structs} and @tt{data} are typed still has a large slowdown. When all
-@;  three modules are typed, the slowdown is reduced to 5x.}
-@; 
-@; @item{Finally, the configurations close to the worst slowdown case are
-@;  those in which the @tt{data} module is left untyped but several of the
-@;  other modules are typed. This makes sense given the coupling noted
-@;  above; the contract boundaries induced between the untyped @tt{data} and
-@;  other typed modules slow down the program.  The module structure diagram
-@;  for @tt{suffixtree} in @figure-ref{fig:bm} corroborates the presence of
-@;  this coupling. The rightmost node in that diagram corresponds to the
-@;  @tt{data} module, which has the most in-edges in that particular
-@;  graph. We observe a similar kind of coupling in the simpler @tt{sieve}
-@;  example, which consists of just a data module and its client.}
-@; ]
-@; 
-@; The performance lattice for @tt{suffixtree} is bad news for gradual typing.
-@; It exhibits performance ``valleys'' in which a maintenance programmer can get stuck.
-@; Consider starting with the untyped program, and for some reason choosing
-@; to add types to @tt{label}. The program slows down by a factor of 88x. Without any
-@; guidance, a developer may choose to then add types to @tt{structs} and see the
-@; program slow down to 104x.  After that, typing @tt{main} (104x), @tt{ukkonen}
-@; (99x), and @tt{lcs} (103x) do little to improve performance. It is only
-@; when all the modules are typed that performance becomes acceptable again (0.7x).
-@; 
-@; 
-@; @figure*["fig:lnm1"
-@;   @list{@step["L" "N" "M"] results for the first six benchmarks}
-@;   @(let* ([data `(("sieve"        ,SIEVE-DATA)
-@;                   ("morse-code"   ,MORSECODE-DATA)
-@;                   ("mbta"         ,MBTA-DATA)
-@;                   ("zordoz"       ,ZORDOZ-DATA)
-@;                   ("suffixtree"   ,SUFFIXTREE-DATA)
-@;                   ("lnm"          ,LNM-DATA)
-@;                   )])
-@;      (data->pict data #:tag "1"))
-@; ]
-@; 
-@; @figure*["fig:lnm2"
-@;   @list{@step["L" "N" "M"] results for the remaining benchmarks}
-@;   @(let* ([data `(("kcfa"       ,KCFA-DATA)
-@;                   ("snake"      ,SNAKE-DATA)
-@;                   ("tetris"     ,TETRIS-DATA)
-@;                   ("synth"      ,SYNTH-DATA)
-@;                   ("gregor"     ,GREGOR-DATA)
-@;                   ("quad"       ,QUAD-DATA))])
-@;      (data->pict data #:tag "2"))
-@; ]
-@; 
-@; 
-@; @; -----------------------------------------------------------------------------
-@; @section{Reading the Figures}
+
+@Figure-ref{fig:fsm-lattice-6.2} is the full performance lattice for @bm{fsm}
+ run on Racket version 6.2.
+Each configuration with a sequence of colored shapes, corresponding to its
+ bitstring.
+A black shape represents a typed module and a white shape is an untyped one.
+In terms of bitstrings, the shape at index @math{i} from the left is colored
+ iff the bit at index @math{i} from the left is 1.
+Nodes are labeled with the configuration's overhead---computed
+ as the configuration's mean runtime divided by the untyped
+ configuration's mean runtime---and
+ the standard error of our timings for that configuration.
+Configurations @tt{0010}, and @todo{others} suffer from a boundary between
+ @tt{main} and @tt{population}.
+These are by far the slowest configurations.
+But most other configurations are only slightly slower, and a few
+ are no worse than the untyped configuration.
+
+
+@; -----------------------------------------------------------------------------
+@subsubsection{Comparing Lattices}
+
+Given that only half of @bm{fsm}'s configurations are slow, and that furthermore
+ the slow configurations can be avoided by adding types to either @tt{main}
+ (~25 lines) or @tt{population} (~50 lines), the @tt{fsm} benchmark suggests
+ that Typed Racket's gradual typing is performant as of the v6.2 release.@note{
+   Besides, of course, the overwhelming cost of repeatedly wrapping a vector.}
+There are two ways to further validate the performance of Typed Racket:
+ by comparing with other gradual type systems and by testing more programs (@Secref{sec:lnm}).
+
+While not technically a competing implementation of Typed Racket v6.2,@note{
+   Pycket @todo{cite} is a competing implementation of gradual typing for Typed Racket.
+   At the time of writing Pycket could not run all our benchmark programs, but
+    the Pycket authors will soon publish their own analysis.}
+ we can compare our lattice against results for versions 6.3 and 6.4.
+These lattices are shown in @Figure-ref{fig:fsm-lattice-6.3}.
+
+@todo{describe}
+
+@figure*["fig:fsm-lattice-6.3"
+  @list{Annotated performance lattice for @bm{fsm} v6.2}
+  @todo{(hc-append 8 ...)}
+  @todo{(data-lattice 'fsm "6.3")}
+  @todo{(data-lattice 'fsm "6.4.0.5")}
+]
+
+This is a sad story for Typed Racket, but we promise to improve for version 6.5.
+
+
+@; -----------------------------------------------------------------------------
+@subsubsection{Scaling the Performance Lattice}
+
+Inspecting the annotated performance lattice for @bm{fsm} is feasible and
+ even gives insight as to why the worst configurations are slow.
+At a glance, it is fairly easy to see that the 8 slow modules match the pattern
+ @tt{*01*} or @tt{*10*}, corresponding to a type boundary between @tt{main}
+ and @tt{population}.
+The number of nodes in a lattice, however, is exponential in the number of
+ modules in a program.
+Visual inspection quickly becomes impossible.
+
+To demonstrate, @Figure-ref{fig:suffixtree-lattice-6.2} is the annotated
+ performance lattice for @bm{suffixtree}.
+As background, @bm{suffixtree} consists of six modules:
+ @tt{data} defines label and tree nodes,
+ @tt{label} defines functions on suffixtree node labels,
+ @tt{lcs} computes longest common substrings,
+ @tt{main} provides input to @tt{lcs},
+ @tt{node} creates and traverses suffix tree nodes @todo{do rename},
+ and @tt{ukkonen} builds suffix trees via Ukkonen's algorithm.
+Therefore, the configuration with only @tt{main} and @tt{ukkonen} typed
+ has bitstring @tt{000101}.
+
+@figure*["fig:suffixtree-lattice-6.2"
+  @list{Annotated performance lattice for @bm{suffixtree} v6.2}
+  @todo{(data-lattice 'suffixtree "6.2")}
+]
+
+Basic questions about the performance lattice are much harder
+ to answer for these 64 configurations.
+Which configurations are the slowest?
+Why might they be slow?
+    @; Readers with a magnifying glass can answer, just as readers with
+    @; poster-sized paper can answer questions about a 10-module lattice.
+We now explain key points in the lattice, but this is the last such explanation
+ we will give before introducting a graphical analogue to performance lattices.
+
+@todo{BEGIN check numbers}
+
+The fully typed configuration is again @emph{faster} than the fully untyped
+ configuration.
+The difference is approximately 30%, which puts the typed/untyped ratio at 0.7.
+This improvement is due to specialization of arithmetic operations and
+ field accesses by Typed Racket's optimizer @~cite[thscff-pldi-2011].
+When the optimizer is turned off, the ratio goes back up to 1.
+Sadly, the performance improvement of the typed configuration is the
+ only good part of this benchmark.
+@itemlist[
+  @item{
+   Almost all partially typed configurations exhibit large slowdowns,
+    the worst begin 105x.
+  }
+  @item{
+   Adding types to any of the workhorse modules---@tt{data}, @tt{label},
+    or @tt{structs}---while leaving all other modules untyped causes slowdown of
+    at least 35x.
+   Not surprisingly, these modules are tightly coupled in the program.
+  }
+  @item{
+    Not a single path from untyped to typed converting one module at a time
+     avoids worst-case overheads within 20x.
+  }
+  @item{
+   The five slowest configurations are @todo{list}.
+   These all have a type boundary between the first two modules: @tt{data} and
+    @tt{label}.
+   Configurations where @tt{data} and @tt{label} have the same type
+    have an average overhead of @todo{X}.
+  }
+]
+
+The performance lattice for @tt{suffixtree} is bad news Typed Racket v6.2.
+It exhibits many performance ``valleys'' in which a group of similar configurations
+ all suffer large performance overhead.
+Consider starting with the untyped program and choosing
+ to add types to @tt{label}.
+The program slows down by a factor of 88x.
+Without any guidance, a developer may then choose to add types to @tt{structs};
+ now the program slows to 104x.
+After that, typing @tt{main} (104x), @tt{ukkonen} (99x), and @tt{lcs} (103x)
+ do little to improve performance.
+It is only when all the modules are typed that performance becomes acceptable
+ again (0.7x), at which point it is probably too late to convince the programmer
+ that gradual typing is useful.
+@; Useful for more than the static check of making sure intermediate programs type-check
+
+@todo{END check numbers}
+
+
+@; -----------------------------------------------------------------------------
+@subsection{L-N/M Plots}
+@(lnm-plots)
+
+@;@figure*["fig:lnm1"
+@;  @list{@step["L" "N" "M"] results for the first six benchmarks}
+@;  @(let* ([data `(("sieve"        ,SIEVE-DATA)
+@;                  ("morse-code"   ,MORSECODE-DATA)
+@;                  ("mbta"         ,MBTA-DATA)
+@;                  ("zordoz"       ,ZORDOZ-DATA)
+@;                  ("suffixtree"   ,SUFFIXTREE-DATA)
+@;                  ("lnm"          ,LNM-DATA)
+@;                  )])
+@;     (data->pict data #:tag "1"))
+@;]
+@;
+@;@figure*["fig:lnm2"
+@;  @list{@step["L" "N" "M"] results for the remaining benchmarks}
+@;  @(let* ([data `(("kcfa"       ,KCFA-DATA)
+@;                  ("snake"      ,SNAKE-DATA)
+@;                  ("tetris"     ,TETRIS-DATA)
+@;                  ("synth"      ,SYNTH-DATA)
+@;                  ("gregor"     ,GREGOR-DATA)
+@;                  ("quad"       ,QUAD-DATA))])
+@;     (data->pict data #:tag "2"))
+@;]
+@;
+@;
+@; @subsubsection{Reading the Figures}
 @; 
 @; Our method defines the number of @step["L" "N" "M"] configurations as the key metric for measuring the quality of a gradual type system.
 @; For this experiment we have chosen values of 3x and 10x for @math{N} and @math{M}, respectively, and allow up to 2 additional type conversion steps.
