@@ -544,7 +544,7 @@ But most other configurations are only slightly slower, and a few
 
 
 @; -----------------------------------------------------------------------------
-@subsubsection{Comparing Lattices}
+@; @subsubsection{Comparing Lattices}
 
 Given that only half of @bm{fsm}'s configurations are slow, and that furthermore
  the slow configurations can be avoided by adding types to either @tt{main}
@@ -574,7 +574,7 @@ This is a sad story for Typed Racket, but we promise to improve for version 6.5.
 
 
 @; -----------------------------------------------------------------------------
-@subsubsection{Scaling the Performance Lattice}
+@subsection{Limitations of Lattice-Based Evaluation}
 
 Inspecting the annotated performance lattice for @bm{fsm} is feasible and
  even gives insight as to why the worst configurations are slow.

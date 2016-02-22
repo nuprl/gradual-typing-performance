@@ -7,8 +7,11 @@ typecheck vs type-check vs type check
 vary inputs, confirm the same lattice
 
 
+---
 
-TR what is fully-typed
+Argument: our gradual typing is THE BEST gradual typing
+It's the only coherent one -- that is the meta-point of this journal paper.
+
 
 --- 
 
