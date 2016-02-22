@@ -140,7 +140,7 @@ The goal is that we as language designers evaluate performance using
  criteria that our users find valuable.
 
 
-@section{Measurements}
+@section[#:tag "sec:measurements"]{Measurements}
 
 When the software system consists of a small number of modules, the engineers
  might be able to equip the entire program with type annotations in one fell
