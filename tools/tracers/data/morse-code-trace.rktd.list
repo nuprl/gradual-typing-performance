@@ -1,7 +1,0 @@
-Results for '../data/morse-code-trace.rktd'
-===========================================
-  3 contracts generated
-  2014220 total checks
-* Boundary from 'morse-code-table.rkt' to 'morse-code-strings.rkt' created 1 contracts (33%) and caused 1642120 checks (82%)
-* Boundary from 'morse-code-strings.rkt' to 'main.rkt' created 1 contracts (33%) and caused 186050 checks (9%)
-* Boundary from 'levenshtein.rkt' to 'main.rkt' created 1 contracts (33%) and caused 186050 checks (9%)

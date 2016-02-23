@@ -1,9 +1,0 @@
-Results for '../data/zordoz2-trace.rktd'
-========================================
-  277 contracts generated
-  584186 total checks
-* Boundary from 'zo-find.rkt' to 'zo-shell.rkt' created 4 contracts (1%) and caused 290 checks (0%)
-* Boundary from 'zo-shell.rkt' to 'main.rkt' created 1 contracts (0%) and caused 3 checks (0%)
-
-* Boundary from 'compiler/zo-parse' to 'zo-shell.rkt' created 1 contracts (0%) and caused 1 checks (0%)
-* Boundary from 'compiler/zo-structs' to 'typed-zo-structs.rkt' created 211 contracts (76%) and caused 583892 checks (100%)
