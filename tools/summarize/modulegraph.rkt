@@ -61,6 +61,7 @@
   ;; Guess where the project is located in the GTP repo
 )
 (provide
+  Boundary
   (struct-out modulegraph)
   ModuleGraph
   (struct-out provided)

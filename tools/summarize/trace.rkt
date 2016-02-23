@@ -1,39 +1,57 @@
-#lang racket/base
+#lang typed/racket/base
 
-;; TODO
-;; - typed racket 
+;; Build a dynamic picture of a module graph.
+;;
+;; From the command-line:
+;;    raco gtp-trace PROJECT-NAME
+;; Prints out the number of calls across each boundary in the program.
+;;
+;; Calls/boundary is a coarse view of what this module provides.
+;; A dynamic module graph has calls for each identifier.
+;; Use the API to get them. (once we have an api)
 
 (provide
 )
 
 (require
   gtp-summarize/modulegraph
-  glob
-  (only-in racket/string string-replace string-prefix? string-split)
+  glob/typed
+  trivial/regexp
+  (only-in racket/string string-replace string-split)
   (only-in racket/file delete-directory/files)
   (only-in racket/port copy-port)
   (only-in racket/system system process)
 )
+;; TODO
+(require/typed racket/string
+  (string-prefix? (-> String String Boolean)))
 
 ;; =============================================================================
 
+(: TRACE-PREFIX Symbol)
 (define TRACE-PREFIX 'trace:)
 ;; Prefix for indirected identifiers
 
+(: TRACE-LOG-PREFIX String)
 (define TRACE-LOG-PREFIX "[TRACE]")
 
+(: TRACE-TMP Path-String)
 (define TRACE-TMP ".trace.tmp")
 ;; Temporary file to use for search/replace
 
+(: *DIRECTORY?* (Parameterof Boolean))
 (define *DIRECTORY?* (make-parameter #f))
 ;; If #t, assume input is a directory (instead of a project name)
 
+(: *RKT-BIN* (Parameterof String))
 (define *RKT-BIN* (make-parameter ""))
 ;; Location of Racket binaries
 
+(: *TEX-OUT* (Parameterof Path-String))
 (define *TEX-OUT* (make-parameter "graph.tex"))
 ;(define *STD-OUT* (make-parameter #f))
 
+(: *VERBOSE* (Parameterof Boolean))
 (define *VERBOSE* (make-parameter #t))
 (define-syntax-rule (debug str arg* ...)
   (when (*VERBOSE*)
@@ -43,73 +61,96 @@
 
 ;; =============================================================================
 
-;; (define-type DynamicBoundary (List String String (Listof (Pairof Symbol Natural))))
-;; (define-type Dynamic-ModuleGraph dynamic-modulegraph)
+(define-type DynamicId* (Listof (Pairof Symbol Natural)))
+(define-type DynamicBoundary (List String String DynamicId*))
+(define-type Dynamic-ModuleGraph dynamic-modulegraph)
+;; 
 
 (struct dynamic-modulegraph (
-  graph ;; ModuleGraph
-  boundary* ;; (Listof DynamicBoundary)
-  ;; TODO rename these fields
+  [graph : ModuleGraph]
+  [boundary* : (Listof DynamicBoundary)]
 ) #:transparent )
+
+(define-type DynHash (HashTable (Pairof String String) (HashTable Symbol Natural)))
+;; Used internally for building a Dynamic-ModuleGraph
 
 ;; -----------------------------------------------------------------------------
 ;; Wrappers
 
+(: dmg->project-name (-> Dynamic-ModuleGraph String))
 (define (dmg->project-name dmg)
   (project-name (dynamic-modulegraph-graph dmg)))
 
+(: dmg->module-names (-> Dynamic-ModuleGraph (Listof String)))
 (define (dmg->module-names dmg)
   (module-names (dynamic-modulegraph-graph dmg)))
 
+(: dmg->num-modules (-> Dynamic-ModuleGraph Natural))
 (define (dmg->num-modules dmg)
   (length (modulegraph-adjlist (dynamic-modulegraph-graph dmg))))
 
+(: dyn-boundary-to (-> DynamicBoundary String))
 (define dyn-boundary-to car)
+
+(: dyn-boundary-from (-> DynamicBoundary String))
 (define dyn-boundary-from cadr)
+
+(: dyn-boundary-provided+count* (-> DynamicBoundary DynamicId*))
 (define dyn-boundary-provided+count* caddr)
 
+(: dyn-boundary*-ref (-> (Listof DynamicBoundary) String String (U #f DynamicId*)))
 (define (dyn-boundary*-ref b* to from)
-  (for/or ([b (in-list b*)])
+  (for/or : (U #f DynamicId*)
+          ([b (in-list b*)])
     (and (string=? to (dyn-boundary-to b))
          (string=? from (dyn-boundary-from b))
          (dyn-boundary-provided+count* b))))
 
+(: dyn-boundary*-ref/fail (-> (Listof DynamicBoundary) String String DynamicId*))
 (define (dyn-boundary*-ref/fail b* to from)
   (or (dyn-boundary*-ref b* to from)
       (raise-user-error 'trace "No info for boundary (~a ~a) in\n    ~a" to from b*)))
 
 ;; -----------------------------------------------------------------------------
 
+(: to->dyn-boundary* (-> Dynamic-ModuleGraph String (Listof DynamicBoundary)))
 (define (to->dyn-boundary* dmg to)
   (for/list ([b (in-list (dynamic-modulegraph-boundary* dmg))]
              #:when (string=? to (dyn-boundary-to b)))
     b))
 
 ;; Sum the total uses of all identifiers in this boundary
+(: dyn-boundary-count (-> DynamicBoundary Natural))
 (define (dyn-boundary-count b)
-  (for/sum ([p+c (in-list (dyn-boundary-provided+count* b))])
+  (for/sum : Natural
+           ([p+c (in-list (dyn-boundary-provided+count* b))])
     (cdr p+c)))
 
 ;; Count all requires used by a module
+(: to->total-count (-> Dynamic-ModuleGraph String Natural))
 (define (to->total-count DMG to)
-  (for/sum ([b (in-list (to->dyn-boundary* DMG to))])
+  (for/sum : Natural
+           ([b (in-list (to->dyn-boundary* DMG to))])
     (dyn-boundary-count b)))
 
 ;; =============================================================================
 
 ;; UGH gotta be a better / more consitent way of doing this
+(: filename (-> String String))
 (define filename
-  (let ([rx #rx"/?([^/]*)\\.rkt$"])
-    (lambda (str)
+  (let ()
+    (define-regexp: rx #rx"/?([^/]*)\\.rkt$")
+    (lambda ([str : String])
       (cond
-       [(regexp-match rx str) => cadr]
+       [(regexp-match: rx str) => cadr]
        [else (raise-user-error 'trace "Failed to get filename from '~a'" str)]))))
 
-;; (: (-> Path-String Boolean))
+(: trace-directory-exists? (-> Path-String Boolean))
 (define (trace-directory-exists? dir)
-  (define dir-str (path->string dir))
+  (define dir-str (if (path? dir) (path->string dir) dir))
   (and (directory-exists? dir)
-       (for/and ([u-file (in-glob (string-append dir-str "/../untyped/*.rkt"))])
+       (for/and : Boolean
+                ([u-file (in-glob (string-append dir-str "/../untyped/*.rkt"))])
          (= 2 (length (glob (string-append dir-str "/" (filename u-file) "*.rkt")))))))
 
 ;; Setup a directory for tracing.
@@ -117,7 +158,7 @@
 ;; - Make a compatibility interface for each untyped file
 ;; - Require compat. interfaces in each file
 ;; - Copy all 'both' files  (but these shouldn't matter)
-;; (-> Path-String (Listof Boundary) Void)
+(: setup-trace-dir (-> Path-String (Listof Boundary) Path-String))
 (define (setup-trace-dir trace-dir boundary*)
   (make-directory trace-dir)
   (define trace-str (if (string? trace-dir) trace-dir (path->string trace-dir)))
@@ -159,7 +200,7 @@
   (copy-all (string-append trace-str "/../both") trace-str #:glob "*.rkt")
   trace-dir)
 
-;; (: string-replace/file (-> Path-String String String Void))
+(: string-replace/file (-> Path-String String String Void))
 (define (string-replace/file fname from to)
   (with-output-to-file TRACE-TMP #:exists 'replace
     (lambda ()
@@ -174,13 +215,16 @@
           (copy-port (current-input-port) (current-output-port))))))
   (delete-file TRACE-TMP))
 
-;; (->* [Path-String Path-String] [#:glob String] Void)
+(: copy-all (->* [Path-String Path-String] [#:glob String] Void))
 (define (copy-all from-dir to-dir #:glob [glob "*"])
-  (for ([b-file (in-glob (string-append from-dir "/" glob))])
+  (define from-dir-str (if (path? from-dir) (path->string from-dir) from-dir))
+  (define to-dir-str (if (path? to-dir) (path->string to-dir) to-dir))
+  (for ([b-file (in-glob (string-append from-dir-str "/" glob))])
     ;; Lazy here using system, because I don't want to get the filename from `b-file`
-    (system (format "cp ~a ~a" b-file to-dir))))
+    (system (format "cp ~a ~a" b-file to-dir-str))))
 
 ;; Check that no existing trace directory exists, then build a new trace directory
+(: setup-trace-dir/check (-> Path-String (Listof Boundary) Path-String))
 (define (setup-trace-dir/check dir boundary*)
   (define trace-dir (build-path dir "trace"))
   (if (trace-directory-exists? trace-dir)
@@ -194,15 +238,20 @@
 
 ;; Create a hash from a list of boundaries.
 ;; Return the hash and an increment procedure.
-;; (-> (Listof Boundary) (Values DynHash (-> String String Symbol Void)))
+(: boundary*->dyn-hash (-> (Listof Boundary) (Values DynHash
+                                                     (-> String String Symbol Void))))
 (define (boundary*->dyn-hash b*)
   (define H
-    (for/hash ([b (in-list b*)])
+    (for/hash : DynHash
+              ([b (in-list b*)])
       (define-values (to from provided*) (apply values b))
-      (define p-hash
+      (define p-hash : (HashTable Symbol Natural)
         (make-hasheq
-          (for/list ([p (in-list provided*)]) (cons (provided->symbol p) 0))))
+          (for/list : (Listof (Pairof Symbol Natural))
+                    ([p (in-list provided*)])
+            (cons (provided->symbol p) 0))))
       (values (cons to from) p-hash)))
+  (: H++ (-> String String Symbol Void))
   (define (H++ to from p)
     (define H1 (hash-ref H (cons to from) (lambda () #f)))
     (define old-val (and H1 (hash-ref H1 p (lambda () #f))))
@@ -213,19 +262,21 @@
         (printf "Warning: no value for key {to : ~a} {from : ~a} {id : ~a}\n" to from p))))
   (values H H++))
 
-;; (-> DynHash (Listof DynamicBoundary))
+(: dyn-hash->dyn-boundary* (-> DynHash (Listof DynamicBoundary)))
 (define (dyn-hash->dyn-boundary* H)
-  (for/list ([(to+from p*) (in-hash H)])
+  (for/list : (Listof DynamicBoundary)
+            ([(to+from p*) (in-hash H)])
     (list (car to+from)
           (cdr to+from)
-          (sort
-            (for/list ([(p v) (in-hash p*)])
+          ((inst sort (Pairof Symbol Natural) Symbol)
+            (for/list : DynamicId*
+                      ([(p v) (in-hash p*)])
               (cons p v))
             symbol<?
             #:key car))))
 
 ;; Run a program, with tracing
-;; (-> Path-String (Listof Boundary) (Listof DynamicBoundary))
+(: trace-run (-> Path-String (Listof Boundary) (Listof DynamicBoundary)))
 (define (trace-run dir b*)
   (define dir-str (if (string? dir) dir (path->string dir)))
   (define main-file (string-append dir-str "/main.rkt"))
@@ -268,11 +319,16 @@
   ;; -- immutable output
   (dyn-hash->dyn-boundary* H))
 
+(: log->data (-> String (List String String Symbol)))
 (define (log->data str)
-  (define-values (tag to from id payload) (apply values (string-split str "\t")))
+  (define str* (string-split str "\t"))
+  ;(define-values (tag to from id payload) (apply values str*))
+  (define to (cadr str*))
+  (define from (caddr str*))
+  (define id (cadddr str*))
   (list to from (string->symbol id)))
 
-;; (: directory->dmg (-> Path-String Dynamic-ModuleGraph))
+(: directory->dmg (-> Path-String Dynamic-ModuleGraph))
 (define (directory->dmg dir)
   (define MG (directory->modulegraph dir))
   (define B* (boundaries MG))
@@ -280,11 +336,12 @@
   (define dyn-B* (trace-run trace-dir B*))
   (dynamic-modulegraph MG dyn-B*))
 
+(: project-name->dmg (-> String Dynamic-ModuleGraph))
 (define (project-name->dmg name)
   (directory->dmg (infer-project-dir name)))
 
-;; Pretty-print a dynamic module graph to the current output port
-;; (: print-dmg (-> DMG Void))
+;;; Pretty-print a dynamic module graph to the current output port
+(: print-dmg (-> Dynamic-ModuleGraph Void))
 (define (print-dmg dmg)
   ;; Print title
   (define title (format "ModuleGraph for ~a:" (dmg->project-name dmg)))
@@ -302,7 +359,7 @@
       (printf "Total: ~a\n" (to->total-count dmg to))
       (newline))))
 
-;; (-> String Void)
+(: assert-rkt-bin (-> String Void))
 (define (assert-rkt-bin r)
   (unless (and (file-exists? (string-append r "/racket"))
                (file-exists? (string-append r "/raco")))
@@ -315,12 +372,14 @@
   (command-line
    #:program "gtp-trace"
    #:once-each
-   [("--tex") tex "File to store .tex output to" (*TEX-OUT* tex)]
+   [("--tex") tex "File to store .tex output to" (*TEX-OUT* (assert tex string?))]
    [("-q" "--quiet") "Run quietly" (*VERBOSE* #f)]
-   [("-r" "--racket") r "Run quietly" (and (assert-rkt-bin r)
+   [("-r" "--racket") r "Run quietly" (and (assert r string?)
+                                           (assert-rkt-bin r)
                                            (*RKT-BIN* (string-append r "/")))]
    [("-d" "--directory") "Run from a specific directory, instead of by project name" (*DIRECTORY?* #t)]
-   #:args (PROJECT-NAME)
+   #:args (PROJECT-NAME-any)
+   (define PROJECT-NAME (assert PROJECT-NAME-any string?))
    (define DMG
      (if (*DIRECTORY?*)
        (directory->dmg (build-path (current-directory) PROJECT-NAME))
@@ -334,7 +393,7 @@
   (*VERBOSE* #f)
 
   (require
-    rackunit
+    typed/rackunit
     (only-in racket/file file->lines))
 
   ;; ---
@@ -354,7 +413,7 @@
       (string-replace/file TEST-FILE search-str replace-str)
       (check-equal?
         (file->lines TEST-FILE)
-        (map (lambda (ln) (string-replace ln search-str replace-str)) line*))
+        (map (lambda ([ln : String]) (string-replace ln search-str replace-str)) line*))
       (map delete-file (glob (string-append TEST-FILE "*")))
       (void)))
 
@@ -386,7 +445,8 @@
         1)
       ;; -- check dynhash->dynboundary
       (check-equal?
-        (sort (dyn-hash->dyn-boundary* H) string<? #:key car)
+        ((inst sort DynamicBoundary String)
+         (dyn-hash->dyn-boundary* H) string<? #:key car)
         '(("toA" "fromA" ((A1 . 0) (A2 . 0) (A3 . 0)))
           ("toB" "fromB" ((B1 . 1)))))
       ))
@@ -408,13 +468,14 @@
       (dyn-boundary*-ref b* "YO" "LO")))
 
   ;; -- end-to-end
+  (: check-dmg (-> String Dynamic-ModuleGraph))
   (define (check-dmg dir-name)
     (printf "[TEST] Building dynamic graph for '~a'... \n" dir-name)
     (define dmg (directory->dmg (build-path (current-directory) "test" dir-name)))
     (printf "[TEST] finished building dynamic graph for '~a'\n" dir-name)
     dmg)
 
-  #;(let* ([DMG (check-dmg "sample_modulegraph_dir")]
+  (let* ([DMG (check-dmg "sample_modulegraph_dir")]
          [B*  (dynamic-modulegraph-boundary* DMG)])
     (check-equal? (length B*) 4)
     (check-equal?
@@ -431,7 +492,7 @@
       '((DATA . 400001) (PORT . 1)))
   )
 
-  #;(let* ([DMG (check-dmg "mini-morsecode")]
+  (let* ([DMG (check-dmg "mini-morsecode")]
          [B* (dynamic-modulegraph-boundary* DMG)])
     ;; -- 20 because the first 4 words in `base/frequency-small.rktd`
     ;;    have 10 total characters & we use each of the words 2x
@@ -453,7 +514,7 @@
         (vector-levenshtein/predicate . 0)
         (vector-levenshtein/predicate/get-scratch . 0))))
 
-  #;(let* ([DMG (check-dmg "mini-zombie")]
+  (let* ([DMG (check-dmg "mini-zombie")]
          [B* (dynamic-modulegraph-boundary* DMG)])
     ;; -- 4 = 1 to get the world, 3 for each command in `zombie-hist-micro.rktd`
     (check-equal?
@@ -464,9 +525,9 @@
       '((circle . 1) (empty-scene . 1) (image . 0) (image-impl . 0) (image? . 0) (place-image . 0) (struct:image . 0)))
     (check-equal?
       (dyn-boundary*-ref/fail B* "zombie" "math")
-      '((abs . 90) (max . 18) (min . 9) (msqrt . 9) (sqr . 36))))
+      '((abs . 36) (max . 9) (min . 9) (msqrt . 9) (sqr . 18))))
 
-  #;(let* ([DMG (check-dmg "mini-tetris")]
+  (let* ([DMG (check-dmg "mini-tetris")]
          [B* (dynamic-modulegraph-boundary* DMG)])
     ;; -- elim.rkt is unused
     (check-equal?
@@ -483,7 +544,7 @@
       '((build-tetra-blocks . 7) (tetra-change-color . 0) (tetra-move . 0) (tetra-overlaps-blocks? . 0) (tetra-rotate-ccw . 0) (tetra-rotate-cw . 0)))
    )
 
-  #;(let* ([DMG (check-dmg "mini-mbta")]
+  (let* ([DMG (check-dmg "mini-mbta")]
          [B* (dynamic-modulegraph-boundary* DMG)])
     (check-equal?
       (dyn-boundary*-ref/fail B* "run-t" "t-view")
