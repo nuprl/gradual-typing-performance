@@ -471,8 +471,10 @@
   (: check-dmg (-> String Dynamic-ModuleGraph))
   (define (check-dmg dir-name)
     (printf "[TEST] Building dynamic graph for '~a'... \n" dir-name)
-    (define dmg (directory->dmg (build-path (current-directory) "test" dir-name)))
+    (define p (build-path (current-directory) "test" dir-name))
+    (define dmg (directory->dmg p))
     (printf "[TEST] finished building dynamic graph for '~a'\n" dir-name)
+    (delete-directory/files (build-path p "trace"))
     dmg)
 
   (let* ([DMG (check-dmg "sample_modulegraph_dir")]

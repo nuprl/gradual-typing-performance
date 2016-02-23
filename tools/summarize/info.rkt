@@ -4,7 +4,10 @@
                "typed-racket-lib"
                "typed-racket-more"
                "benchmark-util" ;; local package
+               "rackunit-lib"
+               "draw-lib" ;; For the mini-quadMB test ... oh well
                "glob"
+               "trivial"
                "math-lib"
                "plot-lib"))
 (define build-deps '("rackunit-lib"
