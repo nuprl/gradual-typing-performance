@@ -5,6 +5,20 @@
 ;; - Make L-N/M figures
 
 (provide
+  EXAMPLE-BENCHMARK ;; Symbol
+  EXAMPLE-OVERHEAD  ;; Natural
+  ;; For discussion / prose
+
+  MAX-OVERHEAD
+  ;; Natural
+  ;; To generate L-N/M figures
+
+  NUM-BENCHMARKS
+  ;; Natural
+  ;; Not really a constant -- length of `benchmark-name*`
+
+  ;; ---------------------------------------------------------------------------
+
   bm
   ;; (-> String Any)
   ;; Use to format benchmark names.
@@ -21,10 +35,6 @@
   ;; Finds the data file corresponding to the benchmark
   ;;  at the specific version and renders a data lattice.
 
-  NUM-BENCHMARKS
-  ;; Natural
-  ;; Not really a constant -- length of `benchmark-name*`
-
   (rename-out [make-benchmark benchmark])
   ;; (->* [] [#:name String
   ;;          #:author String
@@ -40,6 +50,12 @@
   ;; Render a list of Benchmark structures.
   ;; Use the `benchmark` constructor to make a `Benchmark`
 
+  ;lnm-descriptions
+  ;; (-> (Listof Lnm) Any)
+
+  ;(rename-out [make-lnm lnm])
+  ;; (->* [Symbol] [] #:rest (Listof String) Lnm)
+
   benchmark-characteristics
   ;; (-> Any)
   ;; 
@@ -50,7 +66,8 @@
 
 (require
  glob
- gtp-summarize/modulegraph
+ "render-lnm.rkt"
+ "scripts/modulegraph.rkt"
  racket/match
  (only-in racket/file file->value)
  scribble/core
@@ -79,6 +96,13 @@
   zordoz
 ))
 (define NUM-BENCHMARKS (length benchmark-name*))
+
+(define MAX-OVERHEAD 20)
+(define NUM-SAMPLES 120)
+(define EXAMPLE-BENCHMARK 'kcfa)
+(define EXAMPLE-OVERHEAD 10)
+
+;; -----------------------------------------------------------------------------
 
 (define (bm name)
   (unless (memq (string->symbol name) benchmark-name*)
@@ -179,6 +203,10 @@
   (check-missing-benchmarks b*)
   (map render-benchmark (sort b* benchmark<?)))
 
+;;; TODO need to do some work abstracting
+;(define (lnm-descriptions . l*)
+;  (map render-lnm-description (sort l* symbol<? #:key 
+
 (define (benchmark-characteristics)
   (elem "TODO"))
 
@@ -192,4 +220,25 @@
   ;; Map over benchmark names,
   ;; Sort & make figures of with 6 plots each or whatever
   (elem "TODO"))
-
+;@figure*["fig:lnm1"
+;  @list{@step["L" "N" "M"] results for the first six benchmarks}
+;  @(let* ([data `(("sieve"        ,SIEVE-DATA)
+;                  ("morse-code"   ,MORSECODE-DATA)
+;                  ("mbta"         ,MBTA-DATA)
+;                  ("zordoz"       ,ZORDOZ-DATA)
+;                  ("suffixtree"   ,SUFFIXTREE-DATA)
+;                  ("lnm"          ,LNM-DATA)
+;                  )])
+;     (data->pict data #:tag "1"))
+;]
+;
+;@figure*["fig:lnm2"
+;  @list{@step["L" "N" "M"] results for the remaining benchmarks}
+;  @(let* ([data `(("kcfa"       ,KCFA-DATA)
+;                  ("snake"      ,SNAKE-DATA)
+;                  ("tetris"     ,TETRIS-DATA)
+;                  ("synth"      ,SYNTH-DATA)
+;                  ("gregor"     ,GREGOR-DATA)
+;                  ("quad"       ,QUAD-DATA))])
+;     (data->pict data #:tag "2"))
+;]
