@@ -6,39 +6,39 @@
 ;; (because their layout requires human intervention)
 ;; so this file provides a (brittle) parser.
 
-(provide
-  from-directory
-  ;; (-> Path ModuleGraph)
+(provide:
+  (from-directory (-> Path-String ModuleGraph))
   ;; Parse a directory into a module graph.
   ;; Does not collect module dependency information.
 
-  from-tex
-  ;; (-> Path-String ModuleGraph)
+  (from-tex (-> Path-String ModuleGraph))
   ;; Parse a tex file into a module graph
 
-  module-names
-  ;; (-> ModuleGraph (Listof String))
+  (module-names (-> ModuleGraph (Listof String)))
   ;; Return a list of all module names in the project
 
-  path->project-name
-  ;; (-> Path-String String)
+  (path->project-name (-> Path-String String))
   ;; Parse a project's name from a filename.
 
-  project-name
-  ;; (-> ModuleGraph String)
+  (project-name (-> ModuleGraph String))
   ;; Get the project name direct from the modulegraph
 
-  name->index
-  ;; (-> ModuleGraph String Index)
+  (name->index (-> ModuleGraph String Natural))
   ;; Get the module's index into bitstrings
 
-  index->name
-  ;; (-> ModuleGraph Index String)
+  (index->name (-> ModuleGraph Natural String))
 
-  requires
+  (provides (-> ModuleGraph String (Listof String)))
+  ;; List of modules that require the given one; i.e., modules the current provides to
+
+  (requires (-> ModuleGraph String (Listof String)))
   ;; (-> ModuleGraph String (Listof String))
   ;; List of modules required by the given one
 
+  (strip-suffix (-> Path-String String))
+  ;; Remove the file extension from a path string
+)
+(provide
   (struct-out modulegraph)
   ModuleGraph
 )
@@ -46,13 +46,20 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+  glob/typed
   racket/match
+  (only-in racket/system system)
+  (only-in racket/port with-output-to-string)
+  (only-in racket/list make-list last drop-right)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
-  (only-in racket/string string-split string-trim)
+  (only-in racket/string string-split string-contains? string-trim string-join)
 )
-(require/typed glob
-  [glob (-> String (Listof String))])
+(require/typed syntax/modcode
+  (get-module-code
+   (-> Path Any)))
+(require/typed racket/string
+  (string-contains? (-> String String Any)))
 
 ;; =============================================================================
 ;; --- data definition: modulegraph
@@ -64,6 +71,29 @@
   [adjlist : AdjList]) #:transparent)
 (define-type AdjList (Listof (Listof String)))
 (define-type ModuleGraph modulegraph)
+
+(: adjlist-add-edge (-> AdjList String String AdjList))
+(define (adjlist-add-edge A* from to)
+  (define found? : (Boxof Boolean) (box #f))
+  (define res : AdjList
+    (for/list : AdjList
+              ([src+dst* (in-list A*)])
+      (define src (car src+dst*))
+      (define dst* (cdr src+dst*))
+      (if (string=? from src)
+        (begin
+          (when (unbox found?)
+            (raise-user-error 'adjlist-add-edge
+              (format "Malformed adjacency list, node '~a' appears twice" from)))
+          (set-box! found? #t)
+          (if (member to dst*)
+            ;; Already exists? That's fine
+            src+dst*
+            (list* src to dst*)))
+        src+dst*)))
+  (if (unbox found?)
+    res
+    (cons (list from to) res)))
 
 ;; Get the name of the project represented by a module graph
 (: project-name (-> ModuleGraph String))
@@ -94,7 +124,26 @@
 
 (: requires (-> ModuleGraph String (Listof String)))
 (define (requires mg name)
-  (for/list ([node+neighbors (in-list (modulegraph-adjlist mg))]
+  (or
+   (adjlist->dst* (modulegraph-adjlist mg) name)
+   (raise-user-error 'modulegraph (format "Module '~a' is not part of graph '~a'" name mg))))
+
+(: adjlist->dst* (-> AdjList String (U #f (Listof String))))
+(define (adjlist->dst* adj name)
+  (for/or : (U #f (Listof String))
+          ([src+dst* (in-list adj)])
+    (and
+     (string=? name (car src+dst*))
+     (cdr src+dst*))))
+
+(: provides (-> ModuleGraph String (Listof String)))
+(define (provides mg name)
+  (adjlist->src* (modulegraph-adjlist mg) name))
+
+(: adjlist->src* (-> AdjList String (Listof String)))
+(define (adjlist->src* adj name)
+  (for/list : (Listof String)
+            ([node+neighbors : (Listof String) (in-list adj)]
              #:when (member name (cdr node+neighbors)))
     (car node+neighbors)))
 
@@ -112,21 +161,38 @@
 (define-syntax-rule (parse-error msg arg* ...)
   (error 'modulegraph (format msg arg* ...)))
 
-(: rkt-file? (-> Path Boolean))
+(: rkt-file? (-> Path-String Boolean))
 (define (rkt-file? p)
-  (regexp-match? #rx"\\.rkt$" (path->string p)))
+  (regexp-match? #rx"\\.rkt$" (if (string? p) p (path->string p))))
 
-(: from-directory (-> Path ModuleGraph))
+(: from-directory (-> Path-String ModuleGraph))
 (define (from-directory parent)
   (define name (path->project-name parent))
   ;; TODO works when we're in the paper/ directory, but nowhere else
-  (define u-dir (build-path ".." name "untyped"))
-  (unless (directory-exists? u-dir)
-    (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name)))
+  (define u-dir (infer-untyped-dir name))
   ;; No edges, just nodes
   (: adjlist AdjList)
   (define adjlist (directory->adjlist u-dir))
   (modulegraph name adjlist))
+
+(: get-git-root (-> String))
+(define (get-git-root)
+  (define ok? : (Boxof Boolean) (box #t))
+  (define outs
+    (with-output-to-string
+      (lambda ()
+        (set-box! ok? (system "git rev-parse --show-toplevel")))))
+  (if (and (unbox ok?) (string-contains? outs "gradual-typing-performance"))
+    (string-trim outs)
+    (raise-user-error 'modulegraph "Must be in `gradual-typing-performance` repo to use script")))
+
+;; Blindly search for a directory called `name`.
+(: infer-untyped-dir (-> Path-String Path))
+(define (infer-untyped-dir name)
+  (define u-dir (build-path (get-git-root) "benchmark" name "untyped"))
+  (if (directory-exists? u-dir)
+    u-dir
+    (raise-user-error 'modulegraph (format "Failed to find source code for '~a', cannot summarize data" name))))
 
 ;; Interpret a .tex file containing a TiKZ picture as a module graph
 (: from-tex (-> Path-String ModuleGraph))
@@ -141,7 +207,7 @@
 
 ;; Verify that `filename` is a tex file, return the name of
 ;; the project it describes.
-(: ensure-tex (-> (U Path-String Path) (Values Path String)))
+(: ensure-tex (-> Path-String (Values Path String)))
 (define (ensure-tex filename)
   (define path (or (and (path? filename) filename)
                    (string->path filename)))
@@ -152,11 +218,21 @@
   (values path project-name))
 
 ;; Parse the project's name from a path
-(: path->project-name (-> Path String))
-(define (path->project-name path)
-  (define p (or (file-name-from-path path) (error 'path->project-name)))
+(: path->project-name (-> Path-String String))
+(define (path->project-name ps)
+  (define p : Path
+    (cond
+     [(path? ps) ps]
+     [(string? ps) (string->path ps)]
+     [else (raise-user-error 'path->project-name ps)]))
+  (define s : String
+    (path->string
+      (or (file-name-from-path p)
+          (raise-user-error 'path->project-name (format "Could not get filename from path '~a'" p)))))
+  (define without-dir
+    (last (string-split s "/")))
   (define without-ext
-    (car (string-split (path->string p) ".")))
+    (strip-suffix without-dir))
   (define without-hyphen
     (car (string-split without-ext "-")))
   without-hyphen)
@@ -254,7 +330,8 @@
 (: dummy-node? (-> String Boolean))
 (define (dummy-node? str)
   (define N (string-length str))
-  (string=? "{};" (substring str (- N 3) N)))
+  (and (>= N 3)
+       (string=? "{};" (substring str (- N 3) N))))
 
 ;; Parse a string into a texnode struct.
 (: string->texnode (-> String texnode))
@@ -329,78 +406,76 @@
 
 (: directory->adjlist (-> Path AdjList))
 (define (directory->adjlist dir)
-  (define src-path-str* (glob (format "~a/*.rkt" (path->string dir))))
+  (define abs-path* (glob (format "~a/*.rkt" (path->string dir))))
   (define src-name*
     (for/list : (Listof String)
-              ([path-str (in-list src-path-str*)])
-      (path->project-name (string->path path-str))))
-  (for/list ([path-str (in-list src-path-str*)]
-             [name     (in-list src-name*)])
-    (cons name
-          (for/list : (Listof String)
-                    ([name2 (in-list (parse-requires path-str))]
-                     #:when (member name2 src-name*))
-            name2))))
+              ([path-str (in-list abs-path*)])
+      (strip-suffix (strip-directory (string->path path-str)))))
+  ;; Build modulegraph
+  (for/list : AdjList
+            ([abs-path (in-list abs-path*)]
+             [src-name (in-list src-name*)])
+    (cons src-name (absolute-path->imports abs-path src-name*))))
+
+;; '((0 #<module-path-index:(racket/base)> #<module-path-index:(benchmark-util)> #<module-path-index:(racket/file)> #<module-path-index:("lcs.rkt")>))
+
+(: absolute-path->imports (-> Path-String (Listof String) (Listof String)))
+(define (absolute-path->imports ps valid-name*)
+  (define p (if (path? ps) ps (string->path ps)))
+  (define mc (cast (compile (get-module-code p)) Compiled-Module-Expression))
+  (for/fold : (Listof String)
+            ([acc : (Listof String) '()])
+            ([mpi (in-list (apply append (module-compiled-imports mc)))])
+    (if (module-path-index? mpi)
+      (let-values (((name _2) (module-path-index-split mpi)))
+        (let ([name+ (if (string? name)
+                       (strip-suffix (strip-directory (string->path name)))
+                       #f)])
+          (if (and (string? name+) (member name+ valid-name*))
+            (cons name+ acc)
+            acc)))
+      acc)))
 
 (define RX-REQUIRE #rx"require.*\"(.*)\\.rkt\"")
 
-(: parse-requires (-> Path-String (Listof String)))
-(define (parse-requires fname)
-  (with-input-from-file fname
-    (lambda ()
-      (: match (Boxof String))
-      (define match (box ""))
-      (: regexp-match/set! (-> String (Option Void)))
-      (define (regexp-match/set! str)
-        (let ([m (regexp-match RX-REQUIRE str)])
-          (if m
-            (set-box! match (or (cadr m) (error 'parse-requires "internal")))
-            #f)))
-      (for/list : (Listof String)
-                ([ln (in-lines)]
-                 #:when (regexp-match/set! ln))
-        (unbox match)))))
-
-(define-type AdjList/Level (Listof (Listof (Listof String))))
-
-(: group-by-level (-> AdjList AdjList/Level))
-(define (group-by-level A)
-  (let loop : AdjList/Level
-            ([A : AdjList A]
-             [level* : AdjList/Level '()]
-             [seen* : (Listof String) '()])
-    (if (null? A)
-      level*
-      (let* ([seen? : (-> String Boolean)
-              (lambda ([s : String]) (and (member s seen*) #t))]
-             [in-this-level
-              (for/list : (Listof (Listof String))
-                        ([name+req* (in-list A)]
-                         #:when (andmap seen? (cdr name+req*)))
-                name+req*)]
-             [this-level-names : (Listof String)
-               (map (inst car String (Listof String)) in-this-level)]
-             [A2 (for/list : AdjList
-                           ([name+req* (in-list A)]
-                            #:when (not (member (car name+req*) this-level-names)))
-                   name+req*)])
-
-        (loop
-          A2
-          (cons in-this-level level*)
-          (append this-level-names seen*))))))
+;; Sort an adjacency list in order of transitive indegree, increasing.
+;; Results are grouped by indegree, i.e.
+;; - 1st result = list of 0-indegree nodes
+;; - 2nd result = list of 1-indegree nodes
+;; - ...
+(: topological-sort (-> AdjList (Listof (Listof String))))
+(define (topological-sort adj)
+  (: indegree-map (HashTable String Integer))
+  (define indegree-map
+    (make-hash (for/list : (Listof (Pairof String Integer))
+                         ([src+dst* (in-list adj)])
+                 (cons (car src+dst*) (length (cdr src+dst*))))))
+  (reverse
+    (let loop ([acc : (Listof (Listof String)) '()])
+      (cond
+       [(zero? (hash-count indegree-map))
+        acc]
+       [else
+        (define zero-indegree*
+          (for/list : (Listof String)
+                    ([(k v) (in-hash indegree-map)]
+                     #:when (zero? v)) k))
+        (for ([k (in-list zero-indegree*)])
+          (hash-remove! indegree-map k)
+          (define src* (adjlist->src* adj k))
+          (for ([src (in-list src*)])
+            (hash-set! indegree-map src
+              (- (hash-ref indegree-map src (lambda () -1)) 1))))
+        (loop (cons (sort zero-indegree* string<?) acc))]))))
 
 ;; Print a modulegraph for a project.
 ;; The layout should be approximately right
 ;;  (may need to bend edges & permute a row's nodes)
-;;
-;; TODO failed for snake (only 1 level!!!) pls debug
 (: directory->tikz (-> Path Path-String Void))
 (define (directory->tikz p out-file)
   (define N (path->project-name p))
-  (define A (directory->adjlist p))
-  (define MG (modulegraph N A))
-  (define A/level (reverse (group-by-level A)))
+  (define MG (from-directory p))
+  (define tsort (topological-sort (modulegraph-adjlist MG)))
   (with-output-to-file out-file #:exists 'replace
     (lambda ()
       (displayln "\\begin{tikzpicture}\n")
@@ -408,18 +483,17 @@
       (define name+tikzid*
        (apply append
         (for/list : (Listof (Listof (Pairof String String)))
-                  ([group (in-list A/level)]
+                  ([group (in-list tsort)]
                    [g-id  (in-naturals)])
           (for/list : (Listof (Pairof String String))
-                    ([name+req (in-list group)]
+                    ([name (in-list group)]
                      [n-id (in-naturals)])
-            (define name (car name+req))
             (define tikzid (format "~a~a" g-id n-id))
             (define pos
               (cond
                [(and (zero? g-id) (zero? n-id)) ""]
-               [(zero? n-id) (format "[left of=~a]" (decr-left tikzid))]
-               [else (format "[below of=~a]" (decr-right tikzid))]))
+               [(zero? n-id) (format "[left of=~a,xshift=-2cm]" (decr-left tikzid))]
+               [else (format "[below of=~a,yshift=-1cm]" (decr-right tikzid))]))
             (printf "  \\node (~a) ~a {\\rkt{~a}{~a}};\n"
               tikzid pos (name->index MG name) name)
             (cons name tikzid)))))
@@ -427,11 +501,11 @@
       (: get-tikzid (-> String String))
       (define (get-tikzid name)
         (cdr (or (assoc name name+tikzid*) (error 'NONAME))))
-      (for* ([group (in-list A/level)]
-             [name+req* (in-list group)]
-             [req (in-list (cdr name+req*))])
+      (for* ([group (in-list tsort)]
+             [name (in-list group)]
+             [req (in-list (requires MG name))])
         (printf "  \\draw[->] (~a) -- (~a);\n"
-          (get-tikzid (car name+req*))
+          (get-tikzid name)
           (get-tikzid req)))
       (displayln "\n\\end{tikzpicture}"))))
 
@@ -457,29 +531,207 @@
 ;; =============================================================================
 
 (module+ main
-  (unless (= 1 (vector-length (current-command-line-arguments)))
+  (define-syntax-rule (usage-error)
     (raise-user-error "Usage: ./modulegraph.rkt PROJECT-NAME"))
+  (unless (= 1 (vector-length (current-command-line-arguments)))
+    (usage-error))
   (define out-file "output.tex")
-  (define u-path-str
-    (string-append (vector-ref (current-command-line-arguments) 0) "/typed"))
-  (directory->tikz (string->path u-path-str) out-file)
+  (define name (vector-ref (current-command-line-arguments) 0))
+  (directory->tikz (string->path name) out-file)
   (printf "Saved module graph to '~a'\n" out-file)
 )
+
+(: strip-suffix (-> Path-String String))
+(define (strip-suffix p)
+  (define p+ (if (path? p) p (string->path p)))
+  (path->string (path-replace-suffix p+ "")))
+
+(: strip-directory (-> Path-String String))
+(define (strip-directory ps)
+  (define p (if (path? ps) ps (string->path ps)))
+  (path->string (assert (last (explode-path p)) path?)))
 
 ;; =============================================================================
 
 (module+ test
-  ;; -- Simple test, just make sure all module graphs parse.
-  (require/typed glob [in-glob (-> String (Sequenceof String))])
-  (: test-file (-> String Void))
-  (define (test-file fn)
-    (define mg (from-tex fn))
-    (printf "Parsed '~a' from '~a'\n" mg fn))
-  (for ([fname (in-glob "../module-graphs/*.tex")])
-    (printf "TESTING ~a\n" fname)
-    (test-file fname))
+  (require
+    racket/port
+    typed/rackunit)
+
+  (define SAMPLE-MG-FILE "test/sample-modulegraph.tex")
+  (define SAMPLE-MG-DIRECTORY "echo")
+
+  ;; -- Test parsing
+
+  ;; -- Parse all module graphs
+  (define MGf (from-tex SAMPLE-MG-FILE))
+  (define MGd (from-directory SAMPLE-MG-DIRECTORY))
+
+  ;; --- project-name
+  (check-false (string-contains? (project-name MGf) "-"))
+  (check-equal? (project-name MGf) "sample") ;; Hyphen is stripped
+
+  (check-equal? (project-name MGd) SAMPLE-MG-DIRECTORY)
+
+  ;; -- module-names
+  (check-equal? (sort (module-names MGf) string<?)
+               '("collide" "const" "cut-tail" "data" "handlers" "main" "motion" "motion-help"))
+  (check-equal? (module-names MGd) '("client" "constants" "main" "server"))
 
   ;; -- name->index
+  (check-equal? (name->index MGf "collide") 0)
+  (check-equal? (name->index MGf "handlers") 4)
+
+  (check-equal? (name->index MGd "main") 2)
+
   ;; -- index->name
+  (check-equal? (index->name MGf 4) "handlers")
+  (check-equal? (index->name MGf (assert (- (length (module-names MGf)) 3) index?)) "main")
+
+  ;; -- provides
+  (check-equal? (provides MGf "data") '("collide" "const" "cut-tail" "handlers" "main" "motion-help" "motion"))
+  (check-equal? (provides MGf "main") '())
+
   ;; -- requires
+  (check-equal? (requires MGf "data") '())
+  (check-equal? (requires MGf "main") '("motion" "handlers" "const" "data"))
+
+  ;; -- rkt-file?
+  (check-true (rkt-file? "foo.rkt"))
+  (check-true (rkt-file? "bar.rkt"))
+  (check-true (rkt-file? ".rkt"))
+
+  (check-false (rkt-file? "rktd"))
+  (check-false (rkt-file? "yolo"))
+  (check-false (rkt-file? ""))
+
+  ;; -- adjlist
+  (check-equal? (modulegraph-adjlist MGd)
+    '(("client" "constants") ("constants") ("main" "server" "client") ("server" "constants")))
+
+  ;; -- from-directory
+  ;; -- from-tex
+  ;; TESTED ABOVE
+
+  ;; -- infer-untyped-dir
+  (check-equal?
+    (infer-untyped-dir SAMPLE-MG-DIRECTORY)
+    (build-path (get-git-root) "benchmark" SAMPLE-MG-DIRECTORY "untyped"))
+  (check-exn exn:fail:user?
+    (lambda () (infer-untyped-dir "nasdhoviwr")))
+
+  ;; -- ensure-tex
+  (define-syntax-rule (check-ensure-tex [in o1 o2] ...)
+    (begin
+      (let-values ([(p s) (ensure-tex in)])
+        (check-equal? p o1)
+        (check-equal? s o2)) ...))
+  (check-ensure-tex
+    ["a.tex" (string->path "a.tex") "a"]
+    ["bar.tex" (string->path "bar.tex") "bar"]
+    ["bar-3.tex" (string->path "bar-3.tex") "bar"])
+
+  (check-exn exn:fail?
+    (lambda ()
+      (let-values (((a b) (ensure-tex "foo"))) (void))))
+  (check-exn exn:fail?
+    (lambda ()
+      (let-values (((a b) (ensure-tex "foo.rkt"))) (void))))
+
+  ;; -- path->project-name
+  (check-equal? (path->project-name "foo-bar-baz.rkt") "foo")
+  (check-equal? (path->project-name (string->path "x-6.3")) "x")
+  (check-equal? (path->project-name "yes/no/maybe-so.out") "maybe")
+
+  ;; -- ensure-tikz
+  (check-equal?
+    (call-with-input-string "\\begin{tikzpicture}"
+      ensure-tikz)
+    (void))
+  (check-equal?
+    (call-with-input-string "\nblahblahblah\n\n\\begin{tikzpicture}"
+      ensure-tikz)
+    (void))
+
+  (check-exn exn:fail?
+    (lambda ()
+      (call-with-input-string ""
+        ensure-tikz)))
+  (check-exn exn:fail?
+    (lambda ()
+      (call-with-input-string "nope"
+        ensure-tikz)))
+
+  ;; -- strip-suffix
+  (check-equal? (strip-suffix "file.txt") "file")
+  (check-equal? (strip-suffix "yo/lo.com") "yo/lo")
+  (check-equal? (strip-suffix "cant.stop.now") "cant.stop")
+
+  ;; -- strip-directory
+  (check-equal? (strip-directory "file.txt") "file.txt")
+  (check-equal? (strip-directory "yo/lo.com") "lo.com")
+  (check-equal? (strip-directory "cant.stop.now") "cant.stop.now")
+  (check-equal? (strip-directory "cant/stop/now") "now")
+
+  ;; -- parse-nodes TODO
+  ;; -- parse-edges TODO
+
+  ;; -- string->index
+  (check-equal? (string->index "2") 2)
+  (check-equal? (string->index "6789") 6789)
+
+  (check-exn exn:fail:contract?
+    (lambda () (string->index "yes")))
+  (check-exn exn:fail:contract?
+    (lambda () (string->index "-1")))
+
+  ;; -- dummy-node?
+  (check-true (dummy-node? "{};"))
+  (check-true (dummy-node? "yolo {};"))
+  (check-true (dummy-node? "some fist things {}; {}; yeah {};"))
+
+  (check-false (dummy-node? ""))
+  (check-false (dummy-node? "{}"))
+  (check-false (dummy-node? "{}; and1"))
+
+  ;; -- string->texnode
+  (define-syntax-rule (check-string->texnode [str n] ...)
+    (begin
+      (let ([n2 (string->texnode str)])
+        (check-true (not (eq? #f n2)))
+        (for ([acc (in-list (list texnode-id texnode-index texnode-name))])
+          (check-equal? (acc n2) (acc n)))) ...))
+  (check-string->texnode
+   ["\\node (0) {\\rkt{0}{hi}};" (texnode 0 0 "hi")]
+   ["\\node (10) [some crap] {\\rkt{777}{hi.rkt}};" (texnode 10 777 "hi.rkt")])
+
+  (check-exn exn:fail?
+    (lambda ()
+      (string->texnode "")))
+  (check-exn exn:fail?
+    (lambda ()
+      (string->texnode "weeeeeepa")))
+
+  (check-equal?
+    (topological-sort '(("client" "constants") ("constants") ("main" "server" "client") ("server" "constants")))
+    '(("constants") ("client" "server") ("main")))
+
+  (check-equal?
+    (topological-sort (modulegraph-adjlist (from-directory "suffixtree")))
+    '(("data") ("label") ("structs") ("ukkonen") ("lcs") ("main")))
+
+  (check-equal?
+    (modulegraph-adjlist (from-directory "synth"))
+    '(("array-broadcast" "data" "array-utils" "array-struct") ("array-struct" "data" "array-utils") ("array-transform" "data" "array-utils" "array-broadcast" "array-struct") ("array-utils") ("data") ("drum" "data" "synth" "array-transform" "array-utils" "array-struct") ("main" "synth" "mixer" "drum" "sequencer") ("mixer" "array-broadcast" "array-struct") ("sequencer" "mixer" "synth" "array-transform" "array-struct") ("synth" "array-utils" "array-struct")))
+
+  (check-equal?
+    (topological-sort (modulegraph-adjlist (from-directory "synth")))
+    '(("array-utils" "data") ("array-struct") ("array-broadcast" "synth") ("array-transform" "mixer") ("drum" "sequencer") ("main")))
+
+
+  ;; -- string->texedge TODO
+  ;; -- tex->modulegraph TODO
+
+  ;; -- directory->adjlist TODO
 )
+
