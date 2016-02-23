@@ -5,10 +5,6 @@
          "graph-weighted.rkt"
          "graph-matrix.rkt"
          "graph-fns-basic.rkt"
-         "graph-fns-minspantree.rkt"
-         "graph-fns-singlesource-shortestpaths.rkt"
-         "graph-fns-allpairs-shortestpaths.rkt"
-         "graph-fns-coloring.rkt"
          "graph-fns-maxflow.rkt"
          "graph-fns-graphviz.rkt"
          "graph-property.rkt"
@@ -25,12 +21,8 @@
                      [mk-matrix-graph matrix-graph])
          weighted-graph? unweighted-graph? matrix-graph?
          (all-from-out "graph-fns-basic.rkt"
-                       "graph-fns-minspantree.rkt"
-                       "graph-fns-singlesource-shortestpaths.rkt"
-                       "graph-fns-coloring.rkt"
                        "graph-fns-maxflow.rkt"
                        "graph-fns-graphviz.rkt")
-         floyd-warshall transitive-closure johnson
          (all-from-out "graph-property.rkt")
          $v $from $to $seen? $discovered? $visited? $broke? $acc)
 
