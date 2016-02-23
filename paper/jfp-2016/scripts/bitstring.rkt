@@ -3,6 +3,11 @@
 ;; A bitstring is a string of #\1 and #\0.
 ;; Technically bitstrings of unequal length are incompatible,
 ;;  but our scripts do nothing to enforce this.
+
+;; Maybe someday we'll migrate to bit-vectors or bitwise operations:
+;;   docs.racket-lang.org/data/bit-vector.html
+;;   docs.racket-lang.org/reference/generic-numbers.html
+
 (define-type Bitstring String)
 (provide
   Bitstring
@@ -49,8 +54,17 @@
 
 ;; =============================================================================
 
+(: power-of-2? (-> Natural Boolean))
+(define (power-of-2? n)
+  (and (not (= 1 n))
+       (zero? (bitwise-and n (- n 1)))))
+
+;; Compute an exact base 2 logarithm, if the input has one.
+;; Fails otherwise.
 (: log2 (-> Natural Natural))
 (define (log2 n)
+  (unless (power-of-2? n)
+    (raise-argument-error 'log2 "Natural divisible by 2" n))
   (: log2-help (-> Natural Natural Natural))
   (define (log2-help pow acc)
     (if (= acc n) pow (log2-help (add1 pow) (* acc 2))))
@@ -149,10 +163,28 @@
 (module+ test
   (require typed/rackunit)
 
+  ;; -- power-of-2?
+  (check-true (power-of-2? 0))
+  (check-true (power-of-2? 2))
+  (check-true (power-of-2? 4))
+  (check-true (power-of-2? 8))
+
+  (check-false (power-of-2? 1))
+  (check-false (power-of-2? 3))
+  (check-false (power-of-2? 5))
+  (check-false (power-of-2? 13))
+  (check-false (power-of-2? 9000))
+
   ;; -- log2
+  ;(check-equal? (log2 1) 0)
   (check-equal? (log2 2) 1)
   (check-equal? (log2 32) 5)
   (check-equal? (log2 1024) 10)
+
+  (check-exn exn:fail:contract?
+    (lambda () (log2 1)))
+  (check-exn exn:fail:contract?
+    (lambda () (log2 3)))
 
   ;; -- natural->bitstring
   (check-equal? (natural->bitstring 2 #:pad 2) "10")
