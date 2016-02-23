@@ -83,7 +83,7 @@
  (slice-at (All (A) (case-> ((Listof A) Positive-Integer -> (Listof (Listof A)))
                    ((Listof A) Positive-Integer Boolean -> (Listof (Listof A)))))))
 ;; bg: should maybe import this
-(require/typed "../base/csp/main.rkt"
+(require/typed "../base/csp/csp.rkt"
   [problem%  (Class (init-field [solver Any])
   (field [_solver Any])
   (field [_variable-domains Any])
