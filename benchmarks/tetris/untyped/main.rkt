@@ -11,7 +11,7 @@
       [`(on-key ,ke) (world-key-move w ke)]
       [`(on-tick) (next-world w)]
       [`(stop-when)
-       (λ (w) (blocks-overflow? (world-blocks w)))
+       (λ (w) (blocks-overflow? (world-blocks w))) ;; Unused in original code https://github.com/philnguyen/soft-contract/blob/master/benchmark-contract-overhead/tetris.rkt#L959
        w]))
   (void))
 
