@@ -41,7 +41,7 @@ In most cases our documented input size is a compromise between having an
 @todo{descriptions look very bad}
 
 
-@(benchmark-descriptions
+@benchmark-descriptions[
 @(benchmark
   #:name 'sieve
   #:author "Ben Greenman"
@@ -320,7 +320,7 @@ In most cases our documented input size is a compromise between having an
      of the built-in @racket[list?] and @racket[symbol?] functions.@note{In particular,
        @racket[(lambda (v) (and (list? v) (symbol? (car v))))].}
   }
-))
+)]
 
 
 @; -----------------------------------------------------------------------------
@@ -667,139 +667,155 @@ It is only when all the modules are typed that performance becomes acceptable
 @subsection{L-N/M Plots}
 @(lnm-plots)
 
-@;@figure*["fig:lnm1"
-@;  @list{@step["L" "N" "M"] results for the first six benchmarks}
-@;  @(let* ([data `(("sieve"        ,SIEVE-DATA)
-@;                  ("morse-code"   ,MORSECODE-DATA)
-@;                  ("mbta"         ,MBTA-DATA)
-@;                  ("zordoz"       ,ZORDOZ-DATA)
-@;                  ("suffixtree"   ,SUFFIXTREE-DATA)
-@;                  ("lnm"          ,LNM-DATA)
-@;                  )])
-@;     (data->pict data #:tag "1"))
-@;]
-@;
-@;@figure*["fig:lnm2"
-@;  @list{@step["L" "N" "M"] results for the remaining benchmarks}
-@;  @(let* ([data `(("kcfa"       ,KCFA-DATA)
-@;                  ("snake"      ,SNAKE-DATA)
-@;                  ("tetris"     ,TETRIS-DATA)
-@;                  ("synth"      ,SYNTH-DATA)
-@;                  ("gregor"     ,GREGOR-DATA)
-@;                  ("quad"       ,QUAD-DATA))])
-@;     (data->pict data #:tag "2"))
-@;]
-@;
-@;
-@; @subsubsection{Reading the Figures}
-@; 
-@; Our method defines the number of @step["L" "N" "M"] configurations as the key metric for measuring the quality of a gradual type system.
-@; For this experiment we have chosen values of 3x and 10x for @math{N} and @math{M}, respectively, and allow up to 2 additional type conversion steps.
-@; These values are rather liberal,@note{We would expect that most production contexts would not tolerate anything higher than 2x, if that much.} but serve to ground our discussion.
-@; 
-@; The twelve rows of graphs in @Figure-ref["fig:lnm1" "fig:lnm2"] summarize the results from exhaustively exploring the performance lattices of our benchmarks.
-@; Each row contains a table of summary statistics and one graph for each value of @math{L} between 0 and 2.
-@; 
-@; The typed/untyped ratio is the slowdown or speedup of fully typed code over untyped code.
+
+The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figure-ref}
+ summarize the results from exhaustively exploring the performance lattices of
+ our benchmarks on three versions of Racket.
+For this experiment we have chosen values of 3x and 10x for @math{N} and
+ @math{M}, respectively, and allow up to @math{L = 2} additional type conversion
+ steps.
+Hence our plots are organized in 3 columns, corresponding to values of @math{L}
+ between 0 and 2, and we draw vertical lines representing @math{N} and @math{M}.
+These values are rather liberal,@note{We would expect that most production
+  contexts would not tolerate anything higher than 2x, if that much.}
+  but serve to ground our discussion.
+
+In each graph, the x-axis represents a slowdown relative to the untyped program
+ (from 1x to @id[MAX-OVERHEAD]x).
+The y-axis is a count of the number of configurations
+ (from @math{0} to @math{2^n}) scaled so that all graphs are the same height.
+If @math{L} is zero, the curves represents the total number of configurations
+ with performance no worse than the overhead on the x-axis.
+For arbitrary @math{L}, the blue line gives the number of configurations that
+ can reach a configuration with performance no worse than the overhead on the
+ x-axis in at most @math{L} conversion steps.
+
+A useful way to read these figures is to first pick an overhead value,
+ say @id[EXAMPLE-OVERHEAD], then follow the y-axis until it intersects
+ one of the curves.
+Taking @id[EXAMPLE-BENCHMARK] for example, the leftmost plot shows that
+ @todo{how many} configurations run within a @id[EXAMPLE-OVERHEAD] slowdown
+ on Racket version 6.2.
+Upgrading to Racket version @todo{6.4.0.5} gives @todo{modest}.
+
+@todo{summary table, or no?}
+@; The typed/untyped ratio is the slowdown or speedup of fully typed code
+@;  over untyped code.
 @; Values smaller than @math{1.0} indicate a speedup due to Typed Racket optimizations.
-@; Values larger than @math{1.0} are slowdowns caused by interaction with untyped libraries or untyped parts of the underlying Racket runtime.
-@; The ratios range between 0.28x (@tt{lnm}) and 3.22x (@tt{zordoz}).
+@; Values larger than @math{1.0} are slowdowns caused by interaction with untyped
+@;  libraries or untyped parts of the underlying Racket runtime.
+@; The ratios range between @todo{min} and @todo{max}.
 @; 
-@; The maximum overhead is computed by finding the running time of the slowest configuration and dividing it by the running time of the untyped configuration.
-@; The average overhead is obtained by computing the average over all configurations (excluding the fully-typed and untyped configurations) and dividing it by the running time of the untyped configuration.
-@; Maximum overheads range from 1.25x (@tt{lnm}) to 168x (@tt{tetris}).
-@; Average overheads range from 0.6x (@tt{lnm}) to 68x (@tt{tetris}).
+@; The maximum overhead is computed by finding the running time of the slowest
+@;  configuration and dividing it by the running time of the untyped configuration.
+@; The average overhead is obtained by computing the average over all
+@;  configurations (excluding the fully-typed and untyped configurations) and
+@;  dividing it by the running time of the untyped configuration.
+@; Maximum overheads range from @todo{min} to @todo{max}.
+@; Average overheads range from @todo{min} to @todo{max}.
 @; 
 @; The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
-@; In parentheses, we express these counts as a percentage of all configurations for the program.
-@; 
-@; The three cumulative performance graphs are read as follows.
-@; The x-axis represents the slowdown over the untyped program (from 1x to @id[PARAM-MAX-OVERHEAD]x).
-@; The y-axis is a count of the number of configurations (from @math{0} to @math{2^n}) scaled so that all graphs are the same height.
-@; If @math{L} is zero, the blue line represents the total number of configurations with performance no worse than the overhead on the x-axis.
-@; For arbitrary @math{L}, the blue line gives the number of configurations that can reach a configuration with performance no worse than the overhead on the x-axis in at most @math{L} conversion steps.
-@; 
-@; The ideal result would be a flat line at a graph's top.
-@; Such a result would mean that all configurations are as fast as (or faster than) the untyped one.
-@; The worst scenario is a flat line at the graph's bottom, indicating that all configurations are more than 20x slower than the untyped one.
-@; For ease of comparison between graphs, a dashed (@exact{\color{red}{red}}) horizontal line indicates the 60% point along each project's y-axis.
-@; 
-@; 
-@; @; -----------------------------------------------------------------------------
-@; @section[#:tag "sec:all-results"]{Interpretation}
-@; 
-@; The ideal shape is difficult to achieve because of the overwhelming cost of the
-@; dynamic checks inserted at the boundaries between typed and untyped code.
-@; The next-best shape is a nearly-vertical line that reaches the top at a low x-value.
-@; All else being equal, a steep slope anywhere on the graph is desirable because
-@; the number of acceptable programs quickly increases at that point.
-@; 
-@; For each benchmark, we evaluate the actual graphs against these expectations.
-@; Our approach is to focus on the left column, where @math{L}=0, and to consider the
-@; center and right column as rather drastic countermeasures to recover
-@; performance.@note{Increasing @math{L} should remove pathologically-bad cases.} 
-@; 
-@; @parag{Sieve}
-@; The flat line at @math{L}=0 shows that half of all configurations suffer
-@; unacceptable overhead. As there are only 4 configurations in the lattice
-@; for @tt{sieve}, increasing @math{L} improves performance.
-@; 
-@; @parag{Morse code}
-@; The steep lines show that a few configurations suffer modest overhead (below 2x),
-@; otherwise @tt{morse-code} performs well.
-@; Increasing @math{L} improves the worst cases.
-@; 
-@; @parag{MBTA}
-@; These lines are also steep, but flatten briefly at 2x.
-@; This coincides with the performance of the fully-typed
-@; configuration.
-@; As one would expect, freedom to type additional modules adds configurations
-@; to the @deliverable{2} equivalence class.
-@; 
-@; @parag{Zordoz}
-@; Plots here are similar to @tt{mbta}.
-@; There is a gap between the performance of the fully-typed
-@; configuration and the performance of the next-fastest lattice point.
-@; 
-@; @parag{Suffixtree}
-@; The wide horizontal areas are explained by the performance lattice in
-@; @figure-ref{fig:suffixtree}: configurations' running times are not evenly
-@; distributed but instead vary drastically when certain boundaries exist.
-@; Increasing @math{L} significantly improves the number of acceptable configuration
-@; at 10x and even 3x overhead.
-@; 
-@; @parag{LNM}
-@; These results are ideal.
-@; Note the large y-intercept at @math{L}=0.
-@; This shows that very few configurations suffer any overhead.
-@; 
-@; @parag{KCFA}
-@; The most distinctive feature at @math{L}=0 is the flat portion between 1x
-@; and 6x. This characteristic remains at @math{L}=1, and overall performance
-@; is very good at @math{L}=2.
-@; 
-@; @parag{Snake}
-@; The slope at @math{L}=0 is very low.
-@; Allowing @math{L}=1 brings a noticeable improvement above the 5x mark,
-@; but the difference between @math{L}=1 and @math{L}=2 is small.
-@; 
-@; @parag{Tetris}
-@; Each @tt{tetris} plot is essentially a flat line.
-@; At @math{L}=0 roughly 1/3 of configurations lie below the line.
-@; This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
-@; when @math{L}=2.
-@; 
-@; @parag{Synth}
-@; Each slope is very low.
-@; Furthermore, some configurations remain unusable even at @math{L}=2.
-@; These plots have few flat areas, which implies that overheads are spread
-@; evenly throughout possible boundaries in the program.
-@; 
-@; @parag{Gregor}
-@; These steep curves are impressive given that @tt{gregor} has 13 modules.
-@; Increasing @math{L} brings consistent improvements.
-@; 
-@; @parag{Quad}
-@; The @tt{quad} plots follow the same pattern as @tt{mbta} and @tt{zordoz}, despite being visually distinct.
-@; In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
-@; The high typed/untyped ratio is explained by small differences in the original author-supplied variants.
+@; In parentheses, we express these counts as a percentage of all configurations
+@;  for the benchmark.
+
+@; -----------------------------------------------------------------------------
+@section[#:tag "sec:all-results"]{Interpretation}
+@todo{need to emphasize comparisons}
+
+The ideal result would be a flat line at a graph's top.
+Such a result would mean that all configurations are as fast as
+ (or faster than) the untyped one.
+The worst scenario is a flat line at the graph's bottom,
+ indicating that all configurations are more than 20x slower than the untyped one.
+
+Of course, the ideal shape is difficult to achieve because of the overwhelming
+ cost of the dynamic checks inserted at the boundaries between typed and untyped code.
+The next-best shape is a nearly-vertical line that reaches the top at a low x-value.
+All else being equal, a steep slope anywhere on the graph is desirable because
+ the number of acceptable programs quickly increases at that point.
+
+For each benchmark, we evaluate the actual graphs against these expectations.
+Our approach is to focus on the left column, where @math{L}=0, and to consider the
+ center and right column as rather drastic countermeasures to recover
+ performance.@note{Increasing @math{L} should remove pathologically-bad cases.} 
+
+@; @lnm-descriptions[
+@;   @lnm['sieve]{
+@;   }
+@; @;@parag{Sieve}
+@; @;@todo{?}
+@; @;@; The flat line at @math{L}=0 shows that half of all configurations suffer
+@; @;@; unacceptable overhead. As there are only 4 configurations in the lattice
+@; @;@; for @tt{sieve}, increasing @math{L} improves performance.
+@; @;
+@; @;@parag{Morse code}
+@; @;@todo{?}
+@; @;@; The steep lines show that a few configurations suffer modest overhead (below 2x),
+@; @;@; otherwise @tt{morse-code} performs well.
+@; @;@; Increasing @math{L} improves the worst cases.
+@; @;
+@; @;@parag{MBTA}
+@; @;@todo{?}
+@; @;@; These lines are also steep, but flatten briefly at 2x.
+@; @;@; This coincides with the performance of the fully-typed
+@; @;@; configuration.
+@; @;@; As one would expect, freedom to type additional modules adds configurations
+@; @;@; to the @deliverable{2} equivalence class.
+@; @;
+@; @;@parag{Zordoz}
+@; @;@todo{?}
+@; @;@; Plots here are similar to @tt{mbta}.
+@; @;@; There is a gap between the performance of the fully-typed
+@; @;@; configuration and the performance of the next-fastest lattice point.
+@; @;@; 
+@; @;@parag{Suffixtree}
+@; @;@todo{?}
+@; @;@; The wide horizontal areas are explained by the performance lattice in
+@; @;@; @figure-ref{fig:suffixtree}: configurations' running times are not evenly
+@; @;@; distributed but instead vary drastically when certain boundaries exist.
+@; @;@; Increasing @math{L} significantly improves the number of acceptable configuration
+@; @;@; at 10x and even 3x overhead.
+@; @;
+@; @;@parag{LNM}
+@; @;@todo{?}
+@; @;@; These results are ideal.
+@; @;@; Note the large y-intercept at @math{L}=0.
+@; @;@; This shows that very few configurations suffer any overhead.
+@; @;@; 
+@; @;@parag{KCFA}
+@; @;@todo{?}
+@; @;@; The most distinctive feature at @math{L}=0 is the flat portion between 1x
+@; @;@; and 6x. This characteristic remains at @math{L}=1, and overall performance
+@; @;@; is very good at @math{L}=2.
+@; @;@; 
+@; @;@parag{Snake}
+@; @;@todo{?}
+@; @;@; The slope at @math{L}=0 is very low.
+@; @;@; Allowing @math{L}=1 brings a noticeable improvement above the 5x mark,
+@; @;@; but the difference between @math{L}=1 and @math{L}=2 is small.
+@; @;@; 
+@; @;@parag{Tetris}
+@; @;@todo{?}
+@; @;@; Each @tt{tetris} plot is essentially a flat line.
+@; @;@; At @math{L}=0 roughly 1/3 of configurations lie below the line.
+@; @;@; This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
+@; @;@; when @math{L}=2.
+@; @;
+@; @;@parag{Synth}
+@; @;@todo{?}
+@; @;@; Each slope is very low.
+@; @;@; Furthermore, some configurations remain unusable even at @math{L}=2.
+@; @;@; These plots have few flat areas, which implies that overheads are spread
+@; @;@; evenly throughout possible boundaries in the program.
+@; @;
+@; @;@parag{Gregor}
+@; @;@todo{?}
+@; @;@; These steep curves are impressive given that @tt{gregor} has 13 modules.
+@; @;@; Increasing @math{L} brings consistent improvements.
+@; @;
+@; @;@parag{Quad}
+@; @;@todo{?}
+@; @;@; The @tt{quad} plots follow the same pattern as @tt{mbta} and @tt{zordoz}, despite being visually distinct.
+@; @;@; In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
+@; @;@; The high typed/untyped ratio is explained by small differences in the original author-supplied variants.
+@; ]

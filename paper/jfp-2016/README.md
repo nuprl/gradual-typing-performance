@@ -5,6 +5,7 @@ quarantine the refs. to "typed racket"
 run-time vs runtime vs run time
 typecheck vs type-check vs type check
 vary inputs, confirm the same lattice
+benchmark vs program
 
 
 ---
