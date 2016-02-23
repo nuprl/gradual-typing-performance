@@ -2,9 +2,6 @@
 
 ;; TODO
 ;; - typed racket 
-;; - unit tests
-;; - morsecode is not running
-;; - 
 
 (provide
 )
@@ -27,6 +24,9 @@
 
 (define TRACE-TMP ".trace.tmp")
 ;; Temporary file to use for search/replace
+
+(define *DIRECTORY?* (make-parameter #f))
+;; If #t, assume input is a directory (instead of a project name)
 
 (define *RKT-BIN* (make-parameter ""))
 ;; Location of Racket binaries
@@ -90,6 +90,11 @@
   (for/sum ([p+c (in-list (dyn-boundary-provided+count* b))])
     (cdr p+c)))
 
+;; Count all requires used by a module
+(define (to->total-count DMG to)
+  (for/sum ([b (in-list (to->dyn-boundary* DMG to))])
+    (dyn-boundary-count b)))
+
 ;; =============================================================================
 
 ;; UGH gotta be a better / more consitent way of doing this
@@ -139,7 +144,7 @@
           (printf "  (syntax-parse stx\n")
           (printf "   [(_ arg* ...)\n")
           (printf "    (syntax/loc stx (begin\n")
-          (printf "      (printf \"~a\\t~~a\\n\" (list arg* ...))\n" msg)
+          (printf "      (printf \"~a\\t~~a\\n\" '(arg* ...))\n" msg)
           (printf "      (~a arg* ...)))]\n" id/trace)
           (printf "   [id\n")
           (printf "    (syntax/loc stx (begin\n")
@@ -229,18 +234,37 @@
   (unless (system (format "~araco make ~a" (*RKT-BIN*) main-file))
     (raise-user-error 'trace "Failed to compile ~a" main-file))
   ;; -- run a subprocess, collect output
-  (define-values (stdout stdin pid stderr ping)
-    (apply values (process (format "~aracket ~a" (*RKT-BIN*) main-file))))
-  (for ([line (in-lines stdout)])
-    (cond
-     [(string-prefix? line TRACE-LOG-PREFIX)
-      (apply H++ (log->data line))]
-     [else
-      (void)]))
-  ;; -- close ports
-  (close-input-port stdout)
-  (close-output-port stdin)
-  (close-input-port stderr)
+  (define cmd (format "~aracket ~a" (*RKT-BIN*) main-file))
+  (define-values (in out pid err check-status)
+    (apply values
+      (parameterize ([current-directory dir]) (process cmd))))
+  (define num-lines (box 0))
+  (define (subprocess-read)
+    (for ([line (in-lines in)])
+      (set-box! num-lines (+ 1 (unbox num-lines)))
+      (cond
+       [(string-prefix? line TRACE-LOG-PREFIX)
+        (apply H++ (log->data line))]
+       [else
+        (void)])))
+  ;; --- do the output collection
+  (let loop ()
+    (case (check-status 'status)
+     [(running)
+      (debug "Subprocess running, reading output so far")
+      (subprocess-read)
+      (loop)]
+     [(done-ok)
+      (subprocess-read)
+      (debug "Subprocess finished cleanly. Produced ~a lines of output." (unbox num-lines))]
+     [(done-error)
+      (parameterize ([current-output-port (current-error-port)])
+        (for ([line (in-lines err)]) (displayln line)))
+      (raise-user-error 'trace "Subprocess '~a' exited with an error" cmd)]))
+  ;; -- close pipe ports
+  (close-input-port in)
+  (close-output-port out)
+  (close-input-port err)
   ;; -- immutable output
   (dyn-hash->dyn-boundary* H))
 
@@ -271,10 +295,11 @@
   (for ([to (in-list (dmg->module-names dmg))])
     (define b* (to->dyn-boundary* dmg to))
     (when (not (null? b*))
-      (printf "Requires for: ~a.rkt\n" to)
+      (printf "Requires for '~a.rkt'\n" to)
       (define indent "  - ")
       (for ([b (in-list b*)])
         (printf "  - ~a.rkt : ~a\n" (dyn-boundary-from b) (dyn-boundary-count b)))
+      (printf "Total: ~a\n" (to->total-count dmg to))
       (newline))))
 
 ;; (-> String Void)
@@ -294,14 +319,20 @@
    [("-q" "--quiet") "Run quietly" (*VERBOSE* #f)]
    [("-r" "--racket") r "Run quietly" (and (assert-rkt-bin r)
                                            (*RKT-BIN* (string-append r "/")))]
+   [("-d" "--directory") "Run from a specific directory, instead of by project name" (*DIRECTORY?* #t)]
    #:args (PROJECT-NAME)
-   (define DMG (project-name->dmg PROJECT-NAME))
+   (define DMG
+     (if (*DIRECTORY?*)
+       (directory->dmg (build-path (current-directory) PROJECT-NAME))
+       (project-name->dmg PROJECT-NAME)))
    (print-dmg DMG))
 )
 
 ;; =============================================================================
 
 (module+ test
+  (*VERBOSE* #f)
+
   (require
     rackunit
     (only-in racket/file file->lines))
@@ -377,10 +408,14 @@
       (dyn-boundary*-ref b* "YO" "LO")))
 
   ;; -- end-to-end
-  (let* ([_void (printf "[TEST] Building dynamic graph... \n")]
-         [DMG (directory->dmg (build-path (current-directory) "test" "sample_modulegraph_dir"))]
-         [B*  (dynamic-modulegraph-boundary* DMG)]
-         [_void+ (printf "[TEST] finished building dynamic graph\n")])
+  (define (check-dmg dir-name)
+    (printf "[TEST] Building dynamic graph for '~a'... \n" dir-name)
+    (define dmg (directory->dmg (build-path (current-directory) "test" dir-name)))
+    (printf "[TEST] finished building dynamic graph for '~a'\n" dir-name)
+    dmg)
+
+  #;(let* ([DMG (check-dmg "sample_modulegraph_dir")]
+         [B*  (dynamic-modulegraph-boundary* DMG)])
     (check-equal? (length B*) 4)
     (check-equal?
       (dyn-boundary*-ref/fail B* "main" "client")
@@ -395,4 +430,83 @@
       (dyn-boundary*-ref/fail B* "client" "constants")
       '((DATA . 400001) (PORT . 1)))
   )
+
+  #;(let* ([DMG (check-dmg "mini-morsecode")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    ;; -- 20 because the first 4 words in `base/frequency-small.rktd`
+    ;;    have 10 total characters & we use each of the words 2x
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "morse-code-strings" "morse-code-table")
+      '((char-table . 20)))
+    ;; -- 8 because we make 2 calls in each of 4 iterations in `main.rkt`
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "main" "morse-code-strings")
+      '((string->morse . 8)))
+    ;; -- all 0 except for string-levenshtein
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "main" "levenshtein")
+      '((levenshtein . 0) (list-levenshtein . 0) (list-levenshtein/eq . 0)
+        (list-levenshtein/equal . 0) (list-levenshtein/eqv . 0)
+        (list-levenshtein/predicate . 0) (string-levenshtein . 8)
+        (vector-levenshtein . 0) (vector-levenshtein/eq . 0)
+        (vector-levenshtein/equal . 0) (vector-levenshtein/eqv . 0)
+        (vector-levenshtein/predicate . 0)
+        (vector-levenshtein/predicate/get-scratch . 0))))
+
+  #;(let* ([DMG (check-dmg "mini-zombie")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    ;; -- 4 = 1 to get the world, 3 for each command in `zombie-hist-micro.rktd`
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "main" "zombie")
+      '((w0 . 1) (world-on-mouse . 0) (world-on-tick . 3)))
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "zombie" "image")
+      '((circle . 1) (empty-scene . 1) (image . 0) (image-impl . 0) (image? . 0) (place-image . 0) (struct:image . 0)))
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "zombie" "math")
+      '((abs . 90) (max . 18) (min . 9) (msqrt . 9) (sqr . 36))))
+
+  #;(let* ([DMG (check-dmg "mini-tetris")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    ;; -- elim.rkt is unused
+    (check-equal?
+      (to->total-count DMG "elim")
+      0)
+    ;; -- main does not use bset
+    (check-equal?
+      (for/sum ([id+c (in-list (dyn-boundary*-ref/fail B* "main" "bset"))])
+        (cdr id+c))
+      0)
+    ;; -- aux only uses 1 identifier
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "aux" "tetras")
+      '((build-tetra-blocks . 7) (tetra-change-color . 0) (tetra-move . 0) (tetra-overlaps-blocks? . 0) (tetra-rotate-ccw . 0) (tetra-rotate-cw . 0)))
+   )
+
+  #;(let* ([DMG (check-dmg "mini-mbta")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "run-t" "t-view")
+      '((manage% . 1)))
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "t-view" "t-graph")
+      '((read-t-graph . 1)))
+    (check-equal?
+      (to->total-count DMG "main")
+      9))
+
+  (let* ([DMG (check-dmg "mini-quadMB")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      (to->total-count DMG "hyphenate")
+      0)
+    (check-equal?
+      (to->total-count DMG "main")
+      5)
+    (check-equal?
+      (to->total-count DMG "quad-main")
+      381)
+    (check-equal?
+      (dyn-boundary*-ref/fail B* "ocm" "ocm-struct")
+      '(($ocm . 1) ($ocm-base . 1) ($ocm-entry->value . 1) ($ocm-finished . 5) ($ocm-matrix-proc . 1) ($ocm-min-entrys . 3) ($ocm-min-row-indices . 2) ($ocm-tentative . 2) ($ocm? . 0) (set-$ocm-base! . 0) (set-$ocm-entry->value! . 0) (set-$ocm-finished! . 1) (set-$ocm-matrix-proc! . 0) (set-$ocm-min-entrys! . 1) (set-$ocm-min-row-indices! . 1) (set-$ocm-tentative! . 1) (struct:$ocm . 0))))
 )
