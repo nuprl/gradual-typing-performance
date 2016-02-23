@@ -12,8 +12,6 @@
  new-suffix-tree
  node-find-child
  node-root?
- node-suffix-link
- set-node-suffix-link!
  node-position-at-end?
  node-add-leaf!
  node-up-splice-leaf!
