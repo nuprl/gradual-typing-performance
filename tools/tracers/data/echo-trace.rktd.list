@@ -1,8 +1,0 @@
-Results for '../data/echo-trace.rktd'
-=====================================
-  6 contracts generated
-  6 total checks
-* Boundary from 'server.rkt' to 'main.rkt' created 1 contracts (17%) and caused 1 checks (17%)
-* Boundary from 'constants.rkt' to 'server.rkt' created 2 contracts (33%) and caused 2 checks (33%)
-* Boundary from 'constants.rkt' to 'client.rkt' created 2 contracts (33%) and caused 2 checks (33%)
-* Boundary from 'client.rkt' to 'main.rkt' created 1 contracts (17%) and caused 1 checks (17%)

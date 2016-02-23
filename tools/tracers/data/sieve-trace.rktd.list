@@ -1,5 +1,0 @@
-Results for '../data/sieve-trace.rktd'
-======================================
-  8 contracts generated
-  504220800 total checks
-* Boundary from 'streams.rkt' to 'main.rkt' created 7 contracts (88%) and caused 504220800 checks (100%)
