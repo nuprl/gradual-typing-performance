@@ -534,26 +534,23 @@
             ([abs-path (in-list abs-path*)]
              [src-name (in-list src-name*)])
     (cons src-name
-          (filter (lambda (mod-name) (member mod-name src-name*))
-                  (absolute-path->imports abs-path)))))
+          (for/list : (Listof String)
+                    ([mod-abspath (in-list (absolute-path->imports abs-path))]
+                     #:when (member (strip-suffix mod-abspath) src-name*))
+            (strip-suffix mod-abspath)))))
 
-;; '((0 #<module-path-index:(racket/base)> #<module-path-index:(benchmark-util)> #<module-path-index:(racket/file)> #<module-path-index:("lcs.rkt")>))
-
-(: absolute-path->imports (-> Path-String (Listof String)))
+(: absolute-path->imports (-> Path-String (Listof Path)))
 (define (absolute-path->imports ps)
   (define p (if (path? ps) ps (string->path ps)))
   (define mc (cast (compile (get-module-code p)) Compiled-Module-Expression))
-  (for/fold : (Listof String)
-            ([acc : (Listof String) '()])
+  (for/fold : (Listof Path)
+            ([acc : (Listof Path) '()])
             ([mpi (in-list (apply append (module-compiled-imports mc)))])
     (if (module-path-index? mpi)
       (let-values (((name _2) (module-path-index-split mpi)))
-        (let ([name+ (if (string? name)
-                       (strip-suffix (strip-directory (string->path name)))
-                       #f)])
-          (if (string? name+)
-            (cons name+ acc)
-            acc)))
+        (if (string? name)
+          (cons (string->path name) acc)
+          acc))
       acc)))
 
 (define RX-REQUIRE #rx"require.*\"(.*)\\.rkt\"")
