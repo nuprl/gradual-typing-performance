@@ -56,55 +56,8 @@ Thus our framework is directly applicable to other sound gradual type systems.
 Let us re-articulate the salient points from our previous work:
 @itemlist[
 
-@section{Performance Lattice}
-
-The promise of macro-level gradual typing is that any subset of modules
- in an untyped program may be given types.
-Performance evaluation must therefore consider the space of all @emph{configurations}
- of a program that can be obtained by adding types to a subset of the program's modules.
-We describe this space as a static lattice representing all combinations of typed and
- untyped modules.
-This lattice-based approach to performance measurements was introduced in our
- preliminary evaluation of Typed Racket's object-oriented
- features@~cite[tfdffthf-ecoop-2015]; here we summarize the key points:
-@itemlist[
-  @item{
-    A (@emph{software system}) @emph{configuration} is a sequence of
-     @math{N} modules where each module is either typed or untyped.
-  }
-  @item{ @emph{Proposition:}
-    For a fixed sequence of @math{N} modules there are @math{2^N} possible
-     configurations.
-  }
-  @item{
-    Let @math{S} be the set of all configurations for @math{N} modules.
-    For @exact|{$c \in S$}| and @exact|{$i \in [0, N)$}|,
-     let @exact|{$c(i) = 1 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is typed
-     and
-     let @exact|{$c(i) = 0 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is untyped.
-  }
-
-  @item{
-    Define @exact|{$\leq\,\subseteq S \times S$}| as:
-     @exact|{$c_1 \leq c_2 \iff \forall i\,. (c_1(i) = 1) \Rightarrow c_2(i) = 1$}|
-  }
-
-  @item{ @emph{Proposition:}
-    @exact|{$(S, \leq)$}| is a complete lattice.
-    The fully untyped configuration is the
-     bottom element and the fully-typed configuration is the top
-  }
-
-  @item{
-    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_k\,\subset\,\leq$}
-     such that @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
-     and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
-    If @exact|{$c_1 \rightarrow_k c_2$}| we say that @exact{$c_2$} is reachable from
-     @exact{$c_1$} in at most @exact{$k$} @emph{type conversion steps}.
-  }
-]
-
-@item{Each module in a software system configuration is either typed or untyped.}
+@item{A (@italic{software system}) @italic{configuration} is a sequence of
+ @math{n} modules where each module is either typed or untyped.}
 
 @item{For a fixed sequence of @math{n} modules there are @math{2^n} possible
  configurations.}
@@ -127,7 +80,7 @@ We speak of a @italic{performance lattice} to describe a pair @exact|{$(S, \leq)
  generated from a sequence of modules.
 Note that a performance lattice does not actually contain performance numbers.
 It is a static artifact representing the possible ways of running the program.
-Actually testing the configurations and recording the time taken is next.
+Actually testing the configurations and recording the time taken is a second step.
 
 Our contribution is to exploit the lattice-oriented approach to benchmarking
  for a @emph{summative} evaluation.
@@ -186,102 +139,6 @@ Even if a configuration is not deliverable, it might be suitably fast to
  run the test suites and prototype designs.
 A software engineering team can
  use such a configuration for development purposes, but it may not
-<<<<<<< HEAD
- release it to clients.
-@;In practice, usable configurations may act as checkpoints for a team to ensure
-@; the product is working correctly before implementing performance optimizations.
-Using a second parameter to capture the meaning of "suitably fast",
- we define a notion of usable configurations.
-
-    @def[#:term @list{@usable[]}]{
-     A configuration in a performance
-      lattice is @usable[] if its performance is worse than an
-      @math{D}x slowdown but no worse than a @math{U}x slowdown compared to
-      the untyped configuration.
-    }
-
-On the other hand, the performance overhead of gradual typing may render
- some configurations too slow even for development purposes.
-These might be configurations where running the unit tests takes hours
- or days longer than normal.
-
-    @def[#:term "unacceptable"]{
-     A unacceptable configuration is neither @deliverable{} nor @usable[].
-    }
-
-Finally, if a software project is currently in an unacceptable
- configuration we ask how much work a team needs to invest to reach a
- deliverable or usable configuration.
-We propose as a coarse measure of "work" the number of modules that must be
- annotated with types before performance improves.
-Using this metric, configurations one module away from a usable configuration
- are recognized as nearly usable themselves.
-
-    @def[#:term @list{@step{}}]{
-     A configuration is @step[] if it is unacceptable and at most @math{k}
-      type conversion steps from a @deliverable{}
-      or a @usable[] configuration.
-    }
-
-@profile-point{sec:framework:example}
-@(define sample-data
-  (let* ([mean+std* '#((2 . 0) (1.5 . 0) (3.5 . 0) (1 . 0))]
-         [mean (lambda (i) (car (vector-ref mean+std* i)))])
-    (lambda (tag)
-      (case tag
-       [(c00) (mean 0)]
-       [(c01) (mean 1)]
-       [(c10) (mean 2)]
-       [(c11) (mean 3)]
-       [(all) mean+std*]
-       [else (raise-user-error 'sample-data "Invalid configuration '~a'. Use e.g. c00 for untyped." tag)]))))
-@(define (sample-overhead cfg)
-  (ceiling (/ (sample-data cfg) (sample-data 'c00))))
-
-The four notions of the typed/untyped ratio, @deliverable{},
- @usable[], and @step[] form the basis of our evaluation
- framework.
-As an example of these terms' use, suppose we have a project of
- two modules where the untyped configuration runs in @id[(sample-data 'c00)]
- seconds and the typed configuration runs in @id[(sample-data 'c11)] second.
-Furthermore, suppose the gradually typed configurations run in
-  @id[(sample-data 'c01)] and @id[(sample-data 'c10)] seconds.
-Using white squares to represent untyped modules and black squares for typed
- modules, we can visualize this scenario in a performance lattice with
- configurations' overhead (relative to the untyped configuration) as labels.
-
-@centered[@elem[
-  (parameterize ([*LATTICE-HSPACE* 30]
-                 [*LATTICE-VSPACE* 4])
-    (make-performance-lattice (sample-data 'all)))
-]]
-
-@(let ([tu-ratio (/ (sample-data 'c11) (sample-data 'c00))]
-       [t-str @id[(sample-overhead 'c11)]]
-       [g-overhead (inexact->exact (max (sample-overhead 'c10) (sample-overhead 'c01)))])
-  @elem{
-    In terms of our metrics, typed/untyped ratio is @id[tu-ratio],
-     indicating a performance improvement due to adding types.
-    The typed configuration is also
-      @deliverable[t-str]
-      because it runs within a @elem[t-str]x
-      slowdown relative to the untyped configuration.
-    Both gradually typed configurations are
-      @deliverable[@id[g-overhead]]
-      because they run within @id[(* g-overhead (sample-data 'c00))] seconds.
-    These configurations are also @step[t-str t-str t-str]
-     because each is one conversion step
-     from the fully-typed configuration.
-  })
-
-Practitioners curious about the feasibility of gradual typing should
- replace the parameters with concrete values tailored to their needs.
-If our experimental results in @Secref{sec:plots} show that a large number of
- configurations are deliverable under the actual parameters,
- then the same results may hold for other projects.
-Language implementors should work to make more configurations deliverable
- or diagnose the cause of the worst performance overhead.
-=======
  deliver it.
 In order to formulate this criteria
  properly, we introduce the following definition of usable configurations. 
@@ -314,7 +171,7 @@ In the context of macro-level gradual typing, one easy way
  conversion steps away from a @deliverable{N} or a @usable["N" "M"]
  configuration.}
 
-These four notions of the typed/untyped ration, @deliverable{N},
+These four notions of the typed/untyped ratio, @deliverable{N},
  @usable["N" "M"], and @step["L" "N" "M"] form the basis of our evaluation
  framework.
 The benefit of the parameterized metrics is that
@@ -322,4 +179,3 @@ The benefit of the parameterized metrics is that
  @math{L}, @math{N}, and @math{M}.
 
 
->>>>>>> 698f2e7... [jfp] story, first pass
