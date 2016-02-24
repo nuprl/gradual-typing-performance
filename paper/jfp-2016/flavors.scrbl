@@ -192,7 +192,7 @@ This type error is guaranteed to occur by Typed Racket's soundness: run-time
 Unfortunately, these runtime checks can have a large performance cost.
 For small or simple values the cost is relatively low, though frequent checks
  will add up to a large slowdown.
-More sophisticated values entail larger costs.
+More sophisticated values entail larger costs; in theory, there is no limit
 For instance, untyped lists require a linear-time check and untyped functions
  must be proxied to guarantee that each call returns well-typed output.
 Conversely, if a mutable value flows from typed to untyped parts of the program,
@@ -200,7 +200,8 @@ Conversely, if a mutable value flows from typed to untyped parts of the program,
  value's type.
 One would hope that the cost of dynamic checks is relatively small in practice,
  but gradually typed languages have reported slowdowns ranging from
- 2x to 70x @todo{cite}.
+ 2x to 70x @todo{cite} and there has been no comprehensive performance
+ evaluation on realistic programs.
 
 
 @subsection{The Case for Soundness}
@@ -272,5 +273,5 @@ Typed Racket is the only macro system we know of, which is somewhat surprising
 The only requirements for interaction are type annotations for untyped components
  and a reliable compiler from types to coercions.
 On the other hand, Typed Racket is the only implementation of sound gradual
- typing with a large userbase.
+ typing that is more than a research language.
 
