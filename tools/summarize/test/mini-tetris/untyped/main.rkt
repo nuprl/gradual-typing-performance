@@ -11,7 +11,6 @@
       [`(on-key ,ke) (world-key-move w ke)]
       [`(on-tick) (next-world w)]
       [`(stop-when)
-       (displayln "STOPWHEN\n")
        (λ (w) (blocks-overflow? (world-blocks w)))
        w]))
   (void))
