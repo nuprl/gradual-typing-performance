@@ -29,30 +29,3 @@
 
 %% Make sure hats are (uniformly) high enough over variables.
 \newcommand{\myhat}[1]{\hat{\raisebox{0pt}[1.3ex]{$#1$}}}
-
-\newcommand{\ctc}[1]{\llparenthesis #1 \rrparenthesis}
-
-%% TODO handle/render benchmarks' 'ext-libs'
-\newcommand{\benchmark}[7]{\vbox{
-  {\noindent\normalfont\bfseries #1}
-
-  \vspace{1ex}{\small
-  \begin{minipage}{0.5\textwidth}\flushleft
-    \makebox[1.1cm][l]{\emph{Origin}}   : ~#3\\
-    \makebox[1.1cm][l]{\emph{Purpose}}  : ~#4
-  \end{minipage}\begin{minipage}{0.5\textwidth}\flushleft
-    \makebox[1.1cm][l]{\emph{Author}}   : ~#2\\
-    \makebox[1.1cm][l]{\emph{Depends}}  : ~#7
-    %#6\hspace{1cm}
-  \end{minipage}}
-
-  \vspace{1ex}
-  {\noindent #5}
-
-  \hfill{}\rule{0.5\textwidth}{0.5pt}\hfill{}
-  \vspace{2ex}
-
-}}
-\newcommand{\twoline}[2]{\parbox[s]{1.8cm}{\flushright\hfill #1\newline#2}}
-%% --- end texstyle.tex
-%% -----------------------------------------------------------------------------
