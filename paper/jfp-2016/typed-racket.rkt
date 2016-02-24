@@ -15,7 +15,7 @@
 
   NUM-BENCHMARKS
   ;; Natural
-  ;; Not really a constant -- length of `benchmark-name*`
+  ;; Not really a constant -- depends on `benchmark-name*`
 
   ;; ---------------------------------------------------------------------------
 
@@ -23,10 +23,6 @@
   ;; (-> String Any)
   ;; Use to format benchmark names.
   ;; Asserts that its argument is a correctly-spelled benchmark name.
-
-  benchmark-name*
-  ;; (Listof Symbol)
-  ;; Names of all benchmarks used in the paper
 
   data-lattice
   ;; (-> Benchmark-Name Version-String Any)
@@ -46,14 +42,14 @@
   ;;     Benchmark)
 
   benchmark-descriptions
-  ;; (-> (Listof Benchmark) Any)
+  ;; (-> Benchmark * Any)
   ;; Render a list of Benchmark structures.
   ;; Use the `benchmark` constructor to make a `Benchmark`
 
-  ;lnm-descriptions
-  ;; (-> (Listof Lnm) Any)
+  lnm-descriptions
+  ;; (-> Lnm * Any)
 
-  ;(rename-out [make-lnm lnm])
+  (rename-out [make-lnm lnm])
   ;; (->* [Symbol] [] #:rest (Listof String) Lnm)
 
   benchmark-characteristics
@@ -61,7 +57,11 @@
   ;; 
 
   lnm-plots
-  ;; (-> Any)
+  ;; (-> String * Any)
+
+  lnm-summary
+  ;; (-> String * Any)
+  ;; Create a summary table for all versions of Racket
 )
 
 (require
@@ -70,6 +70,7 @@
  "scripts/modulegraph.rkt"
  racket/match
  (only-in racket/file file->value)
+ (only-in "common.rkt" parag)
  scribble/core
  scribble/base
  version/utils
@@ -78,24 +79,31 @@
 ;; -----------------------------------------------------------------------------
 ;; -- Organizing the benchmarks
 
+;; TODO precompute modulegraphs?
+
 (define benchmark-name* '(
+  acquire
   forth
-  fsm
+  (fsm fsm fsmoo)
   gregor
   kcfa
   lnm
   mbta
   morsecode
-  quad
+  (quad quadBG quadMB)
   sieve
   snake
   suffixtree
   synth
   tetris
   zombie
-  zordoz
+  (zordoz zordoz.6.2 zordoz.6.3)
 ))
-(define NUM-BENCHMARKS (length benchmark-name*))
+(define NUM-BENCHMARKS
+  (for/sum ([name (in-list benchmark-name*)])
+    (if (list? name)
+      (length (cdr name))
+      1)))
 
 (define MAX-OVERHEAD 20)
 (define NUM-SAMPLES 120)
@@ -105,7 +113,11 @@
 ;; -----------------------------------------------------------------------------
 
 (define (bm name)
-  (unless (memq (string->symbol name) benchmark-name*)
+  (define name-sym (string->symbol name))
+  (unless (for/or ([b (in-list benchmark-name*)])
+            (if (list? b)
+              (memq name-sym b)
+              (eq? name-sym b)))
     (unknown-benchmark-error name))
   (tt name))
 
@@ -132,7 +144,7 @@
 
 ;; -----------------------------------------------------------------------------
 
-(struct benchmark (name author num-modules num-adaptor origin purpose lib* description))
+(struct benchmark (name author num-adaptor origin purpose lib* description))
 (define (make-benchmark #:name name
                         #:author author
                         #:num-adaptor num-adaptor
@@ -140,13 +152,11 @@
                         #:purpose purpose
                         #:external-libraries [lib* #f]
                         description)
-  ;(define MG (project-name->modulegraph name))
-  (define num-modules 0);(modulegraph->num-modules MG))
-  (benchmark name author num-modules num-adaptor origin purpose lib* description))
+  (benchmark name author num-adaptor origin purpose lib* description))
 
 (define (render-benchmark b)
   (match-define
-    (benchmark name author num-modules num-adaptor origin purpose lib* description)
+    (benchmark name author num-adaptor origin purpose lib* description)
     b)
   (paragraph plain
    (list
@@ -165,9 +175,14 @@
        '())
      (list description)))))
 
-(define (benchmark<? b1 b2)
-  (< (benchmark-num-modules b1)
-     (benchmark-num-modules b2)))
+;; (-> Symbol Natural)
+(define (benchmark-num-modules name)
+  ;; TODO implement
+  0)
+
+(define (benchmark<? name1 name2)
+  (< (benchmark-num-modules name1)
+     (benchmark-num-modules name2)))
 
 (define (missing-benchmark-error name*)
   (raise-user-error 'benchmark
@@ -177,9 +192,22 @@
   (raise-user-error 'benchmark
     "Got descriptions for unknown benchmarks '~a'. Register them at the top of 'typed-racket.rkt'" name*))
 
-(define (check-missing-benchmarks b*)
-  (define name* (map benchmark-name b*))
-  (let loop ([expect* (sort benchmark-name* symbol<?)]
+
+;; If exact?, use the specific names and not the 'umbrella' benchmark names.
+;; (-> Boolean (Listof Symbol))
+(define (flatten-benchmark-name* exact?)
+  (for/fold ([acc '()])
+            ([name (in-list benchmark-name*)])
+    (if (list? name)
+      (if exact?
+        (append (cdr name) acc)
+        (cons (car name) acc))
+      (cons name acc))))
+
+;; Like, zordoz.6.2 and zordoz.6.3 instead of zordoz
+;; (-> (Listof Symbol) Void)
+(define (check-missing-benchmarks name* #:exact? [exact? #f])
+  (let loop ([expect* (sort (flatten-benchmark-name* exact?) symbol<?)]
              [given*  (sort name* symbol<?)])
     (cond
      [(null? expect*)
@@ -199,13 +227,10 @@
        [else
         (unknown-benchmark-error given)])])))
 
+;; (-> Benchmark * Any)
 (define (benchmark-descriptions . b*)
-  (check-missing-benchmarks b*)
-  (map render-benchmark (sort b* benchmark<?)))
-
-;;; TODO need to do some work abstracting
-;(define (lnm-descriptions . l*)
-;  (map render-lnm-description (sort l* symbol<? #:key 
+  (check-missing-benchmarks (map benchmark-name b*))
+  (map render-benchmark (sort b* benchmark<? #:key benchmark-name)))
 
 (define (benchmark-characteristics)
   (elem "TODO"))
@@ -216,7 +241,23 @@
   ;(define other-loc (modulegraph->other-loc MG))
   ;(define num-modules (modulegraph->num-modules MG))
 
-(define (lnm-plots)
+;; -----------------------------------------------------------------------------
+
+(struct lnm (name description))
+(define (make-lnm name . descr*)
+  (lnm name (apply elem descr*)))
+
+;; (-> Lnm * Any)
+(define (lnm-descriptions . l*)
+  (check-missing-benchmarks (map lnm-name l*) #:exact? #t)
+  (map render-lnm-description (sort l* benchmark<? #:key lnm-name)))
+
+(define (render-lnm-description l)
+  (elem
+    (parag (symbol->string (lnm-name l)))
+    (elem (lnm-description l))))
+
+(define (lnm-plots . version*)
   ;; Map over benchmark names,
   ;; Sort & make figures of with 6 plots each or whatever
   (elem "TODO"))
@@ -242,3 +283,7 @@
 ;                  ("quad"       ,QUAD-DATA))])
 ;     (data->pict data #:tag "2"))
 ;]
+
+(define (lnm-summary . version*)
+  (elem "TODO"))
+
