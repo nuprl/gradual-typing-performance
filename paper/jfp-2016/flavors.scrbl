@@ -28,8 +28,8 @@ Here, as in the introduction, we prefer to say ``sound gradual typing''
 @; Dynamic ~ 1989
 Work on gradual typing can be traced back to the type @tt{Dynamic} proposed
  for simply-typed and polymorphic languages @todo{abadi + mauny}.
-Values of type @tt{Dynamic} have an unknown compile-time type, but flow into a
- program at runtime---perhaps by reading a file---with an explicit type tag.
+Values of type @tt{Dynamic}  flow into a
+ program at runtime---perhaps by reading from an input port---with an explicit type tag.
 To use a @tt{Dynamic} value, one must dispatch on the value of its tag.
 Protected by a suitable guard, the untrusted value is safe to use in a typed
  program.
@@ -115,10 +115,11 @@ Emitting code regardless of known type errors is a design choice made by
  type-unsoundess.
 Types present in source code of optionally typed languages are
  not enforced at runtime.
+This is a problem even in the absence of compile-time errors.
 Untyped code is free to call @racket[norm] or
  any other typed function with nonsense arguments.
-At runtime, these calls might trigger a dynamic error, but even that is not guaranteed.
-Illegal calls can also ``succeed'' silently and cause the program to produce
+At runtime, these calls might trigger a dynamic error, but
+ illegal calls can also ``succeed'' silently and cause the program to produce
  incorrect results or diverge.
 
 In practice unit testing should reveal dynamic type errors, but the fact remains
@@ -126,7 +127,8 @@ In practice unit testing should reveal dynamic type errors, but the fact remains
  annotations for more than protection from mis-spellings or simple logical errors.
 As a corollary, type-based optimizations are unsafe because they rely
  on information that may not be valid at runtime. @; memory error
-On the other hand, erased types have zero run-time overhead.
+But you get what you pay for, and optional types are ``free'': they impose
+ zero run-time cost on a program.
 
 @; Should TypeScript optimize with types? [devs say no]
 @;   https://github.com/Microsoft/TypeScript/issues/1151
@@ -140,8 +142,8 @@ On the other hand, erased types have zero run-time overhead.
 
 Pluggable type systems are closely related to optional types, but
  require that type annotations have no impact on a program's dynamic behavior.
-Type checking is completely independent of the underlying language runtime and
- functions only as a static analysis that rejects certain programs.
+Type checking is completely independent of the runtime semantics and
+ serves only as a static analysis that rejects certain ill-formed programs.
 This design makes writing a new type system for an existing language
  straightforward.
 
@@ -167,8 +169,7 @@ The enforcement is what separates gradual types from optional types,
 In contrast, a gradual type system compiles types to run-time assertions
  that preserve the compile-time semantics of typed terms.
 When two typed parts of a program interact, the runtime assertions
- are skpped.
-But the boundary between typed and untyped code is always guarded.
+ are skipped, but the boundary between typed and untyped code is always guarded.
 
 @figure["fig:tr-example" "Typed and untyped Racket code"
 @exact|{\input{fig-tr-example}}|
@@ -177,9 +178,9 @@ But the boundary between typed and untyped code is always guarded.
 In short, a gradual type system includes both static and dynamic components.
 Converting the typed program from @Figure-ref{fig:ts-example} into Typed Racket
  gives the code on the left side of @Figure-ref{fig:tr-example}.
-If the call to @racket[norm] was part of the typed module, the program would
+If a typed module were to call @racket[(norm 3)], the program would
  fail to compile due to a static type error.
-When the call is in an untyped module, as we have written it on the right
+When an ill-typed call is in an untyped module, as we have written it on the right
  half of @Figure-ref{fig:tr-example}, compilation
  succeeds and running the program raises an exception
  at the call site for @racket[norm] detailing the type error.
@@ -254,7 +255,12 @@ Reason being, there are two schools of thought regarding the granularity at
  program be typed or untyped.
 As @Figure-ref{fig:ts-example} demonstrates, class fields, function parameters,
  and function return types can be annotated or left untyped.
-This gives enormous freedom when adding types to a program.
+This gives enormous freedom when adding types to a program, but also
+ challenges the language designer.
+Developing a sound type system that guards against untyped components in
+ the correct locations is very difficult @todo{cite gradualizer}, even more
+ so when the type system must accomodate dynamic features specific to an
+ untyped language @todo{cite sam?}.
 Nearly all the languages mentioned above are examples of micro gradual typing
  @todo{cite}.
 
@@ -263,5 +269,8 @@ In contrast, @emph{macro} gradual typing @todo{th-f} requires the developer
 Typed Racket is the only macro system we know of, which is somewhat surprising
  because macro gradual typing simplifies the implementation of the typechecker
  and leads to fewer boundaries between typed and untyped code.
+The only requirements for interaction are type annotations for untyped components
+ and a reliable compiler from types to coercions.
+On the other hand, Typed Racket is the only implementation of sound gradual
+ typing with a large userbase.
 
-@; More to say?
