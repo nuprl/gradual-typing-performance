@@ -580,4 +580,42 @@
     (check-equal?
       (dyn-boundary*-ref/fail B* "ocm" "ocm-struct")
       '(($ocm . 1) ($ocm-base . 1) ($ocm-entry->value . 1) ($ocm-finished . 5) ($ocm-matrix-proc . 1) ($ocm-min-entrys . 3) ($ocm-min-row-indices . 2) ($ocm-tentative . 2) ($ocm? . 0) (set-$ocm-base! . 0) (set-$ocm-entry->value! . 0) (set-$ocm-finished! . 1) (set-$ocm-matrix-proc! . 0) (set-$ocm-min-entrys! . 1) (set-$ocm-min-row-indices! . 1) (set-$ocm-tentative! . 1) (struct:$ocm . 0))))
+
+  (let* ([DMG (check-dmg "data-structure")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      B*
+      '(("main" "x" ((x . 3)))))) ;; TODO should be 6
+
+  (let* ([DMG (check-dmg "id-rename")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      B*
+      '(("main" "friend" ((x . 3)))))) ;; TODO should be 5
+
+  (let* ([DMG (check-dmg "macro-intro")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      B*
+      '(("main" "x" ((x . 3) (x2 . 1)))))) ;; TODO should be 5 uses of x
+
+  (let* ([DMG (check-dmg "match-expander")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      B*
+      '(("main" "struct-def" ((SAMPLE-FOO . 1) (foo . 1) (foo-x . 0) (foo-y . 0) (foo? . 0) (struct:foo . 0))))))
+
+  (let* ([DMG (check-dmg "path-overlap")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      B*
+      '(("main" "lib" ((lib-fun . 1) (lib-val . 1))))))
+
+  (let* ([DMG (check-dmg "require-transitive")]
+         [B* (dynamic-modulegraph-boundary* DMG)])
+    (check-equal?
+      B*
+      '(("main" "middleman" ((x . 11)))
+        ("middleman" "endpoint" ((x . 11)))))) ;; TODO middle/end should be 0 or something
+
 )
