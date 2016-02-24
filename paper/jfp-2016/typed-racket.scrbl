@@ -673,7 +673,9 @@ It is only when all the modules are typed that performance becomes acceptable
 
 @; -----------------------------------------------------------------------------
 @subsection{L-N/M Plots}
-@(lnm-plots "6.2" "6.3" "6.4.0.5")
+@figure["fig:lnm" "L-N/M plots"
+  @(lnm-plots "6.2" "6.3" "6.4.0.5")
+]
 
 The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figure-ref}
  summarize the results from exhaustively exploring the performance lattices of
@@ -838,13 +840,16 @@ In @todo{secref} we explain the changes between different versions of Racket
 
 
 @; -----------------------------------------------------------------------------
-@subsection{So Much Data}
-
-@todo{Motivational text}
+@subsection{Summary Tables}
+@; Does this need a subsection?
 
 @figure*["fig:lnm-summary" "Summary Statistics"
   @(lnm-summary "6.2" "6.3" "6.4.0.5")
 ]
+
+The table in @Figure-ref{fig:lnm-summary} gives a second perspective on our
+ datasets, giving a typed/untyped ratio, mean, max, and @usable["N" "M"]
+ percentages for each tested version of Racket.
 
 The typed/untyped ratio is the slowdown or speedup of fully typed code
  over untyped code.
@@ -864,5 +869,3 @@ Average overheads range from @todo{min} to @todo{max}.
 The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
 In parentheses, we express these counts as a percentage of all configurations
  for the benchmark.
-
-@todo{Each benchmark gets 3 columns for the 3 versions of Racket.}
