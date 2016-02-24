@@ -355,6 +355,7 @@
   (define title (format "ModuleGraph for ~a:" (dmg->project-name dmg)))
   (displayln title)
   (displayln (make-string (string-length title) #\=))
+  (displayln "(Counting uses of _statically-apparent_ required identifiers)\n")
   (newline)
   ;; For each module, print info about its requires
   (for ([to (in-list (dmg->module-names dmg))])
