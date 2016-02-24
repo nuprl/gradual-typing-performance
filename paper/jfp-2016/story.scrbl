@@ -65,8 +65,8 @@ This low payoff is underscored by the opportunity cost of migrating existing
 
 Instead of requiring a full conversion, gradual typing makes it possible
  to typecheck only core or mission-critical parts of an application.
-The converted modules fit into the software system exactly as before,
- but now strengthened with static type checking and dynamic enforcement of type
+The converted modules fit into the software system exactly as before
+ and are now strengthened with static type checking and dynamic enforcement of type
  signatures.
 In short, we gain increased protection from bugs in important parts of the
  codebase and leave the rest alone---without compomising the safety of
@@ -75,7 +75,7 @@ In short, we gain increased protection from bugs in important parts of the
 Other components of a system may be converted when, if ever, doing so becomes expedient.
 Imagine, for example, that a bug is traced to an untyped module.
 The first step in fixing the bug is understanding how that untyped module
- works, typically by reading the code, looking at test cases, and asking other
+ works, typically by reading the code, looking at test cases, and consulting other
  developers.
 Thus a side effect of debugging untyped code is recovering its type information.
 In a gradual type system, the developer can leave these types in the code
@@ -92,17 +92,17 @@ So too will new typed components, and if the type system grows to add
  forcing a rewrite of neighboring components.
 All this is to say that gradual typing is not about making it easy to flip
  a switch from untyped to typed, but rather to turn the decision of whether
- to switch a local choice instead of a global one.
+ to switch a realistic local choice instead of an infeasible global one.
 
 
 @subsection{Beyond Typed Racket}
 Gradual typing, in our mind, is not just about mixing typed and untyped code.
 The deeper question is about language interoperability, especially between
  languages that offer different correctness guarantees.
-Typed Racket is just one instance, where the type system's guarantees
- are at odds with the freedom of the untyped programming language.
-A similar problem concerns typed languages interaction with their untyped
- runtime system, or any interaction between languages through an FFI.
+Typed Racket is just one instance, where the type system
+ is at odds with the freedom of the untyped programming language.
+A similar problem concerns typed languages' interaction with their untyped
+ runtime system, or any communication through an FFI.
 
 How can we ensure safety when data flows across a boundary?
 To date, the solution has been ``by assumption'': we assert that the boundary is correct.
@@ -120,19 +120,25 @@ Thus we think of gradual typing as one motivating example for research on
 The question is how we can enforce and streamline the conditions necessary
  for correctness.
 Once we do find successful techniques, we expect to apply them in other
- multi-language systems.
+ multi-language systems; in particular, between specialized and general-purpose
+ type systems.
 
 As a concrete example, the verification community is currently trying to
  bring proof assistants into common use.
-This is happening gradually, as high-profile software like C compilers,
- device drivers, OS kernels, and even a web browser shim are implemented in Coq.
+This is happening gradually in the manner we outlined above.
+High-profile software like C compilers,
+ device drivers, OS kernels, and even a web browser shim have been implemented
+ in Coq because they stand to benefit the most from formal verification.
 Each conversion requires tremendous effort, so despite these successes we
  may never reach the point where Coq is the @emph{lingua franca} for verified
  software.
 Therefore we need safe interoperability between verified software and the existing
  code that lives around it.
+Even typed code, written in OCaml or Haskell for example, is not safe to
+ interact with dependently typed code.
 Until now, interactions have been dealt with case-by-case, but we hope for
- a unified theory and implementation.
+ a unified theory and implementation and consider our work on Typed Racket
+ a practical first step.
 
 @; Snarky aside: GT self-propogating
 @; math library etc are forceful models
@@ -159,7 +165,7 @@ The program consists of four modules:
 All told, there are @exact|{$2^4$}| ways of choosing a subset of these four
  modules to type.
 To ground our discussion we focus on the configuration
- where only @tt{population} is typed; specifically the fragments of
+ where only @tt{population} is typed; specifically, consider the fragments of
  @tt{main} and @tt{population} shown in @Figure-ref{fig:fsm-example}.
 
 @figure["fig:fsm-example" "Example typed/untyped interaction"
@@ -243,6 +249,6 @@ If, however, we perservere and add types to every module in the program,
  the running time improves to @todo{85} milliseconds.
 This net improvement is due to Typed Racket's optimizer, which specializes
  arithmetic and vector operations in typed code.
-Without dynamic checks to shadow these optimizations, the program makes
- Typed Racket look very good.
+Without dynamic checks to shadow these optimizations, the program reflects well
+ on Typed Racket.
 

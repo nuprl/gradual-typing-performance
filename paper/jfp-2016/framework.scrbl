@@ -57,9 +57,7 @@ Let us re-articulate the salient points from our previous work:
 @itemlist[
 
 @item{A (@italic{software system}) @italic{configuration} is a sequence of
- @math{n} modules.}
-
-@item{Each module in a software system configuration is either typed or untyped.}
+ @math{n} modules where each module is either typed or untyped.}
 
 @item{For a fixed sequence of @math{n} modules there are @math{2^n} possible
  configurations.}
@@ -82,7 +80,7 @@ We speak of a @italic{performance lattice} to describe a pair @exact|{$(S, \leq)
  generated from a sequence of modules.
 Note that a performance lattice does not actually contain performance numbers.
 It is a static artifact representing the possible ways of running the program.
-Actually testing the configurations and recording the time taken is next.
+Actually testing the configurations and recording the time taken is a second step.
 
 Our contribution is to exploit the lattice-oriented approach to benchmarking
  for a @emph{summative} evaluation.
@@ -173,7 +171,7 @@ In the context of macro-level gradual typing, one easy way
  conversion steps away from a @deliverable{N} or a @usable["N" "M"]
  configuration.}
 
-These four notions of the typed/untyped ration, @deliverable{N},
+These four notions of the typed/untyped ratio, @deliverable{N},
  @usable["N" "M"], and @step["L" "N" "M"] form the basis of our evaluation
  framework.
 The benefit of the parameterized metrics is that
