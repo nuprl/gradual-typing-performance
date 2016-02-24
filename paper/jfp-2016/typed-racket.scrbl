@@ -12,8 +12,8 @@ For our evaluation of Typed Racket, we use a suite of
  @id[NUM-BENCHMARKS] programs
  and generate timings over the whole performance lattice for each.
 As lattices for projects with more than 6 modules are too large to analyze at
- a glance, we present our results in terms of the proportion of
- @step["L" "N" "M"] configurations.
+ a glance (or fit within 8 inch margins), we present our results in terms of
+ the proportion of @step["L" "N" "M"] configurations.
 
 
 @; -----------------------------------------------------------------------------
@@ -261,6 +261,18 @@ In most cases our documented input size is a compromise between having an
 )
 
 @(benchmark
+  #:name 'acquire
+  #:author "Matthias Felleisen"
+  #:num-adaptor 2
+  #:origin @hyperlink["https://github.com/mfelleisen/Acquire"]{Educational}
+  #:purpose "Board Game"
+
+  @elem{
+    You know it
+  }
+)
+
+@(benchmark
   #:name 'fsm
   #:author "Matthias Felleisen"
   #:num-adaptor 1
@@ -326,13 +338,12 @@ In most cases our documented input size is a compromise between having an
 @; -----------------------------------------------------------------------------
 @subsection{Benchmark Characteristics}
 
-The table in @figure-ref{fig:bm} lists and summarizes our @id[NUM-BENCHMARKS]
- benchmark programs.
+The table in @figure-ref{fig:bm} lists and summarizes our benchmark programs.
 For each, we give an approximate measure of the program's size and
  a diagram of its module structure.
 
 Size is measured by the number of modules and lines of code (LOC) in a program.
-Crucially, the number of modules also determines the number of gradually-typed
+The number of modules also determines the number of gradually-typed
  configurations to be run when testing the benchmark, as a program with @math{n} modules
  can be gradually-typed in @exact{$2^n$} possible configurations.
 Lines of code is less important for evaluating macro-level gradual typing,
@@ -340,6 +351,7 @@ Lines of code is less important for evaluating macro-level gradual typing,
 Moreover, the Type Annotations LOC numbers are an upper bound on the annotations required
  at any stage of gradual typing because each typed module in our experiment
  fully annotates its import statements.
+In reality, imports from other typed modules are not annotated.
 
 The column labeled ``Other LOC'' measures the additional infrastructure required
  to run each project for all typed-untyped configurations.
@@ -384,8 +396,8 @@ We dedicated 29 of the machine's cores to running our experiment;
 
 Timing information for a single configuration was obtained by compiling the
  code ahead of time and then running the configuration's main module repeatedly.
-Each run took place on a new instance of the Racket VM.@note{The exact command
- we used was @tt{racket main}}.
+Each run took place on a new instance of the Racket VM with the JIT compiler
+ enabled.@note{The exact command we used was @tt{racket main}}.
 After discarding one preliminary run, we collected timings
  for 10 runs of the configuration.
 If these 10 timings were not normally distributed, we ran an additional 20
@@ -419,24 +431,26 @@ We further assume by the law of large numbers that our sample mean after
     @;       Civilibus, Moralibus & Oeconomicis,
     @;       1713, Chapter 4, (Translated into English by Oscar Sheynin)
 Frankly none of these assumptions are obviously valid, but we believe the
- relative differences we observed between configurations in a lattice are correct.
+ relative differences we observed between configurations in a lattice are correct,
+ especially since we have observed similar differences on other machines @todo{cite popl}.
 
 Running even 30 iterations, however, is prohibitive given the size of our
  experiment.
 In total, we measured @todo{total} configurations on three versions of Racket.
 To finish the experiment in a timely manner, we applied the Anderson-Darling
- test @todo{cite} after taking 10 measurements with a critical value experimentally
+ test @todo{cite} after taking 10 measurements with a critical value
    @; http://www.hep.caltech.edu/~fcp/statistics/hypothesisTest/PoissonConsistency/AndersonDarling1954.pdf
- shown by Stephens @todo{cite} to give a @math{p} value of @math{1%}.
+ from Stephens @todo{cite}.
    @; http://www.math.utah.edu/~morris/Courses/6010/p1/writeup/ks.pdf
 The judgment we made was about the likelihood of seeing a particular sequence
  of 10 runtimes assuming the data were from a normal distribution.
 If the odds were less than @math{1%}, we ran an additional 20 iterations.
-This led us to skip @todo{total} runs in total and led to no apparent
- differences in the overall timings.
+This led us to skip @todo{total} runs in total and led to no statistically
+ significant differences in benchmarks that we tested exhaustively.
+ @todo{which exhaustive?}
 
 For readers hoping to reproduce our setup, we now summarize the key points from
- Stephens @todo{cite}.
+ Stephens @todo{cite} regarding the Anderson-Darling test.
 Our underlying distribution @math{F} is the distribution of runtimes obtained
  for one configuration run repeatedly on a single core.
 We assume that @math{F} is normally distributed with an unknown mean
@@ -444,10 +458,10 @@ We assume that @math{F} is normally distributed with an unknown mean
 Let @exact|{$\vec{x}$}| denote our vector of 10 runtimes, sorted in increasing
  order.
 We approximate the true mean @exact|{$\mu$}| and variance @exact|{$\sigma^2$}|
- of @math{F} by the statistics:
+ of @math{F} by the sample mean and variance:
 
    @exact|{$$
-     \hat{\mu} = \Sigma_{i=0}^{9} \vec{x}_i / 10
+     \hat{\mathstrut\mu} = \Sigma_{i=0}^{9} \vec{x}_i / 10
      \hspace{2cm}
      \hat{\sigma}^2 = \Sigma_{i=0}^{9} (\mu_i - \hat{\mu})^2 / 9
    $$}|
@@ -492,9 +506,8 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 
 This section presents the results of our experiment in terms of the
  measurements described in @Secref{sec:measurements}.
-In the first subsection we explore full performance lattices and show
- the limitations of using a performance lattice to critically assess performance.
-The second subsection presents our full results graphically.
+For two small benchmarks we explore full performance lattices
+ but our main results are the plots in @todo{figure-ref}.
 
 
 @; -----------------------------------------------------------------------------
@@ -506,8 +519,8 @@ The second subsection presents our full results graphically.
 The modules in @bm{fsm} were named @tt{automata}, @tt{main},
  @tt{population}, and @tt{utilities};
  the above-noted slow configuration assigned types only in @tt{population}.
-Henceforth, we will represent configurations of @bm{fsm} as 4-bit strings
- corresponding to the module names in alphabetic order.
+Henceforth, we will represent configurations of @bm{fsm} as 4-bit binary
+ strings corresponding to the module names in alphabetic order.
 Using this notation, the configuration where only @tt{population} typed
  has the bitstring @tt{0010}.
 
@@ -516,31 +529,24 @@ Using this notation, the configuration where only @tt{population} typed
   @todo{(data-lattice 'fsm "6.2")}
 ]
 
-@; @Figure-ref{fig:suffixtree} shows the performance lattice annotated with the
-@;   timing measurements. The lattice displays each of the modules in the
-@;   program with a shape.  A filled black shape means the module is typed, an
-@;   open shape means the module is untyped. The shapes are ordered from left
-@;   to right and correspond to the modules of @tt{suffixtree} in alphabetical
-@;   order: @tt{data}, @tt{label}, @tt{lcs}, @tt{main}, @tt{structs}, and
-@;   @tt{ukkonen}.
-@; 
-
 @Figure-ref{fig:fsm-lattice-6.2} is the full performance lattice for @bm{fsm}
  run on Racket version 6.2.
-Each configuration with a sequence of colored shapes, corresponding to its
- bitstring.
-A black shape represents a typed module and a white shape is an untyped one.
-In terms of bitstrings, the shape at index @math{i} from the left is colored
- iff the bit at index @math{i} from the left is 1.
+Each configuration is represented by a sequence of colored shapes,
+ corresponding to its bitstring.
+A black shape represents a typed module and a white shape is an untyped one;
+ the shape at index @math{i} from the left is colored
+ iff the bit at index @math{i} from the left is 1,
+ meaning the @tt{automata} module is typed.
 Nodes are labeled with the configuration's overhead---computed
- as the configuration's mean runtime divided by the untyped
+ as the configuration's mean runtime divided by the fully-untyped
  configuration's mean runtime---and
  the standard error of our timings for that configuration.
 Configurations @tt{0010}, and @todo{others} suffer from a boundary between
  @tt{main} and @tt{population}.
-These are by far the slowest configurations.
-But most other configurations are only slightly slower, and a few
- are no worse than the untyped configuration.
+These are by far the slowest configurations and no path through the lattice
+ can avoid all of them.
+But the other 8 configurations are at worst slightly slower than untyped,
+ and two of these improve on the baseline performance.
 
 
 @; -----------------------------------------------------------------------------
@@ -571,6 +577,7 @@ These lattices are shown in @Figure-ref{fig:fsm-lattice-6.3}.
 ]
 
 This is a sad story for Typed Racket, but we promise to improve for version 6.5.
+@todo{say more}
 
 
 @; -----------------------------------------------------------------------------
@@ -580,7 +587,7 @@ Inspecting the annotated performance lattice for @bm{fsm} is feasible and
  even gives insight as to why the worst configurations are slow.
 At a glance, it is fairly easy to see that the 8 slow modules match the pattern
  @tt{*01*} or @tt{*10*}, corresponding to a type boundary between @tt{main}
- and @tt{population}.
+ and @tt{population}. @todo{use shapes?}
 The number of nodes in a lattice, however, is exponential in the number of
  modules in a program.
 Visual inspection quickly becomes impossible.
@@ -608,8 +615,9 @@ Which configurations are the slowest?
 Why might they be slow?
     @; Readers with a magnifying glass can answer, just as readers with
     @; poster-sized paper can answer questions about a 10-module lattice.
-We now explain key points in the lattice, but this is the last such explanation
+We now explain key points in this lattice, but this is the last such explanation
  we will give before introducting a graphical analogue to performance lattices.
+@todo{2 lattices?}
 
 @todo{BEGIN check numbers}
 
@@ -665,8 +673,7 @@ It is only when all the modules are typed that performance becomes acceptable
 
 @; -----------------------------------------------------------------------------
 @subsection{L-N/M Plots}
-@(lnm-plots)
-
+@(lnm-plots "6.2" "6.3" "6.4.0.5")
 
 The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figure-ref}
  summarize the results from exhaustively exploring the performance lattices of
@@ -674,11 +681,12 @@ The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figur
 For this experiment we have chosen values of 3x and 10x for @math{N} and
  @math{M}, respectively, and allow up to @math{L = 2} additional type conversion
  steps.
-Hence our plots are organized in 3 columns, corresponding to values of @math{L}
- between 0 and 2, and we draw vertical lines representing @math{N} and @math{M}.
+Hence we draw vertical lines representing @math{N} and @math{M} and organize
+ our plots in 3 columns, corresponding to values of @math{L} between 0 and 2.
 These values are rather liberal,@note{We would expect that most production
   contexts would not tolerate anything higher than 2x, if that much.}
   but serve to ground our discussion.
+The three curves give results for Racket versions 6.2, 6.3, and 6.4.0.5.
 
 In each graph, the x-axis represents a slowdown relative to the untyped program
  (from 1x to @id[MAX-OVERHEAD]x).
@@ -686,7 +694,7 @@ The y-axis is a count of the number of configurations
  (from @math{0} to @math{2^n}) scaled so that all graphs are the same height.
 If @math{L} is zero, the curves represents the total number of configurations
  with performance no worse than the overhead on the x-axis.
-For arbitrary @math{L}, the blue line gives the number of configurations that
+For arbitrary @math{L}, the curves give the number of configurations that
  can reach a configuration with performance no worse than the overhead on the
  x-axis in at most @math{L} conversion steps.
 
@@ -695,127 +703,166 @@ A useful way to read these figures is to first pick an overhead value,
  one of the curves.
 Taking @id[EXAMPLE-BENCHMARK] for example, the leftmost plot shows that
  @todo{how many} configurations run within a @id[EXAMPLE-OVERHEAD] slowdown
- on Racket version 6.2.
+ over the untyped configuration on Racket version 6.2.
 Upgrading to Racket version @todo{6.4.0.5} gives @todo{modest}.
 
-@todo{summary table, or no?}
-@; The typed/untyped ratio is the slowdown or speedup of fully typed code
-@;  over untyped code.
-@; Values smaller than @math{1.0} indicate a speedup due to Typed Racket optimizations.
-@; Values larger than @math{1.0} are slowdowns caused by interaction with untyped
-@;  libraries or untyped parts of the underlying Racket runtime.
-@; The ratios range between @todo{min} and @todo{max}.
-@; 
-@; The maximum overhead is computed by finding the running time of the slowest
-@;  configuration and dividing it by the running time of the untyped configuration.
-@; The average overhead is obtained by computing the average over all
-@;  configurations (excluding the fully-typed and untyped configurations) and
-@;  dividing it by the running time of the untyped configuration.
-@; Maximum overheads range from @todo{min} to @todo{max}.
-@; Average overheads range from @todo{min} to @todo{max}.
-@; 
-@; The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
-@; In parentheses, we express these counts as a percentage of all configurations
-@;  for the benchmark.
-
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:all-results"]{Interpretation}
-@todo{need to emphasize comparisons}
+@; @section[#:tag "sec:all-results"]{Interpretation}
 
-The ideal result would be a flat line at a graph's top.
-Such a result would mean that all configurations are as fast as
- (or faster than) the untyped one.
-The worst scenario is a flat line at the graph's bottom,
- indicating that all configurations are more than 20x slower than the untyped one.
+The ideal curves would be flat lines at a graph's top.
+Such a result would mean that all configurations were as fast as
+ (or faster than) the untyped one on Racket v6.2 and performance did not
+ degrade in more recent versions.
+The worst scenario would be flat lines at the graph's bottom,
+ indicating that all configurations are more than 20x slower than the untyped one
+ even in the most recent Racket release.
 
 Of course, the ideal shape is difficult to achieve because of the overwhelming
  cost of the dynamic checks inserted at the boundaries between typed and untyped code.
 The next-best shape is a nearly-vertical line that reaches the top at a low x-value.
 All else being equal, a steep slope anywhere on the graph is desirable because
- the number of acceptable programs quickly increases at that point.
+ the number of acceptable programs quickly increases at some point below the
+ 20x slowdown mark.
 
 For each benchmark, we evaluate the actual graphs against these expectations.
 Our approach is to focus on the left column, where @math{L}=0, and to consider the
  center and right column as rather drastic countermeasures to recover
  performance.@note{Increasing @math{L} should remove pathologically-bad cases.} 
+In @todo{secref} we explain the changes between different versions of Racket
+ and the pathologies in each benchmark.
 
-@; @lnm-descriptions[
-@;   @lnm['sieve]{
-@;   }
-@; @;@parag{Sieve}
-@; @;@todo{?}
-@; @;@; The flat line at @math{L}=0 shows that half of all configurations suffer
-@; @;@; unacceptable overhead. As there are only 4 configurations in the lattice
-@; @;@; for @tt{sieve}, increasing @math{L} improves performance.
-@; @;
-@; @;@parag{Morse code}
-@; @;@todo{?}
-@; @;@; The steep lines show that a few configurations suffer modest overhead (below 2x),
-@; @;@; otherwise @tt{morse-code} performs well.
-@; @;@; Increasing @math{L} improves the worst cases.
-@; @;
-@; @;@parag{MBTA}
-@; @;@todo{?}
-@; @;@; These lines are also steep, but flatten briefly at 2x.
-@; @;@; This coincides with the performance of the fully-typed
-@; @;@; configuration.
-@; @;@; As one would expect, freedom to type additional modules adds configurations
-@; @;@; to the @deliverable{2} equivalence class.
-@; @;
-@; @;@parag{Zordoz}
-@; @;@todo{?}
-@; @;@; Plots here are similar to @tt{mbta}.
-@; @;@; There is a gap between the performance of the fully-typed
-@; @;@; configuration and the performance of the next-fastest lattice point.
-@; @;@; 
-@; @;@parag{Suffixtree}
-@; @;@todo{?}
-@; @;@; The wide horizontal areas are explained by the performance lattice in
-@; @;@; @figure-ref{fig:suffixtree}: configurations' running times are not evenly
-@; @;@; distributed but instead vary drastically when certain boundaries exist.
-@; @;@; Increasing @math{L} significantly improves the number of acceptable configuration
-@; @;@; at 10x and even 3x overhead.
-@; @;
-@; @;@parag{LNM}
-@; @;@todo{?}
-@; @;@; These results are ideal.
-@; @;@; Note the large y-intercept at @math{L}=0.
-@; @;@; This shows that very few configurations suffer any overhead.
-@; @;@; 
-@; @;@parag{KCFA}
-@; @;@todo{?}
-@; @;@; The most distinctive feature at @math{L}=0 is the flat portion between 1x
-@; @;@; and 6x. This characteristic remains at @math{L}=1, and overall performance
-@; @;@; is very good at @math{L}=2.
-@; @;@; 
-@; @;@parag{Snake}
-@; @;@todo{?}
-@; @;@; The slope at @math{L}=0 is very low.
-@; @;@; Allowing @math{L}=1 brings a noticeable improvement above the 5x mark,
-@; @;@; but the difference between @math{L}=1 and @math{L}=2 is small.
-@; @;@; 
-@; @;@parag{Tetris}
-@; @;@todo{?}
-@; @;@; Each @tt{tetris} plot is essentially a flat line.
-@; @;@; At @math{L}=0 roughly 1/3 of configurations lie below the line.
-@; @;@; This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
-@; @;@; when @math{L}=2.
-@; @;
-@; @;@parag{Synth}
-@; @;@todo{?}
-@; @;@; Each slope is very low.
-@; @;@; Furthermore, some configurations remain unusable even at @math{L}=2.
-@; @;@; These plots have few flat areas, which implies that overheads are spread
-@; @;@; evenly throughout possible boundaries in the program.
-@; @;
-@; @;@parag{Gregor}
-@; @;@todo{?}
-@; @;@; These steep curves are impressive given that @tt{gregor} has 13 modules.
-@; @;@; Increasing @math{L} brings consistent improvements.
-@; @;
-@; @;@parag{Quad}
-@; @;@todo{?}
-@; @;@; The @tt{quad} plots follow the same pattern as @tt{mbta} and @tt{zordoz}, despite being visually distinct.
-@; @;@; In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
-@; @;@; The high typed/untyped ratio is explained by small differences in the original author-supplied variants.
-@; ]
+@lnm-descriptions[
+  @lnm['sieve]{
+    The flat line at @math{L}=0 shows that half of all configurations suffer
+    unacceptable overhead. As there are only 4 configurations in the lattice
+    for @tt{sieve}, increasing @math{L} improves performance.
+  }
+
+  @lnm['morsecode]{
+    The steep lines show that a few configurations suffer modest overhead (below 2x),
+    otherwise @tt{morse-code} performs well.
+    Increasing @math{L} improves the worst cases.
+  }
+
+  @lnm['mbta]{
+    These lines are also steep, but flatten briefly at 2x.
+    This coincides with the performance of the fully-typed
+    configuration.
+    As one would expect, freedom to type additional modules adds configurations
+    to the @deliverable{2} equivalence class.
+  }
+
+  @lnm['acquire]{
+    Nope!
+  }
+
+  @lnm['fsm]{
+    Nope!
+  }
+
+  @lnm['fsmoo]{
+    Nope!
+  }
+
+  @lnm['forth]{
+    Nope!
+  }
+
+  @lnm['zordoz.6.2]{
+    Nope!
+  }
+
+  @lnm['zordoz.6.3]{
+    Plots here are similar to @tt{mbta}.
+    There is a gap between the performance of the fully-typed
+    configuration and the performance of the next-fastest lattice point.
+  }
+
+  @lnm['suffixtree]{
+    The wide horizontal areas are explained by the performance lattice in
+    @figure-ref{fig:suffixtree}: configurations' running times are not evenly
+    distributed but instead vary drastically when certain boundaries exist.
+    Increasing @math{L} significantly improves the number of acceptable configuration
+    at 10x and even 3x overhead.
+  }
+
+  @lnm['lnm]{
+    These results are ideal.
+    Note the large y-intercept at @math{L}=0.
+    This shows that very few configurations suffer any overhead.
+  }
+
+  @lnm['kcfa]{
+    The most distinctive feature at @math{L}=0 is the flat portion between 1x
+    and 6x. This characteristic remains at @math{L}=1, and overall performance
+    is very good at @math{L}=2.
+  }
+
+  @lnm['snake]{
+    The slope at @math{L}=0 is very low.
+    Allowing @math{L}=1 brings a noticeable improvement above the 5x mark,
+    but the difference between @math{L}=1 and @math{L}=2 is small.
+  }
+
+  @lnm['tetris]{
+    Each @tt{tetris} plot is essentially a flat line.
+    At @math{L}=0 roughly 1/3 of configurations lie below the line.
+    This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
+    when @math{L}=2.
+  }
+
+  @lnm['synth]{
+    Each slope is very low.
+    Furthermore, some configurations remain unusable even at @math{L}=2.
+    These plots have few flat areas, which implies that overheads are spread
+    evenly throughout possible boundaries in the program.
+  }
+
+  @lnm['gregor]{
+    These steep curves are impressive given that @tt{gregor} has 13 modules.
+    Increasing @math{L} brings consistent improvements.
+  }
+
+  @lnm['zombie]{
+  }
+
+  @lnm['quadBG]{
+  }
+
+  @lnm['quadMB]{
+    The @bm{quadMB} plots follow the same pattern as @bm{mbta} and @bm{zordoz}, despite being visually distinct.
+    In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
+    The high typed/untyped ratio is explained by small differences in the original author-supplied variants.
+  }
+]
+
+
+@; -----------------------------------------------------------------------------
+@subsection{So Much Data}
+
+@todo{Motivational text}
+
+@figure*["fig:lnm-summary" "Summary Statistics"
+  @(lnm-summary "6.2" "6.3" "6.4.0.5")
+]
+
+The typed/untyped ratio is the slowdown or speedup of fully typed code
+ over untyped code.
+Values smaller than @math{1.0} indicate a speedup due to Typed Racket optimizations.
+Values larger than @math{1.0} are slowdowns caused by interaction with untyped
+ libraries or untyped parts of the underlying Racket runtime.
+The ratios range between @todo{min} and @todo{max}.
+
+The maximum overhead is computed by finding the running time of the slowest
+ configuration and dividing it by the running time of the untyped configuration.
+The average overhead is obtained by computing the average over all
+ configurations (excluding the fully-typed and untyped configurations) and
+ dividing it by the running time of the untyped configuration.
+Maximum overheads range from @todo{min} to @todo{max}.
+Average overheads range from @todo{min} to @todo{max}.
+
+The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
+In parentheses, we express these counts as a percentage of all configurations
+ for the benchmark.
+
+@todo{Each benchmark gets 3 columns for the 3 versions of Racket.}
