@@ -12,53 +12,72 @@
 
 @section{Adaptor Modules}
 
-A quirk in Racket's structure-type definitions calls for one twist to
-an otherwise straightforward setup of benchmark configurations. Consider
-the following structure-type definition from @tt{gregor}, one of the
-benchmark programs: 
+At a high level, we generate all configurations for a benchmark program
+ by manually writing typed and untyped versions and then generating all
+ combinations of files for each version.
+This would be sufficient but for the fact that Racket's structure type
+ definitions are generative at type boundaries.
+Consider the following structure definition from the @bm{gregor} benchmark:
 @;%
 @(begin
 #reader scribble/comment-reader
 (racketblock
-(struct DateTime [date time jd])
+(struct YearMonthDay [y m d])
 ))
 @;%
-Its evaluation introduces a new class of data structures via a constructor
-(@racket[DateTime]), a predicate (@racket[DateTime?]), and a number of
-selectors. A second evaluation creates a disjoint
-class of structures, meaning the selectors for the
-first class do not work on the second and vice versa.
+Evaluating this statement introduces a new class of data structures via a
+ constructor (@racket[YearMonthDay]), a predicate (@racket[YearMonthDay?]),
+ and a number of selectors.
+If this statement were evaluated a second time, a second class of data
+ structures incompatible with the first would be defined.
 
-If a structure-type definition is exported, a configuration may place the definition
-in an untyped module and its clients into the typed portion of the program.
-As explained below, importing a @racket[struct] demands that each client
-assigns a type to the structure-type definition. Now, when these typed
-clients wish to exchange instances of these structure types, the type
-checker must prove that the static types match. But due to the above
-quirk, the type system assigns generative static types to imported structure
-types. Thus, even if the developers who annotate the two clients with types choose
-the same names for the imported structure types, the two clients actually have
-mutually incompatible static types.
+If a structure-type definition is exported to other modules, a configuration
+ may place the definition in an untyped module and its clients in typed
+ modules.
+Each typed client will need to assign a type to the structure definition.
+The straightforward way is to use a @racket[require/typed] in each typed
+ module.
 
-@Figure-ref{fig:adaptor} illuminates the problems with the left-hand
-diagram. An export of a structure-type definition from the untyped module
-(star-shaped) to the two typed clients (black squares) ensures that the
-type checker cannot equate the two assigned static types. The right-hand
-side of the figure explains the solution. We manually add a @emph{type
-adaptor module}. Such adaptor modules are specialized typed interfaces to
-untyped code. The typed clients import structure-type definitions and the
-associated static types exclusively from the type adaptor, ensuring that
-only one canonical type is generated for each structure type.  Untyped
-clients remain untouched and continue to use the original untyped file.
+@racketblock[
+  (require/typed "untyped.rkt"
+    [#:struct YearMonthDay (
+      [y : Natural]
+      [m : (U 'January 'February ...)]
+      [d : Natural])])
+]
+
+Now, when these typed clients wish to exchange instances of these structure
+ types, the type checker must prove that the static types match.
+But each @racket[require/typed] generates a new type defintion incompatible
+ with the others.
+Thus, even if the developers who annotate the two clients with types copied
+ the above declaration word-for-word, the two clients actually have
+ mutually incompatible static types.
+
+@Figure-ref{fig:adaptor} illuminates the problems with the left-hand diagram.
+An export of a structure-type definition from the untyped module
+ (star-shaped) to the two typed clients (black squares) ensures that the
+ type checker cannot equate the two assigned static types.
+The right-hand side of the figure explains the solution.
+We manually add a @emph{type adaptor module}.
+Such adaptor modules are typed interfaces to untyped code.
+The typed clients import structure-type definitions and the associated static
+ types exclusively from the type adaptor, ensuring that only one canonical
+ type is generated for each structure type.
+Untyped clients remain untouched and continue to use the original untyped file.
 
 Adaptor modules also reduce the number of type annotations needed at
-boundaries because all typed clients can reference a single point of
-control.@note{In our experimental setup, type adaptors are available to
-all configurations as library files.}  Therefore we expect type adaptor
-modules to be of independent use to practitioners, rather than just a
-synthetic byproduct of our setup.
+ boundaries because all typed clients can reference a single point of
+ control.@note{In our experimental setup, type adaptors are available to
+ all configurations as library files.}
+Therefore we have found adaptors useful whenever dealing with an untyped library,
+ whether or not it exported a structure type.
+Incidentally, the TypeScript community follows a very similar approach by
+ using typed definition files (extension @tt{.d.ts}) to assign types to
+ library code @todo{cite DefinitelyTyped}.
 
 
+@; -----------------------------------------------------------------------------
 @section{Failure to Launch}
 @; Things we could not type
 @; - HTDP mixin polymorphism
