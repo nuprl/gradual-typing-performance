@@ -21,8 +21,7 @@ They have used Typed Racket both to improve existing untyped code and to
  write new applications from scratch @todo{cite}.
 
 Almost universally, Typed Racket programmers complain about performance.
-Slow compile times are one issue, but the cost of interaction with untyped code
- is often a deal-breaker.
+The cost of interaction with untyped code is often a deal-breaker.
 Recent complaints include a 50% slowdown from mixing typed and untyped code
  in a commercial web server@note{https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ},
  a 10x slowdown after fully typing a program in the hope of improving performance,@note{Personal communication from the author of the @tt{quad} benchmark}
@@ -35,6 +34,7 @@ Typed Racket's math library even includes a disclaimer about 25x-50x slowdowns
 
 
 @section{Why Gradual Typing?}
+@; TODO too colloquial
 
 If all our users' code was fully typed, these performance
  issues would disappear.

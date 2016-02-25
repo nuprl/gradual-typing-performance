@@ -1,11 +1,16 @@
 jfp
 ===
 
+monotone general -> specific (Sec 4 is anomoly)
+state boundary / dynamic cost early
+do NOT conflate gradual vs. optional typing
+
 quarantine the refs. to "typed racket"
 run-time vs runtime vs run time
 typecheck vs type-check vs type check
 vary inputs, confirm the same lattice
 benchmark vs program
+no rhetorical questions
 
 
 ---

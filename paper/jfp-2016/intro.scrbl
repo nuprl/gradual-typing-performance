@@ -84,6 +84,8 @@ This comparison serves to evaluate our framework,
  significantly improved the performance of the system (@todo{secref}).
 We conclude by assessing weaknesses of our framework in @Secref{sec:death}
  and suggesting future applications in @Secref{sec:conclusion}.
+@todo{Concrete contributions}
+
 
 @section{So, is Sound Gradual Typing Dead?}
 An earlier conference version of this article presented our evaluation framework
