@@ -5,17 +5,11 @@
 @profile-point{sec:conclusion}
 @title[#:tag "sec:fut"]{Long Live Sound Gradual Typing}
 
-Our goal is to foster expressive, safe, and performant implementations of gradual typing.
-Comprehensive performance evaluation has the potential to advance this goal
- by determining the magnitude of performance overhead in realistic programs,
- identifying bottlenecks in the implementation of gradually typed languages,
- quantifying the performance effect of improvements or changes to a language,
- and
- encouraging new designs or implementation strategies to overcome performance
- barriers.
-
 Sound gradual typing was proposed to solve the practical issue of
  safely combining dynamic and static typing.
+In fact, fundamental research on gradual typing might serve the
+ broader purpose of aiding safe program conversion as large codebases
+ move to adopt new language technology.
 We have found, however, that gradual typing must address serious performance
  issues to achieve these goals.
 At present, the difference between ideal and actual performance seems
@@ -23,7 +17,7 @@ At present, the difference between ideal and actual performance seems
  typed and untyped code can be practically achieved.
 
 We support our thesis with benchmarking results for @emph{all
- possible} gradual typing configurations for @id[(count-benchmarks)] Typed Racket
+ possible} gradual typing configurations for @id[NUM-BENCHMARKS] Typed Racket
  benchmarks of various sizes and complexities.
 Even under liberal conditions, few of these configurations have only
  deliverable or usable performance overhead.
@@ -33,28 +27,34 @@ Relaxing our judgment to allow additional conversions of untyped code
 Our result calls for three orthogonal research efforts.
 First, Typed Racket is only one implementation of sound gradual typing,
  and it supports only macro-level gradual typing.
-Applying our framework to other languages like Safe TypeScript@~cite[rsfbv-popl-2015]
- and Reticulated Python @todo{cite} may yield different results.
-At the same time, we are also challenged to scale our evaluation method
- to micro-level gradual typing, where programmers can equip any variable
- with a type annotation and leave the surrounding context untouched.
+Before we declare gradual typing completely dead, we must apply our method to
+ other implementations.
+The question is whether doing so will yield equally negative results.
+Safe TypeScript@~cite[rsfbv-popl-2015] appears to be one natural candidate for
+ such an effort.
+At the same time, we are also challenged to explore how our evaluation method
+ can be adapted to the world of micro-level gradual typing, where programmers
+ can equip even the smallest expression with a type annotation and leave the
+ surrounding context untouched.
 We conjecture that annotating complete functions or methods
  is an appropriate starting point for such an adaptation experiment.
 
 Second, Typed Racket's implementation can be improved on two levels.
-For one, the conversion from types to contracts could be tuned to
+For one, the high-level translation from types to contracts can
  generate more efficient checks.
+We have already removed the cost of user-defined-type predicates but there
+ are more bugs to stamp out.
 There are other language design issues, such as encouraging abstract types
  or using type inference to shrink the total size of a type boundary.
-The other level is to explore a typed runtime system.
-Typed Racket currently elaborates into plain Racket, type-checks the result,
- inserts contracts between typed and untyped modules, and then relies on
- the Racket compiler to convert the result to bytecode @~cite[thscff-pldi-2011].
+The other direction is to explore a typed runtime system.
+Typed Racket elaborates into plain Racket, type-checks the result,
+ inserts contracts between typed and untyped modules, and then uses Racket
+ to compile the result@~cite[thscff-pldi-2011].
 The latter implements a JIT compiler that open-codes primitive functions.
 One implication is that code from contracts does not get eliminated
  even if it is re-evaluated for the same value in a plain loop.
-A sophisticated or type-aware JIT compiler may eliminate some of the
- contract overhead in such cases.
+A sophisticated JIT compiler may eliminate some of the contract overhead
+ in such cases, but we conjecture that performance pathologies will still remain.
 Applying our method to an implementation with a more sophisticated compiler,
  e.g., Pycket@~cite[bauman-et-al-icfp-2015], may let us validate this conjecture.
 
@@ -67,7 +67,7 @@ Expanding this community will take the development of both guidelines on how
  configuration that yield the most benefit (per time investment).
 St-Amour's feature-specific profiler@~cite[saf-cc-2015] and optimization
  coaches@~cite[stf-optimization-coaching] look promising; we
- used both kinds of tools to diagnose some of the most curious
+ used both kinds of tools to find the reason for some of the most curious
  performance bottlenecks in our measurements.
 
 
