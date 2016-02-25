@@ -60,10 +60,8 @@
 @include-section{story.scrbl}
 @include-section{framework.scrbl}
 @include-section{typed-racket.scrbl}
-@;@include-section{recovery.scrbl}
-@;@include-section{experience.scrbl}
-@;@include-section{death.scrbl}
-@;@include-section{related.scrbl}
-@;@include-section{conclusion.scrbl}
+@include-section{death.scrbl}
+@include-section{experience.scrbl}
+@include-section{conclusion.scrbl}
 
 @generate-bibliography[]

@@ -12,7 +12,7 @@ The data gives us two lessons:
         The current implementation of gradual typing is empirically better.}
 ]
 
-This section concludes by discussing threats to validity.
+Also in this section, threats to validity.
 
 
 @; -----------------------------------------------------------------------------
@@ -53,7 +53,7 @@ Put differently, the number of @math{L}-step @math{N/M}-acceptable
 
 
 @; -----------------------------------------------------------------------------
-@subsection[#:tag "sec:postmortem"]{Auditing the Contracts}
+@subsection[#:tag "sec:postmortem"]{What are the Bottlenecks?}
 @todo{albany numbers}
 
 To analyze the cost of contract checks, we used the
@@ -164,7 +164,7 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
 @; aka, L-N/M is a useful way to measure performance
 
 @subsection{What is to be done?}
-@todo{ }
+
 
 
 @; -----------------------------------------------------------------------------
