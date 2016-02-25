@@ -53,7 +53,7 @@ Put differently, the number of @math{L}-step @math{N/M}-acceptable
 
 
 @; -----------------------------------------------------------------------------
-@subsection[#:tag "sec:postmortem"]{What are the Bottlenecks?}
+@subsection[#:tag "sec:postmortem"]{Auditing the Contracts}
 @todo{albany numbers}
 
 To analyze the cost of contract checks, we used the
