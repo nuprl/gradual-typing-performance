@@ -12,7 +12,7 @@ The data gives us two lessons:
         The current implementation of gradual typing is empirically better.}
 ]
 
-Also in this section, threats to validity.
+This section concludes by discussing threats to validity.
 
 
 @; -----------------------------------------------------------------------------
@@ -164,7 +164,7 @@ The remaining columns of @figure-ref{fig:postmortem} report what percentage
 @; aka, L-N/M is a useful way to measure performance
 
 @subsection{What is to be done?}
-
+@todo{ }
 
 
 @; -----------------------------------------------------------------------------
