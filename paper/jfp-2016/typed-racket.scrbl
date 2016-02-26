@@ -408,7 +408,7 @@ The means and standard errors in our analysis are computed from these sequences
  of 10 or 30 timings.
 
 The scripts we used to run our experiments and the data we collected
- are available in the online supplement to this article: @todo{update artifact}.
+ are available in the online supplement to this paper: @todo{update artifact}.
 
 
 @; -----------------------------------------------------------------------------
