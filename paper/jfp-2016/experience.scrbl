@@ -4,7 +4,7 @@
 
 @title[#:tag "sec:experience"]{Experience Report}
 
-@figure-here["fig:adaptor" "Inserting a type adaptor"
+@figure*["fig:adaptor" "Inserting a type adaptor"
 @exact|{
 \input{fig-adaptor.tex}
 }|
@@ -25,18 +25,20 @@ Consider the following structure definition from the @bm{gregor} benchmark:
 (struct YearMonthDay [y m d])
 ))
 @;%
-Evaluating this statement introduces a new class of data structures via a
- constructor (@racket[YearMonthDay]), a predicate (@racket[YearMonthDay?]),
- and a number of selectors.
+Evaluating this statement introduces a new class of data structures
+ characterized by a constructor (@racket[YearMonthDay]),
+ a predicate (@racket[YearMonthDay?]),
+ and three field selectors.
 If this statement were evaluated a second time, a second class of data
  structures incompatible with the first would be defined.
 
 If a structure-type definition is exported to other modules, a configuration
  may place the definition in an untyped module and its clients in typed
  modules.
-Each typed client will need to assign a type to the structure definition.
-The straightforward way is to use a @racket[require/typed] in each typed
- module.
+If there are two typed clients, each will need to assign a type
+ to the structure definition.
+The straightforward way to assign types to untyped code is to replace imports
+ in each typed module with a @racket[require/typed] statement.
 
 @racketblock[
   (require/typed "untyped.rkt"
@@ -48,30 +50,27 @@ The straightforward way is to use a @racket[require/typed] in each typed
 
 Now, when these typed clients wish to exchange instances of these structure
  types, the type checker must prove that the static types match.
-But each @racket[require/typed] generates a new type defintion incompatible
+But each @racket[require/typed] generates a new type definition incompatible
  with the others.
-Thus, even if the developers who annotate the two clients with types copied
- the above declaration word-for-word, the two clients actually have
- mutually incompatible static types.
+Thus, even if the two clients use exactly the above declaration, they will
+ have mutually incompatible @racket[YearMonthDay] types.
 
 @Figure-ref{fig:adaptor} illuminates the problems with the left-hand diagram.
 An export of a structure-type definition from the untyped module
  (star-shaped) to the two typed clients (black squares) ensures that the
  type checker cannot equate the two assigned static types.
-The right-hand side of the figure explains the solution.
-We manually add a @emph{type adaptor module}.
+The right-hand side of the figure explains the solution:
+ we manually add a @emph{type adaptor module}.
 Such adaptor modules are typed interfaces to untyped code.
 The typed clients import structure-type definitions and the associated static
  types exclusively from the type adaptor, ensuring that only one canonical
  type is generated for each structure type.
-Untyped clients remain untouched and continue to use the original untyped file.
 
 Adaptor modules also reduce the number of type annotations needed at
  boundaries because all typed clients can reference a single point of
  control.@note{In our experimental setup, type adaptors are available to
  all configurations as library files.}
-Therefore we have found adaptors useful whenever dealing with an untyped library,
- whether or not it exported a structure type.
+Therefore we have found adaptors useful whenever dealing with an untyped library.
 Incidentally, the TypeScript community follows a very similar approach by
  using typed definition files (extension @tt{.d.ts}) to assign types to
  library code @todo{cite DefinitelyTyped}.
@@ -80,29 +79,110 @@ Incidentally, the TypeScript community follows a very similar approach by
 @; -----------------------------------------------------------------------------
 @section{Failure to Launch}
 @; Things we could not type
-@; - HTDP mixin polymorphism
-@; - generics
-@; - polymorphic struct over boundary
-@; - zombie symbol-based type (overloading arity)
-@; - partition, no negative filters
-@; - occurrence typing objects
 
 Occasionally, we hit a design that Typed Racket could not type check.
-In all but one case these are bugs which future versions of Typed Racket
- will fix, but we note them regardless.
+In all but one case these are known issues which future versions of Typed Racket
+ will fix, but we note them here regardless.
 
-@bm{suffixtree}
-`(All (A) (-> (-> Void A) A))` was instantiated with a `(Values ...)` type.
-The untyped program ran, but the typechecker rejected it.
+@subsection{Multiple Return Values}
+First, the non-issue.
+The @bm{suffixtree} benchmark contained a function with type
+ @racket[(All (A) ((-> A) -> A))] that executed a thunked computation
+ and returned its result.
+This type alone presented no trouble, but it was later applied to a thunk
+ with two return values, expressed by the type
+ @racket[(-> (Values Node Integer))].
+Although the usage in @bm{suffixtree} happened to be safe, Typed Racket
+ conservatively rejected the program because a different well-typed
+ implementation might crash given a thunk with multiple values:
 
-A small example of necessary code changes was due to Typed Racket's weak type for `partition`.
-Calling `partition` separates a list into two sub-lists, one with elements satisfying
-a given predicate and the other with all the rest.
-The types of both result lists should be refined through occurrence typing,
-but the list of negatives is currently not refined (Typed Racket issue [#138](https://github.com/racket/typed-racket/issues/138)).
-So we had to change the code to use two calls to `filter`, or else add a run-time assertion.
+@racketblock[
+  (: f (All (A) ((-> A) . -> . A)))
+  (define (f thunk)
+    (let ([r (thunk)])
+      r))
+]
+
+@subsection{Unconventional Occurrence Types}
+The first true issue we found was a limitation in Typed Racket's occurrence
+ typing @todo{cite}.
+In brief, occurrence typing refines union types when values flow through
+ designated predicate functions.
+For example, the following program type checks because occurrence typing
+ knows that only values with type @racket[YearMonthDay] are recognized by the
+ @racket[YearMonthDay?] predicate.
+
+@racketblock[
+  (: remove-missing (-> (Listof (U Null YearMonthDay)) (Listof YearMonthDay)))
+  (define (remove-missing ymd*)
+    (filter YearMonthDay? ymd*))
+]
+
+The following similar program ought to type check because partition returns two lists
+ containing precisely the values that the @racket[YearMonthDay?] predicate
+ passed and failed on, respectively.
+Yet it fails because of subtleties in the implementation of
+ negative type filters.@note{@url{https://github.com/racket/typed-racket/issues/138}}
+@; For a challenge the reader should try to give a type for partition
+Basic control-flow statements like @racket[if] explicitly handle the case where
+ predicates fail, but there is no general-purpose mechanism.
+
+@racketblock[
+  (: get-missing (-> (Listof (U Null YearMonthDay)) (Listof Null)))
+  (define (get-missing ymd*)
+    (define-values (_ missing*) (partition YearMonthDay? ymd*))
+    missing*)
+]
+
+On the subject of occurrence typing, finding a semantics for occurrence typing
+ structural objects is still an open problem.
+The challenge is that @racket[is-a?] type tests succeed on untyped
+ subclasses without enforcing that the subclass did not override the type
+ of inherited methods.
 
 
+@subsection{Type-to-Contract Limitations}
+Not all Typed Racket types can be compiled into contracts.
+This became an issue when typing @bm{synth} because polymorphic functions
+ over polymorphic structs are one such type that have no corresponding contract.
+Our solution was to remove all polymorphism from struct definitions
+ in @bm{synth}.@note{This
+ almost certainly improved performance, but we cannot make comparisons
+ against an alternative that does not compile.}
+
+@; TODO: why can't we compile this?
+@; A. general issue with typed racket & impersonators
+@; B. the seal changes how previously-defined functions would work
+
+
+@;@subsection{}
+@;@; - zombie symbol-based type (overloading arity)
+@;The @bm{zombie} benchmark uses an encoding of objects as functions
+@; that dispatch on a symbol.
+@;For example, a @racket[position] object with @racket[x] and @racket[y] coordinates
+@; would be implemented as a function that responds to the symbols
+@; @racket['x] and @racket['y] by returning thunks for the proper coordinate.
+@;
+@;@todo{zombie seems fixed!}
+@;
+@;@racketblock[
+@;  (define-type Position (case-> (-> 'x (-> Integer))
+@;                                (-> 'y (-> Integer))))
+@;  (define (make-position x-coord y-coord)
+@;    (lambda (sym)
+@;      (case (sym)
+@;       [(x) (lambda () x-coord)]
+@;       [(y) (lambda () y-coord)]
+@;       [else (error "unknown symbol")])))
+@;]
+
+
+@subsection{HTDP mixin}
+@; - HTDP mixin polymorphism
+@todo{Ask Asumu}
+
+
+@; -----------------------------------------------------------------------------
 @section{Burden of Type Annotations}
 @; macro-level gives some chance for type inference
 @; But permissive type system fucks that
