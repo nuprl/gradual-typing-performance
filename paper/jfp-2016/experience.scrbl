@@ -113,7 +113,8 @@ For example, the following program type checks because occurrence typing
  @racket[YearMonthDay?] predicate.
 
 @racketblock[
-  (: remove-missing (-> (Listof (U Null YearMonthDay)) (Listof YearMonthDay)))
+  (: remove-missing (-> (Listof (U Null YearMonthDay))
+                        (Listof YearMonthDay)))
   (define (remove-missing ymd*)
     (filter YearMonthDay? ymd*))
 ]
@@ -128,9 +129,11 @@ Basic control-flow statements like @racket[if] explicitly handle the case where
  predicates fail, but there is no general-purpose mechanism.
 
 @racketblock[
-  (: get-missing (-> (Listof (U Null YearMonthDay)) (Listof Null)))
+  (: get-missing (-> (Listof (U Null YearMonthDay))
+                     (Listof Null)))
   (define (get-missing ymd*)
-    (define-values (_ missing*) (partition YearMonthDay? ymd*))
+    (define-values (_ missing*)
+                   (partition YearMonthDay? ymd*))
     missing*)
 ]
 
