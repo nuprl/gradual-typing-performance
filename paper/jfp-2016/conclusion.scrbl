@@ -7,7 +7,7 @@
 Sound gradual typing was proposed to solve the practical issue of
  safely combining dynamic and static typing.
 In fact, fundamental research on gradual typing might serve the
- broader purpose of aiding safe program conversion as large codebases
+ broader purpose of enabling safe program conversion as large codebases
  move to adopt new language technology.
 We have found, however, that gradual typing must address serious performance
  issues to achieve these goals.
@@ -26,29 +26,25 @@ Relaxing our judgment to allow additional conversions of untyped code
 Our result calls for three orthogonal research efforts.
 First, Typed Racket is only one implementation of sound gradual typing,
  and it supports only macro-level gradual typing.
-Before we declare gradual typing completely dead, we must apply our method to
- other implementations.
-The question is whether doing so will yield equally negative results.
-Safe TypeScript@~cite[rsfbv-popl-2015] appears to be one natural candidate for
- such an effort.
-At the same time, we are also challenged to explore how our evaluation method
- can be adapted to the world of micro-level gradual typing, where programmers
- can equip even the smallest expression with a type annotation and leave the
- surrounding context untouched.
+Applying our framework to other languages like Safe TypeScript@~cite[rsfbv-popl-2015]
+ and Reticulated Python @todo{cite} may yield different results.
+At the same time, we are also challenged to scale our evaluation method
+ to micro-level gradual typing, where programmers can equip even the smallest
+ expression with a type annotation and leave the surrounding context untouched.
 We conjecture that annotating complete functions or methods
  is an appropriate starting point for such an adaptation experiment.
 
 Second, Typed Racket's implementation can be improved on two levels.
-For one, the high-level translation from types to contracts can
+For one, the high-level translation from types to contracts could be tuned to
  generate more efficient checks.
-We have already removed the cost of user-defined-type predicates but there
- are more bugs to stamp out.
+We have already reduced the cost of structure type predicates but there
+ are more bugs to correct.
 There are other language design issues, such as encouraging abstract types
  or using type inference to shrink the total size of a type boundary.
 The other direction is to explore a typed runtime system.
-Typed Racket elaborates into plain Racket, type-checks the result,
- inserts contracts between typed and untyped modules, and then uses Racket
- to compile the result@~cite[thscff-pldi-2011].
+Typed Racket currently elaborates into plain Racket, type-checks the result,
+ inserts contracts between typed and untyped modules, and then relies on
+ the Racket compiler to convert the result to bytecode @~cite[thscff-pldi-2011].
 The latter implements a JIT compiler that open-codes primitive functions.
 One implication is that code from contracts does not get eliminated
  even if it is re-evaluated for the same value in a plain loop.
@@ -66,7 +62,7 @@ Expanding this community will take the development of both guidelines on how
  configuration that yield the most benefit (per time investment).
 St-Amour's feature-specific profiler@~cite[saf-cc-2015] and optimization
  coaches@~cite[stf-optimization-coaching] look promising; we
- used both kinds of tools to find the reason for some of the most curious
+ used both kinds of tools to diagnose some of the most curious
  performance bottlenecks in our measurements.
 
 In sum, while we accept that the current implementation technology for
@@ -78,6 +74,8 @@ Above we have spelled out practical
  coercion insertion@~cite[hr-fpca-1995] and the collapsing of chains of
  contracts@~cite[sw-popl-2010]---may take inspiration from the application
  of our method.
+@; Yo, what to say here?
+@; what DID we learn?
 
 @section[#:style 'unnumbered]{Data and Code}
 
