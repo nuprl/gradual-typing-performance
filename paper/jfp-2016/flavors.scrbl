@@ -1,64 +1,37 @@
 #lang scribble/base
 
-@; TODO
-@; emphasize the theorem. The theorem is why sound is slow. Do you like the theorem?
-
 @require["common.rkt"]
 
 @title[#:tag "sec:flavors"]{Flavors of Gradual Typing}
 The term @emph{gradual typing} was introduced by Siek & Taha to describe
- type systems that performed sound, static type checking only when function
- parameters were type annotated @todo{cite}.
+ type systems that performed sound, static type checking only within functions
+ whose parameters were type annotated @todo{cite}.
 Over the past decade, the restriction on function parameters has been lifted
- so that any sound, static type system that does not reject untyped code is
- a gradual type system.
+ so that any class field or variable declaration may or may not have a type
+ annotation.
+Crucially, these type systems provide an unknown (or dynamic) type called
+ @tt{?} or @tt{Dyn} to reason about untyped values within a typed function.
+Typing judgments coerce values from @tt{Dyn} at key points
+ when constructing a type derivation and raise a cast error if the coercion fails.
 
-Although there is variety among gradual type systems, @emph{gradual typing}
- is still a technical term; however, it is often applied to any language
- mixing some amount of static and dynamic type checking.
-This section briefly summarizes the history of typed/untyped languages,
- shows where gradual typing entered the design space,
- and describes the various similar type systems in use today.
-Here, as in the introduction, we prefer to say ``sound gradual typing''
- to distinguish gradual type systems from similar unsound designs.
-
-
-@section{Origins}
-
-@; Dynamic ~ 1989
-Work on gradual typing can be traced back to the type @tt{Dynamic} proposed
- for simply-typed and polymorphic languages @todo{abadi + mauny}.
-Values of type @tt{Dynamic}  flow into a
- program at runtime---perhaps by reading from an input port---with an explicit type tag.
-To use a @tt{Dynamic} value, one must dispatch on the value of its tag.
-Protected by a suitable guard, the untrusted value is safe to use in a typed
- program.
-
-@; Soft ~ 1992
-Soft typing @todo{cite} was an attempt to convert dynamic code into a statically
- typed language.
-The key tenet of soft typing is that the type checker does not reject any
- programs it cannot prove correct.
-Instead, the checker inserts runtime casts to validate properties that must
- hold in a safe execution.
-The end result is improved static error detection and types that may be used
- to guide optimizations, all without imposing syntactic restrictions on the
- language user.
-@; Theorems?
-@; Where are we now?
-
-@; Quasi-Static 1990
-A third research direction combining static and dynamic types is Thatte's
- @emph{quasi-static} typing @todo{cite}, which essentially removed the
- type tags from the previous work on type @tt{Dynamic}.
-Instead of requiring the programmer to dispatch on the exact tag attached
- to values of unknown type, the quasi-static type system would infer or
- cast values automatically.
-Only impossible type casts would result in a compile-time @tt{Dynamic} type error.
-@; Kinda pointless paragraph, no?
+The same year that Siek & Taha published their original paper, Tobin-Hochstadt
+ and Felleisen described a system for combining typed and untyped @emph{modules}
+ in a single program with higher-order contracts @todo{cite} enforcing the type system's
+ invariants at runtime @todo{cite}.
+Their type system was entirely conventional and did not require a dynamic type.
+Untyped values were instead assigned a type when they crossed into typed
+ code; the boundary at which the assignment happened would later be flagged
+ if the untyped value did not act according to its type specification.
+This approach has become known as @emph{macro} gradual typing, in contrast
+ to Siek & Taha's @emph{micro} gradual typing.
 
 
 @section{Optional Types}
+
+Many languages combine static and dynamic type disciplines, but
+ only a small minority of these are gradually typed.
+That is, only a few guarantee the meaning of types at runtime.
+The other languages are @emph{optionally typed}.
 
 An optional type system lets programmers annotate untyped code, but makes no
  guarantee about how type annotations affect compilation or execution.
@@ -92,7 +65,7 @@ Typically, programmers using these languages can opt-in to static typing by
  writing type annotations.
 The compiler statically checks all typed code for type errors and just accepts
  syntactically valid untyped code.
-Note that this form of optional typing is @emph{not} sound gradual typing
+Note that this form of optional typing is @emph{not} gradual typing
  because there is no guarantee that the runtime behavior of a program
  follows its type.
 
@@ -100,7 +73,7 @@ Note that this form of optional typing is @emph{not} sound gradual typing
   @exact|{\input{fig-ts-example.tex}}|
 ]
 
-@Figure-ref{fig:ts-example} gives two similar TypeScript programs.
+To illustrate, @Figure-ref{fig:ts-example} gives two similar TypeScript programs.
 The version on the left is fully typed; the type annotations are preceded by
  a @racket[:] character.
 Any or all of these annotations may be removed to produce a partially-untyped
@@ -108,14 +81,14 @@ Any or all of these annotations may be removed to produce a partially-untyped
 Compiling any version of the program will produce the JavaScript code shown
  on the right---no matter what type annotations are present.
 When the parameter to @racket[norm] is annotated, however, the TypeScript
- compiler will warn the programmer of a type error.
+ compiler will warn the programmer of a type error at the call to @racket[norm].
 
-Emitting code regardless of known type errors is a design choice made by
+Producing JavaScript code regardless of known type errors is a design choice made by
  the TypeScript engineers, but it serves to demonstrate the language's
  type-unsoundess.
 Types present in source code of optionally typed languages are
- not enforced at runtime.
-This is a problem even in the absence of compile-time errors.
+ not enforced at runtime and
+ this is a problem even in the absence of compile-time errors.
 Untyped code is free to call @racket[norm] or
  any other typed function with nonsense arguments.
 At runtime, these calls might trigger a dynamic error, but
@@ -127,8 +100,8 @@ In practice unit testing should reveal dynamic type errors, but the fact remains
  annotations for more than protection from mis-spellings or simple logical errors.
 As a corollary, type-based optimizations are unsafe because they rely
  on information that may not be valid at runtime. @; memory error
-But you get what you pay for, and optional types are ``free'': they impose
- zero run-time cost on a program.
+But you get what you pay for, and optional types are ``free'' in the sense
+ that they impose zero run-time cost on a program.
 
 @; Should TypeScript optimize with types? [devs say no]
 @;   https://github.com/Microsoft/TypeScript/issues/1151
@@ -138,28 +111,13 @@ But you get what you pay for, and optional types are ``free'': they impose
 @;   https://www.dartlang.org/support/faq.html#q-why-is-the-type-system-designed-to-be-unsound
 
 
-@subsection{Pluggable Types}
-
-Pluggable type systems are closely related to optional types, but
- require that type annotations have no impact on a program's dynamic behavior.
-Type checking is completely independent of the runtime semantics and
- serves only as a static analysis that rejects certain ill-formed programs.
-This design makes writing a new type system for an existing language
- straightforward.
-
-The thesis of pluggable types is that a type system imposes extra restrictions
- on syntactically well-formed programs.
-These restrictions may not be appropriate in all situations, hence the
- programmer ought to choose which type systems are suitable for a given project.
-
-@; Java is pluggable https://docs.oracle.com/javase/tutorial/java/annotations/type_annotations.html
-
-
 @section{Sound Gradual Typing}
 
 @; Guarantees!
 @; TC has dynamic component
 @; Performance overhead
+
+@; cheated ???
 
 Sound gradual type systems statically check typed code for type errors,
  allow interaction between typed and untyped code, and additionally enforce
@@ -168,7 +126,7 @@ The enforcement is what separates gradual types from optional types,
  as the latter make no guarantee about the behavior of typed terms at runtime.
 In contrast, a gradual type system compiles types to run-time assertions
  that preserve the compile-time semantics of typed terms.
-When two typed parts of a program interact, the runtime assertions
+When two typed parts of a program interact the runtime assertions
  are skipped, but the boundary between typed and untyped code is always guarded.
 
 @figure["fig:tr-example" "Typed and untyped Racket code"
@@ -243,35 +201,4 @@ If optimizations outweight the cost of dynamic type checks, then sound
  types can provide a net peformance improvement.
 
 @; Haskell https://ghc.haskell.org/trac/ghc/wiki/Commentary/Compiler/HscMain
-
-
-@section{Micro vs. Macro Type Annotations}
-
-Our examples have carefully used vague terms like "part" or "component"
- to refer to code that may be either typed or untyped.
-Reason being, there are two schools of thought regarding the granularity at
- which typed and untyped code should be mixed.
-
-@emph{Micro} gradual typing @todo{siek-taha} allows any @emph{variable} in the
- program be typed or untyped.
-As @Figure-ref{fig:ts-example} demonstrates, class fields, function parameters,
- and function return types can be annotated or left untyped.
-This gives enormous freedom when adding types to a program, but also
- challenges the language designer.
-Developing a sound type system that guards against untyped components in
- the correct locations is very difficult @todo{cite gradualizer}, even more
- so when the type system must accomodate dynamic features specific to an
- untyped language @todo{cite sam?}.
-Nearly all the languages mentioned above are examples of micro gradual typing
- @todo{cite}.
-
-In contrast, @emph{macro} gradual typing @todo{th-f} requires the developer
- to declare each module as either typed or untyped.
-Typed Racket is the only macro system we know of, which is somewhat surprising
- because macro gradual typing simplifies the implementation of the typechecker
- and leads to fewer boundaries between typed and untyped code.
-The only requirements for interaction are type annotations for untyped components
- and a reliable compiler from types to coercions.
-On the other hand, Typed Racket is the only implementation of sound gradual
- typing that is more than a research language.
 
