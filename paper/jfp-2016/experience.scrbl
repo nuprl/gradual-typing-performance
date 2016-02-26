@@ -184,11 +184,28 @@ Our solution was to remove all polymorphism from struct definitions
 
 @; -----------------------------------------------------------------------------
 @section{Burden of Type Annotations}
-@; macro-level gives some chance for type inference
-@; But permissive type system fucks that
-@; anyway the annotaions are a hard thing, common gotcha on users list
-@; conversely, inference in parts of untyped code may help us optimize a region
-@; compatible vs. covering types, #:samples bug vs. htdp mixin
+
+The downside of Typed Racket's expressive type system is that practical type
+ inference is very difficult.
+Aside from standard type constructors and primitive types, any value
+ or untagged union of types are also valid types.
+In some respects, macro gradual typing makes inference easier because at least
+ there are no untyped, unannotated terms with typed code.
+But without a catch-all @tt{Dynamic} type, users must give many type annotations
+ before their programs compile.
+The sheer number of required annotations is a common surprise to
+ new users---nobody wants to annotate the return type of a for loop or
+ the parameter of a simple anonymous function @todo{cite list}.
+@; Also hard to keep annotations accurate. See racket/plot bug
+@; https://github.com/racket/plot/pull/12
+@; (This is a subtle bug that might be taken the wrong way)
+
+Looking forward, with improvements to Typed Racket's inference it may become
+ possible to infer types around an untyped module's interaction with typed code.
+Annotating just the call site in an untyped module could potentially
+ lower the cost of type boundaries.
+The difference may be between crossing a boundary at the start of a loop
+ rather than at each iteration.
 
 
 @; -----------------------------------------------------------------------------
