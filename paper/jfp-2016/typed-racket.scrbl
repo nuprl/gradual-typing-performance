@@ -12,7 +12,7 @@ For our evaluation of Typed Racket, we use a suite of
  @id[NUM-BENCHMARKS] programs
  and generate timings over the whole performance lattice for each.
 As lattices for projects with more than 6 modules are too large to analyze at
- a glance (or fit within 8 inch margins), we present our results in terms of
+ a glance, we present our results in terms of
  the proportion of @step["L" "N" "M"] configurations.
 
 
@@ -383,21 +383,22 @@ When one of these modules is typed and the other untyped, the imported definitio
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:tr"]{Experimental Protocol}
 
-Our experiment measures the running time of all
+Our experiment measured the running time of all
  configurations in each benchmark's performance lattice.
-This experiment was repeated for three versions of Racket: the 6.2 release,
- the 6.3 release, and a pre-release candidate for version 6.4.@note{In particular,
-  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
-The machine we used to generate these numbers was a 64GB RAM Linux machine with
- 32 physical AMD Opteron 6376 2.3GHz cores.
+This experiment was on three versions of Racket: version 6.2,
+ version 6.3, and a development build of version 6.4.@todo{cite commit}.
+@; {In particular,
+@;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
+The machine we used to generate these numbers was a Linux machine with
+ 32 physical AMD Opteron 6376 2.3GHz cores and 128GB RAM.
 We dedicated 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
  was run to completion before starting configurations for the next benchmark.
 
 Timing information for a single configuration was obtained by compiling the
- code ahead of time and then running the configuration's main module repeatedly.
-Each run took place on a new instance of the Racket VM with the JIT compiler
- enabled.@note{The exact command we used was @tt{racket main}}.
+ code ahead of time and then running the configuration's main module.
+Each run used a fresh instance of the Racket VM with the JIT compiler
+ enabled.
 After discarding one preliminary run, we collected timings
  for 10 runs of the configuration.
 If these 10 timings were not normally distributed, we ran an additional 20
@@ -413,10 +414,10 @@ The scripts we used to run our experiments and the data we collected
 @; -----------------------------------------------------------------------------
 @subsection[]{Detecting Stable Measurements with the Anderson-Darling test}
 
-The running time of a configuration is dependent on many factors, ranging
+The running time of a configuration depends on many factors, ranging
  from heuristics in the Racket JIT compiler to machine-level caching and
- environment variable layout.
-    @; http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
+ environment variable layout @todo{cite}.
+    @; (not sure) http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
     @; http://www-plan.cs.colorado.edu/diwan/asplos09.pdf
     @; http://janvitek.org/pubs/r3.pdf
     @; https://people.cs.umass.edu/~emery/pubs/Stabilizer-UMass-CS-TR2011-43.pdf
@@ -430,7 +431,7 @@ We further assume by the law of large numbers that our sample mean after
     @;       Ars Conjectandi: Usum & Applicationem Praecedentis Doctrinae in
     @;       Civilibus, Moralibus & Oeconomicis,
     @;       1713, Chapter 4, (Translated into English by Oscar Sheynin)
-Frankly none of these assumptions are obviously valid, but we believe the
+None of these assumptions are clearly valid, but we believe the
  relative differences we observed between configurations in a lattice are correct,
  especially since we have observed similar differences on other machines @todo{cite popl}.
 
@@ -438,7 +439,7 @@ Running even 30 iterations, however, is prohibitive given the size of our
  experiment.
 In total, we measured @todo{total} configurations on three versions of Racket.
 To finish the experiment in a timely manner, we applied the Anderson-Darling
- test @todo{cite} after taking 10 measurements with a critical value
+ normality test @todo{cite} after taking 10 measurements with a critical value
    @; http://www.hep.caltech.edu/~fcp/statistics/hypothesisTest/PoissonConsistency/AndersonDarling1954.pdf
  from Stephens @todo{cite}.
    @; http://www.math.utah.edu/~morris/Courses/6010/p1/writeup/ks.pdf
@@ -449,7 +450,7 @@ This led us to skip @todo{total} runs in total and led to no statistically
  significant differences in benchmarks that we tested exhaustively.
  @todo{which exhaustive?}
 
-For readers hoping to reproduce our setup, we now summarize the key points from
+In order to explain our methodology precisely, we now summarize the key points from
  Stephens @todo{cite} regarding the Anderson-Darling test.
 Our underlying distribution @math{F} is the distribution of runtimes obtained
  for one configuration run repeatedly on a single core.
@@ -463,15 +464,14 @@ We approximate the true mean @exact|{$\mu$}| and variance @exact|{$\sigma^2$}|
    @exact|{$$
      \myhat{\mu} = \Sigma_{i=0}^{9} \vec{x}_i / 10
      \hspace{2cm}
-     \myhat{\sigma}^2 = \Sigma_{i=0}^{9} (\mu_i - \myhat{\mu})^2 / 9
+     \myhat{\sigma}^2 = \Sigma_{i=0}^{9} (x_i - \myhat{\mu})^2 / 9
    $$}|
 
 Next we take the samples' z-scores and
  compute a probability vector @exact|{$\vec{h}$}| by mapping the standard
- normal CDF @exact|{$\Phi$}| (i.e. with parameters @exact|{$\mu = 0$}| and
- @exact|{$\sigma = 1$}|) over the z-scores.
+ normal CDF @exact|{$\Phi$}| over the z-scores.
 
-    @exact|{$$\vec{h}_i = \Phi(\frac{\myhat{x}_i - \myhat{\mu}}{\myhat{\sigma}})$$}|
+    @exact|{$$\vec{h}_i = \Phi(\frac{x_i - \myhat{\mu}}{\myhat{\sigma}})$$}|
     @; Not \sigma^2
 
 Intuitively, this vector is a histogram generated by our samples.
@@ -494,9 +494,9 @@ The Anderson-Darling statistic is expressed in terms of @exact|{$\vec{h}$}|
 Following Stephens, we modify @exact|{$A^2$}| to compensate for the fact that
  @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown @todo{cite}.
 
-    @exact|{$$ A^{*\,2} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
+    @exact|{$$ A^{2\,'} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
 
-Finally, we declare the samples non-normal if @exact|{$A^{*\,2}$}| is greater than 1.
+Finally, we declare the samples non-normal if @exact|{$A^{2\,'}$}| is greater than 1.
 The value 1 was determined experimentally by Stephens for a @math{p}-value of
  @math{1%} given 10 samples and an unknown underlying mean and variance @todo{cite}.
 
