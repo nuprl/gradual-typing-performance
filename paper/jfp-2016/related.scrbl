@@ -97,3 +97,57 @@ on the quality of the virtual machine used as the baseline.  Richards
 JavaScript. They ascribe this unimpressive result to the quality of the
 optimizations implemented in V8. In other words, V8 is able to guess types
 well enough that providing it with annotations does not help much.
+
+@; -----------------------------------------------------------------------------
+
+@section{Origins}
+
+@; Dynamic ~ 1989
+Work on gradual typing can be traced back to the type @tt{Dynamic} proposed
+ for simply-typed and polymorphic languages @todo{abadi + mauny}.
+Values of type @tt{Dynamic}  flow into a
+ program at runtime---perhaps by reading from an input port---with an explicit type tag.
+To use a @tt{Dynamic} value, one must dispatch on the value of its tag.
+Protected by a suitable guard, the untrusted value is safe to use in a typed
+ program.
+
+@; Soft ~ 1992
+Soft typing @todo{cite} was an attempt to convert dynamic code into a statically
+ typed language.
+The key tenet of soft typing is that the type checker does not reject any
+ programs it cannot prove correct.
+Instead, the checker inserts runtime casts to validate properties that must
+ hold in a safe execution.
+The end result is improved static error detection and types that may be used
+ to guide optimizations, all without imposing syntactic restrictions on the
+ language user.
+@; Theorems?
+@; Where are we now?
+
+@; Quasi-Static 1990
+A third research direction combining static and dynamic types is Thatte's
+ @emph{quasi-static} typing @todo{cite}, which essentially removed the
+ type tags from the previous work on type @tt{Dynamic}.
+Instead of requiring the programmer to dispatch on the exact tag attached
+ to values of unknown type, the quasi-static type system would infer or
+ cast values automatically.
+Only impossible type casts would result in a compile-time @tt{Dynamic} type error.
+@; Kinda pointless paragraph, no?
+
+@subsection{Pluggable Types}
+
+Pluggable type systems are closely related to optional types, but
+ require that type annotations have no impact on a program's dynamic behavior.
+Type checking is completely independent of the runtime semantics and
+ serves only as a static analysis that rejects certain ill-formed programs.
+This design makes writing a new type system for an existing language
+ straightforward.
+
+The thesis of pluggable types is that a type system imposes extra restrictions
+ on syntactically well-formed programs.
+These restrictions may not be appropriate in all situations, hence the
+ programmer ought to choose which type systems are suitable for a given project.
+
+@; Java is pluggable https://docs.oracle.com/javase/tutorial/java/annotations/type_annotations.html
+
+
