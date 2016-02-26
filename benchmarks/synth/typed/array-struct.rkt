@@ -3,14 +3,16 @@
 (require (for-syntax racket/base syntax/parse)
          (only-in racket/fixnum fx+ fx*)
          benchmark-util
-         "typed-data.rkt")
+         )
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "array-utils.rkt"
   [unsafe-array-index->value-index (-> Indexes Indexes Integer)]
   [check-array-shape-size (-> Symbol Indexes Integer)]
   [check-array-shape (-> (Vectorof Integer) (-> Nothing) Indexes)])
 
-(provide
+(safe-and-unsafe-provide
  (rename-out (Array? array?))
  (rename-out (Array-shape array-shape))
  (rename-out (Array-size  array-size))

@@ -1,9 +1,10 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "typed-data.rkt"
          (for-syntax racket/base)
          (only-in racket/list first second rest))
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
   [array? (-> Array Boolean)]
@@ -18,7 +19,7 @@
                                  ((Listof Indexes) (U #f #t 'permissive) -> Indexes))]
   [array-broadcasting (Parameterof (U #f #t 'permissive))])
 
-(provide mix)
+(safe-and-unsafe-provide mix)
 
 ;; -- array-pointwise
 (define-syntax-rule (ensure-array name arr-expr)

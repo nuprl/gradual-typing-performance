@@ -1,15 +1,10 @@
 #lang typed/racket/base
 
-(provide
-  fs
-  sawtooth-wave
-  seconds->samples
-  emit)
-
 (require benchmark-util
-         "typed-data.rkt"
          (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
          (only-in racket/math exact-floor))
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "array-utils.rkt"
   [next-indexes! (-> Indexes Integer Indexes Void)])
@@ -20,6 +15,12 @@
   [unsafe-array-proc (-> Array (-> Indexes Float))]
   [array-size (-> Array Integer)]
   [array-strictness (Parameterof (U #f #t))])
+
+(safe-and-unsafe-provide
+  fs
+  sawtooth-wave
+  seconds->samples
+  emit)
 
 ;; --- from array-sequence.rkt
 

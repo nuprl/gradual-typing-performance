@@ -1,6 +1,6 @@
 #lang typed/racket/base
-
-(provide
+(require benchmark-util)
+(safe-and-unsafe-provide
   (struct-out Array)
   (struct-out Settable-Array)
   (struct-out Mutable-Array))

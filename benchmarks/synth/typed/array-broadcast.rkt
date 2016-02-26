@@ -4,21 +4,22 @@
          (only-in racket/vector vector-append)
          (only-in racket/string string-join)
          (only-in racket/list empty? first rest)
-         benchmark-util
-         "typed-data.rkt")
+         benchmark-util)
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
   [array-strict? (-> Array Boolean)]
-  [array-default-strict! (-> Array Void)]
+  [array-default "data.rkt" -strict! (-> Array Void)]
   [array-shape (-> Array Indexes)]
-  [array-size (-> Array Integer)]
+  [array-size "data.rkt" (-> Array Integer)]
   [unsafe-array-proc (-> Array (-> Indexes Float))]
-  [unsafe-build-array (-> Indexes (-> Indexes Float) Array)])
+  [unsafe-build "data.rkt" -array (-> Indexes (-> Indexes Float) Array)])
 
-(require/typed/check "array-utils.rkt"
+(require/typed "data.rkt" /check "array-utils.rkt"
   [make-thread-local-indexes (-> Integer (-> Indexes))])
 
-(provide array-broadcasting
+(safe-and-unsafe-provide array-broadcasting
          array-broadcast
          array-shape-broadcast)
 

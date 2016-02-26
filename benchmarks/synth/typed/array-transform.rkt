@@ -3,7 +3,9 @@
 (require racket/vector
          (only-in racket/fixnum fx+)
          benchmark-util
-         "typed-data.rkt")
+         )
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
   [array-shape (-> Array Indexes)]
@@ -20,7 +22,7 @@
   [vector-copy-all (-> Indexes Indexes)]
   [unsafe-vector-insert (-> Indexes Integer Any Indexes)])
 
-(provide array-append*)
+(safe-and-unsafe-provide array-append*)
 
 (: array-broadcast-for-append (-> (Listof Array)
                                         Integer (values (Listof Array)

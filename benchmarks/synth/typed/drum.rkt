@@ -1,7 +1,9 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "typed-data.rkt")
+         )
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
   [array-size (-> Array Integer)]
@@ -21,7 +23,7 @@
   [fs Natural]
   [seconds->samples (-> Float Integer)])
 
-(provide drum)
+(safe-and-unsafe-provide drum)
 
 (: random-sample (-> Float))
 (define (random-sample) (- (* 2.0 (random)) 1.0))

@@ -16,6 +16,10 @@
   require/typed/if
   ;; (require/typed/if T E)
   ;; Imports `T` if the current module is typed, and `E` otherwise.
+
+  safe-and-unsafe-provide
+  ;; For typed modules, both provides as usual and creates a submodule
+  ;; `unsafe` that `unsafe-provide`s the same values
 )
 
 (require
@@ -24,7 +28,11 @@
     syntax/parse
     (only-in racket/base prefix-in))
   (only-in typed/racket require/typed)
-  (prefix-in typed: (only-in typed/racket require))
+  (prefix-in typed: (only-in typed/racket
+                             require
+                             provide))
+  (prefix-in typed: (only-in typed/racket/unsafe
+                             unsafe-provide))
 )
 
 (begin-for-syntax
@@ -55,9 +63,8 @@
 (define-syntax (require/adapted stx)
   (syntax-parse stx
     #:literals (prefix-in)
-    [(_ (prefix-in p m:str) rt-clause ...)
-     #'(require/typed m rt-clause ...)]
-    [(_ m:str rt-clause ...)]))
+    [(_ m-adaptee:str m-adaptor:str rt-clause ...)
+     #'(typed:require m-adaptor rt-clause ...)]))
 
 (define-syntax (require/typed/if stx)
   (syntax-parse stx 
@@ -65,3 +72,10 @@
            #'(require t)
            #'(require e))]))
 
+(define-syntax (safe-and-unsafe-provide stx)
+  (syntax-parse stx
+    [(_ p-clause ...)
+     #'(begin
+         (typed:provide p-clause ...)
+         (module* unsafe #f
+           (typed:unsafe-provide p-clause ...)))]))

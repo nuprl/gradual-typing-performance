@@ -1,7 +1,9 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "typed-data.rkt")
+         )
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
   [build-array (-> (Vectorof Nonnegative-Integer) (-> Indexes Flonum) Array)])
@@ -16,7 +18,7 @@
 (require/typed/check "mixer.rkt"
   [mix (-> Weighted-Signal * Array)])
 
-(provide sequence note)
+(safe-and-unsafe-provide sequence note)
 
 ;; details at http://www.phy.mtu.edu/~suits/notefreqs.html
 (: note-freq (-> Natural Float))

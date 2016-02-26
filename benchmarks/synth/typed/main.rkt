@@ -1,7 +1,9 @@
 #lang typed/racket/base
 
 (require benchmark-util
-         "typed-data.rkt")
+         )
+
+(require/adapted "data.rkt" "typed-data.rkt")
 
 (require/typed/check "sequencer.rkt"
   [note (-> Symbol Natural Natural (Pairof Natural Natural))]
