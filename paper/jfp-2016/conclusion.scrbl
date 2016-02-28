@@ -6,9 +6,6 @@
 
 Sound gradual typing was proposed to solve the practical issue of
  safely combining dynamic and static typing.
-In fact, fundamental research on gradual typing might serve the
- broader purpose of enabling safe program conversion as large codebases
- move to adopt new language technology.
 We have found, however, that gradual typing must address serious performance
  issues to achieve these goals.
 At present, the difference between ideal and actual performance seems
@@ -29,27 +26,25 @@ First, Typed Racket is only one implementation of sound gradual typing,
 Applying our framework to other languages like Safe TypeScript@~cite[rsfbv-popl-2015]
  and Reticulated Python @todo{cite} may yield different results.
 At the same time, we are also challenged to scale our evaluation method
- to micro-level gradual typing, where programmers can equip even the smallest
- expression with a type annotation and leave the surrounding context untouched.
+ to micro-level gradual typing, where programmers can equip any variable
+ with a type annotation and leave the surrounding context untouched.
 We conjecture that annotating complete functions or methods
  is an appropriate starting point for such an adaptation experiment.
 
 Second, Typed Racket's implementation can be improved on two levels.
-For one, the high-level translation from types to contracts could be tuned to
+For one, the conversion from types to contracts could be tuned to
  generate more efficient checks.
-We have already reduced the cost of structure type predicates but there
- are more bugs to correct.
 There are other language design issues, such as encouraging abstract types
  or using type inference to shrink the total size of a type boundary.
-The other direction is to explore a typed runtime system.
+The other level is to explore a typed runtime system.
 Typed Racket currently elaborates into plain Racket, type-checks the result,
  inserts contracts between typed and untyped modules, and then relies on
  the Racket compiler to convert the result to bytecode @~cite[thscff-pldi-2011].
 The latter implements a JIT compiler that open-codes primitive functions.
 One implication is that code from contracts does not get eliminated
  even if it is re-evaluated for the same value in a plain loop.
-A sophisticated JIT compiler may eliminate some of the contract overhead
- in such cases, but we conjecture that performance pathologies will still remain.
+A sophisticated or type-aware JIT compiler may eliminate some of the
+ contract overhead in such cases.
 Applying our method to an implementation with a more sophisticated compiler,
  e.g., Pycket@~cite[bauman-et-al-icfp-2015], may let us validate this conjecture.
 
@@ -64,6 +59,51 @@ St-Amour's feature-specific profiler@~cite[saf-cc-2015] and optimization
  coaches@~cite[stf-optimization-coaching] look promising; we
  used both kinds of tools to diagnose some of the most curious
  performance bottlenecks in our measurements.
+
+@section{Beyond Typed Racket}
+
+Gradual typing, in our mind, is not just about mixing typed and untyped code.
+The deeper question is about safe language interoperability, especially between
+ languages that offer different correctness guarantees.
+Typed Racket is just one instance, where the type system
+ is at odds with the freedom of the untyped programming language.
+A similar problem concerns typed languages' interaction with their untyped
+ runtime system, or any communication through an FFI.
+
+How can we ensure safety when data flows across a boundary?
+To date, the solution has been ``by assumption'': we assert that the boundary is correct.
+For a runtime system, this approach is justifiable.
+Checking every interaction between the runtime and the language would
+ incur a large overhead, and besides the runtime is small enough to
+ consider it a trusted computing base.
+Assuming safety is less valid, however, when reasoning about FFI calls.
+It is usually not reasonable to trust that every foreign function is correct.
+And in the case of gradual typing, the untyped code is part of the very system
+ we hope to debug and maintain by adding type safety.
+
+Thus we think of gradual typing as one motivating example for research on
+ language interoperability.
+The question is how we can enforce and streamline the conditions necessary
+ for correctness.
+Once we do find successful techniques, we expect to apply them in other
+ multi-language systems; in particular, between specialized and general-purpose
+ type systems.
+
+As a concrete example, the verification community is currently trying to
+ bring proof assistants into common use.
+This is happening gradually in the manner we outlined above.
+High-profile software like C compilers,
+ device drivers, OS kernels, and even a web browser shim have been implemented
+ in Coq because they stand to benefit the most from formal verification.
+Each conversion requires tremendous effort, so despite these successes we
+ may never reach the point where Coq is the @emph{lingua franca} for verified
+ software.
+Therefore we need safe interoperability between verified software and the existing
+ code that lives around it.
+Until now, interactions have been dealt with case-by-case, but we hope for
+ a unified theory and implementation.
+Research on typed/untyped interaction should provide key insights for this problem.
+
 
 In sum, while we accept that the current implementation technology for
  gradually-typed programming languages falls short of its promises, we also
