@@ -158,26 +158,36 @@ Our solution was to remove all polymorphism from struct definitions
 @; B. the seal changes how previously-defined functions would work
 
 
-@;@subsection{}
-@;@; - zombie symbol-based type (overloading arity)
-@;The @bm{zombie} benchmark uses an encoding of objects as functions
-@; that dispatch on a symbol.
-@;For example, a @racket[position] object with @racket[x] and @racket[y] coordinates
-@; would be implemented as a function that responds to the symbols
-@; @racket['x] and @racket['y] by returning thunks for the proper coordinate.
-@;
-@;@todo{zombie seems fixed!}
-@;
-@;@racketblock[
-@;  (define-type Position (case-> (-> 'x (-> Integer))
-@;                                (-> 'y (-> Integer))))
-@;  (define (make-position x-coord y-coord)
-@;    (lambda (sym)
-@;      (case (sym)
-@;       [(x) (lambda () x-coord)]
-@;       [(y) (lambda () y-coord)]
-@;       [else (error "unknown symbol")])))
-@;]
+@subsection{Symbol-Dependent, Recursive Types}
+@; - zombie symbol-based type (overloading arity)
+The @bm{zombie} benchmark uses an encoding of objects as functions
+ that dispatch on a symbol.
+For example, a @racket[position] object with @racket[x] and @racket[y] coordinates
+ would be implemented as a function that responds to the symbols
+ @racket['x] and @racket['y] by returning thunks for the proper coordinate.
+
+@racketblock[
+  (define-type Position
+    (Rec This
+      (case-> (-> 'x (-> Integer))
+              (-> 'y (-> Integer))
+              (-> 'this (-> This)))))
+
+  (: make-position (-> Integer Integer Position))
+  (define (make-position x-coord y-coord)
+    (lambda (sym)
+      (let ([this (make-position x-coord y-coord)])
+        (case (sym)
+         [(x) (lambda () x-coord)]
+         [(y) (lambda () y-coord)]
+         [(this) (lambda () this)]
+         [else (error "unknown symbol")]))))
+]
+
+This example does not compile in Typed Racket.
+The issue is the recursive type.
+Alone, the @racket[case->} is not an issue but the checker does not extend
+ to recursive types.
 
 
 @subsection{HTDP mixin}
