@@ -11,8 +11,7 @@ Our research is motivated by practical experience with Typed Racket,
  the gradually-typed sister language of Racket @todo{cite}.
 Developed since 2006, Typed Racket is the oldest and most mature implementation
  of @emph{sound, macro} gradual typing.
-
-Typed Racket's users have built diverse applications:
+Typed Racket's users have built diverse applications including
  plotting libraries,
  web servers,@note{https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ}@note{https://twitter.com/ID_AA_Carmack/status/695702976745381889}@note{https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ}
  probabilistic programming languages, @; @todo{cite drbayes},
@@ -20,8 +19,8 @@ Typed Racket's users have built diverse applications:
 They have used Typed Racket both to improve existing untyped code and to
  write new applications from scratch @todo{cite}.
 
-Almost universally, Typed Racket programmers complain about performance.
-The cost of interaction with untyped code is often a deal-breaker.
+Almost universally, Typed Racket programmers complain about the performance
+ cost of interaction with untyped code is often a deal-breaker.
 Recent complaints include a 50% slowdown from mixing typed and untyped code
  in a commercial web server@note{https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ},
  a 10x slowdown after fully typing a program in the hope of improving performance,@note{Personal communication from the author of the @tt{quad} benchmark}
@@ -33,23 +32,19 @@ Typed Racket's math library even includes a disclaimer about 25x-50x slowdowns
 @; Move all the footnotes to an appendix?
 
 
-@section{Why Gradual Typing?}
-@; TODO too colloquial
+@section{Pragmatics of Gradual Typing}
 
-If all our users' code was fully typed, these performance
+If all Typed Racket code was fully typed, these performance
  issues would disappear.
-Likewise if all code was untyped, though removing the types would also
- remove the soundness guarantees.
-So why bother with gradual typing?
-Surely the convenience of switching between static and dynamic type checking
- at a whim is not worth the performance overhead or language design challenges.
-To this we have two replies: one practical, one theoretical.
+Likewise if all Typed Racket users switched to untyped Racket,
+ though removing the types would also remove the soundness guarantees.
+This begs the question of why gradual typing is useful at all.
+Surely the convenience of disabling the type checker is not worth the
+ performance cost.
 
-
-@subsection{Pragmatics of Gradual Typing}
-Converting a large, untyped software system to a statically typed
- language---even a gradually typed variant of the original language---is
- a massive undertaking.
+The underlying problem is that converting a large,
+ untyped software system to a statically typed language
+ is a massive undertaking.
 The team assigned this task will need intimate knowledge of both the
  target type system and the inner workings of the existing software.
 Determining module dependencies and annotating API functions may be straightforward,
@@ -94,54 +89,6 @@ All this is to say that gradual typing is not about making it easy to flip
  a switch from untyped to typed, but rather to turn the decision of whether
  to switch a realistic local choice instead of an infeasible global one.
 
-
-@subsection{Beyond Typed Racket}
-Gradual typing, in our mind, is not just about mixing typed and untyped code.
-The deeper question is about language interoperability, especially between
- languages that offer different correctness guarantees.
-Typed Racket is just one instance, where the type system
- is at odds with the freedom of the untyped programming language.
-A similar problem concerns typed languages' interaction with their untyped
- runtime system, or any communication through an FFI.
-
-How can we ensure safety when data flows across a boundary?
-To date, the solution has been ``by assumption'': we assert that the boundary is correct.
-For a runtime system, this approach is justifiable.
-Checking every interaction between the runtime and the language would
- incur a large overhead, and besides the runtime is small enough to
- consider it a trusted computing base.
-Assuming safety is less valid, however, when reasoning about FFI calls.
-It is usually not reasonable to trust that every foreign function is correct.
-And in the case of gradual typing, the untyped code is part of the very system
- we hope to debug and maintain by adding type safety.
-
-Thus we think of gradual typing as one motivating example for research on
- language interoperability.
-The question is how we can enforce and streamline the conditions necessary
- for correctness.
-Once we do find successful techniques, we expect to apply them in other
- multi-language systems; in particular, between specialized and general-purpose
- type systems.
-
-As a concrete example, the verification community is currently trying to
- bring proof assistants into common use.
-This is happening gradually in the manner we outlined above.
-High-profile software like C compilers,
- device drivers, OS kernels, and even a web browser shim have been implemented
- in Coq because they stand to benefit the most from formal verification.
-Each conversion requires tremendous effort, so despite these successes we
- may never reach the point where Coq is the @emph{lingua franca} for verified
- software.
-Therefore we need safe interoperability between verified software and the existing
- code that lives around it.
-Even typed code, written in OCaml or Haskell for example, is not safe to
- interact with dependently typed code.
-Until now, interactions have been dealt with case-by-case, but we hope for
- a unified theory and implementation and consider our work on Typed Racket
- a practical first step.
-
-@; Snarky aside: GT self-propogating
-@; math library etc are forceful models
 
 
 @section[#:tag "sec:fsm"]{Why is Typed Racket Slow?}
