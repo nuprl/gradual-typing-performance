@@ -25,9 +25,9 @@ The idea is to extend an existing language to allow the incremental
 This gives the programmer fine-grained control to decide when the benefits
  of working with a type system outweigh the costs.
 Exactly where the annotations may be placed depends on the type system:
- @emph{macro} gradual typing@~cite[thf-dls-2006]
+ @emph{macro}-level gradual typing@~cite[thf-dls-2006]
  requires each module to be either typed or untyped
- whereas @emph{micro} gradual typing can be toggled for any expression@~cite[st-sfp-2006].
+ whereas @emph{micro}-level gradual typing can be toggled for any expression@~cite[st-sfp-2006].
 
 In the decade since gradual typing was first proposed, research groups have
  extended
