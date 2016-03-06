@@ -38,11 +38,13 @@
 (define/short lfp "LFP" "LISP and Functional Programming")
 (define/short lsc "LSC" "LISP and Symbolic Computation")
 (define/short ifl "IFL" (string-append International Symposium "Functional and Logic Programming"))
+(define/short ip "Information Processing" "Information Processing")
 (define/short tfp "TFP" (string-append Symposium "Trends in Functional Programming"))
 (define/short ecoop "ECOOP" (string-append "European " Conference "Object-Oriented Programming"))
 (define/short oopsla "OOPSLA" (string-append ACM Conference "on Object-Oriented Programming, Systems, Languages and Applications"))
 (define/short ieee-software (string-append IEEE "Software"))
 (define/short toplas "TOPLAS" (string-append ACM Transactions "Programming Languages and Systems"))
+(define/short aplwa "APLWA" "Analysis and Programming Languages for Web Applications and Cloud Applications")
 (define/short dls "DLS" "Dynamic Languages Symposium")
 (define/short flops "FLOPS" (string-append Symposium "Functional and Logic Programming"))
 (define/short esop "ESOP" (string-append "European " Symposium "on Programming"))
@@ -756,8 +758,8 @@
 ;; ----------------------------------------
 ; Gradual typing
 
-;; for these papers, see
-;; https://github.com/samth/gradual-typing-bib/blob/master/main.rkt
+;; for these papers, see 'gradual-bib.rkt'
+;; or https://github.com/samth/gradual-typing-bib/blob/master/main.rkt
 
 (define typescript
   (make-bib
@@ -768,6 +770,13 @@
 
 ;; ----------------------------------------
 ; Components and modules
+
+(define sfrbcsb-popl-2014
+  (make-bib
+   #:author (authors "Nikhil Swamy" "Cedric Fournet" "Aseem Rastogi" "Karthikeyan Bhargavan" "Juan Chen" "Pierre-Yves Strub" "Gavin Bierman")
+   #:title "Gradual Typing Embedded Securely in JavaScript"
+   #:location (proceedings-location popl #:pages '(425 437))
+   #:date 2014))
 
 (define mfh-oopsla-2001
   (make-bib
@@ -1052,6 +1061,42 @@
    #:title "MACLISP Reference Manual"
    #:date 1974))
 
+;; ----------------------------------------
+;; Blog Posts and User Links
+
+(define v-aplwa-2010
+  (make-bib
+   #:author "Jan Vitek"
+   #:title "Of Scripts and Programs, Tall Tales, Urban Legends and Future Prospects"
+   #:location (proceedings-location aplwa)
+   #:date 2010))
+
+(define tmv-esop-2014
+  (make-bib
+   #:title "Running Probabilistic Programs Backwards"
+   #:author (authors "Neil Toronto" "Jay McCarthy" "David Van Horn")
+   #:location (proceedings-location esop #:pages '(53 79))
+   #:date 2014))
+
+(define r-ip-1983
+  (make-bib
+   #:title "Types, Abstraction, and Parametric Polymorphism"
+   #:author "John C. Reynolds"
+   #:location (proceedings-location ip)
+   #:date 1983))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
+;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
+;https://www.quora.com/What-language-is-Facebook-written-in
+;http://www.artima.com/scalazine/articles/twitter_on_scala.html
+;; TR users
+;https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ
+;https://twitter.com/ID_AA_Carmack/status/695702976745381889
+;https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ
+;https://con.racket-lang.org/2015/burns.pdf
+; server https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ
+; quad @note{Personal communication from the author of the @tt{quad} benchmark}
+; tr-pfds https://groups.google.com/forum/#!searchin/racket-users/warning$20on$20using$20trie$20functions/racket-users/WBPCsdae5fs/XDgOdIZlAAAJ
+; @note{http://docs.racket-lang.org/math/array.html}
