@@ -13,7 +13,7 @@ Typed Racket's users have built diverse applications including plotting librarie
  web servers, probabilistic programming languages@~cite[tmv-esop-2014],
  and music studios.@note{Links and references to users' code are available in
    the online supplement to this paper.}
-Some of these programs migrated to Typed Racket from untyped Racket and others
+Some of these programs migrated to Typed Racket from untyped Racket and thers
  were typed projects from the start.
 At any rate, gradual typing has become a fundamental part of the Racket ecosystem.
 Many popular libraries are typed, thus their untyped clients are implicitly
@@ -39,7 +39,7 @@ As a concrete example, consider a function for multiplying two complex numbers
 #reader scribble/comment-reader
 (racketblock
   (define-type C (Pairof Nonnegative-Real Real))
-  ;;; C = (Distance from origin, Radians)
+  ;; C = (Distance from origin, Radians)
 
   (: complex-* (C C -> C))
   (define (complex-* c1 c2)
@@ -47,15 +47,23 @@ As a concrete example, consider a function for multiplying two complex numbers
           (+ (cdr c1) (cdr c2))))
 ))
 
-When this typed function is used in untyped code, its type signature is
- interpreted as a higher-order contract@~cite[ff-icfp-2002].
-The contract asserts that each call to @racket[complex-*] in untyped code
- is made with two arguments matching the type specification for complex numbers.
-Incorrect calls like @racket[(complex-* '(1 . 2) "NaN")]
+When this typed function is imported by an untyped module, we say it crosses a
+ @emph{type boundary}.
+During the import, the function's type signature is compiled into a
+ higher-order contract@~cite[ff-icfp-2002] to dynamically enforce correct usage.
+Specifically, the contract asserts that each call to @racket[complex-*]
+ in untyped code is made with two arguments matching the type specification
+ for complex numbers.
+Incorrect calls like @racket[(complex-* '(1 . 1) "NaN")]
  are detected immediately, before @racket[complex-*] is invoked, and
  the untyped code is blamed@~cite[ff-icfp-2002] for making a type error.@note{
    Correct blame is essential to Typed Racket's soundness guarantee.
    Typed code will never cause or be blamed for run-time type errors.}
+Conversely, typed modules may import untyped code by assigning types to untyped
+ identifiers.
+Assigned types are compiled to contracts and dynamically ensure that the
+ untyped code meets its type specification.
+
 
 Note that pairs are structured data, so
  validating a single argument to @racket[complex-*] requires three assertions.
@@ -64,24 +72,92 @@ These assertions are relatively fast on their own, but dynamically checking
  function always returns complex numbers can become arbitrarily expensive
  as the list grows or the function is called repeatedly.
 
+@; TODO example here?
+@; The program in @Figure-ref{TODO} underscores this point.
+@; It is a script for (... tree / list ... complex ...)
+@; When the script is typed, it runs in XXXms. Untyped, the same code takes
+@;  YYYms to run.
+@; TODO connect example to soundness?
+
 Despite the potential cost, it is essential that each call to @racket[complex-*]
  is guarded against type errors.
-Although certain type errors will be caught by low-level operations---for example,
+Although certain inputs will be caught by low-level operations---for example,
  @racket[car] and @racket[+] dynamically check their arguments---ill-typed calls
  like @racket[(complex-* '(-1 . -1) '(-3 . 0))] fail @emph{silently}.
 If we are lucky, the silent failure will trigger an error later in the program,
  but since the polar product of @racket['(-1 . -1)] and @racket[(-3 . 0)] is
  the well-typed complex number @racket[(3 . -1)] it is more likely that the
- program will compute the wrong result and leave the programmer no clue as to
+ program will compute an incorrect result and leave the programmer no clue as to
  where the error occurred.
 Such are the dangers of committing moral turpitude@~cite[r-ip-1983].
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:fsm"]{A Larger Example}
+@section[#:tag "sec:fsm"]{Understanding Software Complexity}
 
-Even programmers who know the pitfalls of 
+Knowing that type boundaries introduce run-time checks explains
+ why gradually typed programs are often slower than fully-typed or fully-untyped
+ programs.
+This information is useful, but from a programmer's perspective the real question
+ is why a given program is slow and what can be done to improve performance.
 
+In practice, a gradually typed program consists of @math{N} modules under
+ the programmer's direct control.
+The program could be anything from a one-module script to a large software
+ system with hundreds of intertwined modules.
+Occasionally the program is independent, using only core Racket or Typed Racket
+ libraries.
+More often, the program depends on other libraries in the Racket ecosystem.
+These dependencies often introduce type boundaries, either through direct
+ interaction with the program or through their own dependencies.
+@todo{examples}
+The point is that from the beginning, the boundary structure of a program
+ may be large and complex.
+
+
+A subset of the @math{N} modules in the program will typed.
+In general, we cannot predict the characteristics of these typed modules.
+Having given programmers the freedom to apply types where convenient, we
+ find that Typed Racket users have diverse motivations; here are a few common
+ of the most common:
+@itemlist[
+  @item{ @bold{Catching Bugs:}
+    The typed modules implement core functionality that the programmer
+     wanted to guard against simple bugs; for example, forgetting to check
+     for end-of-file symbols when reading from a port.
+  }
+  @item{ @bold{Documentation:}
+    The typed modules are stable code whose interfaces are unlikely to
+     change.
+    Type signatures serve as machine-checked and enforced APIs.
+  }
+  @item{ @bold{Experimental:}
+    The typed modules were the easiest to type, from the perspective of a
+     programmer just starting to use Typed Racket.
+    These could be the smallest modules or the ones with the fewest dependencies.
+  }
+  @item{ @bold{Necessity:}
+    The typed modules are tightly-coupled to other typed modules or to typed
+     library code.
+    That is, the programmer has identified an expensive type boundary and
+     removed the performance cost by typing additional modules.
+  }
+]
+@; Sometimes impossible to type, defs impossible to type the whole program
+
+
+
+
+@; -----------------------------------------------------------------------------
+
+The end goal of our research is 
+
+
+
+@; =============================================================================
+@; =============================================================================
+@; =============================================================================
+@; =============================================================================
 
 Having established that Typed Racket has known performance issues
  and given our opinion that we must address rather than avoid these issues,
