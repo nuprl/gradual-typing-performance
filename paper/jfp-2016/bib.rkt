@@ -32,6 +32,7 @@
 (define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
 (define/short lncs "LNCS" "Lecture Notes in Computer Science")
 (define/short sigplan-notices "SIGPLAN Notices" (string-append ACM "SIGPLAN Notices"))
+(define/short algorithmica "Algorithmica"  "Algorithmica")
 (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
 (define/short jfp "JFP" (string-append Journal "Functional Programming"))
 (define/short hosc "HOSC" "Higher-Order and Symbolic Programming")
@@ -1084,6 +1085,16 @@
    #:author "John C. Reynolds"
    #:location (proceedings-location ip)
    #:date 1983))
+
+(define u-algorithmica-1995
+  (make-bib
+   #:title "On-line construction of suffix trees"
+   #:author "Esko Ukkonen"
+   #:location (journal-location algorithmica
+                                #:volume 14
+                                #:number 3
+                                #:pages '(249 260))
+   #:date 1995))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html

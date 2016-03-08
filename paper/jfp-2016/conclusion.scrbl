@@ -60,6 +60,66 @@ St-Amour's feature-specific profiler@~cite[saf-cc-2015] and optimization
  used both kinds of tools to diagnose some of the most curious
  performance bottlenecks in our measurements.
 
+
+@; -----------------------------------------------------------------------------
+@section{TR Users}
+If all Typed Racket code was fully typed, these performance
+ issues would disappear.
+Likewise if all Typed Racket users switched to untyped Racket,
+ though removing the types would also remove the soundness guarantees.
+This begs the question of why gradual typing is useful at all.
+Surely the convenience of disabling the type checker is not worth the
+ performance cost.
+
+The underlying problem is that converting a large,
+ untyped software system to a statically typed language
+ is a massive undertaking.
+The team assigned this task will need intimate knowledge of both the
+ target type system and the inner workings of the existing software.
+Determining module dependencies and annotating API functions may be straightforward,
+ but recovering types of obscure or legacy functions written by a developer
+ who has long since left the project is significantly more difficult.
+
+Worse, there is no clear payoff for converting every last bit of untyped functionality.
+The program already worked ``correctly'' before conversion began,
+ so type checking is unlikely to reveal deep bugs.
+This low payoff is underscored by the opportunity cost of migrating existing
+ software; the same time could be spent building new features.
+@; Y > X but we stay
+
+Instead of requiring a full conversion, gradual typing makes it possible
+ to typecheck only core or mission-critical parts of an application.
+The converted modules fit into the software system exactly as before
+ and are now strengthened with static type checking and dynamic enforcement of type
+ signatures.
+In short, we gain increased protection from bugs in important parts of the
+ codebase and leave the rest alone---without compomising the safety of
+ the now-typed parts.
+
+Other components of a system may be converted when, if ever, doing so becomes expedient.
+Imagine, for example, that a bug is traced to an untyped module.
+The first step in fixing the bug is understanding how that untyped module
+ works, typically by reading the code, looking at test cases, and consulting other
+ developers.
+Thus a side effect of debugging untyped code is recovering its type information.
+In a gradual type system, the developer can leave these types in the code
+ so that after the buggy module is fixed, type annotations harden it against
+ future bugs and regressions.
+
+Ultimately, the stable point for a large project initally written in a
+ dynamic language is somewhere between fully-typed and fully-untyped,
+ where the essential services are statically typed and all other code
+ may or may not be typed.
+As the program evolves, some new untyped components will appear.
+So too will new typed components, and if the type system grows to add
+ a new feature then parts of the project may opt-in to the feature without
+ forcing a rewrite of neighboring components.
+All this is to say that gradual typing is not about making it easy to flip
+ a switch from untyped to typed, but rather to turn the decision of whether
+ to switch a realistic local choice instead of an infeasible global one.
+
+
+@; -----------------------------------------------------------------------------
 @section{Beyond Typed Racket}
 
 Gradual typing, in our mind, is not just about mixing typed and untyped code.
