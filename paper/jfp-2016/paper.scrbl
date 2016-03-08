@@ -2,11 +2,20 @@
 
 @(require "common.rkt")
 
-@title{Is Sound Gradual Typing Dead?}
+@title{Performance Evaluation For Gradual Typing}
 
-@((author/short "Ben Greenman, Asumu Takikawa, Max S. New, Jan Vitek, and Matthias Felleisen")
-  "BEN GREENMAN, ASUMU TAKIKAWA, MAX S. NEW, JAN VITEK, and MATTHIAS FELLEISEN"
-  @emph{@(affiliation "Northeastern University")})
+@((author/short "Ben Greenman, Asumu Takikawa, Max S. New, Daniel Feltey Robert Bruce Findler, Jan Vitek, and Matthias Felleisen")
+  "BEN GREENMAN" (affiliation-mark "1")
+  " ASUMU TAKIKAWA" (affiliation-mark "1")
+  " MAX S. NEW" (affiliation-mark "1")
+  " DANIEL FELTEY" (affiliation-mark "2")
+  " ROBERT BRUCE FINDLER" (affiliation-mark "2")
+  " JAN VITEK" (affiliation-mark "1")
+  "and MATTHIAS FELLEISEN" (affiliation-mark "1")
+  @(affiliation
+    "Northeastern University" (affiliation-mark "1")
+    (affiliation-sep)
+    "Northwestern University" (affiliation-mark "2")))
 
 @abstract{
 @bold{TBA}
@@ -42,17 +51,15 @@
 @; tools could be used to steer programmers clear from pathological cases.
 @;
 @;@todo{6.2 vs 6.3 comparison}
-@;
-@;@todo{direct answer to the "is dead?" question}
 }
 
 @include-section{intro.scrbl}
-@include-section{flavors.scrbl}
 @include-section{story.scrbl}
 @include-section{framework.scrbl}
 @include-section{typed-racket.scrbl}
 @include-section{death.scrbl}
 @include-section{experience.scrbl}
+@include-section{flavors.scrbl}
 @include-section{conclusion.scrbl}
 
 @generate-bibliography[]
