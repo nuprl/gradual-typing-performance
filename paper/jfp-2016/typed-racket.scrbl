@@ -381,7 +381,7 @@ When one of these modules is typed and the other untyped, the imported definitio
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:tr"]{Experimental Protocol}
+@section[#:tag "sec:protocol"]{Experimental Protocol}
 
 Our experiment measured the running time of all
  configurations in each benchmark's performance lattice.
@@ -592,84 +592,7 @@ The number of nodes in a lattice, however, is exponential in the number of
  modules in a program.
 Visual inspection quickly becomes impossible.
 
-To demonstrate, @Figure-ref{fig:suffixtree-lattice-6.2} is the annotated
- performance lattice for @bm{suffixtree}.
-As background, @bm{suffixtree} consists of six modules:
- @tt{data} defines label and tree nodes,
- @tt{label} defines functions on suffixtree node labels,
- @tt{lcs} computes longest common substrings,
- @tt{main} provides input to @tt{lcs},
- @tt{node} creates and traverses suffix tree nodes @todo{do rename},
- and @tt{ukkonen} builds suffix trees via Ukkonen's algorithm.
-Therefore, the configuration with only @tt{main} and @tt{ukkonen} typed
- has bitstring @tt{000101}.
-
-@figure*["fig:suffixtree-lattice-6.2"
-  @list{Annotated performance lattice for @bm{suffixtree} v6.2}
-  @todo{(data-lattice 'suffixtree "6.2")}
-]
-
-Basic questions about the performance lattice are much harder
- to answer for these 64 configurations.
-Which configurations are the slowest?
-Why might they be slow?
-    @; Readers with a magnifying glass can answer, just as readers with
-    @; poster-sized paper can answer questions about a 10-module lattice.
-We now explain key points in this lattice, but this is the last such explanation
- we will give before introducting a graphical analogue to performance lattices.
-@todo{2 lattices?}
-
-@todo{BEGIN check numbers}
-
-The fully typed configuration is again @emph{faster} than the fully untyped
- configuration.
-The difference is approximately 30%, which puts the typed/untyped ratio at 0.7.
-This improvement is due to specialization of arithmetic operations and
- field accesses by Typed Racket's optimizer @~cite[thscff-pldi-2011].
-When the optimizer is turned off, the ratio goes back up to 1.
-Sadly, the performance improvement of the typed configuration is the
- only good part of this benchmark.
-@itemlist[
-  @item{
-   Almost all partially typed configurations exhibit large slowdowns,
-    the worst begin 105x.
-  }
-  @item{
-   Adding types to any of the workhorse modules---@tt{data}, @tt{label},
-    or @tt{structs}---while leaving all other modules untyped causes slowdown of
-    at least 35x.
-   Not surprisingly, these modules are tightly coupled in the program.
-  }
-  @item{
-    Not a single path from untyped to typed converting one module at a time
-     avoids worst-case overheads within 20x.
-  }
-  @item{
-   The five slowest configurations are @todo{list}.
-   These all have a type boundary between the first two modules: @tt{data} and
-    @tt{label}.
-   Configurations where @tt{data} and @tt{label} have the same type
-    have an average overhead of @todo{X}.
-  }
-]
-
-The performance lattice for @tt{suffixtree} is bad news Typed Racket v6.2.
-It exhibits many performance ``valleys'' in which a group of similar configurations
- all suffer large performance overhead.
-Consider starting with the untyped program and choosing
- to add types to @tt{label}.
-The program slows down by a factor of 88x.
-Without any guidance, a developer may then choose to add types to @tt{structs};
- now the program slows to 104x.
-After that, typing @tt{main} (104x), @tt{ukkonen} (99x), and @tt{lcs} (103x)
- do little to improve performance.
-It is only when all the modules are typed that performance becomes acceptable
- again (0.7x), at which point it is probably too late to convince the programmer
- that gradual typing is useful.
-@; Useful for more than the static check of making sure intermediate programs type-check
-
-@todo{END check numbers}
-
+@todo{FILL IN HERE}
 
 @; -----------------------------------------------------------------------------
 @subsection{L-N/M Plots}

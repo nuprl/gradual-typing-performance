@@ -186,7 +186,7 @@ For example, a @racket[position] object with @racket[x] and @racket[y] coordinat
 
 This example does not compile in Typed Racket.
 The issue is the recursive type.
-Alone, the @racket[case->} is not an issue but the checker does not extend
+Alone, the @racket[case->] is not an issue but the checker does not extend
  to recursive types.
 
 
