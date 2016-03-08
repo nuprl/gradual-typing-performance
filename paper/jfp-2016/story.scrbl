@@ -2,7 +2,7 @@
 
 @; TODO more story, more wandering in the midst of the lattice, more anti-paths
 
-@require["common.rkt"]
+@require["common.rkt" "typed-racket.rkt"]
 @(require racket/file benchmark-util/data-lattice)
 
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
@@ -13,7 +13,7 @@ Typed Racket's users have built diverse applications including plotting librarie
  web servers, probabilistic programming languages@~cite[tmv-esop-2014],
  and music studios.@note{Links and references to users' code are available in
    the online supplement to this paper.}
-Some of these programs migrated to Typed Racket from untyped Racket and thers
+Some of these programs migrated to Typed Racket from untyped Racket and others
  were typed projects from the start.
 At any rate, gradual typing has become a fundamental part of the Racket ecosystem.
 Many popular libraries are typed, thus their untyped clients are implicitly
@@ -83,7 +83,9 @@ Despite the potential cost, it is essential that each call to @racket[complex-*]
  is guarded against type errors.
 Although certain inputs will be caught by low-level operations---for example,
  @racket[car] and @racket[+] dynamically check their arguments---ill-typed calls
- like @racket[(complex-* '(-1 . -1) '(-3 . 0))] fail @emph{silently}.
+ like:
+    @racketblock[(complex-* '(-1 . -1) '(-3 . 0))]
+ fail @emph{silently}.
 If we are lucky, the silent failure will trigger an error later in the program,
  but since the polar product of @racket['(-1 . -1)] and @racket[(-3 . 0)] is
  the well-typed complex number @racket[(3 . -1)] it is more likely that the
@@ -115,25 +117,25 @@ The point is that from the beginning, the boundary structure of a program
  may be large and complex.
 
 
-A subset of the @math{N} modules in the program will typed.
-In general, we cannot predict the characteristics of these typed modules.
-Having given programmers the freedom to apply types where convenient, we
- find that Typed Racket users have diverse motivations; here are a few common
- of the most common:
+@; Awkward, just trying to justify why the set of typed programs is random
+A subset of the @math{N} modules in the program will be typed.
+This subset is essentially chosen at random.
+Having given programmers the freedom to add types where convenient, we find that
+ Typed Racket users have diverse motivations.
+Here are some of the most common use-cases:
 @itemlist[
-  @item{ @bold{Catching Bugs:}
+  @item{ @bold{Assurance:}
     The typed modules implement core functionality that the programmer
      wanted to guard against simple bugs; for example, forgetting to check
      for end-of-file symbols when reading from a port.
   }
   @item{ @bold{Documentation:}
-    The typed modules are stable code whose interfaces are unlikely to
+    The typed modules are stable, whose interfaces are unlikely to
      change.
     Type signatures serve as machine-checked and enforced APIs.
   }
   @item{ @bold{Experimental:}
-    The typed modules were the easiest to type, from the perspective of a
-     programmer just starting to use Typed Racket.
+    The typed modules were the least effort to type.
     These could be the smallest modules or the ones with the fewest dependencies.
   }
   @item{ @bold{Necessity:}
@@ -143,121 +145,155 @@ Having given programmers the freedom to apply types where convenient, we
      removed the performance cost by typing additional modules.
   }
 ]
-@; Sometimes impossible to type, defs impossible to type the whole program
+A particular module may be typed for one, many, or none of the above reasons.
 
+We might hope that all gradually typed programs are in a temporary state
+ and will soon be fully typed, but this hope is often in vain.@note{As a
+     technical point, certain untyped features cannot be used in Typed Racket,
+     but this set of features is a small and shrinking.}
+Programmers' main task is to deliver a working and reasonably correct software
+ product.
+Adding type annotations to untyped code is @emph{orthogonal} to this goal,
+ especially when the untyped code is well-tested and appears to work correctly
+ in practice.
+Types may catch small bugs or ambiguities in an API, but their net benefit is
+ frequently not worth the software engineering cost of recovering and writing
+ out the type annotations.
+In a codebase with hundreds of modules, it is unrealistic to expect that programmers
+ will devote time to typing each line of code---indeed, the crucial feature of
+ gradual typing is that developers need not type everything before receiving
+ the benefits of static types.
 
+On the other hand, if an untyped module exhibits a bug, the first step in
+ fixing the incorrect behavior is understanding implicit type signatures in the module.
+These signatures may be on function domains or characterize values flowing
+ along program paths.
+Either way, the programmer debugging untyped code must recover this type information
+ in order to identify and prevent future bad values from triggering a bug.
+A gradually typed language encourages programmers to record these types, thereby
+ protecting against future issues; however, adding types to a single module
+ introduces new type boundaries.
+As language designers, the lesson here is that gradual typing is self-propogating:
+ programmers are encouraged to add types exactly where useful and never across the
+ entire program.
 
+Finally, when programmers ask for advice about performance issues they
+ have a target performance in mind.
+The target is usually specified in terms of how a fully-untyped version of
+ the program runs.@note{Although adding types is difficult, ignoring all types
+ in a Racket program is a 1-line change.}
+When the program is under heavy development or in an intermediate state,
+ order-of-magnitude slowdowns may be acceptable.
+That is, a programmer may be willing to tolerate a 10x slowdown as long as
+ the unit tests will run.
+Performance requirements for the final version of a program are typically much
+ stricter.
+Even 2x overhead relative to the untyped program may be unacceptable.
+Useful feedback for these programmers is a list of untyped modules that, if
+ typed, would mitigate the performance overhead.
 
 @; -----------------------------------------------------------------------------
 
-The end goal of our research is 
-
-
-
-@; =============================================================================
-@; =============================================================================
-@; =============================================================================
-@; =============================================================================
-
-Having established that Typed Racket has known performance issues
- and given our opinion that we must address rather than avoid these issues,
- we now examine the boundaries occurring in a small program.
-Our running example for this section is a small program, @tt{fsm},
- that simulates a population of interacting finite-state machines.
-The program consists of four modules:
- @itemlist[
-   @item{
-     @tt{automata} defines a state machine datatype and sample implementations;
-   } @item{
-     @tt{main} is a driver module that creates a population and triggers updates;
-   } @item{
-     @tt{population} defines a (mutable) datatype for populations;
-   } @item{
-     and @tt{utilities} provides functions for working with probability vectors.
-   }]
-All told, there are @exact|{$2^4$}| ways of choosing a subset of these four
- modules to type.
-To ground our discussion we focus on the configuration
- where only @tt{population} is typed; specifically, consider the fragments of
- @tt{main} and @tt{population} shown in @Figure-ref{fig:fsm-example}.
-
-@; 1. #lang line
-First, note that each module begins with a different @tt{#lang} line.
-These directives specify which language---untyped @tt{racket} or @tt{typed/racket}---the
- module is written in.
-(The @tt{#lang} lines for @tt{automata} and @tt{utilities} are
- @tt{#lang racket} as well.)
-This means that all interactions between @tt{population} and any another
- module go from typed to untyped code.
-We express this (symmetric) relationship by saying there is a
- @emph{type boundary} between @tt{population} and the other modules.
-
-@; 2. smooth interaction with require & require/typed
-@; 3. opaque types, imported functions
-Case in point, the @tt{require/typed} statements in @tt{population}
- mark an explicit boundary to untyped code.
-These statements assign types to identifiers crossing a type boundary.
-At runtime, values crossing the boundary are validated against the types by a
- runtime assertion or proxy.
-Line 4 bears special mention.
-It uses an untyped predicate @tt{automaton?} to define a new type, @tt{Automaton},
- to be used when type checking @tt{population}.
-If the module ever receives an untyped value where it expects an
- @tt{Automaton} at runtime, it will apply this predicate to decide whether
- to raise a dynamic type error.
-This happens, for example, before calling @tt{payoff} with an untyped argument.
-
-@; 4. provided types, require in untyped
-Line 4 of @tt{main} also defines a type boundary.
-This case is more subtle.
-As @tt{main} is untyped, it is not required to annotate values
- imported from @tt{population}.
-Instead, the typed module @tt{population} defines a protected set of
- exports for untyped modules to use and shares these through the @racket[require]
- statement.
-Any constant values pass through this boundary unchecked, and mutable or
- higher-order values wrap in a proxy that validates runtime input from untyped
- clients.
-
-@;@; 5. type->contract
-@;To be precise, each typed module defines two sets of identifiers:
-@; unguarded identifiers for use in other typed modules and contract-protected
-@; identifiers provided to untyped clients.
-@;The compiler decides which set of identifiers to import based on the language
-@; of the module currently being compied.
-@;Likewise, the values imported through a @tt{require/typed} are wrapped in
-@; a contract to ensure they return a well-typed result.
-
-@; 6. step/evolve
-Proxied values imported from @tt{population} are used in lines 13 and 16 of
- @tt{main}.
-Each call to these functions crosses a type boundary and therefore triggers
- a runtime check.
-In the case of @tt{step} (line 13), two checks happen.
+To make the above points concrete, we examine a 6-module Racket program,
+ @bm{suffixtree}, that implements a longest-common-substring function
+ using Ukkonen's suffix tree algorithm@~cite[u-algorithmica-1995].
+The program consists of six modules:
 @itemlist[
-  @item{Before the function call, the program asserts that @tt{pop} has type
-     @tt{Population}; that is, @tt{pop} is a vector of vectors of values that
-     pass the @tt{automata?} predicate. This check traverses the entire vector.}
-  @item{After the function call, the result is proxied to protect its type.
-     To be precise, the proxy monitors every future assignment to the vector
-     and rejects type-changing updates.}
+ @item{@tt{data} defines label and tree nodes,}
+ @item{@tt{label} defines functions on suffixtree node labels,}
+ @item{@tt{lcs} computes longest common substrings,}
+ @item{@tt{main} provides input to @tt{lcs},}
+ @item{@tt{node} creates and traverses suffix tree nodes,}
+ @item{and @tt{ukkonen} builds suffix trees.}
 ]
-When @tt{step} is called a second time with the result of the first call,
- it performs these checks again, validating and re-wrapping the proxied vector.
-Every successive call adds another proxy; each proxy slows down vector reference
- and update operations.
+Originally, @bm{suffixtree} was an untyped program.
+We manually added type annotations to the entire program by reading the
+ developer's comments and reasoning about known inputs to the program.
+From the fully-untyped and fully-typed versions of @bm{suffixtree} we then
+ generated all 64 possible ways of gradually typing the program.
+To each of these 64 configurations we assign a bitstring corresponding
+ to @bm{suffixtree}'s module names in alphabetical order.
+Using this notation, the fully-untyped configuration is @bits{000000}
+ and the configuration with only @tt{data} and @tt{node} typed is @bits{100010}.
 
-@; So how is performance?
-Unsurprisingly, these repeated wraps have an enormous performance impact.
-On Racket version 6.2, the program runs in @todo{180} milliseconds with
- no type annotations.
-Adding types to @tt{population} as we have done and leaving all other 
- modules untyped increases the running time to @todo{26 minutes---an 8,500x slowdown}.
+After generating these configurations, we ran each for 30 iterations and
+ recorded the average running time.@note{Our experiment protocol is detailed in
+  @Secref{sec:protocol}, where we present similar results for @id{(- NUM-BENCHMARKS 1)}
+  other programs.}
+These results are organized in an annotated @emph{performance lattice} in
+ @Figure-ref{fig:suffixtree-lattice-6.2}.
+The bottom level of the lattice has the untyped configuration; the first
+ level has all configurations with exactly one typed module, and so on to the top.
+Every node in the lattice is marked with a sequence of colored shapes representing
+ a configuration's bitstring.
+A black shape represents a typed module and a white shape is an untyped one;
+ in other words, the shape at index @math{3} from the left is colored
+ iff the bit at index @math{3} from the left is 1,
+ meaning the @tt{main} module is typed.
+Nodes are labeled with the configuration's overhead---computed
+ as the configuration's mean runtime divided by the fully-untyped
+ configuration's mean runtime---and
+ the standard error of our timings.
 
-If, however, we perservere and add types to every module in the program,
- the running time improves to @todo{85} milliseconds.
-This net improvement is due to Typed Racket's optimizer, which specializes
- arithmetic and vector operations in typed code.
-Without dynamic checks to shadow these optimizations, the program reflects well
- on Typed Racket.
+@figure*["fig:suffixtree-lattice-6.2"
+  @list{Annotated performance lattice for @bm{suffixtree} (Racket v6.2)}
+  @todo{(data-lattice 'suffixtree "6.2")}
+]
+
+Examining the lattice raises a number of interesting points.
+@todo{BEGIN check numbers}
+@itemlist[
+  @item{
+   The fully typed configuration runs faster than the fully untyped
+    configuration by approximately 30%.
+   This improvement is due to specialization of arithmetic operations and
+    field accesses by Typed Racket's optimizer @~cite[thscff-pldi-2011].
+  }
+  @item{
+   Almost all gradually typed configurations exhibit large slowdowns,
+    up to 105x.
+  }
+  @item{
+   Adding types to any of @tt{data}, @tt{label},
+    or @tt{node} while leaving all other modules untyped causes slowdown of
+    at least 35x.
+   Not surprisingly, these modules are tightly coupled in the program.
+  }
+  @item{
+    Not a single path from untyped to typed converting one module at a time
+     avoids worst-case overheads within 20x.
+  }
+  @item{
+   The five slowest configurations are @todo{list}.
+   These all have a type boundary between the first two modules: @tt{data} and
+    @tt{label}.
+   Configurations where @tt{data} and @tt{label} have the same type
+    have an average overhead of @todo{X}.
+  }
+]
+
+The performance lattice for @tt{suffixtree} is bad news for gradual typing in
+ Typed Racket.
+It exhibits many performance ``valleys'' in which a group of similar configurations
+ all suffer large performance overhead.
+Consider starting with the untyped program and choosing
+ to add types to @tt{label}.
+The program slows down by a factor of 88x.
+Without any guidance, a developer may then choose to add types to @tt{node};
+ now the program slows to 104x.
+After that, typing @tt{main} (104x), @tt{ukkonen} (99x), and @tt{lcs} (103x)
+ do little to improve performance.
+It is only when all the modules are typed that performance becomes acceptable
+ again (0.7x), at which point it is probably too late to convince the programmer
+ that gradual typing is useful.
+@; Useful for more than the static check of making sure intermediate programs type-check
+
+@todo{END check numbers}
+
+In terms of our earlier discussion, a programmer who converts a random subset
+ of @bm{suffixtree} to Typed Racket is very likely to arrive at a configuration
+ with high performance overhead.
+Moreover, there seems to be little hope that typing one or two additional
+ modules can possibly recover performance.
+
 

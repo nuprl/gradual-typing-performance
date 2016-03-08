@@ -52,6 +52,7 @@ Although much work has been done to safely express dynamic features like
  safety is typically guaranteed through the use of dynamic casts and type checks.
 These casts and checks affect performance, sometimes drastically.
 Slowdowns of 4x@~cite[tfdffthf-ecoop-2015], 10x@~cite[vksb-dls-2014], and 72x@~cite[rsfbv-popl-2015] have been reported in the literature.
+@todo{allende}
 
 Despite evidence of the tradeoff between safe, expressive gradual typing
  and run-time performance, there

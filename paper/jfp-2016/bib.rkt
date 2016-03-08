@@ -1107,7 +1107,6 @@
    #:location (proceedings-location ip)
    #:date 1983))
 
-<<<<<<< HEAD
 (define u-algorithmica-1995
   (make-bib
    #:title "On-line construction of suffix trees"
@@ -1118,95 +1117,6 @@
                                 #:pages '(249 260))
    #:date 1995))
 
-;; -- GC
-; Zorn's diss : http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-25.pdf
-; Hertz/Berger, GC vs. Explicit : https://people.cs.umass.edu/~emery/pubs/gcvsmalloc.pdf
-; Blackburn, Cheng, McKinley : http://www.cs.utexas.edu/users/mckinley/papers/mmtk-icse-2004.pdf
-; TODO Jones, GC handbook
-
-(define u-sde-1984
-  (make-bib
-   #:title "Generation Scavenging: A non-disruptive high performance storage reclamation algorithm"
-   #:author "David Ungar"
-   #:location (proceedings-location sde #:pages '(157 167))
-   #:date 1984))
-
-(define m-lfp-1984
-  (make-bib
-   #:title "Garbage collection in a large LISP system"
-   #:author "David A. Moon"
-   #:location (proceedings-location lfp #:pages '(235 246))
-   #:date 1984))
-
-;; http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
-(define kff-hosc-2013
-  (make-bib
-   #:title "The Racket Virtual Machine and Randomized Testing"
-   #:author (authors "Casey Klein" "Matthew Flatt" "Robert Bruce Findler")
-   #:location (proceedings-location hosc #:pages '(1 45))
-   #:date 2013))
-
-;; http://kar.kent.ac.uk/33611/7/paper.pdf
-(define kj-ismm-2013
-  (make-bib
-   #:title "Rigorous Benchmarking in Reasonable Time"
-   #:author (authors "Tomas Kalibera" "Richard E. Jones")
-   #:location (proceedings-location ismm #:pages '(63 74))
-   #:date 2013))
-
-;; http://www.cs.umass.edu/~emery/pubs/stabilizer-asplos13.pdf
-(define cb-asplos-2013
-  (make-bib
-   #:title "Stabilizer: Statistically Sound Performance Evaluation"
-   #:author (authors "Charlie Curtsinger" "Emery Berger")
-   #:location (proceedings-location asplos #:pages '(219 228))
-   #:date 2013))
-
-;; -- stats
-(define kj-tr-2013
-  (make-bib
-   #:title "Quantifying performance changes with effect size confidence intervals"
-   #:author (authors "Tomas Kalibera" "Richard Jones")
-   #:location "Technical Report 4--12, University of Kent"
-   #:date 2012))
-
-(define s-asa-1974
-  (make-bib
-   #:title "EDF Statistics for Goodness of Fit and Some Comparisons"
-   #:author "M. A. Stephens"
-   #:location (journal-location asa
-                                #:volume 69
-                                #:number 347
-                                #:pages '(730 737))
-   #:date 1974))
-
-(define ad-asa-1954
-  (make-bib
-   #:title "A Test of Goodness of Fit"
-   #:author (authors "T. W. Anderson" "D. A. Darling")
-   #:location (journal-location asa
-                                #:volume 49
-                                #:number 268
-                                #:pages '(765 769))
-   #:date 1954))
-
-;; TODO
-;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
-;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
-;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
-;https://www.quora.com/What-language-is-Facebook-written-in
-;http://www.artima.com/scalazine/articles/twitter_on_scala.html
-;; TR users
-;https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ
-;https://twitter.com/ID_AA_Carmack/status/695702976745381889
-;https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ
-;https://con.racket-lang.org/2015/burns.pdf
-; server https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ
-; quad @note{Personal communication from the author of the @tt{quad} benchmark}
-; tr-pfds https://groups.google.com/forum/#!searchin/racket-users/warning$20on$20using$20trie$20functions/racket-users/WBPCsdae5fs/XDgOdIZlAAAJ
-; @note{http://docs.racket-lang.org/math/array.html}
-=======
->>>>>>> 95fd8cf... [jfp] moral turpitude
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
