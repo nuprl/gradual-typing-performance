@@ -4,7 +4,7 @@
 
 @title{Performance Evaluation For Gradual Typing}
 
-@((author/short "Greenman, Takikawa, New, Feltey, Findler, Vitek, Felleisen")
+@((author/short "Ben Greenman, Asumu Takikawa, Max S. New, Daniel Feltey Robert Bruce Findler, Jan Vitek, and Matthias Felleisen")
   "BEN GREENMAN" (affiliation-mark "1")
   " ASUMU TAKIKAWA" (affiliation-mark "1")
   " MAX S. NEW" (affiliation-mark "1")
@@ -51,17 +51,15 @@
 @; tools could be used to steer programmers clear from pathological cases.
 @;
 @;@todo{6.2 vs 6.3 comparison}
-@;
-@;@todo{direct answer to the "is dead?" question}
 }
 
 @include-section{intro.scrbl}
-@include-section{flavors.scrbl}
 @include-section{story.scrbl}
 @include-section{framework.scrbl}
 @include-section{typed-racket.scrbl}
 @include-section{death.scrbl}
 @include-section{experience.scrbl}
+@include-section{flavors.scrbl}
 @include-section{conclusion.scrbl}
 
 @generate-bibliography[]
