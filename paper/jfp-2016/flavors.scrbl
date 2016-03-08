@@ -2,7 +2,7 @@
 
 @require["common.rkt"]
 
-@title[#:tag "sec:flavors"]{Flavors of Gradual Typing}
+@title[#:tag "sec:flavors"]{Related Work}
 The term @emph{gradual typing} was introduced by Siek & Taha to describe
  type systems that performed sound, static type checking only within functions
  whose parameters were type annotated @todo{cite}.

@@ -13,11 +13,16 @@
   ;; Natural
   ;; To generate L-N/M figures
 
+  NUM-NEW-OO
   NUM-BENCHMARKS
   ;; Natural
   ;; Not really a constant -- depends on `benchmark-name*`
 
   ;; ---------------------------------------------------------------------------
+
+  bits
+  ;; (-> String Any)
+  ;; Use to format bitstrings
 
   bm
   ;; (-> String Any)
@@ -104,6 +109,8 @@
     (if (list? name)
       (length (cdr name))
       1)))
+(define NUM-NEW-OO
+  (length '(acquire forth fsmoo)))
 
 (define MAX-OVERHEAD 20)
 (define NUM-SAMPLES 120)
@@ -111,6 +118,8 @@
 (define EXAMPLE-OVERHEAD 10)
 
 ;; -----------------------------------------------------------------------------
+
+(define bits tt)
 
 (define (bm name)
   (define name-sym (string->symbol name))
