@@ -1,6 +1,8 @@
 jfp
 ===
 
+- fix acquire, put the tree boudnary back
+
 - lattice clearly leaves questions unanswered
   (which modules to type next?)
   (cost/boundary)
