@@ -73,6 +73,8 @@ These assertions are relatively fast on their own, but dynamically checking
  as the list grows or the function is called repeatedly.
 
 @; TODO example here?
+@; - Derivatives of complex numbers
+@; - Taylor series expansion
 @; The program in @Figure-ref{TODO} underscores this point.
 @; It is a script for (... tree / list ... complex ...)
 @; When the script is typed, it runs in XXXms. Untyped, the same code takes
