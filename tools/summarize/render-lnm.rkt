@@ -389,6 +389,7 @@
 
 (: render-lnm (-> (Vectorof String) Any))
 (define (render-lnm vec)
+  (ensure-dir "./compiled")
   (command-line
    #:program "render-lnm"
    #:argv vec
