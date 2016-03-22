@@ -1,7 +1,7 @@
 #lang typed/racket
 
 (provide
- ;Automaton
+ Automaton
  oAutomaton
  Payoff
  make-random-automaton
@@ -12,7 +12,6 @@
  (make-random-automaton
   (-> Natural oAutomaton)))
 
-(define-type oAutomaton (Instance Automaton))
 (define-type Payoff Nonnegative-Real)
 (define-type Transition* [Vectorof [Vectorof State]])
 (define-type State Natural)
@@ -38,3 +37,4 @@
       ;; reset payoff and current state to original strategy
       (-> oAutomaton)]
      [equal (-> oAutomaton Boolean)]))
+(define-type oAutomaton (Instance Automaton))
