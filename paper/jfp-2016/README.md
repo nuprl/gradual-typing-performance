@@ -36,3 +36,9 @@ Building
 - Change `scribble/jfp` to look for `jfp.cls` instead of `jfp1.cls`
 - Download `ilfonts`, then `\usepackage{ilfonts}`
 
+---
+
+ @;dynamic features@~cite[tsth-esop-2013 vksb-dls-2014 sfrbcsb-popl-2014] in gradual type systems,
+ @;continuation-passing@~cite[tsth-esop-2013],
+ @;object identity checks@~cite[vksb-dls-2014], and
+ @;run-time evaluation@~cite[sfrbcsb-popl-2014],
