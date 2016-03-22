@@ -418,6 +418,7 @@
     (*SINGLE-PLOT?* #f)]
    [("--single")
     "Put all L on the same plot"
+    (*AGGREGATE* #t) ;; Also put all data for 1 benchmark in a single figure
     (*SINGLE-PLOT?* #t)]
    [("--hist" "--histogram" "-H")
     "Show CDF as a histogram"
