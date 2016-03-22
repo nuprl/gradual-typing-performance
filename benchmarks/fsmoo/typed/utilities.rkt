@@ -5,7 +5,6 @@
 (define-type Probability Nonnegative-Real)
 ;; constraint [0,1]
 
-(provide Probability)
 (provide
   sum relative-average choose-randomly)
 

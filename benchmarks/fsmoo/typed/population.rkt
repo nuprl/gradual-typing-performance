@@ -5,10 +5,11 @@
 (require
   "automata-adapted.rkt"
   benchmark-util)
-(define-type Probability Nonnegative-Real)
 (require/typed/check "utilities.rkt"
  (choose-randomly
   (-> [Listof Probability] Natural [#:random (U False Real)] [Listof Natural])))
+
+(define-type Probability Nonnegative-Real)
 
 (define-type Population
   (Class
@@ -24,9 +25,22 @@
     ;; randomly chosen fittest elements of p, also shuffle 
     ;; constraint (< r (length p))
     (-> Natural [#:random (U False Payoff)] Void))))
-(define-type oPopulation (Instance Population))
+(define-type oPopulation (Instance ;Population))
+  (Class
+   (init-field (a* Automaton*) (b* Automaton* #:optional))
+   (payoffs (-> [Listof Payoff]))
+   (match-up*
+    ;; (match-ups p r) matches up neighboring pairs of
+    ;; automata in population p for r rounds 
+    (-> Natural Void))
 
-(define-type Automaton* (Vectorof oAutomaton))
+   (death-birth
+    ;; (death-birth p r) replaces r elements of p with r "children" of 
+    ;; randomly chosen fittest elements of p, also shuffle 
+    ;; constraint (< r (length p))
+    (-> Natural [#:random (U False Payoff)] Void)))))
+
+(define-type Automaton* (Vectorof (Instance Automaton)))
 
 (provide build-random-population)
  (: build-random-population
@@ -53,7 +67,7 @@
     (super-new)
     
     (define/public (payoffs)
-      (for/list : [Listof Payoff] ([a : oAutomaton (in-vector a*)]) (send a pay)))
+      (for/list : [Listof Payoff] ([a : (Instance Automaton) (in-vector a*)]) (send a pay)))
     
     (define/public (match-up* rounds-per-match)
       ;; comment out this line if you want cummulative payoff histories:
@@ -78,7 +92,7 @@
     (: reset (-> Void))
     ;; effect: reset all automata in a*
     (define/private (reset)
-      (for ([x : oAutomaton (in-vector a*)][i : Natural (in-naturals)])
+      (for ([x : (Instance Automaton) (in-vector a*)][i : Natural (in-naturals)])
         (vector-set! a* i (send x reset))))
     
     (: shuffle-vector (-> Void))
@@ -87,7 +101,7 @@
     ;; Fisher-Yates Shuffle
     (define/private (shuffle-vector)
       ;; copy b into a
-      (for ([x : oAutomaton (in-vector a*)][i : Natural (in-naturals)])
+      (for ([x : (Instance Automaton) (in-vector a*)][i : Natural (in-naturals)])
         (vector-set! b* i x))
       ;; now shuffle a 
       (for ([x (in-vector a*)] [i (in-naturals)])

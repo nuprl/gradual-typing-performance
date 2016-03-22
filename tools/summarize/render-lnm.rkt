@@ -422,9 +422,6 @@
    [("--hist" "--histogram" "-H")
     "Show CDF as a histogram"
     (*HISTOGRAM?* #t)]
-   [("--split")
-    "Put each L in a new plot"
-    (*SINGLE-PLOT?* #f)]
    [("--make-table")
     "Create summary tables for each dataset"
     (*MAKE-TABLE?* #t)]
