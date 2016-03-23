@@ -25,12 +25,6 @@
 (require/typed "stack.rkt"
   (bulls  (-> Stack Natural)))
 
-;(require/typed "card-pool.rkt"
-;  )
-;
-;(require/typed "card.rkt"
-;  )
-
 ;; ---------------------------------------------------------------------------------------------------
 
 ;(define-local-member-name
@@ -64,19 +58,22 @@
     (define/public (fewest-bulls)      
       ;; TODO idk what
       (define stacks-with-bulls : (Listof (List Stack Natural))
-        (for/list : (Listof (List Stack Natural)) ((s my-stacks))
+        (for/list : (Listof (List Stack Natural))
+                  ((s my-stacks))
           (list s (bulls s))))
-      (first (argmin second stacks-with-bulls)))))
+      (first (argmin (lambda ([l : (List Stack Natural)]) (second l)) stacks-with-bulls)))))
 
 ;; Class[cards0 field] -> Class[fit, push, replace & larger-than-some-top-of-stacks? methods]
 (: for-dealer (-> BaseDeck% DealerDeck%))
 (define (for-dealer deck%)
   (class deck%
     (inherit-field cards0)
+    (inherit-field my-stacks)
     (super-new)
     
     ;; [Listof Stack]
-    (field [my-stacks (map list cards0)])
+    (set-field! my-stacks this (map (lambda ([c : Card]) (list c)) cards0))
+    ;(field [my-stacks
     
     (define/public (fit c)
       (: distance (-> (Listof Card) Real))
@@ -90,16 +87,20 @@
       (void (replace-stack (first s0) c)))
     
     (define/public (replace s c)
-      (replace-stack (first s) (list c)))
+      (void (replace-stack (first s) (list c))))
     
     (define/public (replace-stack top0 c)
-      (define result 0)
+      (define result : Natural 0)
       (set! my-stacks 
-            (for/list : (Listof Stack) ((s my-stacks))
+            (for/list : (Listof Stack) ((s : Stack my-stacks))
               (cond
                 [(equal? (first s) top0)
                  (set! result (bulls s))
-                 (if (cons? c) c (cons c s))]
+                 (cast
+                  (if (cons? c)
+                   c
+                   (cons c s))
+                  Stack)]
                 [else s])))
       result)
     
@@ -115,6 +116,8 @@
      ;; [Listof Card]
      ;; the tops of the initial stacks (for a round)
      cards0)
+
+    (field (my-stacks '()))
     
     (super-new)))
 
