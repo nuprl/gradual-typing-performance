@@ -6,21 +6,22 @@
 ;; (because their layout requires human intervention)
 ;; so this file provides a (brittle) parser.
 
-(provide
+;; -----------------------------------------------------------------------------
+
+(require
+  benchmark-util
+  racket/match
+  (only-in racket/path file-name-from-path filename-extension)
+  (only-in racket/sequence sequence->list)
+  (only-in racket/string string-split string-trim)
+)
+
+(safe-and-unsafe-provide
   from-tex
   module-names
   (struct-out modulegraph)
   path->project-name
   project-name
-)
-
-;; -----------------------------------------------------------------------------
-
-(require
-  racket/match
-  (only-in racket/path file-name-from-path filename-extension)
-  (only-in racket/sequence sequence->list)
-  (only-in racket/string string-split string-trim)
 )
 
 ;; =============================================================================

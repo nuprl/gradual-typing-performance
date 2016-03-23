@@ -15,7 +15,7 @@
 ;; TODO can use opaque types instead?
 (define-type ModuleGraph modulegraph)
 
-(provide
+(safe-and-unsafe-provide
   ModuleGraph
   project-name
   from-tex

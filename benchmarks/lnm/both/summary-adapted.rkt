@@ -21,7 +21,7 @@
 
 (define-type Summary summary)
 
-(provide
+(safe-and-unsafe-provide
  Summary
  from-rktd
  all-variations

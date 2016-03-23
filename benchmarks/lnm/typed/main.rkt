@@ -1,9 +1,8 @@
 #lang typed/racket/base
 
-(require
-  benchmark-util
-  "summary-adapted.rkt"
-)
+(require benchmark-util)
+
+(require/adapted "summary.rkt" "summary-adapted.rkt")
 (require/typed/check "spreadsheet.rkt"
   [rktd->spreadsheet (-> Path-String #:output Path-String #:format Symbol Void)]
 )

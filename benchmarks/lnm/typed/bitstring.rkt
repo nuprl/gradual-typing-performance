@@ -1,18 +1,19 @@
 #lang typed/racket/base
 
-(provide
-  log2
-  natural->bitstring
-  bitstring->natural
-  in-reach
-)
-
 ;; -----------------------------------------------------------------------------
 
 (require
   (only-in racket/math exact-ceiling exact-truncate)
   (only-in racket/format ~r)
   (only-in racket/list remove-duplicates)
+  benchmark-util
+)
+
+(safe-and-unsafe-provide
+  log2
+  natural->bitstring
+  bitstring->natural
+  in-reach
 )
 
 ;; =============================================================================

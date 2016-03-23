@@ -8,12 +8,6 @@
 ;;   The leftmost column is the configuration's bitstring, the rest of the
 ;;   columns are experimental results.
 
-(provide
-  ;; Convert a data file containing a vector to a spreadsheet
-  ;; Vector must follow the format specified in the `data/` directory
-  ;; (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String)
-  rktd->spreadsheet
-)
 ;; ----------------------------------------------------------------------------
 
 (require
@@ -24,6 +18,12 @@
   [log2 (-> Index Index)]
   [natural->bitstring (-> Index #:pad Index String)])
 
+(safe-and-unsafe-provide
+  ;; Convert a data file containing a vector to a spreadsheet
+  ;; Vector must follow the format specified in the `data/` directory
+  ;; (->* (Path-String) (#:output (U Path-String #f) #:format Symbol) String)
+  rktd->spreadsheet
+)
 ;; =============================================================================
 
 (define-syntax-rule (spreadsheet-error sym)

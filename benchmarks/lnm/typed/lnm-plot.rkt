@@ -9,21 +9,18 @@
 ;; - Pict showing an L-N/M plot for the data
 ;;   (Or, a list of such plots)
 
-(provide
-  lnm-plot
-)
-
 ;; -----------------------------------------------------------------------------
 
 (require
   benchmark-util
   "pict-adapted.rkt"
-  "summary-adapted.rkt"
   plot/typed/pict
   (only-in racket/math exact-floor)
   (only-in plot/typed/utils linear-seq)
   (only-in racket/math exact-floor exact-ceiling)
-)
+  )
+(require/adapted "summary.rkt" "summary-adapted.rkt")
+
 (require/typed racket/stream
   [stream-length (-> (Sequenceof String) Index)]
   [stream->list (-> (Sequenceof String) (Listof String))]
@@ -32,6 +29,10 @@
 (require/typed/check "bitstring.rkt"
   [in-reach (-> String Index (Listof String))]
   [log2 (-> Index Index)]
+)
+
+(safe-and-unsafe-provide
+  lnm-plot
 )
 
 ;; =============================================================================

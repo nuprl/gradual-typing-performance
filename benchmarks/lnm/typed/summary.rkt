@@ -3,17 +3,6 @@
 ;; Data structure representing the results of one experiment.
 ;; Handles queries for raw data and statistical summary data.
 
-(provide
-  all-variations
-  from-rktd
-  get-num-variations
-  get-project-name
-  predicate->variations
-  (struct-out summary)
-  untyped-mean
-  variation->mean-runtime
-)
-
 ;; -----------------------------------------------------------------------------
 
 (require
@@ -22,7 +11,9 @@
   math/statistics
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
-  "modulegraph-adapted.rkt")
+  )
+
+(require/adapted "modulegraph.rkt" "modulegraph-adapted.rkt")
 
 (require/typed racket/stream
   [stream-map (-> (-> Index String) (Sequenceof Index) (Sequenceof String))]
@@ -32,6 +23,17 @@
   [bitstring->natural (-> String Index)]
   [log2 (-> Index Index)]
   [natural->bitstring (-> Index #:pad Index String)]
+)
+
+(safe-and-unsafe-provide
+  all-variations
+  from-rktd
+  get-num-variations
+  get-project-name
+  predicate->variations
+  (struct-out summary)
+  untyped-mean
+  variation->mean-runtime
 )
 
 ;; =============================================================================
