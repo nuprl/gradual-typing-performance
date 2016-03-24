@@ -4,7 +4,7 @@
 
 @title{Performance Evaluation For Gradual Typing}
 
-@((author/short "Ben Greenman, Asumu Takikawa, Max S. New, Daniel Feltey Robert Bruce Findler, Jan Vitek, and Matthias Felleisen")
+@((author/short "Greenman, Takikawa, New, Feltey, Findler, Vitek, Felleisen")
   "BEN GREENMAN" (affiliation-mark "1")
   " ASUMU TAKIKAWA" (affiliation-mark "1")
   " MAX S. NEW" (affiliation-mark "1")
