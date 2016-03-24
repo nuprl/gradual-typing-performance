@@ -15,6 +15,7 @@
          exact
          generate-bibliography
          nrightarrow
+         integer->word
          parag
          sf
 
@@ -30,6 +31,7 @@
 (require "bib.rkt"
          "data.rkt"
          "gradual-bib.rkt" ; copied from the github repo
+         "util.rkt"
          racket/class
          racket/require
          scribble/core
