@@ -14,9 +14,7 @@
          exact
          generate-bibliography
          nrightarrow
-         add-commas
          integer->word
-         rnd
          parag
          sf
 
