@@ -137,4 +137,3 @@ Meeting notes
     - road block: cannot handle external dependencies OR structs
   * L-NM plots look okay, L-NM tables are ugly but may work out.
   * Resolved never to use "LNM" to refer to the plots. Going to say "deliverability plots" etc.
-
