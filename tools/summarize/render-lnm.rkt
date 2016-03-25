@@ -163,18 +163,20 @@
 ;; -----------------------------------------------------------------------------
 
 ;; Try to read a cached pict, fall back to making a new one.
-(: data->pict (->* [(Listof (List String String))] [#:tag String] Pict))
-(define (data->pict data* #:tag [tag ""])
+(: data->pict (->* [(Listof (List String String))] [#:tag (U #f String)] Pict))
+(define (data->pict data* #:tag [tag (*CACHE-TAG*)])
   (define title* (for/list : (Listof String) ([x (in-list data*)]) (car x)))
   (define rktd* (for/list : (Listof String) ([x (in-list data*)]) (cadr x)))
-  (or (get-cached rktd* #:tag tag)
-      (case (*AGGREGATE*)
-       [(#t #f) ;; boolean
-        (get-new-lnm-pict rktd* #:tag tag #:titles title*)]
-       [(mean)
-        (get-deathscore-pict rktd* #:tag tag #:titles title*)]
-       [else
-        (raise-user-error 'render-lnm "Unknown aggregation method" (*AGGREGATE*))])))
+  (parameterize ([*CACHE-TAG* tag])
+    (or
+     (get-cached rktd*)
+     (case (*AGGREGATE*)
+      [(#t #f) ;; boolean
+       (get-new-lnm-pict rktd* #:titles title*)]
+      [(mean)
+       (get-deathscore-pict rktd* #:titles title*)]
+      [else
+       (raise-user-error 'render-lnm "Unknown aggregation method" (*AGGREGATE*))]))))
 
 ;; Create a summary and L-N/M picts for a data file.
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
@@ -229,18 +231,20 @@
     (make-directory path)))
 
 ;; Save a pict, tagging with with `tag` and the `rktd*` filenames
-(: cache-pict (-> Pict (Listof String) (U #f String) Void))
-(define (cache-pict pict rktd* tag)
-  (define filepath (format-filepath tag))
-  (debug "Caching new pict at '~a'" filepath)
-  (with-output-to-file filepath
-    (lambda () (write (list rktd* (current-param-tag*) (serialize pict))))
-    #:mode 'text
-    #:exists 'replace))
+(: cache-pict (-> Pict (Listof String) Void))
+(define (cache-pict pict rktd*)
+  (define tag (*CACHE-TAG*))
+  (when tag
+    (define filepath (format-filepath tag))
+    (debug "Caching new pict at '~a'" filepath)
+    (with-output-to-file filepath
+      (lambda () (write (list rktd* (current-param-tag*) (serialize pict))))
+      #:mode 'text
+      #:exists 'replace)))
 
-(: get-cached (->* [(Listof String)] [#:tag String] (U Pict #f)))
-(define (get-cached rktd* #:tag [tag ""])
-  (define filepath (format-filepath tag))
+(: get-cached (-> (Listof String) (U Pict #f)))
+(define (get-cached rktd*)
+  (define filepath (format-filepath (*CACHE-TAG*)))
   (and (file-exists? filepath)
        (read-cache rktd* filepath)))
 
@@ -291,8 +295,8 @@
     (for/list ([t (in-list title*)] [r (in-list rktd*)])
       (list t r))))
 
-(: get-deathscore-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
-(define (get-deathscore-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
+(: get-deathscore-pict (->* [(Listof String)] [#:titles (U #f (Listof String))] Pict))
+(define (get-deathscore-pict rktd* #:titles [maybe-title* #f])
   ;(define title+rktd* (zip-title* rktd* maybe-title* #:collapse? #f))
   (raise-user-error 'render-lnm "cannot make death scores right now"))
 ;  (define S*
@@ -302,8 +306,8 @@
 ;  (car (make-plot death-plot S*)))
 
 ;; Create a pict, cache it for later use
-(: get-new-lnm-pict (->* [(Listof String)] [#:tag String #:titles (U #f (Listof String))] Pict))
-(define (get-new-lnm-pict rktd* #:tag [tag ""] #:titles [maybe-title* #f])
+(: get-new-lnm-pict (->* [(Listof String)] [#:titles (U #f (Listof String))] Pict))
+(define (get-new-lnm-pict rktd* #:titles [maybe-title* #f])
   (define title+rktd* (zip-title* rktd* maybe-title*
                         #:collapse? (assert (*AGGREGATE*) boolean?)))
   ;; Get all picts. (Each call to lnm-plot returns a list)
@@ -356,7 +360,7 @@
         pict0
         (make-legend))
       pict0))
-  (cache-pict pict/legend rktd* tag)
+  (cache-pict pict/legend rktd*)
   pict/legend)
 
 ;; =============================================================================
@@ -486,6 +490,10 @@
     mx
     "Largest x-axis value"
     (*MAX-OVERHEAD* (assert (assert (reads mx) index?) positive?))]
+   [("--cache")
+    c
+    "Cache generated pict for future calls"
+    (*CACHE-TAG* (assert c string?))]
    [("--samples" "--num-samples")
     sm
     "Number of samples along x-axis"
@@ -498,7 +506,7 @@
    ;; -- Create a pict
    (define P
       (data->pict
-        #:tag (format "cmdline~a" (if (*SHOW-PATHS?*) "-path" ""))
+        #:tag (*CACHE-TAG*)
         (for/list : (Listof (List String String))
                   ([fname (in-list arg*)])
           (list (path->project-name (string->path fname)) fname))))
