@@ -32,7 +32,7 @@
           (lambda (p)
             (parameterize ([current-output-port (open-output-nowhere)]
                            [current-error-port p])
-              (run-benchmark (vector "-i" "1" project-dir)))))))
+              (run-benchmark (vector "-n" "-i" "1" project-dir)))))))
     (check-equal? (string=? "" str) should-pass?
       (format "Expected benchmark '~a' to ~a, but it ~a-ed instead."
         bm (pass/fail should-pass?) (pass/fail (not should-pass?))))
