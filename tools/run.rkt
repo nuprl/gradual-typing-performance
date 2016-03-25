@@ -10,6 +10,11 @@
 ;;   Each job will create a new directory & save results to a file
 ;; - Aggregate the results from all sub-jobs
 
+(provide
+  run-benchmark
+  ;; Same as calling from the command line, just pass argv vector
+)
+
 (require benchmark-util/data-lattice
          "stats-helpers.rkt"
          (only-in glob in-glob)
@@ -58,13 +63,16 @@
 (define exclusive-config (make-parameter #f))
 (define min-max-config (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
+(define *ERROR-MESSAGES* (make-parameter '())) ;; (Listof String)
 
 (define-syntax-rule (compile-error path)
   (let ([message (format "Compilation failed in '~a/~a'" (current-directory) path)])
+    (*ERROR-MESSAGES* (cons message (*ERROR-MESSAGES*)))
     (error 'run:compile message)))
 
 (define-syntax-rule (runtime-error var var-idx)
   (let ([message (format "Error running configuration ~a in '~a'" var-idx var)])
+    (*ERROR-MESSAGES* (cons message (*ERROR-MESSAGES*)))
     (error 'run:runtime message)))
 
 ;; Get paths for all configuration directories
@@ -182,7 +190,7 @@
                (write-results (reverse times)))))))))
   ;; synchronize on all jobs
   (for ([thd (in-list threads)]) (thread-wait thd))
-  (void))
+  #t)
 
 (define (write-results times [dir (current-directory)])
   (with-output-to-file (build-path dir (output-path)) #:exists 'append
@@ -223,9 +231,10 @@
         (printf "Failed to find package 'typed-racket' in 'installation pkg-table\n")))
     (printf "Failed to get 'installed-pkg-table'\n")))
 
-(module+ main
+(define (run-benchmark vec)
   (define basepath
     (command-line #:program "benchmark-runner"
+                  #:argv vec
                   #:once-any
                   [("-x" "--exclusive")    x-p
                                            "Run the given configuration and no others"
@@ -337,4 +346,10 @@
           (pict->bitmap (scale (make-performance-lattice averaged-results) 3))
           save-file
           (lattice-path)
-          'png)))
+          'png))
+  (void))
+
+;; =============================================================================
+
+(module+ main
+  (run-benchmark (current-command-line-arguments)))
