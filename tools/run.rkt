@@ -199,12 +199,18 @@
           (lambda () (system "which racket")))
         "/..")
       (*racket-bin*)))
+  (define success? (box #f))
   (define str
     (parameterize ([current-directory rkt-dir])
       (with-output-to-string
         (lambda ()
-          (system "git rev-parse HEAD")))))
-  (~a str #:max-width 8))
+          (when (directory-exists? "./git")
+            (and (system "git rev-parse HEAD")
+                 (set-box! success? #t)))))))
+  ;; If we parsed the git version, print it. Otherwise, notify.
+  (if (unbox success?)
+      (~a str #:max-width 8)
+      "<unknown-commit>"))
 
 ;; Use the current `raco` to get the most-recent commit hash for typed-racket
 (define (typed-racket-checksum)

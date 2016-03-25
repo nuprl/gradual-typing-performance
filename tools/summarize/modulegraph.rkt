@@ -286,6 +286,8 @@
   (define adjlist (directory->adjlist u-dir))
   (modulegraph (path->project-name dir) adjlist dir))
 
+(define GTP "gradual-typing-performance")
+
 (: get-git-root (-> String))
 (define (get-git-root)
   (define ok? : (Boxof Boolean) (box #t))
@@ -293,7 +295,9 @@
     (with-output-to-string
       (lambda ()
         (set-box! ok? (system "git rev-parse --show-toplevel")))))
-  (if (and (unbox ok?) (string-contains? outs "gradual-typing-performance"))
+  (when (not (string-contains? outs GTP))
+    (printf "WARNING: unrecognized git repo '~a', was expecting '~a'. Proceeding anyway.\n" GTP))
+  (if (unbox ok?)
     (string-trim outs)
     (raise-user-error 'modulegraph "Must be in `gradual-typing-performance` repo to use script")))
 
