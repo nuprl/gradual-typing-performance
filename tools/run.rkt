@@ -59,6 +59,14 @@
 (define min-max-config (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
 
+(define-syntax-rule (compile-error path)
+  (let ([message (format "Compilation failed in '~a/~a'" (current-directory) path)])
+    (error 'run:compile message)))
+
+(define-syntax-rule (runtime-error var var-idx)
+  (let ([message (format "Error running configuration ~a in '~a'" var-idx var)])
+    (error 'run:runtime message)))
+
 ;; Get paths for all configuration directories
 ;; Path Path -> Listof Path
 (define (mk-configurations basepath entry-point)
@@ -114,10 +122,12 @@
            (define times null)
            (parameterize ([current-directory new-cwd])
              ;; first compile the configuration
-             (unless (system (format "taskset -c ~a ~araco make -v ~a"
-                                     job# (*racket-bin*) (path->string file)))
-               (error (format "Compilation failed for '~a/~a', shutting down"
-                              (current-directory) (path->string file))))
+             (define compile-ok?
+               (system (format "taskset -c ~a ~araco make -v ~a"
+                               job# (*racket-bin*) (path->string file))))
+
+             (unless compile-ok?
+               (compile-error (path->string file)))
 
              ;; run an extra run of the configuration to throw away in order to
              ;; avoid OS caching issues
@@ -134,7 +144,7 @@
 
              ;; run the iterations that will count for the data
              (define exact-iters (num-iterations))
-             (unless (only-compile?)
+             (unless (and (only-compile?) compile-ok?)
                (for ([i (in-range 0
                                   (or exact-iters (+ 1 (max-iterations)))
                                   1)]
@@ -159,7 +169,7 @@
                     (printf "job#~a, iteration#~a - cpu: ~a real: ~a gc: ~a~n"
                             job# i cpu real gc)
                     (set! times (cons real times))]
-                   [#f (void)])
+                   [#f (runtime-error var var-idx)])
                  ;; print anything we get on stderr so we can detect errors
                  (for-each displayln (port->lines err))
                  ;; block on the run, just in case
@@ -255,7 +265,8 @@
           [else ;; Default
            "main.rkt"]))
   ;; Assert that the parsed entry point exists in the project
-  (unless (and (file-exists? (build-path basepath "untyped" entry-point))
+  (unless (and (directory-exists? basepath)
+               (file-exists? (build-path basepath "untyped" entry-point))
                (file-exists? (build-path basepath "typed" entry-point)))
     (raise-user-error (format "entry point '~a' not found in project '~a', cannot run" entry-point basepath)))
   (unless (path-string? basepath)
