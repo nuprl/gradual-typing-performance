@@ -119,5 +119,7 @@
 (defparam *AGGREGATE* (U #f #t 'mean) #f)
 ;; TODO, something about combining figures
 
+;; ---
 (defparam *OUTPUT* Path-String "./output.png") ;; Where to save output pict
 (defparam *CACHE-PREFIX* String "./compiled/lnm-cache-")
+(defparam *CACHE-TAG* (U #f String) #f)
