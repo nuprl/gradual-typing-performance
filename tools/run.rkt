@@ -63,6 +63,7 @@
 (define exclusive-config (make-parameter #f))
 (define min-max-config (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
+(define *AFFINITY?* (make-parameter #t)) ;; Boolean
 (define *ERROR-MESSAGES* (make-parameter '())) ;; (Listof String)
 
 (define-syntax-rule (compile-error path)
@@ -131,8 +132,10 @@
            (parameterize ([current-directory new-cwd])
              ;; first compile the configuration
              (define compile-ok?
-               (system (format "taskset -c ~a ~araco make -v ~a"
-                               job# (*racket-bin*) (path->string file))))
+               (system (format "~a~araco make -v ~a"
+                         (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                         (*racket-bin*)
+                         (path->string file))))
 
              (unless compile-ok?
                (compile-error (path->string file)))
@@ -142,8 +145,10 @@
              (unless (only-compile?)
                (printf "job#~a, throwaway build/run to avoid OS caching~n" job#)
                (match-define (list in out _ err control)
-                 (process (format "taskset -c ~a ~aracket ~a"
-                                  job# (*racket-bin*) (path->string file))))
+                 (process (format "~a~aracket ~a"
+                            (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                            (*racket-bin*)
+                            (path->string file))))
                ;; make sure to block on this run
                (control 'wait)
                (close-input-port in)
@@ -164,7 +169,10 @@
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
-                   (process (format "taskset -c ~a ~aracket -e '~s'" job# (*racket-bin*) command)
+                   (process (format "~a~aracket -e '~s'"
+                              (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                              (*racket-bin*)
+                              command)
                             #:set-pwd? #t))
                  ;; if this match fails, something went wrong since we put time in above
                  (define time-info
@@ -243,6 +251,9 @@
                                       "Run the configurations between min and max inclusive"
                                       (min-max-config (list min max))]
                   #:once-each
+                  [("-n" "--no-affinity")
+                   "Do NOT set task affinity (runs all jobs on current core)"
+                   (*AFFINITY?* #f)]
                   [("-c" "--only-compile") "Only compile and don't run"
                                            (only-compile? #t)]
                   [("-o" "--output") o-p
@@ -314,7 +325,8 @@
 
   ;; Set the CPU affinity for this script to CPU0. Jobs spawned by this script run
   ;; using CPU1 and above.
-  (system (format "taskset -pc 0 ~a" (getpid)))
+  (when (*AFFINITY?*)
+    (system (format "taskset -pc 0 ~a" (getpid))))
 
   (run-benchmarks basepath entry-point jobs
                   #:config (exclusive-config)
