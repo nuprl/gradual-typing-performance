@@ -99,3 +99,12 @@ Meeting notes
   * Feb. meeting format will continue as usual, JFP due Feb 28
   * For next time, Asumu & Ben & Max each have 1 paper to read
     - While reading, look for ways to scale our technique to "large macro" or "micro" systems
+
+2016-03-25
+----------
+  * Have most of 6.2/6.3/6.4 data
+    - Missing OO benchmarks (currently re-running, after Robby's bugfix)
+    - Missing a few 6.2 benchmarks due to compile errors
+  * Not using 3x/10x anymore. Will choose new (lower) numbers from the garbage collection literature.
+  * Draft to Matthias due 1st week in April
+
