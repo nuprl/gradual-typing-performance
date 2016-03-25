@@ -89,11 +89,11 @@ Although certain inputs will be caught by low-level operations---for example,
     @racketblock[(complex-* '(-1 . -1) '(-3 . 0))]
  fail @emph{silently}.
 If we are lucky, the silent failure will trigger an error later in the program,
- but since the polar product of @racket['(-1 . -1)] and @racket[(-3 . 0)] is
- the well-typed complex number @racket[(3 . -1)] it is more likely that the
+ but since the polar product of @racket['(-1 . -1)] and @racket['(-3 . 0)] is
+ the well-typed complex number @racket['(3 . -1)] it is more likely that the
  program will compute an incorrect result and leave the programmer no clue as to
  where the error occurred.
-Such are the dangers of committing moral turpitude@~cite[r-ip-1983].
+Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
 
 
 @; -----------------------------------------------------------------------------
@@ -104,6 +104,9 @@ Knowing that type boundaries introduce run-time checks explains
  programs.
 This information is useful, but from a programmer's perspective the real question
  is why a given program is slow and what can be done to improve performance.
+The purpose of this section is to explain what we can assume about the
+ so-called @emph{given program} (spoiler: we cannot assume much).
+@; TODO bad sentence, need to replace with something BUT WHAT
 
 In practice, a gradually typed program consists of @math{N} modules under
  the programmer's direct control.
@@ -114,7 +117,7 @@ Occasionally the program is independent, using only core Racket or Typed Racket
 More often, the program depends on other libraries in the Racket ecosystem.
 These dependencies often introduce type boundaries, either through direct
  interaction with the program or through their own dependencies.
-@todo{examples}
+@; TODO add example? Right now I think it'd be distracting (2016-03-25)
 The point is that from the beginning, the boundary structure of a program
  may be large and complex.
 
@@ -124,7 +127,7 @@ A subset of the @math{N} modules in the program will be typed.
 This subset is essentially chosen at random.
 Having given programmers the freedom to add types where convenient, we find that
  Typed Racket users have diverse motivations.
-Here are some of the most common use-cases:
+Some of the most common use-cases are:
 @itemlist[
   @item{ @bold{Assurance:}
     The typed modules implement core functionality that the programmer
@@ -144,7 +147,7 @@ Here are some of the most common use-cases:
     The typed modules are tightly-coupled to other typed modules or to typed
      library code.
     That is, the programmer has identified an expensive type boundary and
-     removed the performance cost by typing additional modules.
+     reduced the performance cost by typing additional modules.
   }
 ]
 A particular module may be typed for one, many, or none of the above reasons.
@@ -171,15 +174,16 @@ On the other hand, if an untyped module exhibits a bug, the first step in
 These signatures may be on function domains or characterize values flowing
  along program paths.
 Either way, the programmer debugging untyped code must recover this type information
- in order to identify and prevent future bad values from triggering a bug.
-A gradually typed language encourages programmers to record these types, thereby
- protecting against future issues; however, adding types to a single module
- introduces new type boundaries.
-As language designers, the lesson here is that gradual typing is self-propogating:
+ in order to identify and eliminate the cause of the bug.
+A gradually typed language encourages programmers to record these types
+ as a matter-of-course in debugging, thereby hardening the program against
+ future issues.
+Typing a single module, however, introduces new type boundaries.
+As language designers, the lesson is that gradual typing is self-propagating:
  programmers are encouraged to add types exactly where useful and never across the
  entire program.
 
-Finally, when programmers ask for advice about performance issues they
+Finally, when programmers ask for advice about performance issues, they
  have a target performance in mind.
 The target is usually specified in terms of how a fully-untyped version of
  the program runs.@note{Although adding types is difficult, ignoring all types
@@ -196,7 +200,8 @@ Useful feedback for these programmers is a list of untyped modules that, if
 
 @; -----------------------------------------------------------------------------
 
-To make the above points concrete, we examine a 6-module Racket program,
+@; performance guidelines
+To make the above points on performance concrete, we examine a 6-module Racket program,
  @bm{suffixtree}, that implements a longest-common-substring function
  using Ukkonen's suffix tree algorithm@~cite[u-algorithmica-1995].
 The program consists of six modules:
@@ -220,7 +225,7 @@ Using this notation, the fully-untyped configuration is @bits{000000}
 
 After generating these configurations, we ran each for 30 iterations and
  recorded the average running time.@note{Our experiment protocol is detailed in
-  @Secref{sec:protocol}, where we present similar results for @id{(- NUM-BENCHMARKS 1)}
+  @Secref{sec:protocol}, where we present similar results for @id[(- NUM-BENCHMARKS 1)]
   other programs.}
 These results are organized in an annotated @emph{performance lattice} in
  @Figure-ref{fig:suffixtree-lattice-6.2}.
@@ -230,7 +235,7 @@ Every node in the lattice is marked with a sequence of colored shapes representi
  a configuration's bitstring.
 A black shape represents a typed module and a white shape is an untyped one;
  in other words, the shape at index @math{3} from the left is colored
- iff the bit at index @math{3} from the left is 1,
+ if and only if the bit at index @math{3} from the left is 1,
  meaning the @tt{main} module is typed.
 Nodes are labeled with the configuration's overhead---computed
  as the configuration's mean runtime divided by the fully-untyped
@@ -263,7 +268,7 @@ Examining the lattice raises a number of interesting points.
   }
   @item{
     Not a single path from untyped to typed converting one module at a time
-     avoids worst-case overheads within 20x.
+     avoids worst-case overheads below 20x.
   }
   @item{
    The five slowest configurations are @todo{list}.
