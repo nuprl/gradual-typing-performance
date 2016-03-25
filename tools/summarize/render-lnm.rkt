@@ -804,6 +804,7 @@
    ;; -- Create a pict
    (define P
       (data->pict
+        #:tag (*CACHE-TAG*)
         (for/list : (Listof (List String String))
                   ([fname (in-list arg*)])
           (list (fname->title fname) fname))))
