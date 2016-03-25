@@ -8,6 +8,8 @@
 (module+ main
   (match (current-command-line-arguments)
     [(vector path)
+     (unless (directory-exists? path)
+       (raise-user-error 'setup "Invalid directory '~a'" path))
      (create-benchmark-dirs path)]))
 
 ;; ===================================================================================================
