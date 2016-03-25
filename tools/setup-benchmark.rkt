@@ -20,7 +20,7 @@
 (define UNTYPED "no")
 (define COMMENT (string-append ";; " (make-string 77 #\-)))
 
-(define (create-benchmark-dirs 
+(define (create-benchmark-dirs
          pwd
          #:base [base (build-path pwd "base")]
          #:both [both (build-path pwd "both")]
