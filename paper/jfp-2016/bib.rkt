@@ -1117,6 +1117,27 @@
                                 #:pages '(249 260))
    #:date 1995))
 
+;; -- GC
+; Zorn's diss : http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-25.pdf
+; Hertz/Berger, GC vs. Explicit : https://people.cs.umass.edu/~emery/pubs/gcvsmalloc.pdf
+; Blackburn, Cheng, McKinley : http://www.cs.utexas.edu/users/mckinley/papers/mmtk-icse-2004.pdf
+; TODO Jones, GC handbook
+
+(define u-sde-1984
+  (make-bib
+   #:title "Generation Scavenging: A non-disruptive high performance storage reclamation algorithm"
+   #:author "David Ungar"
+   #:location (proceedings-location sde #:pages '(157 167))
+   #:date 1984))
+
+(define m-lfp-1984
+  (make-bib
+   #:title "Garbage collection in a large LISP system"
+   #:author "David A. Moon"
+   #:location (proceedings-location lfp #:pages '(235 246))
+   #:date 1984))
+
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
