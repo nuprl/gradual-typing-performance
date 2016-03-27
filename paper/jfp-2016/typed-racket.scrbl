@@ -509,6 +509,8 @@ This section presents the results of our experiment in terms of the
 For two small benchmarks we explore full performance lattices
  but our main results are the plots in @todo{figure-ref}.
 
+@todo{choosing LNM subsection}
+
 
 @; -----------------------------------------------------------------------------
 @subsection{Lattice-Based Evaluation}
@@ -586,7 +588,9 @@ This is a sad story for Typed Racket, but we promise to improve for version 6.5.
 Inspecting the annotated performance lattice for @bm{fsm} is feasible and
  even gives insight as to why the worst configurations are slow.
 At a glance, it is fairly easy to see that the 8 slow modules match the pattern
- @tt{*01*} or @tt{*10*}, corresponding to a type boundary between @tt{main}
+ @todo{pattern},
+ @;@tt{*01*} or @tt{*10*},
+ corresponding to a type boundary between @tt{main}
  and @tt{population}. @todo{use shapes?}
 The number of nodes in a lattice, however, is exponential in the number of
  modules in a program.
@@ -603,20 +607,27 @@ Visual inspection quickly becomes impossible.
 The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figure-ref}
  summarize the results from exhaustively exploring the performance lattices of
  our benchmarks on three versions of Racket.
-For this experiment we have chosen values of 3x and 10x for @math{N} and
- @math{M}, respectively, and allow up to @math{L = 2} additional type conversion
- steps.
-Hence we draw vertical lines representing @math{N} and @math{M} and organize
- our plots in 3 columns, corresponding to values of @math{L} between 0 and 2.
-These values are rather liberal,@note{We would expect that most production
-  contexts would not tolerate anything higher than 2x, if that much.}
-  but serve to ground our discussion.
-The three curves give results for Racket versions 6.2, 6.3, and 6.4.0.5.
+In each graph, the @math{x}-axis represents a slowdown relative to the untyped program
+ ranging from 1x to @id[MAX-OVERHEAD]x.
+The @math{y}-axis is a count of the number of configurations,
+ from @math{0} to @math{2^n}, scaled so that all graphs are the same height.
+A point at @math{x=3} and @math{y=50} means that fifty of a program's
+ configurations run with at most 3x overhead.
+By definition, one of these 50 is the untyped configuration.
 
-In each graph, the x-axis represents a slowdown relative to the untyped program
- (from 1x to @id[MAX-OVERHEAD]x).
-The y-axis is a count of the number of configurations
- (from @math{0} to @math{2^n}) scaled so that all graphs are the same height.
+Each plot charts three series of points corresponding to three versions of
+ Racket.
+To ground our comparison of these series, we select values for @math{N}, @math{M}, and @math{L}.
+Rather than re-use the parameters from our prior work@~cite[tfgnvf-popl-2016],
+ we choose @math{N=0.2} and @math{M=5}.
+The former is inspired by a remark about the acceptable overhead of
+ garbage collection technology@~cite[u-sde-1984].
+Of course, these parameters are just examples.
+Application-specific requirements will dictate levels of acceptable and
+ usable overhead in practice.
+
+We present three columns of plots, representing values of @math{L} ranging
+ between 0 and 2.
 If @math{L} is zero, the curves represents the total number of configurations
  with performance no worse than the overhead on the x-axis.
 For arbitrary @math{L}, the curves give the number of configurations that
@@ -630,6 +641,7 @@ Taking @id[EXAMPLE-BENCHMARK] for example, the leftmost plot shows that
  @todo{how many} configurations run within a @id[EXAMPLE-OVERHEAD] slowdown
  over the untyped configuration on Racket version 6.2.
 Upgrading to Racket version @todo{6.4.0.5} gives @todo{modest}.
+
 
 @; -----------------------------------------------------------------------------
 @; @section[#:tag "sec:all-results"]{Interpretation}
