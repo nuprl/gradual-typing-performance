@@ -16,7 +16,7 @@
 )
 
 (require benchmark-util/data-lattice
-         "stats-helpers.rkt"
+         gtp-summarize/stats-helpers
          (only-in glob in-glob)
          (only-in racket/file file->value)
          (only-in racket/format ~a ~r)
