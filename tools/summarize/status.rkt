@@ -22,7 +22,8 @@
     system)
   (only-in racket/port
     with-output-to-string)
-  (only-in gtp-summarize/summary
+  (only-in gtp-summarize/modulegraph
+    infer-project-dir
     path->project-name)
   (only-in racket/string
     string-trim
@@ -45,7 +46,7 @@
     ;; then: It's a logfile
     (unless (file-exists? p-or-log)
       (raise-logfile-error p-or-log))
-    (define project (path->project-name p-or-log))
+    (define project (path->string (infer-project-dir (path->project-name p-or-log))))
     (unless (directory-exists? project)
       (raise-project-error project))
     (values p-or-log project)]
