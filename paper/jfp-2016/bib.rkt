@@ -27,6 +27,8 @@
 
 (define/short asplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
 (define/short fpca "FPCA" (string-append ACM International Conference "Functional Programming Languages and Computer Architecture"))
+(define/short sde "SDE" (string-append ACM Symposium "on Practical software development environments"))
+(define/short lfp "LFP" (string-append ACM Symposium "on LISP and functional programming"))
 (define/short icfp "ICFP" (string-append ACM International Conference "on Functional Programming"))
 (define/short pldi "PLDI" (string-append ACM Conference "on Programming Language Design and Implementation"))
 (define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
@@ -1095,6 +1097,27 @@
                                 #:number 3
                                 #:pages '(249 260))
    #:date 1995))
+
+;; -- GC
+; Zorn's diss : http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-25.pdf
+; Hertz/Berger, GC vs. Explicit : https://people.cs.umass.edu/~emery/pubs/gcvsmalloc.pdf
+; Blackburn, Cheng, McKinley : http://www.cs.utexas.edu/users/mckinley/papers/mmtk-icse-2004.pdf
+; TODO Jones, GC handbook
+
+(define u-sde-1984
+  (make-bib
+   #:title "Generation Scavenging: A non-disruptive high performance storage reclamation algorithm"
+   #:author "David Ungar"
+   #:location (proceedings-location sde #:pages '(157 167))
+   #:date 1984))
+
+(define m-lfp-1984
+  (make-bib
+   #:title "Garbage collection in a large LISP system"
+   #:author "David A. Moon"
+   #:location (proceedings-location lfp #:pages '(235 246))
+   #:date 1984))
+
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
