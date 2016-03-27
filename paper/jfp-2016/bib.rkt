@@ -1137,6 +1137,13 @@
    #:location (proceedings-location lfp #:pages '(235 246))
    #:date 1984))
 
+;; -- stats
+(define kj-tr-2013
+  (make-bib
+   #:title "Quantifying performance changes with effect size confidence intervals"
+   #:author (authors "Tomas Kalibera" "Richard Jones")
+   #:location "TechniCal Report 4--12, University of Kent"
+   #:date 2012))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
