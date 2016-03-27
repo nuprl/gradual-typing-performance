@@ -38,7 +38,6 @@
 (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
 (define/short jfp "JFP" (string-append Journal "Functional Programming"))
 (define/short hosc "HOSC" "Higher-Order and Symbolic Programming")
-(define/short lfp "LFP" "LISP and Functional Programming")
 (define/short lsc "LSC" "LISP and Symbolic Computation")
 (define/short ifl "IFL" (string-append International Symposium "Functional and Logic Programming"))
 (define/short ip "Information Processing" "Information Processing")
@@ -1118,6 +1117,13 @@
    #:location (proceedings-location lfp #:pages '(235 246))
    #:date 1984))
 
+;; -- stats
+(define kj-tr-2013
+  (make-bib
+   #:title "Quantifying performance changes with effect size confidence intervals"
+   #:author (authors "Tomas Kalibera" "Richard Jones")
+   #:location "TechniCal Report 4--12, University of Kent"
+   #:date 2012))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
