@@ -11,6 +11,17 @@
   ;; (-> (Listof Natural) Boolean)
   ;; True if the input data is most-likely normal.
   ;;  (p=1%, assuming at least 10 samples)
+
+  independent-state?
+  ;; (->* [String] [Natural] (U #f Natural))
+  ;; Test if a benchmark configuration reaches an
+  ;;  'independent state', where successive runs do not influence one another.
+  ;; If successful, return the observed number of warmup runs.
+  ;;
+  ;; Optional argument specifies which configuration to run.
+  ;; Default is the untyped configuration.
+  ;;
+  ;; Inspired by Kalibera & Jones: https://kar.kent.ac.uk/33611/7/paper.pdf
 )
 
 (require
@@ -19,6 +30,9 @@
     erf)
   (only-in racket/math
     nan?)
+  ;; ---
+  (only-in gtp-summarize/modulegraph
+    infer-project-dir)
 )
 
 ;; -----------------------------------------------------------------------------
@@ -98,7 +112,22 @@
 (define (jarque-bera? x*)
   (> 0.1 (jarque-bera x*)))
 
-;; -----------------------------------------------------------------------------
+;; =============================================================================
+;; === Independent state?
+
+;; TODO cannot implement this yet
+;;  Kalibera & Jones recommend running 300 iterations in a single VM
+;;   and manually picking the point where the graph looks stable.
+;;  This is not cool.
+;;
+;; Option 1: build the `diagnose` plotting library, do the "clicking" thing
+;; Option 2: automate the picking process
+
+(define (independent-state? project-name)
+  (define path (infer-project-dir project-name))
+  (raise-user-error 'independent-state? "Not implemented"))
+
+;; =============================================================================
 
 ;; For spot-checking existing data files
 (module+ main
