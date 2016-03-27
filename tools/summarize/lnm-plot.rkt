@@ -1041,6 +1041,21 @@
 (define (integer->line-width i)
   (cast (+ i (*LNM-WIDTH*)) Nonnegative-Real))
 
+(: make-shapegen (-> (-> Point-Sym)))
+(define (make-shapegen)
+  (let ([c : (Boxof Natural) (box 0)])
+    (lambda ()
+      (begin
+        ;; Maybe want to cycle at some point, or throw helpful error if too big
+        (set-box! c (modulo (+ 1 (unbox c)) 6))
+        (case (unbox c)
+         [(0) 'diamond]
+         [(1) 'fullsquare]
+         [(2) 'fulltriangle]
+         [(3) 'fullcircle]
+         [(4) 'fulltriangleup]
+         [else 'full6star])))))
+
 ;; =============================================================================
 
 ;(module+ test
