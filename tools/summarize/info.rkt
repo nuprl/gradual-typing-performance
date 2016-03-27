@@ -29,6 +29,9 @@
   ("gtp-sort"
     (submod gtp-summarize/sort-configurations main)
     "Sort configurations in a dataset" #f)
+  ("gtp-status"
+    (submod gtp-summarize/status main)
+    "Read an active logfile, report number of configurations finished so far" #f)
   ("gtp-path"
     (submod gtp-summarize/tabulate-paths main)
     "Build a table of 'performant' paths through the lattice" #f)
