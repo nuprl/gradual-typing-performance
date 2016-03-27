@@ -57,6 +57,7 @@
   (only-in racket/format ~r)
   gtp-summarize/bitstring
   gtp-summarize/lnm-parameters
+  gtp-summarize/stats-helpers
   gtp-summarize/summary
 )
 ;(define-type Pict pict)
@@ -195,13 +196,15 @@
     [plot-font-face (*PLOT-FONT-FACE*)]
     [plot-font-size (*PLOT-FONT-SIZE*)])
     (define F-config**
-      (let ([next-color (make-palette)])
+      (let ([next-color (make-palette)]
+            [next-shape (make-shapegen)])
         (for/list : (Listof (Listof renderer2d))
                   ([L+style (in-list L*)])
           (define L (car L+style))
           (define st (cadr L+style))
           (for/list : (Listof renderer2d)
                   ([S (in-list ((inst sort Summary String) S* string<? #:key summary->version))])
+            ;; TODO confidence
             (define f (count-configurations S (assert L index?)
                         #:cache-up-to (assert xmax index?)
                         #:percent? (eq? (*Y-STYLE*) '%)
@@ -209,6 +212,7 @@
             (define lbl (and (*LINE-LABELS?*)
                              (format "~a (L=~a)" (summary->version S) L)))
             (define c (next-color))
+            (define s (next-shape))
             (define w (*LNM-WIDTH*))
             (if (*HISTOGRAM?*)
               (area-histogram f (linear-seq 0 xmax num-samples)
@@ -219,11 +223,12 @@
                 #:line-style st
                 #:line-color c
                 #:line-width w)
-              (function f 0 xmax
+              (discrete-function f 0 xmax
+                #:color c
                 #:label lbl
                 #:samples num-samples
-                #:style st
-                #:color c
+                ;#:style st
+                #:sym s
                 #:width w))
               ))))
     (: make-plot (-> (Listof renderer2d) pict))
@@ -516,6 +521,27 @@
 ;; -----------------------------------------------------------------------------
 ;; --- plotting utils
 
+;; Like plot's `function`, but does not connect points with a line
+(: discrete-function (-> (-> Real Real) Real Real #:color Natural
+                                                  #:label (U #f String)
+                                                  #:samples Natural
+                                                  #:sym Point-Sym
+                                                  #:width Nonnegative-Real
+                                                  renderer2d))
+(define (discrete-function f lo hi #:color c
+                                   #:label lbl
+                                   #:samples num-samples
+                                   #:sym sym
+                                   #:width w)
+  (points
+    (for/list : (Listof (List Real Real))
+              ([x (in-list (linear-seq lo hi num-samples))])
+      (list x (f x)))
+    #:color c
+    #:label lbl
+    #:sym sym
+    #:size (* 3 w)))
+
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
@@ -554,6 +580,21 @@
         ;; Maybe want to cycle at some point, or throw helpful error if too big
         (set-box! c (+ 1 (unbox c)))
         (assert (unbox c) index?)))))
+
+(: make-shapegen (-> (-> Point-Sym)))
+(define (make-shapegen)
+  (let ([c : (Boxof Natural) (box 0)])
+    (lambda ()
+      (begin
+        ;; Maybe want to cycle at some point, or throw helpful error if too big
+        (set-box! c (modulo (+ 1 (unbox c)) 6))
+        (case (unbox c)
+         [(0) 'diamond]
+         [(1) 'fullsquare]
+         [(2) 'fulltriangle]
+         [(3) 'fullcircle]
+         [(4) 'fulltriangleup]
+         [else 'full6star])))))
 
 ;; =============================================================================
 
