@@ -431,7 +431,7 @@ We further assume by the law of large numbers that our sample mean after
     @;       Ars Conjectandi: Usum & Applicationem Praecedentis Doctrinae in
     @;       Civilibus, Moralibus & Oeconomicis,
     @;       1713, Chapter 4, (Translated into English by Oscar Sheynin)
-None of these assumptions are clearly valid, but we believe the
+None of these assumptions are clearly valid@~cite[kj-tr-2013], but we believe the
  relative differences we observed between configurations in a lattice are correct,
  especially since we have observed similar differences on other machines @todo{cite popl}.
 
