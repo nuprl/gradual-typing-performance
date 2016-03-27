@@ -20,7 +20,6 @@
 )
 
 (require benchmark-util/data-lattice
-         benchmark-util/unixtime
          gtp-summarize/stats-helpers
          (only-in glob in-glob)
          (only-in racket/file file->value)
