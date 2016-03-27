@@ -1,10 +1,17 @@
 #lang typed/racket/base
 
-;; 1. get working
-;;   - pdf use points
-;;   - aggregate
-;; 2. clean code
-;; 3. document
+;; TODO
+;; - "shadow" for 90% CI
+;;   upper = count config if average hi CI is <= N
+;;     mid = count config if average is <= N
+;;   lower = count config if average lo CI is <= N
+;;  (does mirror slope, but should still be interesting to compare versions)
+;;  (gosh how to program this in?
+;;   1 copy summary objects, make versions with 1 val per row = lo/hi CI
+;;   2 change summary accessors to get mean OR ci, abstract the caching functions
+;;   3 change count-configs to stream a dataset?
+;;     (space-efficient v1, don't want to use 12GB for quad)
+;;  )
 
 ;; Specific tools for rendering L-N/M pictures in the current paper.
 
