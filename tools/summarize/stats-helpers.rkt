@@ -1,5 +1,8 @@
 #lang racket/base
 
+;; TODO
+;; - standard error of t/u ratio
+
 ;; Statistical helpers
 
 (provide
@@ -11,6 +14,15 @@
   ;; (-> (Listof Natural) Boolean)
   ;; True if the input data is most-likely normal.
   ;;  (p=1%, assuming at least 10 samples)
+
+  confidence-interval
+  ;; (->* [(Listof Real)] [#:ci Real] (Pairof Real Real))
+  ;; By default, compute 95% confidence interval for supplied data
+  ;; Return a pair of the (lower-bound . upper-bound) for 95% confidence.
+  ;;
+  ;; Optional parameter gives a confidence offset in place of 1.96
+  ;;  use this to change the interval to 90% or whatever.
+  ;; TODO better name than "confidence offset"
 
   independent-state?
   ;; (->* [String] [Natural] (U #f Natural))
@@ -111,6 +123,16 @@
 
 (define (jarque-bera? x*)
   (> 0.1 (jarque-bera x*)))
+
+;; =============================================================================
+
+(define (confidence-interval x* #:ci [ci 1.96])
+  (define u (mean x*))
+  (define n (length x*))
+  (define s (sample-stddev/mean+length x* u n))
+  (define ci-offset (/ (* ci s) (sqrt n)))
+  (cons (- u ci-offset)
+        (+ u ci-offset)))
 
 ;; =============================================================================
 ;; === Independent state?
