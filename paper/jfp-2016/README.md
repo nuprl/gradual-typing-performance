@@ -6,7 +6,7 @@ jfp
     - 19% with 3x heap
     - 70% with smaller heap
   - ???   : https://people.cs.umass.edu/~immerman/pub/hertz.pdf
-    - 20% "acceptable for personal computers
+    - 20% "acceptable for personal computers"
   - Ellis, Appel, Li : http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-25.pdf
     - 
   - ???   : /Users/ben/Downloads/mmtk-sigmetrics-2004.pdf 
