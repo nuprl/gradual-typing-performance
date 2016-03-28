@@ -1,6 +1,11 @@
 #lang scribble/base
 
-@; TODO more story, more wandering in the midst of the lattice, more anti-paths
+@; TODO
+@; - (jan) more story, more wandering in the midst of the lattice, more anti-paths
+@; - fix suffixtree numbers
+@; - re-do intro parag.
+@; - orphans/widows
+@; - send to Asumu
 
 @require["common.rkt" "typed-racket.rkt"]
 @(require racket/file benchmark-util/data-lattice)
