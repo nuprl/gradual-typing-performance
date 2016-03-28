@@ -604,6 +604,10 @@ Visual inspection quickly becomes impossible.
   @(lnm-plots "6.2" "6.3" "6.4.0.5")
 ]
 
+@; TODO
+@; - maybe best to ease in to L-NM plots with an example; don't draw all lines yet
+@; - change name from L-NM, add "backwards compat. section
+
 The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figure-ref}
  summarize the results from exhaustively exploring the performance lattices of
  our benchmarks on three versions of Racket.
