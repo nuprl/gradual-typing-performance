@@ -12,14 +12,18 @@
 
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
+@; TODO what is the goal of this paragraph?
 Our research is motivated by practical experience with Typed Racket@~cite[TypedRacket],
  the gradually-typed sister language of Racket@~cite[plt-tr1].
 Typed Racket's users have built diverse applications including plotting libraries,
  web servers, probabilistic programming languages@~cite[tmv-esop-2014],
  and music studios.@note{Links and references to users' code are available in
    the online supplement to this paper.}
-Some of these programs migrated to Typed Racket from untyped Racket and others
+@; TODO awkward
+Some of these programs
+ migrated to Typed Racket from untyped Racket and others
  were typed projects from the start.
+@; TODO necessary?
 At any rate, gradual typing has become a fundamental part of the Racket ecosystem.
 Many popular libraries are typed, thus their untyped clients are implicitly
  gradually typed programs.
@@ -61,9 +65,10 @@ Specifically, the contract asserts that each call to @racket[complex-*]
  for complex numbers.
 Incorrect calls like @racket[(complex-* '(1 . 1) "NaN")]
  are detected immediately, before @racket[complex-*] is invoked, and
- the untyped code is blamed@~cite[ff-icfp-2002] for making a type error.@note{
+ the untyped code is blamed@~cite[ff-icfp-2002] for supplying arguments of the wrong type.@note{
    Correct blame is essential to Typed Racket's soundness guarantee.
    Typed code will never cause or be blamed for run-time type errors.}
+   @; TODO explain blame more, or less, or cite christos more
 Conversely, typed modules may import untyped code by assigning types to untyped
  identifiers.
 Assigned types are compiled to contracts and dynamically ensure that the
@@ -72,6 +77,7 @@ Assigned types are compiled to contracts and dynamically ensure that the
 
 Note that pairs are structured data, so
  validating a single argument to @racket[complex-*] requires three assertions.
+ @; TODO is this detail important?
 These assertions are relatively fast on their own, but dynamically checking
  whether a large list contains only complex numbers or whether an untyped
  function always returns complex numbers can become arbitrarily expensive
@@ -88,9 +94,8 @@ These assertions are relatively fast on their own, but dynamically checking
 
 Despite the potential cost, it is essential that each call to @racket[complex-*]
  is guarded against type errors.
-Although certain inputs will be caught by low-level operations---for example,
- @racket[car] and @racket[+] dynamically check their arguments---ill-typed calls
- like:
+Although inputs such as the string @racket{NaN} will cause an error
+ when applied to @racket[+}, ill-typed like:
     @racketblock[(complex-* '(-1 . -1) '(-3 . 0))]
  fail @emph{silently}.
 If we are lucky, the silent failure will trigger an error later in the program,
@@ -105,15 +110,15 @@ Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
 @section[#:tag "sec:fsm"]{Understanding Software Complexity}
 
 Knowing that type boundaries introduce run-time checks explains
- why gradually typed programs are often slower than fully-typed or fully-untyped
- programs.
+ why gradually typed programs are often slower than fully-typed
+ or fully-untyped programs.
 This information is useful, but from a programmer's perspective the real question
  is why a given program is slow and what can be done to improve performance.
 The purpose of this section is to explain what we can assume about the
  so-called @emph{given program} (spoiler: we cannot assume much).
 @; TODO bad sentence, need to replace with something BUT WHAT
 
-In practice, a gradually typed program consists of @math{N} modules under
+In practice, a gradually typed Racket program consists of @math{N} modules under
  the programmer's direct control.
 The program could be anything from a one-module script to a large software
  system with hundreds of intertwined modules.
@@ -133,6 +138,7 @@ This subset is essentially chosen at random.
 Having given programmers the freedom to add types where convenient, we find that
  Typed Racket users have diverse motivations.
 Some of the most common use-cases are:
+@; TODO does this belong here, or in a general GT section?
 @itemlist[
   @item{ @bold{Assurance:}
     The typed modules implement core functionality that the programmer
@@ -158,8 +164,8 @@ Some of the most common use-cases are:
 A particular module may be typed for one, many, or none of the above reasons.
 
 We might hope that all gradually typed programs are in a temporary state
- and will soon be fully typed, but this hope is often in vain.@note{As a
-     technical point, certain untyped features cannot be used in Typed Racket,
+ and will soon be fully typed, but this hope is often in vain.@note{Technically,
+     certain untyped features cannot yet be used in Typed Racket,
      but this set of features is a small and shrinking.}
 Programmers' main task is to deliver a working and reasonably correct software
  product.
@@ -173,6 +179,7 @@ In a codebase with hundreds of modules, it is unrealistic to expect that program
  will devote time to typing each line of code---indeed, the crucial feature of
  gradual typing is that developers need not type everything before receiving
  the benefits of static types.
+Creating a fully-typed codebase is often @emph{not} the end goal.
 
 On the other hand, if an untyped module exhibits a bug, the first step in
  fixing the incorrect behavior is understanding implicit type signatures in the module.
@@ -187,12 +194,12 @@ Typing a single module, however, introduces new type boundaries.
 As language designers, the lesson is that gradual typing is self-propagating:
  programmers are encouraged to add types exactly where useful and never across the
  entire program.
+@; TODO what is the lesson for benchmarking? Make it explicit!
 
 Finally, when programmers ask for advice about performance issues, they
  have a target performance in mind.
 The target is usually specified in terms of how a fully-untyped version of
- the program runs.@note{Although adding types is difficult, ignoring all types
- in a Racket program is a 1-line change.}
+ the program runs.
 When the program is under heavy development or in an intermediate state,
  order-of-magnitude slowdowns may be acceptable.
 That is, a programmer may be willing to tolerate a 10x slowdown as long as
@@ -222,7 +229,8 @@ Originally, @bm{suffixtree} was an untyped program.
 We manually added type annotations to the entire program by reading the
  developer's comments and reasoning about known inputs to the program.
 From the fully-untyped and fully-typed versions of @bm{suffixtree} we then
- generated all 64 possible ways of gradually typing the program.
+ generated all gradually typed configurations.
+@; TODO what is a configuration?
 To each of these 64 configurations we assign a bitstring corresponding
  to @bm{suffixtree}'s module names in alphabetical order.
 Using this notation, the fully-untyped configuration is @bits{000000}
@@ -302,7 +310,7 @@ It is only when all the modules are typed that performance becomes acceptable
 
 @todo{END check numbers}
 
-In terms of our earlier discussion, a programmer who converts a random subset
+In terms of our earlier discussion, a programmer who converts a subset
  of @bm{suffixtree} to Typed Racket is very likely to arrive at a configuration
  with high performance overhead.
 Moreover, there seems to be little hope that typing one or two additional
