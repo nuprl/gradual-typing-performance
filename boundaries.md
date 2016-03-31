@@ -79,7 +79,20 @@ Therefore we propose the following procedure.
 2. Add a file "boundary-overrides.rktd" to these "fake" configurations
    that says which boundaries should be present.
 3. Add cases to `require/typed/check` that check for the presence of
-   the boundary-overrides file and acts as described above.
+the boundary-overrides file and acts as described above.
+4. Interpose on the untyped requires as well :(.
+
+There is 1 more problem which is that of adaptors:
+
+	Adaptee(?) <- Adaptor(Typed) <- M1(Typed)
+	                             <- M2(Typed)
+Logically Other is requiring Adaptee, but it is in actuality requiring
+from Adaptor.
+However, the contract boundary is added to the Adaptee<--Adaptor require.
+Thus Adaptor must expose an unsafe submodule that can be used when
+Adaptee is untyped, but the boundary is not wanted.
+The submodule must *separately* require the Adaptee module unsafely,
+since that is where contracts will potentially be placed.
 
 Hypothesis
 ----------
