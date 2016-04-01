@@ -108,3 +108,8 @@ Meeting notes
   * Not using 3x/10x anymore. Will choose new (lower) numbers from the garbage collection literature.
   * Draft to Matthias due 1st week in April
 
+2016-04-01
+----------
+  * Chose 20% as GC number
+  * Decided against discretizing the plots
+  * Decided against putting error bars in the plots
