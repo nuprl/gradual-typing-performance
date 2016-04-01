@@ -71,8 +71,8 @@
 
 (require
  glob
- "render-lnm.rkt"
- "scripts/modulegraph.rkt"
+ gtp-summarize/render-lnm
+ gtp-summarize/modulegraph
  racket/match
  (only-in racket/file file->value)
  (only-in "common.rkt" parag)
