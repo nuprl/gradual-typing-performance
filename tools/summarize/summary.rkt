@@ -51,6 +51,15 @@
    (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
+  (configuration->confidence
+   (-> Summary Bitstring (Pairof Real Real)))
+
+  (configuration->confidence-lo
+   (-> Summary Bitstring Real))
+
+  (configuration->confidence-hi
+   (-> Summary Bitstring Real))
+
   (configuration->stddev
    (-> Summary Bitstring Real))
   ;; Get the standard deviation runtime of a configuration
@@ -95,6 +104,12 @@
 
   (summary-modulegraph
    (-> Summary ModuleGraph))
+
+  (untyped-configuration
+   (-> Summary Bitstring))
+
+  (typed-configuration
+   (-> Summary Bitstring))
 )
 (provide
   ;; -- re-provides from modulegraph.rkt
@@ -118,6 +133,9 @@
   racket/sequence
   typed/pict
 )
+
+(require/typed gtp-summarize/stats-helpers
+  [confidence-interval (-> (Listof Real) (Pairof Real Real))])
 
 (require/typed version/utils
   (valid-version? (-> String Boolean)))
@@ -375,6 +393,14 @@
              #:when (bit-low? v i))
     (index->name (summary-modulegraph S) i)))
 
+(: untyped-configuration (-> Summary Bitstring))
+(define (untyped-configuration S)
+  (make-string (get-num-modules S) #\0))
+
+(: typed-configuration (-> Summary Bitstring))
+(define (typed-configuration S)
+  (make-string (get-num-modules S) #\1))
+
 (: predicate->configurations (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
 (define (predicate->configurations sm p)
   (sequence-filter p (all-configurations sm)))
@@ -403,6 +429,19 @@
   (assert-configuration-length S v) ;; Is this going to be expensive?
   (index->mean-runtime S (bitstring->natural v)))
 
+(: configuration->confidence-lo (-> Summary Bitstring Real))
+(define (configuration->confidence-lo S v)
+  (car (configuration->confidence S v)))
+
+(: configuration->confidence-hi (-> Summary Bitstring Real))
+(define (configuration->confidence-hi S v)
+  (cdr (configuration->confidence S v)))
+
+(: configuration->confidence (-> Summary Bitstring (Pairof Real Real)))
+(define (configuration->confidence S v)
+  (assert-configuration-length S v)
+  (index->confidence S (bitstring->natural v)))
+
 (: configuration->stddev (-> Summary Bitstring Real))
 (define (configuration->stddev S v)
   (let ([m (configuration->mean-runtime S v)]
@@ -417,6 +456,10 @@
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime sm i)
   (mean (unixtime*->index* (vector-ref (summary-dataset sm) i))))
+
+(: index->confidence (-> Summary Index (Pairof Real Real)))
+(define (index->confidence sm i)
+  (confidence-interval (vector-ref (summary-dataset sm) i)))
 
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
 (: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
@@ -610,10 +653,21 @@
 
   ;; -- untyped-mean
   (check-equal? (untyped-mean S) 5666/3)
-  
+
   ;; -- config->mean
   (check-equal? (configuration->mean-runtime S "0000") (untyped-mean S))
   (check-equal? (configuration->mean-runtime S "0010") 10563/5)
+
+  ;; -- config->confidence
+  (define (check-confidence-interval [str : String])
+    (let* ([ci (configuration->confidence S str)]
+           [m (configuration->mean-runtime S str)])
+      (check-true (< (car ci) (cdr ci)))
+      (check-true (< (car ci) m))
+      (check-true (< m (cdr ci)))))
+
+  (check-confidence-interval "0000")
+  (check-confidence-interval "0010")
 
   ;; -- config->stddev
   (check-equal? (configuration->stddev S "0000") 59.43923133942953)
