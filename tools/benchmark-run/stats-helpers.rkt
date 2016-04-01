@@ -113,6 +113,18 @@
   (> 0.1 (jarque-bera x*)))
 
 ;; =============================================================================
+
+(define (confidence-interval x* #:ci [ci 1.96])
+  (define u (mean x*))
+  (define n (length x*))
+  (define s (sample-stddev/mean+length x* u n))
+  (define ci-offset (/ (* ci s) (sqrt n)))
+  (when (<= ci-offset 0)
+    (raise-user-error 'wtfs "S is ~a\n" ci-offset))
+  (cons (- u ci-offset)
+        (+ u ci-offset)))
+
+;; =============================================================================
 ;; === Independent state?
 
 ;; TODO cannot implement this yet

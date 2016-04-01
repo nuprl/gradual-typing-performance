@@ -667,6 +667,10 @@
 (define (index->runtimes/vector D i)
   (unixtime*->index* (vector-ref D i)))
 
+(: index->confidence (-> Summary Index (Pairof Real Real)))
+(define (index->confidence sm i)
+  (confidence-interval (vector-ref (summary-dataset sm) i)))
+
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
 ;; #:init : initial value for the fold
 ;; #:pre : converts a row of absolute runtimes to a single real number
