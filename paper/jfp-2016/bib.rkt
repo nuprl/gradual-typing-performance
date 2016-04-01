@@ -165,6 +165,14 @@
    #:location (book-location #:publisher "MIT Press")
    #:date "1991"))
 
+(define armstrong-2007
+  (make-bib
+   #:author "Joe Armstrong"
+   #:is-book? #t
+   #:title "Programming Erlang: software for a concurrent world"
+   #:location (book-location #:publisher "Pragmatic Bookshelf")
+   #:date "2007"))
+
 (define AOP
   (make-bib
    #:author (authors "Gregor Kiczales"
