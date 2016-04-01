@@ -51,6 +51,9 @@
    (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
+  (configuration->standard-error
+   (-> Summary Bitstring Real))
+
   (configuration->confidence
    (-> Summary Bitstring (Pairof Real Real)))
 
@@ -429,6 +432,11 @@
   (assert-configuration-length S v) ;; Is this going to be expensive?
   (index->mean-runtime S (bitstring->natural v)))
 
+(: configuration->standard-error (-> Summary Bitstring Real))
+(define (configuration->standard-error S v)
+  (assert-configuration-length S v)
+  (index->standard-error S (bitstring->natural v)))
+
 (: configuration->confidence-lo (-> Summary Bitstring Real))
 (define (configuration->confidence-lo S v)
   (car (configuration->confidence S v)))
@@ -456,6 +464,10 @@
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime sm i)
   (mean (unixtime*->index* (vector-ref (summary-dataset sm) i))))
+
+(: index->standard-error (-> Summary Index Real))
+(define (index->standard-error sm i)
+  (stddev (vector-ref (summary-dataset sm) i)))
 
 (: index->confidence (-> Summary Index (Pairof Real Real)))
 (define (index->confidence sm i)
