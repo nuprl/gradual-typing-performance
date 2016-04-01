@@ -58,8 +58,11 @@
   ; (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
-  configuration->confidence
-  ; (-> Summary Bitstring (Pairof Real Real)))
+  (configuration->standard-error
+   (-> Summary Bitstring Real))
+
+  (configuration->confidence
+   (-> Summary Bitstring (Pairof Real Real)))
 
   configuration->confidence-lo
   ; (-> Summary Bitstring Real))
@@ -590,7 +593,7 @@
 (: configuration->standard-error (-> Summary Bitstring Real))
 (define (configuration->standard-error S v)
   (assert-configuration-length S v)
-  (index->stddev S (bitstring->natural v)))
+  (index->standard-error S (bitstring->natural v)))
 
 (: configuration->confidence-lo (-> Summary Bitstring Real))
 (define (configuration->confidence-lo S v)
@@ -666,6 +669,10 @@
 (: index->runtimes/vector (-> Dataset Index (Listof Real)))
 (define (index->runtimes/vector D i)
   (unixtime*->index* (vector-ref D i)))
+
+(: index->standard-error (-> Summary Index Real))
+(define (index->standard-error sm i)
+  (stddev (vector-ref (summary-dataset sm) i)))
 
 (: index->confidence (-> Summary Index (Pairof Real Real)))
 (define (index->confidence sm i)
