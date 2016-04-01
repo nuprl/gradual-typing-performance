@@ -1,27 +1,6 @@
 #lang typed/racket/base
 
-;; TODO
-;; - "shadow" for 90% CI
-;;   upper = count config if average hi CI is <= N
-;;     mid = count config if average is <= N
-;;   lower = count config if average lo CI is <= N
-;;  (does mirror slope, but should still be interesting to compare versions)
-;;  (gosh how to program this in?
-;;   1 copy summary objects, make versions with 1 val per row = lo/hi CI
-;;   2 change summary accessors to get mean OR ci, abstract the caching functions
-;;   3 change count-configs to stream a dataset?
-;;     (space-efficient v1, don't want to use 12GB for quad)
-;;  )
-
-;; Specific tools for rendering L-N/M pictures in the current paper.
-
-;; We currently use this two ways:
-;; - The paper (typed-racket.scrbl) calls 'data->pict' to create an image
-;; - From the command-line, call `render-lnm.rkt -o FIG.png DATA.rktd ...`
-;;   to create a figure named `FIG.png` from the data files `DATA.rktd ...`
-;; -- Use the -p option to count performant paths rather than lattice points
-;; -- If two .rktd files with the same module graph are given, plots those on
-;;     on the same graph
+;; Tools for rendering L-N/M pictures
 
 (provide
  render-lnm
@@ -203,13 +182,9 @@
         (vc-append 0 p (blank 0 (- (*PLOT-HEIGHT*) (pict-height p)))))
       (blank 0 0)))
   (define L-pict* : (Listof Pict)
-    ;; TODO there's only a 3-character difference between the branches...
-    ;;  I tried making plot-fn = (if SHOW-PATHS? path-plot lnm-plot),
-    ;;  but a U-type can't be applied!
-    (parameterize ([*PLOT-FONT-SIZE* 6])
-      (if (*SHOW-PATHS?*)
-        (path-plot S*)
-        (lnm-plot S*))))
+    (if (*SHOW-PATHS?*)
+      (path-plot S*)
+      (lnm-plot S*)))
   (cons S-tbl L-pict*))
 
 (: format-filepath (-> (U #f String) String))
@@ -424,6 +399,12 @@
     legend
     "#t/#f = show/hide legend"
     (*LEGEND?* (assert (reads legend) boolean?))]
+   [("--discrete")
+    "Plot discrete points, instead of line"
+    (*DISCRETE?* #t)]
+   [("--error" "--error-bars")
+    "Enable error bars"
+    (*ERROR-BAR?* #t)]
    [("--split")
     "Use different plot for each L"
     (*SINGLE-PLOT?* #f)]
