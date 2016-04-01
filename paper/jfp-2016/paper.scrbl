@@ -62,4 +62,9 @@
 @include-section{flavors.scrbl}
 @include-section{conclusion.scrbl}
 
+@; @section{Acknowledgments}
+@; - Stephen Chang for helping us adapt
+@;
+@;
+
 @generate-bibliography[]
