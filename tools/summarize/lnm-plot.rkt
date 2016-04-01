@@ -230,7 +230,8 @@
                   #:line-width w) acc)
               (append
                 (discrete-function
-                  (count-configurations/confidence
+                  (count-configurations/standard-error
+                  ;(count-configurations/confidence-interval
                     S (assert L index?)
                     #:cache-up-to (assert xmax index?)
                     #:percent? (eq? (*Y-STYLE*) '%)
@@ -429,6 +430,16 @@
 ;            #:width (* 3 width) #:height (* 3 height)) pict?))))
 
 ;; =============================================================================
+
+(: count-configurations/standard-error (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (Listof (-> Real Natural))))
+(define (count-configurations/standard-error sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
+  (list
+   (count-configurations sm L configuration->mean-runtime
+    #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
+   (count-configurations sm L (lambda ([S : Summary] [str : String]) (- (configuration->mean-runtime S str) (configuration->standard-error S str)))
+    #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
+   (count-configurations sm L (lambda ([S : Summary] [str : String]) (+ (configuration->mean-runtime S str) (configuration->standard-error S str)))
+    #:cache-up-to lim #:pdf? pdf? #:percent? percent?)))
 
 (: count-configurations/confidence (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (Listof (-> Real Natural))))
 (define (count-configurations/confidence sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
