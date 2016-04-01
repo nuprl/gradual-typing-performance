@@ -25,7 +25,6 @@
                     #:max-overhead Index
                     #:num-samples Positive-Integer
                     #:font-face String
-                    #:font-size Positive-Integer
                     #:labels? Boolean
                     #:cutoff-proportion Real
                     #:plot-width Positive-Integer
@@ -87,7 +86,6 @@
                   #:M [M (*M*)]
                   #:cutoff-proportion [cutoff-proportion (*CUTOFF-PROPORTION*)]
                   #:font-face [font-face (*PLOT-FONT-FACE*)]
-                  #:font-size [font-size (*PLOT-FONT-SIZE*)]
                   #:max-overhead [xmax (*MAX-OVERHEAD*)]
                   #:num-samples [num-samples (*NUM-SAMPLES*)]
                   #:pdf? [pdf? (*PDF?*)]
@@ -189,7 +187,7 @@
     [plot-y-far-ticks no-ticks]
     [plot-tick-size (*TICK-SIZE*)]
     [plot-font-face (*PLOT-FONT-FACE*)]
-    [plot-font-size (*PLOT-FONT-SIZE*)])
+    [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
     (define F-config**
       (let ([next-color (make-palette)]
             [next-shape (make-shapegen)])
@@ -197,34 +195,48 @@
                   ([L+style (in-list L*)])
           (define L (car L+style))
           (define st (cadr L+style))
-          (for/list : (Listof renderer2d)
+          (for/fold : (Listof renderer2d)
+                  ([acc : (Listof renderer2d) '()])
                   ([S (in-list ((inst sort Summary String) S* string<? #:key summary->version))])
-            ;; TODO confidence
-            (define f (count-configurations S (assert L index?)
-                        #:cache-up-to (assert xmax index?)
-                        #:percent? (eq? (*Y-STYLE*) '%)
-                        #:pdf? pdf?))
             (define lbl (and (*LINE-LABELS?*)
-                             (format "~a (L=~a)" (summary->version S) L)))
+                             (format "~a~a"
+                               (summary->version S)
+                               (if (< 1 (length L*))
+                                 (format " (L=~a)" L)
+                                 ""))))
             (define c (next-color))
             (define s (next-shape))
             (define w (*LNM-WIDTH*))
             (if (*HISTOGRAM?*)
-              (area-histogram f (linear-seq 0 xmax num-samples)
-                #:x-min 0
-                #:x-max xmax
-                #:samples num-samples
-                #:label lbl
-                #:line-style st
-                #:line-color c
-                #:line-width w)
-              (discrete-function f 0 xmax
-                #:color c
-                #:label lbl
-                #:samples num-samples
-                ;#:style st
-                #:sym s
-                #:width w))
+              (cons
+                (area-histogram
+                  (count-configurations/mean
+                    S (assert L index?)
+                    #:cache-up-to (assert xmax index?)
+                    #:percent? (eq? (*Y-STYLE*) '%)
+                    #:pdf? pdf?)
+                  (linear-seq 0 xmax num-samples)
+                  #:x-min 0
+                  #:x-max xmax
+                  #:samples num-samples
+                  #:label lbl
+                  #:line-style st
+                  #:line-color c
+                  #:line-width w) acc)
+              (append
+                (discrete-function
+                  (count-configurations/confidence
+                    S (assert L index?)
+                    #:cache-up-to (assert xmax index?)
+                    #:percent? (eq? (*Y-STYLE*) '%)
+                    #:pdf? pdf?)
+                  0 xmax
+                  #:color c
+                  #:label lbl
+                  #:samples num-samples
+                  ;#:style st
+                  #:sym s
+                  #:width w) acc))
               ))))
     (: make-plot (-> (Listof renderer2d) pict))
     (define (make-plot LNM)
@@ -237,7 +249,7 @@
         #:x-label (and (*AXIS-LABELS?*) "Overhead (vs. untyped)")
         #:y-label (and (*AXIS-LABELS?*) y-label)
         #:title (and (*TITLE?*) (get-project-name (car S*)))
-        #:legend-anchor 'bottom-right
+        #:legend-anchor (*LEGEND-ANCHOR*)
         #:width width
         #:height height) pict))
     (if single-plot?
@@ -329,7 +341,7 @@
       [plot-y-far-ticks no-ticks]
       [plot-tick-size (*TICK-SIZE*)]
       [plot-font-face (*PLOT-FONT-FACE*)]
-      [plot-font-size (*PLOT-FONT-SIZE*)])
+      [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
       (cast
         (plot-pict pts
           #:x-min 1
@@ -340,7 +352,8 @@
           #:x-label (and (*AXIS-LABELS?*) "Overhead (vs. untyped)")
           #:y-label (and (*AXIS-LABELS?*) "#Paths")
           #:width (*PLOT-WIDTH*)
-          #:height (*PLOT-HEIGHT*))
+          #:height (*PLOT-HEIGHT*)
+          )
         pict))))
 
 ;(define (death-plot S*
@@ -350,7 +363,6 @@
 ;                  #:max-overhead [xmax DEFAULT_XLIMIT] ;; Index, max. x-value
 ;                  #:num-samples [num-samples DEFAULT_SAMPLES] ;; Index
 ;                  #:font-face [font-face DEFAULT_FACE]
-;                  #:font-size [font-size DEFAULT_SIZE]
 ;                  #:cutoff-proportion [cutoff-proportion DEFAULT_CUTOFF] ;; Flonum, between 0 and 1.
 ;                  #:plot-width [width (plot-width)] ;; Index
 ;                  #:plot-height [height (plot-height)]) ;; Index
@@ -413,21 +425,36 @@
 
 ;; =============================================================================
 
+(: count-configurations/confidence (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (Listof (-> Real Natural))))
+(define (count-configurations/confidence sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
+  (list
+   (count-configurations sm L configuration->mean-runtime
+    #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
+   (count-configurations sm L configuration->confidence-lo
+    #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
+   (count-configurations sm L configuration->confidence-hi
+    #:cache-up-to lim #:pdf? pdf? #:percent? percent?)))
+
+(: count-configurations/mean (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (-> Real Natural)))
+(define (count-configurations/mean S L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
+  (count-configurations S L configuration->mean-runtime
+    #:cache-up-to lim #:pdf? pdf? #:percent? percent?))
+
 ;; Return a function (-> Real Index) on argument `N`
 ;;  that counts the number of configurations
 ;;  which can reach, in L or fewer steps,
 ;;  a configuration with overhead no more than `N`
-(: count-configurations (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (-> Real Natural)))
-(define (count-configurations sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
-  (define baseline (untyped-mean sm))
-  (define cache (and lim (cache-init sm lim #:L L)))
+(: count-configurations (->* [Summary Index (-> Summary String Real)] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (-> Real Natural)))
+(define (count-configurations sm L f #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
+  (define baseline (f sm (untyped-configuration sm)))
+  (define cache (and lim (cache-init sm f lim #:L L)))
   (define num-configs (get-num-configurations sm))
   (: prev-good (Boxof Natural))
   (define prev-good (box 0)) ;; For computing pdf graphs (instead of cumulative)
   (lambda ([N-raw : Real]) ;; Real, but we assume non-negative
     (: N Nonnegative-Real)
     (define N (if (>= N-raw 0) N-raw (error 'count-configurations)))
-    (define good? (make-configuration->good? sm (* N baseline) #:L L))
+    (define good? (make-configuration->good? sm (* N baseline) f #:L L))
     (define num-good
       (if (and cache lim (<= N lim))
         ;; Use cache to save some work, only test the configurations
@@ -462,11 +489,11 @@
 ;; Make a predicate checking whether a configuration is good.
 ;; Good = no more than `L` steps away from a configuration
 ;;        with average runtime less than `good-threshold`.
-(: make-configuration->good? (->* [Summary Real] [#:L Index] (-> Bitstring Boolean)))
-(define (make-configuration->good? summary good-threshold #:L [L 0])
+(: make-configuration->good? (->* [Summary Real (-> Summary String Real)] [#:L Index] (-> Bitstring Boolean)))
+(define (make-configuration->good? summary good-threshold f #:L [L 0])
   (lambda ([var : String])
     (for/or ([var2 (cons var (in-reach var L))])
-      (<= (configuration->mean-runtime summary var2)
+      (<= (f summary var2)
          good-threshold))))
 
 ;; -----------------------------------------------------------------------------
@@ -474,15 +501,15 @@
 (define-type Cache (Vectorof (Listof Bitstring)))
 
 ;; Create a cache that saves the configurations between discrete overhead values
-(: cache-init (->* [Summary Index] [#:L Index] Cache))
-(define (cache-init summary max-overhead #:L [L 0])
-  (define base-overhead (untyped-mean summary))
+(: cache-init (->* [Summary (-> Summary String Real) Index] [#:L Index] Cache))
+(define (cache-init S f max-overhead #:L [L 0])
+  (define base-overhead (f S (untyped-configuration S)))
   (: unsorted-configurations (Boxof (Sequenceof Bitstring)))
-  (define unsorted-configurations (box (all-configurations summary)))
+  (define unsorted-configurations (box (all-configurations S)))
   ;; For each integer-overhead-range [0, 1] [1, 2] ... [max-1, max]
   ;; save the configurations within that overhead to a cache entry
   (for/vector : Cache ([i (in-range (add1 max-overhead))])
-    (define good? (make-configuration->good? summary (* i base-overhead) #:L L))
+    (define good? (make-configuration->good? S (* i base-overhead) f #:L L))
     (define-values (good-vars rest)
       (sequence-partition good? (unbox unsorted-configurations)))
     (set-box! unsorted-configurations rest)
@@ -517,25 +544,57 @@
 ;; --- plotting utils
 
 ;; Like plot's `function`, but does not connect points with a line
-(: discrete-function (-> (-> Real Real) Real Real #:color Natural
+(: discrete-function (-> (Listof (-> Real Natural)) Real Real #:color Natural
                                                   #:label (U #f String)
                                                   #:samples Natural
                                                   #:sym Point-Sym
                                                   #:width Nonnegative-Real
-                                                  renderer2d))
-(define (discrete-function f lo hi #:color c
-                                   #:label lbl
-                                   #:samples num-samples
-                                   #:sym sym
-                                   #:width w)
-  (points
-    (for/list : (Listof (List Real Real))
+                                                  (Listof renderer2d)))
+(define (discrete-function f* lo hi #:color c
+                                    #:label lbl
+                                    #:samples num-samples
+                                    #:sym sym
+                                    #:width w)
+  (define point**
+    (for/list : (Listof (Listof Real))
               ([x (in-list (linear-seq lo hi num-samples))])
-      (list x (f x)))
-    #:color c
-    #:label lbl
-    #:sym sym
-    #:size (* 3 w)))
+      (cons x
+        (for/list : (Listof Real)
+                  ([f (in-list f*)])
+          (f x)))))
+  (define pts
+    (let ([xy*
+           (for/list : (Listof (List Real Real))
+                     ([x* (in-list point**)])
+             (list (car x*) (cadr x*)))])
+      (if (*DISCRETE?*)
+        (points xy*
+         #:color c
+         #:label lbl
+         #:sym sym
+         #:size (* 3 w))
+        (lines xy*
+         #:color c
+         #:label lbl
+         #:width w))))
+  (if (*ERROR-BAR?*)
+    (list
+      pts
+      (error-bars
+        (for/list : (Listof (Listof Real))
+                  ([x* (in-list point**)])
+          (define x (car x*))
+          (define lo (caddr x*))
+          (define hi (cadddr x*))
+          ;(unless (>= lo hi)
+          ;  (raise-user-error 'lnm-plot "Bad error bounds [~a , ~a]. Should have lower count on the right (i.e. fewer acceptable configs using the upper-bound mean)." lo hi))
+          (define diff (- lo hi))
+          (list x (+ hi (/ diff 2)) diff))
+        #:alpha 0.5
+        #:color c
+        #:line-width (*ERROR-BAR-LINE-WIDTH*)
+        #:width (*ERROR-BAR-WIDTH*)))
+    (list pts)))
 
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional

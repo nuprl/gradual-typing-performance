@@ -66,7 +66,7 @@
 (defparam *NUM-SAMPLES*  Positive-Integer (assert (* (*MAX-OVERHEAD*) 3) positive?))
 
 (defparam *PLOT-FONT-FACE* String "bold")
-(defparam *PLOT-FONT-SIZE* Positive-Integer 20)
+(defparam *PLOT-FONT-SCALE* Nonnegative-Real 0.03)
 
 (defparam *TABLE-FONT-FACE*   String "Liberation Serif")
 (defparam *TABLE-FONT-SIZE* Positive-Index 10)
@@ -123,3 +123,11 @@
 (defparam *OUTPUT* Path-String "./output.png") ;; Where to save output pict
 (defparam *CACHE-PREFIX* String "./compiled/lnm-cache-")
 (defparam *CACHE-TAG* (U #f String) #f)
+
+(defparam *ERROR-BAR?* Boolean #f)
+(defparam *ERROR-BAR-WIDTH* Nonnegative-Real (cast (/ (error-bar-width) 2) Nonnegative-Real))
+(defparam *ERROR-BAR-LINE-WIDTH* Nonnegative-Real (cast (* 0.7 (error-bar-line-width)) Nonnegative-Real))
+
+(defparam *DISCRETE?* Boolean #f)
+
+(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
