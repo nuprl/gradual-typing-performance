@@ -1,4 +1,4 @@
-#lang typed/racket/base
+#lang benchmark-util/adaptor
 
 (require
  benchmark-util
@@ -21,7 +21,7 @@
 
 (define-type Summary summary)
 
-(safe-and-unsafe-provide
+(provide
  Summary
  from-rktd
  all-variations

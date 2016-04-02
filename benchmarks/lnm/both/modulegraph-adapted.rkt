@@ -1,4 +1,4 @@
-#lang typed/racket/base
+#lang benchmark-util/adaptor
 
 (require
   benchmark-util)
@@ -15,7 +15,7 @@
 ;; TODO can use opaque types instead?
 (define-type ModuleGraph modulegraph)
 
-(safe-and-unsafe-provide
+(provide
   ModuleGraph
   project-name
   from-tex
