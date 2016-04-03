@@ -4,6 +4,15 @@
 
 @title[#:tag "sec:fut"]{Long Live Sound Gradual Typing}
 
+Our goal is to foster expressive, safe, and performant implementations of gradual typing.
+Comprehensive performance evaluation has the potential to advance this goal
+ by determining the magnitude of performance overhead in realistic programs,
+ identifying bottlenecks in the implementation of gradually typed languages,
+ quantifying the performance effect of improvements or changes to a language,
+ and
+ encouraging new designs or implementation strategies to overcome performance
+ barriers.
+
 Sound gradual typing was proposed to solve the practical issue of
  safely combining dynamic and static typing.
 We have found, however, that gradual typing must address serious performance
