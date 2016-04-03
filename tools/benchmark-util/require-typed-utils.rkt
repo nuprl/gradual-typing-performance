@@ -1,4 +1,4 @@
- #lang racket
+#lang racket
 
 ;; BRITTLE macros for conditional requires,
 ;;  depending on whether the current or requiree module is typed or not
@@ -42,25 +42,21 @@
   (for-syntax
     typed/untyped-utils
     syntax/parse
-    (only-in racket/base prefix-in))
+    (only-in racket/base prefix-in)
+    "override-boundary.rkt")
   (only-in typed/racket require/typed)
   (prefix-in typed: (only-in typed/racket
                              require
                              provide))
   (prefix-in typed: (only-in typed/racket/unsafe
                              unsafe-require/typed
-                             unsafe-provide))
-)
+                             unsafe-provide)))
 
 (begin-for-syntax
   (define (they-are-typed m)
-    (module->language-info m #t))
+    (module->language-info (syntax->datum m) #t))
   (define (i-am-typed)
-    (syntax-local-typed-context?))
-  ;; TODO: implement
-  ;; m : module-path I think
-  ;; Should check metadata file and return #f if the boundary is disabled
-  (define (keep-boundary? m) #t))
+    (syntax-local-typed-context?)))
 
 ;; =============================================================================
 ;; TODO: check for overrides in this and require/adapted
@@ -70,16 +66,14 @@
   (syntax-parse stx
     #:literals (prefix-in)
     [(_ (prefix-in p m:str) rt-clause ...)
-     (define datumm (syntax->datum #'m))
-     (cond [(or (not (they-are-typed datumm))
-                (keep-boundary? datumm))
+     (cond [(or (not (they-are-typed #'m))
+                (keep-boundary? #'m))
             #'(require (prefix-in p m))]
            [else
             #'(require (prefix-in p (submod m unsafe)))])]
     [(_ m:str rt-clause ...)
-     (define datumm (syntax->datum #'m))
-     (cond [(or (not (they-are-typed datumm))
-                (keep-boundary? datumm))
+     (cond [(or (not (they-are-typed #'m))
+                (keep-boundary? #'m))
             #'(require m)]
            [else
             #'(require (submod m unsafe))])]))
@@ -88,16 +82,14 @@
   (syntax-parse stx
     #:literals (prefix-in)
     [(_ (prefix-in p m:str) rt-clause ...)
-     (define datumm (syntax->datum #'m))
      (cond
-       [((they-are-typed datumm))
+       [((they-are-typed #'m))
         #'(typed:require (prefix-in p m))]
        [else
         #'(my-require/typed (prefix-in p m) rt-clause ...)])]
     [(_ m:str rt-clause ...)
      (cond
-       [(they-are-typed (syntax->datum #'m))
-        #'(typed:require m)]
+       [(they-are-typed #'m) #'(typed:require m)]
        [else
         #`(#,my-require/typed m rt-clause ...)])]))
 
@@ -116,9 +108,9 @@
   (syntax-parse stx
     #:literals (prefix-in)
     [(_ (prefix-in p m:str) rt-clause ...)
-     #`(#,(decide-boundary (syntax->datum #'m)) (prefix-in p m) rt-clause ...)]
+     #`(#,(decide-boundary #'m) (prefix-in p m) rt-clause ...)]
     [(_ m:str rt-clause ...)
-     #`(#,(decide-boundary (syntax->datum #'m)) m rt-clause ...)]))
+     #`(#,(decide-boundary #'m) m rt-clause ...)]))
 
 (define-syntax (require/adapted stx)
   (syntax-parse stx
@@ -127,7 +119,7 @@
      ;; here I check if the boundary with the adaptee is present, the
      ;; adaptor is always typed
      (cond
-       [(keep-boundary? (syntax->datum #'m-adaptee))
+       [(keep-boundary? #'m-adaptee)
         #'(typed:require m-adaptor rt-clause ...)]
        [#'(typed:require (submod m-adaptor unsafe) rt-clause ...)])]))
 
