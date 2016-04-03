@@ -134,9 +134,9 @@ Each call to @racket[complex-*] requires six assertions to check and traverse bo
 This is relatively inexpensive, but folding @racket[complex-*] over a list of
  @math{n} complex numbers requires @math{3n + 1} assertions.
 In other words, costs can quickly accumulate as the size of data
- and number of calls increases, 
+ and number of calls increases.
 
-@; TODO example here?
+@; TODO example here, to show "surprising costs"?
 @; - Derivatives of complex numbers
 @; - Taylor series expansion
 @; The program in @Figure-ref{TODO} underscores this point.
