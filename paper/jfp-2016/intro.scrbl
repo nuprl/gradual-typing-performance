@@ -1,6 +1,10 @@
 #lang scribble/base
 @;TODO add roadmap refs
 
+@; "The first challenge for computer science is to discover how to maintain
+@;  order in a finite, but very large, discrete universe that is intricately
+@;  intertwined."  -- Dijkstra, 1979 (from Emina's thesis)
+
 @require["common.rkt" "typed-racket.rkt"]
 
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
