@@ -11,7 +11,8 @@
      (create-benchmark-dirs path)]))
 
 ;; ===================================================================================================
-(require srfi/13)
+(require srfi/13
+         gtp-summarize/modulegraph)
 
 (define TYPED? "typed?")
 (define TYPED "yes")
@@ -37,7 +38,8 @@
   
   (define typed-dir (source-paths (directory-list typed)))
   (define untyped-dir (source-paths (directory-list untyped)))
-  
+  (define bname (call-with-values (λ () (split-path pwd))
+                                  (λ xs (second xs))))
   (files-exist? pwd typed untyped)
   (same-number-of-files? typed-dir untyped-dir)
   (same-file-names? typed-dir untyped-dir)
@@ -50,7 +52,7 @@
   
   (set-up-benchmark-directory bdir)
   (create-populate-base-directory base bdir)
-  (create-populate-configurations-directories* configuration bdir both typed untyped file-names*)
+  (create-populate-configurations-directories* bname configuration bdir both typed untyped file-names*)
   ;; throw them away: 
   (void))
 
@@ -64,29 +66,95 @@
   (filter is-source-path ps))
 
 ;; String Path Path Path Path [Listof String] -> [Listof String]
-(define (create-populate-configurations-directories* name bdir both typed untyped file-names*)
+(define (create-populate-configurations-directories* bname name bdir both typed untyped file-names*)
+  ;; Normal Directories
   (for/list ([combination (in-list (build-combinations* (length file-names*)))])
     (define cdir (build-path bdir (apply string-append "configuration" (map number->string combination))))
     (make-directory cdir)
     (create-readme cdir (populate-configuration cdir file-names* combination both typed untyped))
-    cdir))
+    cdir)
+  (create-populate-prediction-configurations-directories* bname name bdir both typed untyped file-names*)
+  )
+
+;; ModuleGraph -> Listof (Pairof String String)
+(define (edges mg)
+  (apply append
+         (for/list ([m-name (in-list (module-names mg))])
+           (for/list ([req-name (in-list (requires mg m-name))])
+             (list (string-append m-name   ".rkt")   (name->index mg m-name)
+                   (string-append req-name ".rkt") (name->index mg req-name))))))
+
+(define (create-populate-prediction-configurations-directories* bname name bdir both typed untyped file-names*)
+  ;; First, the untyped requiring typed edge directories
+  ;; THen, the typed requiring untyped edge directories
+  (define mg (from-directory bname))
+  (define es (edges mg))
+  (for ([e (in-list es)])
+    (define ut-dir (build-path bdir (format "edge-u~a-t~a" (second e) (fourth e))))
+    (make-directory ut-dir)
+    (populate-edge-configuration ut-dir file-names* #f (first e) (third e) both typed untyped)
+    ;; todo fix pop-edge-config
+    (define tu-dir (build-path bdir (format "edge-t~a-u~a" (second e) (fourth e))))
+    (make-directory tu-dir)
+    (populate-edge-configuration tu-dir file-names* #t (first e) (third e) both typed untyped))
+
+  ;; Then, the optimization directories
+  (for/list ([file-name (in-list file-names*)])
+    (displayln file-name)
+    (define-values (_a basename _c) (split-path file-name))
+    (define odir (build-path bdir (format "optimize-~a" basename)))
+    (make-directory odir)
+    (populate-optimize-configuration odir file-name file-names* both typed untyped)))
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; Path [Listof [List String Boolean]] -> Void 
 (define (create-readme cdir population)
   (with-output-to-file (build-path cdir "README") (lambda () (pretty-print population))))
 
+(define (populate-both cdir both)
+  (when (directory-exists? both) ; both is optional
+    (for ([file-name (in-list (directory-list both))])
+      (copy-file (build-path both file-name) (build-path cdir file-name)))))
 ;; ---------------------------------------------------------------------------------------------------
 ;; Path [Listof String] Combination Path Path Path -> Void
 (define (populate-configuration cdir file-names* combination both typed untyped)
-  (when (directory-exists? both) ; both is optional
-    (for ([file-name (in-list (directory-list both))])
-      (copy-file (build-path both file-name) (build-path cdir file-name))))
-  (for/list ([file-name (in-list file-names*)][src (in-list combination)])
-    (copy-file (build-path (if (typed? src) typed untyped) file-name) (build-path cdir file-name))
-    #;
-    (special-case-for-acquire file-name typed? typed untyped cdir)
-    (list file-name (typed? src))))
+  (populate-both cdir both)
+  (for ([file-name (in-list file-names*)][src (in-list combination)])
+    (copy-file (build-path (if (typed? src) typed untyped) file-name) (build-path cdir file-name))))
+
+(define (populate-edge-configuration cdir file-names* requirer-typed? requirer requiree both typed untyped)
+  (populate-both cdir both)
+  (for ([file-name (in-list file-names*)])
+    (cond [(or (and requirer-typed?       (equal? file-name requirer))
+               (and (not requirer-typed?) (equal? file-name requiree)))
+           (copy-no-optimize cdir typed file-name)]
+          [else
+           (copy-file (build-path untyped file-name)
+                      (build-path cdir file-name))]))
+  (write-overrides-file cdir (cons requirer requiree)))
+
+(define (populate-optimize-configuration cdir opt-file-name file-names* both typed untyped)
+  (for ([file-name file-names*])
+    (copy-file (build-path (if (equal? file-name opt-file-name)
+                               typed
+                               untyped)
+                           file-name)
+               (build-path cdir file-name)))
+  (write-overrides-file cdir))
+
+(define (write-overrides-file cdir . overrides)
+  (with-output-to-file (build-path cdir "override-all-except.rktd")
+    (λ () (write overrides))))
+
+(define (copy-no-optimize cdir typed file-name)
+  (call-with-output-file (build-path cdir file-name)
+    (λ (outp)
+      (call-with-input-file (build-path typed file-name)
+        (λ (inp)
+          (define lang-line (read-line inp))
+          (write-string lang-line outp)
+          (write-string " #:no-optimize\n" outp)
+          (copy-port inp outp))))))
 
 (define typed? (compose not zero?))
 
