@@ -138,14 +138,14 @@
       (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
       (mt-line))))
 
-(define (deliverable N)
-  (make-element plain @list{@math{@N}-deliverable}))
+(define (deliverable [d "D"])
+  (make-element plain @list{@(math d)-deliverable}))
 
-(define (usable N M)
-  (make-element plain @list{@(math N"/"M)-usable}))
+(define (usable [d "D"] [u "U"])
+  (make-element plain @list{@(math d"/"u)-usable}))
 
-(define (step L N M)
-  (make-element plain @list{@(math L)-step @(math N "/" M)-usable}))
+(define (step [k "k"] [d "D"] [u "U"])
+  (make-element plain @list{@(math k)-step @(math d "/" u)-usable}))
 
 ;; Format an identifier
 ;; Usage: @id[x]
