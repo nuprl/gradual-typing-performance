@@ -64,19 +64,19 @@
 
 (define-syntax (require/check stx)
   (syntax-parse stx
-    #:literals (prefix-in)
-    [(_ (prefix-in p m:str) rt-clause ...)
-     (cond [(or (not (they-are-typed #'m))
-                (keep-boundary? #'m))
-            #'(require (prefix-in p m))]
-           [else
-            #'(require (prefix-in p (submod m unsafe)))])]
-    [(_ m:str rt-clause ...)
-     (cond [(or (not (they-are-typed #'m))
-                (keep-boundary? #'m))
-            #'(require m)]
-           [else
-            #'(require (submod m unsafe))])]))
+    [(_ m*:str ...)
+     #:with (m+* ...)
+       (for/list ([m (in-list (syntax-e #'(m* ...)))])
+         (if (or (not (they-are-typed m))
+                 (keep-boundary? m))
+           m
+           #`(submod #,m unsafe)))
+     #'(require m+* ...)]
+    [_
+     (raise-user-error
+       'require/check
+       "Bad syntax in '~a'.\n  (If you need support for 'prefix-in' etc. we can add it.)"
+       (syntax->datum stx))]))
 
 (define-for-syntax (param-require/typed/check stx my-require/typed)
   (syntax-parse stx
