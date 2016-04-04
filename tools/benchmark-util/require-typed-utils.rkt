@@ -62,21 +62,49 @@
 ;; TODO: check for overrides in this and require/adapted
 ;;
 
+;; Syntax for parsing require specifications
+(begin-for-syntax
+  (define-syntax-class require-spec
+    #:attributes (
+      module-name
+      ;; (Syntaxof String)
+      ;; Syntax object containing the (string) name of the required module
+    )
+    #:literals (only-in prefix-in)
+    (pattern m:str
+     #:attr module-name #'m)
+    (pattern (prefix-in m:str n*:id ...)
+     #:attr module-name #'m)
+    (pattern (only-in m:str n*:id ...)
+     #:attr module-name #'m)
+  )
+
+  ;; Replace the module name required in `old-stx` with `new-stx`
+  (define (subst/require-spec old-stx new-stx)
+    (syntax-parse old-stx
+     #:literals (only-in prefix-in)
+     [m:str
+      new-stx]
+     [(only-in m:str n*:id ...)
+      #`(only-in #,new-stx n* ...)]
+     [(prefix-in pre:id m:str)
+      #`(prefix-in pre #,new-stx)]))
+)
+
 (define-syntax (require/check stx)
   (syntax-parse stx
-    [(_ m*:str ...)
+    [(_ m*:require-spec ...)
      #:with (m+* ...)
-       (for/list ([m (in-list (syntax-e #'(m* ...)))])
-         (if (or (not (they-are-typed m))
-                 (keep-boundary? m))
+       (for/list ([m (in-list (syntax-e #'(m* ...)))]
+                  [module-name (in-list (syntax-e #'(m*.module-name ...)))])
+         (if (or (not (they-are-typed module-name))
+                 (keep-boundary? module-name))
            m
-           #`(submod #,m unsafe)))
-     #'(require m+* ...)]
+           (subst/require-spec m #`(submod #,module-name unsafe))))
+     #`(require m+* ...)]
     [_
      (raise-user-error
-       'require/check
-       "Bad syntax in '~a'.\n  (If you need support for 'prefix-in' etc. we can add it.)"
-       (syntax->datum stx))]))
+       'require/check "Bad/unrecognized syntax in '~a'" (syntax->datum stx))]))
 
 (define-for-syntax (param-require/typed/check stx my-require/typed)
   (syntax-parse stx
