@@ -70,23 +70,27 @@
       ;; (Syntaxof String)
       ;; Syntax object containing the (string) name of the required module
     )
-    #:literals (only-in prefix-in)
+    #:literals (except-in only-in prefix-in)
     (pattern m:str
      #:attr module-name #'m)
     (pattern (prefix-in m:str n*:id ...)
      #:attr module-name #'m)
     (pattern (only-in m:str n*:id ...)
      #:attr module-name #'m)
+    (pattern (except-in m:str n*:id ...)
+     #:attr module-name #'m)
   )
 
   ;; Replace the module name required in `old-stx` with `new-stx`
   (define (subst/require-spec old-stx new-stx)
     (syntax-parse old-stx
-     #:literals (only-in prefix-in)
+     #:literals (except-in only-in prefix-in)
      [m:str
       new-stx]
      [(only-in m:str n*:id ...)
       #`(only-in #,new-stx n* ...)]
+     [(except-in pre:id m:str)
+      #`(prefix-in pre #,new-stx)]
      [(prefix-in pre:id m:str)
       #`(prefix-in pre #,new-stx)]))
 )
