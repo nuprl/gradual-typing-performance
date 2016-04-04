@@ -113,10 +113,10 @@ Depending on the nature of the software and clients' expectations,
 To account for the varying requirements of software teams, we formulate
  the following parameterized definition of "deliverable configurations."
 
-    @def[#:term @list{@deliverable{N}}]{
+    @def[#:term @list{@deliverable{}}]{
      A configuration in a performance
-      lattice is @deliverable{N} if its performance is no worse than an
-      @math{N}x slowdown compared to the untyped configuration.
+      lattice is @deliverable{} if its performance is no worse than a
+      @math{D}x slowdown compared to the untyped configuration.
     }
 
 Even if a configuration is not deliverable, it might be suitably fast to
@@ -127,10 +127,10 @@ A software engineering team can
 In order to formulate this criteria
  properly, we introduce the following definition of usable configurations.
 
-    @def[#:term @list{@usable["N" "M"]}]{
+    @def[#:term @list{@usable[]}]{
      A configuration in a performance
-      lattice is @usable["N" "M"] if its performance is worse than an
-      @math{N}x slowdown but no worse than an @math{M}x slowdown compared to
+      lattice is @usable[] if its performance is worse than an
+      @math{D}x slowdown but no worse than a @math{U}x slowdown compared to
       the untyped configuration.
     }
 
@@ -146,32 +146,31 @@ These might be configurations where running the unit tests takes hours
  or days longer than normal.
 
     @def[#:term "unacceptable"]{
-     A configuration is unacceptable if it is neither @deliverable{N} nor
-      @usable["N" "M"].
+     A configuration is unacceptable if it is neither @deliverable{} nor
+      @usable[].
     }
 
 Finally, if a software project is currently in an unacceptable
- configuration we ask how much work a team needs to invest to reach a deliverable
- or usable configuration.
+ configuration we ask how much work a team needs to invest to reach a
+ @deliverable{} or @usable{} configuration.
 We propose as a coarse measure of "work" the number of modules that must be
  annotated with types before performance improves.
 Using this metric, configurations one module away from a usable configuration
  are nearly usable themselves.
 
-    @def[#:term @list{@step["L" "N" "M"]}]{
-     A configuration is @step["L" "N" "M"] if it is unacceptable and at
-      most @math{L} type conversion steps away from a @deliverable{N}
-      or a @usable["N" "M"] configuration.
+    @def[#:term @list{@step{}}]{
+     A configuration is @step[] if it is unacceptable and at
+      most @math{k} type conversion steps away from a @deliverable{}
+      or a @usable[] configuration.
     }
 
-These four notions of the typed/untyped ratio, @deliverable{N},
- @usable["N" "M"], and @step["L" "N" "M"] form the basis of our evaluation
+These four notions of the typed/untyped ratio, @deliverable{},
+ @usable[], and @step[] form the basis of our evaluation
  framework.
 Practitioners curious about the feasability of gradual typing should
  replace these parameters with concrete values tailored to their needs.
 If experimental results show that a large number of configurations are
  deliverable, etc. under the actual parameters, then the same results may
  well hold for other projects.
-Language implementors should work to make more configurations @deliverable["N"]
- or even  @step["L" "N" "M"].
-
+Language implementors should work to make more configurations deliverable
+ or diagnose the cause of the worst performance overhead.
