@@ -6,8 +6,13 @@
 
 (provide client)
 
-(require "constants.rkt"
-         (only-in racket/tcp tcp-connect))
+(require
+  benchmark-util
+  (only-in racket/tcp tcp-connect)
+)
+(require/check
+  "constants.rkt"
+)
 
 ;; ---------------------------------------------------------------------------------------------------
 

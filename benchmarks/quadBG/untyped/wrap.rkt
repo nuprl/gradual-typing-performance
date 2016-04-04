@@ -13,8 +13,6 @@
 
 (require
   benchmark-util
-  "ocm-struct.rkt"
-  "penalty-struct.rkt"
   (only-in math/flonum fl+ fl= fl fl/ fl- fl> fl* fllog flabs flmax flexpt)
   (only-in racket/list empty empty? partition second first last split-at-right append-map drop-right drop)
   (only-in racket/vector vector-map vector-copy vector-count)
@@ -24,12 +22,15 @@
     (only-in racket/syntax format-id)
     (only-in racket/string string-trim))
 )
-(require (only-in "measure.rkt"
+(require/check
+  "ocm-struct.rkt"
+  "penalty-struct.rkt")
+(require/check (only-in "measure.rkt"
   measure-ascent ;(->* (String Float String) (Font-Weight Font-Style) Float))
   measure-text ;(-> String Float String Font-Weight Font-Style Float))
   round-float ;(-> Float Float)]
 ))
-(require (only-in "quads.rkt"
+(require/check (only-in "quads.rkt"
   quad? quad
   optical-kern ;(->* ((Listof Any)) () #:rest USQ Quad))
   line ;(->* ((Listof Any)) () #:rest USQ Quad)]
@@ -49,7 +50,7 @@
   whitespace? ;(-> Any Boolean)]
   word-string ;(-> Quad String)]
 ))
-(require (only-in "world.rkt"
+(require/check (only-in "world.rkt"
   world:last-line-can-be-short ;Boolean]
   world:new-line-penalty; Index]
   world:hyphen-penalty; Index]
@@ -90,7 +91,7 @@
   world:y-position-key; Symbol]
 ))
 ;(define-type QEXP (U Quad (Listof QEXP)))
-(require (only-in "utils.rkt"
+(require/check (only-in "utils.rkt"
  attr-change ;(QuadAttrs (Listof Any) -> QuadAttrs))
  join-quads ;(Listof Quad) -> (Listof Quad)))
  attr-delete ;QuadAttrs Symbol * -> QuadAttrs))
@@ -104,12 +105,12 @@
  quad-attr-set
   ;(Quad Symbol Any -> Quad))
 ))
-(require (only-in "ocm.rkt"
+(require/check (only-in "ocm.rkt"
   make-ocm ;((Matrix-Proc-Type ($penalty -> Value-Type)) (Entry-Type) . ->* . OCM-Type))
   ocm-min-index ;(OCM-Type Index-Type -> (U Index-Type No-Value-Type)))
   ocm-min-entry ;(OCM-Type Index-Type -> Entry-Type))
 ))
-(require (only-in "sugar-list.rkt"
+(require/check (only-in "sugar-list.rkt"
  shifts ;(-> (Listof Quad) (Listof Integer) (Listof (Listof (Option Quad)))))
  slicef-after ;(All (A) ((Listof A) (A -> Boolean) -> (Listof (Listof A))))]
  break-at

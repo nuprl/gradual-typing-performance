@@ -26,7 +26,7 @@
   (only-in racket/list append-map empty? empty split-at-right first splitf-at)
   (only-in racket/string string-append*)
   (only-in math/flonum fl+))
-(require (only-in "hyphenate.rkt"
+(require/check (only-in "hyphenate.rkt"
   hyphenate ;(->* (String)
              ;     ((U Char String)
              ;      #:exceptions (Listof String)
@@ -37,10 +37,10 @@
              ;      #:omit-string (-> String Boolean))
              ;     String)))
 ))
-(require (only-in "measure.rkt"
+(require/check (only-in "measure.rkt"
   round-float; (-> Float Float)]))
 ))
-(require (only-in "quads.rkt"
+(require/check (only-in "quads.rkt"
   word ;(-> QuadAttrs String Quad)]
   quad-name ;(-> Quad Symbol)]
   quad-attrs ;(-> Quad (Listof Any))]
@@ -50,7 +50,7 @@
   quad-attr-ref ;(->* ((U Quad QuadAttrs) Symbol) (Any) Any))
   whitespace/nbsp? ;(-> Any Boolean))
 ))
-(require (only-in "world.rkt"
+(require/check (only-in "world.rkt"
   world:font-size-key ;Symbol]
   world:font-size-default ;(Parameterof Float)]
   world:font-name-key ;Symbol]

@@ -14,7 +14,8 @@
  manage%)
 
 ;; ===================================================================================================
-(require "t-graph.rkt")
+(require benchmark-util)
+(require/check "t-graph.rkt")
 
 ;; [X -> Real] [Listof X] -> X
 ;; argmax also okay 

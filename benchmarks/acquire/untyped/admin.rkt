@@ -12,14 +12,16 @@
 
 (require
  "../base/untyped.rkt"
- "board.rkt"
- "state.rkt"
+ benchmark-util
 )
 (require (only-in racket/sandbox
   call-with-limits
   exn:fail:resource?
 ))
-(require (only-in "basics.rkt"
+(require/check
+ "board.rkt"
+ "state.rkt"
+ (only-in "basics.rkt"
   ALL-HOTELS
   hotel?
   shares-available?

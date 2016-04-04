@@ -23,8 +23,10 @@
 
 (require
   racket/match
-  "core-structs.rkt"
+  benchmark-util
   (only-in racket/math exact-truncate exact-floor))
+(require/check
+  "core-structs.rkt")
 
 ;; =============================================================================
 

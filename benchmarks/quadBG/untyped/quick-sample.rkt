@@ -8,7 +8,7 @@
   benchmark-util
   racket/file
 )
-(require (only-in "quads.rkt"
+(require/check (only-in "quads.rkt"
   block ;(->* (QuadAttrs) #:rest USQ Quad))
   block-break ;(-> QuadAttrs Quad))
   box ;(->* (QuadAttrs) #:rest USQ Quad))

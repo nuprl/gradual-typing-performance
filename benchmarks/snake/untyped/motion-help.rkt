@@ -1,5 +1,6 @@
 #lang racket
-(require "data.rkt"
+(require benchmark-util)
+(require/check "data.rkt"
          "cut-tail.rkt")
 
 ;; next-head : Posn Direction -> Posn

@@ -2,7 +2,7 @@
 
 (require benchmark-util)
 
-(require "zo-shell.rkt")
+(require/check "zo-shell.rkt")
 
 ;; Stress tests: search entire bytecode for the fairly-common branch struct
 (define SELF-TEST '("../base/zo-shell.zo" "../base/zo-find.zo" "../base/zo-string.zo" "../base/zo-transition.zo"))

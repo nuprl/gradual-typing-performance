@@ -13,10 +13,13 @@
 
 (require
  "../base/untyped.rkt"
+ benchmark-util
+)
+(require/check
  "board.rkt"
  "state.rkt"
- )
-(require (only-in "basics.rkt"
+)
+(require/check (only-in "basics.rkt"
   ALL-HOTELS
   SHARES-PER-TURN#
   hotel<=?
@@ -25,7 +28,7 @@
   shares--
   shares-available
 ))
-(require (only-in "auxiliaries.rkt"
+(require/check (only-in "auxiliaries.rkt"
   randomly-pick
 ))
 

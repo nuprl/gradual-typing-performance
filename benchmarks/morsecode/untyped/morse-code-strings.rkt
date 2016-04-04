@@ -10,8 +10,8 @@
 ;; We just make the . and -
 
 (provide string->morse)
-
-(require "morse-code-table.rkt")
+(require benchmark-util)
+(require/check "morse-code-table.rkt")
 
 ;; map a character to a dit-dah string
 (define (char->dit-dah-string letter)

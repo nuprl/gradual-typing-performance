@@ -1,9 +1,11 @@
 #lang racket/base
 
-(require (only-in "array-struct.rkt" build-array)
-         (only-in "array-transform.rkt" array-append*)
-         (only-in "synth.rkt" fs)
-         (only-in "mixer.rkt" mix))
+(require benchmark-util)
+(require
+  (only-in "array-struct.rkt" build-array)
+  (only-in "array-transform.rkt" array-append*)
+  (only-in "synth.rkt" fs)
+  (only-in "mixer.rkt" mix))
 
 (provide sequence note)
 

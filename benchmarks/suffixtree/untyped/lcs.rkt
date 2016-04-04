@@ -1,7 +1,8 @@
 #lang racket/base
 ;; Some utilities.
+(require benchmark-util)
 
-(require
+(require/check
  (except-in "data.rkt" make-label)
  "label.rkt"
  "structs.rkt"

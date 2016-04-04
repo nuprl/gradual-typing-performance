@@ -8,12 +8,12 @@
 
 (require benchmark-util
          (only-in racket/string string-split string-join string-trim)
-         racket/match)
-
-(require "zo-string.rkt"
- "zo-transition.rkt"
- "zo-find.rkt"
+         racket/match
  compiler/zo-parse)
+
+(require/check "zo-string.rkt"
+ "zo-transition.rkt"
+ "zo-find.rkt")
 
 ;; -----------------------------------------------------------------------------
 

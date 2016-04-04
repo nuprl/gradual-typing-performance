@@ -3,7 +3,7 @@
 (require benchmark-util
          (only-in racket/file file->lines file->string))
 
-(require "lcs.rkt")
+(require/check "lcs.rkt")
 
 (define LARGE_TEST "../base/prufock.txt")
 (define SMALL_TEST "../base/hunt.txt")

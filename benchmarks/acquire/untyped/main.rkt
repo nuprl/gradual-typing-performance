@@ -8,17 +8,20 @@
 (require
   racket/list
   racket/class
+  benchmark-util
+)
+(require/check
   "board.rkt"
   "state.rkt"
 )
-(require (only-in "admin.rkt"
+(require/check (only-in "admin.rkt"
   administrator%
 ))
-(require (only-in "player.rkt"
+(require/check (only-in "player.rkt"
  random-players
  inf-loop-player
 ))
-(require (only-in "auxiliaries.rkt"
+(require/check (only-in "auxiliaries.rkt"
   randomly-pick
 ))
 

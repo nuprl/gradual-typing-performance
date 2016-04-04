@@ -13,19 +13,22 @@
 
 (require
  "../base/untyped.rkt"
+ benchmark-util
+)
+(require/check
  "state.rkt"
 )
-(require (only-in "admin.rkt"
+(require/check (only-in "admin.rkt"
   administrator%
   turn%
 ))
-(require (only-in "basics.rkt"
+(require/check (only-in "basics.rkt"
   player-shares0
   *combine-shares
   shares-minus
   banker-shares0
 ))
-(require (only-in "strategy.rkt"
+(require/check (only-in "strategy.rkt"
   ordered-s
   random-s
 ))

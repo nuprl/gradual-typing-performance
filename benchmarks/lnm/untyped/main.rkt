@@ -1,6 +1,6 @@
 #lang racket/base
-
-(require
+(require benchmark-util)
+(require/check
   (only-in "spreadsheet.rkt" rktd->spreadsheet)
   (only-in "summary.rkt" get-project-name from-rktd)
   (only-in "lnm-plot.rkt" lnm-plot)

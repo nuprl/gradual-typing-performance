@@ -16,8 +16,10 @@
  day-ns->hmsn)
 
 (require
-  "core-structs.rkt"
+  benchmark-util
   racket/match)
+(require/check
+  "core-structs.rkt")
 
 ;; =============================================================================
 

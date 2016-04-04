@@ -10,12 +10,15 @@
  ;; Search result: a zo-struct and the path to reach it
  (struct-out result))
 
-(require (only-in racket/list empty?)
-         (only-in racket/string string-split string-trim)
-         (only-in compiler/zo-structs zo?)
-         (only-in "zo-transition.rkt" zo-transition)
-         (only-in "zo-string.rkt" zo->spec)
-         racket/match)
+(require
+  benchmark-util
+  (only-in racket/list empty?)
+  (only-in racket/string string-split string-trim)
+  (only-in compiler/zo-structs zo?)
+  racket/match)
+(require/check
+  (only-in "zo-transition.rkt" zo-transition)
+  (only-in "zo-string.rkt" zo->spec))
 
 ;; -----------------------------------------------------------------------------
 

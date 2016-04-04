@@ -14,10 +14,12 @@
 (require
   benchmark-util
   racket/match
-  "gregor-structs.rkt"
   (only-in racket/format ~r)
 )
-(require (only-in "datetime.rkt"
+(require/check
+  "gregor-structs.rkt"
+)
+(require/check (only-in "datetime.rkt"
     datetime->iso8601 ;(-> DateTime String)]
 ))
 

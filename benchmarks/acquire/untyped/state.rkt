@@ -138,9 +138,12 @@
 
 (require
  "../base/untyped.rkt"
+ benchmark-util
+)
+(require/check
  "board.rkt"
- )
-(require (only-in "basics.rkt"
+)
+(require/check (only-in "basics.rkt"
   ALL-HOTELS
   CASH0
   FINAL#
@@ -160,7 +163,7 @@
   shares-minus
   shares-plus
 ))
-(require (only-in "auxiliaries.rkt"
+(require/check (only-in "auxiliaries.rkt"
  aux:partition
  distinct
  ))

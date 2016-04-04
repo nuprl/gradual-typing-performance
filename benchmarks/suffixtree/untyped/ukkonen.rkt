@@ -1,10 +1,11 @@
 #lang racket/base
+(require benchmark-util)
 
 ;; Much of this comes from reading Dan Gusfield's Algorithms on
 ;; strings, trees, and sequences: computer science and computational
 ;; biology.
 
-(require "structs.rkt"
+(require/check "structs.rkt"
   (except-in "data.rkt" make-label)
   "label.rkt")
 

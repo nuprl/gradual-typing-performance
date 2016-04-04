@@ -1,8 +1,13 @@
 #lang racket
 
 ;; ===================================================================================================
-(require "run-t.rkt"
+(require
+  benchmark-util
          (only-in racket/string string-join))
+(require/check
+  "run-t.rkt"
+)
+
 
 (define (dat->station-names fname)
   (for/list ([line (in-list (file->lines fname))]

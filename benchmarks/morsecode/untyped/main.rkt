@@ -10,10 +10,10 @@
   benchmark-util
   (only-in racket/file file->value))
 
-(require (only-in "morse-code-strings.rkt"
+(require/check (only-in "morse-code-strings.rkt"
   string->morse))
 
-(require (only-in "levenshtein.rkt"
+(require/check (only-in "levenshtein.rkt"
                string-levenshtein))
 
 ;(define-runtime-path common-words-list "./../base/Lemmatized-NGSL-ezi1.txt")

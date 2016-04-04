@@ -5,15 +5,16 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+  benchmark-util
   racket/match
   racket/class
   (only-in racket/port with-input-from-string)
 )
-(require (only-in "command.rkt"
+(require/check (only-in "command.rkt"
   CMD*
   command%
 ))
-(require (only-in "stack.rkt"
+(require/check (only-in "stack.rkt"
   stack-init
 ))
 

@@ -12,7 +12,8 @@
   (only-in racket/list append* empty empty? split-at drop-right)
   racket/class
   (only-in racket/sequence sequence->list)
-  (only-in math/flonum fl+ fl fl>)
+  (only-in math/flonum fl+ fl fl>))
+(require/check
 (only-in "quads.rkt"
   quad-car
   line

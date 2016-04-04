@@ -28,7 +28,8 @@
   "../base/core.rkt"
   (only-in racket/list append-map empty? empty split-at-right first splitf-at)
   (only-in racket/string string-append*)
-  (only-in math/flonum fl+)
+  (only-in math/flonum fl+))
+(require/check
 (only-in "hyphenate.rkt"
   hyphenate)
 (only-in "measure.rkt"

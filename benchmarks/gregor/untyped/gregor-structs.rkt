@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require
+(require benchmark-util)
+(require/check
   "core-structs.rkt")
 
 (provide

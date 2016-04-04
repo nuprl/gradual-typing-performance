@@ -1,14 +1,17 @@
 #lang racket/base
+(require
+  (for-syntax racket/base syntax/parse)
+  (only-in racket/fixnum fx+ fx*)
+  benchmark-util)
 
-(require (for-syntax racket/base syntax/parse)
-         (only-in racket/fixnum fx+ fx*)
-         (only-in "array-utils.rkt"
-           array-shape-size
-           check-array-shape-size
-           check-array-shape
-           next-indexes!
-           unsafe-array-index->value-index)
-         "data.rkt")
+(require/check
+  (only-in "array-utils.rkt"
+    array-shape-size
+    check-array-shape-size
+    check-array-shape
+    next-indexes!
+    unsafe-array-index->value-index)
+  "data.rkt")
 
 (provide
  (rename-out (Array? array?))

@@ -3,13 +3,15 @@
 ;; Abstract Interpretation
 
 (require
-  "structs.rkt"
-  "benv.rkt"
-  "time.rkt"
-  "denotable.rkt"
+  benchmark-util
   racket/set
   (only-in racket/match match-define)
 )
+(require/check
+  "structs.rkt"
+  "benv.rkt"
+  "time.rkt"
+  "denotable.rkt")
 
 ;; ---
 

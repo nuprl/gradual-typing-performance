@@ -16,6 +16,14 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+  benchmark-util
+  plot/pict
+  (only-in racket/math exact-floor)
+  (only-in plot/utils linear-seq)
+  (only-in racket/math exact-floor exact-ceiling)
+  (only-in racket/stream stream-length stream->list stream-filter)
+)
+(require/check
   (only-in "bitstring.rkt"
     in-reach
     log2)
@@ -27,11 +35,6 @@
     predicate->variations
     untyped-mean
     variation->mean-runtime)
-  plot/pict
-  (only-in racket/math exact-floor)
-  (only-in plot/utils linear-seq)
-  (only-in racket/math exact-floor exact-ceiling)
-  (only-in racket/stream stream-length stream->list stream-filter)
 )
 
 ;; =============================================================================

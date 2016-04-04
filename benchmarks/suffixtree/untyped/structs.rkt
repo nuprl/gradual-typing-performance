@@ -1,8 +1,9 @@
 #lang racket/base
 (require
+ benchmark-util
          racket/list)
 
-(require "label.rkt"
+(require/check "label.rkt"
   (except-in "data.rkt" make-label))
 
 (provide

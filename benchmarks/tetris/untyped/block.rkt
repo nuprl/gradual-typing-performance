@@ -1,6 +1,7 @@
 #lang racket
+(require benchmark-util)
 
-(require "data.rkt")
+(require/check "data.rkt")
 
 ;; block=? : Block Block -> Boolean
 ;; Determines if two blocks are the same (ignoring color).

@@ -1,6 +1,6 @@
 #lang racket
-
-(require "data.rkt")
+(require benchmark-util)
+(require/check "data.rkt")
 ;; NeSegs is one of:
 ;; - (cons Posn empty)
 ;; - (cons Posn NeSegs)

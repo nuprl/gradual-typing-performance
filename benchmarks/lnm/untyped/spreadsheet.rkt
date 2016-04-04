@@ -14,9 +14,11 @@
 ;; ----------------------------------------------------------------------------
 
 (require
+  benchmark-util
   (only-in racket/file file->value)
-  (only-in "bitstring.rkt" log2 natural->bitstring)
 )
+(require/check
+  (only-in "bitstring.rkt" log2 natural->bitstring))
 
 ;; =============================================================================
 

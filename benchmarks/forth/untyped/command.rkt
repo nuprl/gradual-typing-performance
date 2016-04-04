@@ -12,8 +12,9 @@
  racket/class
  (only-in racket/string string-join)
  (for-syntax racket/base racket/syntax syntax/parse)
+ benchmark-util
 )
-(require (only-in "stack.rkt"
+(require/check (only-in "stack.rkt"
   stack-drop
   stack-dup
   stack-init

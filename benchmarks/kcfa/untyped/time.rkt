@@ -1,6 +1,6 @@
 #lang racket/base
-
-(require
+(require benchmark-util)
+(require/check
   "structs.rkt"
   "benv.rkt"
 )

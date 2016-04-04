@@ -22,10 +22,11 @@
 (require
   benchmark-util
   (only-in racket/format ~r)
-  "core-structs.rkt"
-  "gregor-structs.rkt"
   racket/match)
-(require (only-in
+(require/check
+  "core-structs.rkt"
+  "gregor-structs.rkt")
+(require/check (only-in
   "hmsn.rkt"
     hmsn->day-ns ;(-> HMSN Natural)]
     day-ns->hmsn ;(-> Natural HMSN)]

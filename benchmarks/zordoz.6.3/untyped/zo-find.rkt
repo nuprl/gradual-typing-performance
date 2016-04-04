@@ -13,11 +13,12 @@
 (require (only-in racket/list empty?)
          (only-in racket/string string-split string-trim)
          benchmark-util
-         racket/match)
-
-(require "zo-transition.rkt"
- "zo-string.rkt"
+         racket/match
  compiler/zo-structs)
+
+(require/check
+ "zo-transition.rkt"
+ "zo-string.rkt")
 
 ;; -----------------------------------------------------------------------------
 
