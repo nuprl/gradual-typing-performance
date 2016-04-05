@@ -75,7 +75,7 @@
  gtp-summarize/modulegraph
  racket/match
  (only-in racket/file file->value)
- (only-in "common.rkt" exact parag)
+ (only-in "common.rkt" etal cite exact parag)
  scribble/core
  scribble/base
  version/utils
@@ -83,6 +83,9 @@
 
 ;; -----------------------------------------------------------------------------
 ;; -- Organizing the benchmarks
+
+(define *STRICT?* (make-parameter #f))
+;; When #t, raise exceptions instead of warnings
 
 ;; TODO precompute modulegraphs?
 
@@ -116,6 +119,11 @@
 (define NUM-SAMPLES 120)
 (define EXAMPLE-BENCHMARK 'kcfa)
 (define EXAMPLE-OVERHEAD 10)
+
+(define benchmark-data* (box #f))
+;; List of benchmarks used in this pdf.
+;; Is validated against `benchmark-name*` before set;
+;;  later used to generate summary table and L-NM plots
 
 ;; -----------------------------------------------------------------------------
 
@@ -163,14 +171,29 @@
                         description)
   (benchmark name author num-adaptor origin purpose lib* description))
 
+(define missing-benchmark-error
+  (let ([msg "Missing descriptions for benchmark(s) '~a'"])
+    (lambda (name*)
+      (if (*STRICT?*)
+        (raise-user-error 'benchmark msg name*)
+        (begin (printf "WARNING: ")
+               (printf msg name*))))))
+
+(define unknown-benchmark-error
+  (let ([msg "Got descriptions for unknown benchmarks '~a'. Register them at the top of 'typed-racket.rkt'"])
+    (lambda  (name*)
+      (if (*STRICT?*)
+        (raise-user-error 'benchmark msg name*)
+        (begin (printf "WARNING: ")
+               (printf msg name*))))))
+
 ;; (-> benchmark String)
 (define (render-benchmark b)
   (match-define
     (benchmark name author num-adaptor origin purpose lib* description)
     b)
   ;; TODO render lib*, hard because it's an optional list
-  (elem (format "\\benchmark{~a}{~a}{~a}{~a}{" name author origin purpose) description "}"))
-;  (format "\\benchmark{~a}{~a}{~a}{~a}{~a}" name author origin purpose description))
+  (elem "\\benchmark{" (symbol->string name) "}{" author "}{" origin "}{" purpose "}{" description "}"))
 
 ;; (-> Symbol Natural)
 (define (benchmark-num-modules name)
@@ -180,15 +203,6 @@
 (define (benchmark<? name1 name2)
   (< (benchmark-num-modules name1)
      (benchmark-num-modules name2)))
-
-(define (missing-benchmark-error name*)
-  (raise-user-error 'benchmark
-                    "Missing descriptions for benchmark(s) '~a'" name*))
-
-(define (unknown-benchmark-error name*)
-  (raise-user-error 'benchmark
-    "Got descriptions for unknown benchmarks '~a'. Register them at the top of 'typed-racket.rkt'" name*))
-
 
 ;; If exact?, use the specific names and not the 'umbrella' benchmark names.
 ;; (-> Boolean (Listof Symbol))
@@ -226,7 +240,8 @@
 
 ;; (-> Benchmark * Any)
 (define (benchmark-descriptions . b*)
-  ;(check-missing-benchmarks (map benchmark-name b*))
+  (check-missing-benchmarks (map benchmark-name b*))
+  (set-box! benchmark-data* b*)
   (apply exact (map render-benchmark (sort b* benchmark<? #:key benchmark-name))))
 
 (define (benchmark-characteristics)

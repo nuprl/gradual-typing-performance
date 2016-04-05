@@ -25,6 +25,7 @@
          usable
 
          id
+         PHIL
          todo ;; Remove this export before submission
          )
 
@@ -98,11 +99,12 @@
      (define/public (get-group-sep) "; ")
      (define/public (get-item-sep) ", ")
      (define/public (render-citation date-cite i)
+       (printf "HELLO DATE CITE ~a\n" date-cite)
        (make-element
         (make-style "Thyperref" (list (command-extras (list (make-label i)))))
         date-cite))
      (define/public (render-author+dates author dates)
-        (list* author " " dates))
+       (list* author " " dates))
      (define (make-label i)
        (string-append "autobiblab:" (number->string i)))
      (define/public (bibliography-line i e)
@@ -153,6 +155,10 @@
 ;; Usage: @id[x]
 (define (id x)
   (make-element plain @format["~a" x]))
+
+(define (PHIL)
+  ;; Dammit Phil
+  "Nguy{\\~{\\^{e}}}n")
 
 (define (todo x)
   (make-element 'bold @string-append["TODO: " x]))
