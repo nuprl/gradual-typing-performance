@@ -44,7 +44,7 @@ Some of the most common use-cases are:
      change.
     Type signatures serve as machine-checked and enforced APIs.
   }
-  @item{ @bold{Experimental:}
+  @item{ @bold{Ease:}
     The typed modules were the least effort to type.
     These could be the smallest modules or the ones with the fewest dependencies.
   }
