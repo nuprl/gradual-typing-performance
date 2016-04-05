@@ -1,7 +1,7 @@
 PAPER=paper
 
 all: paper.tex
-	pdflatex paper.tex
+	xelatex paper # Temporary, we can render Phil's name correctly
 
 compiled/paper_scrbl.zo: *.rkt *.scrbl
 	raco make -v $(PAPER).scrbl
