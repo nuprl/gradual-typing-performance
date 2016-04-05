@@ -1083,6 +1083,13 @@
    #:title "MACLISP Reference Manual"
    #:date 1974))
 
+(define shivers-dissertation-1991 ;)
+  (make-bib
+   #:author "Olin Shivers"
+   #:title "Control-Flow Analysis of Higher-Order Languages"
+   #:location (dissertation-location #:institution "Carnegie Mellon University")
+   #:date "1991"))
+
 ;; ----------------------------------------
 ;; Blog Posts and User Links
 
