@@ -46,13 +46,14 @@ The final input size we used for benchmarking was frequently a compromise
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
-  #:purpose "Finds prime numbers using the Sieve of Eratosthenes."
+  #:purpose "Compute prime numbers using the Sieve of Eratosthenes."
   @elem{
-    We created the @bm{sieve} benchmark to demonstrate a scenario where user
+    @bm{sieve} demonstrates a scenario where user
      code closely interacts with higher-order library code---in this case,
      a stream library.
-    When fully typed or untyped, @bm{sieve} quickly computes the
-     ten-thousandth prime number.
+    When fully typed or untyped, @bm{sieve} computes quickly; however,
+     introducing a type boundary between the two modules adds
+     significant overhead.
   }
 )
 @(benchmark
@@ -63,12 +64,13 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Generate morse code strings, compare against user input"
 
   @elem{
-  The original program is a plays an audio clip, waits for keyboard input,
-   then scores the input based on its Levenshtein distance from the
-   correct answer.
-  Our benchmark takes the cartesian product of 300 common English words,
-   translates each pair to morse code, and finds the Levenshtein distance
-   between words.}
+    The original morse code training program a plays an audio clip,
+     waits for keyboard input,
+     then scores the input based on its Levenshtein distance from the
+     correct answer.
+    For our experiment we remove the I/O features and use fixed lists
+     of words (representing trainer and user, yadada mean?)
+  }
 )
 
 @(benchmark
@@ -164,7 +166,7 @@ The final input size we used for benchmarking was frequently a compromise
      computer-controlled "zombie" markers.
     We run the game on a pre-defined list of @todo{how many?} commands.
 
-    As noted by Nguyễn @|etal|@~cite[nthvh-icfp-2014], the original
+    As noted by @PHIL{} @|etal|@~cite[nthvh-icfp-2014], the original
      program was implemented in an object-oriented style but converted
      to a functional version to evaluate soft contract verification.
     Our benchmark is based on a typed version of their functional game.
@@ -184,7 +186,7 @@ The final input size we used for benchmarking was frequently a compromise
   Our benchmark runs a pre-recorded history of 50,000 moves.
   These moves update the game state, but do not produce GUI output.
   Our benchmark is a gradually typed version of the @bm{snake} game from
-   Nguyễn @|etal|@~cite[nthvh-icfp-2014].
+   @PHIL{} @|etal|@~cite[nthvh-icfp-2014].
   }
 )
 
@@ -196,9 +198,10 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Game"
 
   @elem{
-    This version of tetris is also adapted from Nguyễn @|etal|@~cite[nthvh-icfp-2014].
+    This version of tetris is also adapted from @PHIL{} @|etal|@~cite[nthvh-icfp-2014].
     Our benchmark run a pre-recorded set of 5,000 moves and does not include
-     a GUI.}
+     a GUI.
+  }
 )
 
 @(benchmark
@@ -329,7 +332,8 @@ The final input size we used for benchmarking was frequently a compromise
      of the built-in @racket[list?] and @racket[symbol?] functions.@note{In particular,
        @racket[(lambda (v) (and (list? v) (symbol? (car v))))].}
   }
-)]
+)
+]
 
 
 @; -----------------------------------------------------------------------------
