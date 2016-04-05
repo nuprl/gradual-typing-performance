@@ -132,15 +132,14 @@
 (define (mt-line) (parag))
 
 (define (def #:term (term #false) . x)
-  ;; TODO need to TRY this
-  (nested #:style 'inset
   (make-paragraph plain
     (list
       (mt-line)
-      (exact #:style #f "\\vspace{-4ex}\\begin{center}\\begin{minipage}{0.88\\textwidth}\n")
+      (exact #:style #f "\\vspace{-0.7cm}\\begin{center}\\begin{minipage}{0.88\\textwidth}\n")
       (bold "Definition")
       (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
-      (mt-line)))))
+      (exact #:style #f "\\end{minipage}\\end{center}\n")
+      (mt-line))))
 
 (define (deliverable [d "D"])
   (make-element plain @list{@(math d)-deliverable}))
