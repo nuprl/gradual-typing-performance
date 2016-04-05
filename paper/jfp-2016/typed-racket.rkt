@@ -169,23 +169,8 @@
     (benchmark name author num-adaptor origin purpose lib* description)
     b)
   ;; TODO render lib*, hard because it's an optional list
-  (format "\\benchmark{~a}{~a}{~a}{~a}{~a}" name author origin purpose description))
-  ;(paragraph plain
-  ; (list
-  ;  (elem #:style 'bold (symbol->string name))
-  ;  (element 'newline "")
-  ;  (list "Author : " author)
-  ;  (element 'newline "")
-  ;  (list "Origin : " origin)
-  ;  (element 'newline "")
-  ;  (list "Purpose : " purpose)
-  ;  (element 'newline "")
-  ;  (append
-  ;   (if lib*
-  ;     (list "External Libraries: " lib*
-  ;           (element 'newline ""))
-  ;     '())
-  ;   (list description)))))
+  (elem (format "\\benchmark{~a}{~a}{~a}{~a}{" name author origin purpose) description "}"))
+;  (format "\\benchmark{~a}{~a}{~a}{~a}{~a}" name author origin purpose description))
 
 ;; (-> Symbol Natural)
 (define (benchmark-num-modules name)
@@ -242,11 +227,7 @@
 ;; (-> Benchmark * Any)
 (define (benchmark-descriptions . b*)
   ;(check-missing-benchmarks (map benchmark-name b*))
-  (define b+*
-    (for/fold ([acc ""])
-              ([b (in-list (sort b* benchmark<? #:key benchmark-name))])
-      (string-append acc "\n" (render-benchmark b))))
-  (exact b+*))
+  (apply exact (map render-benchmark (sort b* benchmark<? #:key benchmark-name))))
 
 (define (benchmark-characteristics)
   (elem "TODO"))
