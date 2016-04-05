@@ -36,10 +36,7 @@ The final input size we used for benchmarking was frequently a compromise
 
 @; -----------------------------------------------------------------------------
 @subsection{Benchmark Descriptions}
-@todo{why do snake & tetris have different num. of moves?}
 
-
-@; "We created the {\\tt sieve} benchmark to demonstrate a scenario where user code closely interacts with higher-order library code---in this case, a stream library.  When fully typed or untyped, {\\tt sieve} quickly computes the ten-thousandth prime number."
 @benchmark-descriptions[
 @(benchmark
   #:name 'sieve
@@ -64,15 +61,13 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Generate morse code strings, compare against user input"
 
   @elem{
-    The original morse code training program a plays an audio clip,
-     waits for keyboard input,
-     then scores the input based on its Levenshtein distance from the
-     correct answer.
-    For our experiment we remove the I/O features and use fixed lists
-     of words (representing trainer and user, yadada mean?)
+    The morse code benchmark is derived from training program that
+     plays an audio clip, accepts keyboard input, and scores the input
+     based on its Levenshtein distance from the correct answer.
+    For our benchmark we remove the I/O features but otherwise convert and
+     score a fixed list of simulated input words.
   }
 )
-
 @(benchmark
   #:name 'mbta
   #:author "Matthias Felleisen"
@@ -82,37 +77,34 @@ The final input size we used for benchmarking was frequently a compromise
   #:external-libraries (list @elem{graph@note{@url["http://github.com/stchang/graph"]}})
 
   @elem{
-  Builds a graph representation of Boston's subway system and
-   answers a series of reachability queries.
-  The original program ran an asynchronous client/server framework
-   but our benchmark is single-threaded to cooperate with Racket's sampling
-   profiler, which we use in @Secref{sec:postmortem} to analyze the cause
-   of performance overhead.
+    Builds a graph representation of Boston's subway system and
+     answers a series of reachability queries.
+    The original program ran an asynchronous client/server framework
+     but our benchmark is single-threaded to cooperate with Racket's sampling
+     profiler.
   }
 )
-
 @(benchmark
   #:name 'zordoz
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin @hyperlink["http://github.com/bennn/zordoz"]{Library}
-  #:purpose "Explore bytecode (.zo) files"
+  #:purpose "Explore Racket bytecode"
   #:external-libraries (list @elem{compiler-lib@note{@url["http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29"]}})
 
   @elem{
-  This program gives a shell-style interface for incrementally traversing
-   Racket bytecode.
-  Our benchmark decompiles its own bytecode files and
-   counts the number of branch instructions in the result.
+    Provides a shell-style interface for traversing
+     Racket bytecode (@tt{.zo} files).
+    Our benchmark decompiles its own bytecode and
+     counts the number of branch instructions in the resulting tree structure.
 
-  The Racket bytecode format changed between versions 6.2 and 6.3 with
-   the release of the set-of-scopes macro expander@~cite[f-popl-2016].
-  Consequently, our @bm{zordoz} benchmark is slightly different before and
-   after version 6.2; however, the relative difference between configurations
-   in the performance lattice is the same across bytecode formats.
+    The Racket bytecode format changed between versions 6.2 and 6.3 with
+     the release of the set-of-scopes macro expander@~cite[f-popl-2016].
+    Consequently, our benchmark is slightly different
+     after version 6.2; however, the relative difference between
+     gradually typed configurations is the same across bytecode formats.
   }
 )
-
 @(benchmark
   #:name 'suffixtree
   #:author "Danny Yoo"
@@ -121,39 +113,43 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Implement Ukkonen's suffix tree algorithm"
 
   @elem{
-    We use a longest-common-subsequence algorithm provided by this library
-     to compare one million pairs of English words.}
+    Computes longest common subsequences by converting strings to a suffix
+     tree representation and comparing the trees.
+    The benchmark compares lines of English text; each line is no
+     more than 80 characters long.
+  }
 )
-
 @(benchmark
   #:name 'lnm
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
-  #:purpose "Produce L-N/M plots"
+  #:purpose "Create graphs"
   #:external-libraries (list @elem{plot@note{@url["https://docs.racket-lang.org/plot/"]}}
                              @elem{@tt{racket/statistics}@note{@url["https://docs.racket-lang.org/math/stats.html"]}})
 
   @elem{
-    We developed the @bm{lnm} program to summarize data lattices and generate
-     the figures in @Secref{sec:lnm-plot}.
-    Our benchmark creates, but does not render, plots for the @bm{gregor} benchmark.}
+    While writing this paper, we built a small library of scripts to analyze
+     and graph the data shown in @Secref{sec:lnm-plot}.
+    The @bm{lnm} benchmark creates one such graph for a 13-module benchmark.
+    Interestingly, most of the computation time is spent in calls to Racket's
+     typed statistics and plotting libraries, so performance improves as more
+     @bm{lnm} modules are typed.
+  }
 )
-
 @(benchmark
   #:name 'kcfa
   #:author "Matt Might"
   #:num-adaptor 4
   #:origin @hyperlink["http://matt.might.net/articles/implementation-of-kcfa-and-0cfa/"]{Blog post}
-  #:purpose "Demo of the k-CFA algorithm"
+  #:purpose "Demo k-CFA algorithm"
 
   @elem{
-    Simple, inefficient implementation of k-CFA.
-    Our benchmark runs the analysis on a lambda calculus term
-     that computes @tt{2 * (1 + 3) = 2 * 1 + 2 * 3}.
+    Simple, inefficient implementation of k-CFA@~cite[shivers-dissertation-1991].
+    Our benchmark runs 1-CFA on a $\lambda$ calculus term
+     that computes @racket[2*(1 + 3) = 2*1 + 2*3].
   }
 )
-
 @(benchmark
   #:name 'zombie
   #:author "David Van Horn"
@@ -162,17 +158,17 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Game"
 
   @elem{
-    In this game, the player must keep his marker away from
+    A game where the player must keep his marker away from
      computer-controlled "zombie" markers.
-    We run the game on a pre-defined list of @todo{how many?} commands.
+    We benchmark the game on a pre-defined sequence of commands and remove the
+     I/O features.
 
-    As noted by @PHIL{} @|etal|@~cite[nthvh-icfp-2014], the original
+    As noted by @PHIL{} @|etal|, the original
      program was implemented in an object-oriented style but converted
-     to a functional version to evaluate soft contract verification.
-    Our benchmark is based on a typed version of their functional game.
+     to a functional encoding to assess soft contract verification@~cite[nthvh-icfp-2014].
+    Our benchmark is a typed version of the functional game.
   }
 )
-
 @(benchmark
   #:name 'snake
   #:author "David Van Horn"
@@ -181,15 +177,12 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Game"
 
   @elem{
-  Implements a small game where a growing and moving snake avoids walls and
-   its own tail.
-  Our benchmark runs a pre-recorded history of 50,000 moves.
-  These moves update the game state, but do not produce GUI output.
-  Our benchmark is a gradually typed version of the @bm{snake} game from
-   @PHIL{} @|etal|@~cite[nthvh-icfp-2014].
+    Game in which a growing and moving snake avoids walls and its own tail.
+    Our benchmark is a gradually typed version of the @bm{snake} game from
+     @PHIL{} @|etal| and runs a pre-recorded sequence of state-changing moves
+     simulating user input@~cite[nthvh-icfp-2014].
   }
 )
-
 @(benchmark
   #:name 'tetris
   #:author "David Van Horn"
@@ -198,12 +191,11 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Game"
 
   @elem{
-    This version of tetris is also adapted from @PHIL{} @|etal|@~cite[nthvh-icfp-2014].
-    Our benchmark run a pre-recorded set of 5,000 moves and does not include
-     a GUI.
+    Implements the eponymous game.
+    The benchmark runs a deterministic sequence of moves and is
+     adapted from @PHIL{} @|etal|@~cite[nthvh-icfp-2014].
   }
 )
-
 @(benchmark
   #:name 'synth
   #:author "Vincent St. Amour and Neil Toronto"
@@ -212,17 +204,18 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Music synthesis DSL"
 
   @elem{
-    Converts a description of notes and drum beats to a playable @tt{.wav} format;
-     specifically, a 10-second clip from @hyperlink["https://en.wikipedia.org/wiki/Funkytown"]{Funkytown}.
+    Converts a description of notes and drum beats to a playable @tt{.wav} format.
     The original program was known to suffer overhead from a type boundary
-     to Typed Racket's @hyperlink["https://docs.racket-lang.org/math/array.html"]{math/array}
-     library, so our benchmark incorporates 5 modules from
-     the library.
-    Notably, we had to monomorphize these math library modules because of
-     restrictions sending polymorphic data structures across type boundaries.
-    Otherwise, this benchmark is the same used by St. Amour @|etal|@~cite[saf-cc-2015].}
+     to Typed Racket's @hyperlink["https://docs.racket-lang.org/math/array.html"]{@exact{\RktMeta{math/array}}}
+     library@~cite[saf-cc-2015].
+    Our benchmark incorporates the relevant library modules to form a
+     self-contained program.
+    @; TODO if the limitation doesn't belong here, where should it go?
+    Notably, we had to monomorphize the core array data structure
+     because opaque, polymorphic data structures may not be sent across type boundaries
+     in Typed Racket.
+  }
 )
-
 @(benchmark
   #:name 'gregor
   #:author "Jon Zeppieri"
@@ -234,15 +227,14 @@ The final input size we used for benchmarking was frequently a compromise
           @elem{tzinfo@note{@url["https://docs.racket-lang.org/tzinfo/index.html"]}})
 
   @elem{
-    The @hyperlink["https://docs.racket-lang.org/gregor/index.html"]{gregor}
-     library provides a variety of tools for working with date objects.
-    Our benchmark creates a list of 40 dates---half historic, half arbitrary---and
-     runs comparison and conversion operators on each.
-    We omit @bm{gregor}'s string-parsing utilities because they use an
-     untyped mechanism for ad-hoc polymorphism that is not supported by
-     Typed Racket.}
+    Provides tools for manipulating date objects.
+    For the benchmark, we build a range of date values and use them to run
+     unit tests.
+    Notably, the benchmark does not test @bm{gregor}'s string-parsing
+     functions because they rely on an untyped library for ad-hoc polymorphism
+     that is not yet supported by Typed Racket.
+  }
 )
-
 @(benchmark
   #:name 'forth
   #:author "Ben Greenman"
@@ -251,28 +243,27 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Forth interpreter"
 
   @elem{
-    This Forth interpreter began as a purely functional calculator
-     that let the user define new commands at run-time.
-    We converted the program to an object-oriented style and found the
-     cost of sharing first-class objects over a type boundary prohibitive.
-    In fact, our benchmark runs only @todo{how many?} commands---the worst
-     configurations in Racket version 6.2 are exponentially slower as
-     this number increases.
+    Object-oriented calculator for Forth programs.
+    The calculator maintains an environment of first-class objects representing
+     commands.
+    If this environment repeatedly crosses type boundaries it accumulates
+     higher-order contract wrappers.
+    These wrappers lead to an exponential slowdown in some configurations.
   }
 )
-
 @(benchmark
   #:name 'acquire
   #:author "Matthias Felleisen"
   #:num-adaptor 2
   #:origin @hyperlink["https://github.com/mfelleisen/Acquire"]{Educational}
-  #:purpose "Board Game"
+  #:purpose "Game"
 
   @elem{
-    You know it
+    Simulates a board game where players invest in real estate.
+    The program is written in a stateful, object-oriented style.
+    For the benchmark, we run a game between AI players.
   }
 )
-
 @(benchmark
   #:name 'fsm
   #:author "Matthias Felleisen"
@@ -281,18 +272,14 @@ The final input size we used for benchmarking was frequently a compromise
   #:purpose "Economy Simulator"
 
   @elem{
-    Simulates the interactions of a group of automata.
-    Each participant employs a pre-determined strategy to maximize its
-     payoff in a sequence of interaction rounds.
-
-    Our benchmark uses a population of 100 automata and simulates 1000 rounds.
+    Simulates the interactions of a population of finite-state automata.
     We measure two versions of this benchmark, one functional (@bm{fsm}) and
      one object-oriented (@tt{fsmoo}).
-    Like our @bm{forth} benchmark, the object-oriented verion uses first-class
-     classes across a type boundary.
+    The object-oriented verion frequently sends first-class
+     objects across type boundaries; the functional version does the same
+     with a mutable vector.
   }
 )
-
 @(benchmark
   #:name 'quad
   #:author "Matthew Butterick"
@@ -302,35 +289,30 @@ The final input size we used for benchmarking was frequently a compromise
   #:external-libraries (list @elem{csp@note{@url["https://github.com/mbutterick/csp"]}})
 
   @elem{
-    @hyperlink["http://github.com/mbutterick/quad"]{Quad} is an experimental
-     document processor.
-    It converts S-expression source code to @tt{pdf}.
-    We measure two versions of @bm{quad}.
-    The first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
+    Converts S-expression source code to @tt{pdf} format.
+    We have two versions of @bm{quad}:
+     the first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
      provided by the original author.
     This version has a high typed/untyped ratio because it uses the type system
-     enforces more properties than the untyped program---the Typed version is
-     slower because it is doing more work.
-    Hence our second version, @tt{quadBG}, which uses types as weak as the untyped
-     program and is therefore suitable for judging the @emph{implementation}
-     of Typed Racket rather than the @emph{user experience} of Typed Racket.@note{Our
+     to enforce more datatype invariants than the untyped program---the Typed version is
+     slower because it does more work.
+    Our second version, @tt{quadBG}, uses types as weak as the untyped
+     program and is therefore suitable for judging the implementation
+     of Typed Racket rather than the user experience of Typed Racket.@note{Our
        conference paper gave data only for @tt{quadMB}@~cite[tfgnvf-popl-2016]}
 
     To give a concrete example of different types, here are the definitions
      for the core @tt{Quad} datatype from both @tt{quadMB} and @tt{quadBG}.
 
-    @;@racketblock[
-    @tt{ (define-type QuadMB (Pairof Symbol (Listof QuadMB))) }
+    @racket[(define-type QuadMB (Pairof Symbol (Listof QuadMB)))]
 
-    @tt{ (define-type QuadBG (Pairof Symbol (Listof Any))) }
-    @;]
+    @racket[(define-type QuadBG (Pairof Symbol (Listof Any)))]
 
     The former is a homogenous, recursive type.
     As such, the predicate asserting that an untyped value has type @tt{QuadMB}
      is a linear-time tree traversal.
-    On the other hand, the predicate for @tt{QuadBG} is simply the composition
-     of the built-in @racket[list?] and @racket[symbol?] functions.@note{In particular,
-       @racket[(lambda (v) (and (list? v) (symbol? (car v))))].}
+    On the other hand, the predicate for @tt{QuadBG} is simply a constant-time
+     combination of the built-in @racket[list?] and @racket[symbol?] predicates.
   }
 )
 ]
