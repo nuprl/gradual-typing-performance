@@ -20,6 +20,10 @@
 
   (modulegraph->num-modules (-> ModuleGraph Natural))
 
+  (modulegraph->num-edges (-> ModuleGraph Natural))
+
+  (modulegraph->num-chaperones (-> ModuleGraph Natural))
+
   (modulegraph=? (-> ModuleGraph ModuleGraph Boolean))
 
   (modulegraph->untyped-loc (-> ModuleGraph Natural))
@@ -671,6 +675,16 @@
         (get-tikzid req)))
     (displayln "\n\\end{tikzpicture}")))
 
+(: modulegraph->num-edges (-> ModuleGraph Natural))
+(define (modulegraph->num-edges M)
+  (assert
+    (for/sum : Integer ([e (in-edges M)]) 1)
+    exact-nonnegative-integer?))
+
+(: modulegraph->num-chaperones (-> ModuleGraph Natural))
+(define (modulegraph->num-chaperones M)
+  0)
+
 (: modulegraph->num-modules (-> ModuleGraph Natural))
 (define (modulegraph->num-modules M)
   (length (module-names M)))
@@ -1000,6 +1014,16 @@
   (check-true (modulegraph=? MGd MGd))
   (check-false (adjlist=? (modulegraph-adjlist MGf) (modulegraph-adjlist MGd)))
   (check-false (modulegraph=? MGd MGf))
+
+  ;; -- modulegraph->num-edges
+  (check-equal?
+    (modulegraph->num-edges MGd)
+    4)
+
+  ;; -- modulegraph->num-chaperones
+  #;(check-equal?
+    (modulegraph->num-chaperones MGd)
+    3)
 
   ;; -- string->texedge TODO
   ;; -- texnode->modulegraph TODO
