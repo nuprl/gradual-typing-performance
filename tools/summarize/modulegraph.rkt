@@ -7,7 +7,7 @@
 ;; so this file provides a (brittle) parser.
 
 (provide:
-  (project-name->modulegraph (-> String ModuleGraph))
+  (project-name->modulegraph (-> (U Symbol String) ModuleGraph))
   (directory->modulegraph (-> Path-String ModuleGraph))
   ;; Parse a directory into a module graph.
   ;; Does not collect module dependency information.
@@ -281,9 +281,10 @@
 (define (rkt-file? p)
   (regexp-match? #rx"\\.rkt$" (if (string? p) p (path->string p))))
 
-(: project-name->modulegraph (-> String ModuleGraph))
+(: project-name->modulegraph (-> (U Symbol String) ModuleGraph))
 (define (project-name->modulegraph name)
-  (directory->modulegraph (infer-project-dir name)))
+  (define name-str (format "~a" name))
+  (directory->modulegraph (infer-project-dir name-str)))
 
 (: directory->modulegraph (-> Path-String ModuleGraph))
 (define (directory->modulegraph dir)
@@ -950,7 +951,7 @@
     '(("data") ("label") ("structs") ("ukkonen") ("lcs") ("main")))
 
   (check-equal?
-    (modulegraph-adjlist (project-name->modulegraph "synth"))
+    (modulegraph-adjlist (project-name->modulegraph 'synth))
     '(("array-broadcast" "data" "array-utils" "array-struct") ("array-struct" "data" "array-utils") ("array-transform" "data" "array-utils" "array-broadcast" "array-struct") ("array-utils") ("data") ("drum" "data" "synth" "array-transform" "array-utils" "array-struct") ("main" "synth" "mixer" "drum" "sequencer") ("mixer" "array-broadcast" "array-struct") ("sequencer" "mixer" "synth" "array-transform" "array-struct") ("synth" "array-utils" "array-struct")))
 
   (check-equal?
