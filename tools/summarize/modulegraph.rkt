@@ -20,6 +20,8 @@
 
   (modulegraph->num-modules (-> ModuleGraph Natural))
 
+  (modulegraph=? (-> ModuleGraph ModuleGraph Boolean))
+
   (modulegraph->untyped-loc (-> ModuleGraph Natural))
   (modulegraph->typed-loc (-> ModuleGraph Natural))
   (modulegraph->other-loc (-> ModuleGraph Natural))
@@ -64,7 +66,7 @@
   (strip-suffix (-> Path-String String))
   ;; Remove the file extension from a path string
 
-  (infer-project-dir (-> String Path-String))
+  (infer-project-dir (-> (U Symbol String) Path-String))
   ;; Guess where the project is located in the GTP repo
 )
 (provide
@@ -105,6 +107,25 @@
 ) #:transparent)
 (define-type AdjList (Listof (Listof String)))
 (define-type ModuleGraph modulegraph)
+
+(: modulegraph=? (-> ModuleGraph ModuleGraph Boolean))
+(define (modulegraph=? m1 m2)
+  (and
+    (string=? (modulegraph-project-name m1) (modulegraph-project-name m2))
+    (equal? (modulegraph-src m1) (modulegraph-src m2))
+    (adjlist=? (modulegraph-adjlist m1) (modulegraph-adjlist m2))))
+
+(: adjlist=? (-> AdjList AdjList Boolean))
+(define (adjlist=? a1 a2)
+  (cond
+   [(and (null? a1) (null? a2))
+    #t]
+   [(or (null? a1) (null? a2))
+    #f]
+   [(equal? (car a1) (car a2))
+    (adjlist=? (cdr a1) (cdr a2))]
+   [else
+    #f]))
 
 (: adjlist-add-edge (-> AdjList String String AdjList))
 (define (adjlist-add-edge A* from to)
@@ -233,9 +254,14 @@
       (list to from (cdr maybe-provided*))
       (raise-user-error 'boundaries (format "Failed to get provides for module '~a'" from)))))
 
+(: path->compiled (-> Path Compiled-Module-Expression))
+(define (path->compiled p)
+  (define gmc (get-module-code p))
+  (cast gmc Compiled-Module-Expression))
+
 (: absolute-path->provided* (-> Path (Listof Provided)))
 (define (absolute-path->provided* p)
-  (define cm (cast (compile (get-module-code p)) Compiled-Module-Expression))
+  (define cm (path->compiled p))
   (define-values (p* s*) (module-compiled-exports cm))
   (append
    (parse-provided p*)
@@ -283,8 +309,10 @@
 
 (: project-name->modulegraph (-> (U Symbol String) ModuleGraph))
 (define (project-name->modulegraph name)
-  (define name-str (format "~a" name))
-  (directory->modulegraph (infer-project-dir name-str)))
+  ;; Try to compile using the current Racket.
+  ;; On failure, fall back to old Racket.
+  ;with-handlers 
+    (directory->modulegraph (infer-project-dir name)))
 
 (: directory->modulegraph (-> Path-String ModuleGraph))
 (define (directory->modulegraph dir)
@@ -310,9 +338,9 @@
     (raise-user-error 'modulegraph "Must be in `gradual-typing-performance` repo to use script")))
 
 ;; Blindly search for a directory called `name`.
-(: infer-project-dir (-> String Path))
+(: infer-project-dir (-> (U Symbol String) Path))
 (define (infer-project-dir name)
-  (define p-dir (build-path (get-git-root) "benchmarks" name))
+  (define p-dir (build-path (get-git-root) "benchmarks" (format "~a" name)))
   (if (directory-exists? p-dir)
     p-dir
     (raise-user-error 'modulegraph "Failed to find project directory for '~a', cannot summarize data" name)))
@@ -554,7 +582,7 @@
 (: absolute-path->imports (-> Path-String (Listof Path)))
 (define (absolute-path->imports ps)
   (define p (if (path? ps) ps (string->path ps)))
-  (define mc (cast (compile (get-module-code p)) Compiled-Module-Expression))
+  (define mc (path->compiled p))
   (for/fold : (Listof Path)
             ([acc : (Listof Path) '()])
             ([mpi (in-list (apply append (module-compiled-imports mc)))])
@@ -966,6 +994,12 @@
                  (map provided->symbol (boundary-provided* b))))
          (boundaries MGd))
     '(("client" "constants" (DATA PORT)) ("main" "server" (server)) ("main" "client" (client)) ("server" "constants" (DATA PORT))))
+
+  ;; -- adjlist=? modulegraph=?
+  (check-true (adjlist=? (modulegraph-adjlist MGd) (modulegraph-adjlist MGd)))
+  (check-true (modulegraph=? MGd MGd))
+  (check-false (adjlist=? (modulegraph-adjlist MGf) (modulegraph-adjlist MGd)))
+  (check-false (modulegraph=? MGd MGf))
 
   ;; -- string->texedge TODO
   ;; -- texnode->modulegraph TODO
