@@ -84,6 +84,9 @@
 ;; -----------------------------------------------------------------------------
 ;; -- Organizing the benchmarks
 
+(define *MODULE-GRAPH-DIR* "./module-graphs")
+;; Place to store module graphs
+
 (define *STRICT?* (make-parameter #f))
 ;; When #t, raise exceptions instead of warnings
 
@@ -129,13 +132,15 @@
 
 (define bits tt)
 
-(define (bm name)
-  (define name-sym (string->symbol name))
+(define (assert-benchmark name-sym)
   (unless (for/or ([b (in-list benchmark-name*)])
             (if (list? b)
               (memq name-sym b)
               (eq? name-sym b)))
-    (unknown-benchmark-error name))
+    (unknown-benchmark-error name-sym)))
+
+(define (bm name)
+  (assert-benchmark (string->symbol name))
   (tt name))
 
 (define (data-lattice bm-raw v #:tag [tag "*"])
@@ -169,7 +174,8 @@
                         #:purpose purpose
                         #:external-libraries [lib* #f]
                         description)
-  (benchmark name author num-adaptor origin purpose lib* description))
+  (assert-benchmark name)
+  (benchmark (symbol->string name) author num-adaptor origin purpose lib* description))
 
 (define missing-benchmark-error
   (let ([msg "Missing descriptions for benchmark(s) '~a'"])
@@ -193,7 +199,7 @@
     (benchmark name author num-adaptor origin purpose lib* description)
     b)
   ;; TODO render lib*, hard because it's an optional list
-  (elem "\\benchmark{" (symbol->string name) "}{" author "}{" origin "}{" purpose "}{" description "}"))
+  (elem "\\benchmark{" name "}{" author "}{" origin "}{" purpose "}{" description "}"))
 
 ;; (-> Symbol Natural)
 (define (benchmark-num-modules name)
@@ -216,10 +222,10 @@
       (cons name acc))))
 
 ;; Like, zordoz.6.2 and zordoz.6.3 instead of zordoz
-;; (-> (Listof Symbol) Void)
+;; (-> (Listof String) Void)
 (define (check-missing-benchmarks name* #:exact? [exact? #f])
   (let loop ([expect* (sort (flatten-benchmark-name* exact?) symbol<?)]
-             [given*  (sort name* symbol<?)])
+             [given*  (sort (map string->symbol name*) symbol<?)])
     (cond
      [(null? expect*)
       (if (null? given*)
@@ -244,20 +250,70 @@
   (set-box! benchmark-data* b*)
   (apply exact (map render-benchmark (sort b* benchmark<? #:key benchmark-name))))
 
+;; Format a table of benchmark characteristics.
+;; Assumes that `benchmark-data*` has been populated (i.e. we called `benchmark-descriptions`)
+;; (-> Content)
+;; TODO
+;; - use b name, not modulegraph name
+;; - compile 6.2
+;; - group adaptor with modules
+;; - give typed % increase
+;; - actual modulegraphs
+;; - tt titles
+;; - wtf mbta
 (define (benchmark-characteristics)
-  (elem "TODO"))
+  (tabular
+   #:sep (hspace 2)
+   #:row-properties '(bottom-border ())
+   #:column-properties '(left right)
+   (cons
+     (list "Benchmark" "#M" "#A" "Untyped LOC" "Type Ann. LOC" "Module Graph")
+     (for*/list ([b (in-list (unbox benchmark-data*))]
+                 [M (in-list (benchmark-modulegraph* b))])
+       (define uloc (modulegraph->untyped-loc M))
+       (define tloc (modulegraph->typed-loc M))
+       (list
+        (benchmark-name b)
+        (number->string (modulegraph->num-modules M))
+        (number->string (benchmark-num-adaptor b))
+        (number->string uloc)
+        (number->string (- tloc uloc))
+        "f" #;(benchmark-tex M))))))
 
-  ;(define MG (project-name->modulegraph MG))
-  ;(define loc (modulegraph->untyped-loc MG))
-  ;(define ann-loc (modulegraph->ann-loc MG))
-  ;(define other-loc (modulegraph->other-loc MG))
-  ;(define num-modules (modulegraph->num-modules MG))
+(define (benchmark-modulegraph* b)
+  (define name (benchmark-name b))
+  (define name-sym (string->symbol name))
+  (map project-name->modulegraph
+    (or (for/or ([s (in-list benchmark-name*)])
+          (cond
+           [(and (symbol? s) (eq? name-sym s))
+            (list name)]
+           [(and (list? s) (eq? name-sym (car s)))
+            (if (eq? name-sym 'zordoz)
+              (list "zordoz.6.3")
+              (map symbol->string (cdr s)))]
+           [else
+            #f]))
+        (raise-user-error 'benchmark-modulgraph "Unknown benchmark name '~a'." name))))
+
+(define (benchmark-tex M)
+  (define mgd (*MODULE-GRAPH-DIR*))
+  (unless (directory-exists? mgd)
+    (make-directory mgd))
+  (define pn (modulegraph-project-name M))
+  (define mgf (string-append mgd "/" pn ".tex"))
+  (unless (file-exists? mgf)
+    (printf "WARNING: could not find modulegraph for project '~a', creating graph now.\n" pn)
+    (call-with-output-file mgf
+      (lambda (p) (modulegraph->tex M p))))
+  (exact "\\input{" mgf "}"))
 
 ;; -----------------------------------------------------------------------------
 
 (struct lnm (name description))
 (define (make-lnm name . descr*)
-  (lnm name (apply elem descr*)))
+  ;; TODO assert?
+  (lnm (symbol->string name) (apply elem descr*)))
 
 ;; (-> Lnm * Any)
 (define (lnm-descriptions . l*)
