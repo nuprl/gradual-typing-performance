@@ -76,6 +76,7 @@
  racket/match
  (only-in racket/file file->value)
  (only-in "common.rkt" etal cite exact parag)
+ (only-in racket/list last)
  scribble/core
  scribble/base
  version/utils
@@ -84,7 +85,16 @@
 ;; -----------------------------------------------------------------------------
 ;; -- Organizing the benchmarks
 
-(define *MODULE-GRAPH-DIR* "./module-graphs")
+(define *CACHE-BENCHMARKS-TABLE?* (make-parameter #t))
+;; TODO fix this
+
+(define *COMPILED* (make-parameter "./compiled"))
+;; Where Racket stores compiled files
+
+(define *BENCHMARK-DESCRIPTIONS-CACHE* (make-parameter "cache-benchmark-descriptions.rktd"))
+;; Place to store cached benchmarks table
+
+(define *MODULE-GRAPH-DIR* (make-parameter "./module-graphs"))
 ;; Place to store module graphs
 
 (define *STRICT?* (make-parameter #f))
@@ -164,9 +174,13 @@
   ;  (raise-user-error 'data-path "Path '~a' returned multiple results. Try again with a #:tag parameter to filter the search: (data-path BENCHMARK VERSION #:tag STR).\n    All results: ~a" path-str p*)]))
 )
 
+(define (ensure-dir d)
+  (unless (directory-exists? d)
+    (make-directory d)))
+
 ;; -----------------------------------------------------------------------------
 
-(struct benchmark (name author num-adaptor origin purpose lib* description))
+(struct benchmark (name author num-adaptor origin purpose lib* description modulegraph))
 (define (make-benchmark #:name name
                         #:author author
                         #:num-adaptor num-adaptor
@@ -175,7 +189,8 @@
                         #:external-libraries [lib* #f]
                         description)
   (assert-benchmark name)
-  (benchmark (symbol->string name) author num-adaptor origin purpose lib* description))
+  (define M (symbol->modulegraph name))
+  (benchmark name author num-adaptor origin purpose lib* description M))
 
 (define missing-benchmark-error
   (let ([msg "Missing descriptions for benchmark(s) '~a'"])
@@ -196,19 +211,31 @@
 ;; (-> benchmark String)
 (define (render-benchmark b)
   (match-define
-    (benchmark name author num-adaptor origin purpose lib* description)
+    (benchmark name author num-adaptor origin purpose lib* description M)
     b)
-  ;; TODO render lib*, hard because it's an optional list
-  (elem "\\benchmark{" name "}{" author "}{" origin "}{" purpose "}{" description "}"))
+  ;; TODO render external libraries
+  ;;  (tricky because it's an optional list)
+  (elem
+    "\\benchmark{"
+    (symbol->string name)
+    "}{"
+    author
+    "}{"
+    origin
+    "}{"
+    purpose
+    "}{"
+    description
+    "}{"
+    (benchmark-tex M)
+    "}\n\n"))
 
-;; (-> Symbol Natural)
-(define (benchmark-num-modules name)
-  ;; TODO implement
-  0)
+(define (benchmark->num-modules b)
+  (modulegraph->num-modules (benchmark-modulegraph b)))
 
-(define (benchmark<? name1 name2)
-  (< (benchmark-num-modules name1)
-     (benchmark-num-modules name2)))
+(define (benchmark<? b1 b2)
+  (< (benchmark->num-modules b1)
+     (benchmark->num-modules b2)))
 
 ;; If exact?, use the specific names and not the 'umbrella' benchmark names.
 ;; (-> Boolean (Listof Symbol))
@@ -225,7 +252,7 @@
 ;; (-> (Listof String) Void)
 (define (check-missing-benchmarks name* #:exact? [exact? #f])
   (let loop ([expect* (sort (flatten-benchmark-name* exact?) symbol<?)]
-             [given*  (sort (map string->symbol name*) symbol<?)])
+             [given*  (sort name* symbol<?)])
     (cond
      [(null? expect*)
       (if (null? given*)
@@ -248,77 +275,175 @@
 (define (benchmark-descriptions . b*)
   (check-missing-benchmarks (map benchmark-name b*))
   (set-box! benchmark-data* b*)
-  (apply exact (map render-benchmark (sort b* benchmark<? #:key benchmark-name))))
+  (apply exact (map render-benchmark (sort b* benchmark<?))))
+
+(define BENCHMARK-DESCRIPTIONS-TITLE* '(
+  "Benchmark"
+  "\\twoline{Untyped}{LOC}"
+  "\\twoline{Type Ann.}{LOC}"
+  "\\twoline{\\# Modules}{(Adaptors)}"
+  "\\# Boundaries"
+  "\\# Chaperones"
+))
 
 ;; Format a table of benchmark characteristics.
 ;; Assumes that `benchmark-data*` has been populated (i.e. we called `benchmark-descriptions`)
 ;; (-> Content)
-;; TODO
-;; - use b name, not modulegraph name
-;; - compile 6.2
-;; - group adaptor with modules
-;; - give typed % increase
-;; - actual modulegraphs
-;; - tt titles
-;; - wtf mbta
 (define (benchmark-characteristics)
-  (tabular
-   #:sep (hspace 2)
-   #:row-properties '(bottom-border ())
-   #:column-properties '(left right)
-   (cons
-     (list "Benchmark" "#M" "#A" "Untyped LOC" "Type Ann. LOC" "Module Graph")
-     (for*/list ([b (in-list (unbox benchmark-data*))]
-                 [M (in-list (benchmark-modulegraph* b))])
-       (define uloc (modulegraph->untyped-loc M))
-       (define tloc (modulegraph->typed-loc M))
-       (list
-        (benchmark-name b)
-        (number->string (modulegraph->num-modules M))
-        (number->string (benchmark-num-adaptor b))
-        (number->string uloc)
-        (number->string (- tloc uloc))
-        "f" #;(benchmark-tex M))))))
+  (exact
+    "\\setlength{\\tabcolsep}{0.3em}"
+    (format "\\begin{tabular}{l~a}\n" (make-string (sub1 (length BENCHMARK-DESCRIPTIONS-TITLE*)) #\r))
+    (apply elem (get-benchmarks-table))
+    "\\end{tabular}\n\n"))
 
-(define (benchmark-modulegraph* b)
-  (define name (benchmark-name b))
-  (define name-sym (string->symbol name))
-  (map project-name->modulegraph
-    (or (for/or ([s (in-list benchmark-name*)])
-          (cond
-           [(and (symbol? s) (eq? name-sym s))
-            (list name)]
-           [(and (list? s) (eq? name-sym (car s)))
-            (if (eq? name-sym 'zordoz)
-              (list "zordoz.6.3")
-              (map symbol->string (cdr s)))]
-           [else
-            #f]))
-        (raise-user-error 'benchmark-modulgraph "Unknown benchmark name '~a'." name))))
+(define (get-benchmarks-table)
+  (or (and (*CACHE-BENCHMARKS-TABLE?*) (uncache-benchmarks-table))
+      (cache-table (new-benchmarks-table))))
+
+(define (benchmark-descriptions-cache)
+  (build-path (*COMPILED*) (*BENCHMARK-DESCRIPTIONS-CACHE*)))
+
+(define (uncache-benchmarks-table)
+  (define bdc (benchmark-descriptions-cache))
+  (and (file-exists? bdc)
+       (let ([tag+data (file->value bdc)])
+         (and (equal? (car tag+data) benchmark-name*)
+              (printf "INFO: retrieving cached benchmarks table from '~a'\n" bdc)
+              (cdr tag+data)))))
+
+(define (cache-table T)
+  (ensure-dir (*COMPILED*))
+  (define bdc (benchmark-descriptions-cache))
+  (printf "INFO: caching new benchmarks table at '~a'\n" bdc)
+  (with-output-to-file bdc #:exists 'replace
+    (lambda ()
+      (writeln (cons benchmark-name* T))))
+  T)
+
+(define (new-benchmarks-table)
+  (list*
+    " \\toprule \n"
+    (apply tex-row BENCHMARK-DESCRIPTIONS-TITLE*)
+    " \\midrule \n"
+    (for/list ([b (in-list (unbox benchmark-data*))])
+      (define M (benchmark-modulegraph b))
+      (define num-adaptor (benchmark-num-adaptor b))
+      (define uloc (modulegraph->untyped-loc M))
+      (define tloc (modulegraph->typed-loc M))
+      (tex-row
+       (format "{\\tt ~a}" (modulegraph-project-name M))
+       (format "~a" uloc)
+       (format-percent-diff tloc uloc)
+       (format-num-modules M #:adaptor num-adaptor)
+       (number->string (modulegraph->num-edges M))
+       (number->string (modulegraph->num-chaperones M))
+      ))))
+
+;; Add '&' for TeX
+(define (tex-row . x*)
+  (let loop ([x* x*])
+    (if (null? (cdr x*))
+      (list (car x*) " \\\\\n")
+      (list* (car x*) " & " (loop (cdr x*))))))
+
+(define (format-num-modules M #:adaptor [adaptor #f])
+  (if adaptor
+    (format "~a\\,~~(~a)"
+      (modulegraph->num-modules M)
+      adaptor)
+    (number->string (modulegraph->num-modules M))))
+
+(define (format-percent-diff meas exp)
+  (define diff (- meas exp))
+  (define pct (round (* 100 (/ diff exp))))
+  (format "~a~~~~~a(~a\\%)"
+    diff
+    (if (< pct 10) "\\hphantom{0}" "")
+    pct))
+
+(define (benchmark->name* b)
+  (project-name->name* (benchmark-name b)))
+
+(define (project-name->name* name)
+  (or (for/first ([s (in-list benchmark-name*)]
+                 #:when (or (and (symbol? s) (eq? s name))
+                            (and (list? s) (eq? name (car s)))))
+        s)
+      (unknown-benchmark-error name)))
+
+(define (benchmark->modulegraph b)
+  (symbol->modulegraph (benchmark-name b)))
+
+(define (symbol->modulegraph n)
+  (define name* (project-name->name* n))
+  (cond
+   [(not (list? name*))
+    ;; Easy! Compile & return the modulegraph.
+    (project-name->modulegraph name*)]
+   [else
+    ;; Hard!
+    ;; - Compile all names in `cdr` to modulegraphs. If they fail, ignore them.
+    ;; - Filter duplicate modulegraphs from the list.
+    ;; - Return only a single modulegraph
+    (choose-modulegraph #:src name*
+      (for/fold ([acc '()])
+                ([name (in-list (cdr name*))])
+        ;; Try compiling a modulegraph, don't worry if it fails.
+        (define M (with-handlers ([exn:fail? (lambda (e) #f)])
+                    (project-name->modulegraph name)))
+        (if (and M (not (for/or ([M2 (in-list acc)])
+                          (adjlist=? (modulegraph-adjlist M) (modulegraph-adjlist M2)))))
+          (cons M acc)
+          acc)))]))
+
+;; Resolve a list of unique modulegraphs to a single one.
+(define (choose-modulegraph M* #:src name*)
+  (cond
+   [(null? M*)
+    (raise-user-error 'choose-modulegraph "Failed to infer modulegraphs for '~a'." name*)]
+   [(null? (cdr M*))
+    (car M*)]
+   [else
+    (printf "WARNING: got different modulegraphs for '~a'. Ignoring all but the last.\n" name*)
+    (last M*)]))
 
 (define (benchmark-tex M)
   (define mgd (*MODULE-GRAPH-DIR*))
-  (unless (directory-exists? mgd)
-    (make-directory mgd))
+  (ensure-dir mgd)
   (define pn (modulegraph-project-name M))
   (define mgf (string-append mgd "/" pn ".tex"))
   (unless (file-exists? mgf)
     (printf "WARNING: could not find modulegraph for project '~a', creating graph now.\n" pn)
     (call-with-output-file mgf
       (lambda (p) (modulegraph->tex M p))))
-  (exact "\\input{" mgf "}"))
+  (elem "\\modulegraph{" mgf "}"))
 
-;; -----------------------------------------------------------------------------
+;; =============================================================================
 
 (struct lnm (name description))
 (define (make-lnm name . descr*)
   ;; TODO assert?
-  (lnm (symbol->string name) (apply elem descr*)))
+  (lnm name (apply elem descr*)))
+
+(define (lnm->benchmark l)
+  (define s (lnm-name l))
+  (or
+   (and
+    (list? (unbox benchmark-data*))
+    (for/first ([b (in-list (unbox benchmark-data*))]
+               #:when (let ([s* (benchmark->name* b)])
+                        (if (list? s*) (memq s s*) (eq? s s*))))
+      b))
+   (raise-user-error 'lnm->benchmark "Failed to get benchmark for LNM '~a'." s)))
+
+(define (lnm<? l1 l2)
+  (benchmark<? (lnm->benchmark l1)
+               (lnm->benchmark l2)))
 
 ;; (-> Lnm * Any)
 (define (lnm-descriptions . l*)
   (check-missing-benchmarks (map lnm-name l*) #:exact? #t)
-  (map render-lnm-description (sort l* benchmark<? #:key lnm-name)))
+  (map render-lnm-description (sort l* lnm<?)))
 
 (define (render-lnm-description l)
   (elem
@@ -354,4 +479,11 @@
 
 (define (lnm-summary . version*)
   (elem "TODO"))
+
+;; =============================================================================
+
+(module+ test
+  (require rackunit)
+
+)
 
