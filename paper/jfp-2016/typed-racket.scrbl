@@ -43,7 +43,7 @@ The final input size we used for benchmarking was frequently a compromise
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
-  #:purpose "Compute prime numbers using the Sieve of Eratosthenes."
+  #:purpose "Generate prime numbers"
   @elem{
     @bm{sieve} demonstrates a scenario where user
      code closely interacts with higher-order library code---in this case,
@@ -58,7 +58,7 @@ The final input size we used for benchmarking was frequently a compromise
   #:author "John Clements and Neil Van Dyke"
   #:num-adaptor 0
   #:origin @hyperlink["https://github.com/jbclements/morse-code-trainer/tree/master/morse-code-trainer"]{Library}
-  #:purpose "Generate morse code strings, compare against user input"
+  #:purpose "Morse code Trainer"
 
   @elem{
     The morse code benchmark is derived from training program that
@@ -73,7 +73,7 @@ The final input size we used for benchmarking was frequently a compromise
   #:author "Matthias Felleisen"
   #:num-adaptor 0
   #:origin "Educational"
-  #:purpose "Answer reachability queries about Boston's transit system"
+  #:purpose "Interactive map"
   #:external-libraries (list @elem{graph@note{@url["http://github.com/stchang/graph"]}})
 
   @elem{
@@ -110,7 +110,7 @@ The final input size we used for benchmarking was frequently a compromise
   #:author "Danny Yoo"
   #:num-adaptor 1
   #:origin @hyperlink["https://github.com/dyoo/suffixtree"]{Library}
-  #:purpose "Implement Ukkonen's suffix tree algorithm"
+  #:purpose "Ukkonen's suffix tree algorithm"
 
   @elem{
     Computes longest common subsequences by converting strings to a suffix
@@ -124,7 +124,7 @@ The final input size we used for benchmarking was frequently a compromise
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
-  #:purpose "Create graphs"
+  #:purpose "Create L-NM graphs"
   #:external-libraries (list @elem{plot@note{@url["https://docs.racket-lang.org/plot/"]}}
                              @elem{@tt{racket/statistics}@note{@url["https://docs.racket-lang.org/math/stats.html"]}})
 
@@ -319,9 +319,10 @@ The final input size we used for benchmarking was frequently a compromise
 
 
 @; -----------------------------------------------------------------------------
-@subsection{Benchmark Characteristics}
+@subsection{Static Benchmark Characteristics}
 
-The table in @figure-ref{fig:bm} lists and summarizes our benchmark programs.
+The table in @figure-ref{fig:bm} lists and summarizes the static characteristics
+ of our benchmark programs.
 For each, we give an approximate measure of the program's size and
  a diagram of its module structure.
 
@@ -358,7 +359,7 @@ When one of these modules is typed and the other untyped, the imported definitio
 @;reports the proportion of observed contract checks due to adaptor modules and
 @;libraries.
 
-@figure*["fig:bm" "Characteristics of the benchmarks"
+@figure*["fig:bm" "Static characteristics of the benchmarks"
   @(benchmark-characteristics)
 ]
 
