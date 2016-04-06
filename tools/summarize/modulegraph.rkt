@@ -18,6 +18,13 @@
   (modulegraph->tex (-> ModuleGraph Output-Port Void))
   ;; Print a modulegraph to .tex
 
+  (modulegraph->num-modules (-> ModuleGraph Natural))
+
+  (modulegraph->untyped-loc (-> ModuleGraph Natural))
+  (modulegraph->typed-loc (-> ModuleGraph Natural))
+  (modulegraph->other-loc (-> ModuleGraph Natural))
+  ;; Count lines of code
+
   (boundaries (-> ModuleGraph (Listof Boundary)))
   ;; Return a list of identifier-annotated edges in the program
   ;; Each boundary is a list (TO FROM PROVIDED)
@@ -74,7 +81,7 @@
   glob/typed
   racket/match
   (only-in racket/system system)
-  (only-in racket/port with-output-to-string)
+  (only-in racket/port with-output-to-string open-output-nowhere)
   (only-in racket/list make-list last drop-right)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
@@ -635,6 +642,47 @@
         (get-tikzid req)))
     (displayln "\n\\end{tikzpicture}")))
 
+(: modulegraph->num-modules (-> ModuleGraph Natural))
+(define (modulegraph->num-modules M)
+  (length (module-names M)))
+
+(: assert-src (-> ModuleGraph Path-String))
+(define (assert-src M)
+  (or (modulegraph-src M)
+      (raise-user-error 'assert-src "Source folder missing for '~a'" (modulegraph-project-name M))))
+
+(: modulegraph->untyped-loc (-> ModuleGraph Natural))
+(define (modulegraph->untyped-loc M)
+  (directory->loc (build-path (assert-src M) "untyped")))
+
+(: modulegraph->typed-loc (-> ModuleGraph Natural))
+(define (modulegraph->typed-loc M)
+  (directory->loc (build-path (assert-src M) "typed")))
+
+(: modulegraph->other-loc (-> ModuleGraph Natural))
+(define (modulegraph->other-loc M)
+  (+ (directory->loc (build-path (assert-src M) "base"))
+     (directory->loc (build-path (assert-src M) "both"))))
+
+(: directory->loc (-> Path-String Natural))
+(define (directory->loc d)
+  ;; First compute dummy output
+  (parameterize ([current-output-port (open-output-nowhere)])
+    (unless (sloccount d)
+      (raise-user-error 'test-loc "Failed to get LOC for '~a'" d)))
+  (define row*
+    (with-output-to-string
+      (lambda () (sloccount d #:cache? #t))))
+  (for/sum : Natural ([line (in-list (string-split row* "\n"))])
+    (assert (string->number (car (string-split line))) index?)))
+
+(: sloccount (->* [Path-String] [#:cache? Boolean] Boolean))
+(define (sloccount d #:cache? [cache? #f])
+  (system
+    (format "sloccount --details ~a ~a"
+            (if cache? "--cached" "")
+            d)))
+
 (: decr-right (-> String String))
 (define (decr-right str)
   (decr-str str #f #t))
@@ -703,6 +751,26 @@
   (check-equal? (sort (module-names MGf) string<?)
                '("collide" "const" "cut-tail" "data" "handlers" "main" "motion" "motion-help"))
   (check-equal? (module-names MGd) '("client" "constants" "main" "server"))
+
+  ;; -- modulegraph->num-modules
+  (check-equal?
+    (modulegraph->num-modules MGf)
+    8)
+
+  (check-equal?
+    (modulegraph->num-modules MGd)
+    4)
+
+  ;; -- modulegraph->lines-of-code
+  (let ([uloc (modulegraph->untyped-loc MGd)]
+        [udir (infer-untyped-dir (infer-project-dir SAMPLE-MG-PROJECT-NAME))])
+    (check-equal?  uloc (directory->loc udir))
+    (check-true (< uloc 900))
+    (check-true (< 10 uloc))
+    (let ([tdir (build-path udir ".." "typed")]
+          [tloc (modulegraph->typed-loc MGd)])
+      (check-equal? tloc (directory->loc tdir))
+      (check-true (< uloc tloc))))
 
   ;; -- name->index
   (check-equal? (name->index MGf "collide") 0)
