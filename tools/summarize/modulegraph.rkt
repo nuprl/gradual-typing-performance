@@ -26,6 +26,8 @@
 
   (modulegraph=? (-> ModuleGraph ModuleGraph Boolean))
 
+  (adjlist=? (-> AdjList AdjList Boolean))
+
   (modulegraph->untyped-loc (-> ModuleGraph Natural))
   (modulegraph->typed-loc (-> ModuleGraph Natural))
   (modulegraph->other-loc (-> ModuleGraph Natural))
@@ -91,6 +93,7 @@
   (only-in racket/list make-list last drop-right)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
+  (only-in racket/file delete-directory/files)
   (only-in racket/string string-split string-contains? string-trim string-join)
 )
 (require/typed syntax/modcode
@@ -121,13 +124,21 @@
 
 (: adjlist=? (-> AdjList AdjList Boolean))
 (define (adjlist=? a1 a2)
+  (list=? string-list=? a1 a2))
+
+(: string-list=? (-> (Listof String) (Listof String) Boolean))
+(define (string-list=? x* y*)
+  (list=? string=? x* y*))
+
+(: list=? (All (A) (-> (-> A A Boolean) (Listof A) (Listof A) Boolean)))
+(define (list=? f a1 a2)
   (cond
    [(and (null? a1) (null? a2))
     #t]
    [(or (null? a1) (null? a2))
     #f]
-   [(equal? (car a1) (car a2))
-    (adjlist=? (cdr a1) (cdr a2))]
+   [(f (car a1) (car a2))
+    (list=? f (cdr a1) (cdr a2))]
    [else
     #f]))
 
@@ -316,15 +327,19 @@
   ;; Try to compile using the current Racket.
   ;; On failure, fall back to old Racket.
   ;with-handlers 
-    (directory->modulegraph (infer-project-dir name)))
+    (directory->modulegraph (infer-project-dir name) #:project-name name))
 
-(: directory->modulegraph (-> Path-String ModuleGraph))
-(define (directory->modulegraph dir)
+(: directory->modulegraph (->* [Path-String] [#:project-name (U Symbol String #f)] ModuleGraph))
+(define (directory->modulegraph dir #:project-name [project-name #f])
   (define u-dir (infer-untyped-dir dir))
   ;; No edges, just nodes
   (: adjlist AdjList)
   (define adjlist (directory->adjlist u-dir))
-  (modulegraph (path->project-name dir) adjlist dir))
+  (define pn
+    (if project-name
+      (format "~a" project-name)
+      (path->project-name dir)))
+  (modulegraph pn adjlist dir))
 
 (define GTP "gradual-typing-performance")
 
@@ -681,9 +696,39 @@
     (for/sum : Integer ([e (in-edges M)]) 1)
     exact-nonnegative-integer?))
 
+;; RUN the typed version of the project, collect the number of chaperones
 (: modulegraph->num-chaperones (-> ModuleGraph Natural))
 (define (modulegraph->num-chaperones M)
-  0)
+  ;; -- Create a directory with typed & both files in it
+  (define tmp (make-tmp-dir M #:typed? #t))
+  (define r
+    (parameterize ([current-directory tmp])
+      ;; -- Replace all 'require/typed/check' with 'require/typed', for the worst-case effect
+      ;; -- Replace 'main' call with `count-chaps` & `read-chaps`
+      ;; -- Run Racket, read & return the counted chaps
+    0))
+  (delete-directory/files tmp)
+  r)
+
+(: make-tmp-dir (->* [ModuleGraph] [#:typed? Boolean] Path-String))
+(define (make-tmp-dir M #:typed? [typed? #f])
+  (define src (or (modulegraph-src M)
+                  (raise-user-error 'make-tmp-dir "Missing source for modulegraph '~a'" M)))
+  ;; Dammit TR
+  (define target (build-path src "tmp"))
+  (define tdir (build-path src (if typed? "typed" "untyped")))
+  (define bdir (build-path src "both"))
+  (delete-directory/files target #:must-exist? #f)
+  (make-directory target)
+  (copy-rkt-file* tdir target)
+  (copy-rkt-file* bdir target)
+  target)
+
+(: copy-rkt-file* (-> Path-String Path-String Void))
+(define (copy-rkt-file* src dst)
+  (define str (if (path? src) (path->string src) src))
+  (for ([fname (in-glob (string-append str "/*.rkt"))])
+    (copy-file fname (build-path dst (strip-directory fname)))))
 
 (: modulegraph->num-modules (-> ModuleGraph Natural))
 (define (modulegraph->num-modules M)
@@ -1011,6 +1056,11 @@
   (check-true (modulegraph=? MGd MGd))
   (check-false (adjlist=? (modulegraph-adjlist MGf) (modulegraph-adjlist MGd)))
   (check-false (modulegraph=? MGd MGf))
+
+  (let ([a1 (modulegraph-adjlist (project-name->modulegraph 'fsm))]
+        [a2 (modulegraph-adjlist (project-name->modulegraph 'fsmoo))])
+    ;; Too bad, one require isn't needed in fsmoo
+    (check-false (adjlist=? a1 a2)))
 
   ;; -- modulegraph->num-edges
   (check-equal?
