@@ -13,7 +13,7 @@
 %% Import and print the pictures for a project
 %% Arguments:
 %% - Name of the project
-\newcommand{\pict}[1]{\begin{tabular}{c}\scalebox{0.6}{\input{module-graphs/#1}}\end{tabular}}
+\newcommand{\modulegraph}[1]{\scalebox{0.6}{\input{#1}}}
 
 \newcommand{\rkt}[2]{$\bullet$}
 
@@ -33,11 +33,17 @@
 \newcommand{\ctc}[1]{\llparenthesis #1 \rrparenthesis}
 
 %% TODO handle/render benchmarks' 'ext-libs'
-\newcommand{\benchmark}[5]{\vbox{
-  {\noindent\kern-0.5em\normalfont\bfseries\itshape #1}\\
-  \makebox[1.2cm][l]{\emph{Author}}   : ~#2\\
-  \makebox[1.2cm][l]{\emph{Origin}}   : ~#3\\
-  \makebox[1.2cm][l]{\emph{Purpose}}  : ~#4
+\newcommand{\benchmark}[6]{\vbox{
+  {\noindent\kern-0.5em\normalfont\bfseries\itshape #1}
+
+  \vspace{0.5ex}
+  \begin{minipage}{0.6\textwidth}\flushleft
+    \makebox[1.2cm][l]{\emph{Author}}   : ~#2\\
+    \makebox[1.2cm][l]{\emph{Origin}}   : ~#3\\
+    \makebox[1.2cm][l]{\emph{Purpose}}  : ~#4
+  \end{minipage}\begin{minipage}{0.5\textwidth}
+    #6\hspace{1cm}
+  \end{minipage}
 
   \vspace{-1ex}
   {\kern1em #5}
@@ -46,3 +52,6 @@
   \vspace{2ex}
 
 }}
+\newcommand{\twoline}[2]{\parbox[s]{2cm}{\flushright\hfill #1\newline#2}}
+%% --- end texstyle.tex
+%% -----------------------------------------------------------------------------
