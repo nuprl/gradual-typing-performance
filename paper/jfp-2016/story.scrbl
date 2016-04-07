@@ -12,24 +12,23 @@
 @; TR is for real, TR is gradual
 Our research is motivated by practical experience with Typed Racket@~cite[TypedRacket],
  the gradually-typed sister language of Racket@~cite[plt-tr1].
-Typed Racket implements @emph{macro} (i.e. by-module) gradual typing.
+Typed Racket implements macro-level (i.e. by-module) gradual typing.
 Programmers choose to invoke the type checker by writing @exact{\RktMeta{\#lang typed/racket}}
  at the beginning of a module.
 In contrast, modules declared using @exact{\RktMeta{\#lang racket}} are untyped.
 When a typed module relies on bindings from an untyped module, programmers
  must supply type annotations in the import statement.
-These annotations are assumed correct by the type checker and compiled to
+These annotations are compiled to
  contracts@~cite[ff-icfp-2002] to ensure that the dynamic behavior of the untyped
  code matches its type specification.
 Untyped modules may freely use bindings from typed modules.
-The imported typed code is protected with a contract to ensure type-correct use
- in untyped contexts.
+The imported typed code is protected with automatically generated
+ contracts to ensure type-correct use in untyped contexts.
 
 Racket programmers frequently mix typed and untyped code.
-For one, the standard matrix, statistics, and plotting libraries are implemented
+For example, the standard matrix, statistics, and plotting libraries are implemented
  in Typed Racket and used by many untyped programs.
-Conversely, the Racket runtime and core libraries are untyped and an essential
- part of any typed module.
+Conversely, Racket's core libraries are untyped and used by nearly all typed programs.
 Within a single project, we find that Typed Racket users have diverse motivations
  for choosing which modules to type and which to leave untyped.
 Some of the most common use-cases are:
@@ -56,8 +55,8 @@ Some of the most common use-cases are:
     Typing both modules may improve performance.
   }
 ]
-A particular module may be typed for one, many, or none of the above reasons.
-For example, consider a large untyped codebase in which a bug is traced to an
+Over time, programs may become progressively more typed.
+Consider a large untyped codebase in which a bug is traced to an
  module that was written years ago by a developer who is no longer with the project.
 The programmer tasked with fixing the bug must first understand how the module
  is intended to work by reading documentation, unit tests, and the code; only
@@ -73,7 +72,7 @@ After converting, the module is now hardened against future bugs;
 
 Introducing types in one module while leaving others untyped, however, may
  lead to significant performance overhead.
-Typed Racket developers have experienced pathologies including
+Because of type boundaries, Typed Racket developers have experienced pathologies including
  a 50% overhead in a commercial web server
  and 25x-50x slowdowns when using the standard math library.
 One potential solution is to convert additional modules to Typed Racket.
@@ -81,7 +80,7 @@ For example,
  one user reported a speedup from 12 seconds to 1 millisecond after converting
  a script from Racket to Typed Racket.
 But annotating a module is not guaranteed to improve performance and may introduce
- new type boundaries with even greater overhead.
+ new type boundaries with even larger overhead.
 
 As language designers, we must also remember that adding types is always
  a software engineering burden.
@@ -102,7 +101,9 @@ As a concrete example, consider a function for multiplying two complex numbers
 
 @(begin
 #reader scribble/comment-reader
-(racketblock
+@codeblock|{
+  #lang typed/racket
+
   (define-type C (Pairof Nonnegative-Real Real))
   ;; C = (Distance from origin, Radians)
 
@@ -110,7 +111,7 @@ As a concrete example, consider a function for multiplying two complex numbers
   (define (complex-* c1 c2)
     (cons (* (car c1) (car c2))
           (+ (cdr c1) (cdr c2))))
-))
+}|)
 
 When this typed function is imported by an untyped module, we say it crosses a
  @emph{type boundary}.
