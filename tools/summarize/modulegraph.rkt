@@ -22,7 +22,7 @@
 
   (modulegraph->num-edges (-> ModuleGraph Natural))
 
-  (modulegraph->num-chaperones (-> ModuleGraph Natural))
+  (modulegraph->num-identifiers (-> ModuleGraph Natural))
 
   (modulegraph=? (-> ModuleGraph ModuleGraph Boolean))
 
@@ -88,6 +88,7 @@
 (require
   glob/typed
   racket/match
+  (only-in racket/set set-count)
   (only-in racket/system system)
   (only-in racket/port with-output-to-string open-output-nowhere)
   (only-in racket/list make-list last drop-right)
@@ -696,19 +697,13 @@
     (for/sum : Integer ([e (in-edges M)]) 1)
     exact-nonnegative-integer?))
 
-;; RUN the typed version of the project, collect the number of chaperones
-(: modulegraph->num-chaperones (-> ModuleGraph Natural))
-(define (modulegraph->num-chaperones M)
-  ;; -- Create a directory with typed & both files in it
-  (define tmp (make-tmp-dir M #:typed? #t))
-  (define r
-    (parameterize ([current-directory tmp])
-      ;; -- Replace all 'require/typed/check' with 'require/typed', for the worst-case effect
-      ;; -- Replace 'main' call with `count-chaps` & `read-chaps`
-      ;; -- Run Racket, read & return the counted chaps
-    0))
-  (delete-directory/files tmp)
-  r)
+(: modulegraph->num-identifiers (-> ModuleGraph Natural))
+(define (modulegraph->num-identifiers M)
+  (set-count
+    (for*/set : (Setof (Pairof String Symbol))
+              ([b (in-list (boundaries M))]
+               [p (in-list (boundary-provided* b))])
+      (cons (boundary-from b) (provided->symbol p)))))
 
 (: make-tmp-dir (->* [ModuleGraph] [#:typed? Boolean] Path-String))
 (define (make-tmp-dir M #:typed? [typed? #f])
@@ -1067,10 +1062,10 @@
     (modulegraph->num-edges MGd)
     4)
 
-  ;; -- modulegraph->num-chaperones
-  #;(check-equal?
-    (modulegraph->num-chaperones MGd)
-    3)
+  ;; -- modulegraph->num-identifiers
+  (check-equal?
+    (modulegraph->num-identifiers MGd)
+    4)
 
   ;; -- string->texedge TODO
   ;; -- texnode->modulegraph TODO
