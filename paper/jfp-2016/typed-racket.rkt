@@ -280,10 +280,10 @@
 (define BENCHMARK-DESCRIPTIONS-TITLE* '(
   "Benchmark"
   "\\twoline{Untyped}{LOC}"
-  "\\twoline{Type Ann.}{LOC}"
+  "\\twoline{Annotation}{LOC}"
   "\\twoline{\\# Modules}{(Adaptors)}"
   "\\# Boundaries"
-  "\\# Chaperones"
+  "\\# Exports"
 ))
 
 ;; Format a table of benchmark characteristics.
@@ -291,7 +291,7 @@
 ;; (-> Content)
 (define (benchmark-characteristics)
   (exact
-    "\\setlength{\\tabcolsep}{0.3em}"
+    "\\setlength{\\tabcolsep}{0.2em}"
     (format "\\begin{tabular}{l~a}\n" (make-string (sub1 (length BENCHMARK-DESCRIPTIONS-TITLE*)) #\r))
     (apply elem (get-benchmarks-table))
     "\\end{tabular}\n\n"))
@@ -336,7 +336,7 @@
        (format-percent-diff tloc uloc)
        (format-num-modules M #:adaptor num-adaptor)
        (number->string (modulegraph->num-edges M))
-       (number->string (modulegraph->num-chaperones M))
+       (number->string (modulegraph->num-identifiers M))
       ))))
 
 ;; Add '&' for TeX
