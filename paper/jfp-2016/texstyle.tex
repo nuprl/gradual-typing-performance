@@ -13,7 +13,7 @@
 %% Import and print the pictures for a project
 %% Arguments:
 %% - Name of the project
-\newcommand{\modulegraph}[1]{\scalebox{0.6}{\input{#1}}}
+\newcommand{\modulegraph}[1]{\resizebox{0.4\textwidth}{!}{\input{#1}}}
 
 \newcommand{\rkt}[2]{$\bullet$}
 
@@ -33,20 +33,21 @@
 \newcommand{\ctc}[1]{\llparenthesis #1 \rrparenthesis}
 
 %% TODO handle/render benchmarks' 'ext-libs'
-\newcommand{\benchmark}[6]{\vbox{
-  {\noindent\kern-0.5em\normalfont\bfseries\itshape #1}
+\newcommand{\benchmark}[7]{\vbox{
+  {\noindent\normalfont\bfseries\itshape #1}
 
-  \vspace{0.5ex}
-  \begin{minipage}{0.6\textwidth}\flushleft
-    \makebox[1.2cm][l]{\emph{Author}}   : ~#2\\
-    \makebox[1.2cm][l]{\emph{Origin}}   : ~#3\\
-    \makebox[1.2cm][l]{\emph{Purpose}}  : ~#4
-  \end{minipage}\begin{minipage}{0.5\textwidth}
-    #6\hspace{1cm}
-  \end{minipage}
+  \vspace{0.5ex}{\small
+  \begin{minipage}{0.5\textwidth}\flushleft
+    \makebox[0.8cm][l]{\emph{Author}}   : ~#2\\
+    \makebox[0.8cm][l]{\emph{Origin}}   : ~#3
+  \end{minipage}\begin{minipage}{0.5\textwidth}\flushleft
+    \makebox[1.2cm][l]{\emph{Purpose}}  : ~#4\\
+    \makebox[1.2cm][l]{\emph{Depends}}  : ~#7\\
+    %#6\hspace{1cm}
+  \end{minipage}}
 
-  \vspace{-1ex}
-  {\kern1em #5}
+  \vspace{1ex}
+  {\noindent #5}
 
   \hfill{}\rule{0.5\textwidth}{0.5pt}\hfill{}
   \vspace{2ex}
