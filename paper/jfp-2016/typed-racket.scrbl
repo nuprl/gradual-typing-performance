@@ -57,7 +57,7 @@ For the purpose of the experiment, the final input size we used
   #:origin "Synthetic"
   #:purpose "Generate prime numbers"
   @elem{
-    @bm{sieve} demonstrates a scenario where user
+    Demonstrates a scenario where user
      code closely interacts with higher-order library code---in this case,
      a stream library.
     When fully typed or untyped, @bm{sieve} computes quickly; however,
@@ -86,7 +86,7 @@ For the purpose of the experiment, the final input size we used
   #:num-adaptor 0
   #:origin "Educational"
   #:purpose "Interactive map"
-  #:external-libraries (list @elem{graph@note{@url["http://github.com/stchang/graph"]}})
+  #:external-libraries (list @hyperlink["http://github.com/stchang/graph"]{graph})
 
   @elem{
     Builds a graph representation of Boston's subway system and
@@ -102,7 +102,7 @@ For the purpose of the experiment, the final input size we used
   #:num-adaptor 0
   #:origin @hyperlink["http://github.com/bennn/zordoz"]{Library}
   #:purpose "Explore Racket bytecode"
-  #:external-libraries (list @elem{compiler-lib@note{@url["http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29"]}})
+  #:external-libraries (list @hyperlink["http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29"]{compiler-lib})
 
   @elem{
     Provides a shell-style interface for traversing
@@ -137,8 +137,9 @@ For the purpose of the experiment, the final input size we used
   #:num-adaptor 0
   #:origin "Synthetic"
   #:purpose "Create L-NM graphs"
-  #:external-libraries (list @elem{plot@note{@url["https://docs.racket-lang.org/plot/"]}}
-                             @elem{@tt{racket/statistics}@note{@url["https://docs.racket-lang.org/math/stats.html"]}})
+  #:external-libraries (list @hyperlink["https://docs.racket-lang.org/plot/"]{plot}
+                             ", "
+                             @hyperlink["https://docs.racket-lang.org/math/stats.html"]{racket/statistics})
 
   @elem{
     While writing this paper, we built a small library of scripts to analyze
@@ -158,7 +159,7 @@ For the purpose of the experiment, the final input size we used
 
   @elem{
     Simple, inefficient implementation of k-CFA@~cite[shivers-dissertation-1991].
-    Our benchmark runs 1-CFA on a $\lambda$ calculus term
+    Our benchmark runs 1-CFA on a lambda calculus term
      that computes @racket[2*(1 + 3) = 2*1 + 2*3].
   }
 )
@@ -235,8 +236,9 @@ For the purpose of the experiment, the final input size we used
   #:origin @hyperlink["https://docs.racket-lang.org/gregor/index.html"]{Library}
   #:purpose "Date and time library"
   #:external-libraries
-    (list @elem{cldr@note{@url["https://docs.racket-lang.org/cldr-core/index.html"]}}
-          @elem{tzinfo@note{@url["https://docs.racket-lang.org/tzinfo/index.html"]}})
+    (list @hyperlink["https://docs.racket-lang.org/cldr-core/index.html"]{cldr}
+          ", "
+          @hyperlink["https://docs.racket-lang.org/tzinfo/index.html"]{tzinfo})
 
   @elem{
     Provides tools for manipulating date objects.
@@ -298,7 +300,7 @@ For the purpose of the experiment, the final input size we used
   #:num-adaptor 2
   #:origin @hyperlink["https://github.com/mbutterick/quad"]{Library}
   #:purpose "Typesetting"
-  #:external-libraries (list @elem{csp@note{@url["https://github.com/mbutterick/csp"]}})
+  #:external-libraries (list @hyperlink["https://github.com/mbutterick/csp"]{csp})
 
   @elem{
     Converts S-expression source code to @tt{pdf} format.
