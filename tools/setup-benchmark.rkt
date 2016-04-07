@@ -12,7 +12,7 @@
 
 ;; ===================================================================================================
 (require srfi/13
-         gtp-summarize/modulegraph)
+         (prefix-in mg: gtp-summarize/modulegraph))
 
 (define TYPED? "typed?")
 (define TYPED "yes")
@@ -77,18 +77,19 @@
   )
 
 ;; ModuleGraph -> Listof (Pairof String String)
-(define (edges mg)
+(define (mk-edges mg)
   (apply append
-         (for/list ([m-name (in-list (module-names mg))])
-           (for/list ([req-name (in-list (requires mg m-name))])
-             (list (string-append m-name   ".rkt")   (name->index mg m-name)
-                   (string-append req-name ".rkt") (name->index mg req-name))))))
+         (for/list ([m-name (in-list (mg:module-names mg))])
+           (for/list ([req-name (in-list (mg:requires mg m-name))])
+             (list (string-append m-name   ".rkt") (mg:name->index mg m-name)
+                   (string-append req-name ".rkt") (mg:name->index mg req-name))))))
 
 (define (create-populate-prediction-configurations-directories* bname name bdir both typed untyped file-names*)
   ;; First, the untyped requiring typed edge directories
   ;; THen, the typed requiring untyped edge directories
-  (define mg (from-directory bname))
-  (define es (edges mg))
+  (define mg (mg:from-directory bname))
+  (define es (mk-edges mg))
+  ;; todo: don't do this yourself
   (for ([e (in-list es)])
     (define ut-dir (build-path bdir (format "edge-u~a-t~a" (second e) (fourth e))))
     (make-directory ut-dir)
@@ -99,10 +100,10 @@
     (populate-edge-configuration tu-dir file-names* #t (first e) (third e) both typed untyped))
 
   ;; Then, the optimization directories
-  (for/list ([file-name (in-list file-names*)])
-    (displayln file-name)
+  (for/list ([file-name (in-list file-names*)]
+             [i (in-naturals)])
     (define-values (_a basename _c) (split-path file-name))
-    (define odir (build-path bdir (format "optimize-~a" basename)))
+    (define odir (build-path bdir (format "optimize-~a" i)))
     (make-directory odir)
     (populate-optimize-configuration odir file-name file-names* both typed untyped)))
 
@@ -134,6 +135,7 @@
   (write-overrides-file cdir (cons requirer requiree)))
 
 (define (populate-optimize-configuration cdir opt-file-name file-names* both typed untyped)
+  (populate-both cdir both)
   (for ([file-name file-names*])
     (copy-file (build-path (if (equal? file-name opt-file-name)
                                typed

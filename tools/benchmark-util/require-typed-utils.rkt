@@ -44,6 +44,7 @@
     syntax/parse
     (only-in racket/base prefix-in)
     "override-boundary.rkt")
+  (for-syntax racket/syntax)
   (only-in typed/racket require/typed)
   (prefix-in typed: (only-in typed/racket
                              require
@@ -99,16 +100,18 @@
   (syntax-parse stx
     [(_ m*:require-spec ...)
      #:with (m+* ...)
-       (for/list ([m (in-list (syntax-e #'(m* ...)))]
-                  [module-name (in-list (syntax-e #'(m*.module-name ...)))])
-         (if (or (not (they-are-typed module-name))
-                 (keep-boundary? module-name))
-           m
-           (subst/require-spec m #`(submod #,module-name unsafe))))
+     (for/list ([m (in-list (syntax-e #'(m* ...)))]
+                [module-name (in-list (syntax-e #'(m*.module-name ...)))])
+       (cond [ (or (not (they-are-typed module-name))
+                   (keep-boundary? module-name))
+               m]
+             [else
+              (define submod-ref (datum->syntax module-name (list 'submod module-name 'unsafe)))
+              (subst/require-spec m submod-ref)]))
      #`(require m+* ...)]
     [_
      (raise-user-error
-       'require/check "Bad/unrecognized syntax in '~a'" (syntax->datum stx))]))
+      'require/check "Bad/unrecognized syntax in '~a'" (syntax->datum stx))]))
 
 (define-for-syntax (param-require/typed/check stx my-require/typed)
   (syntax-parse stx
@@ -144,27 +147,30 @@
     [(_ m:str rt-clause ...)
      #`(#,(decide-boundary #'m) m rt-clause ...)]))
 
+
 (define-syntax (require/adapted stx)
   (syntax-parse stx
     #:literals (prefix-in)
-    [(_ m-adaptee:str m-adaptor:str rt-clause ...)
+    [(_ (~and path m-adaptee:str) m-adaptor:str)
      ;; here I check if the boundary with the adaptee is present, the
      ;; adaptor is always typed
      (cond
        [(keep-boundary? #'m-adaptee)
-        #'(typed:require m-adaptor rt-clause ...)]
-       [#'(typed:require (submod m-adaptor unsafe) rt-clause ...)])]))
+        #'(typed:require m-adaptor)]
+       [else
+        (with-syntax* ([new-path (datum->syntax #'path (list 'submod #'m-adaptor 'unsafe))])
+          #'(typed:require new-path))])]))
 
-(define-syntax (require/typed/if stx)
-  (syntax-parse stx
-    [(_ t e) (if (syntax-local-typed-context?)
-           #'(require t)
-           #'(require e))]))
+  (define-syntax (require/typed/if stx)
+    (syntax-parse stx
+      [(_ t e) (if (syntax-local-typed-context?)
+                   #'(require t)
+                   #'(require e))]))
 
-(define-syntax (safe-and-unsafe-provide stx)
-  (syntax-parse stx
-    [(_ p-clause ...)
-     #'(begin
-         (typed:provide p-clause ...)
-         (module* unsafe #f
-           (typed:unsafe-provide p-clause ...)))]))
+  (define-syntax (safe-and-unsafe-provide stx)
+    (syntax-parse stx
+      [(_ p-clause ...)
+       #'(begin
+           (typed:provide p-clause ...)
+           (module* unsafe #f
+             (typed:unsafe-provide p-clause ...)))]))
