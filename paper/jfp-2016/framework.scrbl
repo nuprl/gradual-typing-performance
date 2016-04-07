@@ -12,7 +12,7 @@
 
 Performance evaluation for gradually typed languages must reflect how
  developers use such languages.
-Migrating an entire project from untyped to typed is @emph{not} the initial goal,
+Migrating an entire project from untyped to typed is rarely the initial goal,
  but rather a symptom of exceptional initiative or a need to remove type
  boundaries.
 Consequently, the question of whether there exists a
@@ -35,9 +35,8 @@ We formalize these lessons in two stages: first by describing the @emph{space}
 
 @section{Performance Lattice}
 
-The promise of macro gradual typing is that any subset of modules
- in an untyped program may be given types.@note{The promise of @emph{micro} gradual
-   typing is that any expression may be given types.}
+The promise of macro-level gradual typing is that any subset of modules
+ in an untyped program may be given types.
 Performance evaluation must therefore consider the space of all @emph{configurations}
  of a program that can be obtained by adding types to a subset of the program's modules.
 We describe this space as a static lattice representing all combinations of typed and
@@ -93,8 +92,8 @@ In principle, static types enable optimizations and can serve in place of the
  run-time tags used in safe dynamic languages, so one would expect a speedup.
 But the net effect of these improvements may be offset in programs
  that rely heavily on an untyped library.
-Determining whether speedups or slowdowns are the norm for fully typed programs
- may influence a software team's decision to experiment with gradual typing.
+Hence we characterize the relative performance of fully-typed programs
+ using a ratio to capture the possibility of speedups and slowdowns.
 
     @def[#:term "typed/untyped ratio"]{
      The typed/untyped ratio of a performance
@@ -102,7 +101,9 @@ Determining whether speedups or slowdowns are the norm for fully typed programs
       time needed to run the bottom configuration.
     }
 
-For programmers already using gradual typing, the important performance
+Determining whether speedups or slowdowns are the norm for fully typed programs
+ may influence a software team's decision to experiment with gradual typing.
+Once a team is already using gradual typing, the important performance
  question is how much overhead their current configuration suffers due
  to gradual typing.
 If the performance overhead is low enough, the configuration can be
@@ -167,8 +168,21 @@ Using this metric, configurations one module away from a usable configuration
 These four notions of the typed/untyped ratio, @deliverable{},
  @usable[], and @step[] form the basis of our evaluation
  framework.
+As an example of how they are used, suppose we have a project with
+ two modules where the untyped configuration runs in 2 seconds and the
+ typed configuration runs in 1 second.
+The typed/untyped ratio is @math{1/2}, indicating a performance improvement due
+ to adding types.
+Also, the typed configuration is @deliverable{1} because it runs within a 1x
+ slowdown relative to the untyped configuration.
+Finally, suppose that a configuration with exactly one typed module runs in 3.8
+ seconds.
+This configuration is @deliverable{2} because it runs within 4 seconds.
+It is also @usable["1" "3"] and @step["1" "1" "1"] because it is one conversion step
+ from the fully-typed configuration.
+
 Practitioners curious about the feasability of gradual typing should
- replace these parameters with concrete values tailored to their needs.
+ replace our parameters with concrete values tailored to their needs.
 If experimental results show that a large number of configurations are
  deliverable, etc. under the actual parameters, then the same results may
  well hold for other projects.
