@@ -1,5 +1,4 @@
 #lang scribble/base
-@;TODO add roadmap refs
 
 @; "The first challenge for computer science is to discover how to maintain
 @;  order in a finite, but very large, discrete universe that is intricately
@@ -12,34 +11,37 @@
 @; Programmers use dynamic languages, dynamic languages don't scale super well
 Dynamically-typed languages have become a staple of the software
  engineering world.
-Programmers use these languages to build all kinds of software,
+Programmers use these languages to build applications
  ranging from telecommunications software@~cite[armstrong-2007]
  to social networking websites
  to an entire country's pension system@~cite[v-aplwa-2010].
-These software systems often start as prototypes in which the flexibility of
+These software systems often begin as prototypes in which the flexibility of
  dynamic typing speeds development.
 But as programs grow in size and complexity, software maintenance
  becomes the bottleneck.
 When this happens, the assurance provided by a static type system becomes
- increasingly desirable.
-Few teams, however, have the resources to move a successful project from a dynamic
- language to a statically-typed language.
+ increasingly desirable; however, converting an existing untyped project to a
+ typed language is a prohibitively large engineering investment.
 
 @; Enter GT
 Gradual typing@~cite[st-sfp-2006] proposes a language-based
  solution to resolve the tradeoffs between dynamic and static typing.
 The idea is to extend an existing, dynamically-typed language to allow the incremental
  addition of static types.
-So-called @emph{macro}-level gradual type systems support by-module increments:
- any untyped module may be converted to a fully-typed module.
-In contrast, @emph{micro}-level gradual type systems allow the incremental
- conversion of any expression.
-Common to both macro and micro gradual type systems is the concept of a
- @emph{type boundary} dividing typed and untyped @emph{components} of a program,
- across which arbitrary values may flow at run-time.
-Whether boundaries appear only in the type checking environment or within
- type judgments is a matter of taste, but the success of a gradually typed
- language hinges on their correct and efficient implementation.
+Programmers enable typechecking by writing type annotations.
+These annotations are checked and enforced by the compiler.
+Other, unannotated parts of the program are left untyped but may interact
+ seamlessly with typed code.
+
+The border separating typed and untyped parts of a gradually typed
+ program is called a @emph{type boundary}.
+So-called @emph{macro}-level gradual type systems implement type boundaries
+ as module boundaries.
+That is, any module in the program is either fully typed or fully untyped.
+In contrast, @emph{micro}-level gradual type systems allow type boundaries
+ between expressions within any module.
+Both systems are useful, but henceforth we equate type boundaries
+ with module boundaries.
 
 In the decade since gradual typing was first proposed, research groups have
  extended
@@ -58,24 +60,23 @@ Each new extension must address challenges unique to its base language,
    @item{@emph{Performance:} leverage type information in compiler optimizations}
  ]
 Safety for gradual type systems is traditionally formulated as a
- type soundness theorem guaranteeing that typed program components are never
- blamed@~cite[wf-esop-2009] for run-time type errors.
+ type soundness theorem guaranteeing that typed parts of a program are never
+ blamed for run-time type errors@~cite[thf-dls-2006].
 In other words, typed code may raise a type error at run-time, but
  only as a consequence of receiving untyped data that did not match a
  static assumption made by the type system.
 When this happens, the source of the type error is always traced back
  to the type boundary that produced it, thereby helping programmers
- debug the impedence mismatch.
+ debug the impedence mismatch between the untyped value and its expected type.
 
 Type soundness is enforced with dynamic assertions inserted at type boundaries.
-Static types @exact|{$\RktMeta{T}$}| are compiled to casts and coercions
+Static types @exact|{$\RktMeta{T}$}| are compiled to dynamic checks
  @exact|{$\ctc{\RktMeta{T}}$}| that guarantee the run-time behavior of an
  untyped program component matches the component's static type@~cite[aft-dls-2013 TypedRacket sw-popl-2010].
 For example, if the type checker assumes that an untyped function has type
  @racket[(Int -> Int)] then every value returned by the function at run-time will
  be dynamically checked against specification @exact|{$\ctc{\RktMeta{Int}}$}|.
-Dynamic checks, however, introduce performance overhead.
-Indeed, slowdowns of
+Dynamic checks, however, introduce performance overhead and slowdowns of
  4x@~cite[tfdffthf-ecoop-2015],
  10x@~cite[vksb-dls-2014],
  and
@@ -84,22 +85,21 @@ Indeed, slowdowns of
 @; Allende (DLS'13) dont seem to report a slowdown. Just,
 @;  "as type annotations are added to a library, performance tends to degrade"
 
-These preliminary figures imply a steep tradeoff between preserving type
+These preliminary slowdown factors imply a steep tradeoff between preserving type
  soundness and maintaining performance when adding types to an untyped program.
-The aim of this paper is to provide a scientific foundation for measuring
+The aim of this paper is to provide a foundation for measuring
  and understanding the tradeoff.
 
 
 @section{Contributions}
 
-This paper introduces a method for evaluating the performance of a gradual type
- system.
-Given an untyped program and a fixed type assigment for all components in the
+This paper introduces a method for evaluating the performance of a macro-level
+ gradual type system.
+Given an untyped program and a fixed type assignment for all modules in the
  program, the method considers the performance of each @emph{configuration}
- obtained by typing a subset of the components.
-We apply our framework to Typed Racket, in which the program components are
- modules.
+ obtained by typing a subset of the modules.
 Hence a program with @exact{$N$} modules has @exact{$2^N$} configurations.
+We apply our framework to Typed Racket.
 The evaluation affirms that Typed Racket programs may suffer
  order-of-magnitude overhead, but also suggests concrete improvements to the language
  and quantifies the effect of implementing these and other improvements.
@@ -108,7 +108,7 @@ The method was originally presented in a conference publication@~cite[tfgnvf-pop
 We extend that prior work with:
 @itemlist[
   @item{
-    A comparitive analysis of three versions of Typed Racket,
+    A comparative analysis of three versions of Typed Racket,
      using the method to measure differences between versions.
   }
   @item{
