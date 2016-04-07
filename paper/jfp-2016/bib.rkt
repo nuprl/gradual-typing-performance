@@ -1,6 +1,7 @@
 #lang at-exp racket
 (require scribble/manual
-         scriblib/autobib)
+         scriblib/autobib
+         (only-in scribble/core make-element make-style plain))
 
 (provide (all-defined-out))
 
@@ -605,7 +606,8 @@
 
 (define nthvh-icfp-2014
   (make-bib
-   #:author (authors "Phúc C. Nguyễn" "Sam Tobin-Hochstadt" "David Van Horn")
+   #:author (authors (make-element (make-style #f '(exact-chars)) "Ph\\'{u}c C. Nguy\\~{\\^{e}}n")
+                     "Sam Tobin-Hochstadt" "David Van Horn")
    #:title "Soft Contract Verification"
    #:location (proceedings-location icfp #:pages '(139 152))
    #:date 2014))
