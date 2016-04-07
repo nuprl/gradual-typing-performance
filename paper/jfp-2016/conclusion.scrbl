@@ -1,5 +1,8 @@
 #lang scribble/base
 
+@; TODO
+@; - argue, LNM obscures too much, need different lattice viz
+
 @require["common.rkt" "typed-racket.rkt"]
 
 @title[#:tag "sec:fut"]{Long Live Sound Gradual Typing}
