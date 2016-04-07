@@ -213,8 +213,6 @@
   (match-define
     (benchmark name author num-adaptor origin purpose lib* description M)
     b)
-  ;; TODO render external libraries
-  ;;  (tricky because it's an optional list)
   (elem
     "\\benchmark{"
     (symbol->string name)
@@ -228,6 +226,8 @@
     description
     "}{"
     (benchmark-tex M)
+    "}{"
+    (or (benchmark-lib* b) "N/A")
     "}\n\n"))
 
 (define (benchmark->num-modules b)
