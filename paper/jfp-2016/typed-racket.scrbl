@@ -20,15 +20,27 @@ In general the lattices are too large to print or analyze, so we present
 
 The benchmarks themselves are representative of actual user code yet
  small enough that exhaustive performance evaluation remains tractable.
-Where relevant, we list the external libraries used by a benchmark.
-Other benchmarks are self-contained aside from dependencies on core Racket
- libraries.
+In the following descriptions, we comment on the purpose
+ of each benchmark and use a graph structure to represent the interactions
+ of its modules.
+Nodes in the graphs represent modules in the program that our experiment
+ varies as typed or untyped.
+Edges represent static import statements.
+For example, the leftmost node in each graph represents the program's main module,
+ which imports from other modules but is never itself imported.
+Finally, we color and thicken each edge in proportion to the run-time cost
+ associated with the edge.
+@todo{what are colors/what mean?}
 
-Although we give specific descriptions of the inputs we ran each benchmark on,
- different inputs should yield similar results.
-We have in fact experimented with inputs of various size and content but found
+Most benchmarks are self-contained, but where relevant we note their external
+ dependencies.
+As a final note, our experiment runs the benchmarks using fixed inputs,
+ but the results should be the same on different inputs.
+We have in fact experimented with inputs of various size and content
+ for select benchmarks but found
  the relative overheads due to type boundaries remained the same.
-The final input size we used for benchmarking was frequently a compromise
+For the purpose of the experiment, the final input size we used
+ was a compromise
  between having an untyped runtime long enough to be stable against
  operating system effects but short enough that the slowest
  configurations finished reasonably quickly.
@@ -321,43 +333,21 @@ The final input size we used for benchmarking was frequently a compromise
 @; -----------------------------------------------------------------------------
 @subsection{Static Benchmark Characteristics}
 
-The table in @figure-ref{fig:bm} lists and summarizes the static characteristics
+@;
+
+The table in @figure-ref{fig:bm} gives static characteristics
  of our benchmark programs.
-For each, we give an approximate measure of the program's size and
- a diagram of its module structure.
-
-Size is measured by the number of modules and lines of code (LOC) in a program.
-The number of modules also determines the number of gradually-typed
- configurations to be run when testing the benchmark, as a program with @math{n} modules
- can be gradually-typed in @exact{$2^n$} possible configurations.
-Lines of code is less important for evaluating macro-level gradual typing,
- but gives a sense of the overall complexity of each benchmark.
-Moreover, the Type Annotations LOC numbers are an upper bound on the annotations required
- at any stage of gradual typing because each typed module in our experiment
- fully annotates its import statements.
-In reality, imports from other typed modules are not annotated.
-
-The column labeled ``Other LOC'' measures the additional infrastructure required
- to run each project for all typed-untyped configurations.
-This count includes project-wide type definitions, typed interfaces to
- untyped libraries, and any so-called type adaptor modules (@todo{secref})
- we used in our experiment.
-
-The module structure graphs show a dot for each module in the program.
-An arrow is drawn from module A to module B when module A imports definitions
- from module B.
-When one of these modules is typed and the other untyped, the imported definitions
- are wrapped with a contract to ensure type soundness.
-@todo{colors}
-@;To give a sense of how ``expensive'' the contracts at each boundary are, we color
-@; arrows to match the absolute number of times contracts at a given boundary
-@; are checked. These numbers are independent from the actual configurations.
-@;The colors fail to show the cost of checking data structures
-@;imported from another library or factored through an adaptor module.
-@;For example, the @bm{kcfa} graph has many thin black edges because the modules
-@;only share data definitions. The column labeled ``Adaptors + Libraries''
-@;reports the proportion of observed contract checks due to adaptor modules and
-@;libraries.
+Program size is measured by the lines of code (LOC) and number of modules.
+In the ``Type Ann. LOC'' column, we give an upper bound on the number of
+ annotations needed to fully type the program.
+This upper bound supposes that every import statement is fully annotated with
+ types for each imported identifier; in practice, only untyped identifiers
+ imported by typed modules need annotations.
+The number of modules is slightly more pragmatic measure of size as it
+ also determines the size of our experiment.
+A project with @exact{$N$} modules has @exact{$2^N$} gradually typed configurations.
+The number of edges is taken from our module graphs.
+Lastly, the ``Chaperones'' column is @todo{finish}.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
   @(benchmark-characteristics)
