@@ -113,3 +113,11 @@ Meeting notes
   * Chose 20% as GC number
   * Decided against discretizing the plots
   * Decided against putting error bars in the plots
+
+2016-04-07
+----------
+  * Replace chaperones with 'identifiers'
+  * Remove the 6.3, BG suffixes in the table
+  * Crunch the author/origin info
+  * Remove the module graphs or cartoonize, they are not informative.
+    Better to make them larger or present as tables, in an appendix
