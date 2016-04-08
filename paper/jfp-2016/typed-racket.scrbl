@@ -496,8 +496,8 @@ Using this notation, the configuration where only @tt{population} typed
  has the bitstring @tt{0010}.
 
 @figure*["fig:fsm-lattice-6.2"
-  @list{Annotated performance lattice for @bm{fsm}}
-  @todo{(data-lattice 'fsm "6.2")}
+  @list{FSM data lattice}
+  @(data-lattice 'fsm "6.2" #:tag "2016-03-19T02:06:11")
 ]
 
 @Figure-ref{fig:fsm-lattice-6.2} is the full performance lattice for @bm{fsm}
