@@ -6,7 +6,7 @@
 @;     (make-performance-lattice vec))
 @;]
 
-@require["common.rkt"]
+@require["common.rkt" benchmark-util/data-lattice]
 
 @title[#:tag "sec:framework"]{Evaluation Framework}
 
@@ -165,20 +165,43 @@ Using this metric, configurations one module away from a usable configuration
       or a @usable[] configuration.
     }
 
+@(define sample-data
+  (let* ([mean+std* '#((2 . 0) (1.5 . 0) (3.5 . 0) (1 . 0))]
+         [mean (lambda (i) (car (vector-ref mean+std* i)))])
+    (lambda (tag)
+      (case tag
+       [(c00) (mean 0)]
+       [(c01) (mean 1)]
+       [(c10) (mean 2)]
+       [(c11) (mean 3)]
+       [(all) mean+std*]
+       [else (raise-user-error 'sample-data "Invalid configuration '~a'. Use e.g. c00 for untyped." tag)]))))
+
 These four notions of the typed/untyped ratio, @deliverable{},
  @usable[], and @step[] form the basis of our evaluation
  framework.
 As an example of how they are used, suppose we have a project with
- two modules where the untyped configuration runs in 2 seconds and the
- typed configuration runs in 1 second.
-The typed/untyped ratio is @math{1/2}, indicating a performance improvement due
- to adding types.
-Also, the typed configuration is @deliverable{1} because it runs within a 1x
+ two modules where the untyped configuration runs in @id[(sample-data 'c00)]
+ seconds and the typed configuration runs in @id[(sample-data 'c11)] second.
+Furthermore, suppose the gradually typed configurations run in
+  @id[(sample-data 'c01)] and @id[(sample-data 'c10)] seconds.
+Using white squares to represent untyped modules and black squares for typed
+ modules, we can visualize this scenario in a performance lattice with
+ configurations' overhead (relative to the untyped configuration) as labels.
+
+@centered[@elem[
+  (parameterize ([*LATTICE-HSPACE* 30]
+                 [*LATTICE-VSPACE* 4])
+    (make-performance-lattice (sample-data 'all)))
+]]
+
+In terms of our metrics, typed/untyped ratio is
+ @id[(/ (sample-data 'c11) (sample-data 'c00))]
+ indicating a performance improvement due to adding types.
+The typed configuration is also @deliverable{1} because it runs within a 1x
  slowdown relative to the untyped configuration.
-Finally, suppose that a configuration with exactly one typed module runs in 3.8
- seconds.
-This configuration is @deliverable{2} because it runs within 4 seconds.
-It is also @usable["1" "3"] and @step["1" "1" "1"] because it is one conversion step
+Both gradually typed configurations are @deliverable{2} because they run within 4 seconds.
+These configurations are also @step["1" "1" "1"] because each is one conversion step
  from the fully-typed configuration.
 
 Practitioners curious about the feasability of gradual typing should
