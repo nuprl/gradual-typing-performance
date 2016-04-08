@@ -40,8 +40,7 @@ So-called @emph{macro}-level gradual type systems implement type boundaries
 That is, any module in the program is either fully typed or fully untyped.
 In contrast, @emph{micro}-level gradual type systems allow type boundaries
  between expressions within any module.
-Both systems are useful, but henceforth we equate type boundaries
- with module boundaries.
+Both systems are useful, but in this paper we focus on macro-level gradual typing.
 
 In the decade since gradual typing was first proposed, research groups have
  extended
