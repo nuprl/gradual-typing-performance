@@ -70,6 +70,7 @@
 )
 
 (require
+ benchmark-util/data-lattice
  glob
  gtp-summarize/render-lnm
  gtp-summarize/modulegraph
@@ -80,7 +81,12 @@
  scribble/core
  scribble/base
  version/utils
+ ;;
+ racket/contract
 )
+(require (only-in racket/serialize
+  serialize deserialize
+))
 
 ;; -----------------------------------------------------------------------------
 ;; -- Organizing the benchmarks
@@ -142,41 +148,50 @@
 
 (define bits tt)
 
+(define (valid-benchmark? bm)
+  (for/or ([b (in-list benchmark-name*)])
+    (if (list? b)
+      (memq bm (cdr b))
+      (eq? bm b))))
+
 (define (assert-benchmark name-sym)
-  (unless (for/or ([b (in-list benchmark-name*)])
-            (if (list? b)
-              (memq name-sym b)
-              (eq? name-sym b)))
+  (unless (valid-benchmark? name-sym)
     (unknown-benchmark-error name-sym)))
 
 (define (bm name)
   (assert-benchmark (string->symbol name))
   (tt name))
 
-(define (data-lattice bm-raw v #:tag [tag "*"])
-  (unless (valid-version? v)
-    (raise-user-error 'data-path "Invalid version string '~a'" v))
-  (define bm (if (string? bm) (string->symbol bm-raw) bm-raw))
-  (unless (memq bm benchmark-name*)
-    (unknown-benchmark-error bm))
-  (raise-user-error 'NOT-IMPLEMENTED)
-  ;@(let* ([vec (file->value (data-path 'fsm "6.2"))]
-  ;        [vec* (vector-map (λ (p) (cons (mean p) (stddev p))) vec)])
-  ;   (make-performance-lattice vec*))
-  ;;; --- do search
-  ;(define path-str (format "~a/data/~a/~a*~a*.rktd" (get-git-root) v bm tag))
-  ;(match (glob path-str)
-  ; [(cons p '())
-  ;  p]
-  ; ['()
-  ;  (raise-user-error 'data-path "No matches for '~a'" path-str)]
-  ; [p*
-  ;  (raise-user-error 'data-path "Path '~a' returned multiple results. Try again with a #:tag parameter to filter the search: (data-path BENCHMARK VERSION #:tag STR).\n    All results: ~a" path-str p*)]))
-)
-
 (define (ensure-dir d)
   (unless (directory-exists? d)
     (make-directory d)))
+
+(define (glob/first str)
+  (match (glob str)
+   [(cons r '())
+    r]
+   ['()
+    (raise-user-error 'glob/first "No results for glob '~a'" str)]
+   [r*
+    (printf "WARNING: ambiguous results for glob '~a'. Returning the first." str)
+    (car r*)]))
+
+;; -----------------------------------------------------------------------------
+
+(define (lattice-filename bm v tag)
+  (string-append (*COMPILED*) "/cache-lattice-" (symbol->string bm) "-" v "-" tag ".rktd"))
+
+(define (data-lattice bm v #:tag [tag "*"] #:cache? [cache? #t])
+  (or (and cache? (uncache-lattice bm v tag))
+      (let ([p (file->performance-lattice (data-path bm v #:tag tag))])
+        (with-output-to-file (lattice-filename bm v tag)
+          (lambda () (writeln (serialize p))))
+        p)))
+
+(define/contract (data-path bm v #:tag [tag "*"])
+  (->* (valid-benchmark? valid-version?) (#:tag string?) path-string?)
+  (define bm-str (symbol->string bm))
+  (glob/first (string-append (get-git-root) "/data/" v "/" bm-str "-" tag ".rktd")))
 
 ;; -----------------------------------------------------------------------------
 
@@ -302,6 +317,12 @@
 
 (define (benchmark-descriptions-cache)
   (build-path (*COMPILED*) (*BENCHMARK-DESCRIPTIONS-CACHE*)))
+
+(define/contract (uncache-lattice bm v tag)
+  (-> valid-benchmark? valid-version? string? any/c)
+  (define fname (lattice-filename bm v tag))
+  (and (file-exists? fname)
+       (deserialize (file->value fname))))
 
 (define (uncache-benchmarks-table)
   (define bdc (benchmark-descriptions-cache))
