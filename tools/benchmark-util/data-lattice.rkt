@@ -7,11 +7,16 @@
          racket/format
          racket/list
          data/bit-vector
+         racket/vector
          (except-in math/number-theory permutations)
+         (only-in racket/file file->value)
+         (only-in math/statistics mean stddev)
          pict
          unstable/gui/pict)
 
 (provide (contract-out
+          [file->performance-lattice
+           (-> path-string? pict?)]
           [make-performance-lattice
            (-> (and/c (vectorof (cons/c number? number?))
                       power-of-two-length?)
@@ -95,14 +100,14 @@
 
 ;; Driver submodule for rapid visualization
 (module+ main
-  (require racket/file
-           racket/gui/base
-           racket/match
-           racket/vector
-           math/statistics)
+  (require racket/gui/base
+           racket/match)
   (match (current-command-line-arguments)
     [(vector path)
-     (define data (file->value path))
-     (define averaged-results
-       (vector-map (λ (times) (cons (mean times) (stddev times))) data))
-     (show-pict (make-performance-lattice averaged-results))]))
+     (show-pict (file->performance-lattice path))]))
+
+(define (file->performance-lattice path)
+  (define data (file->value path))
+  (define averaged-results
+    (vector-map (λ (times) (cons (mean times) (stddev times))) data))
+  (make-performance-lattice averaged-results))

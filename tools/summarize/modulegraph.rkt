@@ -7,6 +7,12 @@
 ;; so this file provides a (brittle) parser.
 
 (provide:
+  ;; -- things that should not be here
+  (get-git-root
+   (-> Path-String))
+
+  ;; ---
+
   (project-name->modulegraph (-> (U Symbol String) ModuleGraph))
   (directory->modulegraph (-> Path-String ModuleGraph))
   ;; Parse a directory into a module graph.
