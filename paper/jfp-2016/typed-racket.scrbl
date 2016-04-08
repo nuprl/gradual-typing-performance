@@ -314,9 +314,9 @@ For the purpose of the experiment, the final input size we used was a compromise
     @racket[(define-type QuadBG (Pairof Symbol (Listof Any)))]
 
     The former is a homogenous, recursive type.
-    As such, the predicate asserting that an untyped value has type @tt{QuadMB}
+    As such, the predicate asserting that an untyped value has type @racket[QuadMB]
      is a linear-time tree traversal.
-    On the other hand, the predicate for @tt{QuadBG} is simply a constant-time
+    On the other hand, the predicate for @racket[QuadBG] is simply a constant-time
      combination of the built-in @racket[list?] and @racket[symbol?] predicates.
   }
 )

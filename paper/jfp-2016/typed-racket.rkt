@@ -151,7 +151,7 @@
 (define (valid-benchmark? bm)
   (for/or ([b (in-list benchmark-name*)])
     (if (list? b)
-      (memq bm (cdr b))
+      (memq bm b)
       (eq? bm b))))
 
 (define (assert-benchmark name-sym)
@@ -173,7 +173,7 @@
    ['()
     (raise-user-error 'glob/first "No results for glob '~a'" str)]
    [r*
-    (printf "WARNING: ambiguous results for glob '~a'. Returning the first." str)
+    (printf "WARNING: ambiguous results for glob '~a'. Returning the first.\n" str)
     (car r*)]))
 
 ;; -----------------------------------------------------------------------------
@@ -183,8 +183,10 @@
 
 (define (data-lattice bm v #:tag [tag "*"] #:cache? [cache? #t])
   (or (and cache? (uncache-lattice bm v tag))
-      (let ([p (file->performance-lattice (data-path bm v #:tag tag))])
-        (with-output-to-file (lattice-filename bm v tag)
+      (let* ([fname (lattice-filename bm v tag)]
+             [_void (printf "INFO: Building new performance lattice at '~a'\n" fname)]
+             [p (file->performance-lattice (data-path bm v #:tag tag))])
+        (with-output-to-file fname #:exists 'replace
           (lambda () (writeln (serialize p))))
         p)))
 
@@ -213,7 +215,8 @@
       (if (*STRICT?*)
         (raise-user-error 'benchmark msg name*)
         (begin (printf "WARNING: ")
-               (printf msg name*))))))
+               (printf msg name*)
+               (newline))))))
 
 (define unknown-benchmark-error
   (let ([msg "Got descriptions for unknown benchmarks '~a'. Register them at the top of 'typed-racket.rkt'"])
@@ -221,7 +224,8 @@
       (if (*STRICT?*)
         (raise-user-error 'benchmark msg name*)
         (begin (printf "WARNING: ")
-               (printf msg name*))))))
+               (printf msg name*)
+               (newline))))))
 
 ;; (-> benchmark String)
 (define (render-benchmark b)
@@ -322,6 +326,7 @@
   (-> valid-benchmark? valid-version? string? any/c)
   (define fname (lattice-filename bm v tag))
   (and (file-exists? fname)
+       (printf "INFO: retrieving cached lattice from '~a'\n" fname)
        (deserialize (file->value fname))))
 
 (define (uncache-benchmarks-table)
