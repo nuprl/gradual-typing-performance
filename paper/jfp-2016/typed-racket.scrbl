@@ -130,7 +130,7 @@ For the purpose of the experiment, the final input size we used was a compromise
   #:purpose "Create L-NM graphs"
   #:external-libraries (list @hyperlink["https://docs.racket-lang.org/plot/"]{plot}
                              ", "
-                             @hyperlink["https://docs.racket-lang.org/math/stats.html"]{racket/statistics})
+                             @hyperlink["https://docs.racket-lang.org/math/stats.html"]{math/statistics})
 
   @elem{
     While writing this paper, we built a small library of scripts to analyze
