@@ -142,7 +142,7 @@
                                untyped)
                            file-name)
                (build-path cdir file-name)))
-  (write-overrides-file cdir))
+  (write-overrides-file cdir 'external))
 
 (define (write-overrides-file cdir . overrides)
   (with-output-to-file (build-path cdir "override-all-except.rktd")

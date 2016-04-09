@@ -2,22 +2,27 @@
 
 (require typed/racket)
 (require (for-syntax syntax/parse)
-         (for-syntax typed/racket/unsafe))
+         (for-syntax typed/racket/unsafe)
+         (for-syntax "../require-typed-utils.rkt"))
 
+;; A #lang for adaptors to enable prediction configurations
 (define-syntax (adaptor-module-begin stx)
   (syntax-parse stx
     [(mb blah ...)
-     #:with r (datum->syntax stx 'typed/racket)
-     #:with u-req (datum->syntax stx
-                                 '(require typed/racket/unsafe))
-     #:with def-display->displayln
-            (datum->syntax stx
-              '(define-syntax require/typed (make-rename-transformer #'unsafe-require/typed)))
+     (define r (datum->syntax stx 'typed/racket))
+     (define hijack-no-boundary
+       (datum->syntax
+        stx
+        '(define-syntax require/typed/check (make-rename-transformer #'require/typed/check-no-boundary))))
+     (define  hijack-with-boundary
+       (datum->syntax
+        stx
+        '(define-syntax require/typed/check (make-rename-transformer #'require/typed/check-boundary))))
      #`(#%module-begin
+        #,hijack-with-boundary
         blah ...
-        (module unsafe r
-          u-req
-          def-display->displayln
+        (module unsafe #,r
+          #,hijack-no-boundary
           blah ...)
         )]))
 

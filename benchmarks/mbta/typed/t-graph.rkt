@@ -6,7 +6,8 @@
 
 ;; ===================================================================================================
 (require "../base/t-graph-types.rkt")
-(require/typed "../base/my-graph.rkt"
+(require benchmark-util)
+(require/external/typed "../base/my-graph.rkt"
                [unweighted-graph/directed (-> Connection* Graph)]
                [in-neighbors (-> Graph Station [Sequenceof Station])]
                [attach-edge-property 

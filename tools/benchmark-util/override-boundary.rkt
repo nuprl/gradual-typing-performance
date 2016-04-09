@@ -6,6 +6,9 @@
  ;; given syntax-object containing the name of the required module,
  ;; return true if the boundary should be enabled.
  ;; Decides by checking the "override-all-except.rktd" file
+
+ act-like-untyped?
+
  ;;
  ;; The override-all-except.rktd file should encode a set of pairs of filenames
  ;; that represent the *enabled* boundaries.
@@ -31,3 +34,15 @@
   (with-handlers ([exn:fail:filesystem? (λ (e) #t)])
     (define overrides (parse-overrides))
     (set-member? overrides (cons us them))))
+
+;; normal or add externals
+(define (external-enabled?)
+  (with-handlers ([exn:fail:filesystem? (λ (e) #t)])
+    (define overrides (parse-overrides))
+    (set-member? overrides 'external)))
+
+;; add externals
+(define (act-like-untyped?)
+  (with-handlers ([exn:fail:filesystem? (λ (e) #f)])
+    (define overrides (parse-overrides))
+    (set-member? overrides 'external)))
