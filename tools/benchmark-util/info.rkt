@@ -4,7 +4,6 @@
                "typed-racket-more"
                "gui-lib"
                "math-lib"
-               "pict-lib"
-               "unstable-lib"))
+               "pict-lib"))
 (define build-deps '(
   "rackunit-lib"))
