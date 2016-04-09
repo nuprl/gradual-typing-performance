@@ -1144,13 +1144,57 @@
    #:location (proceedings-location lfp #:pages '(235 246))
    #:date 1984))
 
+;; http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
+(define kff-hosc-2013
+  (make-bib
+   #:title "The Racket Virtual Machine and Randomized Testing"
+   #:author (authors "Casey Klein" "Matthew Flatt" "Robert Bruce Findler")
+   #:location (proceedings-location hosc #:pages '(1 45))
+   #:date 2013))
+
+;; http://kar.kent.ac.uk/33611/7/paper.pdf
+(define kj-ismm-2013
+  (make-bib
+   #:title "Rigorous Benchmarking in Reasonable Time"
+   #:author (authors "Tomas Kalibera" "Richard E. Jones")
+   #:location (proceedings-location ismm #:pages '(63 74))
+   #:date 2013))
+
+;; http://www.cs.umass.edu/~emery/pubs/stabilizer-asplos13.pdf
+(define cb-asplos-2013
+  (make-bib
+   #:title "Stabilizer: Statistically Sound Performance Evaluation"
+   #:author (authors "Charlie Curtsinger" "Emery Berger")
+   #:location (proceedings-location asplos #:pages '(219 228))
+   #:date 2013))
+
 ;; -- stats
 (define kj-tr-2013
   (make-bib
    #:title "Quantifying performance changes with effect size confidence intervals"
    #:author (authors "Tomas Kalibera" "Richard Jones")
-   #:location "TechniCal Report 4--12, University of Kent"
+   #:location "Technical Report 4--12, University of Kent"
    #:date 2012))
+
+(define s-asa-1974
+  (make-bib
+   #:title "EDF Statistics for Goodness of Fit and Some Comparisons"
+   #:author "M. A. Stephens"
+   #:location (journal-location asa
+                                #:volume 69
+                                #:number 347
+                                #:pages '(730 737))
+   #:date 1974))
+
+(define ad-asa-1954
+  (make-bib
+   #:title "A Test of Goodness of Fit"
+   #:author (authors "T. W. Anderson" "D. A. Darling")
+   #:location (journal-location asa
+                                #:volume 49
+                                #:number 268
+                                #:pages '(765 769))
+   #:date 1954))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
