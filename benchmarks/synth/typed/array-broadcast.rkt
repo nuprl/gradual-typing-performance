@@ -10,13 +10,13 @@
 
 (require/typed/check "array-struct.rkt"
   [array-strict? (-> Array Boolean)]
-  [array-default "data.rkt" -strict! (-> Array Void)]
+  [array-default-strict! (-> Array Void)]
   [array-shape (-> Array Indexes)]
-  [array-size "data.rkt" (-> Array Integer)]
+  [array-size  (-> Array Integer)]
   [unsafe-array-proc (-> Array (-> Indexes Float))]
   [unsafe-build "data.rkt" -array (-> Indexes (-> Indexes Float) Array)])
 
-(require/typed "data.rkt" /check "array-utils.rkt"
+(require/typed/check "array-utils.rkt"
   [make-thread-local-indexes (-> Integer (-> Indexes))])
 
 (safe-and-unsafe-provide array-broadcasting

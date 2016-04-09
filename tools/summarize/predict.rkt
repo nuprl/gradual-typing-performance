@@ -1,9 +1,10 @@
-#lang typed/racket/base
+#lang typed/racket
 
-(require (prefix-in mg: gtp-summarize/modulegraph)
-         (only-in gtp-summarize/modulegraph
-                  ModuleGraph)
-         racket/match)
+(require (prefix-in mg: "modulegraph.rkt")
+         (only-in "modulegraph.rkt" ModuleGraph)
+         racket/match
+         math/statistics
+         "bitstring.rkt")
 (provide (all-defined-out))
 
 (struct untyped-typed-config
@@ -45,3 +46,40 @@
     [(untyped-typed-config rer ree) (format "edge-u~a-t~a" rer ree)]
     [(typed-untyped-config rer ree) (format "edge-t~a-u~a" rer ree)]
     [(optimize-config m) (format "optimize-~a" m)]))
+
+(: config->features : ModuleGraph Bitstring -> (Listof PredictionConfig))
+(define (config->features mg bs)
+  ;; edges
+  (append
+   (apply append
+          (for/list : (Listof (Listof PredictionConfig))
+              ([m1 (in-list (mg:module-names mg))])
+            (for/list : (Listof PredictionConfig)
+                      ([m2 (in-list (mg:requires mg m1))]
+                       #:when (xor (bit-high? bs (mg:name->index mg m1))
+                                   (bit-high? bs (mg:name->index mg m2))))
+              (define n1 (mg:name->index mg m1))
+              (define n2 (mg:name->index mg m2))
+              (cond [(bit-high? bs n1)
+                     (typed-untyped-config n1 n2)]
+                    [else
+                     (untyped-typed-config n1 n2)]))))
+   ;; optimized
+   (for/list : (Listof PredictionConfig)
+             ([_m (in-list (mg:module-names mg))]
+              [n (in-naturals)]             
+              #:when (bit-high? bs (cast n Natural)))
+     (optimize-config (cast n Natural)))))
+
+(: predict :
+   ModuleGraph
+   Bitstring
+   (HashTable PredictionConfig Real)
+   Real
+   ->
+   Real)
+(define (predict mg bs deltas unty)
+  (+ unty
+     (for/sum : Real
+              ([pc (in-list (config->features mg bs))])
+       (hash-ref deltas pc))))
