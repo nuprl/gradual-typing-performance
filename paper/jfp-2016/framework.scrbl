@@ -112,7 +112,7 @@ Depending on the nature of the software and clients' expectations,
  the value of "low enough" might take any value between zero overhead
  and an order-of-magnitude slowdown.
 To account for the varying requirements of software teams, we formulate
- the following parameterized definition of "deliverable configurations."
+ the following parameterized definition of deliverable configurations.
 
     @def[#:term @list{@deliverable{}}]{
      A configuration in a performance
@@ -126,7 +126,7 @@ A software engineering team can
  use such a configuration for development purposes, but it may not
  release it to clients.
 In order to formulate this criteria
- properly, we introduce the following definition of usable configurations.
+ properly, we define a notion of usable configurations.
 
     @def[#:term @list{@usable[]}]{
      A configuration in a performance
@@ -176,6 +176,8 @@ Using this metric, configurations one module away from a usable configuration
        [(c11) (mean 3)]
        [(all) mean+std*]
        [else (raise-user-error 'sample-data "Invalid configuration '~a'. Use e.g. c00 for untyped." tag)]))))
+@(define (sample-overhead cfg)
+  (ceiling (/ (sample-data cfg) (sample-data 'c00))))
 
 These four notions of the typed/untyped ratio, @deliverable{},
  @usable[], and @step[] form the basis of our evaluation
@@ -195,19 +197,29 @@ Using white squares to represent untyped modules and black squares for typed
     (make-performance-lattice (sample-data 'all)))
 ]]
 
-In terms of our metrics, typed/untyped ratio is
- @id[(/ (sample-data 'c11) (sample-data 'c00))]
- indicating a performance improvement due to adding types.
-The typed configuration is also @deliverable{1} because it runs within a 1x
- slowdown relative to the untyped configuration.
-Both gradually typed configurations are @deliverable{2} because they run within 4 seconds.
-These configurations are also @step["1" "1" "1"] because each is one conversion step
- from the fully-typed configuration.
+@(let ([tu-ratio (/ (sample-data 'c11) (sample-data 'c00))]
+       [t-str @id[(sample-overhead 'c11)]]
+       [g-overhead (inexact->exact (max (sample-overhead 'c10) (sample-overhead 'c01)))])
+  @elem{
+    In terms of our metrics, typed/untyped ratio is
+     @id[tu-ratio]
+     indicating a performance improvement due to adding types.
+    The typed configuration is also
+      @deliverable[t-str]
+      because it runs within a @elem[t-str]x
+      slowdown relative to the untyped configuration.
+    Both gradually typed configurations are
+      @deliverable[@id[g-overhead]]
+      because they run within @id[(* g-overhead (sample-data 'c00))] seconds.
+    These configurations are also @step[t-str t-str t-str]
+     because each is one conversion step
+     from the fully-typed configuration.
+  })
 
 Practitioners curious about the feasability of gradual typing should
  replace our parameters with concrete values tailored to their needs.
 If experimental results show that a large number of configurations are
- deliverable, etc. under the actual parameters, then the same results may
+ deliverable under the actual parameters, then the same results may
  well hold for other projects.
 Language implementors should work to make more configurations deliverable
  or diagnose the cause of the worst performance overhead.
