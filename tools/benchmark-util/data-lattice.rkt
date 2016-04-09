@@ -11,16 +11,21 @@
          (except-in math/number-theory permutations)
          (only-in racket/file file->value)
          (only-in math/statistics mean stddev)
-         pict
-         unstable/gui/pict)
+         pict)
 
-(provide (contract-out
-          [file->performance-lattice
-           (-> path-string? pict?)]
-          [make-performance-lattice
-           (-> (and/c (vectorof (cons/c number? number?))
-                      power-of-two-length?)
-               pict?)]))
+(provide
+  *LATTICE-HSPACE*
+  *LATTICE-VSPACE*
+  (contract-out
+    [file->performance-lattice
+     (-> path-string? pict?)]
+    [make-performance-lattice
+     (-> (and/c (vectorof (cons/c number? number?))
+                power-of-two-length?)
+         pict?)]))
+
+(define *LATTICE-HSPACE* (make-parameter 5))
+(define *LATTICE-VSPACE* (make-parameter 10))
 
 (module+ test (require rackunit))
 
@@ -41,7 +46,7 @@
   (define level-picts
     (for/list ([on-bits (in-range total-bits -1 -1)])
       (define perms (select (- total-bits on-bits) total-bits))
-      (apply hc-append 5
+      (apply hc-append (*LATTICE-HSPACE*)
        (for/list ([perm (in-list perms)])
          (define bv (apply bit-vector perm))
          (define num (string->number (bit-vector->string bv) 2))
@@ -50,7 +55,7 @@
                                   (vector-ref data-vec 0)))
          (vector-set! pict-vec num pict)
          pict))))
-  (define no-lines-yet (apply vc-append 10 level-picts))
+  (define no-lines-yet (apply vc-append (*LATTICE-VSPACE*) level-picts))
   no-lines-yet)
 
 ;; taken from MF's version
@@ -69,11 +74,11 @@
   (define style "Liberation Serif")
   (define box-pict
     (apply hc-append
-           1
+           1.5
            (for/list ([bit (in-bit-vector bv)])
-             (ellipse/border 3 8
-                             #:border-width 1
+             (filled-rectangle 6 10
                              #:color (if bit "black" "white")
+                             #:border-width 1
                              #:border-color "black"))))
   (vc-append (blank 1 2)
              box-pict
