@@ -7,7 +7,7 @@
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-To validate the efficacy of our framework, we apply it to a suite of
+To validate our framework, we apply it to a suite of
  @id[NUM-BENCHMARKS] Typed Racket programs.
 For each program we have collected running times over a full performance lattice.
 In general the lattices are too large to print or analyze, so we present
@@ -25,17 +25,6 @@ The following descriptions briefly explain the purpose and history of
 Most benchmarks are self-contained, but where relevant we note their external
  dependencies.
 
-@; Remove?
-As a final note, our experiment runs the benchmarks using fixed inputs,
- but the results should be the same on different inputs.
-We have in fact experimented with inputs of various size and content
- for select benchmarks but found
- the relative overheads due to type boundaries remained the same.
-For the purpose of the experiment, the final input size we used was a compromise
- between having an untyped runtime long enough to be stable against
- operating system effects but short enough that the slowest
- configurations finished reasonably quickly.
-
 
 @; -----------------------------------------------------------------------------
 @subsection{Benchmark Descriptions}
@@ -49,8 +38,8 @@ For the purpose of the experiment, the final input size we used was a compromise
   #:purpose "Generate prime numbers"
   @elem{
     Demonstrates a scenario where user
-     code closely interacts with higher-order library code---in this case,
-     a stream library.
+     code closely interacts with higher-order library code.
+    In this case, the library implements streams.
     When fully typed or untyped, @bm{sieve} computes quickly; however,
      introducing a type boundary between the two modules adds
      significant overhead.
@@ -65,10 +54,11 @@ For the purpose of the experiment, the final input size we used was a compromise
 
   @elem{
     The morse code benchmark is derived from training program that
-     plays an audio clip, accepts keyboard input, and scores the input
-     based on its Levenshtein distance from the correct answer.
-    For our benchmark we remove the I/O features but otherwise convert and
-     score a fixed list of simulated input words.
+     converts a random word to morse code, gives the codeword to the user,
+     accepts keyboard input, then prints the Levenshtein distance of the
+     input from the original word.
+    For our benchmark we remove the I/O and random features but otherwise
+     compute morse code and distances for a fixed sequence of word pairs.
   }
 )
 @(benchmark
@@ -103,7 +93,7 @@ For the purpose of the experiment, the final input size we used was a compromise
 
     The Racket bytecode format changed between versions 6.2 and 6.3 with
      the release of the set-of-scopes macro expander@~cite[f-popl-2016].
-    Consequently, our benchmark is slightly different
+    Consequently, our benchmark is slightly modified
      after version 6.2; however, the relative difference between
      gradually typed configurations is the same across bytecode formats.
   }
@@ -151,7 +141,7 @@ For the purpose of the experiment, the final input size we used was a compromise
   @elem{
     Simple, inefficient implementation of k-CFA@~cite[shivers-dissertation-1991].
     Our benchmark runs 1-CFA on a lambda calculus term
-     that computes @racket[2*(1 + 3) = 2*1 + 2*3].
+     that computes @exact|{~$\RktMeta{2*(1+3) = 2*1 + 2*3}$}|.
   }
 )
 @(benchmark
@@ -167,10 +157,9 @@ For the purpose of the experiment, the final input size we used was a compromise
     We benchmark the game on a pre-defined sequence of commands and remove the
      I/O features.
 
-    As noted by @PHIL{} @|etal|, the original
-     program was implemented in an object-oriented style but converted
-     to a functional encoding to assess soft contract verification@~cite[nthvh-icfp-2014].
-    Our benchmark is a typed version of the functional game.
+    The original program was implemented in an object-oriented style but converted
+     to a functional encoding as a test case for soft contract verification@~cite[nthvh-icfp-2014].
+    We benchmark a typed version of the functional game.
   }
 )
 @(benchmark
@@ -236,8 +225,8 @@ For the purpose of the experiment, the final input size we used was a compromise
     For the benchmark, we build a range of date values and use them to run
      unit tests.
     Notably, the benchmark does not test @bm{gregor}'s string-parsing
-     functions because they rely on an untyped library for ad-hoc polymorphism
-     that is not yet supported by Typed Racket.
+     functions because those functions rely on an untyped library for
+     ad-hoc polymorphism that is not yet supported by Typed Racket.
   }
 )
 @(benchmark
@@ -249,7 +238,7 @@ For the purpose of the experiment, the final input size we used was a compromise
 
   @elem{
     Object-oriented calculator for Forth programs.
-    The calculator maintains an environment of first-class objects representing
+    The interpreter maintains an environment of first-class objects representing
      commands.
     If this environment repeatedly crosses type boundaries it accumulates
      higher-order contract wrappers.
@@ -299,7 +288,7 @@ For the purpose of the experiment, the final input size we used was a compromise
      the first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
      provided by the original author.
     This version has a high typed/untyped ratio because it uses the type system
-     to enforce more datatype invariants than the untyped program---the Typed version is
+     to enforce more datatype invariants than the untyped program---the typed version is
      slower because it does more work.
     Our second version, @tt{quadBG}, uses types as weak as the untyped
      program and is therefore suitable for judging the implementation
@@ -328,12 +317,12 @@ For the purpose of the experiment, the final input size we used was a compromise
 
 @;
 
-The table in @figure-ref{fig:bm} gives static characteristics
+The table in @Figure-ref{fig:bm} gives static characteristics
  of our benchmark programs as a coarse measure of their size and diversity.
 Program size is measured by the lines of code (LOC) and number of modules.
 Of these two measures, the number of modules is a better indicator of size
- as it also determines the size of our gradual typing experiment.
-Given @exact{$N$} modules, there are @exact{$2^N$} configurations.
+ as it also determines the size of our gradual typing experiment:
+ given @exact{$N$} modules, there are @exact{$2^N$} configurations.
 The ``Annotation LOC'' column is an upper bound on the number of type
  annotations needed to fully type the program.
 This column is an over-approximation because it annotates each import;
@@ -355,7 +344,7 @@ The exports count is the total number of unique identifiers that cross any
 Our experiment measured the running time of all
  configurations in each benchmark's performance lattice.
 This experiment was on three versions of Racket: version 6.2,
- version 6.3, and a development build of version 6.4.@todo{cite commit}.
+ version 6.3, and a development build of version 6.4.
 @; {In particular,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
 The machine we used to generate these numbers was a Linux machine with
@@ -384,14 +373,10 @@ The scripts we used to run our experiments and the data we collected
 @subsection[]{Detecting Stable Measurements with the Anderson-Darling test}
 
 The running time of a configuration depends on many factors, ranging
- from heuristics in the Racket JIT compiler to machine-level caching and
- environment variable layout @todo{cite}.
-    @; (not sure) http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
-    @; http://www-plan.cs.colorado.edu/diwan/asplos09.pdf
-    @; http://janvitek.org/pubs/r3.pdf
-    @; https://people.cs.umass.edu/~emery/pubs/Stabilizer-UMass-CS-TR2011-43.pdf
+ from heuristics in the Racket JIT compiler@~cite[kff-hosc-2013] to machine-level caching and
+ environment variable layout@~cite[cb-asplos-2013 kj-ismm-2013]
 We hope to mitigate these confounding effects by running our experiments on
- a single machine and taking the average of repeated runs.
+ a single core and taking the average of repeated runs.
 To be precise, we assume that back-to-back runs of a configuration pinned to
  a single core are independent samples from a normal distribution.
 We further assume by the law of large numbers that our sample mean after
@@ -402,25 +387,21 @@ We further assume by the law of large numbers that our sample mean after
     @;       1713, Chapter 4, (Translated into English by Oscar Sheynin)
 None of these assumptions are clearly valid@~cite[kj-tr-2013], but we believe the
  relative differences we observed between configurations in a lattice are correct,
- especially since we have observed similar differences on other machines @todo{cite popl}.
+ especially since we have observed similar differences on other machines@~cite[tfgnvf-popl-2016].
 
-Running even 30 iterations, however, is prohibitive given the size of our
- experiment.
-In total, we measured @todo{total} configurations on three versions of Racket.
+Running even 30 iterations, however, is prohibitive given the size of our experiment.
+In total, we measured @add-commas[(count-all-configurations)] configurations on three versions of Racket.
 To finish the experiment in a timely manner, we applied the Anderson-Darling
- normality test @todo{cite} after taking 10 measurements with a critical value
-   @; http://www.hep.caltech.edu/~fcp/statistics/hypothesisTest/PoissonConsistency/AndersonDarling1954.pdf
- from Stephens @todo{cite}.
-   @; http://www.math.utah.edu/~morris/Courses/6010/p1/writeup/ks.pdf
+ normality test@~cite[ad-asa-1954] after taking 10 measurements with a critical value
+ from Stephens@~cite[s-asa-1974].
 The judgment we made was about the likelihood of seeing a particular sequence
  of 10 runtimes assuming the data were from a normal distribution.
 If the odds were less than @math{1%}, we ran an additional 20 iterations.
 This led us to skip @todo{total} runs in total and led to no statistically
  significant differences in benchmarks that we tested exhaustively.
- @todo{which exhaustive?}
 
 In order to explain our methodology precisely, we now summarize the key points from
- Stephens @todo{cite} regarding the Anderson-Darling test.
+ Stephens@~cite[s-asa-1974] regarding the Anderson-Darling test.
 Our underlying distribution @math{F} is the distribution of runtimes obtained
  for one configuration run repeatedly on a single core.
 We assume that @math{F} is normally distributed with an unknown mean
@@ -461,13 +442,13 @@ The Anderson-Darling statistic is expressed in terms of @exact|{$\vec{h}$}|
     $$}|
 
 Following Stephens, we modify @exact|{$A^2$}| to compensate for the fact that
- @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown @todo{cite}.
+ @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown@~cite[s-asa-1974].
 
     @exact|{$$ A^{2\,'} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
 
 Finally, we declare the samples non-normal if @exact|{$A^{2\,'}$}| is greater than 1.
 The value 1 was determined experimentally by Stephens for a @math{p}-value of
- @math{1%} given 10 samples and an unknown underlying mean and variance @todo{cite}.
+ @math{1%} given 10 samples and an unknown underlying mean and variance.
 
 
 @; -----------------------------------------------------------------------------

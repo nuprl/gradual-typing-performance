@@ -26,7 +26,8 @@
 (define Transactions "Transactions on ")
 
 
-(define/short asplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
+(define/short aplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
+(define/short asplos "ASPLOS" (string-append ACM International Conference "on Architectural Support for Programming Languages and Operating Systems"))
 (define/short fpca "FPCA" (string-append ACM International Conference "Functional Programming Languages and Computer Architecture"))
 (define/short sde "SDE" (string-append ACM Symposium "on Practical software development environments"))
 (define/short lfp "LFP" (string-append ACM Symposium "on LISP and functional programming"))
@@ -34,10 +35,12 @@
 (define/short pldi "PLDI" (string-append ACM Conference "on Programming Language Design and Implementation"))
 (define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
 (define/short lncs "LNCS" "Lecture Notes in Computer Science")
+(define/short ismm "ISMM" (string-append ACM International Symposium "on Memory Management"))
 (define/short sigplan-notices "SIGPLAN Notices" (string-append ACM "SIGPLAN Notices"))
 (define/short algorithmica "Algorithmica"  "Algorithmica")
 (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
 (define/short jfp "JFP" (string-append Journal "Functional Programming"))
+(define/short asa "JASA" (string-append Journal "the American Statistical Association"))
 (define/short hosc "HOSC" "Higher-Order and Symbolic Programming")
 (define/short lsc "LSC" "LISP and Symbolic Computation")
 (define/short ifl "IFL" (string-append International Symposium "Functional and Logic Programming"))
@@ -839,11 +842,11 @@
    #:location (proceedings-location ecoop #:pages '(248 274))
    #:date 2003))
 
-(define kt-asplas-2004
+(define kt-aplas-2004
   (make-bib
    #:title "McJava – A Design and Implementation of Java with Mixin-Types"
    #:author (authors "Tetsuo Kamina" "Tetsuo Tamai")
-   #:location (proceedings-location asplas #:pages '(398 414))
+   #:location (proceedings-location aplas #:pages '(398 414))
    #:date 2004))
 
 (define sd-ecoop-2005
@@ -917,7 +920,7 @@
   (make-bib
     #:author (authors "Kenichi Asai" "Yukiyoshi Kameyama")
     #:title "Polymorphic Delimited Continuations"
-    #:location (proceedings-location asplas #:pages '(239 254) #;#:series #;"LNCS 4807")
+    #:location (proceedings-location aplas #:pages '(239 254) #;#:series #;"LNCS 4807")
     #:date 2007))
 
 (define Dybvig2007
@@ -989,12 +992,12 @@
    #:location (proceedings-location icfp #:pages '(138 147))
    #:date 1999))
 
-(define fff-asplas-2006
+(define fff-aplas-2006
   (make-bib
    #:author (authors "Matthew Flatt" "Robert Bruce Findler"
                      "Matthias Felleisen")
    #:title "Scheme with Classes, Mixins, and Traits"
-   #:location (proceedings-location asplas #:pages '(270 289))
+   #:location (proceedings-location aplas #:pages '(270 289))
    #:date 2006))
 
 (define fbf-icfp-2009
@@ -1134,13 +1137,57 @@
    #:location (proceedings-location lfp #:pages '(235 246))
    #:date 1984))
 
+;; http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
+(define kff-hosc-2013
+  (make-bib
+   #:title "The Racket Virtual Machine and Randomized Testing"
+   #:author (authors "Casey Klein" "Matthew Flatt" "Robert Bruce Findler")
+   #:location (proceedings-location hosc #:pages '(1 45))
+   #:date 2013))
+
+;; http://kar.kent.ac.uk/33611/7/paper.pdf
+(define kj-ismm-2013
+  (make-bib
+   #:title "Rigorous Benchmarking in Reasonable Time"
+   #:author (authors "Tomas Kalibera" "Richard E. Jones")
+   #:location (proceedings-location ismm #:pages '(63 74))
+   #:date 2013))
+
+;; http://www.cs.umass.edu/~emery/pubs/stabilizer-asplos13.pdf
+(define cb-asplos-2013
+  (make-bib
+   #:title "Stabilizer: Statistically Sound Performance Evaluation"
+   #:author (authors "Charlie Curtsinger" "Emery Berger")
+   #:location (proceedings-location asplos #:pages '(219 228))
+   #:date 2013))
+
 ;; -- stats
 (define kj-tr-2013
   (make-bib
    #:title "Quantifying performance changes with effect size confidence intervals"
    #:author (authors "Tomas Kalibera" "Richard Jones")
-   #:location "TechniCal Report 4--12, University of Kent"
+   #:location "Technical Report 4--12, University of Kent"
    #:date 2012))
+
+(define s-asa-1974
+  (make-bib
+   #:title "EDF Statistics for Goodness of Fit and Some Comparisons"
+   #:author "M. A. Stephens"
+   #:location (journal-location asa
+                                #:volume 69
+                                #:number 347
+                                #:pages '(730 737))
+   #:date 1974))
+
+(define ad-asa-1954
+  (make-bib
+   #:title "A Test of Goodness of Fit"
+   #:author (authors "T. W. Anderson" "D. A. Darling")
+   #:location (journal-location asa
+                                #:volume 49
+                                #:number 268
+                                #:pages '(765 769))
+   #:date 1954))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
