@@ -67,8 +67,8 @@ Typed Racket makes it easy to record these types.
 The programmer
  only needs to write the inferred signatures, annotate imports from untyped
  modules, and change the @exact{\RktMeta{\#lang}} line to use Typed Racket.
-After converting, the module is now hardened against future bugs;
- specifically, bugs due to type errors.
+After converting, the module is now hardened against bugs due to type errors
+ and documented with type annotations for future maintainers.
 
 Introducing types in one module while leaving others untyped, however, may
  lead to significant performance overhead.
@@ -84,7 +84,8 @@ But annotating a module is not guaranteed to improve performance and may introdu
 
 As language designers, we must also remember that adding types is always
  a software engineering burden.
-Even in the "debugging" scenario outlined above, converting untyped code to
+Even in the "campground" scenario@note{Golden rule of camping: always leave the campground cleaner than you found it.}
+ outlined above, converting untyped code to
  Typed Racket is orthogonal to developers' primary goal of delivering a working
  software product.
 @; Quote Matthew?
@@ -134,7 +135,7 @@ Tracking blame and dynamically enforcing types can, however, be costly.
 Each call to @racket[complex-*] requires six assertions to check and traverse both pairs.
 This is relatively inexpensive, but folding @racket[complex-*] over a list of
  @math{n} complex numbers requires @math{3n + 1} assertions.
-In other words, costs can quickly accumulate as the size of data
+In brief, costs can quickly accumulate as the size of data
  and number of calls increases.
 
 @; TODO example here, to show "surprising costs"?

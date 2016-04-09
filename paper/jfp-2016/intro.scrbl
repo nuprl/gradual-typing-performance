@@ -64,7 +64,7 @@ Safety for gradual type systems is traditionally formulated as a
 In other words, typed code may raise a type error at run-time, but
  only as a consequence of receiving untyped data that did not match a
  static assumption made by the type system.
-When this happens, the source of the type error is always traced back
+The source of the type error is always traced back
  to the type boundary that produced it, thereby helping programmers
  debug the impedence mismatch between the untyped value and its expected type.
 
