@@ -1,13 +1,8 @@
-#lang racket 
+#lang racket/base
 
 ;; basic constants and types for the game
 
-(require "../base/utility.rkt")
-
 (provide
- (type Face)
- (type Bulls)
- 
  ;; constants 
  FACE
  HAND
@@ -16,14 +11,10 @@
  FIVE
  MAX-BULL
  MIN-BULL
- 
  ;; -> [Listof Number]
  configuration)
 
 ;; -----------------------------------------------------------------------------
-
-(define-type Face [1,FACE])
-(define-type Bulls [MIN-BULL,MAX-BULL])
 
 (define FACE 104)
 (define HAND 10)
@@ -39,6 +30,6 @@
     (SIXTSIX  ,SIXTYSIX)
     (STACKS   ,STACKS)
     (FIVE     ,FIVE)
-    (MAX BULL ,MAX-BULL)
-    (MIN BULL ,MIN-BULL)))
+    (MAX_BULL ,MAX-BULL)
+    (MIN_BULL ,MIN-BULL)))
 

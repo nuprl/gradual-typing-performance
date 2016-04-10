@@ -1,25 +1,8 @@
-#lang racket
+#lang racket/base
 
 ;; a representation of the complete deck of cards 
 
-(require "card.rkt" "basics.rkt" "../base/utility.rkt")
-
-(types Card Bulls)
-
 (provide
- (type CardPool [Instance CardPool%])
- 
- (type CardPool%
-       (Class
-        (draw-card
-         ;; effect: pick and return one card from the pool of cards
-         (-> Card))
-        (draw-hand
-         ;; effect: pick and return HAND cards from the pool of cards
-         (-> Hand))))
- 
- (type Hand [Listof Card]) ;; of size Hand
- 
  ;;   { [Listof X] -> [Listof X] }
  ;;   { -> Bulls }
  ;; -> CardPool
@@ -31,41 +14,46 @@
  ;; the second optional argument generates bulls 
  create-card-pool)
 
-;; ---------------------------------------------------------------------------------------------------
-(module+ test (require rackunit))
+;; -----------------------------------------------------------------------------
 
+(require
+  racket/class
+  "../base/untyped.rkt"
+  (only-in racket/list shuffle first rest))
+(require "card.rkt")
+(require (only-in "basics.rkt"
+  FACE
+  HAND
+  MIN-BULL
+  MAX-BULL
+))
+
+;; For the assert
+(define (hand? h)
+  (and (list? h)
+       (= 10 (length h))
+       (for/and ([c (in-list h)]) (card? c))))
+
+;; ---------------------------------------------------------------------------------------------------
 (define (create-card-pool (shuffle shuffle) (random-bulls random-bulls))
   (new card-pool% (shuffle shuffle) (random-bulls random-bulls)))
 
 ;; -> Bulls
 ;; pick a random number of BULLS 
 (define (random-bulls)
-  (random MIN-BULL (+ MAX-BULL 1)))
+  (assert (random MIN-BULL (+ MAX-BULL 1)) bulls?))
 
 (define card-pool%
   (class object%
     (init-field (shuffle shuffle) (random-bulls random-bulls))
     (super-new)
-    
-    ;; [Listof Card]
+
     (define my-cards
-      (shuffle (build-list FACE (lambda (i) (card (+ i 1) (random-bulls))))))
-    
+      (shuffle (build-list FACE (lambda (i) (card (assert (+ i 1) face?) (random-bulls))))))
+
     (define/public (draw-card)
       (begin0 (first my-cards)
               (set! my-cards (rest my-cards))))
-    
+
     (define/public (draw-hand)
-      (build-list HAND (lambda (_) (draw-card))))))
-
-
-(module+ test
-  (require "card.rkt" "basics.rkt")
-  
-  (check-equal? (let ((cp (create-card-pool values (lambda () MIN-BULL))))
-                  (send cp draw-card))
-                (card 1 MIN-BULL))
-  
-  (check-equal? (let ((cp (create-card-pool values (lambda () MIN-BULL))))
-                  (send cp draw-hand))
-                (build-list HAND (lambda (i) (card (+ i 1) MIN-BULL)))))
+      (assert (build-list HAND (lambda (_) (draw-card))) hand?))))
