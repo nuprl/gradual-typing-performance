@@ -179,10 +179,10 @@ Using this metric, configurations one module away from a usable configuration
 @(define (sample-overhead cfg)
   (ceiling (/ (sample-data cfg) (sample-data 'c00))))
 
-These four notions of the typed/untyped ratio, @deliverable{},
+The four notions of the typed/untyped ratio, @deliverable{},
  @usable[], and @step[] form the basis of our evaluation
  framework.
-As an example of how they are used, suppose we have a project with
+As an example of these terms' use, suppose we have a project of
  two modules where the untyped configuration runs in @id[(sample-data 'c00)]
  seconds and the typed configuration runs in @id[(sample-data 'c11)] second.
 Furthermore, suppose the gradually typed configurations run in
