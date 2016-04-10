@@ -17,6 +17,17 @@ jfp
 
 @; -----------------------------------------------------------------------------
 
+@; Different inputs
+As a final note, our experiment runs the benchmarks using fixed inputs,
+ but the results should be the same on different inputs.
+We have in fact experimented with inputs of various size and content
+ for select benchmarks but found
+ the relative overheads due to type boundaries remained the same.
+For the purpose of the experiment, the final input size we used was a compromise
+ between having an untyped runtime long enough to be stable against
+ operating system effects but short enough that the slowest
+ configurations finished reasonably quickly.
+
 @; performance guidelines
 To make the above points on performance concrete, we examine a 6-module Racket program,
  @bm{suffixtree}, that implements a longest-common-substring function
