@@ -5,6 +5,7 @@
   lplaced%
   generate-tree
   tree-next
+  hand-out?
 )
 
 (require
