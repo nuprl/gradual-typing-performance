@@ -2,19 +2,17 @@
 
 ;; a representation for game cards
 
-(require "basics-types.rkt")
-;(require/typed "basics.rkt"
-;  )
-
 (provide
  (struct-out card)
- 
+
  ;; Card Card -> Boolean
  >-face
- 
+
  ;; Card Card -> Face
  ;; assume for (--face c d) assume (>-face c d)
  --face)
+
+(require "basics-types.rkt")
 
 ;; ---------------------------------------------------------------------------------------------------
 

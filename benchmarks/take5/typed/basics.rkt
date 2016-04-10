@@ -3,7 +3,6 @@
 ;; basic constants and types for the game
 
 (provide
- 
  ;; constants 
  FACE
  HAND
@@ -12,7 +11,6 @@
  FIVE
  MAX-BULL
  MIN-BULL
- 
  ;; -> [Listof Number]
  configuration)
 
@@ -25,8 +23,8 @@
 (define SIXTYSIX : Natural 66)
 (define STACKS : Natural 4)
 (define FIVE : Natural 5)
-(define MAX-BULL : Natural 7)
-(define MIN-BULL : Natural 2)
+(define MAX-BULL : Bulls 7)
+(define MIN-BULL : Bulls 2)
 
 (: configuration (-> (Listof (List Symbol Natural))))
 (define (configuration)

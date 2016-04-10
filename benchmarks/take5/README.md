@@ -1,4 +1,16 @@
-# A Object-Oriented Implementation of "Take 5"
+take5
+===
+
+Changes
+- Fixed num players & num iterations for benchmark
+- The `both` folder has type definitions and 1 adaptor.
+  The typedefs are there because some rely on the adaptor.
+
+
+
+# ORIGINAL README BELOW
+
+## A Object-Oriented Implementation of "Take 5"
 
 
 Files 

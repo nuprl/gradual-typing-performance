@@ -21,9 +21,10 @@
   "basics-types.rkt"
   "card-pool-types.rkt"
   typed/racket/class
+  benchmark-util
   (only-in racket/list shuffle first rest))
 
-(require/typed "basics.rkt"
+(require/typed/check "basics.rkt"
   (FACE  Natural)
   (HAND  Natural)
   (MIN-BULL Natural)
@@ -48,16 +49,13 @@
   (class object%
     (init-field (shuffle shuffle) (random-bulls random-bulls))
     (super-new)
-    
-    ;; [Listof Card]
+
     (define my-cards : (Listof Card)
       (shuffle (build-list FACE (lambda ([i : Natural]) (card (cast (+ i 1) Face) (random-bulls))))))
-    
+
     (define/public (draw-card)
       (begin0 (first my-cards)
               (set! my-cards (rest my-cards))))
-    
+
     (define/public (draw-hand)
       (cast (build-list HAND (lambda (_) (draw-card))) Hand))))
-
-

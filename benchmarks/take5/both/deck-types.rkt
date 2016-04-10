@@ -25,7 +25,7 @@
       #:implements/inits BaseDeck%
       (fit (-> Card Stack))
       (push (-> Card Void))
-      (replace (-> Stack Card Void))
+      (replace (-> Stack Card Natural))
       (replace-stack (-> Card (U Card (Listof Card)) Natural))
       (larger-than-some-top-of-stacks? (-> Card Boolean))))
 (define-type Deck%
@@ -34,7 +34,7 @@
       (fewest-bulls (-> Stack))
       (fit (-> Card Stack))
       (push (-> Card Void))
-      (replace (-> Stack Card Void))
+      (replace (-> Stack Card Natural))
       (replace-stack (-> Card (U Card (Listof Card)) Natural))
       (larger-than-some-top-of-stacks? (-> Card Boolean))))
 

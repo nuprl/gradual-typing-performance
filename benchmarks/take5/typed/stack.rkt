@@ -3,19 +3,19 @@
 ;; a representation of the visible stacks
 
 (provide
- 
+
  ;; Card -> Stack
  create-stack
- 
+
  ;; Stack -> Card
  top
- 
+
  ;; Card Stack -> Stack
- push 
- 
+ push
+
  ;; Stack -> N
  length
- 
+
  ;; Stack -> N
  ;; sum up the bulls shown on the cards of the stack
  bulls)
