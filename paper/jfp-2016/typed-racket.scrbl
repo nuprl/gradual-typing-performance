@@ -39,7 +39,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   @elem{
     Demonstrates a scenario where user
      code closely interacts with higher-order library code.
-    In this case, the library implements streams.
+    In this case, the library implements a stream data structure.
     When fully typed or untyped, @bm{sieve} computes quickly; however,
      introducing a type boundary between the two modules adds
      significant overhead.
@@ -53,7 +53,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   #:purpose "Morse code Trainer"
 
   @elem{
-    The morse code benchmark is derived from training program that
+    The morse code benchmark is derived from a training program that
      converts a random word to morse code, gives the codeword to the user,
      accepts keyboard input, then prints the Levenshtein distance of the
      input from the original word.
@@ -152,7 +152,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   #:purpose "Game"
 
   @elem{
-    A game where the player must keep his marker away from
+    A game where players must keep their marker away from
      computer-controlled "zombie" markers.
     We benchmark the game on a pre-defined sequence of commands and remove the
      I/O features.
@@ -204,7 +204,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     Our benchmark incorporates the relevant library modules to form a
      self-contained program.
     @; TODO if the limitation doesn't belong here, where should it go?
-    Notably, we had to monomorphize the core array data structure
+    We monomorphized the core array data structure
      because opaque, polymorphic data structures may not be sent across type boundaries
      in Typed Racket.
   }
@@ -323,14 +323,16 @@ Program size is measured by the lines of code (LOC) and number of modules.
 Of these two measures, the number of modules is a better indicator of size
  as it also determines the size of our gradual typing experiment:
  given @exact{$N$} modules, there are @exact{$2^N$} configurations.
+Adaptor modules (discussed in @Section-ref{sec:adaptor}) roughly correspond
+ to the number of user-defined datatypes in each benchmark.
 The ``Annotation LOC'' column is an upper bound on the number of type
  annotations needed to fully type the program.
 This column is an over-approximation because it annotates each import;
  in practice, only imports from untyped modules into typed modules need annotations.
 Lastly, the ``Boundaries'' and ``Exports'' columns describe the graph
  structure of each benchmark.
-We count each import statements in the program as a boundary.
-The exports count is the total number of unique identifiers that cross any
+We count each import statement in the program as a boundary.
+The exports count the total number of unique identifiers that cross any
  boundary in the program.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
@@ -343,7 +345,7 @@ The exports count is the total number of unique identifiers that cross any
 
 Our experiment measured the running time of all
  configurations in each benchmark's performance lattice.
-This experiment was on three versions of Racket: version 6.2,
+We performed the same experiment on three versions of Racket: version 6.2,
  version 6.3, and a development build of version 6.4.
 @; {In particular,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
@@ -351,10 +353,10 @@ The machine we used to generate these numbers was a Linux machine with
  32 physical AMD Opteron 6376 2.3GHz cores and 128GB RAM.
 We dedicated 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
- was run to completion before starting configurations for the next benchmark.
+ was run to completion before starting any configuration for the next benchmark.
 
 Timing information for a single configuration was obtained by compiling the
- code ahead of time and then running the configuration's main module.
+ code ahead of time and then running the configuration's main module repeatedly.
 Each run used a fresh instance of the Racket VM with the JIT compiler
  enabled.
 After discarding one preliminary run, we collected timings
