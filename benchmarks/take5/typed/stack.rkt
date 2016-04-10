@@ -24,13 +24,6 @@
 (require (prefix-in list: (only-in racket/base length)))
 (require (only-in racket/list first))
 
-(define-type Stack
-  (U (List Card)
-     (List Card Card)
-     (List Card Card Card)
-     (List Card Card Card Card)
-     (List Card Card Card Card Card)))
-
 ;; ---------------------------------------------------------------------------------------------------
 
 (: create-stack (-> Card Stack))
