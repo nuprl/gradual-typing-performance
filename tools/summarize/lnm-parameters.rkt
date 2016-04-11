@@ -56,8 +56,8 @@
 ;; - VAL is the default value
 
 ;; --- Lines to plot
-(defparam *N* (U #f Natural) #f)
-(defparam *M* (U #f Natural) #f)
+(defparam *N* (U #f Real) #f)
+(defparam *M* (U #f Real) #f)
 (defparam *L* (U Natural (Listof Natural) (Listof (List Natural Plot-Pen-Style))) 0)
 (defparam *CUTOFF-PROPORTION* (U #f Real) #f) ;; [0,1]
 
@@ -116,12 +116,9 @@
 (defparam *SHOW-PATHS?* Boolean #f)
 ;; If #t, make a path picture
 
-(defparam *AGGREGATE* (U #f #t 'mean) #f)
-;; TODO, something about combining figures
-
 ;; ---
 (defparam *OUTPUT* Path-String "./output.png") ;; Where to save output pict
-(defparam *CACHE-PREFIX* String "./compiled/lnm-cache-")
+(defparam *CACHE-PREFIX* String "./compiled/cache-lnm-")
 (defparam *CACHE-TAG* (U #f String) #f)
 
 (defparam *ERROR-BAR?* Boolean #f)
@@ -130,4 +127,6 @@
 
 (defparam *DISCRETE?* Boolean #f)
 
-(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
+(defparam *PICT?* Boolean #f)
+
+(defparam *LEGEND-ANCHOR* (U #f 'top-right 'bottom-right) 'top-right)
