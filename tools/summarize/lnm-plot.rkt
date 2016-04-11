@@ -194,7 +194,7 @@
     [plot-font-face (*PLOT-FONT-FACE*)]
     [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
     (define F-config**
-      (let ([next-color (make-palette)]
+      (let ([next-color (make-palette (length S*))]
             [next-shape (make-shapegen)])
         (for/list : (Listof (Listof renderer2d))
                   ([L+style (in-list L*)])
@@ -224,7 +224,7 @@
                   #:x-min 0
                   #:x-max xmax
                   #:samples num-samples
-                  #:label lbl
+                  #:label (and (*LEGEND?*) lbl)
                   #:line-style st
                   #:line-color c
                   #:line-width w) acc)
@@ -238,7 +238,7 @@
                     #:pdf? pdf?)
                   0 xmax
                   #:color c
-                  #:label lbl
+                  #:label (and (*LEGEND?*) lbl)
                   #:samples num-samples
                   ;#:style st
                   #:sym s
@@ -255,7 +255,7 @@
         #:x-label (and (*AXIS-LABELS?*) "Overhead (vs. untyped)")
         #:y-label (and (*AXIS-LABELS?*) y-label)
         #:title (and (*TITLE?*) (get-project-name (car S*)))
-        #:legend-anchor (*LEGEND-ANCHOR*)
+        ;; #:legend-anchor (*LEGEND-ANCHOR*)
         #:width width
         #:height height) pict))
     (if single-plot?
@@ -642,13 +642,13 @@
            (for/list : (Listof Bitstring) ([pt (in-list pre-ticks)])
              (format "~ax" (pre-tick-value pt))))))
 
-(: make-palette (-> (-> Index)))
-(define (make-palette)
-  (let ([c : (Boxof Natural) (box 0)])
+(: make-palette (->* [] [Natural] (-> Index)))
+(define (make-palette [num-colors #f])
+  (let ([c : (Boxof Natural) (box 0)]
+        [incr : (-> Natural Natural) (if num-colors (lambda ([n : Natural]) (modulo (add1 n) num-colors)) add1)])
     (lambda ()
       (begin
-        ;; Maybe want to cycle at some point, or throw helpful error if too big
-        (set-box! c (+ 1 (unbox c)))
+        (set-box! c (incr (unbox c)))
         (assert (unbox c) index?)))))
 
 (: make-shapegen (-> (-> Point-Sym)))
