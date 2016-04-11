@@ -1,11 +1,11 @@
 #lang typed/racket/base
-
+(require benchmark-util)
 ;; TODO make stacks be objects ?
 
 ;; Forth stacks,
 ;;  data definition & operations
 
-(provide
+(safe-and-unsafe-provide
   ;; type Stack = List
   ;;
   ;; Notation:
