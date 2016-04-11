@@ -317,21 +317,23 @@ Most benchmarks are self-contained, but where relevant we note their external
 
 @;
 
-The table in @Figure-ref{fig:bm} gives static characteristics
+@Figure-ref{fig:bm} gives static characteristics
  of our benchmark programs as a coarse measure of their size and diversity.
 Program size is measured by the lines of code (LOC) and number of modules.
 Of these two measures, the number of modules is a better indicator of size
  as it also determines the size of our gradual typing experiment:
  given @exact{$N$} modules, there are @exact{$2^N$} configurations.
-Adaptor modules (discussed in @Section-ref{sec:adaptor}) roughly correspond
+Adaptor modules (discussed in @Secref{sec:adaptor}) roughly correspond
  to the number of user-defined datatypes in each benchmark.
-The ``Annotation LOC'' column is an upper bound on the number of type
- annotations needed to fully type the program.
-This column is an over-approximation because it annotates each import;
- in practice, only imports from untyped modules into typed modules need annotations.
+Regarding lines of code, the ``Annotation'' column is an
+ upper bound on the number of type annotations needed to fully type each program.
+This column is an over-approximation because it includes type annotates for
+ each import in a benchmark; in practice,
+ only imports from untyped modules into typed modules need annotations.
 Lastly, the ``Boundaries'' and ``Exports'' columns describe the graph
  structure of each benchmark.
-We count each import statement in the program as a boundary.
+The boundaries are import statements from one module in the benchmark to another.
+That is, external boundaries are not included in the count.
 The exports count the total number of unique identifiers that cross any
  boundary in the program.
 
@@ -349,11 +351,11 @@ We performed the same experiment on three versions of Racket: version 6.2,
  version 6.3, and a development build of version 6.4.
 @; {In particular,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
-The machine we used to generate these numbers was a Linux machine with
+The machine we used to take measurements was a Linux machine with
  32 physical AMD Opteron 6376 2.3GHz cores and 128GB RAM.
 We dedicated 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
- was run to completion before starting any configuration for the next benchmark.
+ was run to completion before starting the next benchmark.
 
 Timing information for a single configuration was obtained by compiling the
  code ahead of time and then running the configuration's main module repeatedly.
@@ -392,15 +394,21 @@ None of these assumptions are clearly valid@~cite[kj-tr-2013], but we believe th
  especially since we have observed similar differences on other machines@~cite[tfgnvf-popl-2016].
 
 Running even 30 iterations, however, is prohibitive given the size of our experiment.
-In total, we measured @add-commas[(count-all-configurations)] configurations on three versions of Racket.
+In total, we measured @add-commas[(count-all-configurations)] configurations
+ under each version of Racket.
 To finish the experiment in a timely manner, we applied the Anderson-Darling
  normality test@~cite[ad-asa-1954] after taking 10 measurements with a critical value
- from Stephens@~cite[s-asa-1974].
+ determined experimentally by Stephens@~cite[s-asa-1974].
 The judgment we made was about the likelihood of seeing a particular sequence
  of 10 runtimes assuming the data were from a normal distribution.
 If the odds were less than @math{1%}, we ran an additional 20 iterations.
-This led us to skip @todo{total} runs in total and led to no statistically
- significant differences in benchmarks that we tested exhaustively.
+@(let-values ([(num-skip-runs num-runs) (count-savings (*RKT-VERSIONS*))])
+  @elem{
+    This led us to skip @add-commas[num-skip-runs] runs in total
+     (@id[(round (* 100 (/ (- num-runs num-skip-runs) num-runs)))]% of all runs)
+     and led to no statistically
+     significant differences in benchmarks that we tested exhaustively.
+  })
 
 In order to explain our methodology precisely, we now summarize the key points from
  Stephens@~cite[s-asa-1974] regarding the Anderson-Darling test.
@@ -414,9 +422,9 @@ We approximate the true mean @exact|{$\mu$}| and variance @exact|{$\sigma^2$}|
  of @math{F} by the sample mean and variance:
 
    @exact|{$$
-     \myhat{\mu} = \Sigma_{i=0}^{9} \vec{x}_i / 10
+     \myhat{\mu} = \Sigma_{i=0}^{9} \vec{x}_i~/ 10
      \hspace{2cm}
-     \myhat{\sigma}^2 = \Sigma_{i=0}^{9} (x_i - \myhat{\mu})^2 / 9
+     \myhat{\sigma}^2 = \Sigma_{i=0}^{9} (x_i - \myhat{\mu})^2~/ 9
    $$}|
 
 Next we take the samples' z-scores and
@@ -444,7 +452,7 @@ The Anderson-Darling statistic is expressed in terms of @exact|{$\vec{h}$}|
     $$}|
 
 Following Stephens, we modify @exact|{$A^2$}| to compensate for the fact that
- @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown@~cite[s-asa-1974].
+ the true @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown@~cite[s-asa-1974].
 
     @exact|{$$ A^{2\,'} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
 
@@ -456,105 +464,36 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @; -----------------------------------------------------------------------------
 @section[]{Results}
 
-This section presents the results of our experiment in terms of the
- measurements described in @Secref{sec:measurements}.
-For two small benchmarks we explore full performance lattices
- but our main results are the plots in @todo{figure-ref}.
+@Figure-ref{fig:lnm} (and more?) present our results.
 
-@todo{choosing LNM subsection}
+@(let ([lnm* (make-lnm-plot* (*RKT-VERSIONS*))]
+       [get-caption
+        (lambda (i)
+         (case i
+          [else "L-N/M Plots"]))])
+  (for/list ([lnm (in-list lnm*)]
+             [i (in-naturals 1)])
+    (figure (format "fig:lnm:~a" i)
+            (get-caption i)
+            lnm)))
 
+@; TODO reading the figures
+@; - axis
+@; - boring lines (choosing LNM)
+@; - interesting lines
+@; - k-step
 
-@; -----------------------------------------------------------------------------
-@subsection{Lattice-Based Evaluation}
+@; TODO interpreting the figures
+@; - ideal shape
+@; - simple shapes
+@; - interesting shapes
+@; - common shapes
 
-@Secref{sec:fsm} described a 4-module benchmark, @bm{fsm}, and remarked that
- although the fully-typed configuration ran faster than the untyped program,
- a configuration with one typed module experienced an @todo{8,500x} slowdown.
-The modules in @bm{fsm} were named @tt{automata}, @tt{main},
- @tt{population}, and @tt{utilities};
- the above-noted slow configuration assigned types only in @tt{population}.
-Henceforth, we will represent configurations of @bm{fsm} as 4-bit binary
- strings corresponding to the module names in alphabetic order.
-Using this notation, the configuration where only @tt{population} typed
- has the bitstring @tt{0010}.
+@; (no sense wasting space on each figure)
 
-@figure*["fig:fsm-lattice-6.2"
-  @list{FSM data lattice}
-  @(data-lattice 'fsm "6.2" #:tag "2016-03-19T02:06:11")
-]
-
-@Figure-ref{fig:fsm-lattice-6.2} is the full performance lattice for @bm{fsm}
- run on Racket version 6.2.
-Each configuration is represented by a sequence of colored shapes,
- corresponding to its bitstring.
-A black shape represents a typed module and a white shape is an untyped one;
- the shape at index @math{i} from the left is colored
- iff the bit at index @math{i} from the left is 1,
- meaning the @tt{automata} module is typed.
-Nodes are labeled with the configuration's overhead---computed
- as the configuration's mean runtime divided by the fully-untyped
- configuration's mean runtime---and
- the standard error of our timings for that configuration.
-Configurations @tt{0010}, and @todo{others} suffer from a boundary between
- @tt{main} and @tt{population}.
-These are by far the slowest configurations and no path through the lattice
- can avoid all of them.
-But the other 8 configurations are at worst slightly slower than untyped,
- and two of these improve on the baseline performance.
+@; 
 
 
-@; -----------------------------------------------------------------------------
-@; @subsubsection{Comparing Lattices}
-
-Given that only half of @bm{fsm}'s configurations are slow, and that furthermore
- the slow configurations can be avoided by adding types to either @tt{main}
- (~25 lines) or @tt{population} (~50 lines), the @tt{fsm} benchmark suggests
- that Typed Racket's gradual typing is performant as of the v6.2 release.@note{
-   Besides, of course, the overwhelming cost of repeatedly wrapping a vector.}
-There are two ways to further validate the performance of Typed Racket:
- by comparing with other gradual type systems and by testing more programs (@Secref{sec:lnm}).
-
-While not technically a competing implementation of Typed Racket v6.2,@note{
-   Pycket @todo{cite} is a competing implementation of gradual typing for Typed Racket.
-   At the time of writing Pycket could not run all our benchmark programs, but
-    the Pycket authors will soon publish their own analysis.}
- we can compare our lattice against results for versions 6.3 and 6.4.
-These lattices are shown in @Figure-ref{fig:fsm-lattice-6.3}.
-
-@todo{describe}
-
-@figure*["fig:fsm-lattice-6.3"
-  @list{Annotated performance lattice for @bm{fsm} v6.2}
-  @todo{(hc-append 8 ...)}
-  @todo{(data-lattice 'fsm "6.3")}
-  @todo{(data-lattice 'fsm "6.4.0.5")}
-]
-
-This is a sad story for Typed Racket, but we promise to improve for version 6.5.
-@todo{say more}
-
-
-@; -----------------------------------------------------------------------------
-@subsection{Limitations of Lattice-Based Evaluation}
-
-Inspecting the annotated performance lattice for @bm{fsm} is feasible and
- even gives insight as to why the worst configurations are slow.
-At a glance, it is fairly easy to see that the 8 slow modules match the pattern
- @todo{pattern},
- @;@tt{*01*} or @tt{*10*},
- corresponding to a type boundary between @tt{main}
- and @tt{population}. @todo{use shapes?}
-The number of nodes in a lattice, however, is exponential in the number of
- modules in a program.
-Visual inspection quickly becomes impossible.
-
-@todo{FILL IN HERE}
-
-@; -----------------------------------------------------------------------------
-@subsection{L-N/M Plots}
-@figure["fig:lnm" "L-N/M plots"
-  @(lnm-plots "6.2" "6.3" "6.4.0.5")
-]
 
 @; TODO
 @; - maybe best to ease in to L-NM plots with an example; don't draw all lines yet
@@ -760,3 +699,92 @@ Average overheads range from @todo{min} to @todo{max}.
 The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
 In parentheses, we express these counts as a percentage of all configurations
  for the benchmark.
+
+
+@; -----------------------------------------------------------------------------
+@section{Lattice-Based Evaluation}
+@todo{want this section?}
+
+@Secref{sec:fsm} described a 4-module benchmark, @bm{fsm}, and remarked that
+ although the fully-typed configuration ran faster than the untyped program,
+ a configuration with one typed module experienced an @todo{8,500x} slowdown.
+The modules in @bm{fsm} were named @tt{automata}, @tt{main},
+ @tt{population}, and @tt{utilities};
+ the above-noted slow configuration assigned types only in @tt{population}.
+Henceforth, we will represent configurations of @bm{fsm} as 4-bit binary
+ strings corresponding to the module names in alphabetic order.
+Using this notation, the configuration where only @tt{population} typed
+ has the bitstring @tt{0010}.
+
+@figure*["fig:fsm-lattice-6.2"
+  @list{FSM data lattice}
+  @(data-lattice 'fsm "6.2" #:tag "2016-03-19T02:06:11")
+]
+
+@Figure-ref{fig:fsm-lattice-6.2} is the full performance lattice for @bm{fsm}
+ run on Racket version 6.2.
+Each configuration is represented by a sequence of colored shapes,
+ corresponding to its bitstring.
+A black shape represents a typed module and a white shape is an untyped one;
+ the shape at index @math{i} from the left is colored
+ iff the bit at index @math{i} from the left is 1,
+ meaning the @tt{automata} module is typed.
+Nodes are labeled with the configuration's overhead---computed
+ as the configuration's mean runtime divided by the fully-untyped
+ configuration's mean runtime---and
+ the standard error of our timings for that configuration.
+Configurations @tt{0010}, and @todo{others} suffer from a boundary between
+ @tt{main} and @tt{population}.
+These are by far the slowest configurations and no path through the lattice
+ can avoid all of them.
+But the other 8 configurations are at worst slightly slower than untyped,
+ and two of these improve on the baseline performance.
+
+
+@; -----------------------------------------------------------------------------
+@; @subsubsection{Comparing Lattices}
+
+Given that only half of @bm{fsm}'s configurations are slow, and that furthermore
+ the slow configurations can be avoided by adding types to either @tt{main}
+ (~25 lines) or @tt{population} (~50 lines), the @tt{fsm} benchmark suggests
+ that Typed Racket's gradual typing is performant as of the v6.2 release.@note{
+   Besides, of course, the overwhelming cost of repeatedly wrapping a vector.}
+There are two ways to further validate the performance of Typed Racket:
+ by comparing with other gradual type systems and by testing more programs (@Secref{sec:lnm}).
+
+While not technically a competing implementation of Typed Racket v6.2,@note{
+   Pycket @todo{cite} is a competing implementation of gradual typing for Typed Racket.
+   At the time of writing Pycket could not run all our benchmark programs, but
+    the Pycket authors will soon publish their own analysis.}
+ we can compare our lattice against results for versions 6.3 and 6.4.
+These lattices are shown in @Figure-ref{fig:fsm-lattice-6.3}.
+
+@todo{describe}
+
+@figure*["fig:fsm-lattice-6.3"
+  @list{Annotated performance lattice for @bm{fsm} v6.2}
+  @todo{(hc-append 8 ...)}
+  @todo{(data-lattice 'fsm "6.3")}
+  @todo{(data-lattice 'fsm "6.4.0.5")}
+]
+
+This is a sad story for Typed Racket, but we promise to improve for version 6.5.
+@todo{say more}
+
+
+@; -----------------------------------------------------------------------------
+@subsection{Limitations of Lattice-Based Evaluation}
+
+Inspecting the annotated performance lattice for @bm{fsm} is feasible and
+ even gives insight as to why the worst configurations are slow.
+At a glance, it is fairly easy to see that the 8 slow modules match the pattern
+ @todo{pattern},
+ @;@tt{*01*} or @tt{*10*},
+ corresponding to a type boundary between @tt{main}
+ and @tt{population}. @todo{use shapes?}
+The number of nodes in a lattice, however, is exponential in the number of
+ modules in a program.
+Visual inspection quickly becomes impossible.
+
+@todo{FILL IN HERE}
+
