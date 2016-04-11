@@ -245,7 +245,7 @@
                   #:x-min 0
                   #:x-max xmax
                   #:samples num-samples
-                  #:label (and (*LINE-LABELS?*) lbl)
+                  #:label (and (*LEGEND?*) lbl)
                   #:line-style st
                   #:line-color c
                   #:line-width w) acc)]
@@ -275,7 +275,7 @@
                     #:pdf? pdf?)
                   0 xmax
                   #:color c
-                  #:label (and (*LINE-LABELS?*) lbl)
+                  #:label (and (*LEGEND?*) lbl)
                   #:samples num-samples
                   #:style sty
                   #:width w) acc)]
@@ -297,8 +297,8 @@
         #:y-max (if pdf? #f (if (eq? '% (*Y-STYLE*)) 100 ymax))
         #:x-label (and (*AXIS-LABELS?*) "Overhead (vs. untyped)")
         #:y-label (and (*AXIS-LABELS?*) y-label)
-        #:title (and (*SINGLE-PLOT?*) (get-project-name (car S*)))
-        #:legend-anchor (*LEGEND-ANCHOR*)
+        #:title (and (*TITLE?*) (get-project-name (car S*)))
+        ;; #:legend-anchor (*LEGEND-ANCHOR*)
         #:width width
         #:height height) pict))
     (if single-plot?
@@ -895,151 +895,14 @@
 (define (unknown-y-style)
   (raise-user-error 'lnm "Unknown y-style type '~a'" (*Y-STYLE*)))
 
-(: bar-type->selector (-> BarType (-> (Listof Real) Integer Real)))
-(define (bar-type->selector bt)
-  (cond
-   [(eq? bt 'runtime)
-    (cond
-     [(eq? (*Y-STYLE*) '%)
-      (lambda ([r* : (Listof Real)] [i : Integer])
-        (let ([a (car r*)]
-              [b (list-ref r* i)])
-          (/ (- b a) a)))]
-     [(eq? (*Y-STYLE*) 'X)
-      (lambda ([r* : (Listof Real)] [i : Integer])
-        (/ (list-ref r* i) (car r*)))]
-     [else
-      (unknown-y-style)])]
-   [(eq? bt 'runtime)
-    list-ref]
-   [else
-    (unknown-bar-type bt)]))
-
-(: bar-type->y-min (-> BarType Real))
-(define (bar-type->y-min bt)
-  (cond
-   [(or (eq? bt 'ratio)
-        (eq? bt 'runtime))
-    (if (*LOG-TRANSFORM?*) 0.1 0)]
-   [(eq? bt 'overhead)
-    1]
-   [else
-    (unknown-bar-type bt)]))
-
-(: bar-type->y-max (-> BarType (U #f Real)))
-(define (bar-type->y-max bt)
-  (cond
-   [(or (eq? bt 'ratio)
-        (and (eq? (*Y-STYLE*) '%)
-             (eq? bt 'runtime)))
-    1]
-   [(and (eq? bt 'runtime)
-         (eq? (*Y-STYLE*) 'X))
-    #f]
-   [(or (eq? bt 'overhead)
-        (eq? bt 'runtime))
-    (* 13 (expt 10 3))]
-   [else
-    (unknown-bar-type bt)]))
-
-(: bar-type->units (-> BarType String))
-(define (bar-type->units bt)
-  (cond
-   [(eq? bt 'ratio)
-    ""]
-   [(eq? bt 'overhead)
-    "x"]
-   [(eq? bt 'runtime)
-    (case (*Y-STYLE*)
-     [(%) "%"]
-     [(X) "x"]
-     [(count) "ms"]
-     [else (unknown-y-style)])]
-   [else
-    (unknown-bar-type bt)]))
-
-(: bar-type->major-ticks (-> BarType (Listof Real)))
-(define (bar-type->major-ticks bt)
-  (cond
-   [(eq? bt 'ratio)
-    (if (*LOG-TRANSFORM?*)
-      (exponential-seq -1 2)
-      (range 10))]
-   [(and (eq? bt 'runtime)
-         (eq? (*Y-STYLE*) '%))
-    (range 0 2 1/10)]
-   [(eq? bt 'runtime)
-    (range 1 11)]
-   [(eq? bt 'overhead)
-    (exponential-seq 0 5)]
-   [else
-    (unknown-bar-type bt)]))
-
-(: bar-type->minor-ticks (-> BarType (Listof Real)))
-(define (bar-type->minor-ticks bt)
-  (cond
-   [(or (eq? bt 'ratio)
-        (and (eq? (*Y-STYLE*) 'X)
-             (eq? bt 'runtime)))
-    (if (*LOG-TRANSFORM?*)
-      '(1/5 2/5 3/5 4/5 2 4 6 8)
-      (range 0 2 1/10))]
-   [(and (eq? (*Y-STYLE*) '%)
-         (eq? bt 'runtime))
-    '()]
-   [(or (eq? bt 'overhead)
-        (eq? bt 'runtime))
-    '()]
-   [else
-    (unknown-bar-type bt)]))
-
-;; -----------------------------------------------------------------------------
-;; --- Very Miscellaneous
-
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
   (let ([c : (Boxof Natural) (box 0)]
-        [incr : (-> Natural Natural) (if num-colors
-                                       (lambda ([n : Natural])
-                                         (add1 (modulo n num-colors)))
-                                       add1)])
+        [incr : (-> Natural Natural) (if num-colors (lambda ([n : Natural]) (modulo (add1 n) num-colors)) add1)])
     (lambda ()
       (begin
         (set-box! c (incr (unbox c)))
         (assert (unbox c) index?)))))
-
-(: make-shapegen (-> (-> Point-Sym)))
-(define (make-shapegen)
-  (let ([c : (Boxof Natural) (box 0)])
-    (lambda ()
-      (begin
-        ;; Maybe want to cycle at some point, or throw helpful error if too big
-        (set-box! c (modulo (+ 1 (unbox c)) 6))
-        (case (unbox c)
-         [(0) 'diamond]
-         [(1) 'fullsquare]
-         [(2) 'fulltriangle]
-         [(3) 'fullcircle]
-         [(4) 'fulltriangleup]
-         [else 'full6star])))))
-
-(: integer->pen-style (-> Integer (U 'dot 'short-dash 'solid)))
-(define (integer->pen-style i)
-  (case i
-   [(1) 'dot]
-   [(2) 'short-dash]
-   [else 'solid]))
-
-(: integer->brush-style (-> Integer (U 'bdiagonal-hatch 'crossdiag-hatch 'solid)))
-(define (integer->brush-style i)
-  (case i
-   [(1) 'bdiagonal-hatch]
-   [(2) 'crossdiag-hatch]
-   [else 'solid]))
-
-(: integer->line-width (-> Integer Nonnegative-Real))
-(define (integer->line-width i)
-  (cast (+ i (*LNM-WIDTH*)) Nonnegative-Real))
 
 (: make-shapegen (-> (-> Point-Sym)))
 (define (make-shapegen)
