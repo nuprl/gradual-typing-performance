@@ -45,4 +45,4 @@
    [else
     (error "bad input")]))
 
-(time (main MICRO_TEST))
+(time (main SMALL_TEST))

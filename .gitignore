@@ -13,6 +13,7 @@
 
 compiled/
 benchmark/
+trace/
 output/
 
 tmp-contract-profile-*

@@ -389,6 +389,7 @@
 
 (: render-lnm (-> (Vectorof String) Any))
 (define (render-lnm vec)
+  (ensure-dir "./compiled")
   (command-line
    #:program "render-lnm"
    #:argv vec
@@ -417,13 +418,11 @@
     (*SINGLE-PLOT?* #f)]
    [("--single")
     "Put all L on the same plot"
+    (*AGGREGATE* #t) ;; Also put all data for 1 benchmark in a single figure
     (*SINGLE-PLOT?* #t)]
    [("--hist" "--histogram" "-H")
     "Show CDF as a histogram"
     (*HISTOGRAM?* #t)]
-   [("--split")
-    "Put each L in a new plot"
-    (*SINGLE-PLOT?* #f)]
    [("--make-table")
     "Create summary tables for each dataset"
     (*MAKE-TABLE?* #t)]

@@ -10,6 +10,11 @@
 ;;   Each job will create a new directory & save results to a file
 ;; - Aggregate the results from all sub-jobs
 
+(provide
+  run-benchmark
+  ;; Same as calling from the command line, just pass argv vector
+)
+
 (require benchmark-util/data-lattice
          "stats-helpers.rkt"
          (only-in glob in-glob)
@@ -62,6 +67,18 @@
 (define min-max-config (make-parameter #f))
 (define predict? (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
+(define *AFFINITY?* (make-parameter #t)) ;; Boolean
+(define *ERROR-MESSAGES* (make-parameter '())) ;; (Listof String)
+
+(define-syntax-rule (compile-error path)
+  (let ([message (format "Compilation failed in '~a/~a'" (current-directory) path)])
+    (*ERROR-MESSAGES* (cons message (*ERROR-MESSAGES*)))
+    (error 'run:compile message)))
+
+(define-syntax-rule (runtime-error var var-idx)
+  (let ([message (format "Error running configuration ~a in '~a'" var-idx var)])
+    (*ERROR-MESSAGES* (cons message (*ERROR-MESSAGES*)))
+    (error 'run:runtime message)))
 
 ;; Get paths for all configuration directories
 ;; ModuleGraph #:such-that (Nat -> Bool) -> Listof Path
@@ -115,18 +132,24 @@
            (define times null)
            (parameterize ([current-directory new-cwd])
              ;; first compile the configuration
-             (unless (system (format "taskset -c ~a ~araco make -v ~a"
-                                     job# (*racket-bin*) (path->string file)))
-               (error (format "Compilation failed for '~a/~a', shutting down"
-                              (current-directory) (path->string file))))
+             (define compile-ok?
+               (system (format "~a~araco make -v ~a"
+                         (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                         (*racket-bin*)
+                         (path->string file))))
+
+             (unless compile-ok?
+               (compile-error (path->string file)))
 
              ;; run an extra run of the configuration to throw away in order to
              ;; avoid OS caching issues
              (unless (only-compile?)
                (printf "job#~a, throwaway build/run to avoid OS caching~n" job#)
                (match-define (list in out _ err control)
-                 (process (format "taskset -c ~a ~aracket ~a"
-                                  job# (*racket-bin*) (path->string file))))
+                 (process (format "~a~aracket ~a"
+                            (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                            (*racket-bin*)
+                            (path->string file))))
                ;; make sure to block on this run
                (control 'wait)
                (close-input-port in)
@@ -135,7 +158,7 @@
 
              ;; run the iterations that will count for the data
              (define exact-iters (num-iterations))
-             (unless (only-compile?)
+             (unless (and (only-compile?) compile-ok?)
                (for ([i (in-range 0
                                   (or exact-iters (+ 1 (max-iterations)))
                                   1)]
@@ -147,7 +170,10 @@
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
-                   (process (format "taskset -c ~a ~aracket -e '~s'" job# (*racket-bin*) command)
+                   (process (format "~a~aracket -e '~s'"
+                              (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                              (*racket-bin*)
+                              command)
                             #:set-pwd? #t))
                  ;; if this match fails, something went wrong since we put time in above
                  (define time-info
@@ -160,7 +186,7 @@
                     (printf "job#~a, iteration#~a - cpu: ~a real: ~a gc: ~a~n"
                             job# i cpu real gc)
                     (set! times (cons real times))]
-                   [#f (void)])
+                   [#f (runtime-error var var-idx)])
                  ;; print anything we get on stderr so we can detect errors
                  (for-each displayln (port->lines err))
                  ;; block on the run, just in case
@@ -173,7 +199,7 @@
                (write-results (reverse times)))))))))
   ;; synchronize on all jobs
   (for ([thd (in-list threads)]) (thread-wait thd))
-  (void))
+  #t)
 
 (define (write-results times [dir (current-directory)])
   (with-output-to-file (build-path dir (output-path)) #:exists 'append
@@ -190,12 +216,18 @@
           (lambda () (system "which racket")))
         "/..")
       (*racket-bin*)))
+  (define success? (box #f))
   (define str
     (parameterize ([current-directory rkt-dir])
       (with-output-to-string
         (lambda ()
-          (system "git rev-parse HEAD")))))
-  (~a str #:max-width 8))
+          (when (directory-exists? "./git")
+            (and (system "git rev-parse HEAD")
+                 (set-box! success? #t)))))))
+  ;; If we parsed the git version, print it. Otherwise, notify.
+  (if (unbox success?)
+      (~a str #:max-width 8)
+      "<unknown-commit>"))
 
 ;; Use the current `raco` to get the most-recent commit hash for typed-racket
 (define (typed-racket-checksum)
@@ -215,9 +247,10 @@
   (printf ";; base @ ~a~n" (racket-checksum))
   (printf ";; typed-racket @ ~a~n" (typed-racket-checksum)))
 
-(module+ main
+(define (run-benchmark vec)
   (define basepath
     (command-line #:program "benchmark-runner"
+                  #:argv vec
                   #:once-any
                   [("-x" "--exclusive")    x-p
                    "Run the given configuration and no others"
@@ -228,6 +261,9 @@
                   [("-p" "--predict") "Run the prediction configurations instead of normal configurations"
                    (predict? #t)]
                   #:once-each
+                  [("-n" "--no-affinity")
+                   "Do NOT set task affinity (runs all jobs on current core)"
+                   (*AFFINITY?* #f)]
                   [("-c" "--only-compile") "Only compile and don't run"
                    (only-compile? #t)]
                   [("-o" "--output") o-p
@@ -265,7 +301,8 @@
           [else ;; Default
            "main.rkt"]))
   ;; Assert that the parsed entry point exists in the project
-  (unless (and (file-exists? (build-path basepath "untyped" entry-point))
+  (unless (and (directory-exists? basepath)
+               (file-exists? (build-path basepath "untyped" entry-point))
                (file-exists? (build-path basepath "typed" entry-point)))
     (raise-user-error (format "entry point '~a' not found in project '~a', cannot run" entry-point basepath)))
   (unless (path-string? basepath)
@@ -298,7 +335,8 @@
 
   ;; Set the CPU affinity for this script to CPU0. Jobs spawned by this script run
   ;; using CPU1 and above.
-  (system (format "taskset -pc 0 ~a" (getpid)))
+  (when (*AFFINITY?*)
+    (system (format "taskset -pc 0 ~a" (getpid))))
   (define mg (mg:from-directory basepath))
   ;; produce the dir-names to run
   ;; and a thunk to collect all the data afterwards
@@ -355,7 +393,13 @@
     (define averaged-results
       (vector-map (λ (times) (cons (mean times) (stddev times))) (file->value (output-path))))
     (send ;; default size is too small to see, so apply a scaling factor
-     (pict->bitmap (scale (make-performance-lattice averaged-results) 3))
-     save-file
-     (lattice-path)
-     'png)))
+          (pict->bitmap (scale (make-performance-lattice averaged-results) 3))
+          save-file
+          (lattice-path)
+          'png))
+  (void))
+
+;; =============================================================================
+
+(module+ main
+  (run-benchmark (current-command-line-arguments)))

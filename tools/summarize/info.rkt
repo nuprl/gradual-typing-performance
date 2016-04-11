@@ -4,7 +4,11 @@
                "typed-racket-lib"
                "typed-racket-more"
                "benchmark-util" ;; local package
+               "rackunit-lib"
+               "rackunit-abbrevs"
+               "draw-lib" ;; For the mini-quadMB test ... oh well
                "glob"
+               "trivial"
                "math-lib"
                "plot-lib"))
 (define build-deps '("rackunit-lib"
@@ -28,4 +32,7 @@
   ("gtp-path"
     (submod gtp-summarize/tabulate-paths main)
     "Build a table of 'performant' paths through the lattice" #f)
+  ("gtp-trace"
+    (submod gtp-summarize/trace main)
+    "Build a dynamic module graph for a benchmark" #f)
 ))

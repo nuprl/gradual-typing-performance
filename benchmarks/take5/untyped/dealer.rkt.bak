@@ -1,0 +1,222 @@
+#lang typed/racket/base
+
+;; the dealer and supervisor of the deck
+
+(provide
+ ;; [Listof Player] -> Dealer
+ ;; create a dealer object that connects the players with the deck
+ ;; and places the player's chosen cards
+ create-dealer)
+
+(require
+  "basics-types.rkt"
+  "card-adapted.rkt"
+  "card-pool-types.rkt"
+  "dealer-types.rkt"
+  "deck-types.rkt"
+  "player-types.rkt"
+  racket/list
+  typed/racket/class)
+
+(require/typed "basics.rkt"
+  (FACE  Natural)
+  (FIVE  Natural)
+  (STACKS Natural)
+  (SIXTYSIX Natural)
+  (HAND  Natural)
+  (MIN-BULL Natural)
+  (MAX-BULL Natural)
+  (configuration (-> (Listof (List Symbol Natural))))
+)
+(require/typed "card-pool.rkt"
+  (create-card-pool (-> (-> (Listof Card) (Listof Card)) (-> Bulls) CardPool))
+)
+(require/typed "deck.rkt"
+  (create-deck (-> CardPool Deck))
+)
+(require/typed "player.rkt"
+  (player% Player%)
+)
+
+;; ---------------------------------------------------------------------------------------------------
+
+;(require/typed "deck.rkt"
+;)
+;
+;(require/typed "stack.rkt"
+;  (bulls
+;)
+;
+;(require/typed "card.rkt"
+;)
+;
+;(require/typed "card-pool.rkt"
+;)
+
+
+;; Note to self: the types for the below descriptions are used out of scope for now
+;; in a file-module they come back into scope 
+#;(define-local-member-name
+  ;; fields:
+  
+  internal%
+  ;; [Listof [Instance Internal%]]
+  internals
+  
+  ;; methods:
+  
+  ;; N -> Result
+  ;; project internals to a list of player names and scores, 
+  ;; sorted in increasing order for the latter 
+  present-results
+  
+  ;; -> Boolean
+  ;; has any of the internals of this dealer collected more than SIXTYSIX bull points
+  any-player-done?
+  
+  ;; -> Void
+  ;; effect: run one complete round of the game for this dealer and its players
+  play-round
+  
+  ;; CardPool -> Void
+  ;; effect: hand each player the cards for one round 
+  deal-cards 
+  
+  ;; Deck -> Void
+  ;; effect: run one complete turn of a round game for this dealer, its players, & current deck
+  play-turn
+  
+  ;; Deck [Listof [List Internal Card]] -> Void
+  ;; effect: place each player's designed card on this dealer's stacks (from the deck)
+  ;; assume: the second argument are pairs of cards and players, sorted in the order to be placed  
+  place-cards)
+
+(: create-dealer (-> (Listof Player) Dealer))
+(define (create-dealer players)
+  (new dealer% [players players]))
+
+(define dealer% : Dealer%
+  (class object%
+    (init-field
+     ;; [Listof Player]
+     (players : (Listof Player)))
+    
+    (super-new)
+    
+    ;; ---------------------------------------------------------------------------------------------
+    ;; representing players for the dealer
+    ;(types Player%)
+    
+    (define-type Internal%
+      (Class
+       (init-field
+        ;; Player
+        ;; the external player that this internal representation wraps 
+        (player (Instance Player%)))
+       
+       ;; N
+       ;; the number of bulls that this wrapped player lost 
+       (field [my-bulls Natural])
+       
+       ;; -> N
+       ;; retrieve my-bulls from this wrapped player
+       (bulls (-> Natural))
+
+       (name (-> Name))
+
+       (start-round (-> (Listof Card) Void))
+       
+       ;; N -> Void
+       ;; add n to this wrapped player's bulls 
+       (add-score (-> Natural Void))))
+    
+    (field
+     [internal% : Internal%
+      (class player%
+        (init-field player)
+        (super-new [n (send player name)])
+        
+        (field [my-bulls 0])
+        (define/public (bulls) my-bulls)
+        (define/public (name)
+          (send (get-field player this) name))
+        (define/public (start-round c*)
+          (send (get-field player this) start-round c*))
+        (define/public (add-score n)
+          (set! my-bulls (+ my-bulls n))))])
+    
+    ;; ---------------------------------------------------------------------------------------------
+    ;; running a game 
+    
+    ;; [Listof Internal]
+    (field [internals : (Listof (Instance Internal%))
+            (for/list : (Listof (Instance Internal%))
+                                ((p players))
+                        (new internal% [player p]))])
+    
+    (define/public (play-game (shuffle values) (faces (lambda () MIN-BULL)))
+      (displayln '(welcome to 6 takes!))
+      (displayln `(configuration ,(configuration)))
+      (define n (length players))
+      (when (> (+ (* n HAND) STACKS) FACE)
+        (error 'play-game "cannot play with ~a players; more cards needed" n))
+      
+      (let play-game : Result ([i : Natural 1])
+        (play-round shuffle faces)
+        (if (any-player-done?)
+            (present-results i)
+            (play-game (+ i 1)))))
+    
+    (define/public (present-results i)
+      (define sorted (sort internals < #:key (lambda (i) (send i bulls))))
+      `((after round ,i)
+        ,(for/list : (Listof (List Name Natural))
+            ([p : (Instance Internal%) sorted])
+           `(,(send p name) ,(send p bulls)))))
+    
+    (define/public (any-player-done?)
+      (for/or : Boolean
+              ((p : (Instance Internal%) (in-list internals)))
+        (> (send p bulls) SIXTYSIX)))
+    
+    (define/public (play-round shuffle faces)
+      (define card-pool (create-card-pool shuffle faces))
+      (define deck (create-deck card-pool))
+      (deal-cards card-pool)
+      (for ((p HAND))
+        (play-turn deck)))
+
+    (: deal-cards (-> CardPool Void))
+    (define/private (deal-cards card-pool)
+      (for ((p : (Instance Internal%) (in-list internals)))
+        (send p start-round (send card-pool draw-hand))))
+
+    (: play-turn (-> Deck Void))
+    (define/private (play-turn deck)
+      (define played-cards
+        (for/list : (Listof TODO TODO)
+                  ((p : (Instance Internal%) internals))
+          (list p (send p start-turn deck))))
+      (define sorted-played-cards
+        (sort played-cards < #:key (lambda ([x : (List Any Card)]) (card-face (second x)))))
+      (place-cards deck sorted-played-cards))
+
+    (: place-cards (-> Deck (Listof (List (Instance Internal%) Card)) Void))
+    (define/private (place-cards deck sorted-player-cards)
+      (for ((p+c sorted-player-cards))
+        (define player (first p+c))
+        (define card (second p+c))
+        (cond
+          [(send deck larger-than-some-top-of-stacks? card)
+           (define closest-fit-stack (send deck fit card))
+           (cond
+             [(< (length closest-fit-stack) FIVE)
+              (send deck push card)]
+             [(= (length closest-fit-stack) FIVE)
+              (define bulls (send deck replace closest-fit-stack card))
+              (send player add-score bulls)])]
+          [else ;; the tops of all stacks have larger face values than card
+           (define chosen-stack (send player choose deck))
+           (define bulls (send deck replace chosen-stack card))
+           (send player add-score bulls)])))))
+

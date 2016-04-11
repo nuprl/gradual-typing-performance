@@ -23,5 +23,5 @@ if test $NUMITERS; then
  echo "### ("$NUMITERS" iterations per config.)"
 fi
 $RKT/racket tools/setup-benchmark.rkt $TARGET
-$RKT/racket tools/run.rkt -j $JOBS -r $RKT $TARGET | tee $LOG
+$RKT/racket tools/run.rkt -j $JOBS -r $RKT $TARGET > $LOG
 echo "### Saved logfile to '"$LOG"'"

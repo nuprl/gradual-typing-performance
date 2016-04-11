@@ -81,7 +81,7 @@
 (only-in "sugar-list.rkt"
  slice-at)
 ;; bg: should maybe import this
-(only-in "../base/csp/main.rkt" problem%))
+(only-in "../base/csp/csp.rkt" problem%))
 
 ;; =============================================================================
 

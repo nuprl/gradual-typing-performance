@@ -2,9 +2,6 @@
 
 ;; Populations of Automata
 
-(define-type Population (cons Automaton* Automaton*))
-(define-type Automaton* [Vectorof Automaton])
-
 (provide
   build-random-population
   population-payoffs
