@@ -16,6 +16,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+ (for-syntax racket/base syntax/parse)
  (only-in racket/file file->value)
  (only-in racket/port with-input-from-string open-output-nowhere)
  (only-in racket/math exact-round)
@@ -24,7 +25,6 @@
  gtp-summarize/lnm-parameters
  gtp-summarize/lnm-plot
  gtp-summarize/summary
- ;plot/typed/no-gui
  plot/typed/utils
  racket/cmdline
  typed/pict
@@ -50,10 +50,14 @@
 ;; =============================================================================
 
 ;(: assert-false/L (-> (Parameterof Any) Void))
-(define-syntax-rule (assert-false/L PARAM)
-  (when (PARAM)
-    (raise-user-error 'render-lnm
-      (format "Cannot make L-titles with parameter ~a is non-#f" (object-name PARAM)))))
+(define-syntax (assert-false/L stx)
+  (syntax-parse stx
+   [(_ ?PARAM:id)
+    #:with param-str (syntax-e #'?PARAM)
+    (syntax/loc stx
+      (when (?PARAM)
+        (raise-user-error 'render-lnm
+          (format "Cannot make L-titles when parameter ~a is non-#f" 'param-str))))]))
 
 ;; Important parameters.
 ;; If these are changed, ignore cached pict
@@ -65,12 +69,11 @@
                          (*LEGEND?*) (*SHOW-PATHS?*) (*LOG-TRANSFORM?*)
                          (*HISTOGRAM?*) (*MAX-OVERHEAD*) (*NUM-SAMPLES*)
                          (*PLOT-WIDTH*) (*PLOT-HEIGHT*) (*Y-STYLE*)
-                         (*AGGREGATE*) (*N*) (*M*) (*L*)))])
+                         (*N*) (*M*) (*L*)))])
     (format "~a" x)))
 
 (: make-L-title* (-> (Listof String)))
 (define (make-L-title*)
-  (assert-false/L *AGGREGATE*)
   (assert-false/L *SHOW-PATHS?*)
   (assert-false/L *SINGLE-PLOT?*)
   (assert-false/L *PDF?*)
@@ -156,13 +159,13 @@
   (parameterize ([*CACHE-TAG* tag])
     (or
      (get-cached rktd*)
-     (case (*AGGREGATE*)
-      [(#t #f) ;; boolean
+     (case #t  ;; TODO allow making deathscores etc.
+      [(#t #f)
        (get-new-lnm-pict rktd* #:titles title*)]
       [(mean)
        (get-deathscore-pict rktd* #:titles title*)]
       [else
-       (raise-user-error 'render-lnm "Unknown aggregation method" (*AGGREGATE*))]))))
+       (raise-user-error 'render-lnm "Unknown aggregation method")]))))
 
 ;; Create a summary and L-N/M picts for a data file.
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
@@ -245,10 +248,9 @@
     [else
      (error 'render-lnm (format "Malformed data in cache file '~a'" filepath))]))
 
-(: zip-title* (->* [(Listof String) (U #f (Listof String))]
-                   [#:collapse? Boolean]
+(: zip-title* (-> (Listof String) (U #f (Listof String))
                    (Listof (Pairof (U #f String) (Listof String)))))
-(define (zip-title* rktd* maybe-title* #:collapse? [collapse? #f])
+(define (zip-title* rktd* maybe-title*)
   (: title* (U (Listof String) (Listof #f)))
   (define title*
     (if maybe-title*
@@ -259,27 +261,25 @@
         maybe-title*)
         (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
   ;; Combine duplicate titles
-  (if collapse?
-    (for/fold : (Listof (Pairof (U String #f) (Listof String)))
-              ([acc : (Listof (Pairof (U String #f) (Listof String)))
-                      '()])
-              ([t (in-list title*)]
-               [r (in-list rktd*)])
-      (cond
-       [(and t (assoc t acc))
-        (for/list ([t+r (in-list acc)])
-          (define hd (car t+r))
-          (if (and (string? hd) (string=? hd t))
-            (list* t r (cdr t+r))
-            t+r))]
-       [else
-        (cons (list t r) acc)]))
-    (for/list ([t (in-list title*)] [r (in-list rktd*)])
-      (list t r))))
+  (reverse
+  (for/fold : (Listof (Pairof (U String #f) (Listof String)))
+            ([acc : (Listof (Pairof (U String #f) (Listof String)))
+                    '()])
+            ([t (in-list title*)]
+             [r (in-list rktd*)])
+    (cond
+     [(and t (assoc t acc))
+      (for/list ([t+r (in-list acc)])
+        (define hd (car t+r))
+        (if (and (string? hd) (string=? hd t))
+          (list* t r (cdr t+r))
+          t+r))]
+     [else
+      (cons (list t r) acc)]))))
 
 (: get-deathscore-pict (->* [(Listof String)] [#:titles (U #f (Listof String))] Pict))
 (define (get-deathscore-pict rktd* #:titles [maybe-title* #f])
-  ;(define title+rktd* (zip-title* rktd* maybe-title* #:collapse? #f))
+  ;(define title+rktd* (zip-title* rktd* maybe-title*))
   (raise-user-error 'render-lnm "cannot make death scores right now"))
 ;  (define S*
 ;    (for/list : (Listof Summary)
@@ -290,8 +290,7 @@
 ;; Create a pict, cache it for later use
 (: get-new-lnm-pict (->* [(Listof String)] [#:titles (U #f (Listof String))] Pict))
 (define (get-new-lnm-pict rktd* #:titles [maybe-title* #f])
-  (define title+rktd* (zip-title* rktd* maybe-title*
-                        #:collapse? (assert (*AGGREGATE*) boolean?)))
+  (define title+rktd* (zip-title* rktd* maybe-title*))
   ;; Get all picts. (Each call to lnm-plot returns a list)
   (define pict**
     (for/list : (Listof (Listof Pict))
@@ -387,14 +386,11 @@
    [("-p" "--path" "--paths")
     "Count paths instead of configurations"
     (*SHOW-PATHS?* #t)]
-   [("-a" "--aggregate")
-    "Combine all data into a single figure"
-    (*AGGREGATE* #t)]
    ;; TODO enable aggregation
    ;[("-d" "--deathscore")
    ; sym
    ; "Create a deathscore, valid params: 'mean"
-   ; (*AGGREGATE* sym)]
+   ; (*TODO* sym)]
    [("--legend")
     legend
     "#t/#f = show/hide legend"
@@ -410,7 +406,6 @@
     (*SINGLE-PLOT?* #f)]
    [("--single")
     "Put all L on the same plot"
-    (*AGGREGATE* #t) ;; Also put all data for 1 benchmark in a single figure
     (*SINGLE-PLOT?* #t)]
    [("--hist" "--histogram" "-H")
     "Show CDF as a histogram"
@@ -458,11 +453,11 @@
    [("-N")
     n
     "Set line for N (#f by default)"
-    (*N* (assert (reads n) index?))]
+    (*N* (assert (reads n) real?))]
    [("-M")
     m
     "Set line for M (#f by default)"
-    (*M* (assert (reads m) index?))]
+    (*M* (assert (reads m) real?))]
    [("-L")
     l
     "Set L values, may be natural, (listof natural) or (listof (list natural pen-style))"
@@ -498,7 +493,9 @@
         (for/list : (Listof (List String String))
                   ([fname (in-list arg*)])
           (list (path->project-name (string->path fname)) fname))))
-   (pict->png P (*OUTPUT*))))
+   (if (*PICT?*)
+     P
+     (pict->png P (*OUTPUT*)))))
 
 (module+ main (render-lnm (current-command-line-arguments)))
 
@@ -525,13 +522,8 @@
    ;; -- unique titles
    ['("a" "b" "c" "d") '("1" "2" "3" "4")
     '(("1" "a") ("2" "b") ("3" "c") ("4" "d"))]
-   ;; -- duplicate titles, but #:collapse is #f
    ['("a-1" "b-1") '("hi" "hi")
-    '(("hi" "a-1") ("hi" "b-1"))])
-  (check-equal?
-   ;; -- duplicate titles, #:collapse is #t
-   (zip-title* '("a-1" "b-1") '("hi" "hi") #:collapse? #t)
-   '(("hi" "b-1" "a-1")))
+   '(("hi" "b-1" "a-1"))])
 
   (check-exn exn:fail:user?
     (lambda () (zip-title* '("A") '())))
