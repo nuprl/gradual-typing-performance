@@ -145,3 +145,6 @@
 
 (defparam *TRACE-NUM-COLORS* Index 3)
 
+(defparam *PICT?* Boolean #f)
+
+(defparam *LEGEND-ANCHOR* (U #f 'top-right 'bottom-right) 'top-right)

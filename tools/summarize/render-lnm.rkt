@@ -807,8 +807,10 @@
         #:tag (*CACHE-TAG*)
         (for/list : (Listof (List String String))
                   ([fname (in-list arg*)])
-          (list (fname->title fname) fname))))
-   P))
+          (list (path->project-name (string->path fname)) fname))))
+   (if (*PICT?*)
+     P
+     (pict->png P (*OUTPUT*)))))
 
 (module+ main
   (let ([p (render-lnm (current-command-line-arguments))])
