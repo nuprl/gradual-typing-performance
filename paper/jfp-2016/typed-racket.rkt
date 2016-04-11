@@ -20,6 +20,10 @@
 
   ;; ---------------------------------------------------------------------------
 
+  *RKT-VERSIONS*
+
+  ;; ---------------------------------------------------------------------------
+
   add-commas
   ;; (-> Number String)
 
@@ -31,6 +35,11 @@
   ;; (-> String Any)
   ;; Use to format benchmark names.
   ;; Asserts that its argument is a correctly-spelled benchmark name.
+
+  count-savings
+  ;; (-> (Listof String) Natural)
+  ;; Count Anderson-Darling savings.
+  ;; i.e. the number of data rows with 10 values rather than 30
 
   count-all-configurations
   ;; (-> Natural)
@@ -67,7 +76,7 @@
   ;; (-> Any)
   ;; 
 
-  lnm-plots
+  make-lnm-plot*
   ;; (-> String * Any)
 
   lnm-summary
@@ -82,6 +91,7 @@
  gtp-summarize/modulegraph
  racket/match
  (only-in racket/file file->value)
+ (only-in racket/port with-input-from-string)
  (only-in "common.rkt" etal cite exact parag)
  (only-in racket/list last)
  scribble/core
@@ -112,7 +122,7 @@
 (define *STRICT?* (make-parameter #f))
 ;; When #t, raise exceptions instead of warnings
 
-;; TODO precompute modulegraphs?
+(define *RKT-VERSIONS* (make-parameter '("6.2" "6.3" "6.4.x")))
 
 (define benchmark-name* '(
   acquire
@@ -214,6 +224,9 @@
   (define bm-str (symbol->string bm))
   (glob/first (string-append (get-git-root) "/data/" v "/" bm-str "-" tag ".rktd")))
 
+(define (version->data-file* v)
+  (in-glob (string-append (get-git-root) "/data/" v "/*.rktd")))
+
 ;; -----------------------------------------------------------------------------
 
 (struct benchmark (name author num-adaptor origin purpose lib* description modulegraph))
@@ -270,6 +283,22 @@
 
 (define (benchmark->num-modules b)
   (modulegraph->num-modules (benchmark-modulegraph b)))
+
+(define (count-savings version*)
+  (for*/sum ([v (in-list version*)]
+             [d (version->data-file* v)])
+    (with-input-from-file d
+      (lambda ()
+        (for/sum ([ln (in-lines)])
+          (if (and (eq? #\( (string-ref ln 0))
+                   (= 10 (length (read-list ln))))
+            1
+            0))))))
+
+(define (read-list str)
+  (with-handlers ([exn:fail? (lambda (e) #f)])
+    (let ([r (with-input-from-string str read)])
+      (and (list? r) r))))
 
 (define (count-all-configurations)
   (for/sum ([b (in-list (unbox benchmark-data*))])
@@ -499,10 +528,11 @@
     (parag (symbol->string (lnm-name l)))
     (elem (lnm-description l))))
 
-(define (lnm-plots . version*)
+(define (make-lnm-plot* version*)
   ;; Map over benchmark names,
   ;; Sort & make figures of with 6 plots each or whatever
-  (elem "TODO"))
+  (map (lambda (x) (elem "TODO")) version*))
+
 ;@figure*["fig:lnm1"
 ;  @list{@step["L" "N" "M"] results for the first six benchmarks}
 ;  @(let* ([data `(("sieve"        ,SIEVE-DATA)
@@ -551,5 +581,12 @@
     => "123,456,789"]
    [12456789
     => "12,456,789"])
+
+  (check-apply* read-list
+   ["()" => '()]
+   ["( 1 2 3   )" => '(1 2 3)]
+   ["( 2 1 () 5)" => '(2 1 () 5)]
+   ["yolo" => #f]
+   [")( " => #f])
 )
 
