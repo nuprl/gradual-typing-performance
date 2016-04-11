@@ -1,10 +1,10 @@
 #lang typed/racket
-
+(require benchmark-util)
 ;; ---------------------------------------------------------------------------------------------------
 ;; basic game ontology and data structures for simple concepts (hotels, cash, shares)
 
 ;; ---------------------------------------------------------------------------------------------------
-(provide
+(safe-and-unsafe-provide
  hotel?
  ;; (-> Any Boolean)
  hotel<=?
@@ -90,7 +90,6 @@
 ;; ---------------------------------------------------------------------------------------------------
 
 (require
- benchmark-util
  "../base/types.rkt"
 )
 (require/typed/check "auxiliaries.rkt"

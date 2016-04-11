@@ -1,12 +1,12 @@
 #lang typed/racket
-
+(require benchmark-util)
 ;; ---------------------------------------------------------------------------------------------------
 ;; a data representation for internal game states 
 ;; -- inspecting the game state 
 ;; -- manipulating the game state 
 ;; including a data structure for internalizing the state of the players
 
-(provide
+(safe-and-unsafe-provide
  score?
 
  (struct-out player)
@@ -139,10 +139,9 @@
 ;; IMPLEMENTATION: 
 
 (require
- benchmark-util
- "../base/types.rkt"
- "board-adapted.rkt"
- )
+ "../base/types.rkt")
+(require/adapted "board.rkt" "board-adapted.rkt")
+
 (require/typed/check "basics.rkt"
   (ALL-HOTELS (Listof Hotel))
   (CASH0 Cash)

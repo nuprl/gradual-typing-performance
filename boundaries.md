@@ -105,3 +105,22 @@ It is not clear to us what "good" is.
 performance evaluation of gradual-typing programming languages.
 Most relevant measures are the 99th and 100th percentile of prediction
 error.
+
+Updating a Benchmark for Prediction
+-----------------------------------
+
+Benchmarks need to be tweaked in some ways to facilitate the
+interposition proposed above.
+Here are the Changes:
+
+1. For untyped modules
+   a. `require`ing an internal module should use the `require/check` form
+2. For typed modules
+   a. `require`ing an internal module is the same (`require/typed/check`).
+   b. `require`ing an adapted module should use the `require/adapted` form. (require/adapted "adaptee.rkt" "adaptor.rkt")
+   c. `provide`ing should use the `safe-and-unsafe-provide` form.
+3. For adaptors
+   a. Use `#lang benchmark-util`
+
+For external dependencies...I'm not sure.
+   

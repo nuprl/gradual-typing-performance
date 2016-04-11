@@ -1,5 +1,5 @@
 #lang typed/racket/base
-
+(require benchmark-util)
 ;; Copyright 2014 John Clements (clements@racket-lang.org)
 ;; Code licensed under the Mozilla Public License 2.0
 
@@ -7,7 +7,6 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
   (only-in racket/file file->value))
 
 (require/typed/check "morse-code-strings.rkt"

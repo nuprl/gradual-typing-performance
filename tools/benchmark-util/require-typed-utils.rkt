@@ -26,7 +26,7 @@
 
  require/adapted
  ;; for typed modules
- ;; Same as typed require, but can be overriden by a benchmark-config.rktd file
+ ;; same as typed require, but includes the name of the adaptee module
 
  require/external/typed
  require/external/untyped

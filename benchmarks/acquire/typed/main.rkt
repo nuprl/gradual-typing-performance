@@ -1,17 +1,17 @@
 #lang typed/racket/base
+(require benchmark-util)
 (random-seed 5)
 
 ;; This is `tree-game.rkt`
 
 ;; -----------------------------------------------------------------------------
 
-(require
-  benchmark-util
+(require  
   racket/list
-  typed/racket/class
-  "board-adapted.rkt"
-  "state-adapted.rkt"
-  )
+  typed/racket/class)
+(require/adapted "state.rkt" "state-adapted.rkt")
+(require/adapted "board.rkt" "board-adapted.rkt")
+
 (require/typed/check "admin.rkt"
   (administrator% Administrator%)
   )

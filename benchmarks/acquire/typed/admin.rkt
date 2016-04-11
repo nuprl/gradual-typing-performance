@@ -1,9 +1,10 @@
 #lang typed/racket
+(require benchmark-util)
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; the Acquire game administrator class: sign up players and manage their play 
 
-(provide
+(safe-and-unsafe-provide
  Administrator%
  administrator%
  Turn%
@@ -13,11 +14,13 @@
 ;; ---------------------------------------------------------------------------------------------------
 
 (require
- benchmark-util
  "../base/types.rkt"
- "board-adapted.rkt"
- "state-adapted.rkt"
+ 
+ 
 )
+(require/adapted "state.rkt" "state-adapted.rkt")
+(require/adapted "board.rkt" "board-adapted.rkt")
+
 (require/typed racket/sandbox
   (call-with-limits (All (A) (-> Natural Natural (-> A) A)))
   (exn:fail:resource? (All (A) (-> A Boolean)))
