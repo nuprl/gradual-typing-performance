@@ -337,7 +337,8 @@
   ;; using CPU1 and above.
   (when (*AFFINITY?*)
     (system (format "taskset -pc 0 ~a" (getpid))))
-  (define mg (mg:from-directory basepath))
+  (define-values (_a bp _b) (split-path basepath))
+  (define mg (mg:project-name->modulegraph (path->string bp)))
   ;; produce the dir-names to run
   ;; and a thunk to collect all the data afterwards
   (match-define (list dir-names post-process)

@@ -89,7 +89,7 @@
 (define (create-populate-prediction-configurations-directories* bname name bdir both typed untyped file-names*)
   ;; First, the untyped requiring typed edge directories
   ;; THen, the typed requiring untyped edge directories
-  (define mg (mg:from-directory bname))
+  (define mg (mg:project-name->modulegraph (path->string bname)))
   (define es (mk-edges mg))
   ;; todo: don't do this yourself
   (for ([e (in-list es)])
