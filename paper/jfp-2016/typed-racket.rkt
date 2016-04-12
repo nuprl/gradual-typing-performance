@@ -37,7 +37,7 @@
   ;; Asserts that its argument is a correctly-spelled benchmark name.
 
   count-savings
-  ;; (-> (Listof String) Natural)
+  ;; (-> (Listof String) (Values Natural Natural))
   ;; Count Anderson-Darling savings.
   ;; i.e. the number of data rows with 10 values rather than 30
 
@@ -286,15 +286,19 @@
   (modulegraph->num-modules (benchmark-modulegraph b)))
 
 (define (count-savings version*)
-  (for*/sum ([v (in-list version*)]
-             [d (version->data-file* v)])
+  (for*/fold ([num-skip-runs 0]
+              [num-runs 0])
+             ([v (in-list version*)]
+              [d (version->data-file* v)])
     (with-input-from-file d
       (lambda ()
-        (for/sum ([ln (in-lines)])
-          (if (and (eq? #\( (string-ref ln 0))
-                   (= 10 (length (read-list ln))))
-            1
-            0))))))
+        (for/fold ([nsr num-skip-runs]
+                   [nr num-runs])
+                  ([ln (in-lines)])
+          (define is-run? (eq? #\( (string-ref ln 0)))
+          (values
+            (+ nsr (if (and is-run? (= 10 (length (read-list ln)))) 1 0))
+            (+ nr (if is-run? 1 0))))))))
 
 (define (read-list str)
   (with-handlers ([exn:fail? (lambda (e) #f)])
@@ -512,8 +516,9 @@
    (and
     (list? (unbox benchmark-data*))
     (for/first ([b (in-list (unbox benchmark-data*))]
-               #:when (let ([s* (benchmark->name* b)])
-                        (if (list? s*) (memq s s*) (eq? s s*))))
+               #:when (or (eq? s (benchmark-name b))
+                          (let ([s* (benchmark->name* b)])
+                                   (if (list? s*) (memq s s*) (eq? s s*)))))
       b))
    (raise-user-error 'lnm->benchmark "Failed to get benchmark for LNM '~a'." s)))
 
@@ -579,7 +584,7 @@
                                    [v (in-list version*)])
                        (define n+ (if (eq? n 'zordoz) "zordoz.6.[23]" n))
                        (glob/first (format "~a/~a/~a-*.rktd" data-root v n+))))
-      (parameterize ([*CACHE-TAG* #f]) ;(number->string i)])
+      (parameterize ([*CACHE-TAG* (number->string i)])
         (render-lnm fname*)))))
 
 (define (lnm-summary . version*)
