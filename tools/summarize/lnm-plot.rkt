@@ -655,7 +655,11 @@
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
            (for/list : (Listof Bitstring) ([pt (in-list pre-ticks)])
              (define v (pre-tick-value pt))
-             (format "~ax" (if (integer? v) v (exact->inexact v)))))))
+             (define v+ (if exact-x-ticks
+                          ;; Use decimal notation, instead of fractions
+                          (if (integer? v) v (exact->inexact v))
+                          (round v)))
+             (format "~ax" v+)))))
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
