@@ -439,23 +439,23 @@
 ;; =============================================================================
 
 (: count-configurations/standard-error (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (Listof (-> Real Natural))))
-(define (count-configurations/standard-error sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
+(define (count-configurations/standard-error S L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
   (list
-   (count-configurations sm L configuration->mean-runtime
+   (count-configurations S L configuration->mean-runtime
     #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
-   (count-configurations sm L (lambda ([S : Summary] [str : String]) (- (configuration->mean-runtime S str) (configuration->standard-error S str)))
+   (count-configurations S L (lambda ([S : Summary] [str : String]) (- (configuration->mean-runtime S str) (configuration->standard-error S str)))
     #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
-   (count-configurations sm L (lambda ([S : Summary] [str : String]) (+ (configuration->mean-runtime S str) (configuration->standard-error S str)))
+   (count-configurations S L (lambda ([S : Summary] [str : String]) (+ (configuration->mean-runtime S str) (configuration->standard-error S str)))
     #:cache-up-to lim #:pdf? pdf? #:percent? percent?)))
 
 (: count-configurations/confidence (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (Listof (-> Real Natural))))
-(define (count-configurations/confidence sm L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
+(define (count-configurations/confidence S L #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
   (list
-   (count-configurations sm L configuration->mean-runtime
+   (count-configurations S L configuration->mean-runtime
     #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
-   (count-configurations sm L configuration->confidence-lo
+   (count-configurations S L configuration->confidence-lo
     #:cache-up-to lim #:pdf? pdf? #:percent? percent?)
-   (count-configurations sm L configuration->confidence-hi
+   (count-configurations S L configuration->confidence-hi
     #:cache-up-to lim #:pdf? pdf? #:percent? percent?)))
 
 (: count-configurations/mean (->* [Summary Index] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (-> Real Natural)))
@@ -468,23 +468,23 @@
 ;;  which can reach, in L or fewer steps,
 ;;  a configuration with overhead no more than `N`
 (: count-configurations (->* [Summary Index (-> Summary String Real)] [#:pdf? Boolean #:percent? Boolean #:cache-up-to (U #f Index)] (-> Real Natural)))
-(define (count-configurations sm L f #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
-  (define baseline (f sm (untyped-configuration sm)))
-  (define cache (and lim (cache-init sm f lim #:L L)))
-  (define num-configs (get-num-configurations sm))
+(define (count-configurations S L f #:cache-up-to [lim #f] #:pdf? [pdf? #f] #:percent? [percent? #f])
+  (define baseline (f S (untyped-configuration S)))
+  (define cache (and lim (cache-init S f lim #:L L)))
+  (define num-configs (get-num-configurations S))
   (: prev-good (Boxof Natural))
   (define prev-good (box 0)) ;; For computing pdf graphs (instead of cumulative)
   (lambda ([N-raw : Real]) ;; Real, but we assume non-negative
     (: N Nonnegative-Real)
     (define N (if (>= N-raw 0) N-raw (error 'count-configurations)))
-    (define good? (make-configuration->good? sm (* N baseline) f #:L L))
+    (define good? (make-configuration->good? S (* N baseline) f #:L L))
     (define num-good
       (if (and cache lim (<= N lim))
         ;; Use cache to save some work, only test the configurations
         ;; in the next bucket
         (cache-lookup cache N good?)
         ;; No cache, need to test all configurations
-        (sequence-length (predicate->configurations sm good?))))
+        (sequence-length (predicate->configurations S good?))))
     (cond
      [pdf?
       (begin0 (assert (- num-good (unbox prev-good)) index?) (set-box! prev-good num-good))]
@@ -664,7 +664,10 @@
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
   (let ([c : (Boxof Natural) (box 0)]
-        [incr : (-> Natural Natural) (if num-colors (lambda ([n : Natural]) (modulo (add1 n) num-colors)) add1)])
+        [incr : (-> Natural Natural) (if num-colors
+                                       (lambda ([n : Natural])
+                                         (add1 (modulo n num-colors)))
+                                       add1)])
     (lambda ()
       (begin
         (set-box! c (incr (unbox c)))
