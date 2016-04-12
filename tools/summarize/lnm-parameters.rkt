@@ -3,6 +3,7 @@
 ;; Calls to (defparam id ...) expand to a (provide id)
 (provide
   defparam
+  Y-Style
 )
 
 (require
@@ -93,7 +94,7 @@
 (defparam *M-STYLE*      Plot-Pen-Style 'solid)
 (defparam *CUTOFF-STYLE* Plot-Pen-Style 'short-dash)
 
-(define thin (* 0.5 (line-width)))
+(define thin (* 0.8 (line-width)))
 (define thick (line-width))
 (defparam *LNM-WIDTH*    Nonnegative-Real thin)
 (defparam *N-WIDTH*      Nonnegative-Real thin)
@@ -103,14 +104,10 @@
 (defparam *TICK-SIZE* Natural 4) ;; Dude IDK
 (defparam *X-MINOR-TICKS* (U #f (Listof Real)) #f)
 (defparam *X-NUM-TICKS* Natural 5)
-(defparam *X-TICK-LINES?* Boolean #t)
-(defparam *X-TICKS* (U #f (Listof Real)) '(1 2.5 3.5 4.25 5))
-(defparam *Y-MINOR-TICKS* (U #f (Listof Real)) '(.25 .75))
-(defparam *Y-NUM-TICKS* Natural 3)
-(defparam *Y-TICK-LINES?* Boolean #t)
-(defparam *Y-TICKS* (U #f (Listof Real)) #f)
-(deftype Y-Style (U 'count '% 'X))
-(defparam *Y-STYLE* Y-Style '%)
+(defparam *X-TICKS* (U #f (Listof Exact-Rational)) #f) ;; Takes precedence over num-ticks
+(defparam *Y-NUM-TICKS* Natural 6)
+(define-type Y-Style (U 'count '%))
+(defparam *Y-STYLE* Y-Style 'count)
 
 ;; --- Boolean flags
 (defparam *AXIS-LABELS?*   Boolean #t) ;; If #t, label all plot axes
@@ -136,15 +133,5 @@
 
 (defparam *DISCRETE?* Boolean #f)
 
-(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'bottom-right)
+(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
 
-(defparam *TOO-MANY-BYTES* Natural (expt 10 9))
-;; Files larger than this should not be loaded
-
-(deftype BarType (U 'overhead 'ratio 'runtime))
-
-(defparam *TRACE-NUM-COLORS* Index 3)
-
-(defparam *PICT?* Boolean #f)
-
-(defparam *LEGEND-ANCHOR* (U #f 'top-right 'bottom-right) 'top-right)

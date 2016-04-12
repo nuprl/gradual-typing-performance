@@ -104,96 +104,54 @@
     (define num-L (length normL))
     (for/list : (Listof String)
               ([x (in-list normL)])
-      (format "k = ~a" x))]))
-
-;; old formatting function
-(: l-index->string (-> Integer (-> Integer String)))
-(define ((l-index->string num-L) i)
-  (cond [(zero? i)
-         (format "L = ~a" i)]
-        [(= num-L i)
-         (format "\t~a  (steps)" i)]
-        [else
-         (number->string i)]))
-
-(: mytext (->* (String) ((U #f 'italic)) Pict))
-(define (mytext str [mystyle #f])
-  (text str
-    (if mystyle
-      ((inst cons 'italic String) mystyle (*TITLE-FONT-FACE*))
-      (*TITLE-FONT-FACE*))
-    (assert (+ 1 (*TABLE-FONT-SIZE*)) index?)))
+      (l-index->string x))]))
 
 ;; Optional argument: list of Racket versions
 (: make-legend (->* [] [(Listof String)] Pict))
 (define (make-legend [version* '("# k-step D/U-usable")])
   ;; VSHIM separates 2 rows in the legend
   (define VSHIM (*TITLE-VSPACE*))
-  (define HSHIM (* 3 (*GRAPH-HSPACE*)))
+  (define HSHIM (*GRAPH-HSPACE*))
+  (: mytext (->* (String) ((U #f 'italic)) Pict))
+  (define (mytext str [mystyle #f])
+    (text str
+      (if mystyle
+        ((inst cons 'italic String) mystyle (*TITLE-FONT-FACE*))
+        (*TITLE-FONT-FACE*))
+      (assert (+ 1 (*TABLE-FONT-SIZE*)) index?)))
   (: myrule (-> String Any String Any  Pict))
   (define (myrule c-str c-val key val)
     (hc-append 0
       (colorize (mytext c-str) (format "~a" c-val))
       (mytext " rule: ")
       (mytext key 'italic)
-      (mytext (format " = ~a" val))))
-  (: myline (-> String Any String Integer Pict))
-  (define (myline c-str c-val descr i)
+      (mytext (format "=~a" val))))
+  (: myline (->* [String Any String] [(U #f String)] Pict))
+  (define (myline c-str c-val descr [style #f])
     (hc-append 0
-      (colorize
-        (linewidth (integer->line-width i)
-          (linestyle (integer->pen-style i)
-            (hline HSHIM 5)))
-        (cast c-val (List Byte Byte Byte)))
-      (mytext (string-append " : " descr))))
+      (colorize (mytext c-str) (cast c-val (List Byte Byte Byte)))
+      (mytext (format " line~a: ~a" (if style (format " (~a)" style) "") descr))))
+  ;; TODO spacing is sometimes wrong... recompiling fixes but otherwise this looks okay
   ;; LEGEND
   ;;  +--------------------------+
-  ;;  | x  ---- yo   ---- lo     |
-  ;;  | y                        |
+  ;;  |       x  y   N  M        |
+  ;;  |  color1  color2  color3  |
   ;;  +--------------------------+
   (define N-RULE (myrule "orange" (*N-COLOR*) "N" (*N*)))
   (define M-RULE (myrule "grey" (*M-COLOR*) "M" (*M*)))
-  (hc-append (* HSHIM 3.5)
-    (vl-append VSHIM
-      (mytext "x-axis: Overhead (vs. untyped)")
-      (mytext "y-axis: % Acceptable configs."))
-    (vl-append*/2 HSHIM VSHIM
-      (list*
-        (for/list : (Listof Pict)
-                  ([v (in-list version*)]
-                   [i (in-naturals 1)])
-          (let-values (((color-txt color-val) (int->color i)))
-            (myline color-txt color-val v i)))))))
+  (vc-append VSHIM
+    (hc-append (* 3 HSHIM)
+      (mytext "x-axis: overhead") (mytext "y-axis: #configs") N-RULE M-RULE)
+    (hc-append* (* 4 HSHIM)
+      (for/list : (Listof Pict)
+                ([v (in-list version*)]
+                 [i (in-naturals 1)])
+        (let-values (((color-txt color-val) (int->color i)))
+          (myline color-txt color-val v (int->style i)))))))
 
-(: vl-append*/2 (-> Real Real (Listof Pict) Pict))
-(define (vl-append*/2 h v p*)
-  (cond
-   [(null? p*)
-    (blank h 0)]
-   [(null? (cdr p*))
-    (car p*)]
-   [else
-    (ht-append h
-      (vl-append v (car p*) (cadr p*))
-      (vl-append*/2 h v (cddr p*)))]))
-
-(: vl-append* (-> Real (Listof Pict) Pict))
-(define (vl-append* h p*)
-  (if (null? p*)
-    (blank h 0)
-    (for/fold : Pict
-              ([acc (car p*)])
-              ([p (in-list (cdr p*))])
-      (vl-append h acc p))))
-
-(: ht-append* (-> Real (Listof Pict) Pict))
-(define (ht-append* h p*)
-  (if (null? p*)
-    (blank h 0)
-    (for/fold : Pict
-              ([acc (car p*)])
-              ([p (in-list (cdr p*))])
-      (ht-append h acc p))))
+(: int->style (-> Integer String))
+(define (int->style i)
+  (last (string-split (format "~a" (integer->pen-style i)) "-")))
 
 (: hc-append* (-> Real (Listof Pict) Pict))
 (define (hc-append* h p*)
@@ -203,10 +161,6 @@
               ([acc (car p*)])
               ([p (in-list (cdr p*))])
       (hc-append h acc p))))
-
-(: int->style (-> Integer String))
-(define (int->style i)
-  (last (string-split (format "~a" (integer->pen-style i)) "-")))
 
 ;; Return a descriptive name and "actual" color value corresponding to an integer.
 ;;  (Should match the plot library's encoding from integers to colors)
@@ -265,24 +219,15 @@
       (lnm-plot S*)))
   (if (*SINGLE-PLOT?*)
     L-pict*
-    (let* ([V 2]
-           [S (car S*)]
-           [first-lbl (title-text (or title (get-project-name S)))]
-           [mid-lbl   (blank 0 (pict-height first-lbl))]
-           [last-lbl  (title-text (format "~a configurations" (get-num-configurations S)))])
-      (cons
-        (vl-append V first-lbl (car L-pict*))
-        (let loop : (Listof Pict)
-                  ([p* (cdr L-pict*)])
-          (cond
-           [(null? p*)
-            (printf "WARNING: have 1 L-pict, no place to put second label\n")
-            '()]
-           [(null? (cdr p*))
-            ;; Last pict
-            (list (vr-append V last-lbl (car p*)))]
-           [else
-            (cons (vl-append V mid-lbl (car p*)) (loop (cdr p*)))]))))))
+    (let* ([txt (text (get-project-name (car S*))
+                      (cons 'bold (*TABLE-FONT-FACE*))
+                      (*TABLE-FONT-SIZE*))]
+           [V 2]
+           [vphantom (blank 0 (pict-height txt))])
+      (cons (vl-append V txt (car L-pict*))
+            (for/list : (Listof Pict)
+                      ([p (in-list (cdr L-pict*))])
+              (vl-append V vphantom p))))))
 
 (: format-filepath (-> (U #f String) String))
 (define (format-filepath tag)
@@ -405,7 +350,7 @@
                        [new (in-list pict*)])
               (vc-append (*TITLE-VSPACE*)
                          (text l-str
-                               (cons 'bold (*TITLE-FONT-FACE*))
+                               (*TITLE-FONT-FACE*)
                                (*TITLE-FONT-SIZE*))
                          new))
             pict*)))
@@ -472,224 +417,6 @@
 (define (fname->title fname)
   ;; Pretty inefficient
   (car (string-split (path->project-name fname) ".")))
-
-;; -----------------------------------------------------------------------------
-(define-type Real** (Listof (Listof Real)))
-
-;;; For command-line clients
-;(: renderbar (-> (Listof Path-String) Symbol Pict))
-;(define (renderbar dir* bar-type)
-;  (assert-directory-exists* dir*)
-;  (define-values (S->data render-proc)
-;    (case bar-type
-;     [(ratio)
-;      ]
-;     [(mean)
-;      ]
-;     [(max)
-;      ]
-;     [(untyped)
-;      ]
-;     [else
-;      (raise-user-error 'renderbar "Unknown barchart type '~a'" bar-type)]))
-;  (define rktd**
-;    (for/list : (Listof (Listof String))
-;              ([d (in-list dir*)])
-;      (define str (if (string? d) d (path->string d)))
-;      (glob (string-append str "/*.rktd"))))
-;  (define name*
-;    (for/list : (Listof String)
-;              ([rktd (in-list (car rktd**))])
-;      (fname->title rktd)))
-;  (define data**
-;    (for*/list : Real**
-;               ([rktd* 
-;  (render-proc name* data**))
-
-(: render-untyped-bars (-> (Listof String) Real** Pict))
-(define (render-untyped-bars name* r**)
-  (parameterize ([*GRAPH-VSPACE* (assert (/ (*GRAPH-VSPACE*) 2) index?)])
-    (vr-append (* (*GRAPH-VSPACE*) 6)
-      (parameterize ([*Y-STYLE* 'X])
-        (render-runtime-bars r** #:title "(Normalized) Untyped"))
-      (parameterize ([*Y-STYLE* '%])
-        (render-runtime-bars r** #:title "(% Diff) Untyped"))
-      (render-bars-legend (* 3.3 (*GRAPH-HSPACE*)) name*))))
-
-(: render-bars (-> (Listof String) Real** Real** Real** Pict))
-(define (render-bars name* ratio** mean** max**)
-  (parameterize ([*GRAPH-VSPACE* (assert (/ (*GRAPH-VSPACE*) 2) index?)])
-    (vr-append (* (*GRAPH-VSPACE*) 6)
-      (render-typed/untyped-ratio-bars ratio**)
-      (render-mean-overhead-bars mean**)
-      (render-max-overhead-bars max**)
-      (render-bars-legend (* 3 (*GRAPH-HSPACE*)) name*))))
-
-(: render-typed/untyped-ratio-bars (-> Real** Pict))
-(define (render-typed/untyped-ratio-bars ratio**)
-  (define VTHIN (*GRAPH-VSPACE*))
-  (vl-append VTHIN
-    (hb-append VTHIN
-      (title-text "Typed/Untyped Ratio")
-      (subtitle-text "quotient of fully-typed and fully-untyped performance"))
-    (hc-append 0
-      (blank SHIM-FOR-BARCHART-ALIGNMENT 0)
-      (lnm-bar ratio** 'ratio))))
-
-(: render-mean-overhead-bars (-> Real** Pict))
-(define (render-mean-overhead-bars r**)
-  (render-overhead-bars r** #:title "Average"
-    #:subtitle "computed over all gradually typed configurations"))
-
-(: render-max-overhead-bars (-> Real** Pict))
-(define (render-max-overhead-bars r**)
-  (render-overhead-bars r** #:title "Max"
-    #:subtitle "worst-case of any gradually typed configuration"))
-
-(: render-runtime-bars (->* [Real**] [#:title String #:subtitle (U String #f)] Pict))
-(define (render-runtime-bars data** #:title [title "???"] #:subtitle [subtitle #f])
-  (render-generic-bars data** 'runtime title subtitle))
-
-(: render-overhead-bars (->* [Real**] [#:title String #:subtitle (U String #f)] Pict))
-(define (render-overhead-bars data** #:title [title "???"] #:subtitle [subtitle #f])
-  (render-generic-bars data** 'overhead title subtitle))
-
-(: render-generic-bars (-> Real** BarType String (U #f String) Pict))
-(define (render-generic-bars data** bar-type title subtitle)
-  (define VTHIN (*GRAPH-VSPACE*))
-  (vl-append VTHIN
-    (hb-append VTHIN
-      (title-text (string-append title " " (string-titlecase (symbol->string bar-type))))
-      (if subtitle (subtitle-text subtitle) (blank 0 0)))
-    (lnm-bar data** bar-type)))
-
-(: render-bars-legend (-> Real (Listof String) Pict))
-(define (render-bars-legend hspace name*)
-  (ht-append hspace
-    (render-bars-color-key)
-    (render-bars-xlabels hspace name*)))
-
-(: render-bars-color-key (-> Pict))
-(define (render-bars-color-key)
-  (define HSHIM (*GRAPH-HSPACE*))
-  (vl-append* (*TITLE-VSPACE*)
-    (for/list : (Listof Pict)
-              ([i (in-range 1 4)])
-      (hb-append HSHIM
-        (integer->bar-swatch i)
-        (mytext (integer->rkt-version i))))))
-
-(: integer->bar-swatch (-> Integer Pict))
-(define (integer->bar-swatch i)
-  (define sty (integer->brush-style i))
-  (define col* (cast (->pen-color i) (List Byte Byte Byte)))
-  (define col (make-object color% (car col*) (cadr col*) (caddr col*)))
-  (define w 4)
-  (define h 14)
-  (dc (lambda (dc dx dy)
-       (define old-brush (send dc get-brush))
-       (define old-pen (send dc get-pen))
-       (send dc set-brush
-        (new brush% [style sty]
-                    [color col]))
-       (send dc set-pen
-        (new pen% [width 1] [color col]))
-       (define path (new dc-path%))
-       (send path move-to 0 0)
-       (send path line-to w 0)
-       (send path line-to w h)
-       (send path line-to 0 h)
-       (send path close)
-       (send dc draw-path path dx dy)
-       (send dc set-brush old-brush)
-       (send dc set-pen old-pen))
-      w h))
-
-(: integer->rkt-version (-> Integer String))
-(define (integer->rkt-version i)
-  (case i
-   [(1) "v6.2"]
-   [(2) "v6.3"]
-   [(3) "v6.4"]
-   [else (raise-user-error "Unrecognized version ~a" i)]))
-
-(: render-bars-xlabels (-> Real (Listof String) Pict))
-(define (render-bars-xlabels hspace name*)
-  (define VSHIM (exact-round (/ (*GRAPH-VSPACE*) 2)))
-  (define pict*
-    (for/list : (Listof Pict)
-              ([name (in-list name*)]
-               [i (in-naturals 1)])
-      (text (format "~a. ~a" (integer->letter i) name) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
-  (ht-append* hspace
-    (for/list : (Listof Pict)
-              ([p* (in-list (split-list 4 pict*))])
-      (vl-append* VSHIM p*))))
-
-;; -----------------------------------------------------------------------------
-
-(: render-dots (-> (Listof (Listof Path-String)) Pict))
-(define (render-dots rktd**)
-  (vl-append* (*GRAPH-VSPACE*)
-    (for/list ([rktd* (in-list rktd**)])
-      (collect-garbage 'major)
-      (render-dot rktd*))))
-
-(: render-dot (-> (Listof Path-String) Pict))
-(define (render-dot rktd*)
-  (define title (title-text (fname->title (car rktd*))))
-  (define S*
-    (for/list : (Listof Summary)
-              ([ps (in-list rktd*)])
-      (from-rktd ps)))
-  (define ratio* (map typed/untyped-ratio S*))
-  (define mean* (map avg-overhead S*))
-  (define max* (map max-overhead S*))
-  (define num** (list ratio* mean* max*))
-  (define HSHIM (*GRAPH-HSPACE*))
-  (hc-append (* 3 HSHIM)
-    title
-    (hc-append* (* 6 HSHIM)
-      (for/list ([num* (in-list num**)]
-                 [i (in-naturals 1)])
-        (define n0 (car num*))
-        (define (diameter (area : Real)) : Flonum
-          (fl* 2.0 (flsqrt (fl/ (real->double-flonum area) 3.14))))
-        (define target-area 100)
-        (define-values (_str color) (int->color i))
-          (colorize
-        (hc-append* HSHIM
-          (for/list ([n (in-list num*)])
-            (disk (diameter (* target-area (+ 1 (/ (- n n0) n0))))
-             #:draw-border? #f)))
-             (cast color (List Byte Byte Byte)))))))
-
-;; -----------------------------------------------------------------------------
-
-(define-syntax-rule (simple-commandline-plot make-plot)
-  (lambda ([vec : (Vectorof String)])
-    (ensure-dir "./compiled")
-    (command-line
-     #:program "render-plot"
-     #:argv vec
-     #:args FNAME*
-     ;; -- Filter valid arguments, assert that we got anything to render
-     (define arg* (filter-valid-filenames FNAME*))
-     (when (null? arg*)
-       (raise-user-error "Usage: render-plot.rkt DATA.rktd ..."))
-     ;; -- Create a pict
-     (make-plot (for/list : (Listof Summary) ([r (in-list arg*)]) (from-rktd r))))))
-
-(: render-exact (-> (Vectorof String) Pict))
-(define render-exact (simple-commandline-plot plot-exact-configurations))
-
-(: render-traces (-> (Vectorof String) Pict))
-(define render-traces (simple-commandline-plot plot-traces))
-
-(: render-means (-> (Vectorof String) Pict))
-(define render-means (simple-commandline-plot plot-mean-bars))
-
-;; -----------------------------------------------------------------------------
 
 (: pict->png (-> Pict Path-String Boolean))
 (define (pict->png p path)
@@ -804,13 +531,10 @@
    ;; -- Create a pict
    (define P
       (data->pict
-        #:tag (*CACHE-TAG*)
         (for/list : (Listof (List String String))
                   ([fname (in-list arg*)])
-          (list (path->project-name (string->path fname)) fname))))
-   (if (*PICT?*)
-     P
-     (pict->png P (*OUTPUT*)))))
+          (list (fname->title fname) fname))))
+   P))
 
 (module+ main
   (let ([p (render-lnm (current-command-line-arguments))])

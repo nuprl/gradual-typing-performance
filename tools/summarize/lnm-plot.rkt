@@ -7,24 +7,9 @@
 ;;  subject to at most L additional conversion steps
 
 (provide
-
-  ;; TODO
-  ;; load a summary to an interactive plot
-  ;; summary = vectorof listof unixtime
-
-  SHIM-FOR-BARCHART-ALIGNMENT
   integer->pen-style
-  integer->brush-style
-  integer->line-width
-
-  plot-mean-bars
-  plot-exact-configurations
 
   ;; ---
-
-  plot-traces
-  ;; (-> Path-String Pict)
-  ;; Plot convergence for each configuration
 
   lnm-plot
   ;; Create an L-NM plot based on the given parameters
@@ -175,8 +160,8 @@
   (define elem* (for/list : (Listof renderer2d)
                           ([x (list N-line M-line cutoff-line)] #:when x) x))
   ;; Get ticks
-  (define x-major-ticks (compute-xticks (*X-TICKS*) (*X-NUM-TICKS*)))
-  (define y-major-ticks
+  (define xticks (compute-xticks))
+  (define yticks
     (case (*Y-STYLE*)
      [(count)
       (if pdf?
@@ -231,9 +216,8 @@
             (define c (next-color))
             (define shape (next-shape))
             (define sty (integer->pen-style i))
-            (define w (integer->line-width i))
-            (cond
-             [(*HISTOGRAM?*)
+            (define w (cast (* (+ 1 (* 4/10 i)) (*LNM-WIDTH*)) Nonnegative-Real))
+            (if (*HISTOGRAM?*)
               (cons
                 (area-histogram
                   (count-configurations/mean
@@ -245,7 +229,7 @@
                   #:x-min 0
                   #:x-max xmax
                   #:samples num-samples
-                  #:label (and (*LEGEND?*) lbl)
+                  #:label (and (*LINE-LABELS?*) lbl)
                   #:line-style st
                   #:line-color c
                   #:line-width w) acc)]
@@ -275,18 +259,12 @@
                     #:pdf? pdf?)
                   0 xmax
                   #:color c
-                  #:label (and (*LEGEND?*) lbl)
+                  #:label (and (*LINE-LABELS?*) lbl)
                   #:samples num-samples
                   #:style sty
-                  #:width w) acc)]
-              )))))
-    (define ticks-renderer : (Listof renderer2d)
-      (let ([x? (*X-TICK-LINES?*)]
-            [y? (*Y-TICK-LINES?*)])
-        (cond [(and x? y?) (tick-grid)]
-              [x?          (list (x-tick-lines))]
-              [y?          (list (y-tick-lines))]
-              [else        '()])))
+                  #:sym shape
+                  #:width w) acc))
+              ))))
     (: make-plot (-> (Listof renderer2d) pict))
     (define (make-plot LNM)
       (cast ;; dammit, Neil re-defined 'Pict'
@@ -297,8 +275,8 @@
         #:y-max (if pdf? #f (if (eq? '% (*Y-STYLE*)) 100 ymax))
         #:x-label (and (*AXIS-LABELS?*) "Overhead (vs. untyped)")
         #:y-label (and (*AXIS-LABELS?*) y-label)
-        #:title (and (*TITLE?*) (get-project-name (car S*)))
-        ;; #:legend-anchor (*LEGEND-ANCHOR*)
+        #:title (and (*SINGLE-PLOT?*) (get-project-name (car S*)))
+        #:legend-anchor (*LEGEND-ANCHOR*)
         #:width width
         #:height height) pict))
     (if single-plot?
@@ -495,7 +473,7 @@
   (define num-paths (get-num-paths S))
   (define next-color (make-palette))
   (define xmax (*MAX-OVERHEAD*))
-  (define xticks (compute-xticks (*X-TICKS*) (*X-NUM-TICKS*)))
+  (define xticks (compute-xticks))
   (define num-samples (*NUM-SAMPLES*))
   ;; Here's where to generalize for more L
   (for/list : (Listof pict)
@@ -863,37 +841,19 @@
                (string-append str units)
                str)))))
 
-(: compute-xticks (-> (U #f (Listof Real)) Natural ticks))
-(define (compute-xticks exact-x-ticks num-ticks)
+(: compute-xticks (-> ticks))
+(define (compute-xticks)
+  (define exact-x-ticks (*X-TICKS*))
+  (define num-ticks (*X-NUM-TICKS*))
   (define tolerance 1/10)
-  (define round? (if exact-x-ticks #f #t))
-  (define unit-str "x")
   (ticks (lambda ([ax-min : Real] [ax-max : Real])
            (for/list : (Listof pre-tick)
                      ([i (in-list (or exact-x-ticks (linear-seq 1 ax-max num-ticks)))])
              (pre-tick (rationalize i tolerance) #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (for/list : (Listof String) ([pt (in-list pre-ticks)])
+           (for/list : (Listof Bitstring) ([pt (in-list pre-ticks)])
              (define v (pre-tick-value pt))
-             (define str (format "~a"
-               (cond [round?        (round v)]
-                     [(integer? v)          v]
-                     [else (exact->inexact v)])))
-             (if (= v ax-max)
-               (string-append str "x")
-               str)))))
-
-(: ticks-add? (-> ticks (U #f (Listof Real)) ticks))
-(define (ticks-add? ts xs)
-  (if xs (ticks-add ts xs #f) ts))
-
-(: unknown-bar-type (All (A) (-> Any A)))
-(define (unknown-bar-type bt)
-  (raise-user-error 'lnm "Unknown bar type '~a'" bt))
-
-(: unknown-y-style (All (A) (-> A)))
-(define (unknown-y-style)
-  (raise-user-error 'lnm "Unknown y-style type '~a'" (*Y-STYLE*)))
+             (format "~ax" (if (integer? v) v (exact->inexact v)))))))
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
@@ -918,6 +878,13 @@
          [(3) 'fullcircle]
          [(4) 'fulltriangleup]
          [else 'full6star])))))
+
+(: integer->pen-style (-> Integer Plot-Pen-Style))
+(define (integer->pen-style i)
+  (case i
+   [(1) 'dot]
+   [(2) 'short-dash]
+   [else 'solid]))
 
 ;; =============================================================================
 
