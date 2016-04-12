@@ -23,6 +23,7 @@
  gtp-summarize/lnm-parameters
  gtp-summarize/lnm-plot
  gtp-summarize/summary
+ plot/typed/no-gui
  plot/typed/utils
  racket/cmdline
  racket/list
@@ -123,33 +124,51 @@
       (colorize (mytext c-str) (format "~a" c-val))
       (mytext " rule: ")
       (mytext key 'italic)
-      (mytext (format "=~a" val))))
-  (: myline (->* [String Any String] [(U #f String)] Pict))
-  (define (myline c-str c-val descr [style #f])
+      (mytext (format " = ~a" val))))
+  (: myline (-> String Any String Integer Pict))
+  (define (myline c-str c-val descr i)
     (hc-append 0
-      (colorize (mytext c-str) (cast c-val (List Byte Byte Byte)))
-      (mytext (format " line~a: ~a" (if style (format " (~a)" style) "") descr))))
+      (colorize
+        (linewidth (integer->line-width i)
+          (linestyle (integer->pen-style i)
+            (hline HSHIM 5)))
+        (cast c-val (List Byte Byte Byte)))
+      (mytext (string-append " : " descr))))
   ;; TODO spacing is sometimes wrong... recompiling fixes but otherwise this looks okay
   ;; LEGEND
   ;;  +--------------------------+
-  ;;  |       x  y   N  M        |
-  ;;  |  color1  color2  color3  |
+  ;;  | x  N    ---- yo
+  ;;  | y  M    ---- lo
   ;;  +--------------------------+
   (define N-RULE (myrule "orange" (*N-COLOR*) "N" (*N*)))
   (define M-RULE (myrule "grey" (*M-COLOR*) "M" (*M*)))
-  (vc-append VSHIM
-    (hc-append (* 3 HSHIM)
-      (mytext "x-axis: overhead") (mytext "y-axis: #configs") N-RULE M-RULE)
-    (hc-append* (* 4 HSHIM)
+  (vl-append*/2 (* 4 HSHIM) VSHIM
+    (list*
+      (mytext "x-axis: overhead")
+      (mytext "y-axis: #configs")
+      N-RULE
+      M-RULE
       (for/list : (Listof Pict)
                 ([v (in-list version*)]
                  [i (in-naturals 1)])
         (let-values (((color-txt color-val) (int->color i)))
-          (myline color-txt color-val v (int->style i)))))))
+          (myline color-txt color-val v i))))))
 
 (: int->style (-> Integer String))
 (define (int->style i)
   (last (string-split (format "~a" (integer->pen-style i)) "-")))
+
+(: vl-append*/2 (-> Real Real (Listof Pict) Pict))
+(define (vl-append*/2 h v p*)
+  (cond
+   [(null? p*)
+    (blank h 0)]
+   [(null? (cdr p*))
+    (car p*)]
+   [else
+    (ht-append h
+      (vl-append v (car p*) (cadr p*))
+      (vl-append*/2 h v (cddr p*)))]))
 
 (: hc-append* (-> Real (Listof Pict) Pict))
 (define (hc-append* h p*)
