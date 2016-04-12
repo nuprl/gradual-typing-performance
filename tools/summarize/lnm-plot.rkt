@@ -863,7 +863,10 @@
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
   (let ([c : (Boxof Natural) (box 0)]
-        [incr : (-> Natural Natural) (if num-colors (lambda ([n : Natural]) (modulo (add1 n) num-colors)) add1)])
+        [incr : (-> Natural Natural) (if num-colors
+                                       (lambda ([n : Natural])
+                                         (add1 (modulo n num-colors)))
+                                       add1)])
     (lambda ()
       (begin
         (set-box! c (incr (unbox c)))
