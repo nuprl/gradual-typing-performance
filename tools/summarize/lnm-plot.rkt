@@ -13,6 +13,7 @@
   ;; summary = vectorof listof unixtime
 
   integer->pen-style
+  integer->line-width
 
   ;; ---
 
@@ -217,7 +218,7 @@
             (define c (next-color))
             (define shape (next-shape))
             (define sty (integer->pen-style i))
-            (define w (cast (* (+ 1 (* 4/10 i)) (*LNM-WIDTH*)) Nonnegative-Real))
+            (define w (integer->line-width i))
             (if (*HISTOGRAM?*)
               (cons
                 (area-histogram
@@ -680,12 +681,16 @@
          [(4) 'fulltriangleup]
          [else 'full6star])))))
 
-(: integer->pen-style (-> Integer Plot-Pen-Style))
+(: integer->pen-style (-> Integer (U 'dot 'short-dash 'solid)))
 (define (integer->pen-style i)
   (case i
    [(1) 'dot]
    [(2) 'short-dash]
    [else 'solid]))
+
+(: integer->line-width (-> Integer Nonnegative-Real))
+(define (integer->line-width i)
+  (cast (* (+ 1 (* 4/10 i)) (*LNM-WIDTH*)) Nonnegative-Real))
 
 ;; =============================================================================
 
