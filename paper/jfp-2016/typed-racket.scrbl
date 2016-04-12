@@ -600,11 +600,7 @@ In @todo{secref} we explain the changes between different versions of Racket
     Nope!
   }
 
-  @lnm['zordoz.6.2]{
-    Nope!
-  }
-
-  @lnm['zordoz.6.3]{
+  @lnm['zordoz]{
     Plots here are similar to @tt{mbta}.
     There is a gap between the performance of the fully-typed
     configuration and the performance of the next-fastest lattice point.
