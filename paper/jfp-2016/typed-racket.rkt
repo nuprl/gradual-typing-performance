@@ -87,13 +87,14 @@
 (require
  benchmark-util/data-lattice
  glob
+ gtp-summarize/lnm-parameters
  gtp-summarize/render-lnm
  gtp-summarize/modulegraph
  racket/match
  (only-in racket/file file->value)
  (only-in racket/port with-input-from-string)
  (only-in "common.rkt" etal cite exact parag)
- (only-in racket/list last)
+ (only-in racket/list last append* split-at)
  scribble/core
  scribble/base
  version/utils
@@ -122,7 +123,7 @@
 (define *STRICT?* (make-parameter #f))
 ;; When #t, raise exceptions instead of warnings
 
-(define *RKT-VERSIONS* (make-parameter '("6.2" "6.3" "6.4.x")))
+(define *RKT-VERSIONS* (make-parameter '("6.2" "6.3" "6.4")))
 
 (define benchmark-name* '(
   acquire
@@ -140,7 +141,7 @@
   synth
   tetris
   zombie
-  (zordoz zordoz.6.2 zordoz.6.3)
+  zordoz ;(zordoz zordoz.6.2 zordoz.6.3)
 ))
 (define NUM-BENCHMARKS
   (for/sum ([name (in-list benchmark-name*)])
@@ -455,6 +456,8 @@
 (define (symbol->modulegraph n)
   (define name* (project-name->name* n))
   (cond
+   [(eq? n 'zordoz)
+    (project-name->modulegraph 'zordoz.6.3)]
    [(not (list? name*))
     ;; Easy! Compile & return the modulegraph.
     (project-name->modulegraph name*)]
@@ -528,33 +531,56 @@
     (parag (symbol->string (lnm-name l)))
     (elem (lnm-description l))))
 
-(define (make-lnm-plot* version*)
-  ;; Map over benchmark names,
-  ;; Sort & make figures of with 6 plots each or whatever
-  (map (lambda (x) (elem "TODO")) version*))
+(define (sorted-benchmark-names)
+  (append*
+    (for*/list ([b (in-list (unbox benchmark-data*))])
+      (define n* (benchmark->name* b))
+      (if (symbol? n*)
+        (list n*)
+        (cdr n*)))))
 
-;@figure*["fig:lnm1"
-;  @list{@step["L" "N" "M"] results for the first six benchmarks}
-;  @(let* ([data `(("sieve"        ,SIEVE-DATA)
-;                  ("morse-code"   ,MORSECODE-DATA)
-;                  ("mbta"         ,MBTA-DATA)
-;                  ("zordoz"       ,ZORDOZ-DATA)
-;                  ("suffixtree"   ,SUFFIXTREE-DATA)
-;                  ("lnm"          ,LNM-DATA)
-;                  )])
-;     (data->pict data #:tag "1"))
-;]
-;
-;@figure*["fig:lnm2"
-;  @list{@step["L" "N" "M"] results for the remaining benchmarks}
-;  @(let* ([data `(("kcfa"       ,KCFA-DATA)
-;                  ("snake"      ,SNAKE-DATA)
-;                  ("tetris"     ,TETRIS-DATA)
-;                  ("synth"      ,SYNTH-DATA)
-;                  ("gregor"     ,GREGOR-DATA)
-;                  ("quad"       ,QUAD-DATA))])
-;     (data->pict data #:tag "2"))
-;]
+(define (split-list n x*)
+  (cond
+   [(<= n 0)
+    (raise-user-error 'split-list "Invalid partition size ~a" n)]
+   [(null? x*)
+    '()]
+   [else
+    (let loop ([x* x*]
+               [L (length x*)])
+      (if (< L n)
+        (list x*)
+        (let-values (((l* r*) (split-at x* n)))
+          (cons l* (if (null? r*) '() (loop r* (- L n)))))))]))
+
+(define (make-lnm-plot* version*)
+  (unless (unbox benchmark-data*)
+    (raise-user-error 'make-lnm-plot* "Missing benchmark data. Need to call `benchmark-descriptions` earlier in the file."))
+  ;; Sort & make figures of with 6 plots each or whatever
+  (define data-root (string-append (get-git-root) "/data"))
+  (parameterize ([*AXIS-LABELS?* #f]
+                 [*L* '(0 1 2)]
+                 [*L-LABELS?* #t]
+                 [*LEGEND?* #t]
+                 [*LINE-LABELS?* #f]
+                 [*LOG-TRANSFORM?* #t]
+                 [*M* 10]
+                 [*MAX-OVERHEAD* 20]
+                 [*N* 1.2]
+                 [*NUM-SAMPLES* 60]
+                 [*PLOT-FONT-SCALE* 0.06]
+                 [*PLOT-HEIGHT* 100]
+                 [*PLOT-WIDTH* 140]
+                 [*SINGLE-PLOT?* #f]
+                 [*X-TICKS* '(1 2 4 6 10 20)])
+    (for/list ([n* (in-list (split-list 5 (sorted-benchmark-names)))]
+               [i (in-naturals 1)])
+      (define fname* (for*/vector ([n (in-list n*)]
+                                   [v (in-list version*)])
+                       (define n+ (if (eq? n 'zordoz) "zordoz.6.[23]" n))
+                       (glob/first (format "~a/~a/~a-*.rktd" data-root v n+))))
+      (parameterize ([*CACHE-TAG* #f]) ;(number->string i)])
+        (render-lnm fname*)))))
 
 (define (lnm-summary . version*)
   (elem "TODO"))
@@ -588,5 +614,20 @@
    ["( 2 1 () 5)" => '(2 1 () 5)]
    ["yolo" => #f]
    [")( " => #f])
+
+  (check-apply* split-list
+   [1 '()
+    => '()]
+   [1 '(1 2 3)
+    => '((1) (2) (3))]
+   [2 '(1 2 3)
+    => '((1 2) (3))]
+   [3 '(9 9 9 9 9 9 9 9 9)
+    => '((9 9 9) (9 9 9) (9 9 9))])
+
+  (check-exn #rx"split-list"
+    (lambda () (split-list -3 '(1 2 3 4))))
+  (check-exn #rx"split-list"
+    (lambda () (split-list 0 '(1 2 3))))
 )
 

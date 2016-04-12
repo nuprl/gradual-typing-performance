@@ -18,15 +18,15 @@
 (require
  (for-syntax racket/base syntax/parse)
  (only-in racket/file file->value)
+ (only-in racket/math exact-round pi)
  (only-in racket/port with-input-from-string open-output-nowhere)
- (only-in racket/math exact-round)
- racket/list
- racket/string
  gtp-summarize/lnm-parameters
  gtp-summarize/lnm-plot
  gtp-summarize/summary
  plot/typed/utils
  racket/cmdline
+ racket/list
+ racket/string
  typed/pict
  typed/racket/class
 )
@@ -40,7 +40,7 @@
 ;; =============================================================================
 
 (defparam *GRAPH-HSPACE* Positive-Integer 10)
-(defparam *GRAPH-VSPACE* Positive-Integer 20)
+(defparam *GRAPH-VSPACE* Positive-Integer 10)
 (defparam *TITLE-VSPACE* Positive-Integer (assert (exact-round (/ (*GRAPH-VSPACE*) 2)) positive?))
 
 (define DEBUG #t)
@@ -64,8 +64,8 @@
 (: current-param-tag* (-> (Listof String)))
 (define (current-param-tag*)
   (for/list : (Listof String)
-      ([x (in-list (list (*PDF?*) (*SINGLE-PLOT?*) (*MAKE-TABLE?*)
-                         (*AXIS-LABELS?*) (*L-LABELS?*) (*LINE-LABELS?*) (*TITLE?*)
+      ([x (in-list (list (*PDF?*) (*SINGLE-PLOT?*)
+                         (*AXIS-LABELS?*) (*L-LABELS?*) (*LINE-LABELS?*)
                          (*LEGEND?*) (*SHOW-PATHS?*) (*LOG-TRANSFORM?*)
                          (*HISTOGRAM?*) (*MAX-OVERHEAD*) (*NUM-SAMPLES*)
                          (*PLOT-WIDTH*) (*PLOT-HEIGHT*) (*Y-STYLE*)
@@ -104,10 +104,12 @@
               ([x (in-list normL)])
       (l-index->string x))]))
 
-(: make-legend (-> Pict))
-(define (make-legend)
+;; Optional argument: list of Racket versions
+(: make-legend (->* [] [(Listof String)] Pict))
+(define (make-legend [version* '("# k-step D/U-usable")])
   ;; VSHIM separates 2 rows in the legend
-  (define VSHIM (/ (*TITLE-VSPACE*) 3))
+  (define VSHIM (*TITLE-VSPACE*))
+  (define HSHIM (*GRAPH-HSPACE*))
   (: mytext (->* (String) ((U #f 'italic)) Pict))
   (define (mytext str [mystyle #f])
     (text str
@@ -115,39 +117,65 @@
         ((inst cons 'italic String) mystyle (*TITLE-FONT-FACE*))
         (*TITLE-FONT-FACE*))
       (assert (+ 1 (*TABLE-FONT-SIZE*)) index?)))
-  ;; TODO spacing is sometimes wrong... recompiling fixes
-  ;; but otherwise this looks okay
-  (hc-append (* 6 (*GRAPH-HSPACE*))
-    (vl-append VSHIM
-     (mytext "x-axis: overhead")
-     (mytext "y-axis: # configs"))
-    (vl-append VSHIM
-     (hc-append 0
-       (colorize (mytext "red") "orangered")
-       (let ([pc (*CUTOFF-PROPORTION*)])
-         (if pc
-           (mytext (format " line: ~a% of configs." (round (* 100 pc))))
-           (blank))))
-     (hc-append 0
-       (colorize (mytext "blue") "navy")
-       (mytext " line: # ")
-       (mytext "L" 'italic)
-       (mytext "-step ")
-       (mytext "N" 'italic)
-       (mytext "/")
-       (mytext "M" 'italic)
-       (mytext "-usable")))
-    (vl-append VSHIM
-     (hc-append 0
-       (colorize (mytext "green") "forestgreen")
-       (mytext " line: ")
-       (mytext "N" 'italic)
-       (mytext (format "=~a" (*N*))))
-     (hc-append 0
-       (colorize (mytext "yellow") "goldenrod")
-       (mytext " line: ")
-       (mytext "M" 'italic)
-       (mytext (format "=~a" (*M*)))))))
+  (: myrule (-> String Any String Any  Pict))
+  (define (myrule c-str c-val key val)
+    (hc-append 0
+      (colorize (mytext c-str) (format "~a" c-val))
+      (mytext " rule: ")
+      (mytext key 'italic)
+      (mytext (format "=~a" val))))
+  (: myline (->* [String Any String] [(U #f String)] Pict))
+  (define (myline c-str c-val descr [style #f])
+    (hc-append 0
+      (colorize (mytext c-str) (cast c-val (List Byte Byte Byte)))
+      (mytext (format " line~a: ~a" (if style (format " (~a)" style) "") descr))))
+  ;; TODO spacing is sometimes wrong... recompiling fixes but otherwise this looks okay
+  ;; LEGEND
+  ;;  +--------------------------+
+  ;;  |       x  y   N  M        |
+  ;;  |  color1  color2  color3  |
+  ;;  +--------------------------+
+  (define N-RULE (myrule "orange" (*N-COLOR*) "N" (*N*)))
+  (define M-RULE (myrule "grey" (*M-COLOR*) "M" (*M*)))
+  (vc-append VSHIM
+    (hc-append (* 3 HSHIM)
+      (mytext "x-axis: overhead") (mytext "y-axis: #configs") N-RULE M-RULE)
+    (hc-append* (* 4 HSHIM)
+      (for/list : (Listof Pict)
+                ([v (in-list version*)]
+                 [i (in-naturals 1)])
+        (let-values (((color-txt color-val) (int->color i)))
+          (myline color-txt color-val v (int->style i)))))))
+
+(: int->style (-> Integer String))
+(define (int->style i)
+  (last (string-split (format "~a" (integer->pen-style i)) "-")))
+
+(: hc-append* (-> Real (Listof Pict) Pict))
+(define (hc-append* h p*)
+  (if (null? p*)
+    (blank h 0)
+    (for/fold : Pict
+              ([acc (car p*)])
+              ([p (in-list (cdr p*))])
+      (hc-append h acc p))))
+
+;; Return a descriptive name and "actual" color value corresponding to an integer.
+;;  (Should match the plot library's encoding from integers to colors)
+(: int->color (-> Integer (Values String Any)))
+(define (int->color i)
+  (values
+    (case i
+     [(0) "black"]
+     [(1) "red"]
+     [(2) "green"]
+     [(3) "blue"]
+     [(4) "orange"]
+     [(5) "navy"]
+     [(6) "purple"]
+     [(7) "magenta"]
+     [else "???"])
+    (->pen-color i)))
 
 ;; -----------------------------------------------------------------------------
 
@@ -158,7 +186,7 @@
   (define rktd* (for/list : (Listof String) ([x (in-list data*)]) (cadr x)))
   (parameterize ([*CACHE-TAG* tag])
     (or
-     (get-cached rktd*)
+     (and tag (get-cached rktd*))
      (case #t  ;; TODO allow making deathscores etc.
       [(#t #f)
        (get-new-lnm-pict rktd* #:titles title*)]
@@ -171,24 +199,21 @@
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
 (define (file->pict* data-file* #:title title)
   (define S* (for/list : (Listof Summary) ([d : String data-file*]) (from-rktd d)))
-  ;; If we have only 1 summary object, we can tabulate stats
-  (define S-tbl : Pict
-    (if (and (not (null? S*)) (null? (cdr S*)) (*MAKE-TABLE?*))
-      (let ([p (summary->pict (car S*)
-                              #:title title
-                              #:font-face (*TABLE-FONT-FACE*)
-                              #:font-size (*TABLE-FONT-SIZE*)
-                              #:N (assert (or (*N*) (raise-user-error 'render-lnm "Need a value for N, set the *N* parameter")) index?)
-                              #:M (assert (or (*M*) (raise-user-error 'render-lnm "Need a value for M, set the *M* parameter")) index?)
-                              #:width (* 0.6 (*PLOT-WIDTH*))
-                              #:height (*PLOT-HEIGHT*))])
-        (vc-append 0 p (blank 0 (- (*PLOT-HEIGHT*) (pict-height p)))))
-      (blank 0 0)))
   (define L-pict* : (Listof Pict)
     (if (*SHOW-PATHS?*)
       (path-plot S*)
       (lnm-plot S*)))
-  (cons S-tbl L-pict*))
+  (if (*SINGLE-PLOT?*)
+    L-pict*
+    (let* ([txt (text (get-project-name (car S*))
+                      (cons 'bold (*TABLE-FONT-FACE*))
+                      (*TABLE-FONT-SIZE*))]
+           [V 2]
+           [vphantom (blank 0 (pict-height txt))])
+      (cons (vl-append V txt (car L-pict*))
+            (for/list : (Listof Pict)
+                      ([p (in-list (cdr L-pict*))])
+              (vl-append V vphantom p))))))
 
 (: format-filepath (-> (U #f String) String))
 (define (format-filepath tag)
@@ -262,20 +287,20 @@
         (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
   ;; Combine duplicate titles
   (reverse
-  (for/fold : (Listof (Pairof (U String #f) (Listof String)))
-            ([acc : (Listof (Pairof (U String #f) (Listof String)))
-                    '()])
-            ([t (in-list title*)]
-             [r (in-list rktd*)])
-    (cond
-     [(and t (assoc t acc))
-      (for/list ([t+r (in-list acc)])
-        (define hd (car t+r))
-        (if (and (string? hd) (string=? hd t))
-          (list* t r (cdr t+r))
-          t+r))]
-     [else
-      (cons (list t r) acc)]))))
+    (for/fold : (Listof (Pairof (U String #f) (Listof String)))
+              ([acc : (Listof (Pairof (U String #f) (Listof String)))
+                      '()])
+              ([t (in-list title*)]
+               [r (in-list rktd*)])
+      (cond
+       [(and t (assoc t acc))
+        (for/list ([t+r (in-list acc)])
+          (define hd (car t+r))
+          (if (and (string? hd) (string=? hd t))
+            (list* t r (cdr t+r))
+            t+r))]
+       [else
+        (cons (list t r) acc)]))))
 
 (: get-deathscore-pict (->* [(Listof String)] [#:titles (U #f (Listof String))] Pict))
 (define (get-deathscore-pict rktd* #:titles [maybe-title* #f])
@@ -297,7 +322,7 @@
               ([title+rktd : (Pairof (Option String) (Listof String)) (in-list title+rktd*)])
       (file->pict* (cdr title+rktd) #:title (car title+rktd))))
   ;; Align all picts vertically first
-  (define columns : (Listof Pict)
+  (define column* : (Listof Pict)
     (or (for/fold : (U #f (Listof Pict))
               ([prev* : (U #f (Listof Pict)) #f])
               ([pict* : (Listof Pict) (in-list pict**)])
@@ -307,42 +332,50 @@
                     ([old (in-list prev*)]
                      [new (in-list pict*)])
             (vr-append (*GRAPH-VSPACE*) old new))
-          ;; Generate titles. Be careful aligning the summary row
+          ;; Generate titles.
           (if (*L-LABELS?*)
-            (cons (car pict*)
-             (for/list : (Listof Pict)
-                       ([l-str (in-list (make-L-title*))]
-                        [new (in-list (cdr pict*))])
-               (vc-append (*TITLE-VSPACE*)
-                          (text l-str
-                                (*TITLE-FONT-FACE*)
-                                (assert (*TITLE-FONT-SIZE*) index?))
-                          new)))
+            (for/list : (Listof Pict)
+                      ([l-str (in-list (make-L-title*))]
+                       [new (in-list pict*)])
+              (vc-append (*TITLE-VSPACE*)
+                         (text l-str
+                               (*TITLE-FONT-FACE*)
+                               (*TITLE-FONT-SIZE*))
+                         new))
             pict*)))
          (error 'invariant)))
-  (define columns/stats
-    (if (*MAKE-TABLE?*) columns (cdr columns)))
-  ;; Paste the columns together, insert a little extra space to make up for
-  ;;  the missing L-label in the first column
+  ;; Paste the columns together
   (define pict0 : Pict
     (or
-     (for/fold : (U #f Pict)
-              ([prev-pict : (U #f Pict) #f])
-              ([c columns/stats])
-      (if prev-pict
-          (hc-append (*GRAPH-HSPACE*) prev-pict c)
-          (if (*L-LABELS?*)
-            (vc-append (*TITLE-VSPACE*) (blank 0 10) c)
-            c)))
-     (error 'invariant)))
+      (for/fold : (U #f Pict)
+                ([prev-pict : (U #f Pict) #f])
+                ([c column*])
+        (if prev-pict
+            (hc-append (*GRAPH-HSPACE*) prev-pict c)
+            c))
+      (error 'invariant)))
   (define pict/legend
     (if (*LEGEND?*)
-      (vc-append (*TITLE-VSPACE*)
+      (vc-append (*GRAPH-VSPACE*)
         pict0
-        (make-legend))
+        (make-legend (parse-version* rktd*)))
       pict0))
   (cache-pict pict/legend rktd*)
   pict/legend)
+
+(: parse-version* (-> (Listof String) (Listof String)))
+(define (parse-version* rktd*)
+  (define v*
+    (for/fold ([acc : (Listof String) '()])
+              ([rktd (in-list rktd*)])
+      (define v (string->version rktd))
+      (if v
+        (let ([v+ (string-append "v" v)])
+          (if (not (member v+ acc))
+            (cons v+ acc)
+            acc))
+        acc)))
+  (sort v* string<?))
 
 ;; =============================================================================
 (define-syntax-rule (reads l)
@@ -368,11 +401,17 @@
     (printf "Skipping invalid file '~a'\n" fname)
     #f]))
 
+;; Remove everything after the first . or - in the filename
+(: fname->title (-> Path-String String))
+(define (fname->title fname)
+  ;; Pretty inefficient
+  (car (string-split (path->project-name fname) ".")))
+
 (: pict->png (-> Pict Path-String Boolean))
 (define (pict->png p path)
   (send (pict->bitmap p) save-file path 'png))
 
-(: render-lnm (-> (Vectorof String) Any))
+(: render-lnm (-> (Vectorof String) Pict))
 (define (render-lnm vec)
   (ensure-dir "./compiled")
   (command-line
@@ -410,9 +449,6 @@
    [("--hist" "--histogram" "-H")
     "Show CDF as a histogram"
     (*HISTOGRAM?* #t)]
-   [("--make-table")
-    "Create summary tables for each dataset"
-    (*MAKE-TABLE?* #t)]
    [("--log")
     "Plot x-axis on a log scale"
     (*LOG-TRANSFORM?* #t)]
@@ -422,8 +458,7 @@
     (let ([b (assert (reads lbl) boolean?)])
      (*AXIS-LABELS?* b)
      (*LINE-LABELS?* b)
-     (*L-LABELS?*    b)
-     (*TITLE?*       b))]
+     (*L-LABELS?*    b))]
    [("--axis-labels")
     lbl
     "#t/#f = show/hide axis labels"
@@ -435,10 +470,6 @@
    [("--l-label")
     "Show L labels above each plot"
     (*L-LABELS?* #t)]
-   [("--title")
-    lbl
-    "#t/#f = show/hide plot title"
-    (*TITLE?* (assert (reads lbl) boolean?))]
    [("--cutoff")
     c
     "Set red line with a number in [0,1] (#f by default)"
@@ -473,10 +504,10 @@
     mx
     "Largest x-axis value"
     (*MAX-OVERHEAD* (assert (assert (reads mx) index?) positive?))]
-   [("--cache")
+   [("-c" "--cache")
     c
     "Cache generated pict for future calls"
-    (*CACHE-TAG* (assert c string?))]
+    (*CACHE-TAG* (cast c (U #f String)))]
    [("--samples" "--num-samples")
     sm
     "Number of samples along x-axis"
@@ -489,15 +520,15 @@
    ;; -- Create a pict
    (define P
       (data->pict
-        #:tag (*CACHE-TAG*)
         (for/list : (Listof (List String String))
                   ([fname (in-list arg*)])
-          (list (path->project-name (string->path fname)) fname))))
-   (if (*PICT?*)
-     P
-     (pict->png P (*OUTPUT*)))))
+          (list (fname->title fname) fname))))
+   P))
 
-(module+ main (render-lnm (current-command-line-arguments)))
+(module+ main
+  (let ([p (render-lnm (current-command-line-arguments))])
+    (pict->png p (*OUTPUT*)))
+)
 
 ;; =============================================================================
 
@@ -523,7 +554,9 @@
    ['("a" "b" "c" "d") '("1" "2" "3" "4")
     '(("1" "a") ("2" "b") ("3" "c") ("4" "d"))]
    ['("a-1" "b-1") '("hi" "hi")
-   '(("hi" "b-1" "a-1"))])
+   '(("hi" "b-1" "a-1"))]
+   ['("a.0-1" "b.1-1") '("hi" "hi")
+   '(("hi" "b.1-1" "a.0-1"))])
 
   (check-exn exn:fail:user?
     (lambda () (zip-title* '("A") '())))

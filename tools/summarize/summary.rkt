@@ -113,6 +113,9 @@
 
   (typed-configuration
    (-> Summary Bitstring))
+
+  (string->version
+   (-> String (U #f String)))
 )
 (provide
   ;; -- re-provides from modulegraph.rkt
@@ -178,11 +181,15 @@
   (: s String)
   (define s (if (path? p) (path->string p) (format "~a" p)))
   (or
-    (for/or : (Option String)
-               ([x (in-list (string-split s "/"))]
-                #:when (valid-version? x))
-      x)
+    (string->version s)
     (summary->label S)))
+
+(: string->version (-> String (U #f String)))
+(define (string->version s)
+  (for/or : (Option String)
+             ([x (in-list (string-split s "/"))]
+              #:when (valid-version? x))
+    x))
 
 ;; -----------------------------------------------------------------------------
 ;; -- constants
@@ -302,7 +309,7 @@
 
 (: get-project-name (-> Summary String))
 (define (get-project-name sm)
-  (project-name (summary-modulegraph sm)))
+  (car (string-split (project-name (summary-modulegraph sm)) ".")))
 
 (: has-typed? (-> Summary Bitstring (Listof String) Boolean))
 (define (has-typed? S v names*)

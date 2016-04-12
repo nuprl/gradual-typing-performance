@@ -7,6 +7,10 @@
 ;;  subject to at most L additional conversion steps
 
 (provide
+  integer->pen-style
+
+  ;; ---
+
   lnm-plot
   ;; Create an L-NM plot based on the given parameters
   ;; Returns a list of plots:
@@ -153,7 +157,7 @@
   (define elem* (for/list : (Listof renderer2d)
                           ([x (list N-line M-line cutoff-line)] #:when x) x))
   ;; Get ticks
-  (define xticks (compute-xticks (assert (*X-NUM-TICKS*) index?)))
+  (define xticks (compute-xticks))
   (define yticks
     (case (*Y-STYLE*)
      [(count)
@@ -194,10 +198,11 @@
         (for/list : (Listof (Listof renderer2d))
                   ([L+style (in-list L*)])
           (define L (car L+style))
-          (define st (cadr L+style))
+          (define st (cadr L+style)) ;; TODO
           (for/fold : (Listof renderer2d)
                   ([acc : (Listof renderer2d) '()])
-                  ([S (in-list ((inst sort Summary String) S* string<? #:key summary->version))])
+                  ([S (in-list ((inst sort Summary String) S* string<? #:key summary->version))]
+                   [i (in-naturals 1)])
             (define lbl (and (*LINE-LABELS?*)
                              (format "~a~a"
                                (summary->version S)
@@ -205,8 +210,9 @@
                                  (format " (L=~a)" L)
                                  ""))))
             (define c (next-color))
-            (define s (next-shape))
-            (define w (*LNM-WIDTH*))
+            (define shape (next-shape))
+            (define sty (integer->pen-style i))
+            (define w (cast (* (+ 1 (* 4/10 i)) (*LNM-WIDTH*)) Nonnegative-Real))
             (if (*HISTOGRAM?*)
               (cons
                 (area-histogram
@@ -219,7 +225,7 @@
                   #:x-min 0
                   #:x-max xmax
                   #:samples num-samples
-                  #:label (and (*LEGEND?*) lbl)
+                  #:label (and (*LINE-LABELS?*) lbl)
                   #:line-style st
                   #:line-color c
                   #:line-width w) acc)
@@ -233,10 +239,10 @@
                     #:pdf? pdf?)
                   0 xmax
                   #:color c
-                  #:label (and (*LEGEND?*) lbl)
+                  #:label (and (*LINE-LABELS?*) lbl)
                   #:samples num-samples
-                  ;#:style st
-                  #:sym s
+                  #:style sty
+                  #:sym shape
                   #:width w) acc))
               ))))
     (: make-plot (-> (Listof renderer2d) pict))
@@ -249,8 +255,8 @@
         #:y-max (if pdf? #f (if (eq? '% (*Y-STYLE*)) 100 ymax))
         #:x-label (and (*AXIS-LABELS?*) "Overhead (vs. untyped)")
         #:y-label (and (*AXIS-LABELS?*) y-label)
-        #:title (and (*TITLE?*) (get-project-name (car S*)))
-        ;; #:legend-anchor (*LEGEND-ANCHOR*)
+        #:title (and (*SINGLE-PLOT?*) (get-project-name (car S*)))
+        #:legend-anchor (*LEGEND-ANCHOR*)
         #:width width
         #:height height) pict))
     (if single-plot?
@@ -290,7 +296,7 @@
   (define num-paths (get-num-paths S))
   (define next-color (make-palette))
   (define xmax (*MAX-OVERHEAD*))
-  (define xticks (compute-xticks (assert (*X-NUM-TICKS*) index?)))
+  (define xticks (compute-xticks))
   (define num-samples (*NUM-SAMPLES*))
   ;; Here's where to generalize for more L
   (for/list : (Listof pict)
@@ -558,12 +564,14 @@
 (: discrete-function (-> (Listof (-> Real Natural)) Real Real #:color Natural
                                                   #:label (U #f String)
                                                   #:samples Natural
+                                                  #:style Plot-Pen-Style
                                                   #:sym Point-Sym
                                                   #:width Nonnegative-Real
                                                   (Listof renderer2d)))
 (define (discrete-function f* lo hi #:color c
                                     #:label lbl
                                     #:samples num-samples
+                                    #:style sty
                                     #:sym sym
                                     #:width w)
   (define point**
@@ -587,6 +595,7 @@
         (lines xy*
          #:color c
          #:label lbl
+         #:style sty
          #:width w))))
   (if (*ERROR-BAR?*)
     (list
@@ -628,14 +637,19 @@
                  (for/list ([pt (in-list pre-ticks)])
                    (number->string (pre-tick-value pt))))))
 
-(: compute-xticks (-> Index ticks))
-(define (compute-xticks num-ticks)
+(: compute-xticks (-> ticks))
+(define (compute-xticks)
+  (define exact-x-ticks (*X-TICKS*))
+  (define num-ticks (*X-NUM-TICKS*))
+  (define tolerance 1/10)
   (ticks (lambda ([ax-min : Real] [ax-max : Real])
-           (for/list : (Listof pre-tick) ([i (in-list (linear-seq 1 ax-max num-ticks))])
-             (pre-tick (round i) #t)))
+           (for/list : (Listof pre-tick)
+                     ([i (in-list (or exact-x-ticks (linear-seq 1 ax-max num-ticks)))])
+             (pre-tick (rationalize i tolerance) #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
            (for/list : (Listof Bitstring) ([pt (in-list pre-ticks)])
-             (format "~ax" (pre-tick-value pt))))))
+             (define v (pre-tick-value pt))
+             (format "~ax" (if (integer? v) v (exact->inexact v)))))))
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
@@ -660,6 +674,13 @@
          [(3) 'fullcircle]
          [(4) 'fulltriangleup]
          [else 'full6star])))))
+
+(: integer->pen-style (-> Integer Plot-Pen-Style))
+(define (integer->pen-style i)
+  (case i
+   [(1) 'dot]
+   [(2) 'short-dash]
+   [else 'solid]))
 
 ;; =============================================================================
 
