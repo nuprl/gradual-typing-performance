@@ -1,6 +1,9 @@
 jfp
 ===
 
+- rename to kdu
+
+
  Typed Racket to the object-oriented aspects of Racket, in which we
  - use a lattice-style approach for a preliminary performance evaluation
  - conducted in tandem with the design and implementation@~cite[tfdffthf-ecoop-2015].

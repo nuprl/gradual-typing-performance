@@ -1,7 +1,10 @@
 #lang typed/racket/base
 
-(provide defparam Y-Style)
 ;; Calls to (defparam id ...) expand to a (provide id)
+(provide
+  defparam
+  Y-Style
+)
 
 (require
   (for-syntax racket/base syntax/parse)
@@ -72,15 +75,15 @@
 (defparam *TABLE-FONT-SIZE* Positive-Index 10)
 
 (defparam *TITLE-FONT-FACE*   String "Liberation Serif")
-(defparam *TITLE-FONT-SIZE*   Positive-Integer (+ 2 (*TABLE-FONT-SIZE*)))
+(defparam *TITLE-FONT-SIZE*   Positive-Index (assert (+ 2 (*TABLE-FONT-SIZE*)) index?))
 
 (defparam *PLOT-WIDTH*  Exact-Positive-Integer 360)
 (defparam *PLOT-HEIGHT* Exact-Positive-Integer 300)
 
 ;; --- Other styles
 (defparam *LNM-COLOR*    Plot-Color 'navy)
-(defparam *N-COLOR*      Plot-Color 'forestgreen)
-(defparam *M-COLOR*      Plot-Color 'goldenrod)
+(defparam *N-COLOR*      Plot-Color 'orangered)
+(defparam *M-COLOR*      Plot-Color 'dimgray)
 (defparam *CUTOFF-COLOR* Plot-Color 'orangered)
 
 (defparam *LNM-STYLE*    Plot-Pen-Style 'solid)
@@ -89,14 +92,15 @@
 (defparam *CUTOFF-STYLE* Plot-Pen-Style 'short-dash)
 
 (define thin (* 0.8 (line-width)))
-(define thick (* 1.25 (line-width)))
-(defparam *LNM-WIDTH*    Nonnegative-Real thick)
+(define thick (line-width))
+(defparam *LNM-WIDTH*    Nonnegative-Real thin)
 (defparam *N-WIDTH*      Nonnegative-Real thin)
 (defparam *M-WIDTH*      Nonnegative-Real thin)
 (defparam *CUTOFF-WIDTH* Nonnegative-Real thin)
 
 (defparam *TICK-SIZE* Natural 4) ;; Dude IDK
 (defparam *X-NUM-TICKS* Natural 5)
+(defparam *X-TICKS* (U #f (Listof Exact-Rational)) #f) ;; Takes precedence over num-ticks
 (defparam *Y-NUM-TICKS* Natural 6)
 (define-type Y-Style (U 'count '%))
 (defparam *Y-STYLE* Y-Style 'count)
@@ -108,10 +112,8 @@
 (defparam *LEGEND?*        Boolean #f) ;; If #t, make a legend for all plots
 (defparam *LINE-LABELS?*   Boolean #t) ;; If #t, label all plot lines
 (defparam *LOG-TRANSFORM?* Boolean #f)
-(defparam *MAKE-TABLE?*    Boolean #f) ;; If #t, make a table of Summary statistics
 (defparam *PDF?*           Boolean #f) ;; If #t, plot the Probabilistic Distribution Function
 (defparam *SINGLE-PLOT?*   Boolean #t) ;; If #t, make 1 plot for each L
-(defparam *TITLE?*         Boolean #t) ;; If #t, print a plot title
 
 (defparam *SHOW-PATHS?* Boolean #f)
 ;; If #t, make a path picture
@@ -127,6 +129,5 @@
 
 (defparam *DISCRETE?* Boolean #f)
 
-(defparam *PICT?* Boolean #f)
+(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
 
-(defparam *LEGEND-ANCHOR* (U #f 'top-right 'bottom-right) 'top-right)
