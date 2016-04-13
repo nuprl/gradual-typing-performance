@@ -163,8 +163,8 @@
   (define elem* (for/list : (Listof renderer2d)
                           ([x (list N-line M-line cutoff-line)] #:when x) x))
   ;; Get ticks
-  (define xticks (compute-xticks))
-  (define yticks
+  (define x-major-ticks (compute-xticks))
+  (define y-major-ticks
     (case (*Y-STYLE*)
      [(count)
       (if pdf?
@@ -191,9 +191,9 @@
       (raise-user-error ERRLOC (format "Unexpected value '~a' for *Y-STYLE* parameter" (*Y-STYLE*)))]))
   ;; Set plot parameters ('globally', for all picts)
   (parameterize (
-    [plot-x-ticks xticks]
+    [plot-x-ticks (ticks-add? x-major-ticks (*X-MINOR-TICKS*))]
     [plot-x-transform (if (*LOG-TRANSFORM?*) log-transform id-transform)]
-    [plot-y-ticks yticks]
+    [plot-y-ticks (ticks-add? y-major-ticks (*Y-MINOR-TICKS*))]
     [plot-x-far-ticks no-ticks]
     [plot-y-far-ticks no-ticks]
     [plot-tick-size (*TICK-SIZE*)]
@@ -255,7 +255,7 @@
     (: make-plot (-> (Listof renderer2d) pict))
     (define (make-plot LNM)
       (cast ;; dammit, Neil re-defined 'Pict'
-       (plot-pict (append LNM elem*)
+       (plot-pict (cons (tick-grid) (append LNM elem*))
         #:x-min 1
         #:x-max xmax
         #:y-min 0
@@ -268,6 +268,7 @@
         #:height height) pict))
     (if single-plot?
       (list (make-plot (apply append F-config**)))
+      ;; 2016-04-13 : Drawing y-axis on all picts because otherwise the sizing gets messy
       (for/list : (Listof pict)
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
@@ -643,7 +644,12 @@
                            rounded)
                        #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (format*/units number->string pre-ticks #:units unit-str))))
+           (for/list : (Listof String) ([pt (in-list pre-ticks)])
+             (define v (pre-tick-value pt))
+             (define str (number->string v))
+             (if (= v ax-max)
+               (string-append str "%")
+               str)))))
 
 (: compute-xticks (-> ticks))
 (define (compute-xticks)
@@ -657,26 +663,20 @@
                      ([i (in-list (or exact-x-ticks (linear-seq 1 ax-max num-ticks)))])
              (pre-tick (rationalize i tolerance) #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (define (fmt (v : Real)) : String
-             (format "~a"
-               (cond [round?  (round v)]
-                     [(integer? v)    v]
-                     [else (exact->inexact v)])))
-           (format*/units fmt pre-ticks #:units unit-str))))
+           (for/list : (Listof String) ([pt (in-list pre-ticks)])
+             (define v (pre-tick-value pt))
+             (define str
+               (format "~a"
+                 (cond [round?  (round v)]
+                       [(integer? v)    v]
+                       [else (exact->inexact v)])))
+             (if (= v ax-max)
+               (string-append str "x")
+               str)))))
 
-(: format*/units (->* [(-> Real String) (Listof pre-tick)] [#:units (U #f String)] (Listof String)))
-(define (format*/units fmt pt* #:units [units #f])
-  (define unit-str (or units ""))
-  (let loop : (Listof String) ([pt* pt*])
-    (cond
-     [(null? pt*)
-      '()]
-     [else
-      (define v (fmt (pre-tick-value (car pt*))))
-      (if (null? (cdr pt*))
-        ;; Format the last tick differently
-        (list (string-append v unit-str))
-        (cons v (loop (cdr pt*))))])))
+(: ticks-add? (-> ticks (U #f (Listof Real)) ticks))
+(define (ticks-add? ts xs)
+  (if xs (ticks-add ts xs #f) ts))
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
@@ -714,7 +714,7 @@
 
 (: integer->line-width (-> Integer Nonnegative-Real))
 (define (integer->line-width i)
-  (cast (* (+ 1 (* 4/10 i)) (*LNM-WIDTH*)) Nonnegative-Real))
+  (cast (+ i (*LNM-WIDTH*)) Nonnegative-Real))
 
 ;; =============================================================================
 

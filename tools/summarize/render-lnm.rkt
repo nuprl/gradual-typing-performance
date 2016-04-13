@@ -142,9 +142,9 @@
   ;;  +--------------------------+
   (define N-RULE (myrule "orange" (*N-COLOR*) "N" (*N*)))
   (define M-RULE (myrule "grey" (*M-COLOR*) "M" (*M*)))
-  (hc-append (* HSHIM 3)
+  (hc-append (* HSHIM 3.5)
     (vl-append VSHIM
-      (mytext "x-axis: Overhead")
+      (mytext "x-axis: Overhead (vs. untyped)")
       (mytext "y-axis: % Acceptable configs."))
     (vl-append*/2 HSHIM VSHIM
       (list*
@@ -222,17 +222,31 @@
     (if (*SHOW-PATHS?*)
       (path-plot S*)
       (lnm-plot S*)))
+  (define title-text
+    (let ([face (*TABLE-FONT-FACE*)]
+          [size (*TABLE-FONT-SIZE*)])
+      (lambda ([s : String])
+        (text s (cons 'bold face) size))))
   (if (*SINGLE-PLOT?*)
     L-pict*
-    (let* ([txt (text (or title (get-project-name (car S*)))
-                      (cons 'bold (*TABLE-FONT-FACE*))
-                      (*TABLE-FONT-SIZE*))]
-           [V 2]
-           [vphantom (blank 0 (pict-height txt))])
-      (cons (vl-append V txt (car L-pict*))
-            (for/list : (Listof Pict)
-                      ([p (in-list (cdr L-pict*))])
-              (vl-append V vphantom p))))))
+    (let* ([V 2]
+           [S (car S*)]
+           [first-lbl (title-text (or title (get-project-name S)))]
+           [mid-lbl   (blank 0 (pict-height first-lbl))]
+           [last-lbl  (title-text (format "~a configurations" (get-num-configurations S)))])
+      (cons
+        (vl-append V first-lbl (car L-pict*))
+        (let loop : (Listof Pict)
+                  ([p* (cdr L-pict*)])
+          (cond
+           [(null? p*)
+            (printf "WARNING: have 1 L-pict, no place to put second label\n")
+            '()]
+           [(null? (cdr p*))
+            ;; Last pict
+            (list (vr-append V last-lbl (car p*)))]
+           [else
+            (cons (vl-append V mid-lbl (car p*)) (loop (cdr p*)))]))))))
 
 (: format-filepath (-> (U #f String) String))
 (define (format-filepath tag)
@@ -358,7 +372,7 @@
                        [new (in-list pict*)])
               (vc-append (*TITLE-VSPACE*)
                          (text l-str
-                               (*TITLE-FONT-FACE*)
+                               (cons 'bold (*TITLE-FONT-FACE*))
                                (*TITLE-FONT-SIZE*))
                          new))
             pict*)))
