@@ -94,7 +94,7 @@
 (defparam *M-STYLE*      Plot-Pen-Style 'solid)
 (defparam *CUTOFF-STYLE* Plot-Pen-Style 'short-dash)
 
-(define thin (* 0.8 (line-width)))
+(define thin (* 0.5 (line-width)))
 (define thick (line-width))
 (defparam *LNM-WIDTH*    Nonnegative-Real thin)
 (defparam *N-WIDTH*      Nonnegative-Real thin)
@@ -105,7 +105,9 @@
 (defparam *X-MINOR-TICKS* (U #f (Listof Real)) #f)
 (defparam *X-NUM-TICKS* Natural 5)
 (defparam *X-TICKS* (U #f (Listof Exact-Rational)) #f) ;; Takes precedence over num-ticks
+(defparam *X-MINOR-TICKS* (U #f (Listof Real)) #f)
 (defparam *Y-NUM-TICKS* Natural 6)
+(defparam *Y-MINOR-TICKS* (U #f (Listof Real)) #f)
 (define-type Y-Style (U 'count '%))
 (defparam *Y-STYLE* Y-Style 'count)
 

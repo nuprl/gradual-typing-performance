@@ -576,9 +576,10 @@
                  [*NUM-SAMPLES* 60]
                  [*PLOT-FONT-SCALE* 0.04]
                  [*PLOT-HEIGHT* 100]
-                 [*PLOT-WIDTH* 220]
+                 [*PLOT-WIDTH* 210]
                  [*SINGLE-PLOT?* #f]
                  [*X-TICKS* '(1 2 4 6 8 10 15 20)]
+                 [*Y-MINOR-TICKS* '(25 75)]
                  [*Y-NUM-TICKS* 3]
                  [*Y-STYLE* '%])
     (for/list ([n* (in-list (split-list 5 (sorted-benchmark-names)))]
