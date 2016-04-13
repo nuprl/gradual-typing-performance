@@ -70,7 +70,8 @@
   (for/list ([combination (in-list (build-combinations* (length file-names*)))])
     (define cdir (build-path bdir (apply string-append "configuration" (map number->string combination))))
     (make-directory cdir)
-    (create-readme cdir (populate-configuration cdir file-names* combination both typed untyped))
+    (define pop (populate-configuration cdir file-names* combination both typed untyped))
+    ;(create-readme cdir pop)
     cdir))
 
 ;; ---------------------------------------------------------------------------------------------------
