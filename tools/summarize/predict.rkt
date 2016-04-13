@@ -25,6 +25,16 @@
                                  TypedUntypedConfig
                                  OptimizeConfig))
 
+(: parse-prediction-config : Any -> PredictionConfig)
+(define (parse-prediction-config v)
+  (match v
+    [`#(struct:untyped-typed-config ,rer ,ree)
+     (untyped-typed-config (cast rer Natural) (cast ree Natural))]
+    [`#(struct:typed-untyped-config ,rer ,ree)
+     (typed-untyped-config (cast rer Natural) (cast ree Natural))]
+    [`#(struct:optimize-config ,i)
+     (optimize-config (cast i Natural))]))
+
 (: prediction-configs : ModuleGraph -> (Listof PredictionConfig))
 (define (prediction-configs mg)
   (append
@@ -78,8 +88,8 @@
    Real
    ->
    Real)
-(define (predict mg bs deltas unty)
+(define (predict mg bs perfs unty)
   (+ unty
      (for/sum : Real
               ([pc (in-list (config->features mg bs))])
-       (hash-ref deltas pc))))
+       ((hash-ref perfs pc) . - . unty))))
