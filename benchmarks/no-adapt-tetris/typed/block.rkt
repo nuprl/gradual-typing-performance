@@ -29,7 +29,7 @@
 (define (block-rotate-cw c b)
   (block-rotate-ccw c (block-rotate-ccw c (block-rotate-ccw c b))))
 
-(provide
+(safe-and-unsafe-provide
  block-rotate-ccw
  block-rotate-cw
  block=?

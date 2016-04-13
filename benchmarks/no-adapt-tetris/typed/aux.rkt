@@ -6,7 +6,7 @@
   [build-tetra-blocks (-> Color Real Real Real Real Real Real Real Real Real Real Tetra)]
   )
 
-(provide
+(safe-and-unsafe-provide
  list-pick-random
  neg-1
  tetras)

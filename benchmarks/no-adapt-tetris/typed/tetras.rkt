@@ -53,7 +53,7 @@
                            (block x3 y3 color)
                            (block x4 y4 color)))))
 
-(provide
+(safe-and-unsafe-provide
  tetra-move
  tetra-rotate-ccw
  tetra-rotate-cw

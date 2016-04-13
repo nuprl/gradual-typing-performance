@@ -8,11 +8,15 @@
          glob
          math/statistics)
 
-(define *truth-file* "morsecode-truth.rktd")
-(define *falsehood-file* "morsecode-falsehood.rktd")
+(define *data-predict-dir* "data/predict")
+(define (predict-dir f) (build-path *data-predict-dir* f))
+(define *truth-file* "par-morsecode-truth.rktd")
+(define *falsehood-file* "par-morsecode-predict.rktd")
+;; (define *truth-file* (predict-dir "seq-morsecode-truth.rktd"))
+;; (define *falsehood-file* (predict-dir "seq-morsecode-predict.rktd"))
 (define *proj-name* "morsecode")
-;; (define *truth-file* "data/predict/no-adapt-tetris-truth.rktd")
-;; (define *falsehood-file* "data/predict/no-adapt-tetris-predict.rktd")
+;; (define *truth-file* (predict-dir "seq-no-adapt-tetris-truth.rktd"))
+;; (define *falsehood-file* (predict-dir "seq-no-adapt-tetris-predict.rktd"))
 ;; (define *proj-name* "no-adapt-tetris")
 
 (current-directory "..")
@@ -46,13 +50,18 @@
       (define bs (natural->bitstring i #:pad pad))
       (predict mg bs falsehood unty-perf))))
 
-(define (logdiff true false)
+(define (err true false)
+
   (define (log2 n)
     (/ (log n) (log 2)))
   (- (log2 true)
-     (log2 false)))
+     (log2 false))
+
+  ;; (/ (true . - . false)
+  ;;    true)
+  )
 (define errors
-  (vector-map logdiff truth prediction))
+  (vector-map err truth prediction))
 
 ;; (define (indices->bitstring s len)
 ;;   (apply string

@@ -1,4 +1,5 @@
 #lang typed/racket
+(require benchmark-util)
 
 (: block-size Integer)
 (define block-size 20)
@@ -9,7 +10,7 @@
 (: board-width Integer)
 (define board-width 10)
 
-(provide block-size
+(safe-and-unsafe-provide block-size
          board-width
          board-height)
 

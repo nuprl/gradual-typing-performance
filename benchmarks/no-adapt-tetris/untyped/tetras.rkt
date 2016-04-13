@@ -1,9 +1,9 @@
 #lang racket
 
-(require "bset.rkt"
-         "data.rkt"
-         "consts.rkt"
-         "block.rkt")
+(require/check "bset.rkt"
+               "data.rkt"
+               "consts.rkt"
+               "block.rkt")
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tetras
@@ -55,12 +55,12 @@
  tetra-overlaps-blocks?
  build-tetra-blocks
  tetra-change-color)
-#;
-(provide/contract
- [tetra-move (integer? integer? TETRA/C . -> . TETRA/C)]
- [tetra-rotate-ccw (TETRA/C . -> . TETRA/C)]
- [tetra-rotate-cw (TETRA/C . -> . TETRA/C)]
- [tetra-overlaps-blocks? (TETRA/C BSET/C . -> . boolean?)]
- [build-tetra-blocks (COLOR/C real? real? integer? integer? integer? integer? integer? integer? integer? integer?
-                              . -> .  TETRA/C)]
- [tetra-change-color (TETRA/C COLOR/C . -> . TETRA/C)])
+
+;; (provide/contract
+;;  [tetra-move (integer? integer? TETRA/C . -> . TETRA/C)]
+;;  [tetra-rotate-ccw (TETRA/C . -> . TETRA/C)]
+;;  [tetra-rotate-cw (TETRA/C . -> . TETRA/C)]
+;;  [tetra-overlaps-blocks? (TETRA/C BSET/C . -> . boolean?)]
+;;  [build-tetra-blocks (COLOR/C real? real? integer? integer? integer? integer? integer? integer? integer? integer?
+;;                               . -> .  TETRA/C)]
+;;  [tetra-change-color (TETRA/C COLOR/C . -> . TETRA/C)])

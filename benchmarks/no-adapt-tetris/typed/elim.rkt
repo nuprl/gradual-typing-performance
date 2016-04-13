@@ -22,5 +22,5 @@
         [else (blocks-union (elim-row bs (sub1 i) offset)
                             (blocks-move 0 offset (blocks-row
                                                    bs i)))]))
-(provide
+(safe-and-unsafe-provide
  eliminate-full-rows)

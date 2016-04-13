@@ -1,8 +1,8 @@
 #lang racket
 
-(require "data.rkt"
-         "block.rkt"
-         "consts.rkt")
+(require/check "data.rkt"
+               "block.rkt"
+               "consts.rkt")
 
 ;; blocks-contains? : BSet Block -> Boolean
 ;; Determine if the block is in the set of blocks.
@@ -109,21 +109,21 @@
  blocks-max-x
  blocks-min-x
  blocks-max-y)
-#;
-(provide/contract
- [blocks-contains? (BSET/C BLOCK/C . -> . boolean?)]
- [blocks=? (BSET/C BSET/C . -> . boolean?)]
- [blocks-subset? (BSET/C BSET/C . -> . boolean?)]
- [blocks-intersect (BSET/C BSET/C . -> . BSET/C)]
- [blocks-count (BSET/C . -> . real?)]
- [blocks-overflow? (BSET/C . -> . boolean?)]
- [blocks-move (integer? integer? BSET/C . -> . BSET/C)]
- [blocks-rotate-cw (POSN/C BSET/C . -> . BSET/C)]
- [blocks-rotate-ccw (POSN/C BSET/C . -> . BSET/C)]
- [blocks-change-color (BSET/C COLOR/C . -> . BSET/C)]
- [blocks-row (BSET/C real? . -> . BSET/C)]
- [full-row? (BSET/C integer? . -> . boolean?)]
- [blocks-union (BSET/C BSET/C . -> . BSET/C)]
- [blocks-max-x (BSET/C . -> . real?)]
- [blocks-min-x (BSET/C . -> . real?)]
- [blocks-max-y (BSET/C . -> . real?)])
+
+;; (provide/contract
+;;  [blocks-contains? (BSET/C BLOCK/C . -> . boolean?)]
+;;  [blocks=? (BSET/C BSET/C . -> . boolean?)]
+;;  [blocks-subset? (BSET/C BSET/C . -> . boolean?)]
+;;  [blocks-intersect (BSET/C BSET/C . -> . BSET/C)]
+;;  [blocks-count (BSET/C . -> . real?)]
+;;  [blocks-overflow? (BSET/C . -> . boolean?)]
+;;  [blocks-move (integer? integer? BSET/C . -> . BSET/C)]
+;;  [blocks-rotate-cw (POSN/C BSET/C . -> . BSET/C)]
+;;  [blocks-rotate-ccw (POSN/C BSET/C . -> . BSET/C)]
+;;  [blocks-change-color (BSET/C COLOR/C . -> . BSET/C)]
+;;  [blocks-row (BSET/C real? . -> . BSET/C)]
+;;  [full-row? (BSET/C integer? . -> . boolean?)]
+;;  [blocks-union (BSET/C BSET/C . -> . BSET/C)]
+;;  [blocks-max-x (BSET/C . -> . real?)]
+;;  [blocks-min-x (BSET/C . -> . real?)]
+;;  [blocks-max-y (BSET/C . -> . real?)])

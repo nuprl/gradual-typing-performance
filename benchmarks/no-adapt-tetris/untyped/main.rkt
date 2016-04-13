@@ -1,6 +1,6 @@
 #lang racket
 
-(require "aux.rkt" "world.rkt" "bset.rkt" "data.rkt")
+(require/check "aux.rkt" "world.rkt" "bset.rkt" "data.rkt")
 
 (define (world0)
   (world (list-pick-random tetras) empty))

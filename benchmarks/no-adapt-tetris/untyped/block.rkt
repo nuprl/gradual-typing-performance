@@ -1,6 +1,6 @@
 #lang racket
 
-(require "data.rkt")
+(require/check "data.rkt")
 
 ;; block=? : Block Block -> Boolean
 ;; Determines if two blocks are the same (ignoring color).
@@ -31,9 +31,9 @@
  block-rotate-cw
  block=?
  block-move)
-#;
-(provide/contract
- [block-rotate-ccw (POSN/C BLOCK/C . -> . BLOCK/C)]
- [block-rotate-cw (POSN/C BLOCK/C . -> . BLOCK/C)]
- [block=? (BLOCK/C BLOCK/C . -> . boolean?)]
- [block-move (real? real? BLOCK/C . -> . BLOCK/C)])
+
+;; (provide/contract
+;;  [block-rotate-ccw (POSN/C BLOCK/C . -> . BLOCK/C)]
+;;  [block-rotate-cw (POSN/C BLOCK/C . -> . BLOCK/C)]
+;;  [block=? (BLOCK/C BLOCK/C . -> . boolean?)]
+;;  [block-move (real? real? BLOCK/C . -> . BLOCK/C)])

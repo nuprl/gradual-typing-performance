@@ -1,4 +1,5 @@
 #lang typed/racket
+(require benchmark-util)
 (require (for-syntax racket/base syntax/parse racket/syntax))
 (define-syntax (struct2 stx)
   (syntax-parse stx #:datum-literals (:)
@@ -35,5 +36,5 @@
   (and (= (posn-x p1) (posn-x p2))
        (= (posn-y p1) (posn-y p2))))
 
-(provide
+(safe-and-unsafe-provide
  posn=?)

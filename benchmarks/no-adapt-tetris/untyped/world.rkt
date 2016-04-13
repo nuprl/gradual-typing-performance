@@ -1,19 +1,19 @@
 #lang racket
 
-(require "data.rkt"
-         "bset.rkt"
-         "tetras.rkt"
-         "aux.rkt"
-         "elim.rkt"
-         "consts.rkt")
+(require/check "data.rkt"
+               "bset.rkt"
+               "tetras.rkt"
+               "aux.rkt"
+               "elim.rkt"
+               "consts.rkt")
 
 (provide world-key-move
          next-world
          ghost-blocks)
-#;
-(provide/contract [world-key-move (WORLD/C string? . -> . WORLD/C)]
-                  [next-world (WORLD/C . -> . WORLD/C)]
-                  [ghost-blocks (WORLD/C . -> . BSET/C)])
+
+;; (provide/contract [world-key-move (WORLD/C string? . -> . WORLD/C)]
+;;                   [next-world (WORLD/C . -> . WORLD/C)]
+;;                   [ghost-blocks (WORLD/C . -> . BSET/C)])
 
 ;; touchdown : World -> World
 ;; Add the current tetra's blocks onto the world's block list,
