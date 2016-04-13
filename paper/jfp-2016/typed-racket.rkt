@@ -573,7 +573,7 @@
                  [*M* #f]
                  [*MAX-OVERHEAD* 20]
                  [*N* #f]
-                 [*NUM-SAMPLES* 60]
+                 [*NUM-SAMPLES* 60] ;; 200
                  [*PLOT-FONT-SCALE* 0.04]
                  [*PLOT-HEIGHT* 100]
                  [*PLOT-WIDTH* 210]
@@ -590,6 +590,7 @@
                        (define n+ (if (eq? n- 'zordoz) "zordoz.6.[23]" n-))
                        (glob/first (format "~a/~a/~a-*.rktd" data-root v n+))))
       (parameterize ([*CACHE-TAG* #f]) ;;(number->string i)])
+        (collect-garbage 'major)
         (render-lnm fname*)))))
 
 (define (lnm-summary . version*)
