@@ -124,3 +124,17 @@ Meeting notes
       Better to make them larger or present as tables, in an appendix
   * Predicitions should be running this weekend, hope to start coloring
     graphs next weekend
+
+2016-04-13
+----------
+  * Threat to Validity: multicore contention
+    - single core data is statistically different from multi-core data, varying by up to 1 second
+    - no pattern to differences, some faster some slower
+    - currently re-running, and again without 'base' directories
+  * Predictions
+    - morsecode predictions look very good (but overhead is low)
+    - tetris (minus structs) predications on the way
+    - road block: cannot handle external dependencies OR structs
+  * L-NM plots look okay, L-NM tables are ugly but may work out.
+  * Resolved never to use "LNM" to refer to the plots. Going to say "deliverability plots" etc.
+
