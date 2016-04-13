@@ -51,9 +51,6 @@
    (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
-  (configuration->standard-error
-   (-> Summary Bitstring Real))
-
   (configuration->confidence
    (-> Summary Bitstring (Pairof Real Real)))
 
@@ -118,6 +115,8 @@
    (-> String (U #f String)))
 )
 (provide
+  (rename-out
+    [configuration->stddev configuration->standard-error])
   ;; -- re-provides from modulegraph.rkt
   path->project-name
 )
@@ -127,13 +126,14 @@
 (require
   (only-in math/number-theory factorial)
   (only-in racket/file file->value)
+  (only-in racket/port with-input-from-string)
+  (only-in racket/vector vector-append)
   (only-in racket/format ~r)
   (only-in racket/list last range) ;; because in-range has the wrong type
   (only-in racket/string string-split)
-  (only-in racket/port with-input-from-string)
-  (only-in racket/vector vector-append)
-  gtp-summarize/bitstring
   gtp-summarize/modulegraph
+  gtp-summarize/lnm-parameters
+  gtp-summarize/bitstring
   math/statistics
   racket/path
   racket/sequence
@@ -261,6 +261,7 @@
 ;; -- constants
 
 ;; Default location for TiKZ module graphs
+;; Defined relative to THIS FILE, maybe a bad idea.
 (define MODULE_GRAPH_DIR "module-graphs")
 
 ;; -----------------------------------------------------------------------------
@@ -282,8 +283,17 @@
       (begin
         (printf "Inferring module graph for '~a'.\n" filename)
         (project-name->modulegraph (path->project-name filename)))))
-  (validate-modulegraph dataset mg)
+  (validate-modulegraph path dataset mg)
   (summary path dataset mg))
+
+(define EMPTY-UT : UnixTime (time->unixtime 1))
+(define EMPTY-DATASET : Dataset (vector (list EMPTY-UT)))
+
+(: dataset-empty? (-> Dataset Boolean))
+(define (dataset-empty? ds)
+  (and (= 1 (vector-length ds))
+       (= 1 (length (vector-ref ds 0)))
+       (= 1 (unixtime-real (car (vector-ref ds 0))))))
 
 ;; Parse a dataset from a filepath.
 (: rktd->dataset (-> Path Dataset))
@@ -292,27 +302,61 @@
   (unless (bytes=? #"rktd" (or (filename-extension path) #""))
     (parse-error "Cannot parse dataset '~a', is not .rktd" (path->string path)))
   ;; Get data
-  (define vec (file->value path))
+  (define vec
+    (if (small-file? path)
+      (begin
+        (printf "INFO: reading vector from '~a'\n" path)
+        (file->value path))
+      (begin
+        (printf "INFO: detected large file '~a'\n" path)
+        EMPTY-DATASET)))
   ;; Check invariants
   (validate-dataset vec))
+
+(: small-file? (-> Path-String Boolean))
+(define (small-file? ps)
+  (< (file-size ps) (*TOO-MANY-BYTES*)))
 
 ;; Confirm that the dataset `vec` is a well-formed vector of experiment results.
 (: validate-dataset (-> Any Dataset))
 (define (validate-dataset vec0)
   (define vec (dataset? vec0))
-  (unless (< 0 (vector-length vec)) (parse-error "Dataset is an empty vector, does not contain any entries"))
+  (unless (< 0 (vector-length vec))
+    (parse-error "Dataset is an empty vector, does not contain any entries"))
   (for ([row-index (in-range (vector-length vec))])
     (when (zero? (length (vector-ref vec row-index)))
       (parse-error "Row ~a has no data" row-index)))
   vec)
 
 ;; Check that the dataset and module graph agree
-(: validate-modulegraph (-> Dataset ModuleGraph Void))
-(define (validate-modulegraph dataset mg)
-  (define ds-num-modules (log2 (vector-length dataset)))
-  (define mg-num-modules (length (module-names mg)))
-  (unless (= ds-num-modules mg-num-modules)
-    (parse-error "Dataset and module graph represent different numbers of modules. The dataset says '~a' but the module graph says '~a'" ds-num-modules mg-num-modules)))
+(: validate-modulegraph (-> Path-String Dataset ModuleGraph Void))
+(define (validate-modulegraph path dataset M)
+  (define expected-num-modules
+    (log2
+      (if (dataset-empty? dataset)
+        (count-data-lines path)
+        (vector-length dataset))))
+  (define given-num-modules (modulegraph->num-modules M))
+  (unless (= expected-num-modules given-num-modules)
+    (parse-error "Dataset and module graph represent different numbers of modules. The dataset says '~a' but the module graph says '~a'"
+      expected-num-modules given-num-modules)))
+
+(: count-data-lines (-> Path-String Natural))
+(define (count-data-lines ps)
+  (with-input-from-file ps
+    (lambda ()
+      (for/sum : Natural ([ln (in-lines)] #:when (data-line? ln)) 1))))
+
+(: data-line? (-> (U String EOF) Boolean))
+(define (data-line? str)
+  (if (string? str)
+    (and (< 0 (string-length str))
+         (eq? #\( (string-ref str 0)))
+    #f))
+
+(: string->index* (-> String (Listof Index)))
+(define (string->index* str)
+  (cast (with-input-from-string str read) (Listof Index)))
 
 ;; Guess the location of the module graph matching the dataset
 (: infer-graph (-> Path (U #f Path)))
@@ -361,17 +405,16 @@
 (define (get-num-paths sm)
   (let ([r (factorial (get-num-modules sm))])
     (if (index? r)
-        r
-        (error 'get-num-paths "Factorial too large, not an index!\n"))))
+      r
+      (error 'get-num-paths "Factorial too large, not an index!\n"))))
 
 (: get-num-configurations (-> Summary Index))
-(define (get-num-configurations sm)
-  (vector-length (summary-dataset sm)))
+(define (get-num-configurations S)
+  (assert (expt 2 (get-num-modules S)) index?))
 
 (: get-num-modules (-> Summary Exact-Positive-Integer))
-(define (get-num-modules sm)
-  (define len (length (get-module-names sm)))
-  (if (< 0 len) len (error 'too-few-modules)))
+(define (get-num-modules S)
+  (assert (modulegraph->num-modules (summary-modulegraph S)) exact-positive-integer?))
 
 (: get-project-name (-> Summary String))
 (define (get-project-name sm)
@@ -413,12 +456,31 @@
 
 (: predicate->configurations (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
 (define (predicate->configurations sm p)
+  ;; TODO optimize?
   (sequence-filter p (all-configurations sm)))
 
 ;; Return all data for the untyped configuration
 (: untyped-runtimes (-> Summary (Listof Index)))
-(define (untyped-runtimes sm)
-  (unixtime*->index* (vector-ref (summary-dataset sm) 0)))
+(define (untyped-runtimes S)
+  (define D (summary-dataset S))
+  (if (dataset-empty? D)
+    (untyped-runtimes/path (summary-source S))
+    (untyped-runtimes/vector D)))
+
+(: untyped-runtimes/path (-> Path-String (Listof Index)))
+(define (untyped-runtimes/path p)
+  (raise-user-error 'ur/path "not implemented")
+  #;(string->index*
+    (with-input-from-file p
+      (lambda ()
+        (or
+          (for/or : (U #f String) ([ln (in-lines)])
+            (and (data-line? ln) ln))
+          (raise-user-error 'untyped-runtimes "No data in file '~a'" p))))))
+
+(: untyped-runtimes/vector (-> Dataset (Listof Index)))
+(define (untyped-runtimes/vector D)
+  (unixtime*->index* (vector-ref D 0)))
 
 (: untyped-mean (-> Summary Real))
 (define (untyped-mean sm)
@@ -426,9 +488,31 @@
 
 ;; Return all data for the typed configuration
 (: typed-runtimes (-> Summary (Listof Index)))
-(define (typed-runtimes sm)
-  (define vec (summary-dataset sm))
-  (unixtime*->index* (vector-ref vec (sub1 (vector-length vec)))))
+(define (typed-runtimes S)
+  (define D (summary-dataset S))
+  (if (dataset-empty? D)
+    (typed-runtimes/path (summary-source S))
+    (typed-runtimes/vector D)))
+
+(: typed-runtimes/path (-> Path-String (Listof Index)))
+(define (typed-runtimes/path p)
+  (raise-user-error 'tr/path "not implemented")
+  #;(string->index*
+    (with-input-from-file p
+      (lambda ()
+        (or
+          ;; Get the last data line
+          (let loop : (U #f String)
+                    ([prev #f])
+            (let ([ln (read-line)])
+              (if (data-line? ln)
+                (assert ln string?)
+                prev)))
+          (raise-user-error 'Typed-runtimes "No data in file '~a'" p))))))
+
+(: typed-runtimes/vector (-> Dataset (Listof Index)))
+(define (typed-runtimes/vector D)
+  (unixtime*->index* (vector-ref D (sub1 (vector-length D)))))
 
 (: typed-mean (-> Summary Real))
 (define (typed-mean sm)
@@ -442,7 +526,7 @@
 (: configuration->standard-error (-> Summary Bitstring Real))
 (define (configuration->standard-error S v)
   (assert-configuration-length S v)
-  (index->standard-error S (bitstring->natural v)))
+  (index->stddev S (bitstring->natural v)))
 
 (: configuration->confidence-lo (-> Summary Bitstring Real))
 (define (configuration->confidence-lo S v)
@@ -459,36 +543,91 @@
 
 (: configuration->stddev (-> Summary Bitstring Real))
 (define (configuration->stddev S v)
-  (let ([m (configuration->mean-runtime S v)]
-        [i (bitstring->natural v)])
-    ;; TODO index->runtimes
-    (stddev/mean m (unixtime*->index* (vector-ref (summary-dataset S) i)))))
+  (index->stddev S (bitstring->natural v)))
 
 (: configuration->overhead (-> Summary Bitstring Real))
 (define (configuration->overhead S v)
   (/ (configuration->mean-runtime S v) (untyped-mean S)))
 
 (: index->mean-runtime (-> Summary Index Real))
-(define (index->mean-runtime sm i)
-  (mean (unixtime*->index* (vector-ref (summary-dataset sm) i))))
+(define (index->mean-runtime S i)
+  (mean (index->runtimes S i)))
 
-(: index->standard-error (-> Summary Index Real))
-(define (index->standard-error sm i)
-  (stddev (vector-ref (summary-dataset sm) i)))
+(: index->stddev (-> Summary Index Real))
+(define (index->stddev S i)
+  (stddev (index->runtimes S i)))
 
 (: index->confidence (-> Summary Index (Pairof Real Real)))
-(define (index->confidence sm i)
-  (confidence-interval (vector-ref (summary-dataset sm) i)))
+(define (index->confidence S i)
+  (confidence-interval (index->runtimes S i)))
+
+(: index->runtimes (-> Summary Index (Listof Real)))
+(define (index->runtimes S i)
+  (define D (summary-dataset S))
+  (if (dataset-empty? D)
+    (index->runtimes/path (summary-source S) i)
+    (index->runtimes/vector D i)))
+
+(: index->runtimes/path (-> Path-String Index (Listof Real)))
+(define (index->runtimes/path p i)
+  (string->index*
+    (with-input-from-file p
+      (lambda ()
+        (define curr (box 0))
+        (define (curr++) (set-box! curr (+ 1 (unbox curr))))
+        (or
+          (for/or : (U #f String) ([ln (in-lines)])
+            ;; Terminate when (= curr #data-lines)
+            (and (data-line? ln)
+                 (if (= i (unbox curr))
+                   ln
+                   (begin (curr++) #f))))
+          (raise-user-error 'index->runtimes "Bad data file '~a'" p))))))
+
+(: index->runtimes/vector (-> Dataset Index (Listof Real)))
+(define (index->runtimes/vector D i)
+  (unixtime*->index* (vector-ref D i)))
 
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
 (: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
-(define (fold-lattice sm f #:init [init #f])
-  (define vec (summary-dataset sm))
+(define (fold-lattice S f #:init [init #f])
+  (define D (summary-dataset S))
+  (if (dataset-empty? D)
+    (fold-lattice/path (summary-source S) f init)
+    (fold-lattice/vector D f init)))
+
+(: fold-lattice/path (-> Path-String (-> Real Real Real) (U #f Real) Real))
+(define (fold-lattice/path p f init)
+  (with-input-from-file p
+    (lambda ()
+      (define prev-box : (Boxof (U #f Real)) (box #f))
+      ;; -- skip first line
+      (void (for/or : Any ([ln (in-lines)]) (data-line? ln)))
+      (or (for/fold : (U #f Real)
+                    ([acc : (U #f Real) init])
+                    ([ln (in-lines)]
+                     #:when (data-line? ln))
+            (define curr (mean (string->index* ln)))
+            (define prev (unbox prev-box))
+            (set-box! prev-box curr)
+            (cond
+             [(and prev acc)
+              (f acc prev)]
+             [prev
+              prev]
+             [acc
+              acc]
+             [else (raise-user-error 'fold-lattice/path "Everything is #f")]))
+        0))))
+
+
+(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) Real))
+(define (fold-lattice/vector D f init)
   (or
     (for/fold : (U #f Real)
               ([prev : (U #f Real) init])
-              ([i    (in-range 1 (sub1 (vector-length vec)))])
-      (define val (mean (unixtime*->index* (vector-ref vec i))))
+              ([i    (in-range 1 (sub1 (vector-length D)))])
+      (define val (mean (unixtime*->index* (vector-ref D i))))
       (or (and prev (f prev val)) val))
     0))
 
@@ -520,6 +659,7 @@
   (+ 1 ;;untyped
      (if (<= (typed-mean sm) baseline) 1 0)
      ;; Cast should be unnecessary, but can't do polymorphic keyword args in fold-lattice
+     ;; 2016-04-16: pretty sure 'inst' could fix this
      (cast (fold-lattice sm count-N #:init 0) Natural)))
 
 (: usable (-> Summary Index Index Natural))
