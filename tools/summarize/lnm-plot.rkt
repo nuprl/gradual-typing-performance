@@ -170,6 +170,7 @@
       (if pdf?
         (raise-user-error ERRLOC "Don't know how to plot PDF with % on y-axis")
         (compute-yticks 100 (*Y-NUM-TICKS*)
+          #:units "%"
           #:exact (if cutoff-proportion (list (* 100 cutoff-proportion) 100) (list 100))))]
      [else
       (raise-user-error ERRLOC (format "Unexpected value '~a' for *Y-STYLE* parameter" (*Y-STYLE*)))]))
@@ -336,6 +337,7 @@
                                   (list ymax)))]
        [(%)
         (compute-yticks 100 (*Y-NUM-TICKS*)
+          #:units "%"
           #:exact (if cutoff-proportion
                       (list (* 100 cutoff-proportion) 100)
                       (list 100)))]
@@ -620,8 +622,9 @@
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
-(: compute-yticks (->* [Index Index] [#:exact (U Real (Listof Real))] ticks))
-(define (compute-yticks max-y num-ticks #:exact [exact '()])
+(: compute-yticks (->* [Natural Natural] [#:units (U #f String) #:exact (U Real (Listof Real))] ticks))
+(define (compute-yticks max-y num-ticks #:exact [exact '()] #:units [units #f])
+  (define unit-str (or units ""))
   (define exact-list (or (and (list? exact) exact) (list exact)))
   (define round-y (if (< max-y 1000) ;;TODO
                       round
@@ -635,26 +638,40 @@
                            rounded)
                        #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-                 (for/list ([pt (in-list pre-ticks)])
-                   (number->string (pre-tick-value pt))))))
+           (format*/units number->string pre-ticks #:units unit-str))))
 
 (: compute-xticks (-> ticks))
 (define (compute-xticks)
   (define exact-x-ticks (*X-TICKS*))
   (define num-ticks (*X-NUM-TICKS*))
   (define tolerance 1/10)
+  (define round? (if exact-x-ticks #t #f))
+  (define unit-str "x")
   (ticks (lambda ([ax-min : Real] [ax-max : Real])
            (for/list : (Listof pre-tick)
                      ([i (in-list (or exact-x-ticks (linear-seq 1 ax-max num-ticks)))])
              (pre-tick (rationalize i tolerance) #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (for/list : (Listof Bitstring) ([pt (in-list pre-ticks)])
-             (define v (pre-tick-value pt))
-             (define v+ (if exact-x-ticks
-                          ;; Use decimal notation, instead of fractions
-                          (if (integer? v) v (exact->inexact v))
-                          (round v)))
-             (format "~ax" v+)))))
+           (define (fmt (v : Real)) : String
+             (format "~a"
+               (cond [round?  (round v)]
+                     [(integer? v)    v]
+                     [else (exact->inexact v)])))
+           (format*/units fmt pre-ticks #:units unit-str))))
+
+(: format*/units (->* [(-> Real String) (Listof pre-tick)] [#:units (U #f String)] (Listof String)))
+(define (format*/units fmt pt* #:units [units #f])
+  (define unit-str (or units ""))
+  (let loop : (Listof String) ([pt* pt*])
+    (cond
+     [(null? pt*)
+      '()]
+     [else
+      (define v (fmt (pre-tick-value (car pt*))))
+      (if (null? (cdr pt*))
+        ;; Format the last tick differently
+        (list (string-append v unit-str))
+        (cons v (loop (cdr pt*))))])))
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
