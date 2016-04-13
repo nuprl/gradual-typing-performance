@@ -819,46 +819,40 @@
                            rounded)
                        #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (for/list : (Listof String) ([pt (in-list pre-ticks)])
-             (define v (pre-tick-value pt))
-             (define str (number->string v))
-             (if (= v ax-max)
-               (string-append str "%")
-               str)))))
-
-(: list->ticks (->* [(Listof Real)] [#:units (U #f String)] ticks))
-(define (list->ticks r* #:units [units-arg #f])
-  (define units (or units-arg ""))
-  (define max-r (apply max r*))
-  (ticks (lambda ([ax-min : Real] [ax-max : Real])
-           (for/list : (Listof pre-tick)
-                     ([r (in-list r*)])
-             (pre-tick r #t)))
-         (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (for/list : (Listof String) ([pt (in-list pre-ticks)])
-             (define v (pre-tick-value pt))
-             (define str (~r v #:precision 2))
-             (if (= v max-r)
-               (string-append str units)
-               str)))))
+           (format*/units number->string pre-ticks #:units unit-str))))
 
 (: compute-xticks (-> ticks))
 (define (compute-xticks)
   (define exact-x-ticks (*X-TICKS*))
   (define num-ticks (*X-NUM-TICKS*))
   (define tolerance 1/10)
+  (define round? (if exact-x-ticks #t #f))
+  (define unit-str "x")
   (ticks (lambda ([ax-min : Real] [ax-max : Real])
            (for/list : (Listof pre-tick)
                      ([i (in-list (or exact-x-ticks (linear-seq 1 ax-max num-ticks)))])
              (pre-tick (rationalize i tolerance) #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (for/list : (Listof Bitstring) ([pt (in-list pre-ticks)])
-             (define v (pre-tick-value pt))
-             (define v+ (if exact-x-ticks
-                          ;; Use decimal notation, instead of fractions
-                          (if (integer? v) v (exact->inexact v))
-                          (round v)))
-             (format "~ax" v+)))))
+           (define (fmt (v : Real)) : String
+             (format "~a"
+               (cond [round?  (round v)]
+                     [(integer? v)    v]
+                     [else (exact->inexact v)])))
+           (format*/units fmt pre-ticks #:units unit-str))))
+
+(: format*/units (->* [(-> Real String) (Listof pre-tick)] [#:units (U #f String)] (Listof String)))
+(define (format*/units fmt pt* #:units [units #f])
+  (define unit-str (or units ""))
+  (let loop : (Listof String) ([pt* pt*])
+    (cond
+     [(null? pt*)
+      '()]
+     [else
+      (define v (fmt (pre-tick-value (car pt*))))
+      (if (null? (cdr pt*))
+        ;; Format the last tick differently
+        (list (string-append v unit-str))
+        (cons v (loop (cdr pt*))))])))
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
