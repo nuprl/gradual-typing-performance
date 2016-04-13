@@ -202,7 +202,7 @@
   #t)
 
 (define (write-results times [dir (current-directory)])
-  (with-output-to-file (build-path dir (output-path)) #:exists 'append
+  (with-output-to-file (build-path dir (output-path)) #:exists 'replace
     (lambda ()
       (write times))))
 
@@ -377,7 +377,8 @@
                                                        basepath
                                                        (output-path)))])
                      (with-input-from-file result-file
-                       (lambda () (for ([ln (in-lines)]) (displayln ln))))) 
+                       (lambda () (for ([ln (in-lines)]) (displayln ln)))))
+                   
                    (displayln ")"))
                  #:mode 'text
                  #:exists 'replace))
