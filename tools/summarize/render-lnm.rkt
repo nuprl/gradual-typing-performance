@@ -11,6 +11,8 @@
  ;;   2nd component is a path-string to data
  ;; Optional argument tags the generated figure, because results are cached
  ;;  are re-used (when called with the same tag & dataset list)
+
+ fname->title
 )
 
 ;; -----------------------------------------------------------------------------
