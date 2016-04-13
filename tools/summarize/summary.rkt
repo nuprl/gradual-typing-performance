@@ -710,35 +710,9 @@
   (define (f acc mean) (+ acc (* mean 1/N)))
   (fold-lattice sm f #:init 0))
 
-(: avg-overhead (-> Summary Real))
-(define (avg-overhead S)
-  (/ (avg-lattice-point S) (untyped-mean S)))
-
-(: min-overhead (-> Summary Real))
-(define (min-overhead S)
-  (/ (min-lattice-point S) (untyped-mean S)))
-
-(: max-overhead (-> Summary Real))
-(define (max-overhead S)
-  (/ (max-lattice-point S) (untyped-mean S)))
-
-(: typed/untyped-ratio (-> (U Summary Path-String) Real))
-(define (typed/untyped-ratio d)
-  (if (summary? d)
-    (typed/untyped-ratio/S d)
-    (typed/untyped-ratio/path d)))
-
-(: typed/untyped-ratio/S (-> Summary Real))
-(define (typed/untyped-ratio/S S)
+(: typed/untyped-ratio (-> Summary Real))
+(define (typed/untyped-ratio S)
   (/ (typed-mean S) (untyped-mean S)))
-
-(: typed/untyped-ratio/path (-> Path-String Real))
-(define (typed/untyped-ratio/path p)
-  (with-input-from-file p
-    (lambda ()
-      (let ([u (mean (read-untyped))]
-            [t (mean (read-typed))])
-        (/ t u)))))
 
 ;; Count the number of configurations with performance no worse than N times untyped
 (: deliverable (-> Summary Real Natural))
