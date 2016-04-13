@@ -131,7 +131,7 @@
       (colorize
         (linewidth (integer->line-width i)
           (linestyle (integer->pen-style i)
-            (hline HSHIM 5)))
+            (hline (* 2 HSHIM) 5)))
         (cast c-val (List Byte Byte Byte)))
       (mytext (string-append " : " descr))))
   ;; TODO spacing is sometimes wrong... recompiling fixes but otherwise this looks okay
@@ -224,7 +224,7 @@
       (lnm-plot S*)))
   (if (*SINGLE-PLOT?*)
     L-pict*
-    (let* ([txt (text (get-project-name (car S*))
+    (let* ([txt (text (or title (get-project-name (car S*)))
                       (cons 'bold (*TABLE-FONT-FACE*))
                       (*TABLE-FONT-SIZE*))]
            [V 2]
