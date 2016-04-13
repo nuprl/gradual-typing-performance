@@ -464,18 +464,27 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @; -----------------------------------------------------------------------------
 @section[]{Results}
 
-@Figure-ref{fig:lnm} (and more?) present our results.
-
 @(let ([lnm* (make-lnm-plot* (*RKT-VERSIONS*))]
        [get-caption
         (lambda (i)
          (case i
-          [else "L-N/M Plots"]))])
-  (for/list ([lnm (in-list lnm*)]
-             [i (in-naturals 1)])
-    (figure (format "fig:lnm:~a" i)
-            (get-caption i)
-            lnm)))
+          [else "L-N/M Plots"]))]
+       [fig-lnm-name* (box '())])
+  (list
+    (for/list ([lnm (in-list lnm*)]
+               [i (in-naturals 1)])
+      (define name (format "fig:lnm:~a" i))
+      (set-box! fig-lnm-name* (cons name (unbox fig-lnm-name*)))
+      (figure name
+              (get-caption i)
+              lnm))
+    @elem{
+      @(apply Figure-ref (reverse (unbox fig-lnm-name*)))
+       present our results.
+    }))
+
+
+@todo{STOP READING TEXT}
 
 @; TODO reading the figures
 @; - axis
