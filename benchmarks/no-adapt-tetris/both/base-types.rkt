@@ -1,10 +1,10 @@
 #lang typed/racket
 
 (define-type Color Symbol)
-(define-type Posn (Pairof 'posn (Listof Any)))
-(define-type Block (Pairof 'block (Listof Any)))
-(define-type Tetra (Pairof 'tetra (Listof Any)))
-(define-type World (Pairof 'world (Listof Any)))
+(define-type Posn (Pairof 'posn (List Real Real)))
+(define-type Block (Pairof 'block (List Real Real Color)))
+(define-type Tetra (Pairof 'tetra (List Posn (Listof Block))))
+(define-type World (Pairof 'world (List Tetra (Listof Block))))
 
 (require benchmark-util)
 (require/typed/check "data.rkt"

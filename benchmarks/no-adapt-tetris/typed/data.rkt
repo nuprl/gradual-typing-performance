@@ -1,22 +1,27 @@
 #lang typed/racket
 (require benchmark-util)
 (require (for-syntax racket/base syntax/parse racket/syntax))
+
+
+
+
 (define-syntax (struct2 stx)
   (syntax-parse stx #:datum-literals (:)
    [(_ name:id ([f*:id : t*] ...))
-    #:with ((name-f* i*) ...)
+    #:with ((name-f* cad*r) ...)
       (for/list ([f (in-list (syntax-e #'(f* ...)))]
-                 [i (in-naturals 1)])
-        (list (format-id stx "~a-~a" (syntax-e #'name) (syntax-e f)) i))
+                 [i (in-naturals 0)])
+        (list (format-id stx "~a-~a" (syntax-e #'name) (syntax-e f))
+              (format-id stx "ca~ar" (make-string i #\d))))
     #:with Name (format-id stx "~a" (string-titlecase (symbol->string (syntax-e #'name))))
     (syntax/loc stx (begin
-      (define-type Name (Pairof 'name (Listof Any)))
+      (define-type Name (Pairof 'name (List t* ...)))
       (provide Name)
       (define (name (f* : t*) ...) : Name
         (list 'name f* ...))
       (provide name)
       (define (name-f* (p : Name)) : t*
-        (cast (list-ref p 'i*) t*))
+        (ann (cad*r (cdr p)) t*))
       ...
       (provide name-f* ...)
     ))]))
