@@ -120,7 +120,7 @@ Here are the Changes:
    b. `require`ing an adapted module should use the `require/adapted` form. (require/adapted "adaptee.rkt" "adaptor.rkt")
    c. `provide`ing should use the `safe-and-unsafe-provide` form.
 3. For adaptors
-   a. Use `#lang benchmark-util`
+   a. Use `#lang benchmark-util/adaptor`
 
 For external dependencies...I'm not sure.
    
