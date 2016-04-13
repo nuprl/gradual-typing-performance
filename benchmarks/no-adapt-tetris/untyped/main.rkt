@@ -1,5 +1,5 @@
 #lang racket
-
+(require benchmark-util)
 (require/check "aux.rkt" "world.rkt" "bset.rkt" "data.rkt")
 
 (define (world0)

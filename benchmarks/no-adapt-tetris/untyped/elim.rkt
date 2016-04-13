@@ -1,8 +1,8 @@
 #lang racket
-
-(require "data.rkt"
-         "bset.rkt"
-         "consts.rkt")
+(require benchmark-util)
+(require/check "data.rkt"
+               "bset.rkt"
+               "consts.rkt")
 
 ;; eliminate-full-rows : BSet -> BSet
 ;; Eliminate all full rows and shift down appropriately.

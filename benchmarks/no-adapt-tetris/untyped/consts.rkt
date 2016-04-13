@@ -6,5 +6,3 @@
 (provide block-size
          board-width
          board-height)
-
-

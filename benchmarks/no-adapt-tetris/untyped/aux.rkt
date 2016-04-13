@@ -1,5 +1,5 @@
 #lang racket
-
+(require benchmark-util)
 (require/check "data.rkt"
                "tetras.rkt")  
 
