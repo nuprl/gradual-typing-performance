@@ -104,14 +104,24 @@
     (define num-L (length normL))
     (for/list : (Listof String)
               ([x (in-list normL)])
-      (l-index->string x))]))
+      (format "k = ~a" x))]))
+
+;; old formatting function
+(: l-index->string (-> Integer (-> Integer String)))
+(define ((l-index->string num-L) i)
+  (cond [(zero? i)
+         (format "L = ~a" i)]
+        [(= num-L i)
+         (format "\t~a  (steps)" i)]
+        [else
+         (number->string i)]))
 
 ;; Optional argument: list of Racket versions
 (: make-legend (->* [] [(Listof String)] Pict))
 (define (make-legend [version* '("# k-step D/U-usable")])
   ;; VSHIM separates 2 rows in the legend
   (define VSHIM (*TITLE-VSPACE*))
-  (define HSHIM (*GRAPH-HSPACE*))
+  (define HSHIM (* 3 (*GRAPH-HSPACE*)))
   (: mytext (->* (String) ((U #f 'italic)) Pict))
   (define (mytext str [mystyle #f])
     (text str
@@ -132,32 +142,28 @@
       (colorize
         (linewidth (integer->line-width i)
           (linestyle (integer->pen-style i)
-            (hline (* 2 HSHIM) 5)))
+            (hline HSHIM 5)))
         (cast c-val (List Byte Byte Byte)))
       (mytext (string-append " : " descr))))
   ;; TODO spacing is sometimes wrong... recompiling fixes but otherwise this looks okay
   ;; LEGEND
   ;;  +--------------------------+
-  ;;  | x  N    ---- yo
-  ;;  | y  M    ---- lo
+  ;;  | x  ---- yo   ---- lo     |
+  ;;  | y                        |
   ;;  +--------------------------+
   (define N-RULE (myrule "orange" (*N-COLOR*) "N" (*N*)))
   (define M-RULE (myrule "grey" (*M-COLOR*) "M" (*M*)))
-  (vl-append*/2 (* 4 HSHIM) VSHIM
-    (list*
-      (mytext "x-axis: overhead")
-      (mytext "y-axis: #configs")
-      N-RULE
-      M-RULE
-      (for/list : (Listof Pict)
-                ([v (in-list version*)]
-                 [i (in-naturals 1)])
-        (let-values (((color-txt color-val) (int->color i)))
-          (myline color-txt color-val v i))))))
-
-(: int->style (-> Integer String))
-(define (int->style i)
-  (last (string-split (format "~a" (integer->pen-style i)) "-")))
+  (hc-append (* HSHIM 3)
+    (vl-append VSHIM
+      (mytext "x-axis: Overhead")
+      (mytext "y-axis: % Acceptable configs."))
+    (vl-append*/2 HSHIM VSHIM
+      (list*
+        (for/list : (Listof Pict)
+                  ([v (in-list version*)]
+                   [i (in-naturals 1)])
+          (let-values (((color-txt color-val) (int->color i)))
+            (myline color-txt color-val v i)))))))
 
 (: vl-append*/2 (-> Real Real (Listof Pict) Pict))
 (define (vl-append*/2 h v p*)
@@ -179,6 +185,10 @@
               ([acc (car p*)])
               ([p (in-list (cdr p*))])
       (hc-append h acc p))))
+
+(: int->style (-> Integer String))
+(define (int->style i)
+  (last (string-split (format "~a" (integer->pen-style i)) "-")))
 
 ;; Return a descriptive name and "actual" color value corresponding to an integer.
 ;;  (Should match the plot library's encoding from integers to colors)
