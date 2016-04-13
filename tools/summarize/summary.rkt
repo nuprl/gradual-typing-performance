@@ -113,6 +113,12 @@
 
   (string->version
    (-> String (U #f String)))
+
+  (N-deliverable
+   (-> Real (-> Summary Natural)))
+
+  (typed/untyped-ratio
+   (-> Summary Real))
 )
 (provide
   (rename-out
@@ -578,8 +584,12 @@
   (define (f acc mean) (+ acc (* mean 1/N)))
   (fold-lattice sm f #:init 0))
 
+(: typed/untyped-ratio (-> Summary Real))
+(define (typed/untyped-ratio S)
+  (/ (typed-mean S) (untyped-mean S)))
+
 ;; Count the number of configurations with performance no worse than N times untyped
-(: deliverable (-> Summary Index Natural))
+(: deliverable (-> Summary Real Natural))
 (define (deliverable sm N)
   (define baseline (* N (untyped-mean sm)))
   (: count-N (-> Natural Real Natural))
@@ -592,6 +602,10 @@
      ;; Cast should be unnecessary, but can't do polymorphic keyword args in fold-lattice
      ;; 2016-04-16: pretty sure 'inst' could fix this
      (cast (fold-lattice sm count-N #:init 0) Natural)))
+
+(: N-deliverable (-> Real (-> Summary Natural)))
+(define ((N-deliverable N) S)
+  (deliverable S N))
 
 (: usable (-> Summary Index Index Natural))
 (define (usable sm N M)
