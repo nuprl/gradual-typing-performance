@@ -16,6 +16,7 @@
 )
 
 (require benchmark-util/data-lattice
+         ffi/unsafe/atomic
          "stats-helpers.rkt"
          (only-in glob in-glob)
          (only-in racket/file file->value)
@@ -170,11 +171,13 @@
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
-                   (process (format "~a~aracket -e '~s'"
-                              (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-                              (*racket-bin*)
-                              command)
-                            #:set-pwd? #t))
+                   (call-as-atomic
+                    (λ ()
+                     (process (format "~a~aracket -e '~s'"
+                                      (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                                      (*racket-bin*)
+                                      command)
+                              #:set-pwd? #t))))
                  ;; if this match fails, something went wrong since we put time in above
                  (define time-info
                    (for/or ([line (in-list (port->lines in))])
@@ -185,7 +188,7 @@
                                (app string->number gc))
                     (printf "job#~a, iteration#~a - cpu: ~a real: ~a gc: ~a~n"
                             job# i cpu real gc)
-                    (set! times (cons real times))]
+                    (set! times (cons cpu times))]
                    [#f (runtime-error var var-idx)])
                  ;; print anything we get on stderr so we can detect errors
                  (for-each displayln (port->lines err))
