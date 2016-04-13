@@ -119,9 +119,9 @@
      [(andmap pair? L*-arg)
       L*-arg]
      [else
-       (for/list : (Listof (List Natural Plot-Pen-Style))
-                 ([l (in-list L*-arg)])
-         (list l (line-style)))]))
+      (for/list : (Listof (List Natural Plot-Pen-Style))
+                ([l (in-list L*-arg)])
+        (list l (line-style)))]))
   (define ymax : Index
     ;; Assert that all summaries have the same number of configurations
     ;; (Sorry the error-handling is a little wild)
@@ -220,7 +220,8 @@
             (define shape (next-shape))
             (define sty (integer->pen-style i))
             (define w (integer->line-width i))
-            (if (*HISTOGRAM?*)
+            (cond
+             [(*HISTOGRAM?*)
               (cons
                 (area-histogram
                   (count-configurations/mean
@@ -235,11 +236,12 @@
                   #:label (and (*LINE-LABELS?*) lbl)
                   #:line-style st
                   #:line-color c
-                  #:line-width w) acc)
+                  #:line-width w) acc)]
+             [(*ERROR-BAR?*)
               (append
                 (discrete-function
                   (count-configurations/standard-error
-                  ;(count-configurations/confidence-interval
+                  ;count-configurations/confidence-interval
                     S (assert L index?)
                     #:cache-up-to (assert xmax index?)
                     #:percent? (eq? (*Y-STYLE*) '%)
@@ -250,8 +252,22 @@
                   #:samples num-samples
                   #:style sty
                   #:sym shape
-                  #:width w) acc))
-              ))))
+                  #:width w) acc)]
+             [else
+              (cons
+                (function
+                  (count-configurations/mean
+                    S (assert L index?)
+                    #:cache-up-to (assert xmax index?)
+                    #:percent? (eq? (*Y-STYLE*) '%)
+                    #:pdf? pdf?)
+                  0 xmax
+                  #:color c
+                  #:label (and (*LINE-LABELS?*) lbl)
+                  #:samples num-samples
+                  #:style sty
+                  #:width w) acc)]
+              )))))
     (: make-plot (-> (Listof renderer2d) pict))
     (define (make-plot LNM)
       (cast ;; dammit, Neil re-defined 'Pict'
@@ -516,10 +532,10 @@
 ;; Good = no more than `L` steps away from a configuration
 ;;        with average runtime less than `good-threshold`.
 (: make-configuration->good? (->* [Summary Real (-> Summary String Real)] [#:L Index] (-> Bitstring Boolean)))
-(define (make-configuration->good? summary good-threshold f #:L [L 0])
+(define (make-configuration->good? S good-threshold f #:L [L 0])
   (lambda ([var : String])
     (for/or ([var2 (cons var (in-reach var L))])
-      (<= (f summary var2)
+      (<= (f S var2)
          good-threshold))))
 
 ;; -----------------------------------------------------------------------------
@@ -570,6 +586,7 @@
 ;; --- plotting utils
 
 ;; Like plot's `function`, but does not connect points with a line
+;; Assumes parameter *ERROR-BAR?* is #t
 (: discrete-function (-> (Listof (-> Real Natural)) Real Real #:color Natural
                                                   #:label (U #f String)
                                                   #:samples Natural
@@ -606,24 +623,22 @@
          #:label lbl
          #:style sty
          #:width w))))
-  (if (*ERROR-BAR?*)
-    (list
-      pts
-      (error-bars
-        (for/list : (Listof (Listof Real))
-                  ([x* (in-list point**)])
-          (define x (car x*))
-          (define lo (caddr x*))
-          (define hi (cadddr x*))
-          ;(unless (>= lo hi)
-          ;  (raise-user-error 'lnm-plot "Bad error bounds [~a , ~a]. Should have lower count on the right (i.e. fewer acceptable configs using the upper-bound mean)." lo hi))
-          (define diff (- lo hi))
-          (list x (+ hi (/ diff 2)) diff))
-        #:alpha 0.5
-        #:color c
-        #:line-width (*ERROR-BAR-LINE-WIDTH*)
-        #:width (*ERROR-BAR-WIDTH*)))
-    (list pts)))
+  (list
+    pts
+    (error-bars
+      (for/list : (Listof (Listof Real))
+                ([x* (in-list point**)])
+        (define x (car x*))
+        (define lo (caddr x*))
+        (define hi (cadddr x*))
+        ;(unless (>= lo hi)
+        ;  (raise-user-error 'lnm-plot "Bad error bounds [~a , ~a]. Should have lower count on the right (i.e. fewer acceptable configs using the upper-bound mean)." lo hi))
+        (define diff (- lo hi))
+        (list x (+ hi (/ diff 2)) diff))
+      #:alpha 0.5
+      #:color c
+      #:line-width (*ERROR-BAR-LINE-WIDTH*)
+      #:width (*ERROR-BAR-WIDTH*))))
 
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional

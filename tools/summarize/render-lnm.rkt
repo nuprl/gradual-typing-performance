@@ -353,6 +353,8 @@
   (define pict**
     (for/list : (Listof (Listof Pict))
               ([title+rktd : (Pairof (Option String) (Listof String)) (in-list title+rktd*)])
+      (collect-garbage 'major)
+      (printf "INFO: building pict for data files '~a'\n" (cdr title+rktd))
       (file->pict* (cdr title+rktd) #:title (car title+rktd))))
   ;; Align all picts vertically first
   (define column* : (Listof Pict)
@@ -551,6 +553,7 @@
    (when (null? arg*)
      (raise-user-error "Usage: render-lnm.rkt DATA.rktd ..."))
    ;; -- Create a pict
+   (printf "INFO: render-lnm '~a'\n" arg*)
    (define P
       (data->pict
         (for/list : (Listof (List String String))
