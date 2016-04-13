@@ -489,15 +489,6 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @; - interesting shapes
 @; - common shapes
 
-@; (no sense wasting space on each figure)
-
-@; 
-
-
-
-@; TODO
-@; - maybe best to ease in to L-NM plots with an example; don't draw all lines yet
-@; - change name from L-NM, add "backwards compat. section
 
 The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figure-ref}
  summarize the results from exhaustively exploring the performance lattices of
@@ -537,6 +528,13 @@ Taking @id[EXAMPLE-BENCHMARK] for example, the leftmost plot shows that
  over the untyped configuration on Racket version 6.2.
 Upgrading to Racket version @todo{6.4.0.5} gives @todo{modest}.
 
+
+@; -----------------------------------------------------------------------------
+@; --- lnm characteristics
+
+@figure*["fig:lnm-characteristics" "LNM summary"
+  @(lnm-characteristics (*RKT-VERSIONS*))
+]
 
 @; -----------------------------------------------------------------------------
 @; @section[#:tag "sec:all-results"]{Interpretation}

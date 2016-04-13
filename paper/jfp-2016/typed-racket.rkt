@@ -1,8 +1,13 @@
 #lang racket/base
 
+;; TODO
+;; - use more parameters, especially for RKT VERSIONS
+;;   probly also for benchmark data
+
 ;; Supporting code for `typed-racket.scrbl`
 ;; - Render & organize benchmarks
 ;; - Make L-N/M figures
+
 
 (provide
   EXAMPLE-BENCHMARK ;; Symbol
@@ -69,6 +74,8 @@
   lnm-descriptions
   ;; (-> Lnm * Any)
 
+  lnm-characteristics
+
   (rename-out [make-lnm lnm])
   ;; (->* [Symbol] [] #:rest (Listof String) Lnm)
 
@@ -90,12 +97,14 @@
  gtp-summarize/lnm-parameters
  gtp-summarize/render-lnm
  gtp-summarize/modulegraph
+ gtp-summarize/summary
  racket/match
- (only-in racket/file file->value)
- (only-in racket/port with-input-from-string)
  (only-in "common.rkt" etal cite exact parag)
+ (only-in racket/file file->value)
+ (only-in racket/format ~r)
  (only-in racket/list last append* split-at)
- (only-in racket/string string-prefix?)
+ (only-in racket/port with-input-from-string)
+ (only-in racket/string string-prefix? string-join)
  scribble/core
  scribble/base
  version/utils
@@ -109,11 +118,14 @@
 ;; -----------------------------------------------------------------------------
 ;; -- Organizing the benchmarks
 
-(define *CACHE-BENCHMARKS-TABLE?* (make-parameter #t))
+(define *CACHE-TABLE?* (make-parameter #t))
 ;; TODO fix this
 
 (define *COMPILED* (make-parameter "./compiled"))
 ;; Where Racket stores compiled files
+
+(define *LNM-DESCRIPTIONS-CACHE* (make-parameter "cache-lnm-descriptions.rktd"))
+;; Place to store cached lnm table
 
 (define *BENCHMARK-DESCRIPTIONS-CACHE* (make-parameter "cache-benchmark-descriptions.rktd"))
 ;; Place to store cached benchmarks table
@@ -311,8 +323,11 @@
     (expt 2 (benchmark->num-modules b))))
 
 (define (benchmark<? b1 b2)
-  (< (benchmark->num-modules b1)
-     (benchmark->num-modules b2)))
+  (define m1 (benchmark->num-modules b1))
+  (define m2 (benchmark->num-modules b2))
+  (or (< m1 m2)
+      (and (= m1 m2)
+           (symbol<? (benchmark-name b1) (benchmark-name b2)))))
 
 ;; If exact?, use the specific names and not the 'umbrella' benchmark names.
 ;; (-> Boolean (Listof Symbol))
@@ -374,8 +389,8 @@
     "\\end{tabular}\n\n"))
 
 (define (get-benchmarks-table)
-  (or (and (*CACHE-BENCHMARKS-TABLE?*) (uncache-benchmarks-table))
-      (cache-table (new-benchmarks-table))))
+  (or (and (*CACHE-TABLE?*) (uncache-benchmarks-table))
+      (cache-table (new-benchmarks-table) #:cache (benchmark-descriptions-cache))))
 
 (define (benchmark-descriptions-cache)
   (build-path (*COMPILED*) (*BENCHMARK-DESCRIPTIONS-CACHE*)))
@@ -395,11 +410,18 @@
               (printf "INFO: retrieving cached benchmarks table from '~a'\n" bdc)
               (cdr tag+data)))))
 
-(define (cache-table T)
+(define (uncache-lnm-table)
+  (define ldc (lnm-descriptions-cache))
+  (and (file-exists? ldc)
+       (let ([tag+data (file->value ldc)])
+         (and (equal? (car tag+data) benchmark-name*)
+              (printf "INFO: retrieving cached LNM table from '~a'\n" ldc)
+              (cdr tag+data)))))
+
+(define (cache-table T #:cache c)
   (ensure-dir (*COMPILED*))
-  (define bdc (benchmark-descriptions-cache))
-  (printf "INFO: caching new benchmarks table at '~a'\n" bdc)
-  (with-output-to-file bdc #:exists 'replace
+  (printf "INFO: caching new table at '~a'\n" c)
+  (with-output-to-file c #:exists 'replace
     (lambda ()
       (writeln (cons benchmark-name* T))))
   T)
@@ -563,7 +585,6 @@
   (unless (unbox benchmark-data*)
     (raise-user-error 'make-lnm-plot* "Missing benchmark data. Need to call `benchmark-descriptions` earlier in the file."))
   ;; Sort & make figures of with 6 plots each or whatever
-  (define data-root (string-append (get-git-root) "/data"))
   (parameterize ([*AXIS-LABELS?* #f]
                  [*L* '(0 1)]
                  [*L-LABELS?* #t]
@@ -582,15 +603,69 @@
                  [*Y-MINOR-TICKS* '(25 75)]
                  [*Y-NUM-TICKS* 3]
                  [*Y-STYLE* '%])
-    (for/list ([n* (in-list (split-list 5 (sorted-benchmark-names)))]
+    (for/list ([rktd** (in-list (split-list 5 (get-lnm-rktd** version*)))]
                [i (in-naturals 1)])
-      (define fname* (for*/vector ([n (in-list n*)]
-                                   [v (in-list version*)])
-                       (define n+ (if (eq? n 'zordoz) "zordoz.6.[23]" n))
-                       (glob/first (format "~a/~a/~a-*.rktd" data-root v n+))))
-      (parameterize ([*CACHE-TAG* #f]) ;;(number->string i)])
+      (parameterize ([*CACHE-TAG* (number->string i)])
         (collect-garbage 'major)
-        (render-lnm fname*)))))
+        (render-lnm (list->vector (append* rktd**)))))))
+
+(define (get-lnm-rktd** version*)
+  (define data-root (string-append (get-git-root) "/data"))
+  (for/list ([n (in-list (sorted-benchmark-names))])
+    (define n+ (if (eq? n 'zordoz) "zordoz.6.[23]" n))
+    (for/list ([v (in-list version*)])
+      (glob/first (format "~a/~a/~a-*.rktd" data-root v n+)))))
+
+(define LNM-OVERHEAD* '(0.2 3 10))
+
+(define LNM-TABLE-TITLE* '(
+  "Benchmark"
+  "\\twoline{Typed/Untyped}{Ratio}"
+  "Mean Overhead"
+  "Max Overhead"
+  ;(for/list ([over (in-list LNM-OVERHEAD*)])
+  ;  (format "~a-deliverable" over))))
+))
+
+(define (lnm-characteristics version*)
+  (exact
+    "\\setlength{\\tabcolsep}{0.2em}"
+    (format "\\begin{tabular}{l~a}" (make-string (sub1 (length LNM-TABLE-TITLE*)) #\r))
+    (apply elem (get-lnm-table version*))
+    "\\end{tabular}\n\n"))
+
+(define (lnm-descriptions-cache)
+  (build-path (*COMPILED*) (*LNM-DESCRIPTIONS-CACHE*)))
+
+(define (get-lnm-table version*)
+  (or (and (*CACHE-TABLE?*) (uncache-lnm-table))
+      (cache-table (new-lnm-table version*) #:cache (lnm-descriptions-cache))))
+
+(define (new-lnm-table version*)
+  (list*
+    " \\toprule \n"
+    (apply tex-row LNM-TABLE-TITLE*)
+    " \\midrule \n"
+    (for/list ([rktd* (in-list (get-lnm-rktd** version*))])
+      (define name (fname->title (car rktd*)))
+      (printf "INFO: building table row for '~a'\n" name)
+      (collect-garbage 'major)
+      (define S* (map from-rktd rktd*))
+      (tex-row
+        name
+        (format-stat* typed/untyped-ratio S* #:precision 2)
+        (format-stat* avg-overhead S*)
+        (format-stat* max-overhead S*)
+        ;(for/list ([overhead (in-list LNM-OVERHEAD*)])
+        ;  (format-stat* (N-deliverable overhead) S*))
+      ))))
+
+;; TODO put these in sub-table
+(define (format-stat* f S* #:precision [p 0])
+  (string-join
+    (for/list ((S (in-list S*)))
+      (~r (f S) #:precision p))
+    "~~"))
 
 (define (lnm-summary . version*)
   (elem "TODO"))
