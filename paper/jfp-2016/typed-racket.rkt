@@ -95,6 +95,7 @@
  (only-in racket/port with-input-from-string)
  (only-in "common.rkt" etal cite exact parag)
  (only-in racket/list last append* split-at)
+ (only-in racket/string string-prefix?)
  scribble/core
  scribble/base
  version/utils
@@ -564,27 +565,30 @@
   ;; Sort & make figures of with 6 plots each or whatever
   (define data-root (string-append (get-git-root) "/data"))
   (parameterize ([*AXIS-LABELS?* #f]
-                 [*L* '(0 1 2)]
+                 [*L* '(0 1)]
                  [*L-LABELS?* #t]
                  [*LEGEND?* #t]
                  [*LINE-LABELS?* #f]
                  [*LOG-TRANSFORM?* #t]
-                 [*M* 10]
+                 [*M* #f]
                  [*MAX-OVERHEAD* 20]
-                 [*N* 1.2]
+                 [*N* #f]
                  [*NUM-SAMPLES* 60]
-                 [*PLOT-FONT-SCALE* 0.06]
+                 [*PLOT-FONT-SCALE* 0.04]
                  [*PLOT-HEIGHT* 100]
-                 [*PLOT-WIDTH* 140]
+                 [*PLOT-WIDTH* 220]
                  [*SINGLE-PLOT?* #f]
-                 [*X-TICKS* '(1 2 4 6 10 20)])
+                 [*X-TICKS* '(1 2 4 6 8 10 15 20)]
+                 [*Y-NUM-TICKS* 3]
+                 [*Y-STYLE* '%])
     (for/list ([n* (in-list (split-list 5 (sorted-benchmark-names)))]
                [i (in-naturals 1)])
       (define fname* (for*/vector ([n (in-list n*)]
                                    [v (in-list version*)])
-                       (define n+ (if (eq? n 'zordoz) "zordoz.6.[23]" n))
+                       (define n- (if (string-prefix? (format "~a" n) "quad") 'morsecode n))
+                       (define n+ (if (eq? n- 'zordoz) "zordoz.6.[23]" n-))
                        (glob/first (format "~a/~a/~a-*.rktd" data-root v n+))))
-      (parameterize ([*CACHE-TAG* (number->string i)])
+      (parameterize ([*CACHE-TAG* #f]) ;;(number->string i)])
         (render-lnm fname*)))))
 
 (define (lnm-summary . version*)
