@@ -571,7 +571,6 @@
    (when (null? arg*)
      (raise-user-error "Usage: render-lnm.rkt DATA.rktd ..."))
    ;; -- Create a pict
-   (printf "INFO: render-lnm '~a'\n" arg*)
    (define P
       (data->pict
         (for/list : (Listof (List String String))
