@@ -117,6 +117,12 @@
   (N-deliverable
    (-> Real (-> Summary Natural)))
 
+  (avg-overhead
+   (-> Summary Real))
+
+  (max-overhead
+   (-> Summary Real))
+
   (typed/untyped-ratio
    (-> Summary Real))
 )
@@ -653,9 +659,24 @@
   (define (f acc mean) (+ acc (* mean 1/N)))
   (fold-lattice sm f #:init 0))
 
+;; TODO this is temporary, until we have real quadBG data
+(: // (-> Real Real Real))
+(define (// r1 r2)
+  (if (zero? r2)
+    (begin (printf "WTF div by zero ~a ~a\n" r1 r2) 0)
+    (cast (/ r1 r2) Real)))
+
+(: avg-overhead (-> Summary Real))
+(define (avg-overhead S)
+  (// (avg-lattice-point S) (untyped-mean S)))
+
+(: max-overhead (-> Summary Real))
+(define (max-overhead S)
+  (// (max-lattice-point S) (untyped-mean S)))
+
 (: typed/untyped-ratio (-> Summary Real))
 (define (typed/untyped-ratio S)
-  (/ (typed-mean S) (untyped-mean S)))
+  (// (typed-mean S) (untyped-mean S)))
 
 ;; Count the number of configurations with performance no worse than N times untyped
 (: deliverable (-> Summary Real Natural))
