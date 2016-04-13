@@ -218,7 +218,8 @@
             (define shape (next-shape))
             (define sty (integer->pen-style i))
             (define w (integer->line-width i))
-            (if (*HISTOGRAM?*)
+            (cond
+             [(*HISTOGRAM?*)
               (cons
                 (area-histogram
                   (count-configurations/mean
@@ -263,9 +264,8 @@
                   #:label (and (*LINE-LABELS?*) lbl)
                   #:samples num-samples
                   #:style sty
-                  #:sym shape
-                  #:width w) acc))
-              ))))
+                  #:width w) acc)]
+              )))))
     (: make-plot (-> (Listof renderer2d) pict))
     (define (make-plot LNM)
       (cast ;; dammit, Neil re-defined 'Pict'
@@ -793,12 +793,6 @@
       #:color c
       #:line-width (*ERROR-BAR-LINE-WIDTH*)
       #:width (*ERROR-BAR-WIDTH*))))
-
-(: exponential-seq (-> Real Real (Listof Real)))
-(define (exponential-seq lo hi)
-  (for*/list : (Listof Real)
-             ([e (in-range lo hi)])
-    (expt 10 e)))
 
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional

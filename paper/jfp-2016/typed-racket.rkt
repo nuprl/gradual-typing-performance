@@ -586,8 +586,7 @@
                [i (in-naturals 1)])
       (define fname* (for*/vector ([n (in-list n*)]
                                    [v (in-list version*)])
-                       (define n- (if (string-prefix? (format "~a" n) "quad") 'morsecode n))
-                       (define n+ (if (eq? n- 'zordoz) "zordoz.6.[23]" n-))
+                       (define n+ (if (eq? n 'zordoz) "zordoz.6.[23]" n))
                        (glob/first (format "~a/~a/~a-*.rktd" data-root v n+))))
       (parameterize ([*CACHE-TAG* #f]) ;;(number->string i)])
         (collect-garbage 'major)

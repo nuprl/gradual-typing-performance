@@ -58,9 +58,6 @@
   ; (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
-  (configuration->standard-error
-   (-> Summary Bitstring Real))
-
   (configuration->confidence
    (-> Summary Bitstring (Pairof Real Real)))
 
@@ -317,14 +314,13 @@
   (validate-modulegraph path dataset mg)
   (summary path dataset mg))
 
-(define EMPTY-UT : UnixTime (time->unixtime 1))
-(define EMPTY-DATASET : Dataset (vector (list EMPTY-UT)))
+(define EMPTY-DATASET '#((1)))
 
 (: dataset-empty? (-> Dataset Boolean))
 (define (dataset-empty? ds)
   (and (= 1 (vector-length ds))
        (= 1 (length (vector-ref ds 0)))
-       (= 1 (unixtime-real (car (vector-ref ds 0))))))
+       (= 1 (car (vector-ref ds 0)))))
 
 ;; Parse a dataset from a filepath.
 (: rktd->dataset (-> Path Dataset))
@@ -336,10 +332,10 @@
   (define vec
     (if (small-file? path)
       (begin
-        ;(printf "INFO: reading vector from '~a'\n" path)
+        (printf "INFO: reading vector from '~a'\n" path)
         (file->value path))
       (begin
-        ;(printf "INFO: detected large file '~a'\n" path)
+        (printf "INFO: detected large file '~a'\n" path)
         EMPTY-DATASET)))
   ;; Check invariants
   (validate-dataset vec))
@@ -388,34 +384,6 @@
 (: string->index* (-> String (Listof Index)))
 (define (string->index* str)
   (cast (with-input-from-string str read) (Listof Index)))
-
-(: read-untyped (-> (Listof Real)))
-(define (read-untyped)
-  (or (for/or : (U #f (Listof Index))
-              ([ln (in-lines)])
-        (and (data-line? ln) (string->index* ln)))
-      (raise-user-error 'read-untyped "No data lines in current input port")))
-
-(: read-configuration (-> Integer (Listof Real)))
-(define (read-configuration i)
-  (define j : (Boxof Integer) (box -1))
-  (or (for/or : (U #f (Listof Index))
-              ([ln (in-lines)]
-               #:when (and (data-line? ln)
-                           (set-box! j (+ 1 (unbox j)))
-                           (= i (unbox j))))
-        (string->index* ln))
-      (raise-user-error 'read-configuration "Failed to read configuration '~a'" i)))
-
-(: read-typed (-> (Listof Real)))
-(define (read-typed)
-  (define last-line
-    (or (for/fold : (U #f String)
-                  ([acc : (U #f String) #f])
-                  ([ln (in-lines)])
-          (if (data-line? ln) ln acc))
-        (raise-user-error 'read-typed "No data lines in current input port")))
-  (string->index* last-line))
 
 ;; Guess the location of the module graph matching the dataset
 (: infer-graph (-> Path (U #f Path)))
@@ -466,10 +434,6 @@
     (if (index? r)
       r
       (error 'get-num-paths "Factorial too large, not an index!\n"))))
-
-(: get-num-iterations (-> Summary Index))
-(define (get-num-iterations S)
-  (assert (fold-lattice S max #:pre length) index?))
 
 (: get-num-configurations (-> Summary Index))
 (define (get-num-configurations S)
@@ -532,8 +496,7 @@
 
 (: untyped-runtimes/path (-> Path-String (Listof Index)))
 (define (untyped-runtimes/path p)
-  (raise-user-error 'ur/path "not implemented")
-  #;(string->index*
+  (string->index*
     (with-input-from-file p
       (lambda ()
         (or
@@ -542,8 +505,8 @@
           (raise-user-error 'untyped-runtimes "No data in file '~a'" p))))))
 
 (: untyped-runtimes/vector (-> Dataset (Listof Index)))
-(define (untyped-runtimes/vector D)
-  (unixtime*->index* (vector-ref D 0)))
+(define (untyped-runtimes/vector d)
+  (vector-ref d 0))
 
 (: untyped-mean (-> Summary Real))
 (define (untyped-mean sm)
@@ -559,8 +522,7 @@
 
 (: typed-runtimes/path (-> Path-String (Listof Index)))
 (define (typed-runtimes/path p)
-  (raise-user-error 'tr/path "not implemented")
-  #;(string->index*
+  (string->index*
     (with-input-from-file p
       (lambda ()
         (or
@@ -574,8 +536,8 @@
           (raise-user-error 'Typed-runtimes "No data in file '~a'" p))))))
 
 (: typed-runtimes/vector (-> Dataset (Listof Index)))
-(define (typed-runtimes/vector D)
-  (unixtime*->index* (vector-ref D (sub1 (vector-length D)))))
+(define (typed-runtimes/vector d)
+  (vector-ref d (sub1 (vector-length d))))
 
 (: typed-mean (-> Summary Real))
 (define (typed-mean sm)
@@ -593,7 +555,7 @@
 (: configuration->standard-error (-> Summary Bitstring Real))
 (define (configuration->standard-error S v)
   (assert-configuration-length S v)
-  (index->standard-error S (bitstring->natural v)))
+  (index->stddev S (bitstring->natural v)))
 
 (: configuration->confidence-lo (-> Summary Bitstring Real))
 (define (configuration->confidence-lo S v)
@@ -611,12 +573,6 @@
 (: configuration->stddev (-> Summary Bitstring Real))
 (define (configuration->stddev S v)
   (index->stddev S (bitstring->natural v)))
-
-(: configuration->overhead (-> (U Summary Path-String) Bitstring Real))
-(define (configuration->overhead data v)
-  (if (summary? data)
-    (configuration->overhead/summary data v)
-    (configuration->overhead/path data v)))
 
 (: configuration->overhead/summary (-> Summary Bitstring Real))
 (define (configuration->overhead/summary S v)
@@ -667,39 +623,28 @@
           (raise-user-error 'index->runtimes "Bad data file '~a'" p))))))
 
 (: index->runtimes/vector (-> Dataset Index (Listof Real)))
-(define (index->runtimes/vector D i)
-  (unixtime*->index* (vector-ref D i)))
-
-(: index->standard-error (-> Summary Index Real))
-(define (index->standard-error sm i)
-  (stddev (vector-ref (summary-dataset sm) i)))
-
-(: index->confidence (-> Summary Index (Pairof Real Real)))
-(define (index->confidence sm i)
-  (confidence-interval (vector-ref (summary-dataset sm) i)))
+(define index->runtimes/vector vector-ref)
 
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
-;; #:init : initial value for the fold
-;; #:pre : converts a row of absolute runtimes to a single real number
-;;         defaults to the `mean` of the absolute runtimes
-(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real) #:pre (U #f (-> (Listof Real) Real))] Real))
-(define (fold-lattice S f #:init [init #f] #:pre [pre #f])
-  (define pre+ (if pre pre mean))
+(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
+(define (fold-lattice S f #:init [init #f])
   (define D (summary-dataset S))
   (if (dataset-empty? D)
-    (fold-lattice/path (summary-source S) f init pre+)
-    (fold-lattice/vector D f init pre+)))
+    (fold-lattice/path (summary-source S) f init)
+    (fold-lattice/vector D f init)))
 
-(: fold-lattice/path (-> Path-String (-> Real Real Real) (U #f Real) (-> (Listof Real) Real) Real))
-(define (fold-lattice/path p f init pre)
+(: fold-lattice/path (-> Path-String (-> Real Real Real) (U #f Real) Real))
+(define (fold-lattice/path p f init)
   (with-input-from-file p
     (lambda ()
       (define prev-box : (Boxof (U #f Real)) (box #f))
+      ;; -- skip first line
+      (void (for/or : Any ([ln (in-lines)]) (data-line? ln)))
       (or (for/fold : (U #f Real)
                     ([acc : (U #f Real) init])
                     ([ln (in-lines)]
                      #:when (data-line? ln))
-            (define curr (pre (string->index* ln)))
+            (define curr (mean (string->index* ln)))
             (define prev (unbox prev-box))
             (set-box! prev-box curr)
             (cond
@@ -712,16 +657,15 @@
              [else (raise-user-error 'fold-lattice/path "Everything is #f")]))
         0))))
 
-(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) (-> (Listof Real) Real) Real))
-(define (fold-lattice/vector D f init pre)
+
+(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) Real))
+(define (fold-lattice/vector D f init)
   (or
     (for/fold : (U #f Real)
               ([prev : (U #f Real) init])
-              ([i    (in-range (vector-length D))])
-      (define val (pre (unixtime*->index* (vector-ref D i))))
-      (if prev
-        (f prev val)
-        val))
+              ([i    (in-range 1 (sub1 (vector-length D)))])
+      (define val (mean (vector-ref D i)))
+      (or (and prev (f prev val)) val))
     0))
 
 (: min* (-> (Listof Real) Real))
