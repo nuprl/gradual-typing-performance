@@ -24,5 +24,6 @@
   (unless (list? raw) (error "bad input"))
   (replay w0 (reverse raw)))
 
-;(time (main SMALL_TEST)) ; 0ms
-(time (main LARGE_TEST)) ; 480ms
+(time (main SMALL_TEST)) ; 0ms
+;(time (main LARGE_TEST))
+                                        ; 480ms
