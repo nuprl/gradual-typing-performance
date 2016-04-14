@@ -35,5 +35,9 @@ proof:
 	echo "duplicates: "
 	perl scripts/duplicates.pl *.scrbl
 
+test:
+	raco make -v jfp-test.scrbl
+	scribble ++style texstyle.tex --pdf jfp-test.scrbl
+
 clean:
 	rm -r compiled
