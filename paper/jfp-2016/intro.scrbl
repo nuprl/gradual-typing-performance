@@ -15,6 +15,7 @@ Programmers use these languages to build applications
  ranging from telecommunications software@~cite[armstrong-2007]
  to social networking websites
  to an entire country's pension system@~cite[v-aplwa-2010].
+ @; TODO  why did Jan mark the citation?
 These software systems often begin as prototypes in which the flexibility of
  dynamic typing speeds development.
 But as programs grow in size and complexity, software maintenance
@@ -100,8 +101,7 @@ Given an untyped program and a fixed type assignment for all modules in the
 Hence a program with @exact{$N$} modules has @exact{$2^N$} configurations.
 We apply our framework to Typed Racket.
 The evaluation affirms that Typed Racket programs may suffer
- order-of-magnitude overhead, but also suggests concrete improvements to the language
- and quantifies the effect of implementing these and other improvements.
+ order-of-magnitude overhead, but also suggests concrete improvements.
 
 The method was originally presented in a conference publication@~cite[tfgnvf-popl-2016].
 We extend that prior work with:
