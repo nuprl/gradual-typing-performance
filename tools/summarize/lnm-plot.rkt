@@ -268,10 +268,17 @@
                   #:style sty
                   #:width w) acc)]
               )))))
+    (define ticks-renderer : (Listof renderer2d)
+      (let ([x? (*X-TICK-LINES?*)]
+            [y? (*Y-TICK-LINES?*)])
+        (cond [(and x? y?) (tick-grid)]
+              [x?          (list (x-tick-lines))]
+              [y?          (list (y-tick-lines))]
+              [else        '()])))
     (: make-plot (-> (Listof renderer2d) pict))
     (define (make-plot LNM)
       (cast ;; dammit, Neil re-defined 'Pict'
-       (plot-pict (cons (tick-grid) (append LNM elem*))
+       (plot-pict (append ticks-renderer LNM elem*)
         #:x-min 1
         #:x-max xmax
         #:y-min 0
@@ -671,7 +678,7 @@
   (define exact-x-ticks (*X-TICKS*))
   (define num-ticks (*X-NUM-TICKS*))
   (define tolerance 1/10)
-  (define round? (if exact-x-ticks #t #f))
+  (define round? (if exact-x-ticks #f #t))
   (define unit-str "x")
   (ticks (lambda ([ax-min : Real] [ax-max : Real])
            (for/list : (Listof pre-tick)
@@ -680,11 +687,10 @@
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
            (for/list : (Listof String) ([pt (in-list pre-ticks)])
              (define v (pre-tick-value pt))
-             (define str
-               (format "~a"
-                 (cond [round?  (round v)]
-                       [(integer? v)    v]
-                       [else (exact->inexact v)])))
+             (define str (format "~a"
+               (cond [round?        (round v)]
+                     [(integer? v)          v]
+                     [else (exact->inexact v)])))
              (if (= v ax-max)
                (string-append str "x")
                str)))))
