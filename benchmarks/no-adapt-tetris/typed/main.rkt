@@ -38,5 +38,5 @@
     (replay w0 (reverse raw))
     (error "bad input")))
 
-(time (main SMALL_TEST)) ; 0ms
-;; (time (main LARGE_TEST)) ; 417ms
+;;(time (main SMALL_TEST)) ; 0ms
+(time (main LARGE_TEST)) ; 417ms
