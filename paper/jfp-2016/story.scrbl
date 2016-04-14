@@ -12,7 +12,7 @@
 @; TR is for real, TR is gradual
 Our research is motivated by practical experience with Typed Racket@~cite[TypedRacket],
  the gradually-typed sister language of Racket@~cite[plt-tr1].
-Typed Racket implements macro-level (i.e. by-module) gradual typing.
+Typed Racket implements macro-level gradual typing.
 Programmers choose to invoke the type checker by writing @exact{\RktMeta{\#lang typed/racket}}
  at the beginning of a module.
 In contrast, modules declared using @exact{\RktMeta{\#lang racket}} are untyped.

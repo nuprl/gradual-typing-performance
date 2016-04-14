@@ -317,10 +317,10 @@
   (define vec
     (if (small-file? path)
       (begin
-        (printf "INFO: reading vector from '~a'\n" path)
+        ;(printf "INFO: reading vector from '~a'\n" path)
         (file->value path))
       (begin
-        (printf "INFO: detected large file '~a'\n" path)
+        ;(printf "INFO: detected large file '~a'\n" path)
         EMPTY-DATASET)))
   ;; Check invariants
   (validate-dataset vec))
