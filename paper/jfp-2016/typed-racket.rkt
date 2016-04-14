@@ -599,13 +599,16 @@
                  [*PLOT-HEIGHT* 100]
                  [*PLOT-WIDTH* 210]
                  [*SINGLE-PLOT?* #f]
+                 [*X-MINOR-TICKS* (for/list ([i (in-range 12 20 2)]) (/ i 10))]
+                 [*X-TICK-LINES?* #t] ;; TODO
                  [*X-TICKS* '(1 2 4 6 8 10 15 20)]
-                 [*Y-MINOR-TICKS* '(25 75)]
+                 ;[*Y-MINOR-TICKS* '(25 75)] ;; # TODO discuss ticks with asumu
                  [*Y-NUM-TICKS* 3]
+                 [*Y-TICK-LINES?* #t]  ;; TODO
                  [*Y-STYLE* '%])
     (for/list ([rktd** (in-list (split-list 5 (get-lnm-rktd** version*)))]
                [i (in-naturals 1)])
-      (parameterize ([*CACHE-TAG* (number->string i)])
+      (parameterize ([*CACHE-TAG* #f]) ;;(number->string i)])
         (collect-garbage 'major)
         (render-lnm (list->vector (append* rktd**)))))))
 
