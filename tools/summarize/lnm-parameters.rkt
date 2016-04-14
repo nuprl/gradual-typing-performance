@@ -99,11 +99,13 @@
 (defparam *CUTOFF-WIDTH* Nonnegative-Real thin)
 
 (defparam *TICK-SIZE* Natural 4) ;; Dude IDK
-(defparam *X-NUM-TICKS* Natural 5)
-(defparam *X-TICKS* (U #f (Listof Exact-Rational)) #f) ;; Takes precedence over num-ticks
 (defparam *X-MINOR-TICKS* (U #f (Listof Real)) #f)
-(defparam *Y-NUM-TICKS* Natural 6)
+(defparam *X-NUM-TICKS* Natural 5)
+(defparam *X-TICK-LINES?* Boolean #f)
+(defparam *X-TICKS* (U #f (Listof Exact-Rational)) #f) ;; Takes precedence over num-ticks
 (defparam *Y-MINOR-TICKS* (U #f (Listof Real)) #f)
+(defparam *Y-NUM-TICKS* Natural 6)
+(defparam *Y-TICK-LINES?* Boolean #f)
 (define-type Y-Style (U 'count '%))
 (defparam *Y-STYLE* Y-Style 'count)
 
