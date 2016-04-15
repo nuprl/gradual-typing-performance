@@ -196,5 +196,5 @@
     [(_ p-clause ...)
      #'(begin
          (typed:provide p-clause ...)
-         (module* unsafe #f
+         (module+ unsafe
            (typed:unsafe-provide p-clause ...)))]))
