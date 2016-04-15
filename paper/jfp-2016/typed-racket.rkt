@@ -118,6 +118,7 @@
     snake
     suffixtree
     synth
+    take5
     tetris
     zombie
     zordoz ;(zordoz zordoz.6.2 zordoz.6.3)
@@ -154,7 +155,7 @@
       (length (multi-rest n)))))
 
 (define (count-new-oo-benchmarks)
-  (length '(acquire forth fsmoo)))
+  (length '(acquire forth fsmoo take5)))
 
 (define COMPILED "./compiled") ;; Where Racket stores compiled files
 (define MODULE-GRAPH "./module-graphs") ;; Where to store module graphs
@@ -567,9 +568,10 @@
                  [*PLOT-HEIGHT* 100]
                  [*PLOT-WIDTH* 210]
                  [*SINGLE-PLOT?* #f]
-                 [*X-MINOR-TICKS* (for/list ([i (in-range 12 20 2)]) (/ i 10))]
+                 [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
+                                          (for/list ([i (in-range 4 20 2)]) i))]
                  [*X-TICK-LINES?* #t] ;; TODO
-                 [*X-TICKS* '(1 2 4 6 8 10 15 20)]
+                 [*X-TICKS* '(1 2 20)]
                  ;[*Y-MINOR-TICKS* '(25 75)] ;; # TODO discuss ticks with asumu
                  [*Y-NUM-TICKS* 3]
                  [*Y-TICK-LINES?* #t]  ;; TODO
