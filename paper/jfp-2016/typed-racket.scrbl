@@ -363,7 +363,8 @@ We performed the same experiment on three versions of Racket: version 6.2,
 @; {In particular,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
 The machine we used to take measurements was a Linux machine with
- 32 physical AMD Opteron 6376 2.3GHz cores and 128GB RAM.
+ physical two AMD Opteron 6376 2.3GHz processors and 128GB RAM.
+Each processors has 16 cores, giving us a total of 32.
 We dedicated 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
  was run to completion before starting the next benchmark.
@@ -496,7 +497,7 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @todo{STOP READING TEXT}
 
 @; TODO reading the figures
-@; - axis
+@; - axis, Bode diagrams
 @; - boring lines (choosing LNM)
 @; - interesting lines
 @; - k-step
