@@ -1,33 +1,15 @@
 #lang racket/base
 
 ;; TODO
-;; - use more parameters, especially for RKT VERSIONS
-;;   probly also for benchmark data
+;; - add take5
 
 ;; Supporting code for `typed-racket.scrbl`
 ;; - Render & organize benchmarks
 ;; - Make L-N/M figures
 
-
 (provide
-  EXAMPLE-BENCHMARK ;; Symbol
-  EXAMPLE-OVERHEAD  ;; Natural
-  ;; For discussion / prose
-
-  MAX-OVERHEAD
-  ;; Natural
-  ;; To generate L-N/M figures
-
-  NUM-NEW-OO
-  NUM-BENCHMARKS
-  ;; Natural
-  ;; Not really a constant -- depends on `benchmark-name*`
-
-  ;; ---------------------------------------------------------------------------
-
-  *RKT-VERSIONS*
-
-  ;; ---------------------------------------------------------------------------
+  count-benchmarks
+  count-new-oo-benchmarks
 
   add-commas
   ;; (-> Number String)
@@ -49,13 +31,6 @@
   count-all-configurations
   ;; (-> Natural)
 
-  data-lattice
-  ;; (-> Benchmark-Name Version-String Any)
-  ;;   where Benchmark-Name = (U String Symbol)
-  ;;     and Version-String = String
-  ;; Finds the data file corresponding to the benchmark
-  ;;  at the specific version and renders a data lattice.
-
   (rename-out [make-benchmark benchmark])
   ;; (->* [] [#:name String
   ;;          #:author String
@@ -66,38 +41,36 @@
   ;;     #:rest (Listof String)
   ;;     Benchmark)
 
-  benchmark-descriptions
+  render-benchmark-descriptions
   ;; (-> Benchmark * Any)
   ;; Render a list of Benchmark structures.
   ;; Use the `benchmark` constructor to make a `Benchmark`
 
-  lnm-descriptions
-  ;; (-> Lnm * Any)
+  render-benchmarks-table
+  ;; (-> Any)
+  ;; Build a table describing static properties of the benchmarks
 
-  lnm-characteristics
+  render-data-lattice
+  ;; (-> Benchmark-Name Version-String Any)
+  ;;   where Benchmark-Name = (U String Symbol)
+  ;;     and Version-String = String
+  ;; Finds the data file corresponding to the benchmark
+  ;;  at the specific version and renders a data lattice.
+
+  render-lnm-table
+  ;; (-> Any)
 
   (rename-out [make-lnm lnm])
   ;; (->* [Symbol] [] #:rest (Listof String) Lnm)
 
-  benchmark-characteristics
-  ;; (-> Any)
-  ;; 
-
-  make-lnm-plot*
-  ;; (-> String * Any)
-
-  lnm-summary
-  ;; (-> String * Any)
-  ;; Create a summary table for all versions of Racket
+  render-lnm-plot
+  ;; (-> (-> (Listof Pict) Elem) Any)
 )
 
 (require
  benchmark-util/data-lattice
  glob
- gtp-summarize/lnm-parameters
- gtp-summarize/render-lnm
- gtp-summarize/modulegraph
- gtp-summarize/summary
+ gtp-summarize
  racket/match
  (only-in "common.rkt" etal cite exact parag)
  (only-in racket/file file->value)
@@ -112,98 +85,149 @@
  racket/contract
 )
 (require (only-in racket/serialize
-  serialize deserialize
+  serialize
+  deserialize
 ))
 
 ;; -----------------------------------------------------------------------------
-;; -- Organizing the benchmarks
+;; -- Parameters
+(define-syntax-rule (defparam2 a b c)
+  (begin
+    (define a (make-parameter c))
+    (provide a)))
 
-(define *CACHE-TABLE?* (make-parameter #t))
-;; TODO fix this
+(defparam2 *CACHE?* Boolean #t)
 
-(define *COMPILED* (make-parameter "./compiled"))
-;; Where Racket stores compiled files
+(defparam2 *BENCHMARK-DESCRIPTIONS-CACHE* Path-String "cache-benchmark-descriptions.rktd")
+(defparam2 *DRAFT?* Boolean #t)
+(defparam2 *LNM-DESCRIPTIONS-CACHE* Path-String "cache-lnm-descriptions.rktd") ;; Place to store cached lnm table
+(defparam2 *LNM-OVERHEAD* (Listof Exact-Rational) '(1/5 3 10))
+(defparam2 *RKT-VERSIONS* (Listof String) '("6.2" "6.3" "6.4"))
 
-(define *LNM-DESCRIPTIONS-CACHE* (make-parameter "cache-lnm-descriptions.rktd"))
-;; Place to store cached lnm table
-
-(define *BENCHMARK-DESCRIPTIONS-CACHE* (make-parameter "cache-benchmark-descriptions.rktd"))
-;; Place to store cached benchmarks table
-
-(define *MODULE-GRAPH-DIR* (make-parameter "./module-graphs"))
-;; Place to store module graphs
-
-(define *STRICT?* (make-parameter #f))
-;; When #t, raise exceptions instead of warnings
-
-(define *RKT-VERSIONS* (make-parameter '("6.2" "6.3" "6.4")))
-
-(define benchmark-name* '(
-  acquire
-  forth
-  (fsm fsm fsmoo)
-  gregor
-  kcfa
-  lnm
-  mbta
-  morsecode
-  (quad quadBG quadMB)
-  sieve
-  snake
-  suffixtree
-  synth
-  tetris
-  zombie
-  zordoz ;(zordoz zordoz.6.2 zordoz.6.3)
+(define BENCHMARK-NAMES ;; (Listof (U Symbol (Listof Symbol)))
+  '(acquire
+    forth
+    (fsm fsm fsmoo)
+    gregor
+    kcfa
+    lnm
+    mbta
+    morsecode
+    (quad quadBG quadMB)
+    sieve
+    snake
+    suffixtree
+    synth
+    tetris
+    zombie
+    zordoz ;(zordoz zordoz.6.2 zordoz.6.3)
 ))
-(define NUM-BENCHMARKS
-  (for/sum ([name (in-list benchmark-name*)])
-    (if (list? name)
-      (length (cdr name))
-      1)))
-(define NUM-NEW-OO
+
+(defparam2 *BENCHMARK-DATA* (Listof Benchmark) '())
+;; Initially empty, until we give descriptions in the paper
+
+;; -----------------------------------------------------------------------------
+
+(define single-name? symbol?)
+
+(define multi-name? list?)
+(define multi-canonical car)
+(define multi-rest cdr)
+
+(define (name->canonical n)
+  (if (multi-name? n) (multi-canonical n) n))
+
+(define (in-name? sym name)
+  (if (single-name? name)
+    (eq? sym name)
+    (memq sym name)))
+
+(define (name<? n1 n2)
+  (define s1 (name->canonical n1))
+  (define s2 (name->canonical n2))
+  (symbol<? s1 s2))
+
+(define (count-benchmarks)
+  (for/sum ([n (in-list BENCHMARK-NAMES)])
+    (if (single-name? n)
+      1
+      (length (multi-rest n)))))
+
+(define (count-new-oo-benchmarks)
   (length '(acquire forth fsmoo)))
 
-(define MAX-OVERHEAD 20)
-(define NUM-SAMPLES 120)
-(define EXAMPLE-BENCHMARK 'kcfa)
-(define EXAMPLE-OVERHEAD 10)
-
-(define benchmark-data* (box #f))
-;; List of benchmarks used in this pdf.
-;; Is validated against `benchmark-name*` before set;
-;;  later used to generate summary table and L-NM plots
+(define COMPILED "./compiled") ;; Where Racket stores compiled files
+(define MODULE-GRAPH "./module-graphs") ;; Where to store module graphs
 
 ;; -----------------------------------------------------------------------------
+;; --- Assertions & Predicates
 
-(define bits tt)
+;; (-> Symbol Boolean)
+(define (valid-benchmark? sym)
+  (for/or ([n (in-list BENCHMARK-NAMES)])
+    (in-name? sym n)))
 
-(define (valid-benchmark? bm)
-  (for/or ([b (in-list benchmark-name*)])
-    (if (list? b)
-      (memq bm b)
-      (eq? bm b))))
-
+;; (-> Symbol Void)
 (define (assert-benchmark name-sym)
   (unless (valid-benchmark? name-sym)
     (unknown-benchmark-error name-sym)))
 
-(define (bm name)
-  (assert-benchmark (string->symbol name))
-  (tt name))
+;; Like, zordoz.6.2 and zordoz.6.3 instead of zordoz
+;; (-> (Listof Symbol) Void)
+(define (check-missing-benchmarks name* #:exact? [exact? #f])
+  (let loop ([expect* (sort BENCHMARK-NAMES name<?)]
+             [given*  (sort name* symbol<?)])
+    (cond
+     [(null? expect*)
+      (unknown-benchmark-error given*)]
+     [(null? given*)
+      (missing-benchmark-error expect*)]
+     [else
+      (define expect (car expect*))
+      (define given (car given*))
+      (cond
+       [(name<? expect given)
+        (loop (cdr expect*) given*)]
+       [(in-name? given expect)
+        (if (and (null? (cdr given*))
+                 (null? (cdr expect*)))
+            (void)
+            (loop expect* (cdr given*)))]
+       [(name<? expect given)
+        (printf "yolo ~a ~a\n" expect given)
+        (missing-benchmark-error expect)]
+       [else
+        (unknown-benchmark-error given)])])))
 
-(define (ensure-dir d)
-  (unless (directory-exists? d)
-    (make-directory d)))
+;; (->* (valid-benchmark? valid-version?) (#:tag string?) path-string?)
+(define (data-path bm v tag)
+  (define bm-str (symbol->string bm))
+  (glob-first (string-append (get-git-root) "/data/" v "/" bm-str "-" tag ".rktd")))
 
-(define (glob/first str)
+;; -----------------------------------------------------------------------------
+;; --- Syntax & Utils
+;;     (May be better off in libraries)
+
+(define-syntax-rule (INFO msg arg* ...)
+  (begin
+    (display "INFO: ")
+    (printf msg arg* ...)
+    (newline)))
+
+(define-syntax-rule (WARNING msg arg* ...)
+  (begin
+    (display "WARNING: ")
+    (printf msg arg* ...)
+    (newline)))
+
+(define (glob-first str)
   (match (glob str)
    [(cons r '())
     r]
    ['()
-    (raise-user-error 'glob/first "No results for glob '~a'" str)]
+    (raise-user-error 'glob-first "No results for glob '~a'" str)]
    [r*
-    (printf "WARNING: ambiguous results for glob '~a'. Returning the first.\n" str)
+    (WARNING "ambiguous results for glob '~a'. Returning the first." str)
     (car r*)]))
 
 (define (add-commas n)
@@ -219,89 +243,14 @@
          [else
           (loop i-3 (cons "," (cons (substring str i-3 i) acc)))])))))
 
-;; -----------------------------------------------------------------------------
+(define (count-all-configurations)
+  (for/sum ([b (in-list (*BENCHMARK-DATA*))])
+    (expt 2 (benchmark->num-modules b))))
 
-(define (lattice-filename bm v tag)
-  (string-append (*COMPILED*) "/cache-lattice-" (symbol->string bm) "-" v "-" tag ".rktd"))
-
-(define (data-lattice bm v #:tag [tag "*"] #:cache? [cache? #t])
-  (or (and cache? (uncache-lattice bm v tag))
-      (let* ([fname (lattice-filename bm v tag)]
-             [_void (printf "INFO: Building new performance lattice at '~a'\n" fname)]
-             [p (file->performance-lattice (data-path bm v #:tag tag))])
-        (with-output-to-file fname #:exists 'replace
-          (lambda () (writeln (serialize p))))
-        p)))
-
-(define/contract (data-path bm v #:tag [tag "*"])
-  (->* (valid-benchmark? valid-version?) (#:tag string?) path-string?)
-  (define bm-str (symbol->string bm))
-  (glob/first (string-append (get-git-root) "/data/" v "/" bm-str "-" tag ".rktd")))
-
-(define (version->data-file* v)
-  (in-glob (string-append (get-git-root) "/data/" v "/*.rktd")))
-
-;; -----------------------------------------------------------------------------
-
-(struct benchmark (name author num-adaptor origin purpose lib* description modulegraph))
-(define (make-benchmark #:name name
-                        #:author author
-                        #:num-adaptor num-adaptor
-                        #:origin origin
-                        #:purpose purpose
-                        #:external-libraries [lib* #f]
-                        description)
-  (assert-benchmark name)
-  (define M (symbol->modulegraph name))
-  (benchmark name author num-adaptor origin purpose lib* description M))
-
-(define missing-benchmark-error
-  (let ([msg "Missing descriptions for benchmark(s) '~a'"])
-    (lambda (name*)
-      (if (*STRICT?*)
-        (raise-user-error 'benchmark msg name*)
-        (begin (printf "WARNING: ")
-               (printf msg name*)
-               (newline))))))
-
-(define unknown-benchmark-error
-  (let ([msg "Got descriptions for unknown benchmarks '~a'. Register them at the top of 'typed-racket.rkt'"])
-    (lambda  (name*)
-      (if (*STRICT?*)
-        (raise-user-error 'benchmark msg name*)
-        (begin (printf "WARNING: ")
-               (printf msg name*)
-               (newline))))))
-
-;; (-> benchmark String)
-(define (render-benchmark b)
-  (match-define
-    (benchmark name author num-adaptor origin purpose lib* description M)
-    b)
-  (elem
-    "\\benchmark{"
-    (symbol->string name)
-    "}{"
-    author
-    "}{"
-    origin
-    "}{"
-    purpose
-    "}{"
-    description
-    "}{"
-    (benchmark-tex M)
-    "}{"
-    (or (benchmark-lib* b) "N/A")
-    "}\n\n"))
-
-(define (benchmark->num-modules b)
-  (modulegraph->num-modules (benchmark-modulegraph b)))
-
-(define (count-savings version*)
+(define (count-savings)
   (for*/fold ([num-skip-runs 0]
               [num-runs 0])
-             ([v (in-list version*)]
+             ([v (in-list (*RKT-VERSIONS*))]
               [d (version->data-file* v)])
     (with-input-from-file d
       (lambda ()
@@ -318,9 +267,152 @@
     (let ([r (with-input-from-string str read)])
       (and (list? r) r))))
 
-(define (count-all-configurations)
-  (for/sum ([b (in-list (unbox benchmark-data*))])
-    (expt 2 (benchmark->num-modules b))))
+(define (split-list n x*)
+  (cond
+   [(<= n 0)
+    (raise-user-error 'split-list "Invalid partition size ~a" n)]
+   [(null? x*)
+    '()]
+   [else
+    (let loop ([x* x*]
+               [L (length x*)])
+      (if (< L n)
+        (list x*)
+        (let-values (((l* r*) (split-at x* n)))
+          (cons l* (if (null? r*) '() (loop r* (- L n)))))))]))
+
+;; Add '&' for TeX
+(define (tex-row . x*)
+  (let loop ([x* x*])
+    (if (null? (cdr x*))
+      (list (car x*) " \\\\\n")
+      (list* (car x*) " & " (loop (cdr x*))))))
+
+;; -----------------------------------------------------------------------------
+;; --- Formatting
+
+(define bits
+  tt)
+
+(define (bm name)
+  (assert-benchmark (string->symbol name))
+  (tt name))
+
+;; -----------------------------------------------------------------------------
+;; --- Paths / Caching
+
+(define (with-cache cache-file thunk #:read [read-proc #f] #:write [write-proc #f])
+  (let ([read-proc (or read-proc values)]
+        [write-proc (or write-proc values)])
+    (or (and (*CACHE?*)
+             (file-exists? cache-file)
+             (let ([v (read-proc (file->value cache-file))])
+               (and v
+                    (INFO "reading cachefile '~a'" cache-file)
+                    v)))
+        (let ([r (thunk)])
+          (INFO "writing cachefile '~a'" cache-file)
+          (with-output-to-file cache-file #:exists 'replace
+            (lambda () (writeln (write-proc r))))
+          r))))
+
+;; Example #:write proc
+(define (cache-table T)
+  (cons BENCHMARK-NAMES T))
+
+;; Example #:read proc
+(define (uncache-table tag+data)
+  (and (equal? (car tag+data) BENCHMARK-NAMES)
+       (cdr tag+data)))
+
+(define (render-table render-proc #:title title* #:cache cache-file)
+  (exact
+    "\\setlength{\\tabcolsep}{0.2em}"
+    (format "\\begin{tabular}{l~a}" (make-string (sub1 (length title*)) #\r))
+    (list " \\toprule \n" (apply tex-row title*) " \\midrule \n")
+    (apply elem
+      (with-cache cache-file
+       #:read uncache-table
+       #:write cache-table
+       render-proc))
+    "\\end{tabular}\n\n"))
+
+(define (lattice-cache-file bm v tag)
+  (ensure-dir COMPILED)
+  (string-append COMPILED "/cache-lattice-" (symbol->string bm) "-" v "-" tag ".rktd"))
+
+(define (benchmarks-table-cache-file)
+  (ensure-dir COMPILED)
+  (build-path COMPILED (*BENCHMARK-DESCRIPTIONS-CACHE*)))
+
+(define (lnm-table-cache)
+  (ensure-dir COMPILED)
+  (build-path COMPILED (*LNM-DESCRIPTIONS-CACHE*)))
+
+(define (version->data-file* v)
+  (in-glob (string-append (get-git-root) "/data/" v "/*.rktd")))
+
+;; -----------------------------------------------------------------------------
+;; --- Lattice
+
+(define (render-data-lattice bm v #:tag [tag "*"])
+  (with-cache (lattice-cache-file bm v tag)
+    #:read deserialize
+    #:write serialize
+    (lambda () (file->performance-lattice (data-path bm v tag)))))
+
+;; -----------------------------------------------------------------------------
+;; --- Benchmarks
+
+(struct benchmark (name alt* author num-adaptor origin purpose lib* description modulegraph))
+(define (make-benchmark #:name name
+                        #:author author
+                        #:num-adaptor num-adaptor
+                        #:origin origin
+                        #:purpose purpose
+                        #:alt [other-names #f]
+                        #:external-libraries [lib* #f]
+                        description)
+  (assert-benchmark name)
+  (define M (symbol->modulegraph name))
+  (define alt* (or other-names (list name)))
+  (benchmark name alt* author num-adaptor origin purpose lib* description M))
+
+(define missing-benchmark-error
+  (let ([msg "Missing descriptions for benchmark(s) '~a'"])
+    (lambda (name*)
+      (if (*DRAFT?*)
+        (WARNING msg name*)
+        (raise-user-error 'benchmark msg name*)))))
+
+(define unknown-benchmark-error
+  (let ([msg "Got descriptions for unknown benchmarks '~a'. Register them at the top of 'typed-racket.rkt'"])
+    (lambda  (name*)
+      (if (*DRAFT?*)
+        (WARNING msg name*)
+        (raise-user-error 'benchmark msg name*)))))
+
+;; (-> benchmark String)
+(define (render-benchmark b)
+  (elem
+    "\\benchmark{"
+    (symbol->string (benchmark-name b))
+    "}{"
+    (benchmark-author b)
+    "}{"
+    (benchmark-origin b)
+    "}{"
+    (benchmark-purpose b)
+    "}{"
+    (benchmark-description b)
+    "}{"
+    (benchmark->tex-file b)
+    "}{"
+    (or (benchmark-lib* b) "N/A")
+    "}\n\n"))
+
+(define (benchmark->num-modules b)
+  (modulegraph->num-modules (benchmark-modulegraph b)))
 
 (define (benchmark<? b1 b2)
   (define m1 (benchmark->num-modules b1))
@@ -329,47 +421,72 @@
       (and (= m1 m2)
            (symbol<? (benchmark-name b1) (benchmark-name b2)))))
 
-;; If exact?, use the specific names and not the 'umbrella' benchmark names.
-;; (-> Boolean (Listof Symbol))
-(define (flatten-benchmark-name* exact?)
-  (for/fold ([acc '()])
-            ([name (in-list benchmark-name*)])
-    (if (list? name)
-      (if exact?
-        (append (cdr name) acc)
-        (cons (car name) acc))
-      (cons name acc))))
+(define (benchmark->name* b)
+  (project-name->name* (benchmark-name b)))
 
-;; Like, zordoz.6.2 and zordoz.6.3 instead of zordoz
-;; (-> (Listof String) Void)
-(define (check-missing-benchmarks name* #:exact? [exact? #f])
-  (let loop ([expect* (sort (flatten-benchmark-name* exact?) symbol<?)]
-             [given*  (sort name* symbol<?)])
-    (cond
-     [(null? expect*)
-      (if (null? given*)
-        (void)
-        (unknown-benchmark-error given*))]
-     [(null? given*)
-      (missing-benchmark-error expect*)]
-     [else
-      (define expect (car expect*))
-      (define given (car given*))
+(define (project-name->name* s)
+  (or (for/first ([n (in-list BENCHMARK-NAMES)]
+                  #:when (in-name? s n))
+        (if (multi-name? n) (multi-rest n) (list n)))
+      (unknown-benchmark-error s)))
+
+(define (symbol->modulegraph n)
+  (if (eq? n 'zordoz)
+    (project-name->modulegraph 'zordoz.6.3)
+    (let ([name* (project-name->name* n)])
       (cond
-       [(eq? expect given)
-        (loop (cdr expect*) (cdr given*))]
-       [(symbol<? expect given)
-        (missing-benchmark-error expect)]
+       [(single-name? name*)
+        ;; Easy! Compile & return the modulegraph.
+        (project-name->modulegraph name*)]
        [else
-        (unknown-benchmark-error given)])])))
+        ;; Hard!
+        ;; - Compile all names in `cdr` to modulegraphs. If they fail, ignore them.
+        ;; - Filter duplicate modulegraphs from the list.
+        ;; - Return only a single modulegraph
+        (choose-modulegraph #:src name*
+          (for/fold ([acc '()])
+                    ([name (in-list name*)])
+            ;; Try compiling a modulegraph, don't worry if it fails.
+            (define M (with-handlers ([exn:fail? (lambda (e) #f)])
+                        (project-name->modulegraph name)))
+            (if (and M (not (for/or ([M2 (in-list acc)])
+                              (adjlist=? (modulegraph-adjlist M) (modulegraph-adjlist M2)))))
+              (cons M acc)
+              acc)))]))))
+
+;; Resolve a list of unique modulegraphs to a single one.
+(define (choose-modulegraph M* #:src name*)
+  (cond
+   [(null? M*)
+    (raise-user-error 'choose-modulegraph "Failed to infer modulegraphs for '~a'." name*)]
+   [(null? (cdr M*))
+    (car M*)]
+   [else
+    (WARNING "got different modulegraphs for '~a'. Ignoring all but the last." name*)
+    (last M*)]))
+
+(define (benchmark->tex-file b)
+  (define M (benchmark-modulegraph b))
+  (ensure-dir MODULE-GRAPH)
+  (define mgd MODULE-GRAPH)
+  (ensure-dir mgd)
+  (define pn (modulegraph-project-name M))
+  (define mgf (string-append mgd "/" pn ".tex"))
+  (unless (file-exists? mgf)
+    (WARNING "could not find modulegraph for project '~a', creating graph now." pn)
+    (call-with-output-file mgf
+      (lambda (p) (modulegraph->tex M p))))
+  (elem "\\modulegraph{" mgf "}"))
 
 ;; (-> Benchmark * Any)
-(define (benchmark-descriptions . b*)
+(define (render-benchmark-descriptions . b*)
   (check-missing-benchmarks (map benchmark-name b*))
-  (set-box! benchmark-data* b*)
-  (apply exact (map render-benchmark (sort b* benchmark<?))))
+  (define b+* (sort b* benchmark<?))
+  (*BENCHMARK-DATA* b+*)
+  ;(INFO "about to render ~a" (map benchmark-name b+*))
+  (apply exact (map render-benchmark b+*)))
 
-(define BENCHMARK-DESCRIPTIONS-TITLE* '(
+(define BENCHMARKS-TABLE-TITLE* '(
   "Benchmark"
   "\\twoline{Untyped}{LOC}"
   "\\twoline{Annotation}{LOC}"
@@ -378,79 +495,24 @@
   "\\# Exports"
 ))
 
-;; Format a table of benchmark characteristics.
-;; Assumes that `benchmark-data*` has been populated (i.e. we called `benchmark-descriptions`)
-;; (-> Content)
-(define (benchmark-characteristics)
-  (exact
-    "\\setlength{\\tabcolsep}{0.2em}"
-    (format "\\begin{tabular}{l~a}\n" (make-string (sub1 (length BENCHMARK-DESCRIPTIONS-TITLE*)) #\r))
-    (apply elem (get-benchmarks-table))
-    "\\end{tabular}\n\n"))
-
-(define (get-benchmarks-table)
-  (or (and (*CACHE-TABLE?*) (uncache-benchmarks-table))
-      (cache-table (new-benchmarks-table) #:cache (benchmark-descriptions-cache))))
-
-(define (benchmark-descriptions-cache)
-  (build-path (*COMPILED*) (*BENCHMARK-DESCRIPTIONS-CACHE*)))
-
-(define/contract (uncache-lattice bm v tag)
-  (-> valid-benchmark? valid-version? string? any/c)
-  (define fname (lattice-filename bm v tag))
-  (and (file-exists? fname)
-       (printf "INFO: retrieving cached lattice from '~a'\n" fname)
-       (deserialize (file->value fname))))
-
-(define (uncache-benchmarks-table)
-  (define bdc (benchmark-descriptions-cache))
-  (and (file-exists? bdc)
-       (let ([tag+data (file->value bdc)])
-         (and (equal? (car tag+data) benchmark-name*)
-              (printf "INFO: retrieving cached benchmarks table from '~a'\n" bdc)
-              (cdr tag+data)))))
-
-(define (uncache-lnm-table)
-  (define ldc (lnm-descriptions-cache))
-  (and (file-exists? ldc)
-       (let ([tag+data (file->value ldc)])
-         (and (equal? (car tag+data) benchmark-name*)
-              (printf "INFO: retrieving cached LNM table from '~a'\n" ldc)
-              (cdr tag+data)))))
-
-(define (cache-table T #:cache c)
-  (ensure-dir (*COMPILED*))
-  (printf "INFO: caching new table at '~a'\n" c)
-  (with-output-to-file c #:exists 'replace
-    (lambda ()
-      (writeln (cons benchmark-name* T))))
-  T)
+(define (render-benchmarks-table)
+  (render-table new-benchmarks-table
+   #:title BENCHMARKS-TABLE-TITLE*
+   #:cache (benchmarks-table-cache-file)))
 
 (define (new-benchmarks-table)
-  (list*
-    " \\toprule \n"
-    (apply tex-row BENCHMARK-DESCRIPTIONS-TITLE*)
-    " \\midrule \n"
-    (for/list ([b (in-list (unbox benchmark-data*))])
-      (define M (benchmark-modulegraph b))
-      (define num-adaptor (benchmark-num-adaptor b))
-      (define uloc (modulegraph->untyped-loc M))
-      (define tloc (modulegraph->typed-loc M))
-      (tex-row
-       (format "{\\tt ~a}" (benchmark-name b))
-       (format "~a" uloc)
-       (format-percent-diff tloc uloc)
-       (format-num-modules M #:adaptor num-adaptor)
-       (number->string (modulegraph->num-edges M))
-       (number->string (modulegraph->num-identifiers M))
-      ))))
-
-;; Add '&' for TeX
-(define (tex-row . x*)
-  (let loop ([x* x*])
-    (if (null? (cdr x*))
-      (list (car x*) " \\\\\n")
-      (list* (car x*) " & " (loop (cdr x*))))))
+  (for/list ([b (in-list (*BENCHMARK-DATA*))])
+    (define M (benchmark-modulegraph b))
+    (define num-adaptor (benchmark-num-adaptor b))
+    (define uloc (modulegraph->untyped-loc M))
+    (define tloc (modulegraph->typed-loc M))
+    (tex-row
+     (format "{\\tt ~a}" (benchmark-name b))
+     (format "~a" uloc)
+     (format-percent-diff tloc uloc)
+     (format-num-modules M #:adaptor num-adaptor)
+     (number->string (modulegraph->num-edges M))
+     (number->string (modulegraph->num-identifiers M)))))
 
 (define (format-num-modules M #:adaptor [adaptor #f])
   (if adaptor
@@ -467,123 +529,29 @@
     (if (< pct 10) "\\hphantom{0}" "")
     pct))
 
-(define (benchmark->name* b)
-  (project-name->name* (benchmark-name b)))
-
-(define (project-name->name* name)
-  (or (for/first ([s (in-list benchmark-name*)]
-                 #:when (or (and (symbol? s) (eq? s name))
-                            (and (list? s) (eq? name (car s)))))
-        s)
-      (unknown-benchmark-error name)))
-
-(define (benchmark->modulegraph b)
-  (symbol->modulegraph (benchmark-name b)))
-
-(define (symbol->modulegraph n)
-  (define name* (project-name->name* n))
-  (cond
-   [(eq? n 'zordoz)
-    (project-name->modulegraph 'zordoz.6.3)]
-   [(not (list? name*))
-    ;; Easy! Compile & return the modulegraph.
-    (project-name->modulegraph name*)]
-   [else
-    ;; Hard!
-    ;; - Compile all names in `cdr` to modulegraphs. If they fail, ignore them.
-    ;; - Filter duplicate modulegraphs from the list.
-    ;; - Return only a single modulegraph
-    (choose-modulegraph #:src name*
-      (for/fold ([acc '()])
-                ([name (in-list (cdr name*))])
-        ;; Try compiling a modulegraph, don't worry if it fails.
-        (define M (with-handlers ([exn:fail? (lambda (e) #f)])
-                    (project-name->modulegraph name)))
-        (if (and M (not (for/or ([M2 (in-list acc)])
-                          (adjlist=? (modulegraph-adjlist M) (modulegraph-adjlist M2)))))
-          (cons M acc)
-          acc)))]))
-
-;; Resolve a list of unique modulegraphs to a single one.
-(define (choose-modulegraph M* #:src name*)
-  (cond
-   [(null? M*)
-    (raise-user-error 'choose-modulegraph "Failed to infer modulegraphs for '~a'." name*)]
-   [(null? (cdr M*))
-    (car M*)]
-   [else
-    (printf "WARNING: got different modulegraphs for '~a'. Ignoring all but the last.\n" name*)
-    (last M*)]))
-
-(define (benchmark-tex M)
-  (define mgd (*MODULE-GRAPH-DIR*))
-  (ensure-dir mgd)
-  (define pn (modulegraph-project-name M))
-  (define mgf (string-append mgd "/" pn ".tex"))
-  (unless (file-exists? mgf)
-    (printf "WARNING: could not find modulegraph for project '~a', creating graph now.\n" pn)
-    (call-with-output-file mgf
-      (lambda (p) (modulegraph->tex M p))))
-  (elem "\\modulegraph{" mgf "}"))
-
 ;; =============================================================================
 
 (struct lnm (name description))
 (define (make-lnm name . descr*)
-  ;; TODO assert?
+  (assert-benchmark name)
   (lnm name (apply elem descr*)))
 
-(define (lnm->benchmark l)
-  (define s (lnm-name l))
-  (or
-   (and
-    (list? (unbox benchmark-data*))
-    (for/first ([b (in-list (unbox benchmark-data*))]
-               #:when (or (eq? s (benchmark-name b))
-                          (let ([s* (benchmark->name* b)])
-                                   (if (list? s*) (memq s s*) (eq? s s*)))))
-      b))
-   (raise-user-error 'lnm->benchmark "Failed to get benchmark for LNM '~a'." s)))
-
-(define (lnm<? l1 l2)
-  (benchmark<? (lnm->benchmark l1)
-               (lnm->benchmark l2)))
-
-;; (-> Lnm * Any)
-(define (lnm-descriptions . l*)
-  (check-missing-benchmarks (map lnm-name l*) #:exact? #t)
-  (map render-lnm-description (sort l* lnm<?)))
+;;;
+;(define (lnm<? l1 l2)
+;  (benchmark<? (lnm->benchmark l1)
+;               (lnm->benchmark l2)))
+;
+;;; (-> Lnm * Any)
+;(define (render-lnm-descriptions . l*)
+;  (check-missing-benchmarks (map lnm-name l*) #:exact? #t)
+;  (map render-lnm-description (sort l* lnm<?)))
 
 (define (render-lnm-description l)
   (elem
     (parag (symbol->string (lnm-name l)))
     (elem (lnm-description l))))
 
-(define (sorted-benchmark-names)
-  (append*
-    (for*/list ([b (in-list (unbox benchmark-data*))])
-      (define n* (benchmark->name* b))
-      (if (symbol? n*)
-        (list n*)
-        (cdr n*)))))
-
-(define (split-list n x*)
-  (cond
-   [(<= n 0)
-    (raise-user-error 'split-list "Invalid partition size ~a" n)]
-   [(null? x*)
-    '()]
-   [else
-    (let loop ([x* x*]
-               [L (length x*)])
-      (if (< L n)
-        (list x*)
-        (let-values (((l* r*) (split-at x* n)))
-          (cons l* (if (null? r*) '() (loop r* (- L n)))))))]))
-
-(define (make-lnm-plot* version*)
-  (unless (unbox benchmark-data*)
-    (raise-user-error 'make-lnm-plot* "Missing benchmark data. Need to call `benchmark-descriptions` earlier in the file."))
+(define (render-lnm-plot pict*->elem)
   ;; Sort & make figures of with 6 plots each or whatever
   (parameterize ([*AXIS-LABELS?* #f]
                  [*L* '(0 1)]
@@ -606,20 +574,23 @@
                  [*Y-NUM-TICKS* 3]
                  [*Y-TICK-LINES?* #t]  ;; TODO
                  [*Y-STYLE* '%])
-    (for/list ([rktd** (in-list (split-list 5 (get-lnm-rktd** version*)))]
-               [i (in-naturals 1)])
-      (parameterize ([*CACHE-TAG* #f]) ;;(number->string i)])
-        (collect-garbage 'major)
-        (render-lnm (list->vector (append* rktd**)))))))
+    (define cache? (*CACHE?*))
+    (pict*->elem
+      (for/list ([rktd** (in-list (split-list 5 (get-lnm-rktd**)))]
+                 [i (in-naturals 1)])
+        (parameterize ([*CACHE-TAG* (if cache? (number->string i) #f)])
+          (collect-garbage 'major)
+          (render-lnm (list->vector (append* rktd**))))))))
 
-(define (get-lnm-rktd** version*)
+;; Get data for each benchmark for each version of racket
+(define (get-lnm-rktd**)
   (define data-root (string-append (get-git-root) "/data"))
-  (for/list ([n (in-list (sorted-benchmark-names))])
+  (define version* (*RKT-VERSIONS*))
+  (for*/list ([b (in-list (*BENCHMARK-DATA*))]
+              [n (in-list (benchmark->name* b))])
     (define n+ (if (eq? n 'zordoz) "zordoz.6.[23]" n))
     (for/list ([v (in-list version*)])
-      (glob/first (format "~a/~a/~a-*.rktd" data-root v n+)))))
-
-(define LNM-OVERHEAD* '(0.2 3 10))
+      (glob-first (format "~a/~a/~a-*.rktd" data-root v n+)))))
 
 (define LNM-TABLE-TITLE* '(
   "Benchmark"
@@ -627,41 +598,27 @@
   "Mean Overhead"
   "Max Overhead"
   ;(for/list ([over (in-list LNM-OVERHEAD*)])
-  ;  (format "~a-deliverable" over))))
+  ;  (format "~a-deliverable" over))
 ))
 
-(define (lnm-characteristics version*)
-  (exact
-    "\\setlength{\\tabcolsep}{0.2em}"
-    (format "\\begin{tabular}{l~a}" (make-string (sub1 (length LNM-TABLE-TITLE*)) #\r))
-    (apply elem (get-lnm-table version*))
-    "\\end{tabular}\n\n"))
+(define (render-lnm-table)
+  (render-table new-lnm-table
+   #:title LNM-TABLE-TITLE*
+   #:cache (lnm-table-cache)))
 
-(define (lnm-descriptions-cache)
-  (build-path (*COMPILED*) (*LNM-DESCRIPTIONS-CACHE*)))
-
-(define (get-lnm-table version*)
-  (or (and (*CACHE-TABLE?*) (uncache-lnm-table))
-      (cache-table (new-lnm-table version*) #:cache (lnm-descriptions-cache))))
-
-(define (new-lnm-table version*)
-  (list*
-    " \\toprule \n"
-    (apply tex-row LNM-TABLE-TITLE*)
-    " \\midrule \n"
-    (for/list ([rktd* (in-list (get-lnm-rktd** version*))])
-      (define name (fname->title (car rktd*)))
-      (printf "INFO: building table row for '~a'\n" name)
-      (collect-garbage 'major)
-      (define S* (map from-rktd rktd*))
-      (tex-row
-        name
-        (format-stat* typed/untyped-ratio S* #:precision 2)
-        (format-stat* avg-overhead S*)
-        (format-stat* max-overhead S*)
-        ;(for/list ([overhead (in-list LNM-OVERHEAD*)])
-        ;  (format-stat* (N-deliverable overhead) S*))
-      ))))
+(define (new-lnm-table)
+  (for/list ([rktd* (in-list (get-lnm-rktd**))])
+    (define name (fname->title (car rktd*)))
+    (collect-garbage 'major)
+    (define S* (map from-rktd rktd*))
+    (tex-row
+      name
+      (format-stat* typed/untyped-ratio S* #:precision 2)
+      (format-stat* avg-overhead S*)
+      (format-stat* max-overhead S*)
+      ;(for/list ([overhead (in-list LNM-OVERHEAD*)])
+      ;  (format-stat* (N-deliverable overhead) S*))
+    )))
 
 ;; TODO put these in sub-table
 (define (format-stat* f S* #:precision [p 0])
@@ -669,9 +626,6 @@
     (for/list ((S (in-list S*)))
       (~r (f S) #:precision p))
     "~~"))
-
-(define (lnm-summary . version*)
-  (elem "TODO"))
 
 ;; =============================================================================
 
@@ -717,5 +671,14 @@
     (lambda () (split-list -3 '(1 2 3 4))))
   (check-exn #rx"split-list"
     (lambda () (split-list 0 '(1 2 3))))
+
+  (test-case "benchmark<?"
+    (let* ([name* '(acquire forth fsm gregor kcfa lnm mbta morsecode
+                    quad sieve snake suffixtree synth tetris zombie zordoz)]
+           [b* (for/list ([n (in-list name*)])
+                 (make-benchmark #:name n #:author "N/A" #:num-adaptor 0 #:origin "N/A" #:purpose "N/A" "N/A"))]
+           [b+* (sort b* benchmark<?)]
+           [expect* '(sieve forth fsm mbta morsecode zombie zordoz lnm suffixtree kcfa snake acquire tetris synth  gregor quad)])
+      (check-equal? (map benchmark-name b+*) expect*)))
 )
 
