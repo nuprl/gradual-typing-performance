@@ -11,8 +11,8 @@ To validate our framework, we apply it to a suite of
  @id[(count-benchmarks)] Typed Racket programs.
 For each program we have collected running times over a full performance lattice.
 In general the lattices are too large to print or analyze, so we present
- our results using a graphical shorthand quantifying the number of @step{}
- configurations.
+ our results using a graphical shorthand quantifying the number of deliverable
+ and usable configurations.
 
 
 @; -----------------------------------------------------------------------------
@@ -126,9 +126,9 @@ Most benchmarks are self-contained, but where relevant we note their external
     While writing this paper, we built a small library of scripts to analyze
      and graph the data shown in @Secref{sec:lnm-plot}.
     The @bm{lnm} benchmark creates one such graph for a 13-module benchmark.
-    Interestingly, most of the computation time is spent in calls to Racket's
-     typed statistics and plotting libraries, so performance improves as more
-     @bm{lnm} modules are typed.
+    Most of the computation time is spent in calls to Racket's
+     typed statistics and plotting libraries, so performance typically
+     improves as more @bm{lnm} modules are typed.
   }
 )
 @(benchmark
@@ -202,11 +202,11 @@ Most benchmarks are self-contained, but where relevant we note their external
      to Typed Racket's @hyperlink["https://docs.racket-lang.org/math/array.html"]{@exact{\RktMeta{math/array}}}
      library@~cite[saf-cc-2015].
     Our benchmark incorporates the relevant library modules to form a
-     self-contained program.
+     self-contained program; however,
     @; TODO if the limitation doesn't belong here, where should it go?
-    We monomorphized the core array data structure
-     because opaque, polymorphic data structures may not be sent across type boundaries
-     in Typed Racket.
+     we monomorphized the core array data structure
+     because opaque, polymorphic structures may not be sent across
+     type boundaries in Typed Racket.
   }
 )
 @(benchmark
@@ -227,6 +227,18 @@ Most benchmarks are self-contained, but where relevant we note their external
     Notably, the benchmark does not test @bm{gregor}'s string-parsing
      functions because those functions rely on an untyped library for
      ad-hoc polymorphism that is not yet supported by Typed Racket.
+  }
+)
+@(benchmark
+  #:name 'take5
+  #:author "Matthias Felleisen"
+  #:num-adaptor 1
+  #:origin "Game"
+  #:purpose "Card game"
+  @elem{
+    Object-oriented implementation of a classic German card game.
+    The AI players we use implement a greedy strategy, playing locally optimal
+     cards in each turn.
   }
 )
 @(benchmark
@@ -305,8 +317,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     The former is a homogenous, recursive type.
     As such, the predicate asserting that an untyped value has type @racket[QuadMB]
      is a linear-time tree traversal.
-    On the other hand, the predicate for @racket[QuadBG] is simply a constant-time
-     combination of the built-in @racket[list?] and @racket[symbol?] predicates.
+    On the other hand, the predicate for @racket[QuadBG] is significantly faster.
   }
 )
 ]
@@ -320,25 +331,25 @@ Most benchmarks are self-contained, but where relevant we note their external
 @Figure-ref{fig:bm} gives static characteristics
  of our benchmark programs as a coarse measure of their size and diversity.
 Program size is measured by the lines of code (LOC) and number of modules.
-Of these two measures, the number of modules is a better indicator of size
+Of these two measures, the number of modules is a slightly better indicator
  as it also determines the size of our gradual typing experiment:
  given @exact{$N$} modules, there are @exact{$2^N$} configurations.
 Adaptor modules (discussed in @Secref{sec:adaptor}) roughly correspond
  to the number of user-defined datatypes in each benchmark.
 Regarding lines of code, the ``Annotation'' column is an
  upper bound on the number of type annotations needed to fully type each program.
-This column is an over-approximation because it includes type annotates for
+This column is an over-approximation because it includes type annotatons for
  each import in a benchmark; in practice,
  only imports from untyped modules into typed modules need annotations.
 Lastly, the ``Boundaries'' and ``Exports'' columns describe the graph
  structure of each benchmark.
-The boundaries are import statements from one module in the benchmark to another.
-That is, external boundaries are not included in the count.
+Boundaries are import statements from one module in the benchmark to another.
+This count does not include external boundaries.
 The exports count the total number of unique identifiers that cross any
- boundary in the program.
+ of a benchmark's boundaries.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
-  @(render-benchmarks-table)
+  @render-benchmarks-table{}
 ]
 
 
