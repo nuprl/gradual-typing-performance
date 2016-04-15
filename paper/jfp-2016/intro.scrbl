@@ -1,5 +1,8 @@
 #lang scribble/base
 
+@; 2016-04-15
+@; Too staccato! Too dry! But otherwise ok and accurate.
+
 @; "The first challenge for computer science is to discover how to maintain
 @;  order in a finite, but very large, discrete universe that is intricately
 @;  intertwined."  -- Dijkstra, 1979 (from Emina's thesis)
@@ -56,7 +59,7 @@ Each new extension must address challenges unique to its base language,
  but in general these gradual type systems have three broad goals:
  @itemlist[
    @item{@emph{Expressiveness:} describe all untyped features with useful types}
-   @item{@emph{Safety:} preserve the semantics of types at runtime}
+   @item{@emph{Safety:} preserve the semantics of types at run-time}
    @item{@emph{Performance:} leverage type information in compiler optimizations}
  ]
 Safety for gradual type systems is traditionally formulated as a
