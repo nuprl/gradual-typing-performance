@@ -23,6 +23,8 @@
   ;; - 1 for each given value of L (unless `#:single-plot?` is `#t`
   ;; - each plot has 1 line for each given Summary
 
+  lnm-bar
+
   path-plot
   ;; Plots the number of acceptable paths.
   ;; Acceptable paths have no overhead greater than the cutoff along any point
@@ -295,6 +297,39 @@
       (for/list : (Listof pict)
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
+
+(: lnm-bar (-> (Listof Summary) pict))
+(define (lnm-bar S*)
+  (define ratio* (map typed/untyped-ratio S*))
+  (define mean* (map avg-overhead S*))
+  (define max* (map max-overhead S*))
+  (parameterize ([plot-x-axis? #f]
+                 [plot-y-axis? #f]
+                 [plot-x-far-axis? #f]
+                 [plot-y-far-axis? #f]
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-far-ticks no-ticks])
+    (cast (plot-pict
+      (for/list : (Listof renderer2d)
+                ([num* (in-list (list ratio* mean* max*))]
+                 [i (in-naturals)])
+        (define n0 (car num*))
+        (define c (+ i 1))
+        (define x-min (* 8 i))
+        (discrete-histogram
+         (for/list : (Listof (List Any Real))
+                   ([n (in-list num*)])
+           (list #f (- 1 (/ (- n n0) n0))))
+         #:color c
+         #:line-color c
+         #:x-min x-min))
+      #:x-min 0
+      #:x-max 40
+      #:x-label (and (*AXIS-LABELS?*) "Property foobar")
+      #:y-label (and (*AXIS-LABELS?*) "Normalized foobar")
+      #:width (*PLOT-WIDTH*)
+      #:height (*PLOT-HEIGHT*)) pict)))
+
 
 ;; Configure via parameters
 (: path-plot (-> (U Summary (Listof Summary)) (Listof pict)))

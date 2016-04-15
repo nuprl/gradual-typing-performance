@@ -3,6 +3,7 @@
 ;; Tools for rendering L-N/M pictures
 
 (provide
+ render-bars
  render-lnm
 
  data->pict
@@ -22,6 +23,7 @@
  (only-in racket/file file->value)
  (only-in racket/math exact-round pi)
  (only-in racket/port with-input-from-string open-output-nowhere)
+ racket/flonum
  gtp-summarize/lnm-parameters
  gtp-summarize/lnm-plot
  gtp-summarize/path-util
@@ -169,6 +171,15 @@
       (vl-append v (car p*) (cadr p*))
       (vl-append*/2 h v (cddr p*)))]))
 
+(: vl-append* (-> Real (Listof Pict) Pict))
+(define (vl-append* h p*)
+  (if (null? p*)
+    (blank h 0)
+    (for/fold : Pict
+              ([acc (car p*)])
+              ([p (in-list (cdr p*))])
+      (vl-append h acc p))))
+
 (: hc-append* (-> Real (Listof Pict) Pict))
 (define (hc-append* h p*)
   (if (null? p*)
@@ -217,6 +228,12 @@
       [else
        (raise-user-error 'render-lnm "Unknown aggregation method")]))))
 
+(: title-text (-> String Pict))
+(define (title-text s)
+  (let ([face (*TABLE-FONT-FACE*)]
+        [size (*TABLE-FONT-SIZE*)])
+      (text s (cons 'bold face) size)))
+
 ;; Create a summary and L-N/M picts for a data file.
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
 (define (file->pict* data-file* #:title title)
@@ -225,11 +242,6 @@
     (if (*SHOW-PATHS?*)
       (path-plot S*)
       (lnm-plot S*)))
-  (define title-text
-    (let ([face (*TABLE-FONT-FACE*)]
-          [size (*TABLE-FONT-SIZE*)])
-      (lambda ([s : String])
-        (text s (cons 'bold face) size))))
   (if (*SINGLE-PLOT?*)
     L-pict*
     (let* ([V 2]
@@ -439,6 +451,47 @@
 (define (fname->title fname)
   ;; Pretty inefficient
   (car (string-split (path->project-name fname) ".")))
+
+;; -----------------------------------------------------------------------------
+;; TODO
+
+(: render-bars (-> (Listof (Listof Path-String)) Pict))
+(define (render-bars rktd**)
+  (vl-append* (*GRAPH-VSPACE*)
+    (for/list ([rktd* (in-list rktd**)])
+      (collect-garbage 'major)
+      (render-bar rktd*))))
+
+(: render-bar (-> (Listof Path-String) Pict))
+(define (render-bar rktd*)
+  (define title (title-text (fname->title (car rktd*))))
+  (define S*
+    (for/list : (Listof Summary)
+              ([ps (in-list rktd*)])
+      (from-rktd ps)))
+  (define ratio* (map typed/untyped-ratio S*))
+  (define mean* (map avg-overhead S*))
+  (define max* (map max-overhead S*))
+  (define num** (list ratio* mean* max*))
+  (define HSHIM (*GRAPH-HSPACE*))
+  (hc-append (* 3 HSHIM)
+    title
+    (hc-append* (* 6 HSHIM)
+      (for/list ([num* (in-list num**)]
+                 [i (in-naturals 1)])
+        (define n0 (car num*))
+        (define (diameter (area : Real)) : Flonum
+          (fl* 2.0 (flsqrt (fl/ (real->double-flonum area) 3.14))))
+        (define target-area 100)
+        (define-values (_str color) (int->color i))
+          (colorize
+        (hc-append* HSHIM
+          (for/list ([n (in-list num*)])
+            (disk (diameter (* target-area (+ 1 (/ (- n n0) n0))))
+             #:draw-border? #f)))
+             (cast color (List Byte Byte Byte)))))))
+
+;; -----------------------------------------------------------------------------
 
 (: pict->png (-> Pict Path-String Boolean))
 (define (pict->png p path)
