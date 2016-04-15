@@ -8,7 +8,7 @@
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
 To validate our framework, we apply it to a suite of
- @id[NUM-BENCHMARKS] Typed Racket programs.
+ @id[(count-benchmarks)] Typed Racket programs.
 For each program we have collected running times over a full performance lattice.
 In general the lattices are too large to print or analyze, so we present
  our results using a graphical shorthand quantifying the number of @step{}
@@ -29,7 +29,7 @@ Most benchmarks are self-contained, but where relevant we note their external
 @; -----------------------------------------------------------------------------
 @subsection{Benchmark Descriptions}
 
-@benchmark-descriptions[
+@render-benchmark-descriptions[
 @(benchmark
   #:name 'sieve
   #:author "Ben Greenman"
@@ -338,7 +338,7 @@ The exports count the total number of unique identifiers that cross any
  boundary in the program.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
-  @(benchmark-characteristics)
+  @(render-benchmarks-table)
 ]
 
 
@@ -402,7 +402,7 @@ To finish the experiment in a timely manner, we applied the Anderson-Darling
 The judgment we made was about the likelihood of seeing a particular sequence
  of 10 runtimes assuming the data were from a normal distribution.
 If the odds were less than @math{1%}, we ran an additional 20 iterations.
-@(let-values ([(num-skip-runs num-runs) (count-savings (*RKT-VERSIONS*))])
+@(let-values ([(num-skip-runs num-runs) (count-savings)])
   @elem{
     This led us to skip @add-commas[num-skip-runs] runs in total
      (@id[(round (* 100 (/ (- num-runs num-skip-runs) num-runs)))]% of all runs)
@@ -464,25 +464,23 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @; -----------------------------------------------------------------------------
 @section[]{Results}
 
-@(let ([lnm* (make-lnm-plot* (*RKT-VERSIONS*))]
-       [get-caption
-        (lambda (i)
-         (case i
-          [else "L-N/M Plots"]))]
-       [fig-lnm-name* (box '())])
-  (list
-    (for/list ([lnm (in-list lnm*)]
-               [i (in-naturals 1)])
-      (define name (format "fig:lnm:~a" i))
-      (set-box! fig-lnm-name* (cons name (unbox fig-lnm-name*)))
-      (figure name
-              (get-caption i)
-              lnm))
-    @elem{
-      @(apply Figure-ref (reverse (unbox fig-lnm-name*)))
-       present our results.
-    }))
-
+@(render-lnm-plot
+  (lambda (pict*)
+    (define (get-caption i)
+      (case i
+       [else "L-N/M Plots"]))
+    (define name*
+      (for/list ([p (in-list pict*)]
+                 [i (in-naturals)])
+        (format "fig:lnm:~a" i)))
+    (cons
+      @elem{
+        @(apply Figure-ref name*) present our results.
+      }
+      (for/list ([p (in-list pict*)]
+                 [name (in-list name*)]
+                 [i (in-naturals)])
+        (figure name (get-caption i) p)))))
 
 @todo{STOP READING TEXT}
 
@@ -499,51 +497,36 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @; - common shapes
 
 
-The @id[NUM-BENCHMARKS] rows of cumulative distribution functions in @todo{Figure-ref}
- summarize the results from exhaustively exploring the performance lattices of
- our benchmarks on three versions of Racket.
-In each graph, the @math{x}-axis represents a slowdown relative to the untyped program
- ranging from 1x to @id[MAX-OVERHEAD]x.
-The @math{y}-axis is a count of the number of configurations,
- from @math{0} to @math{2^n}, scaled so that all graphs are the same height.
-A point at @math{x=3} and @math{y=50} means that fifty of a program's
- configurations run with at most 3x overhead.
-By definition, one of these 50 is the untyped configuration.
+@; The @id[(count-benchmarks)] rows of cumulative distribution functions in @todo{Figure-ref}
+@;  summarize the results from exhaustively exploring the performance lattices of
+@;  our benchmarks on three versions of Racket.
+@; In each graph, the @math{x}-axis represents a slowdown relative to the untyped program
+@;  ranging from 1x to @id[(*MAX-OVERHEAD*)]x.
+@; The @math{y}-axis is a count of the number of configurations,
+@;  from @math{0} to @math{2^n}, scaled so that all graphs are the same height.
+@; A point at @math{x=3} and @math{y=50} means that fifty of a program's
+@;  configurations run with at most 3x overhead.
+@; By definition, one of these 50 is the untyped configuration.
+@; 
+@; Each plot charts three series of points corresponding to three versions of
+@;  Racket.
+@; To ground our comparison of these series, we select values for @math{N}, @math{M}, and @math{L}.
+@; Rather than re-use the parameters from our prior work@~cite[tfgnvf-popl-2016],
+@;  we choose @math{N=0.2} and @math{M=5}.
+@; The former is inspired by a remark about the acceptable overhead of
+@;  garbage collection technology@~cite[u-sde-1984].
+@; Of course, these parameters are just examples.
+@; Application-specific requirements will dictate levels of acceptable and
+@;  usable overhead in practice.
+@; 
+@; We present three columns of plots, representing values of @math{L} ranging
+@;  between 0 and 2.
+@; If @math{L} is zero, the curves represents the total number of configurations
+@;  with performance no worse than the overhead on the x-axis.
+@; For arbitrary @math{L}, the curves give the number of configurations that
+@;  can reach a configuration with performance no worse than the overhead on the
+@;  x-axis in at most @math{L} conversion steps.
 
-Each plot charts three series of points corresponding to three versions of
- Racket.
-To ground our comparison of these series, we select values for @math{N}, @math{M}, and @math{L}.
-Rather than re-use the parameters from our prior work@~cite[tfgnvf-popl-2016],
- we choose @math{N=0.2} and @math{M=5}.
-The former is inspired by a remark about the acceptable overhead of
- garbage collection technology@~cite[u-sde-1984].
-Of course, these parameters are just examples.
-Application-specific requirements will dictate levels of acceptable and
- usable overhead in practice.
-
-We present three columns of plots, representing values of @math{L} ranging
- between 0 and 2.
-If @math{L} is zero, the curves represents the total number of configurations
- with performance no worse than the overhead on the x-axis.
-For arbitrary @math{L}, the curves give the number of configurations that
- can reach a configuration with performance no worse than the overhead on the
- x-axis in at most @math{L} conversion steps.
-
-A useful way to read these figures is to first pick an overhead value,
- say @id[EXAMPLE-OVERHEAD], then follow the y-axis until it intersects
- one of the curves.
-Taking @id[EXAMPLE-BENCHMARK] for example, the leftmost plot shows that
- @todo{how many} configurations run within a @id[EXAMPLE-OVERHEAD] slowdown
- over the untyped configuration on Racket version 6.2.
-Upgrading to Racket version @todo{6.4.0.5} gives @todo{modest}.
-
-
-@; -----------------------------------------------------------------------------
-@; --- lnm characteristics
-
-@figure*["fig:lnm-characteristics" "LNM summary"
-  @(lnm-characteristics (*RKT-VERSIONS*))
-]
 
 @; -----------------------------------------------------------------------------
 @; @section[#:tag "sec:all-results"]{Interpretation}
@@ -570,117 +553,16 @@ Our approach is to focus on the left column, where @math{L}=0, and to consider t
 In @todo{secref} we explain the changes between different versions of Racket
  and the pathologies in each benchmark.
 
-@lnm-descriptions[
-  @lnm['sieve]{
-    The flat line at @math{L}=0 shows that half of all configurations suffer
-    unacceptable overhead. As there are only 4 configurations in the lattice
-    for @tt{sieve}, increasing @math{L} improves performance.
-  }
-
-  @lnm['morsecode]{
-    The steep lines show that a few configurations suffer modest overhead (below 2x),
-    otherwise @tt{morse-code} performs well.
-    Increasing @math{L} improves the worst cases.
-  }
-
-  @lnm['mbta]{
-    These lines are also steep, but flatten briefly at 2x.
-    This coincides with the performance of the fully-typed
-    configuration.
-    As one would expect, freedom to type additional modules adds configurations
-    to the @deliverable{2} equivalence class.
-  }
-
-  @lnm['acquire]{
-    Nope!
-  }
-
-  @lnm['fsm]{
-    Nope!
-  }
-
-  @lnm['fsmoo]{
-    Nope!
-  }
-
-  @lnm['forth]{
-    Nope!
-  }
-
-  @lnm['zordoz]{
-    Plots here are similar to @tt{mbta}.
-    There is a gap between the performance of the fully-typed
-    configuration and the performance of the next-fastest lattice point.
-  }
-
-  @lnm['suffixtree]{
-    The wide horizontal areas are explained by the performance lattice in
-    @figure-ref{fig:suffixtree}: configurations' running times are not evenly
-    distributed but instead vary drastically when certain boundaries exist.
-    Increasing @math{L} significantly improves the number of acceptable configuration
-    at 10x and even 3x overhead.
-  }
-
-  @lnm['lnm]{
-    These results are ideal.
-    Note the large y-intercept at @math{L}=0.
-    This shows that very few configurations suffer any overhead.
-  }
-
-  @lnm['kcfa]{
-    The most distinctive feature at @math{L}=0 is the flat portion between 1x
-    and 6x. This characteristic remains at @math{L}=1, and overall performance
-    is very good at @math{L}=2.
-  }
-
-  @lnm['snake]{
-    The slope at @math{L}=0 is very low.
-    Allowing @math{L}=1 brings a noticeable improvement above the 5x mark,
-    but the difference between @math{L}=1 and @math{L}=2 is small.
-  }
-
-  @lnm['tetris]{
-    Each @tt{tetris} plot is essentially a flat line.
-    At @math{L}=0 roughly 1/3 of configurations lie below the line.
-    This improves to 2/3 at @math{L}=1 and only a few configurations suffer overhead
-    when @math{L}=2.
-  }
-
-  @lnm['synth]{
-    Each slope is very low.
-    Furthermore, some configurations remain unusable even at @math{L}=2.
-    These plots have few flat areas, which implies that overheads are spread
-    evenly throughout possible boundaries in the program.
-  }
-
-  @lnm['gregor]{
-    These steep curves are impressive given that @tt{gregor} has 13 modules.
-    Increasing @math{L} brings consistent improvements.
-  }
-
-  @lnm['zombie]{
-  }
-
-  @lnm['quadBG]{
-  }
-
-  @lnm['quadMB]{
-    The @bm{quadMB} plots follow the same pattern as @bm{mbta} and @bm{zordoz}, despite being visually distinct.
-    In all three cases, there is a flat slope for overheads below the typed/untyped ratio and a steep increase just after.
-    The high typed/untyped ratio is explained by small differences in the original author-supplied variants.
-  }
-]
-
 
 @; -----------------------------------------------------------------------------
 @subsection{Summary Tables}
 @; Does this need a subsection?
 
-@figure*["fig:lnm-summary" "Summary Statistics"
-  @(lnm-summary "6.2" "6.3" "6.4.0.5")
+@figure*["fig:lnm-table" "Summary Statistics"
+  @(render-lnm-table)
 ]
 
-The table in @Figure-ref{fig:lnm-summary} gives a second perspective on our
+The table in @Figure-ref{fig:lnm-table} gives a second perspective on our
  datasets, giving a typed/untyped ratio, mean, max, and @usable["N" "M"]
  percentages for each tested version of Racket.
 
@@ -721,7 +603,7 @@ Using this notation, the configuration where only @tt{population} typed
 
 @figure*["fig:fsm-lattice-6.2"
   @list{FSM data lattice}
-  @(data-lattice 'fsm "6.2" #:tag "2016-03-19T02:06:11")
+  @(render-data-lattice 'fsm "6.2" #:tag "2016-03-19T02:06:11")
 ]
 
 @Figure-ref{fig:fsm-lattice-6.2} is the full performance lattice for @bm{fsm}

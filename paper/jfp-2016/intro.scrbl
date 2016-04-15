@@ -111,9 +111,10 @@ We extend that prior work with:
      using the method to measure differences between versions.
   }
   @item{
-    @id[(string-titlecase (integer->word NUM-NEW-OO))]
+    @id[(string-titlecase (integer->word (count-new-oo-benchmarks)))]
      object-oriented benchmark programs, augmenting our previous suite of
-     @id[(- NUM-BENCHMARKS NUM-NEW-OO)] mostly-functional benchmark programs.
+     @id[(- (count-benchmarks) (count-new-oo-benchmarks))]
+     mostly-functional benchmark programs.
   }
   @item{
     In-depth discussions of performance bottlenecks in each benchmark and,
