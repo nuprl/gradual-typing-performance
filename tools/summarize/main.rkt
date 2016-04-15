@@ -1,8 +1,8 @@
 #lang typed/racket/base
 
 (define-syntax-rule (reprovide name ...)
-  (begin (require name ...)
-         (provide (all-from-out name ...))))
+  (begin (begin (require name)
+                (provide (all-from-out name))) ...))
 
 (reprovide
   gtp-summarize/summary
