@@ -128,7 +128,7 @@ Incorrect calls like @racket[(complex-* '(1 . 1) "NaN")]
  the untyped code is blamed@~cite[ff-icfp-2002] for supplying arguments of the wrong type.
 
 Correct blame is essential to Typed Racket's soundness guarantee, which states
- that typed code is never blamed for type errors.
+ that typed code is never the cause of run-time type errors.
 Rather, all type errors are either detected statically or dynamically caught
  and attributed to an untyped module.
 Tracking blame and dynamically enforcing types can, however, be costly.
@@ -147,7 +147,7 @@ In brief, costs can quickly accumulate as the size of data
 @;  YYYms to run.
 @; TODO connect example to soundness?
 
-Despite the potential overhead, it is essential that each call to @racket[complex-*]
+Despite the potential overhead, it is crucial that each call to @racket[complex-*]
  is guarded against type errors.
 Although inputs such as the string @racket{NaN} will cause an error
  when applied to @racket[+], ill-typed calls such as:

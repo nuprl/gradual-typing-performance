@@ -98,9 +98,9 @@
 
 (defparam2 *CACHE?* Boolean #t)
 
-(defparam2 *BENCHMARK-DESCRIPTIONS-CACHE* Path-String "cache-benchmark-descriptions.rktd")
+(defparam2 *BENCHMARK-TABLE-CACHE* Path-String "cache-benchmark-table.rktd")
 (defparam2 *DRAFT?* Boolean #t)
-(defparam2 *LNM-DESCRIPTIONS-CACHE* Path-String "cache-lnm-descriptions.rktd") ;; Place to store cached lnm table
+(defparam2 *LNM-TABLE-CACHE* Path-String "cache-lnm-table.rktd") ;; Place to store cached lnm table
 (defparam2 *LNM-OVERHEAD* (Listof Exact-Rational) '(1/5 3 10))
 (defparam2 *RKT-VERSIONS* (Listof String) '("6.2" "6.3" "6.4"))
 
@@ -182,7 +182,7 @@
      [(null? expect*)
       (unknown-benchmark-error given*)]
      [(null? given*)
-      (missing-benchmark-error expect*)]
+      (missing-benchmark-error (cdr expect*))]
      [else
       (define expect (car expect*))
       (define given (car given*))
@@ -289,6 +289,9 @@
       (list (car x*) " \\\\\n")
       (list* (car x*) " & " (loop (cdr x*))))))
 
+(define (percent-diff meas exp)
+  (/ (- meas exp) exp))
+
 ;; -----------------------------------------------------------------------------
 ;; --- Formatting
 
@@ -344,11 +347,11 @@
 
 (define (benchmarks-table-cache-file)
   (ensure-dir COMPILED)
-  (build-path COMPILED (*BENCHMARK-DESCRIPTIONS-CACHE*)))
+  (build-path COMPILED (*BENCHMARK-TABLE-CACHE*)))
 
 (define (lnm-table-cache)
   (ensure-dir COMPILED)
-  (build-path COMPILED (*LNM-DESCRIPTIONS-CACHE*)))
+  (build-path COMPILED (*LNM-TABLE-CACHE*)))
 
 (define (version->data-file* v)
   (in-glob (string-append (get-git-root) "/data/" v "/*.rktd")))
@@ -524,7 +527,7 @@
 
 (define (format-percent-diff meas exp)
   (define diff (- meas exp))
-  (define pct (round (* 100 (/ diff exp))))
+  (define pct (round (* 100 (percent-diff meas exp))))
   (format "~a~~~~~a(~a\\%)"
     diff
     (if (< pct 10) "\\hphantom{0}" "")
@@ -604,6 +607,20 @@
 ))
 
 (define (render-lnm-table)
+  (with-cache (lnm-table-cache)
+   #:read (lambda (tag+data)
+            (let ([d (uncache-table tag+data)])
+              (and d (deserialize d))))
+   #:write (compose1 cache-table serialize)
+   new-lnm-bars))
+
+(define (new-lnm-bars)
+  (parameterize ([*PLOT-WIDTH* 300]
+                 [*PLOT-HEIGHT* 20]
+                 #;[])
+    (render-bars (get-lnm-rktd**))))
+
+(define (old-render-lnm-table)
   (render-table new-lnm-table
    #:title LNM-TABLE-TITLE*
    #:cache (lnm-table-cache)))
