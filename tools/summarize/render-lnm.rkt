@@ -24,6 +24,7 @@
  (only-in racket/port with-input-from-string open-output-nowhere)
  gtp-summarize/lnm-parameters
  gtp-summarize/lnm-plot
+ gtp-summarize/path-util
  gtp-summarize/summary
  plot/typed/no-gui
  plot/typed/utils
@@ -269,11 +270,6 @@
           (ensure-dir s)
           s))))
   (string-append p (or tag "") ".rktd"))
-
-(: ensure-dir (-> String Void))
-(define (ensure-dir path)
-  (unless (directory-exists? path)
-    (make-directory path)))
 
 ;; Save a pict, tagging with with `tag` and the `rktd*` filenames
 (: cache-pict (-> Pict (Listof String) Void))
