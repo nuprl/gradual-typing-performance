@@ -1,11 +1,5 @@
 #lang scribble/base
 
-@; TODO lattice
-@;@figure["fig:fsm-lattice" "FSM performance lattice (labels are speedup/slowdown factors)"
-@;  @(let ([vec (file->value "src/fsm-lattice-data.rktd")])
-@;     (make-performance-lattice vec))
-@;]
-
 @require["common.rkt" benchmark-util/data-lattice]
 
 @title[#:tag "sec:framework"]{Evaluation Framework}

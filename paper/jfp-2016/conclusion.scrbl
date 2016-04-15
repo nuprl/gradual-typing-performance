@@ -25,7 +25,7 @@ At present, the difference between ideal and actual performance seems
  typed and untyped code can be practically achieved.
 
 We support our thesis with benchmarking results for @emph{all
- possible} gradual typing configurations for @id[NUM-BENCHMARKS] Typed Racket
+ possible} gradual typing configurations for @id[(count-benchmarks)] Typed Racket
  benchmarks of various sizes and complexities.
 Even under liberal conditions, few of these configurations have only
  deliverable or usable performance overhead.
