@@ -294,161 +294,38 @@
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
 
-(: plot-mean-bars (-> (Listof Summary) pict))
-(define (plot-mean-bars S*)
-  (define num-series (length S*))
-  (define p
-    (plot-pict
-      (for/list : (Listof renderer2d)
-                ([S (in-list S*)]
-                 [i (in-naturals 2)])
-        (define c (->pen-color i))
-        (define lbl (format "~a" (summary->version S)))
-        (discrete-histogram
-          (for/list : (Listof (List Any Real))
-                    ([cfg (all-configurations S)])
-            (list (bitstring->natural cfg) (configuration->mean-runtime S cfg)))
-          #:add-ticks? #t
-          #:style (integer->brush-style i)
-          #:label lbl
-          #:line-width 1
-          #:line-color c
-          #:color c
-          #:x-min i
-          #:skip (+ 1 num-series)))
-      #:x-label "Config #"
-      #:y-label "Time (ms)"
-      #:legend-anchor 'bottom-right
-      #:y-min 0
-      #:width (*PLOT-WIDTH*)
-      #:height (*PLOT-HEIGHT*)))
-  (cast p pict))
-
-;; Make a line for each configuration in the dataset
-(: plot-traces (-> (Listof Summary) pict))
-(define (plot-traces S*)
-  (define S
-    (if (and (not (null? S*)) (null? (cdr S*)))
-      (car S*)
-      (raise-user-error 'plot-traces "Sorry expected exactly 1 summary, got '~a'" S*)))
-  (define lo (min-runtime S))
-  (define hi (max-runtime S))
-  (define num-iters (get-num-iterations S))
-  (define num-configs (get-num-configurations S))
-  (define band-size : Real
-    (ceiling (/ (- hi lo) (*TRACE-NUM-COLORS*))))
-  (define (runtime->line-color (r : Real)) : Natural
-    (let loop : Natural ([acc : Natural 0])
-      (if (< r (* (+ 1 acc) band-size))
-        (assert (max (- (*TRACE-NUM-COLORS*) acc) 0) index?)
-        (loop (+ acc 1)))))
-  (define p
-    (plot-pict
-      (for/list : (Listof renderer2d)
-                ([cfg (all-configurations S)])
-        (define r* (configuration->runtimes S cfg))
-        (lines
-          (for/list : (Listof (List Real Real))
-                    ([r (in-list r*)]
-                     [i (in-naturals)])
-            (list i r))
-          #:color (runtime->line-color (car r*))
-          ;#:label (and (< num-configs 64) cfg)
-          #:alpha 0.6))
-      #:x-min 0
-      #:x-max num-iters
-      #:x-label "Iteration #"
-      #:y-label "Time (ms)"
-      ;#:legend-anchor (*LEGEND-ANCHOR*)
-      #:width (*PLOT-WIDTH*)
-      #:height (*PLOT-HEIGHT*)))
-  (cast p pict))
-
-(: plot-exact-configurations (-> (Listof Summary) pict))
-(define (plot-exact-configurations S*)
-  (define num-configs (get-num-configurations (car S*)))
-  (parameterize ([plot-x-ticks (list->ticks (range num-configs))])
-    (define p
-      (plot-pict
-        (append
-          (for/list : (Listof renderer2d)
-                    ([i (in-range (+ 1 num-configs))])
-            (vrule (- i 0.5)
-            #:width 0.6
-            #:color 0))
-          (for/list : (Listof renderer2d)
-                    ([S (in-list S*)]
-                     [i (in-naturals 1)])
-              (points
-                (for*/list : (Listof (List Real Real))
-                          ([cfg (all-configurations S)]
-                           [t (in-list (configuration->runtimes S cfg))])
-                  (list (bitstring->natural cfg) t))
-                #:color i
-                #:alpha 0.6
-                #:sym 'fullcircle
-                #:size 6
-                #:x-jitter 0.4
-                #:label (format "~a" (summary->version S)))))
-        #:x-label "Config.#"
-        #:y-label "Time (ms)"
-        #:x-max num-configs
-        #:legend-anchor (*LEGEND-ANCHOR*)
-        #:width (*PLOT-WIDTH*)
-        #:height (*PLOT-HEIGHT*)))
-    (cast p pict)))
-
-(: lnm-bar (-> (Listof (Listof Real)) BarType pict))
-(define (lnm-bar r** btype)
-  (define overhead? (not (eq? btype 'ratio)))
-  (define y-major-ticks (bar-type->major-ticks btype))
-  (define y-minor-ticks (bar-type->minor-ticks btype))
-  (define units (bar-type->units btype))
-  (define select (bar-type->selector btype))
-  (parameterize ([plot-x-axis? #t]
-                 [plot-y-axis? #t]
-                 [plot-font-face (*PLOT-FONT-FACE*)]
-                 [plot-font-size 8]
-                 [plot-y-ticks (ticks-add? (list->ticks y-major-ticks #:units units) y-minor-ticks)]
-                 [rectangle-alpha 0.9]
+(: lnm-bar (-> (Listof Summary) pict))
+(define (lnm-bar S*)
+  (define ratio* (map typed/untyped-ratio S*))
+  (define mean* (map avg-overhead S*))
+  (define max* (map max-overhead S*))
+  (parameterize ([plot-x-axis? #f]
+                 [plot-y-axis? #f]
                  [plot-x-far-axis? #f]
                  [plot-y-far-axis? #f]
-                 [plot-y-transform (if (*LOG-TRANSFORM?*) log-transform id-transform)]
-                 [plot-x-far-ticks no-ticks])
-    (define num-series (length (car r**)))
-    (define all-time-max : (Boxof Real) (box 0))
-    ;; -- series   = bars that touch each other
-    ;; -- datasets = separate groups of bars
-    (cast (plot-pict (append
-      (if (eq? btype 'runtime) (list (y-tick-lines)) '())
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-far-ticks no-ticks])
+    (cast (plot-pict
       (for/list : (Listof renderer2d)
-                ([series-num (in-range 1 (+ 1 (length (car r**))))])
-        ;; 2016-04-18: brush colors are lighter
-        (define color (->pen-color series-num))
+                ([num* (in-list (list ratio* mean* max*))]
+                 [i (in-naturals)])
+        (define n0 (car num*))
+        (define c (+ i 1))
+        (define x-min (* 8 i))
         (discrete-histogram
-          (for/list : (Listof (List Any Real))
-                    ([r* (in-list r**)]
-                     [dataset-num (in-naturals 1)])
-            (define v (select r* (- series-num 1)))
-            (when (> v (unbox all-time-max))
-              (set-box! all-time-max v))
-            (list (integer->letter dataset-num) v))
-          #:x-min series-num
-          #:skip (+ 1 num-series)
-          #:gap 0.2
-          #:add-ticks? #t
-          #:style (integer->brush-style series-num)
-          #:line-color series-num ;color
-          #:line-width 1
-          #:color color)))
-      #:x-label #f ;(and (*AXIS-LABELS?*) "foo")
-      #:y-label #f ;(*AXIS-LABELS?*) ylabel)
-      #:y-min (bar-type->y-min btype)
-      #:y-max (bar-type->y-max btype)
-      #:width (assert (- (*PLOT-WIDTH*) (if overhead? 0 SHIM-FOR-BARCHART-ALIGNMENT)) positive?)
+         (for/list : (Listof (List Any Real))
+                   ([n (in-list num*)])
+           (list #f (- 1 (/ (- n n0) n0))))
+         #:color c
+         #:line-color c
+         #:x-min x-min))
+      #:x-min 0
+      #:x-max 40
+      #:x-label (and (*AXIS-LABELS?*) "Property foobar")
+      #:y-label (and (*AXIS-LABELS?*) "Normalized foobar")
+      #:width (*PLOT-WIDTH*)
       #:height (*PLOT-HEIGHT*)) pict)))
 
-(define SHIM-FOR-BARCHART-ALIGNMENT 16)
 
 ;; Configure via parameters
 (: path-plot (-> (U Summary (Listof Summary)) (Listof pict)))
