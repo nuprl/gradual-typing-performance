@@ -64,7 +64,7 @@
 
 @; @section{Acknowledgments}
 @; - Stephen Chang for helping us adapt
-@;
+@; - Brian + Milo + Zeina for comments
 @;
 
 @generate-bibliography[]

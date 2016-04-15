@@ -7,18 +7,19 @@
 Performance evaluation for gradually typed languages must reflect how
  developers use such languages.
 Migrating an entire project from untyped to typed is rarely the initial goal,
- but rather a symptom of exceptional initiative or a need to remove type
+ but rather a symptom of an exceptional initiative or a need to remove type
  boundaries.
 Consequently, the question of whether there exists a
  smooth conversion path from fully-untyped to fully-typed that avoids
  performance overhead is purely academic.
-In practice, what happens is that a subset of modules are given types for
+In practice, a subset of modules are given types for
  reasons known only to the original developers.
 The overall performance of the hybrid program is then compared to the previous
  version of the program.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the developers may either accept the performance of the hybrid system
  or seek ways to reduce the cost of type boundaries.
+This process repeats over times as the program evolves.
 
 We formalize these lessons in two stages: first by describing the @emph{space}
  over which a performance evaluation must take place and second by giving
@@ -71,8 +72,8 @@ A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|
  generated from a sequence of modules.
 After framing the lattice for a given program, language evaluators must measure
  the performance of each configuration and generate a labeling @exact{$l$}
- such that @exact{$\forall c \in S$} the average running time of
- configuration @math{c} is @exact{$l(c)$}.
+ such that @exact{$\forall c \in S$} the performance of
+ configuration @math{c} is expressed by @exact{$l(c)$}.
 Once the data is aggregated, we can draw lessons and make comparisons
  using the lattice and labeling.
 
@@ -119,8 +120,10 @@ Even if a configuration is not deliverable, it might be suitably fast to
 A software engineering team can
  use such a configuration for development purposes, but it may not
  release it to clients.
-In order to formulate this criteria
- properly, we define a notion of usable configurations.
+@;In practice, usable configurations may act as checkpoints for a team to ensure
+@; the product is working correctly before implementing performance optimizations.
+Using a second parameter to capture the meaning of "suitably fast",
+ we define a notion of usable configurations.
 
     @def[#:term @list{@usable[]}]{
      A configuration in a performance
@@ -128,12 +131,6 @@ In order to formulate this criteria
       @math{D}x slowdown but no worse than a @math{U}x slowdown compared to
       the untyped configuration.
     }
-
-Using the first parameter, we exclude deliverable configurations from the count.
-The second parameter specifies the positive boundary, i.e., the acceptable
- slowdown factor for a usable configuration.
-In practice, usable configurations may act as checkpoints for a team to ensure
- the product is working correctly before implementing performance optimizations.
 
 On the other hand, the performance overhead of gradual typing may render
  some configurations too slow even for development purposes.
