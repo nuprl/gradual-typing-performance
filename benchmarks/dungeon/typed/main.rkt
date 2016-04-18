@@ -12,17 +12,12 @@
   benchmark-util
   typed/racket/class
   "../base/cell-types.rkt"
-  math/array
   racket/match
 )
 (require/typed racket/set
   (set-intersect (All (A) (-> (Listof A) (Listof A) (Listof A))))
 )
-;(require/typed racket/base
-;  (hash-clear! (-> (HashTable Pos Boolean) Void))
-;)
 (require/typed racket/dict
-  ;(in-dict (-> Poss->Cells (Sequenceof (Values Pos Cell%))))
   (dict-set (-> Poss->Cells Pos Cell% Poss->Cells))
 )
 (require/typed/check "cell.rkt"
@@ -45,7 +40,8 @@
   (south-tee-wall% Cell%)
   (empty-cell% Cell%)
 )
-(require/typed/check "grid.rkt" ;; TODO
+(require/typed "grid.rkt"
+  (#:opaque Grid grid?)
   (left (->* (Pos) (Index) Pos))
   (right (->* (Pos) (Index) Pos))
   (up (->* (Pos) (Index) Pos))
@@ -54,6 +50,8 @@
   (grid-height (-> Grid Index))
   (grid-width (-> Grid Index))
   (show-grid (-> Grid String))
+  (array-set! (-> Grid Pos (Instance Cell%) Void))
+  (build-array (-> Pos (-> Any (Instance Cell%)) Grid))
 )
 (require/typed "utils.rkt"
   (random-between (-> Integer Integer Integer))
@@ -233,9 +231,8 @@
   ;; a room for each encounter, and a few empty ones
   (define n-rooms (max (length encounters) (random-between 6 9)))
   (define grid
-    (array->mutable-array
      (build-array (ann (vector dungeon-height dungeon-width) Pos)
-                  (lambda _ (new void-cell%)))))
+                  (lambda _ (new void-cell%))))
   (define first-room
     (let loop : Room ()
       (define starting-point : Pos
@@ -313,7 +310,7 @@
               [else ; didn't fit, try again
                (values n-rooms-to-go rooms extension-points)])))))
     (cond [(not (= n 0)) ; we got stuck, try again
-           (log-error "generate-dungeon: had to restart")
+           ;(log-error "generate-dungeon: had to restart")
            ;; may have gotten too ambitious with n of rooms, back off
            (set! n-rooms (max (length encounters) (sub1 n-rooms)))
            (loop)]

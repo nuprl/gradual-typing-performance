@@ -9,19 +9,28 @@
   grid-height
   grid-width
   show-grid
+  array-set!
+  (rename-out
+    (ext:build-array build-array)
+    (mutable-array? grid?))
 )
 
 (require
   "../base/cell-types.rkt"
   benchmark-util
-  math/array)
-
+  math/array
+)
 (require/typed "cell.rkt"
   (char->cell% (-> Char Cell%))
   (void-cell% Cell%)
 )
 
 ;; =============================================================================
+(define-type Grid (Mutable-Array (Instance Cell%)))
+
+(: ext:build-array (-> Pos (-> Indexes (Instance Cell%)) Grid))
+(define (ext:build-array p f)
+  (array->mutable-array (build-array p f)))
 
 ;; a Grid is a math/array Mutable-Array of cell%
 ;; (mutability is required for dungeon generation)
@@ -30,7 +39,8 @@
 ;; of each cell
 (: parse-grid (-> (Listof String) Grid))
 (define (parse-grid los)
-  (for*/array: #:shape (vector (length los)
+  (for*/array: ;: (Vectorof Cell%)
+               #:shape (vector (length los)
                               (apply max (map string-length los)))
               #:fill (new void-cell%)
               ([s (in-list los)]
@@ -87,46 +97,46 @@
           (vector-ref pos 1)))
 
 
-(module+ test
-  (require typed/rackunit)
-
-  (: parse-and-show (-> (Listof String) String))
-  (define (parse-and-show los) (show-grid (parse-grid los)))
-  (: render-grid (-> (Listof String) String))
-  (define (render-grid g) (string-join g "\n" #:after-last "\n"))
-
-  (define g1
-    '(" "))
-  (check-equal? (parse-and-show g1) " \n")
-
-  (define g2
-    '("**********"
-      "*        *"
-      "*        *"
-      "*        *"
-      "**********"))
-  (check-equal? (parse-and-show g2) (render-grid g2))
-
-  (define g3 ; padding should work
-    '("**********"
-      "*        *"
-      "*        *"
-      "*        *"
-      "*****"))
-  (define g3*
-    '("**********"
-      "*        *"
-      "*        *"
-      "*        *"
-      "*****....."))
-  (check-equal? (parse-and-show g3) (render-grid g3*))
-
-  (define g2* (parse-grid g2))
-  (check-true (within-grid? g2* '#(0 0)))
-  (check-true (within-grid? g2* '#(0 1)))
-  (check-true (within-grid? g2* '#(1 0)))
-  (check-true (within-grid? g2* '#(4 4)))
-  (check-false (within-grid? g2* '#(0 10)))
-  (check-false (within-grid? g2* '#(5 0)))
-  (check-false (within-grid? g2* '#(5 10)))
-  )
+;(module+ test
+;  (require typed/rackunit)
+;
+;  (: parse-and-show (-> (Listof String) String))
+;  (define (parse-and-show los) (show-grid (parse-grid los)))
+;  (: render-grid (-> (Listof String) String))
+;  (define (render-grid g) (string-join g "\n" #:after-last "\n"))
+;
+;  (define g1
+;    '(" "))
+;  (check-equal? (parse-and-show g1) " \n")
+;
+;  (define g2
+;    '("**********"
+;      "*        *"
+;      "*        *"
+;      "*        *"
+;      "**********"))
+;  (check-equal? (parse-and-show g2) (render-grid g2))
+;
+;  (define g3 ; padding should work
+;    '("**********"
+;      "*        *"
+;      "*        *"
+;      "*        *"
+;      "*****"))
+;  (define g3*
+;    '("**********"
+;      "*        *"
+;      "*        *"
+;      "*        *"
+;      "*****....."))
+;  (check-equal? (parse-and-show g3) (render-grid g3*))
+;
+;  (define g2* (parse-grid g2))
+;  (check-true (within-grid? g2* '#(0 0)))
+;  (check-true (within-grid? g2* '#(0 1)))
+;  (check-true (within-grid? g2* '#(1 0)))
+;  (check-true (within-grid? g2* '#(4 4)))
+;  (check-false (within-grid? g2* '#(0 10)))
+;  (check-false (within-grid? g2* '#(5 0)))
+;  (check-false (within-grid? g2* '#(5 10)))
+;  )

@@ -4,7 +4,6 @@
   Cell%
   Door%
   Pos
-  Grid
 )
 (require
   math/array
@@ -33,5 +32,4 @@
 ;     (open? Boolean #:optional))))
 
 (define-type Pos (Vector Index Index))
-(define-type Grid (Mutable-Array (Instance Cell%)))
 
