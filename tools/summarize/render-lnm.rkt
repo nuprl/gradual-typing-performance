@@ -4,6 +4,7 @@
 
 (provide
  render-bars
+ render-dots
  render-lnm
 
  data->pict
@@ -180,6 +181,15 @@
               ([p (in-list (cdr p*))])
       (vl-append h acc p))))
 
+(: ht-append* (-> Real (Listof Pict) Pict))
+(define (ht-append* h p*)
+  (if (null? p*)
+    (blank h 0)
+    (for/fold : Pict
+              ([acc (car p*)])
+              ([p (in-list (cdr p*))])
+      (ht-append h acc p))))
+
 (: hc-append* (-> Real (Listof Pict) Pict))
 (define (hc-append* h p*)
   (if (null? p*)
@@ -228,11 +238,11 @@
       [else
        (raise-user-error 'render-lnm "Unknown aggregation method")]))))
 
-(: title-text (-> String Pict))
-(define (title-text s)
+(: title-text (->* (String) (Real) Pict))
+(define (title-text s [angle 0])
   (let ([face (*TABLE-FONT-FACE*)]
         [size (*TABLE-FONT-SIZE*)])
-      (text s (cons 'bold face) size)))
+      (text s (cons 'bold face) size angle)))
 
 ;; Create a summary and L-N/M picts for a data file.
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
@@ -453,17 +463,54 @@
   (car (string-split (path->project-name fname) ".")))
 
 ;; -----------------------------------------------------------------------------
-;; TODO
+(define-type Real** (Listof (Listof Real)))
 
 (: render-bars (-> (Listof (Listof Path-String)) Pict))
 (define (render-bars rktd**)
+  (define-values (name* ratio** mean** max**)
+    (let loop : (Values (Listof String) Real** Real** Real**)
+              ([rktd** rktd**])
+      (if (null? rktd**)
+        (values '() '() '() '())
+        (let-values ([(n* r** m** x**) (loop (cdr rktd**))]
+                     [(_) (collect-garbage 'major)]
+                     [(S*) (for/list : (Listof Summary)
+                                     ([rktd (in-list (car rktd**))])
+                             (from-rktd rktd))])
+          (values
+            (cons (fname->title (caar rktd**)) n*)
+            (cons (map typed/untyped-ratio S*) r**)
+            (cons (map avg-overhead S*) m**)
+            (cons (map max-overhead S*) x**))))))
+  (define VSHIM (exact-round (/ (*GRAPH-VSPACE*) 2)))
+  (vl-append (* VSHIM 6)
+    (vl-append VSHIM
+      (title-text "Typed/Untyped Ratio") (lnm-bar ratio**))
+    (vl-append VSHIM
+      (title-text "Mean Overhead") (lnm-bar mean**))
+    (vl-append VSHIM
+      (title-text "Max Overhead") (lnm-bar max**))
+    (render-xlabels name*)))
+
+(: render-xlabels (-> (Listof String) Pict))
+(define (render-xlabels name*)
+  ;; TODO hspacing
+  (ht-append* (*GRAPH-HSPACE*)
+    (for/list ([name (in-list name*)])
+      ;; TODO rotate back just a little bit
+      (title-text name (/ pi 2)))))
+
+;; -----------------------------------------------------------------------------
+
+(: render-dots (-> (Listof (Listof Path-String)) Pict))
+(define (render-dots rktd**)
   (vl-append* (*GRAPH-VSPACE*)
     (for/list ([rktd* (in-list rktd**)])
       (collect-garbage 'major)
-      (render-bar rktd*))))
+      (render-dot rktd*))))
 
-(: render-bar (-> (Listof Path-String) Pict))
-(define (render-bar rktd*)
+(: render-dot (-> (Listof Path-String) Pict))
+(define (render-dot rktd*)
   (define title (title-text (fname->title (car rktd*))))
   (define S*
     (for/list : (Listof Summary)

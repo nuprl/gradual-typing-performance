@@ -298,38 +298,40 @@
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
 
-(: lnm-bar (-> (Listof Summary) pict))
-(define (lnm-bar S*)
-  (define ratio* (map typed/untyped-ratio S*))
-  (define mean* (map avg-overhead S*))
-  (define max* (map max-overhead S*))
-  (parameterize ([plot-x-axis? #f]
-                 [plot-y-axis? #f]
+(: lnm-bar (-> (Listof (Listof Real)) pict))
+(define (lnm-bar r**)
+  (parameterize ([plot-x-axis? #t]
+                 [plot-y-axis? #t]
+                 [plot-x-ticks no-ticks]
+                 [rectangle-alpha 0.9]
                  [plot-x-far-axis? #f]
-                 [plot-y-far-axis? #f]
+                 [plot-y-far-axis? #t]
+                 [plot-y-transform (if (*LOG-TRANSFORM?*) log-transform id-transform)]
                  [plot-x-far-ticks no-ticks]
-                 [plot-y-far-ticks no-ticks])
+                 )
+    (define num-datasets (length r**))
     (cast (plot-pict
       (for/list : (Listof renderer2d)
-                ([num* (in-list (list ratio* mean* max*))]
-                 [i (in-naturals)])
-        (define n0 (car num*))
-        (define c (+ i 1))
-        (define x-min (* 8 i))
+                ([series-num (in-range 1 (+ 1 (length (car r**))))])
+        ;; 2016-04-18: brush colors are lighter
+        (define color (->pen-color series-num))
         (discrete-histogram
-         (for/list : (Listof (List Any Real))
-                   ([n (in-list num*)])
-           (list #f (- 1 (/ (- n n0) n0))))
-         #:color c
-         #:line-color c
-         #:x-min x-min))
-      #:x-min 0
-      #:x-max 40
-      #:x-label (and (*AXIS-LABELS?*) "Property foobar")
-      #:y-label (and (*AXIS-LABELS?*) "Normalized foobar")
+          (for/list : (Listof (List Any Real))
+                    ([r* (in-list r**)]
+                     [dataset-num (in-naturals)])
+            (list dataset-num (list-ref r* (- series-num 1))))
+          #:x-min series-num
+          #:skip (+ num-datasets 1)
+          #:gap 0.02
+          #:add-ticks? #f
+          #:style (integer->brush-style series-num)
+          #:line-color color
+          #:line-width 0.1
+          #:color color))
+      #:x-label #f ;(and (*AXIS-LABELS?*) "foo")
+      #:y-label #f ;(*AXIS-LABELS?*) ylabel)
       #:width (*PLOT-WIDTH*)
       #:height (*PLOT-HEIGHT*)) pict)))
-
 
 ;; Configure via parameters
 (: path-plot (-> (U Summary (Listof Summary)) (Listof pict)))
@@ -766,6 +768,13 @@
   (case i
    [(1) 'dot]
    [(2) 'short-dash]
+   [else 'solid]))
+
+(: integer->brush-style (-> Integer (U 'bdiagonal-hatch 'crossdiag-hatch 'solid)))
+(define (integer->brush-style i)
+  (case i
+   [(1) 'bdiagonal-hatch]
+   [(2) 'crossdiag-hatch]
    [else 'solid]))
 
 (: integer->line-width (-> Integer Nonnegative-Real))

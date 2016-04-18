@@ -616,10 +616,15 @@
    new-lnm-bars))
 
 (define (new-lnm-bars)
-  (parameterize ([*PLOT-WIDTH* 300]
-                 [*PLOT-HEIGHT* 20]
-                 #;[])
+  (parameterize ([*PLOT-WIDTH* 420]
+                 [*PLOT-HEIGHT* 140]
+                 [*LOG-TRANSFORM?* #f]) ;; TODO
     (render-bars (get-lnm-rktd**))))
+
+(define (new-lnm-dots)
+  (parameterize ([*PLOT-WIDTH* 300]
+                 [*PLOT-HEIGHT* 20])
+    (render-dots (get-lnm-rktd**))))
 
 (define (old-render-lnm-table)
   (render-table new-lnm-table
