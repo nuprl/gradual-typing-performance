@@ -14,10 +14,11 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+ benchmark-util
  typed/racket/class
  "../base/cell-types.rkt"
 )
-(require/typed "message-queue.rkt"
+(require/typed/check "message-queue.rkt"
   (enqueue-message! (-> String Void))
 )
 (require/typed racket/dict

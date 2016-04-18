@@ -1,14 +1,41 @@
-#lang racket
+#lang racket/base
 
-(require "message-queue.rkt")
+;; TODO use open?
 
-(provide (all-defined-out))
+(provide
+  empty-cell%
+  void-cell%
+  door%
+  vertical-door%
+  horizontal-door%
+  char->cell%
+  wall%
+  void-cell%
+)
+
+;; -----------------------------------------------------------------------------
+
+(require
+ racket/class
+ "../base/un-types.rkt"
+)
+(require (only-in "message-queue.rkt"
+  enqueue-message!
+))
+(require (only-in racket/dict
+  dict-ref
+  dict-set!
+))
+;; =============================================================================
 
 ;; maps printed representations to cell classes
 ;; for map parsing
-(define chars->cell%s (make-hash))
+(define chars->cell%s
+  (make-hash))
+
 (define (register-cell-type! c% char)
   (dict-set! chars->cell%s char c%))
+
 (define (char->cell% char)
   (dict-ref chars->cell%s char))
 
@@ -34,7 +61,7 @@
       (not occupant))
     (define/override (show)
       (if occupant
-          (send occupant show)
+          (send (or occupant (raise-user-error 'show)) show)
           #\space))
     (super-new)))
 (register-cell-type! empty-cell% #\space)
@@ -76,38 +103,40 @@
 
 (define door%
   (class cell%
-    (init-field [open? #f])
+    ;(init-field [open? #f])
     (inherit-field occupant)
     (define/override (free?)
-      (and open? (not occupant)))
+      (and #;open? (not occupant)))
     (define/override (open)
-      (if open?
+      (if #t ;open?
           (enqueue-message! "The door is already open.")
-          (set! open? #t)))
+          (void) #;(set! open? #t)))
     (define/override (close)
-      (if open?
-          (set! open? #f)
+      (if #t ;open?
+          (void) #;(set! open? #f)
           (enqueue-message! "The door is already closed.")))
     (super-new)))
+
 (define vertical-door%
   (class door%
-    (inherit-field open? occupant)
+    (inherit-field #;open? occupant)
     (define/override (show)
-      (if open?
-          (if occupant (send occupant show) #\_)
+      (if #t ;open?
+          (if occupant (send (or occupant (raise-user-error 'vdoor)) show) #\_)
           #\|))
     (super-new)))
 (register-cell-type! vertical-door% #\|)
-(register-cell-type! (class vertical-door% (super-new [open? #t])) #\_)
+(register-cell-type! (class vertical-door% (super-new #;[open? #t])) #\_)
+
 (define horizontal-door%
   (class door%
-    (inherit-field open? occupant)
+    (inherit-field #;open? occupant)
     (define/override (show)
-      (if open?
-          (if occupant (send occupant show) #\')
+      (if #t ;open?
+          (if occupant (send (or occupant (raise-user-error 'hdoor)) show) #\')
           #\-))
     (super-new)))
 (register-cell-type! horizontal-door% #\-)
-(register-cell-type! (class horizontal-door% (super-new [open? #t])) #\')
+(register-cell-type! (class horizontal-door% (super-new #;[open? #t])) #\')
 
 ;; TODO chests, entry/exit

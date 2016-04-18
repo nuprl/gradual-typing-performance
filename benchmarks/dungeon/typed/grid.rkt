@@ -10,27 +10,33 @@
   grid-width
   show-grid
   array-set!
-  (rename-out
-    (ext:build-array build-array)
-    (mutable-array? grid?))
+  build-array
 )
 
 (require
   "../base/cell-types.rkt"
   benchmark-util
-  math/array
+  ;math/array ;; TODO it'd be nice to use this
 )
-(require/typed "cell.rkt"
+(require/typed/check "cell.rkt"
   (char->cell% (-> Char Cell%))
   (void-cell% Cell%)
 )
 
 ;; =============================================================================
-(define-type Grid (Mutable-Array (Instance Cell%)))
 
-(: ext:build-array (-> Pos (-> Indexes (Instance Cell%)) Grid))
-(define (ext:build-array p f)
-  (array->mutable-array (build-array p f)))
+(: array-set! (-> Grid Pos (Instance Cell%) Void))
+(define (array-set! g p v)
+  (vector-set! (vector-ref g (vector-ref p 0)) (vector-ref p 1) v))
+
+(: build-array (-> Pos (-> Pos (Instance Cell%)) Grid))
+(define (build-array p f)
+  (for/vector : Grid
+    ([x (in-range (vector-ref p 0))])
+   (for/vector : (Vectorof (Instance Cell%))
+                ([y (in-range (vector-ref p 1))])
+    (f (vector (assert x index?) (assert y index?))))))
+  ;(build-array p f)))
 
 ;; a Grid is a math/array Mutable-Array of cell%
 ;; (mutability is required for dungeon generation)
@@ -39,32 +45,35 @@
 ;; of each cell
 (: parse-grid (-> (Listof String) Grid))
 (define (parse-grid los)
-  (for*/array: ;: (Vectorof Cell%)
-               #:shape (vector (length los)
-                              (apply max (map string-length los)))
-              #:fill (new void-cell%)
-              ([s (in-list los)]
-               [c (in-string s)]) : (Instance Cell%)
-     (new (char->cell% c))))
+  (for/vector : Grid
+              ; #:shape (vector (length los)
+              ;                (apply max (map string-length los)))
+              ;#:fill (new void-cell%)
+              ([s (in-list los)])
+            (for/vector : (Vectorof (Instance Cell%))
+               ([c (in-string s)]) ;: (Instance Cell%)
+     (new (char->cell% c)))))
 
 (: show-grid (-> Grid String))
 (define (show-grid g)
   (with-output-to-string
     (lambda ()
-      (for ([r (in-array-axis g)])
-        (for ([c (in-array r)])
+      (for ([r (in-vector g)])
+        (for ([c (in-vector r)])
           (display (send c show)))
         (newline)))))
 
 (: grid-height (-> Grid Index))
 (define (grid-height g)
-  (match-define (vector rows cols) (array-shape g))
-  rows)
+  (vector-length g))
+  ;(match-define (vector rows cols) (array-shape g))
+  ;rows)
 
 (: grid-width (-> Grid Index))
 (define (grid-width g)
-  (match-define (vector rows cols) (array-shape g))
-  cols)
+  (vector-length (vector-ref g 0)))
+  ;(match-define (vector rows cols) (array-shape g))
+  ;cols)
 
 (: within-grid? (-> Grid Pos Boolean))
 (define (within-grid? g pos)
@@ -74,7 +83,7 @@
 (: grid-ref (-> Grid Pos (U #f (Instance Cell%))))
 (define (grid-ref g pos)
   (and (within-grid? g pos)
-       (array-ref g pos)))
+       (vector-ref (vector-ref g (vector-ref pos 0)) (vector-ref pos 1))))
 
 (: left (->* (Pos) (Index) Pos))
 (define (left pos [n 1])
