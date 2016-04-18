@@ -77,7 +77,7 @@
 (defparam *TITLE-FONT-FACE*   String "Liberation Serif")
 (defparam *TITLE-FONT-SIZE*   Positive-Index (assert (+ 2 (*TABLE-FONT-SIZE*)) index?))
 
-(defparam *PLOT-WIDTH*  Exact-Positive-Integer 360)
+(defparam *PLOT-WIDTH*  Exact-Positive-Integer 600)
 (defparam *PLOT-HEIGHT* Exact-Positive-Integer 300)
 
 ;; --- Other styles
@@ -101,13 +101,13 @@
 (defparam *TICK-SIZE* Natural 4) ;; Dude IDK
 (defparam *X-MINOR-TICKS* (U #f (Listof Real)) #f)
 (defparam *X-NUM-TICKS* Natural 5)
-(defparam *X-TICK-LINES?* Boolean #f)
-(defparam *X-TICKS* (U #f (Listof Exact-Rational)) #f) ;; Takes precedence over num-ticks
-(defparam *Y-MINOR-TICKS* (U #f (Listof Real)) #f)
-(defparam *Y-NUM-TICKS* Natural 6)
-(defparam *Y-TICK-LINES?* Boolean #f)
+(defparam *X-TICK-LINES?* Boolean #t)
+(defparam *X-TICKS* (U #f (Listof Real)) '(1 2.5 3.5 4.25 5))
+(defparam *Y-MINOR-TICKS* (U #f (Listof Real)) '(.25 .75))
+(defparam *Y-NUM-TICKS* Natural 3)
+(defparam *Y-TICK-LINES?* Boolean #t)
 (define-type Y-Style (U 'count '%))
-(defparam *Y-STYLE* Y-Style 'count)
+(defparam *Y-STYLE* Y-Style '%)
 
 ;; --- Boolean flags
 (defparam *AXIS-LABELS?*   Boolean #t) ;; If #t, label all plot axes
@@ -133,7 +133,7 @@
 
 (defparam *DISCRETE?* Boolean #f)
 
-(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
+(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'bottom-right)
 
 (defparam *TOO-MANY-BYTES* Natural (expt 10 9))
 ;; Files larger than this should not be loaded
