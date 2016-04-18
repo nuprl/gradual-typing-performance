@@ -1,0 +1,15 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{3}{message-queue}};
+  \node (01) [below of=00,yshift=-1cm] {\rkt{4}{utils}};
+  \node (10) [left of=00,xshift=-2cm] {\rkt{0}{cell}};
+  \node (20) [left of=10,xshift=-2cm] {\rkt{1}{grid}};
+  \node (30) [left of=20,xshift=-2cm] {\rkt{2}{main}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (20) -- (10);
+  \draw[->] (30) -- (01);
+  \draw[->] (30) -- (20);
+  \draw[->] (30) -- (10);
+
+\end{tikzpicture}

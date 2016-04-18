@@ -106,6 +106,7 @@
 
 (define BENCHMARK-NAMES ;; (Listof (U Symbol (Listof Symbol)))
   '(acquire
+    dungeon
     forth
     (fsm fsm fsmoo)
     gregor
@@ -155,7 +156,7 @@
       (length (multi-rest n)))))
 
 (define (count-new-oo-benchmarks)
-  (length '(acquire forth fsmoo take5)))
+  (length '(acquire dungeon forth fsmoo take5)))
 
 (define COMPILED "./compiled") ;; Where Racket stores compiled files
 (define MODULE-GRAPH "./module-graphs") ;; Where to store module graphs
