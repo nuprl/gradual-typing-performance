@@ -3,6 +3,9 @@
 (provide
   empty-cell%
   void-cell%
+  door%
+  vertical-door%
+  horizontal-door%
   char->cell%
   wall%
   void-cell%
@@ -129,7 +132,7 @@
           #\|))
     (super-new)))
 (register-cell-type! vertical-door% #\|)
-(register-cell-type! (cast (class vertical-door% (super-new #;[open? #t])) Cell%) #\_)
+(register-cell-type! (class vertical-door% (super-new #;[open? #t])) #\_)
 (: horizontal-door% Door%)
 (define horizontal-door%
   (class door%
@@ -139,7 +142,7 @@
           (if occupant (send (or occupant (raise-user-error 'hdoor)) show) #\')
           #\-))
     (super-new)))
-(register-cell-type! (cast horizontal-door% Cell%) #\-)
-(register-cell-type! (cast (class horizontal-door% (super-new #;[open? #t])) Cell%) #\')
+(register-cell-type! horizontal-door% #\-)
+(register-cell-type! (class horizontal-door% (super-new #;[open? #t])) #\')
 
 ;; TODO chests, entry/exit

@@ -6,6 +6,8 @@
   up
   down
   grid-ref
+  grid-height
+  grid-width
   show-grid
 )
 
@@ -67,21 +69,21 @@
 (: left (->* (Pos) (Index) Pos))
 (define (left pos [n 1])
   (vector (vector-ref pos 0)
-          (cast (- (vector-ref pos 1) n) Index)))
+          (assert (- (vector-ref pos 1) n) index?)))
 
 (: right (->* (Pos) (Index) Pos))
 (define (right pos [n 1])
   (vector (vector-ref pos 0)
-          (cast (+ (vector-ref pos 1) n) Index)))
+          (assert (+ (vector-ref pos 1) n) index?)))
 
 (: up (->* (Pos) (Index) Pos))
 (define (up pos [n 1])
-  (vector (cast (- (vector-ref pos 0) n) Index)
+  (vector (assert (- (vector-ref pos 0) n) index?)
           (vector-ref pos 1)))
 
 (: down (->* (Pos) (Index) Pos))
 (define (down pos [n 1])
-  (vector (cast (+ (vector-ref pos 0) n) Index)
+  (vector (assert (+ (vector-ref pos 0) n) index?)
           (vector-ref pos 1)))
 
 
