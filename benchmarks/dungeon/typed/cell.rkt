@@ -21,9 +21,15 @@
 (require/typed/check "message-queue.rkt"
   (enqueue-message! (-> String Void))
 )
-(require/typed racket/dict
-  (dict-ref (-> CCTable Char Cell%))
-  (dict-set! (-> CCTable Char Cell% Void)))
+;(require/typed racket/dict
+;  (dict-ref (-> CCTable Char Cell%))
+;  (dict-set! (-> CCTable Char Cell% Void)))
+(: dict-ref (-> CCTable Char Cell%))
+(define (dict-ref tbl c)
+  (or (hash-ref tbl c #f) (raise-user-error 'dict-ref)))
+(: dict-set! (-> CCTable Char Cell% Void))
+(define (dict-set! cc k v)
+  (hash-set! cc k v))
 
 ;; =============================================================================
 

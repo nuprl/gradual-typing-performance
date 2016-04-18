@@ -17,9 +17,17 @@
 (require/typed racket/set
   (set-intersect (All (A) (-> (Listof A) (Listof A) (Listof A))))
 )
-(require/typed racket/dict
-  (dict-set (-> Poss->Cells Pos Cell% Poss->Cells))
-)
+;(require/typed racket/dict
+;  (dict-set (-> Poss->Cells Pos Cell% Poss->Cells))
+;)
+(: dict-set (-> Poss->Cells Pos Cell% Poss->Cells))
+(define (dict-set pc p c)
+  (define ok : (Boxof Boolean) (box #f))
+  (for/list : Poss->Cells
+            ([x (in-list pc)])
+    (if (and (not (unbox ok)) (equal? (car x) p))
+      (begin (set-box! ok #t) (cons p c))
+      x)))
 (require/typed/check "cell.rkt"
   (void-cell% Cell%)
   (wall% Cell%)
