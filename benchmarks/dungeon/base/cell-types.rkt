@@ -7,7 +7,6 @@
   Grid
 )
 (require
-  math/array
   typed/racket/class
 )
 

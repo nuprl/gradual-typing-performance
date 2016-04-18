@@ -230,6 +230,19 @@ Most benchmarks are self-contained, but where relevant we note their external
   }
 )
 @(benchmark
+  #:name 'dungeon
+  #:author "Vincent St. Amour"
+  #:num-adaptor 0
+  #:origin "Game"
+  #:purpose "Maze generator"
+  @elem{
+    Builds a grid of wall and floor objects by selecting first-class classes
+     from a map of ``template'' pieces.
+    @todo{keep math/array?}
+    @todo{keep dict?}
+  }
+)
+@(benchmark
   #:name 'take5
   #:author "Matthias Felleisen"
   #:num-adaptor 1
