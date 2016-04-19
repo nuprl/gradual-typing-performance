@@ -3,6 +3,7 @@
 @require[
   "common.rkt"
   "typed-racket.rkt"
+  (except-in gtp-summarize/lnm-parameters defparam)
 ]
 
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
@@ -492,97 +493,118 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 
 @(render-lnm-plot
   (lambda (pict*)
-    (define (get-caption i)
-      (case i
-       [else "L-N/M Plots"]))
     (define name*
       (for/list ([p (in-list pict*)]
                  [i (in-naturals)])
         (format "fig:lnm:~a" i)))
+    (define get-caption
+      (let ([N (length name*)])
+        (lambda (i) (format "Performance Graphs (~a/~a)" i N))))
     (cons
       @elem{
-        @(apply Figure-ref name*) present our results.
+        @; -- Quickly, just the basics
+        @(apply Figure-ref name*) present our experimental results in
+         a series of performance graphs.
+        Each graph is a cumulative distribution function showing the number
+         of @deliverable{D} configurations for real-valued @math{D} between
+         1 and @id[(*MAX-OVERHEAD*)].
+        Specifically, the x-axes represent overhead factors
+         relative to the untyped configuration of each benchmark.
+        The y-axes count the percentage of each benchmark's configurations
+         that run within the overhead shown on the x-axes.
+        On each plot we give three lines corresponding to the three
+         versions of Racket we tested; finally, figures are partitioned
+         across two columns to compare the number of @step["0" "D" "U"]
+         configurations against the number @step["1" "D" "U"] configurations.
+
+        @; -- choice of x-axis, log scale, bode diagrams, picking D/U
+        The range of values on the x-axes were chosen as plausible bounds
+         for the overhead users of gradual type systems are willing to
+         accept.
+        Granted, there may be software teams that require overhead
+         under 1x---that is, a speedup relative to the untyped program---or
+         can work with slowdowns exceeding 20x, but we expect most users
+         will tolerate a small performance overhead.
+        As such we use a log scale on the x-axis to emphasize the practical
+         value of low overheads.
+        Minor tick lines are drawn at 1.2x, 1.4x, etc and again at 4x, 6x, etc.
+         for ease of reference.
+        For example, the number of @deliverable{1.2} configurations can be found
+         by studying the first minor tick and the number of @usable["1.2" "1.4"]
+         configurations
+         by subtracting the number of @deliverable{1.2} configurations from
+         the number of configurations deliverable at the second minor tick.
+
+        @; -- choice of y-axis
+        To encourage comparisons across benchmarks, the y-axes show
+         the precentage of deliverable configurations rather than an absolute count.
+        For readers interested in the number of configurations a given percentage
+         represents, we list the total configurations in each benchmark
+         along the right column of the figures.
+
+        @; -- data lines
+        A data point @math{(x,y)} along any of the three curves in a plot
+         along the left column
+         thus represents the percentage @math{y} of configurations
+         that run at most @math{x} times slower than the benchmark's
+         untyped configuration.
+   @; TODO "run within"
+        Taking @bm{sieve} as an example, 50% of configurations run within a
+         2x overhead.
+        On Racket versions 6.2 and 6.3, the same 50% of configurations
+         run within a 20x overhead.
+        The situation is improved in Racket 6.4 where 75% of configurations
+         run within a 20x overhead.
+
+        The right column of plots shows the effect of adding types
+         to @math{k=1} additional untyped modules, chosen angelically.
+        Again using @bm{sieve} as the example, 100% of configurations can
+         reach a configuration with at most 1x overhead after typing at most
+         one untyped module.
+        Intuitively, the fully-typed configuration in @bm{sieve} runs within a 1x
+         overhead and all of its two gradually typed configurations can
+         be made fully-typed after one type conversion step.
+        As a larger example, consider the graph for @bm{mbta}.
+        Freedom to type one extra module has no effect on the number of
+         @deliverable{1.2} configurations.
+        In other words, even if the programmer at a @deliverable{1.2} configuration
+         happens to type the untyped module best-suited to improve performance,
+         their next configuration will be no better than @deliverable{1.2}.
+        @; Add teaser for Sec 6?
+
+        @; -- all about data, ideal shape
+        Ideally, every curve in the left column would be a flat line at the
+         top of the plot, meaning that all configurations on all tested versions
+         of Racket run no slower than each benchmark's untyped configuration.
+        If this were true, the right column would be identical to the left
+         because every @deliverable{1} configuration can reach a @deliverable{1}
+         configuration (itself) in at most one type conversion step.
+        Conversely, the worst scenario would be flat lines at the bottom of every
+         plot, indicating that any configuration with at least one typed module
+         is more than 20x slower than the untyped configuration.
+        Here too, freedom to type an additional module will not change performance.
+
+        The reality is that each benchmark determines a unique curve.
+        Using a different version of Racket or moving from @math{k=0} to @math{k=1}
+         shifts the curve horizontally, but does not change the overall shape
+         i.e. the relative cost of type boundaries in a program.
+        Keep in mind that a steep slope implies a good tradeoff between
+         accepting a larger overhead and increasing the number of
+         deliverable configurations.
+        A shallow slope or flat line is a poor tradeoff and evidence that
+         the majority of configurations suffer very large performance overhead.
+        Where large overheads are due to a pathological boundary between two
+         tightly-coupled modules, the associated @math{k=1} graph should
+         exhibit much better performance, as is the case for @bm{sieve}.
       }
       (for/list ([p (in-list pict*)]
                  [name (in-list name*)]
-                 [i (in-naturals)])
+                 [i (in-naturals 1)])
         (figure name (get-caption i) p)))))
-
-@todo{STOP READING TEXT}
-
-@; TODO reading the figures
-@; - axis, Bode diagrams
-@; - boring lines (choosing LNM)
-@; - interesting lines
-@; - k-step
-
-@; TODO interpreting the figures
-@; - ideal shape
-@; - simple shapes
-@; - interesting shapes
-@; - common shapes
-
-
-@; The @id[(count-benchmarks)] rows of cumulative distribution functions in @todo{Figure-ref}
-@;  summarize the results from exhaustively exploring the performance lattices of
-@;  our benchmarks on three versions of Racket.
-@; In each graph, the @math{x}-axis represents a slowdown relative to the untyped program
-@;  ranging from 1x to @id[(*MAX-OVERHEAD*)]x.
-@; The @math{y}-axis is a count of the number of configurations,
-@;  from @math{0} to @math{2^n}, scaled so that all graphs are the same height.
-@; A point at @math{x=3} and @math{y=50} means that fifty of a program's
-@;  configurations run with at most 3x overhead.
-@; By definition, one of these 50 is the untyped configuration.
-@; 
-@; Each plot charts three series of points corresponding to three versions of
-@;  Racket.
-@; To ground our comparison of these series, we select values for @math{N}, @math{M}, and @math{L}.
-@; Rather than re-use the parameters from our prior work@~cite[tfgnvf-popl-2016],
-@;  we choose @math{N=0.2} and @math{M=5}.
-@; The former is inspired by a remark about the acceptable overhead of
-@;  garbage collection technology@~cite[u-sde-1984].
-@; Of course, these parameters are just examples.
-@; Application-specific requirements will dictate levels of acceptable and
-@;  usable overhead in practice.
-@; 
-@; We present three columns of plots, representing values of @math{L} ranging
-@;  between 0 and 2.
-@; If @math{L} is zero, the curves represents the total number of configurations
-@;  with performance no worse than the overhead on the x-axis.
-@; For arbitrary @math{L}, the curves give the number of configurations that
-@;  can reach a configuration with performance no worse than the overhead on the
-@;  x-axis in at most @math{L} conversion steps.
-
-
-@; -----------------------------------------------------------------------------
-@; @section[#:tag "sec:all-results"]{Interpretation}
-
-The ideal curves would be flat lines at a graph's top.
-Such a result would mean that all configurations were as fast as
- (or faster than) the untyped one on Racket v6.2 and performance did not
- degrade in more recent versions.
-The worst scenario would be flat lines at the graph's bottom,
- indicating that all configurations are more than 20x slower than the untyped one
- even in the most recent Racket release.
-
-Of course, the ideal shape is difficult to achieve because of the overwhelming
- cost of the dynamic checks inserted at the boundaries between typed and untyped code.
-The next-best shape is a nearly-vertical line that reaches the top at a low x-value.
-All else being equal, a steep slope anywhere on the graph is desirable because
- the number of acceptable programs quickly increases at some point below the
- 20x slowdown mark.
-
-For each benchmark, we evaluate the actual graphs against these expectations.
-Our approach is to focus on the left column, where @math{L}=0, and to consider the
- center and right column as rather drastic countermeasures to recover
- performance.@note{Increasing @math{L} should remove pathologically-bad cases.} 
-In @todo{secref} we explain the changes between different versions of Racket
- and the pathologies in each benchmark.
 
 
 @; -----------------------------------------------------------------------------
 @subsection{Summary Tables}
-@; Does this need a subsection?
 
 @figure*["fig:lnm-table" "Summary Statistics"
   @(render-lnm-table)
