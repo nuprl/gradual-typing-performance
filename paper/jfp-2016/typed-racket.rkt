@@ -41,6 +41,8 @@
   ;;     #:rest (Listof String)
   ;;     Benchmark)
 
+  get-lnm-table-data
+
   render-benchmark-descriptions
   ;; (-> Benchmark * Any)
   ;; Render a list of Benchmark structures.
@@ -101,6 +103,7 @@
 (defparam2 *BENCHMARK-TABLE-CACHE* Path-String "cache-benchmark-table.rktd")
 (defparam2 *DRAFT?* Boolean #t)
 (defparam2 *LNM-TABLE-CACHE* Path-String "cache-lnm-table.rktd") ;; Place to store cached lnm table
+(defparam2 *LNM-TABLE-DATA-CACHE* Path-String "cache-lnm-table-data.rktd")
 (defparam2 *LNM-OVERHEAD* (Listof Exact-Rational) '(1/5 3 10))
 (defparam2 *RKT-VERSIONS* (Listof String) '("6.2" "6.3" "6.4"))
 
@@ -196,7 +199,6 @@
             (void)
             (loop expect* (cdr given*)))]
        [(name<? expect given)
-        (printf "yolo ~a ~a\n" expect given)
         (missing-benchmark-error expect)]
        [else
         (unknown-benchmark-error given)])])))
@@ -316,6 +318,13 @@
   (and (equal? (car tag+data) BENCHMARK-NAMES)
        (cdr tag+data)))
 
+(define (cache-dataset d)
+  (cons (get-lnm-rktd**) d))
+
+(define (uncache-dataset fname+d)
+  (and (equal? (car fname+d) (get-lnm-rktd**))
+       (cdr fname+d)))
+
 (define (render-table render-proc #:title title* #:cache cache-file)
   (exact
     "\\setlength{\\tabcolsep}{0.2em}"
@@ -339,6 +348,10 @@
 (define (lnm-table-cache)
   (ensure-dir COMPILED)
   (build-path COMPILED (*LNM-TABLE-CACHE*)))
+
+(define (lnm-table-data-cache)
+  (ensure-dir COMPILED)
+  (build-path COMPILED (*LNM-TABLE-DATA-CACHE*)))
 
 (define (version->data-file* v)
   (in-glob (string-append (get-git-root) "/data/" v "/*.rktd")))
@@ -601,12 +614,34 @@
    #:write (compose1 cache-table serialize)
    new-lnm-bars))
 
+(define (get-lnm-table-data)
+  (with-cache (lnm-table-data-cache)
+   #:read uncache-dataset
+   #:write cache-dataset
+   (lambda ()
+     (call-with-values new-lnm-table-data list))))
+
+(define (new-lnm-table-data)
+  (let loop ([rktd** (get-lnm-rktd**)])
+    (if (null? rktd**)
+      (values '() '() '() '())
+      (let-values ([(n* r** m** x**) (loop (cdr rktd**))]
+                   [(_) (collect-garbage 'major)]
+                   [(S*) (for/list ;: (Listof Summary)
+                                   ([rktd (in-list (car rktd**))])
+                           (from-rktd rktd))])
+        (values
+          (cons (fname->title (caar rktd**)) n*)
+          (cons (map typed/untyped-ratio S*) r**)
+          (cons (map avg-overhead S*) m**)
+          (cons (map max-overhead S*) x**))))))
+
 (define (new-lnm-bars)
   (parameterize ([*PLOT-WIDTH* 420]
                  [*PLOT-HEIGHT* 140]
                  [*PLOT-FONT-SCALE* 0.04]
                  [*LOG-TRANSFORM?* #t])
-    (render-bars (get-lnm-rktd**))))
+    (apply render-bars (get-lnm-table-data))))
 
 (define (new-lnm-dots)
   (parameterize ([*PLOT-WIDTH* 300]
