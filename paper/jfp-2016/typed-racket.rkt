@@ -11,9 +11,6 @@
   count-benchmarks
   count-new-oo-benchmarks
 
-  add-commas
-  ;; (-> Number String)
-
   bits
   ;; (-> String Any)
   ;; Use to format bitstrings
@@ -233,19 +230,6 @@
    [r*
     (WARNING "ambiguous results for glob '~a'. Returning the first." str)
     (car r*)]))
-
-(define (add-commas n)
-  (define str (number->string n))
-  (define L (string-length str))
-  (apply string-append
-    (let loop ([i L]
-               [acc '()])
-      (let ([i-3 (- i 3)])
-        (cond
-         [(<= i-3 0)
-          (cons (substring str 0 i) acc)]
-         [else
-          (loop i-3 (cons "," (cons (substring str i-3 i) acc)))])))))
 
 (define (count-all-configurations)
   (for/sum ([b (in-list (*BENCHMARK-DATA*))])
@@ -678,24 +662,6 @@
 
 (module+ test
   (require rackunit rackunit-abbrevs)
-
-  (check-apply* add-commas
-   [1
-    => "1"]
-   [10
-    => "10"]
-   [100
-    => "100"]
-   [1000
-    => "1,000"]
-   [999999
-    => "999,999"]
-   [12
-    => "12"]
-   [123456789
-    => "123,456,789"]
-   [12456789
-    => "12,456,789"])
 
   (check-apply* read-list
    ["()" => '()]
