@@ -638,8 +638,6 @@
   (with-input-from-file p
     (lambda ()
       (define prev-box : (Boxof (U #f Real)) (box #f))
-      ;; -- skip first line
-      (void (for/or : Any ([ln (in-lines)]) (data-line? ln)))
       (or (for/fold : (U #f Real)
                     ([acc : (U #f Real) init])
                     ([ln (in-lines)]
@@ -663,7 +661,7 @@
   (or
     (for/fold : (U #f Real)
               ([prev : (U #f Real) init])
-              ([i    (in-range 1 (sub1 (vector-length D)))])
+              ([i    (in-range (vector-length D))])
       (define val (mean (vector-ref D i)))
       (or (and prev (f prev val)) val))
     0))
