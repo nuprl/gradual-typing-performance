@@ -296,16 +296,17 @@
 
 (: lnm-bar (-> (Listof (Listof Real)) (U 'overhead 'ratio) pict))
 (define (lnm-bar r** type)
+  (define overhead? (eq? type 'overhead))
   (define yticks
     (let-values (((lo hi)
-                  (if (eq? type 'overhead)
+                  (if overhead?
                     (values 0 6)
                     (values -1 2))))
       (for*/list : (Listof Real)
                  ([mag (in-range lo hi)]
                   [val (in-range 10 11 5)])
         (* (expt 10 mag) val))))
-  (define units (if (eq? type 'overhead) "x" ""))
+  (define units (if overhead? "x" ""))
   (parameterize ([plot-x-axis? #t]
                  [plot-y-axis? #t]
                  [plot-font-face (*PLOT-FONT-FACE*)]
@@ -341,9 +342,9 @@
           #:color color))
       #:x-label #f ;(and (*AXIS-LABELS?*) "foo")
       #:y-label #f ;(*AXIS-LABELS?*) ylabel)
-      #:y-min (if (eq? type 'overhead) 1 0.1)
-      #:y-max (* 13 (expt 10 (if (eq? type 'overhead) 3 0)))
-      #:width (*PLOT-WIDTH*)
+      #:y-min (if overhead? 1 0.1)
+      #:y-max (* 13 (expt 10 (if overhead? 3 0)))
+      #:width (assert (- (*PLOT-WIDTH*) (if overhead? 0 14)) positive?)
       #:height (*PLOT-HEIGHT*)) pict)))
 
 ;; Configure via parameters
