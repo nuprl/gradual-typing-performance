@@ -109,6 +109,7 @@
 (defparam *Y-MINOR-TICKS* (U #f (Listof Real)) '(.25 .75))
 (defparam *Y-NUM-TICKS* Natural 3)
 (defparam *Y-TICK-LINES?* Boolean #t)
+(defparam *Y-TICKS* (U #f (Listof Real)) #f)
 (define-type Y-Style (U 'count '%))
 (defparam *Y-STYLE* Y-Style '%)
 
