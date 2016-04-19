@@ -15,6 +15,7 @@
          generate-bibliography
          nrightarrow
          integer->word
+         rnd
          parag
          sf
 

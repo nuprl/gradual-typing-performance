@@ -465,23 +465,8 @@
 ;; -----------------------------------------------------------------------------
 (define-type Real** (Listof (Listof Real)))
 
-(: render-bars (-> (Listof (Listof Path-String)) Pict))
-(define (render-bars rktd**)
-  (define-values (name* ratio** mean** max**)
-    (let loop : (Values (Listof String) Real** Real** Real**)
-              ([rktd** rktd**])
-      (if (null? rktd**)
-        (values '() '() '() '())
-        (let-values ([(n* r** m** x**) (loop (cdr rktd**))]
-                     [(_) (collect-garbage 'major)]
-                     [(S*) (for/list : (Listof Summary)
-                                     ([rktd (in-list (car rktd**))])
-                             (from-rktd rktd))])
-          (values
-            (cons (fname->title (caar rktd**)) n*)
-            (cons (map typed/untyped-ratio S*) r**)
-            (cons (map avg-overhead S*) m**)
-            (cons (map max-overhead S*) x**))))))
+(: render-bars (-> (Listof String) Real** Real** Real** Pict))
+(define (render-bars name* ratio** mean** max**)
   (define VTHIN (exact-round (/ (*GRAPH-VSPACE*) 2)))
   (define VTHICK (* VTHIN 6))
   (vr-append VTHICK
@@ -489,7 +474,7 @@
       (title-text "Typed/Untyped Ratio")
       (lnm-bar ratio** 'ratio))
     (vl-append VTHIN
-      (title-text "Mean Overhead")
+      (title-text "Average Overhead")
       (lnm-bar mean** 'overhead))
     (vl-append VTHIN
       (title-text "Max Overhead")

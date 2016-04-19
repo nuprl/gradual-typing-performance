@@ -373,7 +373,8 @@ The exports count the total number of unique identifiers that cross any
 
 Our experiment measured the running time of all
  configurations in each benchmark's performance lattice.
-We performed the same experiment on three versions of Racket: version 6.2,
+We performed the same experiment on @integer->word[(length (*RKT-VERSIONS*))]
+ versions of Racket: version 6.2,
  version 6.3, and a development build of version 6.4.
 @; {In particular,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
@@ -500,6 +501,7 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
     (define get-caption
       (let ([N (length name*)])
         (lambda (i) (format "Performance Graphs (~a/~a)" i N))))
+    (define NUMV (integer->word (length (*RKT-VERSIONS*))))
     (cons
       @elem{
         @; -- Quickly, just the basics
@@ -512,7 +514,8 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
          relative to the untyped configuration of each benchmark.
         The y-axes count the percentage of each benchmark's configurations
          that run within the overhead shown on the x-axes.
-        On each plot we give three lines corresponding to the three
+        On each plot we give @id[NUMV]
+         lines corresponding to the @id[NUMV]
          versions of Racket we tested; finally, figures are partitioned
          across two columns to compare the number of @step["0" "D" "U"]
          configurations against the number @step["1" "D" "U"] configurations.
@@ -543,7 +546,7 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
          along the right column of the figures.
 
         @; -- data lines
-        A data point @math{(x,y)} along any of the three curves in a plot
+        A data point @math{(x,y)} along any of the @id[NUMV] curves in a plot
          along the left column
          thus represents the percentage @math{y} of configurations
          that run at most @math{x} times slower than the benchmark's
@@ -604,34 +607,49 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 
 
 @; -----------------------------------------------------------------------------
-@subsection{Summary Tables}
+@subsection{Aggregate Statistics}
 
-@figure*["fig:lnm-table" "Summary Statistics"
+@(let*-values (((name* ratio** mean** max**) (apply values (get-lnm-table-data)))
+               ((min/max)
+                (lambda (x*)
+                  (for/fold ([lo #f] [hi #f])
+                            ([x (in-list x*)])
+                    (values (if lo (min lo x) x) (if hi (max hi x) x)))))
+               ((min-ratio max-ratio) (min/max (apply append ratio**)))
+               ((min-mean max-mean)   (min/max (apply append mean**)))
+               ((min-max max-max)     (min/max (apply append max**))))
+  @elem{
+    The bar charts in @Figure-ref{fig:lnm-table} give the typed/untyped ratio,
+     average overhead, and maximum overhead for each benchmark.
+    The x-axis of each chart spans our @id[(count-benchmarks)] benchmark programs;
+     a key mapping lowercase letters to benchmark names is at the bottom of
+     @Figure-ref{fig:lnm-table}.
+    Each benchmark on each chart is represented with
+     @integer->word[(length (*RKT-VERSIONS*))] bars.
+    From left to right, these bars represent data for Racket v6.2, v6.3, and v6.4.
+
+    The typed/untyped ratio is the slowdown or speedup of the fully-typed configuration
+     relative to the untyped configuration.
+    Values smaller than @math{1.0} indicate a speedup due to Typed Racket optimizations.
+    Values larger than @math{1.0} are slowdowns caused by interaction with untyped
+     libraries or untyped parts of the underlying Racket runtime.
+    The ratios range between @id[(rnd min-ratio)] and @id[(rnd max-ratio)].
+
+    The maximum overhead is computed by finding the running time of the slowest
+     configuration and dividing it by the running time of the untyped configuration.
+    The average overhead is obtained by computing the average over all
+     configurations (excluding the fully-typed and untyped configurations) and
+     dividing it by the running time of the untyped configuration.
+    Maximum overheads range from @todo{min} to @todo{max}.
+    Average overheads range from @todo{min} to @todo{max}.
+
+    ALL PLOTS LOGSCALED
+  }
+)
+
+@figure*["fig:lnm-table" "Coarse-Grained Performance Statistics"
   @(render-lnm-table)
 ]
-
-The table in @Figure-ref{fig:lnm-table} gives a second perspective on our
- datasets, giving a typed/untyped ratio, mean, max, and @usable["N" "M"]
- percentages for each tested version of Racket.
-
-The typed/untyped ratio is the slowdown or speedup of fully typed code
- over untyped code.
-Values smaller than @math{1.0} indicate a speedup due to Typed Racket optimizations.
-Values larger than @math{1.0} are slowdowns caused by interaction with untyped
- libraries or untyped parts of the underlying Racket runtime.
-The ratios range between @todo{min} and @todo{max}.
-
-The maximum overhead is computed by finding the running time of the slowest
- configuration and dividing it by the running time of the untyped configuration.
-The average overhead is obtained by computing the average over all
- configurations (excluding the fully-typed and untyped configurations) and
- dividing it by the running time of the untyped configuration.
-Maximum overheads range from @todo{min} to @todo{max}.
-Average overheads range from @todo{min} to @todo{max}.
-
-The @deliverable{3} and @usable["3" "10"] counts are computed for @math{L=0}.
-In parentheses, we express these counts as a percentage of all configurations
- for the benchmark.
 
 
 @; -----------------------------------------------------------------------------
