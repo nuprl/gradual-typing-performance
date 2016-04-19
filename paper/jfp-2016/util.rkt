@@ -3,10 +3,12 @@
 (provide
   integer->word*
   integer->word
+  rnd
 )
 
 (require
   racket/match
+  racket/format
 )
 
 ;; =============================================================================
@@ -98,3 +100,6 @@
     w]
    [w*
     (raise-user-error 'integer->word "Integer ~a produced multiple words ~a" N w*)]))
+
+(define (rnd n)
+  (~r n #:precision 2))
