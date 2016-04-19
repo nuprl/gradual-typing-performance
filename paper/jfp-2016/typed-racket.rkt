@@ -498,7 +498,7 @@
     (define uloc (modulegraph->untyped-loc M))
     (define tloc (modulegraph->typed-loc M))
     (tex-row
-     (format "{\\tt ~a}" (benchmark-name b))
+     (format "{~a}" (benchmark-name b))
      (format "~a" uloc)
      (format-percent-diff tloc uloc)
      (format-num-modules M #:adaptor num-adaptor)

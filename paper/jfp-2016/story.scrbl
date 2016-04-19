@@ -66,17 +66,18 @@ A side effect of this investigation is that the programmer uncovers the implicit
 Typed Racket makes it easy to record these types.
 The programmer
  only needs to write the inferred signatures, annotate imports from untyped
- modules, and change the @exact{\RktMeta{\#lang}} line to use Typed Racket.
+ modules, and change the @exact{\RktMeta{\#lang}} line from @exact{\RktMeta{racket}}
+ to @exact{\RktMeta{typed/racket}}.
 After converting, the module is now hardened against bugs due to type errors
  and documented with type annotations for future maintainers.
 
 Introducing types in one module while leaving others untyped, however, may
  lead to significant performance overhead.
-Because of type boundaries, Typed Racket developers have experienced pathologies including
+For example, Typed Racket developers have experienced pathologies including
  a 50% overhead in a commercial web server
  and 25x-50x slowdowns when using the standard math library.
 One potential solution is to convert additional modules to Typed Racket.
-For example,
+Indeed,
  one user reported a speedup from 12 seconds to 1 millisecond after converting
  a script from Racket to Typed Racket.
 But annotating a module is not guaranteed to improve performance and may introduce
