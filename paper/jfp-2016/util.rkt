@@ -104,10 +104,12 @@
     (raise-user-error 'integer->word "Integer ~a produced multiple words ~a" N w*)]))
 
 (define (add-commas n)
-  (define str (number->string n))
+  (define str (if (string? n) n (number->string n)))
   (define str* (string-split str "."))
   (string-append (add-commas/integer (car str*))
-                 (if (null? (cdr str*)) "" (string-append "." (cadr str*)))))
+                 (if (or (null? (cdr str*)) (> (string-length str) 4))
+                   ""
+                   (string-append "." (cadr str*)))))
 
 (define (add-commas/integer str)
   (define L (string-length str))
