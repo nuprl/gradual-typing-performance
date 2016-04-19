@@ -117,7 +117,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   #:author "Ben Greenman"
   #:num-adaptor 0
   #:origin "Synthetic"
-  #:purpose "Create L-NM graphs"
+  #:purpose "Graphing"
   #:external-libraries (list @hyperlink["https://docs.racket-lang.org/plot/"]{plot}
                              ", "
                              @hyperlink["https://docs.racket-lang.org/math/stats.html"]{math/statistics})
@@ -264,7 +264,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   @elem{
     Object-oriented calculator for Forth programs.
     The interpreter maintains an environment of first-class objects representing
-     commands.
+     calculator commands.
     If this environment repeatedly crosses type boundaries it accumulates
      higher-order contract wrappers.
     These wrappers lead to an exponential slowdown in some configurations.
@@ -308,17 +308,18 @@ Most benchmarks are self-contained, but where relevant we note their external
   #:external-libraries (list @hyperlink["https://github.com/mbutterick/csp"]{csp})
 
   @elem{
-    Converts S-expression source code to @tt{pdf} format.
+    Converts S-expression source code to @tt{.pdf} format.
     We have two versions of @bm{quad}:
      the first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
      provided by the original author.
     This version has a high typed/untyped ratio because it uses the type system
-     to enforce more datatype invariants than the untyped program---the typed version is
-     slower because it does more work.
+     to enforce more datatype invariants than the untyped program.
+    In other words, the typed version is slower because it does more work.
     Our second version, @tt{quadBG}, uses types as weak as the untyped
      program and is therefore suitable for judging the implementation
-     of Typed Racket rather than the user experience of Typed Racket.@note{Our
-       conference paper gave data only for @tt{quadMB}@~cite[tfgnvf-popl-2016]}
+     of Typed Racket rather than the user experience of Typed Racket.
+    The conference version of this paper gave data only for
+     @tt{quadMB}@~cite[tfgnvf-popl-2016].
 
     To give a concrete example of different types, here are the definitions
      for the core @tt{Quad} datatype from both @tt{quadMB} and @tt{quadBG}.
@@ -377,8 +378,8 @@ We performed the same experiment on three versions of Racket: version 6.2,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
 The machine we used to take measurements was a Linux machine with
  physical two AMD Opteron 6376 2.3GHz processors and 128GB RAM.
-Each processors has 16 cores, giving us a total of 32.
-We dedicated 29 of the machine's cores to running our experiment;
+Each processor has 16 cores, giving us a total of 32.
+We dedicated at most 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
  was run to completion before starting the next benchmark.
 
@@ -479,9 +480,9 @@ The Anderson-Darling statistic is expressed in terms of @exact|{$\vec{h}$}|
 Following Stephens, we modify @exact|{$A^2$}| to compensate for the fact that
  the true @exact|{$\mu$}| and @exact|{$\sigma^2$}| are unknown@~cite[s-asa-1974].
 
-    @exact|{$$ A^{2\,'} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
+    @exact|{$$ A^{2}_{+} = A^2 * (1 + \frac{4}{n} - \frac{25}{n^2}) $$}|
 
-Finally, we declare the samples non-normal if @exact|{$A^{2\,'}$}| is greater than 1.
+Finally, we declare the samples non-normal if @exact|{$A^{2}_{+}$}| is greater than 1.
 The value 1 was determined experimentally by Stephens for a @math{p}-value of
  @math{1%} given 10 samples and an unknown underlying mean and variance.
 
