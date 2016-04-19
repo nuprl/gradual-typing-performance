@@ -14,6 +14,7 @@
          exact
          generate-bibliography
          nrightarrow
+         add-commas
          integer->word
          rnd
          parag
@@ -161,4 +162,3 @@
 
 (define (todo x)
   (make-element 'bold @string-append["TODO: " x]))
-
