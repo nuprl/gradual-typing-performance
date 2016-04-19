@@ -64,6 +64,7 @@
   gtp-summarize/bitstring
   gtp-summarize/lnm-parameters
   gtp-summarize/stats-helpers
+  gtp-summarize/path-util
   gtp-summarize/summary
 )
 ;(define-type Pict pict)
@@ -165,7 +166,7 @@
   (define elem* (for/list : (Listof renderer2d)
                           ([x (list N-line M-line cutoff-line)] #:when x) x))
   ;; Get ticks
-  (define x-major-ticks (compute-xticks))
+  (define x-major-ticks (compute-xticks (*X-TICKS*) (*X-NUM-TICKS*)))
   (define y-major-ticks
     (case (*Y-STYLE*)
      [(count)
@@ -298,18 +299,30 @@
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
 
-(: lnm-bar (-> (Listof (Listof Real)) pict))
-(define (lnm-bar r**)
+(: lnm-bar (-> (Listof (Listof Real)) (U 'overhead 'ratio) pict))
+(define (lnm-bar r** type)
+  (define yticks
+    (let-values (((lo hi)
+                  (if (eq? type 'overhead)
+                    (values 0 6)
+                    (values -1 2))))
+      (for*/list : (Listof Real)
+                 ([mag (in-range lo hi)]
+                  [val (in-range 10 11 5)])
+        (* (expt 10 mag) val))))
+  (define units (if (eq? type 'overhead) "x" ""))
   (parameterize ([plot-x-axis? #t]
                  [plot-y-axis? #t]
-                 [plot-x-ticks no-ticks]
+                 [plot-font-face (*PLOT-FONT-FACE*)]
+                 [plot-font-size 8]
+                 [plot-y-ticks (list->ticks yticks #:units units)]
                  [rectangle-alpha 0.9]
                  [plot-x-far-axis? #f]
-                 [plot-y-far-axis? #t]
+                 [plot-y-far-axis? #f]
                  [plot-y-transform (if (*LOG-TRANSFORM?*) log-transform id-transform)]
-                 [plot-x-far-ticks no-ticks]
-                 )
-    (define num-datasets (length r**))
+                 [plot-x-far-ticks no-ticks])
+    (define num-series (length (car r**)))
+    (define all-time-max : (Boxof Real) (box 0))
     (cast (plot-pict
       (for/list : (Listof renderer2d)
                 ([series-num (in-range 1 (+ 1 (length (car r**))))])
@@ -318,18 +331,23 @@
         (discrete-histogram
           (for/list : (Listof (List Any Real))
                     ([r* (in-list r**)]
-                     [dataset-num (in-naturals)])
-            (list dataset-num (list-ref r* (- series-num 1))))
+                     [dataset-num (in-naturals 1)])
+            (define v (list-ref r* (- series-num 1)))
+            (when (> v (unbox all-time-max))
+              (set-box! all-time-max v))
+            (list (integer->letter dataset-num) v))
           #:x-min series-num
-          #:skip (+ num-datasets 1)
-          #:gap 0.02
-          #:add-ticks? #f
+          #:skip (+ 1 num-series)
+          #:gap 0.2
+          #:add-ticks? #t
           #:style (integer->brush-style series-num)
-          #:line-color color
-          #:line-width 0.1
+          #:line-color series-num ;color
+          #:line-width 1
           #:color color))
       #:x-label #f ;(and (*AXIS-LABELS?*) "foo")
       #:y-label #f ;(*AXIS-LABELS?*) ylabel)
+      #:y-min (if (eq? type 'overhead) 1 0.1)
+      #:y-max (* 13 (expt 10 (if (eq? type 'overhead) 3 0)))
       #:width (*PLOT-WIDTH*)
       #:height (*PLOT-HEIGHT*)) pict)))
 
@@ -364,7 +382,7 @@
   (define num-paths (get-num-paths S))
   (define next-color (make-palette))
   (define xmax (*MAX-OVERHEAD*))
-  (define xticks (compute-xticks))
+  (define xticks (compute-xticks (*X-TICKS*) (*X-NUM-TICKS*)))
   (define num-samples (*NUM-SAMPLES*))
   ;; Here's where to generalize for more L
   (for/list : (Listof pict)
@@ -710,10 +728,25 @@
                (string-append str "%")
                str)))))
 
-(: compute-xticks (-> ticks))
-(define (compute-xticks)
-  (define exact-x-ticks (*X-TICKS*))
-  (define num-ticks (*X-NUM-TICKS*))
+(: list->ticks (->* [(Listof Real)] [#:units (U #f String)] ticks))
+(define (list->ticks r* #:units [units-arg #f])
+  (define units (or units-arg ""))
+  (define max-r (apply max r*))
+  (ticks (lambda ([ax-min : Real] [ax-max : Real])
+           (for/list : (Listof pre-tick)
+                     ([r (in-list r*)])
+             (pre-tick r #t)))
+         (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
+           (define hi (min max-r ax-max))
+           (for/list : (Listof String) ([pt (in-list pre-ticks)])
+             (define v (pre-tick-value pt))
+             (define str (format "~a" v))
+             (if (= v hi)
+               (string-append str units)
+               str)))))
+
+(: compute-xticks (-> (U #f (Listof Real)) Natural ticks))
+(define (compute-xticks exact-x-ticks num-ticks)
   (define tolerance 1/10)
   (define round? (if exact-x-ticks #f #t))
   (define unit-str "x")

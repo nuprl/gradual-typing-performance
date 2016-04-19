@@ -75,7 +75,7 @@
  (only-in "common.rkt" etal cite exact parag)
  (only-in racket/file file->value)
  (only-in racket/format ~r)
- (only-in racket/list last append* split-at)
+ (only-in racket/list last append*)
  (only-in racket/port with-input-from-string)
  (only-in racket/string string-prefix? string-join)
  scribble/core
@@ -268,20 +268,6 @@
   (with-handlers ([exn:fail? (lambda (e) #f)])
     (let ([r (with-input-from-string str read)])
       (and (list? r) r))))
-
-(define (split-list n x*)
-  (cond
-   [(<= n 0)
-    (raise-user-error 'split-list "Invalid partition size ~a" n)]
-   [(null? x*)
-    '()]
-   [else
-    (let loop ([x* x*]
-               [L (length x*)])
-      (if (< L n)
-        (list x*)
-        (let-values (((l* r*) (split-at x* n)))
-          (cons l* (if (null? r*) '() (loop r* (- L n)))))))]))
 
 ;; Add '&' for TeX
 (define (tex-row . x*)
@@ -618,7 +604,8 @@
 (define (new-lnm-bars)
   (parameterize ([*PLOT-WIDTH* 420]
                  [*PLOT-HEIGHT* 140]
-                 [*LOG-TRANSFORM?* #f]) ;; TODO
+                 [*PLOT-FONT-SCALE* 0.04]
+                 [*LOG-TRANSFORM?* #t])
     (render-bars (get-lnm-rktd**))))
 
 (define (new-lnm-dots)
@@ -681,21 +668,6 @@
    ["( 2 1 () 5)" => '(2 1 () 5)]
    ["yolo" => #f]
    [")( " => #f])
-
-  (check-apply* split-list
-   [1 '()
-    => '()]
-   [1 '(1 2 3)
-    => '((1) (2) (3))]
-   [2 '(1 2 3)
-    => '((1 2) (3))]
-   [3 '(9 9 9 9 9 9 9 9 9)
-    => '((9 9 9) (9 9 9) (9 9 9))])
-
-  (check-exn #rx"split-list"
-    (lambda () (split-list -3 '(1 2 3 4))))
-  (check-exn #rx"split-list"
-    (lambda () (split-list 0 '(1 2 3))))
 
   (test-case "benchmark<?"
     (let* ([name* '(acquire forth fsm gregor kcfa lnm mbta morsecode

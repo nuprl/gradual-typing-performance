@@ -482,23 +482,32 @@
             (cons (map typed/untyped-ratio S*) r**)
             (cons (map avg-overhead S*) m**)
             (cons (map max-overhead S*) x**))))))
-  (define VSHIM (exact-round (/ (*GRAPH-VSPACE*) 2)))
-  (vl-append (* VSHIM 6)
-    (vl-append VSHIM
-      (title-text "Typed/Untyped Ratio") (lnm-bar ratio**))
-    (vl-append VSHIM
-      (title-text "Mean Overhead") (lnm-bar mean**))
-    (vl-append VSHIM
-      (title-text "Max Overhead") (lnm-bar max**))
+  (define VTHIN (exact-round (/ (*GRAPH-VSPACE*) 2)))
+  (define VTHICK (* VTHIN 6))
+  (vr-append VTHICK
+    (vl-append VTHIN
+      (title-text "Typed/Untyped Ratio")
+      (lnm-bar ratio** 'ratio))
+    (vl-append VTHIN
+      (title-text "Mean Overhead")
+      (lnm-bar mean** 'overhead))
+    (vl-append VTHIN
+      (title-text "Max Overhead")
+      (lnm-bar max** 'overhead))
     (render-xlabels name*)))
 
 (: render-xlabels (-> (Listof String) Pict))
 (define (render-xlabels name*)
-  ;; TODO hspacing
-  (ht-append* (*GRAPH-HSPACE*)
-    (for/list ([name (in-list name*)])
-      ;; TODO rotate back just a little bit
-      (title-text name (/ pi 2)))))
+  (define VSHIM (exact-round (/ (*GRAPH-VSPACE*) 2)))
+  (define pict*
+    (for/list : (Listof Pict)
+              ([name (in-list name*)]
+               [i (in-naturals 1)])
+      (text (format "~a. ~a" (integer->letter i) name) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
+  (ht-append* (* 3.5 (*GRAPH-HSPACE*))
+    (for/list : (Listof Pict)
+              ([p* (in-list (split-list 4 pict*))])
+      (vl-append* VSHIM p*))))
 
 ;; -----------------------------------------------------------------------------
 
