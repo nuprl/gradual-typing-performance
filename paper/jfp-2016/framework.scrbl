@@ -19,7 +19,7 @@ The overall performance of the hybrid program is then compared to the previous
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the developers may either accept the performance of the hybrid system
  or seek ways to reduce the cost of type boundaries.
-This process repeats over times as the program evolves.
+This process repeats over time as the program evolves.
 
 We formalize these lessons in two stages: first by describing the @emph{space}
  over which a performance evaluation must take place and second by giving
@@ -98,13 +98,13 @@ Hence we characterize the relative performance of fully-typed programs
 
 Determining whether speedups or slowdowns are the norm for fully typed programs
  may influence a software team's decision to experiment with gradual typing.
-Once a team is already using gradual typing, the important performance
+But once a team is already using gradual typing, the important performance
  question is how much overhead their current configuration suffers due
  to gradual typing.
 If the performance overhead is low enough, the configuration can be
  released and used by clients.
 Depending on the nature of the software and clients' expectations,
- the value of "low enough" might take any value between zero overhead
+ an appropriate substitute for "low enough" might take any value between zero overhead
  and an order-of-magnitude slowdown.
 To account for the varying requirements of software teams, we formulate
  the following parameterized definition of deliverable configurations.
@@ -138,21 +138,20 @@ These might be configurations where running the unit tests takes hours
  or days longer than normal.
 
     @def[#:term "unacceptable"]{
-     A configuration is unacceptable if it is neither @deliverable{} nor
-      @usable[].
+     A unacceptable configuration is neither @deliverable{} nor @usable[].
     }
 
 Finally, if a software project is currently in an unacceptable
  configuration we ask how much work a team needs to invest to reach a
- @deliverable{} or @usable{} configuration.
+ deliverable or usable configuration.
 We propose as a coarse measure of "work" the number of modules that must be
  annotated with types before performance improves.
 Using this metric, configurations one module away from a usable configuration
- are nearly usable themselves.
+ are recognized as nearly usable themselves.
 
     @def[#:term @list{@step{}}]{
-     A configuration is @step[] if it is unacceptable and at
-      most @math{k} type conversion steps away from a @deliverable{}
+     A configuration is @step[] if it is unacceptable and annotating at
+      most @math{k} modules can yield a @deliverable{}
       or a @usable[] configuration.
     }
 
@@ -192,8 +191,7 @@ Using white squares to represent untyped modules and black squares for typed
        [t-str @id[(sample-overhead 'c11)]]
        [g-overhead (inexact->exact (max (sample-overhead 'c10) (sample-overhead 'c01)))])
   @elem{
-    In terms of our metrics, typed/untyped ratio is
-     @id[tu-ratio]
+    In terms of our metrics, typed/untyped ratio is @id[tu-ratio],
      indicating a performance improvement due to adding types.
     The typed configuration is also
       @deliverable[t-str]
@@ -207,10 +205,10 @@ Using white squares to represent untyped modules and black squares for typed
      from the fully-typed configuration.
   })
 
-Practitioners curious about the feasability of gradual typing should
+Practitioners curious about the feasibility of gradual typing should
  replace our parameters with concrete values tailored to their needs.
-If experimental results show that a large number of configurations are
+If our experimental results show that a large number of configurations are
  deliverable under the actual parameters, then the same results may
- well hold for other projects.
+ hold for other projects.
 Language implementors should work to make more configurations deliverable
  or diagnose the cause of the worst performance overhead.

@@ -99,10 +99,10 @@ The aim of this paper is to provide a foundation for measuring
 This paper introduces a method for evaluating the performance of a macro-level
  gradual type system.
 Given an untyped program and a fixed type assignment for all modules in the
- program, the method considers the performance of each @emph{configuration}
+ program, the method considers the performance of every @emph{configuration}
  obtained by typing a subset of the modules.
 Hence a program with @exact{$N$} modules has @exact{$2^N$} configurations.
-We apply our framework to Typed Racket.
+We apply our method to Typed Racket.
 The evaluation affirms that Typed Racket programs may suffer
  order-of-magnitude overhead, but also suggests concrete improvements.
 
@@ -114,7 +114,7 @@ We extend that prior work with:
      using the method to measure differences between versions.
   }
   @item{
-    @id[(string-titlecase (integer->word (count-new-oo-benchmarks)))]
+    Results for @id[(integer->word (count-new-oo-benchmarks))]
      object-oriented benchmark programs, augmenting our previous suite of
      @id[(- (count-benchmarks) (count-new-oo-benchmarks))]
      mostly-functional benchmark programs.
