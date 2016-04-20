@@ -430,7 +430,9 @@ To finish the experiment in a timely manner, we applied the Anderson-Darling
 The judgment we made was about the likelihood of seeing a particular sequence
  of 10 runtimes assuming the data were from a normal distribution.
 If the odds were less than @math{1%}, we ran an additional 20 iterations.
-@(let-values ([(num-skip-runs num-runs) (count-savings)])
+@(let* ([s+t (count-savings)]
+        [num-skip-runs (car s+t)]
+        [num-runs (cadr s+t)])
   @elem{
     This led us to skip @add-commas[num-skip-runs] runs in total
      (@id[(round (* 100 (/ (- num-runs num-skip-runs) num-runs)))]% of all runs)

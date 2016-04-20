@@ -98,6 +98,7 @@
 (defparam2 *CACHE?* Boolean #t)
 
 (defparam2 *BENCHMARK-TABLE-CACHE* Path-String "cache-benchmark-table.rktd")
+(defparam2 *BENCHMARK-SAVINGS-CACHE* Path-String "cache-benchmark-savings.rktd")
 (defparam2 *DRAFT?* Boolean #t)
 (defparam2 *LNM-TABLE-CACHE* Path-String "cache-lnm-table.rktd") ;; Place to store cached lnm table
 (defparam2 *LNM-TABLE-DATA-CACHE* Path-String "cache-lnm-table-data.rktd")
@@ -236,19 +237,27 @@
     (expt 2 (benchmark->num-modules b))))
 
 (define (count-savings)
-  (for*/fold ([num-skip-runs 0]
-              [num-runs 0])
-             ([v (in-list (*RKT-VERSIONS*))]
-              [d (version->data-file* v)])
-    (with-input-from-file d
-      (lambda ()
-        (for/fold ([nsr num-skip-runs]
-                   [nr num-runs])
-                  ([ln (in-lines)])
-          (define is-run? (eq? #\( (string-ref ln 0)))
-          (values
-            (+ nsr (if (and is-run? (= 10 (length (read-list ln)))) 1 0))
-            (+ nr (if is-run? 1 0))))))))
+  (with-cache (benchmark-savings-cache)
+    #:read uncache-dataset
+    #:write cache-dataset
+    new-count-savings))
+
+(define (new-count-savings)
+  (define-values (skip total)
+    (for*/fold ([num-skip-runs 0]
+                [num-runs 0])
+               ([rktd* (in-list (get-lnm-rktd**))]
+                [d (in-list rktd*)])
+      (with-input-from-file d
+        (lambda ()
+          (for/fold ([nsr num-skip-runs]
+                     [nr num-runs])
+                    ([ln (in-lines)])
+            (define is-run? (eq? #\( (string-ref ln 0)))
+            (values
+              (+ nsr (if (and is-run? (= 10 (length (read-list ln)))) 1 0))
+              (+ nr (if is-run? 1 0))))))))
+    (list skip total))
 
 (define (read-list str)
   (with-handlers ([exn:fail? (lambda (e) #f)])
@@ -328,6 +337,10 @@
 (define (benchmarks-table-cache-file)
   (ensure-dir COMPILED)
   (build-path COMPILED (*BENCHMARK-TABLE-CACHE*)))
+
+(define (benchmark-savings-cache)
+  (ensure-dir COMPILED)
+  (build-path COMPILED (*BENCHMARK-SAVINGS-CACHE*)))
 
 (define (lnm-table-cache)
   (ensure-dir COMPILED)
