@@ -7,6 +7,7 @@
 ;;  subject to at most L additional conversion steps
 
 (provide
+  SHIM-FOR-BARCHART-ALIGNMENT
   integer->pen-style
   integer->brush-style
   integer->line-width
@@ -348,8 +349,10 @@
       #:y-label #f ;(*AXIS-LABELS?*) ylabel)
       #:y-min (if overhead? 1 0.1)
       #:y-max (* 13 (expt 10 (if overhead? 3 0)))
-      #:width (assert (- (*PLOT-WIDTH*) (if overhead? 0 16)) positive?)
+      #:width (assert (- (*PLOT-WIDTH*) (if overhead? 0 SHIM-FOR-BARCHART-ALIGNMENT)) positive?)
       #:height (*PLOT-HEIGHT*)) pict)))
+
+(define SHIM-FOR-BARCHART-ALIGNMENT 16)
 
 ;; Configure via parameters
 (: path-plot (-> (U Summary (Listof Summary)) (Listof pict)))
