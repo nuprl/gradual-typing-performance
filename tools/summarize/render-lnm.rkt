@@ -481,7 +481,9 @@
       (hb-append VTHIN
         (title-text "Typed/Untyped Ratio")
         (subtitle-text "quotient of fully-typed and fully-untyped performance"))
-      (lnm-bar ratio** 'ratio))
+      (hc-append 0
+        (blank SHIM-FOR-BARCHART-ALIGNMENT 0)
+        (lnm-bar ratio** 'ratio)))
     (vl-append VTHIN
       (hb-append VTHIN
         (title-text "Average Overhead")
