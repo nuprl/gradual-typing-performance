@@ -8,6 +8,7 @@
 
 (provide
   integer->pen-style
+  integer->brush-style
   integer->line-width
 
   ;; ---
@@ -297,21 +298,24 @@
 (: lnm-bar (-> (Listof (Listof Real)) (U 'overhead 'ratio) pict))
 (define (lnm-bar r** type)
   (define overhead? (eq? type 'overhead))
-  (define yticks
+  (define y-major-ticks
     (let-values (((lo hi)
                   (if overhead?
-                    (values 0 6)
+                    (values 0 5)
                     (values -1 2))))
-      (for*/list : (Listof Real)
-                 ([mag (in-range lo hi)]
-                  [val (in-range 10 11 5)])
-        (* (expt 10 mag) val))))
+        (for*/list : (Listof Real)
+                   ([mag (in-range lo hi)])
+          (expt 10 mag))))
+  (define y-minor-ticks
+    (if overhead?
+      '()
+      '(1/5 2/5 3/5 4/5 2 4 6 8)))
   (define units (if overhead? "x" ""))
   (parameterize ([plot-x-axis? #t]
                  [plot-y-axis? #t]
                  [plot-font-face (*PLOT-FONT-FACE*)]
                  [plot-font-size 8]
-                 [plot-y-ticks (list->ticks yticks #:units units)]
+                 [plot-y-ticks (ticks-add? (list->ticks y-major-ticks #:units units) y-minor-ticks)]
                  [rectangle-alpha 0.9]
                  [plot-x-far-axis? #f]
                  [plot-y-far-axis? #f]
@@ -344,7 +348,7 @@
       #:y-label #f ;(*AXIS-LABELS?*) ylabel)
       #:y-min (if overhead? 1 0.1)
       #:y-max (* 13 (expt 10 (if overhead? 3 0)))
-      #:width (assert (- (*PLOT-WIDTH*) (if overhead? 0 14)) positive?)
+      #:width (assert (- (*PLOT-WIDTH*) (if overhead? 0 16)) positive?)
       #:height (*PLOT-HEIGHT*)) pict)))
 
 ;; Configure via parameters
@@ -733,11 +737,10 @@
                      ([r (in-list r*)])
              (pre-tick r #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (define hi (min max-r ax-max))
            (for/list : (Listof String) ([pt (in-list pre-ticks)])
              (define v (pre-tick-value pt))
              (define str (format "~a" v))
-             (if (= v hi)
+             (if (= v max-r)
                (string-append str units)
                str)))))
 
