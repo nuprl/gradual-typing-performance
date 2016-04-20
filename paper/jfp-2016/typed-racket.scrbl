@@ -620,6 +620,11 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
                            [x*   (in-list x**)]
                            #:when (member v x*))
                     (bm name))))
+               ((max-at?) (lambda (x* i) (= (apply max x*) (list-ref x* i))))
+               ((num-improved) (for/sum ([avg* (in-list average**)]
+                                         [max* (in-list max**)])
+                                 (if (and (max-at? avg* 2) (max-at? max* 2))
+                                   1 0)))
                ((min-ratio max-ratio) (min/max (apply append ratio**)))
                ((min-ratio-name max-ratio-name) (values (val->name ratio** min-ratio)
                                                         (val->name ratio** max-ratio)))
@@ -648,6 +653,8 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
      libraries or untyped parts of the underlying Racket runtime.
     The ratios range between @id[(rnd min-ratio)] (@elem[min-ratio-name])
      and @id[(rnd max-ratio)] (@elem[max-ratio-name]).
+    On the y-axis, we draw ticks at even-numbered intervals after the
+     previous major tick.
 
     Average and maximum overheads are computed over the entire performance
      lattice.
@@ -662,7 +669,7 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
      optimizations.
     Case in point, the figure shows that Typed Racket has improved
      the average-case and worst-case overhead in
-     @todo{compute} benchmarks.
+     @id[num-improved] benchmarks.
     The performance regressions are mainly due to a bugfix related to the
      implementation of class contracts (see @Secref{sec:threats} for details).
   }

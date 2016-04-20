@@ -24,6 +24,7 @@
  (only-in racket/file file->value)
  (only-in racket/math exact-round pi)
  (only-in racket/port with-input-from-string open-output-nowhere)
+ typed/racket/draw
  racket/flonum
  gtp-summarize/lnm-parameters
  gtp-summarize/lnm-plot
@@ -111,19 +112,20 @@
         [else
          (number->string i)]))
 
+(: mytext (->* (String) ((U #f 'italic)) Pict))
+(define (mytext str [mystyle #f])
+  (text str
+    (if mystyle
+      ((inst cons 'italic String) mystyle (*TITLE-FONT-FACE*))
+      (*TITLE-FONT-FACE*))
+    (assert (+ 1 (*TABLE-FONT-SIZE*)) index?)))
+
 ;; Optional argument: list of Racket versions
 (: make-legend (->* [] [(Listof String)] Pict))
 (define (make-legend [version* '("# k-step D/U-usable")])
   ;; VSHIM separates 2 rows in the legend
   (define VSHIM (*TITLE-VSPACE*))
   (define HSHIM (* 3 (*GRAPH-HSPACE*)))
-  (: mytext (->* (String) ((U #f 'italic)) Pict))
-  (define (mytext str [mystyle #f])
-    (text str
-      (if mystyle
-        ((inst cons 'italic String) mystyle (*TITLE-FONT-FACE*))
-        (*TITLE-FONT-FACE*))
-      (assert (+ 1 (*TABLE-FONT-SIZE*)) index?)))
   (: myrule (-> String Any String Any  Pict))
   (define (myrule c-str c-val key val)
     (hc-append 0
@@ -140,7 +142,6 @@
             (hline HSHIM 5)))
         (cast c-val (List Byte Byte Byte)))
       (mytext (string-append " : " descr))))
-  ;; TODO spacing is sometimes wrong... recompiling fixes but otherwise this looks okay
   ;; LEGEND
   ;;  +--------------------------+
   ;;  | x  ---- yo   ---- lo     |
@@ -243,6 +244,12 @@
   (let ([face (*TABLE-FONT-FACE*)]
         [size (*TABLE-FONT-SIZE*)])
       (text s (cons 'bold face) size angle)))
+
+(: subtitle-text (->* (String) (Real) Pict))
+(define (subtitle-text s [angle 0])
+  (let ([face (*TABLE-FONT-FACE*)]
+        [size (assert (- (*TABLE-FONT-SIZE*) 1) index?)])
+      (text s face size angle)))
 
 ;; Create a summary and L-N/M picts for a data file.
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
@@ -471,25 +478,81 @@
   (define VTHICK (* VTHIN 6))
   (vr-append VTHICK
     (vl-append VTHIN
-      (title-text "Typed/Untyped Ratio")
+      (hb-append VTHIN
+        (title-text "Typed/Untyped Ratio")
+        (subtitle-text "quotient of fully-typed and fully-untyped performance"))
       (lnm-bar ratio** 'ratio))
     (vl-append VTHIN
-      (title-text "Average Overhead")
+      (hb-append VTHIN
+        (title-text "Average Overhead")
+        (subtitle-text "computed over all gradually typed configurations"))
       (lnm-bar mean** 'overhead))
     (vl-append VTHIN
-      (title-text "Max Overhead")
+      (hb-append VTHIN
+        (title-text "Max Overhead")
+        (subtitle-text "worst-case of any gradually typed configuration"))
       (lnm-bar max** 'overhead))
-    (render-xlabels name*)))
+    (render-bars-legend (* 3.3 (*GRAPH-HSPACE*)) name*)))
 
-(: render-xlabels (-> (Listof String) Pict))
-(define (render-xlabels name*)
+(: render-bars-legend (-> Real (Listof String) Pict))
+(define (render-bars-legend hspace name*)
+  (ht-append hspace
+    (render-bars-color-key)
+    (render-bars-xlabels hspace name*)))
+
+(: render-bars-color-key (-> Pict))
+(define (render-bars-color-key)
+  (define HSHIM (*GRAPH-HSPACE*))
+  (vl-append* (*TITLE-VSPACE*)
+    (for/list : (Listof Pict)
+              ([i (in-range 1 4)])
+      (hb-append HSHIM
+        (integer->bar-swatch i)
+        (mytext (integer->rkt-version i))))))
+
+(: integer->bar-swatch (-> Integer Pict))
+(define (integer->bar-swatch i)
+  (define sty (integer->brush-style i))
+  (define col* (cast (->pen-color i) (List Byte Byte Byte)))
+  (define col (make-object color% (car col*) (cadr col*) (caddr col*)))
+  (define w 4)
+  (define h 14)
+  (dc (lambda (dc dx dy)
+       (define old-brush (send dc get-brush))
+       (define old-pen (send dc get-pen))
+       (send dc set-brush
+        (new brush% [style sty]
+                    [color col]))
+       (send dc set-pen
+        (new pen% [width 1] [color col]))
+       (define path (new dc-path%))
+       (send path move-to 0 0)
+       (send path line-to w 0)
+       (send path line-to w h)
+       (send path line-to 0 h)
+       (send path close)
+       (send dc draw-path path dx dy)
+       (send dc set-brush old-brush)
+       (send dc set-pen old-pen))
+      w h))
+
+(: integer->rkt-version (-> Integer String))
+(define (integer->rkt-version i)
+  (case i
+   [(1) "v6.2"]
+   [(2) "v6.3"]
+   [(3) "v6.4"]
+   [else (raise-user-error "Unrecognized version ~a" i)]))
+
+(: render-bars-xlabels (-> Real (Listof String) Pict))
+(define (render-bars-xlabels hspace name*)
   (define VSHIM (exact-round (/ (*GRAPH-VSPACE*) 2)))
   (define pict*
     (for/list : (Listof Pict)
               ([name (in-list name*)]
                [i (in-naturals 1)])
       (text (format "~a. ~a" (integer->letter i) name) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
-  (ht-append* (* 3.5 (*GRAPH-HSPACE*))
+  (ht-append* hspace
     (for/list : (Listof Pict)
               ([p* (in-list (split-list 4 pict*))])
       (vl-append* VSHIM p*))))
