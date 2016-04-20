@@ -540,38 +540,37 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 
         @; -- choice of y-axis
         To encourage comparisons across benchmarks, the y-axes show
-         the precentage of deliverable configurations rather than an absolute count.
+         the percentage of deliverable configurations rather than an absolute count.
         For readers interested in the number of configurations a given percentage
          represents, we list the total configurations in each benchmark
          along the right column of the figures.
 
         @; -- data lines
-        A data point @math{(x,y)} along any of the @id[NUMV] curves in a plot
+        A data point @math{(X,Y)} along any of the @id[NUMV] curves in a plot
          along the left column
-         thus represents the percentage @math{y} of configurations
-         that run at most @math{x} times slower than the benchmark's
+         represents the percentage @math{Y} of configurations
+         that run at most @math{X} times slower than the benchmark's
          untyped configuration.
-   @; TODO "run within"
-        Taking @bm{sieve} as an example, 50% of configurations run within a
-         2x overhead.
+        Taking @bm{sieve} as an example, 50% of configurations run at most
+         2x slower than the untype configuration.
         On Racket versions 6.2 and 6.3, the same 50% of configurations
-         run within a 20x overhead.
-        The situation is improved in Racket 6.4 where 75% of configurations
-         run within a 20x overhead.
+         are all that run within a 20x overhead.
+        The situation is improved in Racket 6.4, where 75% of configurations
+         exhibit less than 20x overhead.
 
         The right column of plots shows the effect of adding types
          to @math{k=1} additional untyped modules, chosen angelically.
         Again using @bm{sieve} as the example, 100% of configurations can
-         reach a configuration with at most 1x overhead after typing at most
-         one untyped module.
-        Intuitively, the fully-typed configuration in @bm{sieve} runs within a 1x
-         overhead and all of its two gradually typed configurations can
-         be made fully-typed after one type conversion step.
-        As a larger example, consider the graph for @bm{mbta}.
+         reach a configuration with at most 1x overhead after at most one
+         type conversion step.
+        This is because the fully-typed configuration happens to be
+         @deliverable{1} and both of the gradually typed configurations
+         become fully-typed after one conversion step.
+        As a larger example, consider the plots for @bm{mbta}.
         Freedom to type one extra module has no effect on the number of
          @deliverable{1.2} configurations.
         In other words, even if the programmer at a @deliverable{1.2} configuration
-         happens to type the untyped module best-suited to improve performance,
+         happens to convert the untyped module best-suited to improve performance,
          their next configuration will be no better than @deliverable{1.2}.
         @; Add teaser for Sec 6?
 
@@ -582,7 +581,7 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
         If this were true, the right column would be identical to the left
          because every @deliverable{1} configuration can reach a @deliverable{1}
          configuration (itself) in at most one type conversion step.
-        Conversely, the worst scenario would be flat lines at the bottom of every
+        Conversely, the worst scenario would have flat lines at the bottom of every
          plot, indicating that any configuration with at least one typed module
          is more than 20x slower than the untyped configuration.
         Here too, freedom to type an additional module will not change performance.

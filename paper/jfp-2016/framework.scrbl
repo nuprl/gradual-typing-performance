@@ -66,6 +66,14 @@ This lattice-based approach to performance measurements was introduced in our
     The fully untyped configuration is the
      bottom element and the fully-typed configuration is the top
   }
+
+  @item{
+    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_n\,\subset\,\leq$}
+     such that @exact{$c_1 \rightarrow_n c_2$} if and only if @exact{$c_1 \leq c_2$}
+     and the sum @exact{$\Sigma_i\,c_2(i) - c_1(i)$} is less than or equal to @exact{$n$}.
+    If @exact|{$c_1 \rightarrow_n c_2$}| we say that @exact{$c_2$} is reachable from
+     @exact{$c_1$} in at most @exact{$n$} @emph{type conversion steps}.
+  }
 ]
 
 A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|
@@ -150,8 +158,8 @@ Using this metric, configurations one module away from a usable configuration
  are recognized as nearly usable themselves.
 
     @def[#:term @list{@step{}}]{
-     A configuration is @step[] if it is unacceptable and annotating at
-      most @math{k} modules can yield a @deliverable{}
+     A configuration is @step[] if it is unacceptable and at most @math{k}
+      type conversion steps from a @deliverable{}
       or a @usable[] configuration.
     }
 
