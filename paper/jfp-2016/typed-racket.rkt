@@ -1,7 +1,9 @@
 #lang racket/base
 
 ;; TODO
-;; - add take5
+;; - quadbg 6.2 data
+;; - zombie consistent inputs?
+;; - dungeon data
 
 ;; Supporting code for `typed-racket.scrbl`
 ;; - Render & organize benchmarks
@@ -71,7 +73,7 @@
  glob
  gtp-summarize
  racket/match
- (only-in "common.rkt" etal cite exact parag)
+ (only-in "common.rkt" etal cite exact parag rnd)
  (only-in racket/file file->value)
  (only-in racket/format ~r)
  (only-in racket/list last append*)
