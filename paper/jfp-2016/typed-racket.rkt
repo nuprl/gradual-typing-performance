@@ -66,6 +66,8 @@
 
   render-lnm-plot
   ;; (-> (-> (Listof Pict) Elem) Any)
+
+  (rename-out [ext:typed/untyped-ratio typed/untyped-ratio])
 )
 
 (require
@@ -204,8 +206,9 @@
         (unknown-benchmark-error given)])])))
 
 ;; (->* (valid-benchmark? valid-version?) (#:tag string?) path-string?)
-(define (data-path bm v tag)
-  (define bm-str (symbol->string bm))
+(define (data-path bm v [tag "*"])
+  (define str (symbol->string bm))
+  (define bm-str (if (eq? bm 'zordoz) (string-append str "." v) str))
   (glob-first (string-append (get-git-root) "/data/" v "/" bm-str "-" tag ".rktd")))
 
 ;; -----------------------------------------------------------------------------
@@ -673,6 +676,9 @@
       (~r (f S) #:precision p))
     "~~"))
 
+(define (ext:typed/untyped-ratio sym version)
+  (typed/untyped-ratio (data-path sym version)))
+
 ;; =============================================================================
 
 (module+ test
@@ -693,5 +699,13 @@
            [b+* (sort b* benchmark<?)]
            [expect* '(sieve forth fsm mbta morsecode zombie zordoz lnm suffixtree kcfa snake acquire tetris synth  gregor quad)])
       (check-equal? (map benchmark-name b+*) expect*)))
+
+  (test-case "typed/untyped-ratio"
+    (let ([z6.2 (ext:typed/untyped-ratio 'zordoz "6.2")]
+          [z6.3 (ext:typed/untyped-ratio 'zordoz "6.3")])
+      (printf "YOLO 62 = ~a\n" z6.2)
+      (printf "YOLO 63 = ~a\n" z6.3)
+      (check-true (< z6.3 z6.2))))
+
 )
 
