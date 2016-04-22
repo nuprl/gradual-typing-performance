@@ -124,7 +124,7 @@
    (-> Summary Real))
 
   (typed/untyped-ratio
-   (-> Summary Real))
+   (-> (U Path-String Summary) Real))
 )
 (provide
   (rename-out
@@ -303,6 +303,23 @@
 (: string->index* (-> String (Listof Index)))
 (define (string->index* str)
   (cast (with-input-from-string str read) (Listof Index)))
+
+(: read-untyped (-> (Listof Real)))
+(define (read-untyped)
+  (or (for/or : (U #f (Listof Index))
+              ([ln (in-lines)])
+        (and (data-line? ln) (string->index* ln)))
+      (raise-user-error 'read-untyped "No data lines in current input port")))
+
+(: read-typed (-> (Listof Real)))
+(define (read-typed)
+  (define last-line
+    (or (for/fold : (U #f String)
+                  ([acc : (U #f String) #f])
+                  ([ln (in-lines)])
+          (if (data-line? ln) ln acc))
+        (raise-user-error 'read-typed "No data lines in current input port")))
+  (string->index* last-line))
 
 ;; Guess the location of the module graph matching the dataset
 (: infer-graph (-> Path (U #f Path)))
@@ -596,9 +613,23 @@
 (define (max-overhead S)
   (/ (max-lattice-point S) (untyped-mean S)))
 
-(: typed/untyped-ratio (-> Summary Real))
-(define (typed/untyped-ratio S)
+(: typed/untyped-ratio (-> (U Summary Path-String) Real))
+(define (typed/untyped-ratio d)
+  (if (summary? d)
+    (typed/untyped-ratio/S d)
+    (typed/untyped-ratio/path d)))
+
+(: typed/untyped-ratio/S (-> Summary Real))
+(define (typed/untyped-ratio/S S)
   (/ (typed-mean S) (untyped-mean S)))
+
+(: typed/untyped-ratio/path (-> Path-String Real))
+(define (typed/untyped-ratio/path p)
+  (with-input-from-file p
+    (lambda ()
+      (let ([u (mean (read-untyped))]
+            [t (mean (read-typed))])
+        (/ t u)))))
 
 ;; Count the number of configurations with performance no worse than N times untyped
 (: deliverable (-> Summary Real Natural))
