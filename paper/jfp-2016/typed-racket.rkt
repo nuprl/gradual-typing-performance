@@ -453,7 +453,7 @@
           (for/fold ([acc '()])
                     ([name (in-list name*)])
             ;; Try compiling a modulegraph, don't worry if it fails.
-            (define M (with-handlers ([exn:fail? (lambda (e) #f)])
+            (define M (with-handlers ([exn:fail? (lambda (e) (WARNING (exn-message e)) #f)])
                         (project-name->modulegraph name)))
             (if (and M (not (for/or ([M2 (in-list acc)])
                               (adjlist=? (modulegraph-adjlist M) (modulegraph-adjlist M2)))))
