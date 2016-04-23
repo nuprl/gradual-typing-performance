@@ -16,7 +16,6 @@
  (only-in racket/file write-to-file file->value)
  (only-in typed/racket/draw record-dc% Font% make-font)
  (only-in typed/racket/draw Font-Weight Font-Style)
- (only-in racket/serialize serialize deserialize)
 )
 (require/typed racket/serialize
   [serialize (Any -> Any)]

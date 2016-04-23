@@ -15,7 +15,6 @@
  (only-in math/flonum fl)
  (only-in racket/file write-to-file file->value)
  (only-in racket/draw record-dc% font% make-font)
- (only-in racket/serialize serialize deserialize)
 )
 (require (only-in racket/serialize
   serialize ;(Any -> Any)]
