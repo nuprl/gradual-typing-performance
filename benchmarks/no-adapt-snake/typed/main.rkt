@@ -45,5 +45,5 @@
         [else
          (error "bad input")]))
 
-(time (main SMALL_TEST)) ; 66ms
-;; (time (main LARGE_TEST)) ; 340ms
+;; (time (main SMALL_TEST)) ; 66ms
+(time (main LARGE_TEST)) ; 340ms
