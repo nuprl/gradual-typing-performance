@@ -71,10 +71,13 @@ Most benchmarks are self-contained, but where relevant we note their external
   #:external-libraries (list @hyperlink["http://github.com/stchang/graph"]{graph})
 
   @elem{
-    Builds a graph representation of Boston's subway system and
+    Builds a map of Boston's subway system and
      answers a series of reachability queries.
-    The original program ran an asynchronous client/server framework
-     but our benchmark is single-threaded to cooperate with Racket's sampling
+    The map is an object and encapsulates a boundary to Racket's untyped
+     @tt{graph} library; when the map is typed, the boundary to @tt{graph}
+     causes noticable overhead.
+    Although the original program ran an asynchronous client/server framework,
+     our benchmark is single-threaded to cooperate with Racket's sampling
      profiler.
   }
 )
@@ -94,9 +97,12 @@ Most benchmarks are self-contained, but where relevant we note their external
 
     The Racket bytecode format changed between versions 6.2 and 6.3 with
      the release of the set-of-scopes macro expander@~cite[f-popl-2016].
-    Consequently, our benchmark is slightly modified
-     after version 6.2; however, the relative difference between
-     gradually typed configurations is the same across bytecode formats.
+    Consequently, our benchmark is slightly modified after version 6.2 to
+     accomodate the new bytecode structures.
+    As it turns out, the changes improved the typed/untyped ratio from
+     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.2"))] in v6.2 to
+     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.3"))] in v6.3 because
+     the new bytecode structures generate less expensive type contracts.
   }
 )
 @(benchmark
@@ -111,6 +117,12 @@ Most benchmarks are self-contained, but where relevant we note their external
      tree representation and comparing the trees.
     The benchmark compares lines of English text; each line is no
      more than 80 characters long.
+
+    All @bm{suffixtree} datatype definitions are in a single module, separate
+     from the functions that manipulate and traverse the data.
+    The data are also mutable, therefore the frequently-crossed type boundary
+     between data definitions and their clients is protected by expensive
+     contracts.
   }
 )
 @(benchmark
@@ -143,6 +155,9 @@ Most benchmarks are self-contained, but where relevant we note their external
     Simple, inefficient implementation of k-CFA@~cite[shivers-dissertation-1991].
     Our benchmark runs 1-CFA on a lambda calculus term
      that computes @exact|{~$\RktMeta{2*(1+3) = 2*1 + 2*3}$}|.
+    The performance overhead in this benchmark comes primarily from contracts
+     protecting the binding environment, which is implemented as a hashtable
+     and threaded across the program.
   }
 )
 @(benchmark
@@ -160,7 +175,27 @@ Most benchmarks are self-contained, but where relevant we note their external
 
     The original program was implemented in an object-oriented style but converted
      to a functional encoding as a test case for soft contract verification@~cite[nthvh-icfp-2014].
-    We benchmark a typed version of the functional game.
+    We benchmark a typed version of the functional game on a small input
+     (100 lines) because repeatedly sending one of the encoded objects across
+     a type boundary leads to an exponential slowdown.
+
+    @; --- 2016-04-22 : this type is a little too awkward to talk about
+    @;As an example of the encoding, the following type signature implements a
+    @; point object.
+    @;By supplying a symbol, clients get access to a (tagged) method.
+    @;
+    @;@codeblock{
+    @;  (define-type Point
+    @;    ((U 'x 'y 'move)
+    @;     ->
+    @;     (U (Pairof 'x (-> Real))
+    @;        (Pairof 'y (-> Real))
+    @;        (Pairof 'move (Real Real -> Point)))))
+    @;}
+    @;Intersection
+    @; types would be more straightforward than the tagged codomains used here,
+    @; but Typed Racket does not yet support intersections.
+
   }
 )
 @(benchmark
@@ -188,6 +223,9 @@ Most benchmarks are self-contained, but where relevant we note their external
     Implements the eponymous game.
     The benchmark runs a deterministic sequence of moves and is
      adapted from @PHIL{} @|etal|@~cite[nthvh-icfp-2014].
+    Most of the overhead in @bm{tetris}, and also @bm{snake}, is due
+     to repeatedly passing the game state and subsidary data structures
+     across type boundaries.
   }
 )
 @(benchmark
@@ -239,8 +277,15 @@ Most benchmarks are self-contained, but where relevant we note their external
   @elem{
     Builds a grid of wall and floor objects by selecting first-class classes
      from a map of ``template'' pieces.
-    @todo{keep math/array?}
-    @todo{keep dict?}
+    Originally, the program used two external libraries: the math library
+     for array operations and @tt{racket/dict} for a generic dictionary interface.
+    We removed both these dependencies.
+    Replacing the array library with vectors was necessary because the
+     higher-order, polymorphic datatype used to represent arrays cannot be made
+     into a contract.
+    Replacing the dict interface was a choice made so that the results for
+     @bm{dungeon} describe internal type boundaries rather than the type
+     boundary to the untyped, optional dict interface.
   }
 )
 @(benchmark
@@ -253,6 +298,8 @@ Most benchmarks are self-contained, but where relevant we note their external
     Object-oriented implementation of a classic German card game.
     The AI players we use implement a greedy strategy, playing locally optimal
      cards in each turn.
+    Much of the functionality is encapsulated within objects that seldom
+     communicate, so gradual typing imposes fairly low overhead.
   }
 )
 @(benchmark
@@ -282,6 +329,9 @@ Most benchmarks are self-contained, but where relevant we note their external
     Simulates a board game where players invest in real estate.
     The program is written in a stateful, object-oriented style.
     For the benchmark, we run a game between AI players.
+
+    @; TODO re-run
+    @; TODO comment on runtime breakdown
   }
 )
 @(benchmark
@@ -680,5 +730,4 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 @figure*["fig:lnm-table" "Coarse-Grained Performance Statistics"
   @(render-lnm-table)
 ]
-
 
