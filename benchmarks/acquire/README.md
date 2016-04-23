@@ -21,3 +21,6 @@ Compared to the [ECOOP'15](http://drops.dagstuhl.de/opus/volltexte/2015/5215/pdf
      and moved the remainder into their only client (`admin` and `player`, respectively).
 - The type definitions are very similar (thanks Matthias!)
 - ECOOP ignored dynamic checks (for example, `*create-player` in `state.rkt`)
+- Added `nothing-to-place?` to the `atree%` class because of occurrence typing.
+  (`admin.rkt` was doing an `is-of` test, then calling the method.
+   Typed Racket doesn't allow this.)

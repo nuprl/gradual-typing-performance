@@ -1,13 +1,16 @@
 #lang racket/base
 
-(require (only-in "array-struct.rkt"
-                    array?
-                    array-shape
-                    array-default-strict!
-                    unsafe-array-proc
-                    unsafe-build-array)
-           (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
-         (only-in "array-broadcast.rkt" array-broadcasting))
+(require
+  benchmark-util)
+(require/check
+  (only-in "array-struct.rkt"
+             array?
+             array-shape
+             array-default-strict!
+             unsafe-array-proc
+             unsafe-build-array)
+  (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
+  (only-in "array-broadcast.rkt" array-broadcasting))
 
 (provide mix)
 

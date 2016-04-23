@@ -1,8 +1,8 @@
 #lang typed/racket/base
-
+(require benchmark-util)
 ;; Copyright 2014 John Clements, except the portion that comes from wikipedia!
 
-(provide char-table)
+(safe-and-unsafe-provide char-table)
 (require racket/match)
 
 (define wikipedia-text

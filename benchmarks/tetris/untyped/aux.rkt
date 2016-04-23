@@ -1,7 +1,8 @@
 #lang racket
+(require benchmark-util)
 
-(require "data.rkt"
-         "tetras.rkt")  
+(require/check "data.rkt"
+         "tetras.rkt")
 
 (provide
  list-pick-random

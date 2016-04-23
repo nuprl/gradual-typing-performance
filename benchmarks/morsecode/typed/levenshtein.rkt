@@ -1,3 +1,5 @@
+#lang typed/racket/base
+(require benchmark-util)
 ;;; @Package     levenshtein
 ;;; @Subtitle    Levenshtein Distance Metric in Scheme
 ;;; @HomePage    http://www.neilvandyke.org/levenshtein-scheme/
@@ -19,9 +21,6 @@
 ;;; @indicateurl{http://www.gnu.org/licenses/} for details.  For other licenses
 ;;; and consulting, please contact the author.
 ;;; @end legal
-
-#lang typed/racket/base
-
 ;;; @section Introduction
 ;;;
 ;;; This is a Scheme implementation of the @dfn{Levenshtein Distance}
@@ -359,7 +358,7 @@
 ;;;
 ;;; @end table
 
-(provide
+(safe-and-unsafe-provide
  levenshtein
  ;levenshtein/predicate
  list-levenshtein

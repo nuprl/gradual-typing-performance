@@ -1,6 +1,7 @@
 #lang racket/base
 
-(require (only-in "eval.rkt"
+(require benchmark-util)
+(require/check (only-in "eval.rkt"
   forth-eval*
 ))
 

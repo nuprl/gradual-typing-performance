@@ -1,6 +1,7 @@
 #lang racket
+(require benchmark-util)
 
-(require "data.rkt"
+(require/check "data.rkt"
          "block.rkt"
          "consts.rkt")
 

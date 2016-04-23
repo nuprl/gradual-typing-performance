@@ -16,7 +16,8 @@
 
 ;; ===================================================================================================
 
-(require "t-view.rkt")
+(require benchmark-util)
+(require/check "t-view.rkt")
 (module+ test (require rackunit))
 
 (define PATH    #rx"from (.*) to (.*)$")

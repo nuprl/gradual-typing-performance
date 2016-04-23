@@ -101,14 +101,15 @@
 
 (require
  "../base/untyped.rkt"
+ benchmark-util
 )
-(require (only-in "basics.rkt"
+(require/check (only-in "basics.rkt"
  hotel?
  SAFE#
  price-per-share
  shares-order?
 ))
-(require (only-in "auxiliaries.rkt"
+(require/check (only-in "auxiliaries.rkt"
   aux:partition
   distinct
 ))
@@ -118,11 +119,12 @@
 (module tiles racket
   (provide (all-defined-out))
   (require
+   benchmark-util
    "../base/untyped.rkt")
-  (require (only-in "basics.rkt"
+  (require/check (only-in "basics.rkt"
     hotel->color
     hotel->label))
-  (require (only-in "auxiliaries.rkt"
+  (require/check (only-in "auxiliaries.rkt"
     randomly-pick))
 
   ;; ---------------------------------------------------------------------------------------------------

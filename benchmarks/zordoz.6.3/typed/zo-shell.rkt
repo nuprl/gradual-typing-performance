@@ -20,7 +20,7 @@
   [zo-find (-> zo String [#:limit (U Natural #f)] (Listof result))]
   [#:struct result ([zo : zo]
                     [path : (Listof zo)])])
-(require/typed compiler/zo-parse
+(require/external/typed compiler/zo-parse
                [zo-parse (->* () (Input-Port) zo)])
 
 ;; -----------------------------------------------------------------------------

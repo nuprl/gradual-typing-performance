@@ -14,8 +14,6 @@
 (require
   benchmark-util
   "../base/core.rkt"
-  "ocm-struct.rkt"
-  "penalty-struct.rkt"
   (only-in math/flonum fl+ fl= fl fl/ fl- fl> fl* fllog flabs flmax flexpt)
   (only-in racket/list empty empty? partition second first last split-at-right append-map drop-right drop)
   (only-in racket/vector vector-map vector-copy vector-count)
@@ -23,7 +21,10 @@
   (for-syntax
     racket/base
     (only-in racket/syntax format-id)
-    (only-in racket/string string-trim))
+    (only-in racket/string string-trim)))
+(require/check
+  "ocm-struct.rkt"
+  "penalty-struct.rkt"
 (only-in "measure.rkt"
   measure-ascent
   measure-text

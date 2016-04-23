@@ -1,11 +1,10 @@
 #lang typed/racket/base
-
-(provide forth-eval*)
+(require benchmark-util)
+(safe-and-unsafe-provide forth-eval*)
 
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
   racket/match
   typed/racket/class
   "../base/command-types.rkt"

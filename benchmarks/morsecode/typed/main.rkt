@@ -1,5 +1,5 @@
 #lang typed/racket/base
-
+(require benchmark-util)
 ;; Copyright 2014 John Clements (clements@racket-lang.org)
 ;; Code licensed under the Mozilla Public License 2.0
 
@@ -7,7 +7,6 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
   (only-in racket/file file->value))
 
 (require/typed/check "morse-code-strings.rkt"
@@ -17,8 +16,8 @@
                [string-levenshtein (String String -> Integer)])
 
 ;(define-runtime-path common-words-list "./../base/Lemmatized-NGSL-ezi1.txt")
-(define word-frequency-list "./../base/frequency.rktd")
-(define word-frequency-list-small "./../base/frequency-small.rktd")
+(define word-frequency-list "frequency.rktd")
+(define word-frequency-list-small "frequency-small.rktd")
 
 (define-predicate freq-list? (Listof (List String Integer)))
 

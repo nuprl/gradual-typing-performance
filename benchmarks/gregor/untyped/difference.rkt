@@ -13,21 +13,23 @@
 (require
   benchmark-util
   racket/match
+  (only-in racket/math exact-floor))
+(require/check
   "core-structs.rkt"
   "gregor-structs.rkt"
-  (only-in racket/math exact-floor))
-(require (only-in
+)
+(require/check (only-in
   "ymd.rkt"
     days-in-month ;(-> Natural Month (U 28 29 30 31))]
   ))
-(require (only-in "hmsn.rkt"
+(require/check (only-in "hmsn.rkt"
     NS/DAY ;Natural]
 ))
-(require (only-in "date.rkt"
+(require/check (only-in "date.rkt"
     date->ymd ;(-> Date YMD)]
     date ;(->* (Natural) (Month Natural) Date)]
 ))
-(require (only-in "datetime.rkt"
+(require/check (only-in "datetime.rkt"
     datetime<? ;(-> Any Any Boolean)]
     datetime->date ;(-> DateTime Date)]
     date+time->datetime ;(-> Date Time DateTime)]

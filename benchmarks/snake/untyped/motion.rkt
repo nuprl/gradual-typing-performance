@@ -1,5 +1,6 @@
 #lang racket  
-(require "data.rkt"
+(require benchmark-util)
+(require/check "data.rkt"
          "const.rkt"
          "motion-help.rkt")
 

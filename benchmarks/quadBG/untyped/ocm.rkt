@@ -11,11 +11,13 @@
 
 (require
  benchmark-util
- "ocm-struct.rkt"
  (only-in racket/list argmin)
  (only-in racket/sequence sequence->list)
  (only-in racket/vector vector-drop vector-append)
  (for-syntax racket/base racket/syntax))
+
+(require/check
+  "ocm-struct.rkt")
 
 ;; =============================================================================
 

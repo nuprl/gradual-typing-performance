@@ -5,31 +5,33 @@
 (require
   benchmark-util
   racket/match
-  "gregor-structs.rkt"
   (only-in racket/math exact-round)
 )
-(require (only-in "../base/tzinfo/main.rkt"
+(require/check
+  "gregor-structs.rkt"
+)
+(require/check (only-in "../base/tzinfo/main.rkt"
   system-tzid ;(-> (U tz #f))]
   tzoffset tzoffset? tzoffset-utc-seconds
   local-seconds->tzoffset ;(-> String Integer (U tzoffset tzgap tzoverlap))]
   utc-seconds->tzoffset ;(-> String Exact-Rational tzoffset)]
 ))
-(require (only-in "hmsn.rkt"
+(require/check (only-in "hmsn.rkt"
     NS/SECOND ;Natural]
 ))
-(require (only-in "datetime.rkt"
+(require/check (only-in "datetime.rkt"
     datetime ;(->* (Natural) (Month Natural Natural Natural Natural Natural) DateTime)]
     datetime->posix ;(-> DateTime Exact-Rational)]
     posix->datetime ;(-> Exact-Rational DateTime)]
     datetime->jd ;(-> DateTime Exact-Rational)]
     datetime-add-seconds ;(-> DateTime Integer DateTime)]
 ))
-(require (only-in "moment-base.rkt"
+(require/check (only-in "moment-base.rkt"
     make-moment ;(-> DateTime Integer (U String #f) Moment)]
     moment->iso8601 ;(-> Moment String)]
     moment->iso8601/tzid ;(-> Moment String)]
 ))
-(require (only-in "offset-resolvers.rkt"
+(require/check (only-in "offset-resolvers.rkt"
     resolve-offset/raise ;(-> (U tzgap tzoverlap) DateTime (U String #f) (U Moment #f) Moment)]
 ))
 

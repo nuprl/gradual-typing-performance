@@ -16,6 +16,7 @@
 )
 
 (require benchmark-util/data-lattice
+         ffi/unsafe/atomic
          "stats-helpers.rkt"
          (only-in glob in-glob)
          (only-in racket/file file->value)
@@ -38,6 +39,9 @@
          racket/system
          racket/vector
          unstable/sequence)
+
+(require (prefix-in mg: gtp-summarize/modulegraph)
+         (prefix-in p:  gtp-summarize/predict))
 
 ;; Flag to set compilation-only mode. If #f it will compile and
 ;; run, otherwise only compiles.
@@ -62,6 +66,7 @@
 (define entry-point-param (make-parameter #f))
 (define exclusive-config (make-parameter #f))
 (define min-max-config (make-parameter #f))
+(define predict? (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
 (define *AFFINITY?* (make-parameter #t)) ;; Boolean
 (define *ERROR-MESSAGES* (make-parameter '())) ;; (Listof String)
@@ -77,44 +82,41 @@
     (error 'run:runtime message)))
 
 ;; Get paths for all configuration directories
-;; Path Path -> Listof Path
-(define (mk-configurations basepath entry-point)
-  (define num-modules
-    (for/sum ([fname (in-list (directory-list (build-path basepath "untyped")))]
-              #:when (regexp-match? "\\.rkt$" (path->string fname))) 1))
-  (for/list ([i (in-range (expt 2 num-modules))])
+;; ModuleGraph #:such-that (Nat -> Bool) -> Listof Path
+(define (mk-configurations mg #:such-that [include? (λ (x) #t)])
+  (define num-modules (length (mg:module-names mg)))
+  (for/list ([i     (in-range (expt 2 num-modules))]
+             #:when (include? i))
     (define bits
       (if (zero? i)
-        (make-string num-modules #\0)
-        (~r i #:base 2 #:min-width num-modules #:pad-string "0")))
-    (define var-str (format "configuration~a" bits))
-    (build-path basepath "benchmark" var-str entry-point)))
+          (make-string num-modules #\0)
+          (~r i #:base 2 #:min-width num-modules #:pad-string "0")))
+    (format "configuration~a" bits)))
 
-;; Run the configurations for each configuration directory
-;; Optional argument gives the exact configuration to run.
-;; Default is to run all configurations
-;; (Listof Path) Path Nat Nat [(U (Listof String) #f)] -> Void
-(define (run-benchmarks basepath entry-point jobs
-                        #:config [cfg #f]
-                        #:min/max [min/max #f])
+(define (mk-prediction-configurations mg)
+  (append
+   (apply append
+    (for*/list ([requirer (in-list (mg:module-names mg))]
+                [requiree (in-list (mg:requires mg requirer))])
+      (list (format "edge-u~a-t~a" requirer requiree)
+            (format "edge-t~a-u~a" requirer requiree))))
+   (for/list ([m (in-list (mg:module-names mg))])
+     (format "optimize-~a" m))))
+
+;; Run the configurations for each supplied configuration directory
+(define (run-benchmarks basepath
+                        dir-names
+                        entry-point
+                        jobs)
   (define benchmark-dir (build-path basepath "benchmark"))
   (unless (directory-exists? benchmark-dir)
     (raise-user-error 'run (format "Directory '~a' does not exist, please run `setup.rkt ~a` and try again." benchmark-dir basepath)))
   (define configurations
-    (cond
-      [cfg
-      (list (build-path benchmark-dir (string-append "configuration" cfg) entry-point))]
-      [min/max
-       (match-define (list min max) min/max)
-       (define all-vars (mk-configurations basepath entry-point))
-       (define (in-range? var)
-         (match-define (list _ bits) (regexp-match "configuration([10]*)/" var))
-         (define n (string->number bits 2))
-         (and (>= n (string->number min))
-              (<= n (string->number max))))
-       (filter in-range? all-vars)]
-      [else
-       (mk-configurations basepath entry-point)]))
+    (for/list ([dir (in-list dir-names)])
+      (build-path benchmark-dir dir entry-point)))
+  (run-benchmark-dirs configurations jobs))
+
+(define (run-benchmark-dirs configurations jobs)
   ;; allocate a slice of the configurations per job
   (define slice-size (ceiling (/ (length configurations) jobs)))
   (define threads
@@ -124,8 +126,8 @@
       ;; Each job gets assigned to the CPU that is the same as the job# using
       ;; the `taskset` command.
       (thread
-       (λ ()
-         (for ([var-in-slice var-slice])
+       (λ () 
+        (for ([var-in-slice var-slice])
            (match-define (list var var-idx) var-in-slice)
            (define-values (new-cwd file _2) (split-path var))
            (define times null)
@@ -169,11 +171,13 @@
                  (printf "job#~a, iteration #~a of ~a started~n" job# i var)
                  (define command `(time (dynamic-require ,(path->string file) #f)))
                  (match-define (list in out pid err control)
-                   (process (format "~a~aracket -e '~s'"
-                              (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-                              (*racket-bin*)
-                              command)
-                            #:set-pwd? #t))
+                   (call-as-atomic
+                    (λ ()
+                     (process (format "~a~aracket -e '~s'"
+                                      (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                                      (*racket-bin*)
+                                      command)
+                              #:set-pwd? #t))))
                  ;; if this match fails, something went wrong since we put time in above
                  (define time-info
                    (for/or ([line (in-list (port->lines in))])
@@ -201,7 +205,7 @@
   #t)
 
 (define (write-results times [dir (current-directory)])
-  (with-output-to-file (build-path dir (output-path)) #:exists 'append
+  (with-output-to-file (build-path dir (output-path)) #:exists 'replace
     (lambda ()
       (write times))))
 
@@ -239,45 +243,54 @@
         (printf "Failed to find package 'typed-racket' in 'installation pkg-table\n")))
     (printf "Failed to get 'installed-pkg-table'\n")))
 
+(define (print-data-preamble)
+  ;; first write a comment that encodes the commandline args / version
+  (printf ";; ~a~n" (current-command-line-arguments))
+  (printf ";; ~a~n" (version))
+  (printf ";; base @ ~a~n" (racket-checksum))
+  (printf ";; typed-racket @ ~a~n" (typed-racket-checksum)))
+
 (define (run-benchmark vec)
   (define basepath
     (command-line #:program "benchmark-runner"
                   #:argv vec
                   #:once-any
                   [("-x" "--exclusive")    x-p
-                                           "Run the given configuration and no others"
-                                           (exclusive-config x-p)]
+                   "Run the given configuration and no others"
+                   (exclusive-config x-p)]
                   [("-m" "--min-max") min max
-                                      "Run the configurations between min and max inclusive"
-                                      (min-max-config (list min max))]
+                   "Run the configurations between min and max inclusive"
+                   (min-max-config (list min max))]
+                  [("-p" "--predict") "Run the prediction configurations instead of normal configurations"
+                   (predict? #t)]
                   #:once-each
                   [("-n" "--no-affinity")
                    "Do NOT set task affinity (runs all jobs on current core)"
                    (*AFFINITY?* #f)]
                   [("-c" "--only-compile") "Only compile and don't run"
-                                           (only-compile? #t)]
+                   (only-compile? #t)]
                   [("-o" "--output") o-p
-                                     "A path to write data to"
-                                     (output-path o-p)]
+                   "A path to write data to"
+                   (output-path o-p)]
                   [("-l" "--lattice") l-p
-                                     "A path to write the lattice diagram to"
-                                     (lattice-path l-p)]
+                   "A path to write the lattice diagram to"
+                   (lattice-path l-p)]
                   [("-e" "--entry-point") e-p
-                                          "The main file to execute. (Defaults to 'main.rkt'.)"
-                                          (entry-point-param e-p)]
+                   "The main file to execute. (Defaults to 'main.rkt'.)"
+                   (entry-point-param e-p)]
                   [("-j" "--jobs") j
-                                   "The number of processes to spawn"
-                                   (num-jobs j)]
+                   "The number of processes to spawn"
+                   (num-jobs j)]
                   [("-r" "--racket") r-p
-                                     "Directory containing the preferred racket & raco executables"
-                                     (*racket-bin* (string-append r-p "/"))]
+                   "Directory containing the preferred racket & raco executables"
+                   (*racket-bin* (string-append r-p "/"))]
 
                   #:multi
                   [("-i" "--iterations") n-i
-                                         "The number of iterations to run"
-                                         (let ([n (string->number n-i)])
-                                           (unless n (raise-user-error 'run (format "Expected natural number, got '~a'" n-i)))
-                                           (num-iterations n))]
+                   "The number of iterations to run"
+                   (let ([n (string->number n-i)])
+                     (unless n (raise-user-error 'run (format "Expected natural number, got '~a'" n-i)))
+                     (num-iterations n))]
                   #:args (basepath)
                   basepath))
   ;; Validate given entry-point, or fall back to default
@@ -316,39 +329,69 @@
   ;; to cores 1 and above.
   (when (< (processor-count) 2)
     (raise-user-error
-      (string-append "Detected less than 2 CPUs. Please run this "
-                     "script on a machine/VM with at least 2 CPUs.")))
+     (string-append "Detected less than 2 CPUs. Please run this "
+                    "script on a machine/VM with at least 2 CPUs.")))
   (when (< (processor-count) (add1 jobs))
     (raise-user-error
-      (string-append "Too many jobs specified. Need at least as many "
-                     "processors as #jobs+1")))
+     (string-append "Too many jobs specified. Need at least as many "
+                    "processors as #jobs+1")))
 
   ;; Set the CPU affinity for this script to CPU0. Jobs spawned by this script run
   ;; using CPU1 and above.
   (when (*AFFINITY?*)
     (system (format "taskset -pc 0 ~a" (getpid))))
+  (define-values (_a bp _b) (split-path basepath))
+  (define mg (mg:project-name->modulegraph (path->string bp)))
+  ;; produce the dir-names to run
+  ;; and a thunk to collect all the data afterwards
+  (match-define (list dir-names post-process)
+    (cond [(predict?)
+           (define configs (p:prediction-configs mg))
+           (define dirs (map p:prediction-config->name configs))
+           (define (collect)
+             (define data (for/hash ([config (in-list configs)])
+                (define data
+                  (with-input-from-file
+                    (build-path basepath "benchmark" (p:prediction-config->name config) (output-path))
+                    (λ () (read))))
+                (values config data)))
+             (with-output-to-file (output-path)
+               (λ ()
+                 (print-data-preamble)
+                 (write data))))
+           (list dirs collect)]
+          [else
+           (define dirs
+             (cond [(exclusive-config)
+                    (list (string-append "configuration" (exclusive-config)))]
+                   [(min-max-config)
+                    (match-define (list min max) (map string->number (min-max-config)))
+                    (mk-configurations mg
+                                       #:such-that (λ (n)
+                                                     (and (>= n min)
+                                                          (<= n max))))]
+                   [else (mk-configurations mg)]))
+           (define (collect)
+             (with-output-to-file (output-path)
+                 (λ ()
+                   (print-data-preamble)
+                   (displayln "#(")
+                   (for ([result-file (in-glob (format "~a/benchmark/configuration*/~a"
+                                                       basepath
+                                                       (output-path)))])
+                     (with-input-from-file result-file
+                       (lambda () (for ([ln (in-lines)]) (displayln ln)))))
+                   
+                   (displayln ")"))
+                 #:mode 'text
+                 #:exists 'replace))
+           (list dirs collect)]))
 
-  (run-benchmarks basepath entry-point jobs
-                  #:config (exclusive-config)
-                  #:min/max (min-max-config))
-
+  (run-benchmarks basepath dir-names entry-point jobs)
   (when (and (not (only-compile?)) (output-path))
-    (with-output-to-file (output-path)
-      (λ ()
-        ;; first write a comment that encodes the commandline args / version
-        (printf ";; ~a~n" (current-command-line-arguments))
-        (printf ";; ~a~n" (version))
-        (printf ";; base @ ~a~n" (racket-checksum))
-        (printf ";; typed-racket @ ~a~n" (typed-racket-checksum))
-        (displayln "#(")
-        (for ([result-file (in-glob (format "~a/benchmark/configuration*/~a"
-                                     basepath
-                                     (output-path)))])
-          (with-input-from-file result-file
-            (lambda () (for ([ln (in-lines)]) (displayln ln)))))
-        (displayln ")"))
-      #:mode 'text
-      #:exists 'replace))
+    (post-process))
+  
+  
 
   ;; TODO: update lattice to account for empty-result startup time
   (when (lattice-path)

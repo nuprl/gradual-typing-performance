@@ -22,6 +22,9 @@
   math/statistics
   (only-in racket/file file->value)
   (only-in racket/vector vector-append)
+  benchmark-util
+)
+(require/check
   (only-in "modulegraph.rkt"
     from-tex
     module-names

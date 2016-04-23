@@ -4,7 +4,8 @@
 (random-seed 7480)
 
 ;; =============================================================================
-(require benchmark-util
+(require benchmark-util)
+(require/check
  "automata.rkt"
  "population.rkt"
  "utilities.rkt")

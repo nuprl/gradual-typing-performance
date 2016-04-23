@@ -13,7 +13,7 @@
   (only-in racket/list append* split-at drop-right)
   (only-in racket/sequence sequence->list)
   (only-in math/flonum fl+ fl fl>))
-(require (only-in "quads.rkt"
+(require/check (only-in "quads.rkt"
   make-quadattrs ;(-> (Listof Any) QuadAttrs))
   quad-car ;(-> Quad (U String Quad)))
   line ;(->* ((Listof Any)) #:rest USQ Quad))
@@ -29,13 +29,13 @@
   page ;(->* ((Listof Any)) #:rest USQ Quad))
   column ;(->* ((Listof Any)) #:rest USQ Quad))
 ))
-(require (only-in "wrap.rkt"
+(require/check (only-in "wrap.rkt"
   insert-spacers-in-line ;((Quad) ((Option Symbol)) . ->* . Quad))
   wrap-best ;(->* ((Listof Quad)) (Float) (Listof Quad)))
   fill ;(->* (Quad) ((Option Float)) Quad))
   add-horiz-positions ;(-> Quad Quad))
 ))
-(require (only-in "world.rkt"
+(require/check (only-in "world.rkt"
   world:line-looseness-key ;Symbol]
   world:allow-hyphenated-last-word-in-paragraph;; Boolean]
   world:line-looseness-tolerance; Float]
@@ -58,12 +58,12 @@
   world:minimum-lines-per-column; Index]
   world:default-lines-per-column; Index]
 ))
-(require (only-in "measure.rkt"
+(require/check (only-in "measure.rkt"
   round-float ;(-> Float Float)]
   load-text-cache-file; (-> Void)]
   update-text-cache-file; (-> Void)]
 ))
-(require (only-in "utils.rkt"
+(require/check (only-in "utils.rkt"
   add-vert-positions; (-> Quad Quad))
   attr-change; (-> QuadAttrs (Listof Any) QuadAttrs))
   compute-line-height; (-> Quad Quad))
@@ -74,12 +74,12 @@
   split-last ;(All (A) ((Listof A) -> (values (Listof A) A))))
   split-quad ;(-> Quad (Listof Quad)))
 ))
-(require (only-in "sugar-list.rkt"
+(require/check (only-in "sugar-list.rkt"
  slice-at ;(All (A) (case-> ((Listof A) Positive-Integer -> (Listof (Listof A)))
            ;        ((Listof A) Positive-Integer Boolean -> (Listof (Listof A))))))
 ))
 ;; bg: should maybe import this
-(require (only-in "../base/csp/csp.rkt"
+(require/check (only-in "../base/csp/main.rkt"
   problem%  ;(Class (init-field [solver Any])
     ;(field [_solver Any])
     ;(field [_variable-domains Any])

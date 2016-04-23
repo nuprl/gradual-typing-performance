@@ -1,15 +1,19 @@
 #lang racket/base
 
-(require racket/vector
-         (only-in racket/fixnum fx+)
-         (only-in "array-struct.rkt"
-                  array-shape
-                  unsafe-array-proc
-                  unsafe-build-array
-                  array-default-strict!)
-         (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
-         (only-in "array-utils.rkt" unsafe-vector-remove vector-copy-all unsafe-vector-insert)
-         "data.rkt")
+(require
+  benchmark-util
+  racket/vector
+  (only-in racket/fixnum fx+)
+)
+(require/check
+  (only-in "array-struct.rkt"
+           array-shape
+           unsafe-array-proc
+           unsafe-build-array
+           array-default-strict!)
+  (only-in "array-broadcast.rkt" array-broadcast array-shape-broadcast)
+  (only-in "array-utils.rkt" unsafe-vector-remove vector-copy-all unsafe-vector-insert)
+  "data.rkt")
 
 (provide array-append*)
 

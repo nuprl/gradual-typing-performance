@@ -1,6 +1,7 @@
 #lang racket/base
+(require benchmark-util)
 
-(require (only-in "zombie.rkt"
+(require/check (only-in "zombie.rkt"
   w0
   world-on-mouse
   world-on-tick

@@ -1,6 +1,6 @@
-#lang typed/racket/base
-
-(provide
+#lang typed/racket/base #:no-optimize
+(require  benchmark-util)
+(safe-and-unsafe-provide
   command%
   CMD*
 )
@@ -8,7 +8,6 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
  racket/match
  typed/racket/class
  "../base/command-types.rkt"

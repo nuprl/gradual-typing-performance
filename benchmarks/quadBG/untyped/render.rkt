@@ -11,7 +11,7 @@
  (only-in racket/class inherit define/override send* class new super-new send define/public object% this)
  (only-in racket/file display-to-file)
 )
-(require (only-in "world.rkt"
+(require/check (only-in "world.rkt"
   world:font-size-key; Symbol]
   world:font-size-default; (Parameterof Float)]
   world:font-color-key; Symbol]
@@ -33,10 +33,10 @@
   world:draft-quality; Index]
   world:page-key; Symbol]
 ))
-(require (only-in "utils.rkt"
+(require/check (only-in "utils.rkt"
   flatten-quad ;(-> Quad (Listof Quad)))
 ))
-(require (only-in "quads.rkt"
+(require/check (only-in "quads.rkt"
   quad-attr-ref ;(->* ((U Quad QuadAttrs) Symbol) (Any) Any)])
   word ;(->* ((Listof Any)) Quad)]
   quad-name ;(-> Quad Symbol)]

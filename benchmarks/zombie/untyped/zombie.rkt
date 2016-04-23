@@ -7,14 +7,15 @@
 )
 
 (require
+  benchmark-util
   (for-syntax racket/sequence racket/base syntax/parse racket/syntax))
 
-(require (only-in "image.rkt"
+(require/check (only-in "image.rkt"
   empty-scene
   place-image
   circle
 ))
-(require (only-in "math.rkt"
+(require/check (only-in "math.rkt"
   min
   max
   abs

@@ -1,6 +1,8 @@
 #lang typed/racket/base
+(require benchmark-util)
 
-(provide
+;; -----------------------------------------------------------------------------
+(safe-and-unsafe-provide
   randomly-pick
   ;; (-> cons? any)
 
@@ -12,8 +14,6 @@
   ;; (->* [(Listof Any) (-> Any Real)] [#:info (-> Any Any)] (Listof (Listof Any)))
   ;; Precondition: input list is sorted vis <= or >=
   )
-
-;; -----------------------------------------------------------------------------
 
 (require
   (only-in racket/list

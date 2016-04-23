@@ -6,21 +6,22 @@
 
 (require
  benchmark-util
- "../base/quad-types.rkt"
- (only-in typed/racket/class new send))
+ (only-in typed/racket/class new send)
+  "../base/quad-types.rkt"
+)
 
-(require (only-in "world.rkt"
+(require/check (only-in "world.rkt"
   world:allow-hyphenated-last-word-in-paragraph ;Boolean)
   world:quality-default ;(Parameterof Index))
   world:draft-quality ;Index)
 ))
-(require (only-in "quad-main.rkt"
+(require/check (only-in "quad-main.rkt"
   typeset; (-> Quad Quad))
 ))
-(require (only-in "quick-sample.rkt"
+(require/check (only-in "quick-sample.rkt"
   quick-sample ;(-> Quad))
 ))
-(require (only-in "render.rkt"
+(require/check (only-in "render.rkt"
   pdf-renderer%
   ;  (Class
   ;    [render-to-file (Quad Path-String -> Void)]

@@ -5,21 +5,15 @@
 (require
   benchmark-util
   racket/set
+  (only-in racket/string string-join)
+)
+(require/check
   "structs.rkt"
   "benv.rkt"
   "denotable.rkt"
   "time.rkt"
-  (only-in racket/string string-join)
+  "ai.rkt"
 )
-
-(require "ai.rkt")
-;(require/typed/check "ai.rkt"
-;  (atom-eval (-> BEnv Store (-> Exp Denotable)))
-;  (next (-> State (Setof State)))
-;  (explore (-> (Setof State) (Listof State) (Setof State)))
-;)
-;; ---
-
 (provide
   summarize
   empty-mono-store

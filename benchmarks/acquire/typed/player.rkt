@@ -1,9 +1,9 @@
 #lang typed/racket
-
+(require benchmark-util)
 ;; ---------------------------------------------------------------------------------------------------
 ;; Acquire player that manages all the interactions; delegates decision making to separate strategies 
 
-(provide
+(safe-and-unsafe-provide
  random-players
  inf-loop-player
  )
@@ -12,10 +12,8 @@
 ;; IMPLEMENTATION 
 
 (require
- benchmark-util
- "../base/types.rkt"
- "state-adapted.rkt"
-)
+ "../base/types.rkt")
+(require/adapted "state.rkt" "state-adapted.rkt")
 (require/typed/check "admin.rkt"
   (administrator% Administrator%)
   (turn% Turn%)

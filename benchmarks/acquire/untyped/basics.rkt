@@ -91,8 +91,9 @@
 
 (require
   "../base/untyped.rkt"
+  benchmark-util
 )
-(require (only-in "auxiliaries.rkt"
+(require/check (only-in "auxiliaries.rkt"
  randomly-pick
 ))
 

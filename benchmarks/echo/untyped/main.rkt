@@ -1,7 +1,9 @@
 #lang racket/base
 
-(require (only-in "client.rkt" client)
-         (only-in "server.rkt" server))
+(require benchmark-util)
+(require/check
+  (only-in "client.rkt" client)
+  (only-in "server.rkt" server))
 
 ;; ---------------------------------------------------------------------------------------------------
 

@@ -9,7 +9,8 @@
  (only-in racket/list filter-not)
  (only-in racket/draw font% make-font current-ps-setup pdf-dc% the-color-database)
  (only-in racket/class inherit define/override send* class new super-new send define/public object% this)
- (only-in racket/file display-to-file)
+ (only-in racket/file display-to-file))
+(require/check
 (only-in "world.rkt"
   world:font-size-key
   world:font-size-default

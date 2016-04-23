@@ -4,7 +4,8 @@
 ;; Run a Simulation of Interacting Automata
 
 ;; =============================================================================
-(require "population.rkt" "utilities.rkt")
+(require benchmark-util)
+(require/check "population.rkt" "utilities.rkt")
 
 ;; -> Void
 ;; effect: run timed simulation, create and display plot of average payoffs

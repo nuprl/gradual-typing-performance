@@ -27,9 +27,11 @@
 (require
   benchmark-util
   (only-in racket/math exact-round)
+)
+(require/check
   "gregor-structs.rkt"
 )
-(require (only-in "moment.rkt"
+(require/check (only-in "moment.rkt"
     current-timezone ;(Parameterof (U tz #f))]
     posix->moment ;(-> Exact-Rational tz Moment)]
     moment->datetime/local ;(-> Moment DateTime)]
@@ -39,7 +41,7 @@
     moment->iso8601 ;(-> Moment String)]
     moment->iso8601/tzid ;(-> Moment String)]
 ))
-(require (only-in "datetime.rkt"
+(require/check (only-in "datetime.rkt"
     datetime->date ;(-> DateTime Date)]
     datetime->time ;(-> DateTime Time)]
 ))

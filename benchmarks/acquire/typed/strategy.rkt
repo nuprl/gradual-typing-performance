@@ -1,9 +1,9 @@
 #lang typed/racket
-
+(require benchmark-util)
 ;; ---------------------------------------------------------------------------------------------------
 ;; implementing Acquire game strategies
 
-(provide
+(safe-and-unsafe-provide
  ordered-s
  random-s
 )
@@ -11,12 +11,10 @@
 ;; ---------------------------------------------------------------------------------------------------
 ;; IMPLEMENTATION
 
-(require
- benchmark-util
- "../base/types.rkt"
- "board-adapted.rkt"
- "state-adapted.rkt"
- )
+(require "../base/types.rkt")
+(require/adapted "state.rkt" "state-adapted.rkt")
+(require/adapted "board.rkt" "board-adapted.rkt")
+
 (require/typed/check "basics.rkt"
   (ALL-HOTELS (Listof Hotel))
   (SHARES-PER-TURN# Integer)

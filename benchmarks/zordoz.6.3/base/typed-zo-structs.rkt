@@ -1,17 +1,16 @@
-#lang typed/racket
-
+#lang benchmark-util/adaptor
 
 ;; A Spec is the name of a zo struct and a list of pairs representing its fields:
 ;; - The car of each field is the name of that field
 ;; - The cdr of each field is a thunk for building a representation of the field's value.
 ;;   If the value is a zo-struct, the thunk should build a Spec
 ;;   Otherwise, the thunk should build a string
+
+(require benchmark-util)
 (define-type Spec
   (Rec Spec
    (Pair String (Listof (Pair String (-> (U Spec String)))))))
-(provide Spec)
-
-(require/typed/provide compiler/zo-structs
+(require/external/typed compiler/zo-structs
                [#:struct zo ()]
                [#:struct (compilation-top zo) (
                  [max-let-depth : Exact-Nonnegative-Integer]
@@ -225,3 +224,6 @@
                  [id : stx-obj]
                  [phase : (U #f Integer)])]
                )
+(provide (all-from-out compiler/zo-structs)
+         Spec)
+

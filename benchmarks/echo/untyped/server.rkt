@@ -4,8 +4,12 @@
 
 (provide server)
 
-(require "constants.rkt"
-         (only-in racket/tcp tcp-accept tcp-listen))
+(require
+ benchmark-util
+ (only-in racket/tcp tcp-accept tcp-listen))
+(require/check
+  "constants.rkt"
+)
 
 ;; ---------------------------------------------------------------------------------------------------
 

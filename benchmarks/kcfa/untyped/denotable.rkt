@@ -7,10 +7,11 @@
 (require
   benchmark-util
   racket/set
+)
+(require/check
   "structs.rkt"
   "benv.rkt"
-  "time.rkt"
-)
+  "time.rkt")
 
 ;; -----------------------------------------------------------------------------
 

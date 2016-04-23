@@ -9,9 +9,10 @@
 ;; Original file would make a SOUND from the sequence of dots and dashes.
 ;; We just make the . and -
 
-(provide string->morse)
 
 (require benchmark-util)
+(safe-and-unsafe-provide string->morse)
+
 
 (require/typed/check "morse-code-table.rkt"
   [char-table (HashTable Char String)])

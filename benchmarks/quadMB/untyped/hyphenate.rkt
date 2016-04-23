@@ -13,6 +13,8 @@
  benchmark-util
  (only-in racket/string string-replace string-join)
  (only-in racket/list partition drop-right drop make-list filter-not take splitf-at)
+)
+(require/check
 (only-in "patterns-hashed.rkt" hashed-patterns)
 (only-in "exceptions.rkt" default-exceptions))
 

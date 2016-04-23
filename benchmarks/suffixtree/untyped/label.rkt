@@ -1,7 +1,7 @@
 #lang racket/base
+(require benchmark-util)
 
-(require
-  "data.rkt")
+(require/check "data.rkt")
 ;; Label implementation.  Labels are like strings, but also allow for
 ;; efficient shared slicing.
 ;;

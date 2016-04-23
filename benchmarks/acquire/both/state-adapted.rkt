@@ -1,4 +1,4 @@
-#lang typed/racket
+#lang benchmark-util/adaptor
 
 ;; ---------------------------------------------------------------------------------------------------
 ;; a data representation for internal game states 

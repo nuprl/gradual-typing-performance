@@ -8,12 +8,15 @@
  ;; Start a REPL using command-line arguments
  init)
 
-(require (only-in compiler/zo-parse zo? zo-parse)
-         (only-in racket/string string-split string-join)
-         (only-in "zo-find.rkt" zo-find result result? result-z result-path)
-         (only-in "zo-string.rkt" zo->string)
-         (only-in "zo-transition.rkt" zo-transition)
-         racket/match)
+(require
+  benchmark-util
+  (only-in compiler/zo-parse zo? zo-parse)
+  (only-in racket/string string-split string-join)
+  racket/match)
+(require/check
+  (only-in "zo-find.rkt" zo-find result result? result-z result-path)
+  (only-in "zo-string.rkt" zo->string)
+  (only-in "zo-transition.rkt" zo-transition))
 
 ;; -----------------------------------------------------------------------------
 

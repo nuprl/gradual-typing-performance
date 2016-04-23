@@ -10,15 +10,15 @@
   benchmark-util
   (only-in racket/file file->value))
 
-(require (only-in "morse-code-strings.rkt"
+(require/check (only-in "morse-code-strings.rkt"
   string->morse))
 
-(require (only-in "levenshtein.rkt"
+(require/check (only-in "levenshtein.rkt"
                string-levenshtein))
 
 ;(define-runtime-path common-words-list "./../base/Lemmatized-NGSL-ezi1.txt")
-(define word-frequency-list "./../base/frequency.rktd")
-(define word-frequency-list-small "./../base/frequency-small.rktd")
+(define word-frequency-list "frequency.rktd")
+(define word-frequency-list-small "frequency-small.rktd")
 
 (define (file->words filename)
   (define words+freqs (file->value (string->path filename)))

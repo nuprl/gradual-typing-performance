@@ -4,9 +4,10 @@
 ;; helper functions
 
 (require
-  "structs.rkt"
+  benchmark-util
 )
-
+(require/check
+  "structs.rkt")
 (provide
   (struct-out Closure)
   (struct-out Binding)

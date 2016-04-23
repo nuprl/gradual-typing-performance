@@ -7,7 +7,8 @@
 (require
   benchmark-util
   racket/file
-  (only-in racket/include include)
+  (only-in racket/include include))
+(require/check
 (only-in "quads.rkt"
   page-break
   column-break

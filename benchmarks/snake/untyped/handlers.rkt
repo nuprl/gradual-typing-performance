@@ -1,7 +1,8 @@
 #lang racket
 ;; Movie handlers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  
-(require "data.rkt"
+(require benchmark-util)
+(require/check "data.rkt"
          "motion.rkt"
          "collide.rkt")
 

@@ -1,5 +1,6 @@
 #lang racket  
-(require "data.rkt")
+(require benchmark-util)
+(require/check "data.rkt")
 
 (define GRID-SIZE 30)
 (define BOARD-HEIGHT 20)

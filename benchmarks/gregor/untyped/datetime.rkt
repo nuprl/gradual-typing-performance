@@ -6,16 +6,18 @@
 (require
   benchmark-util
   racket/match
+  (only-in racket/math exact-round exact-floor)
+)
+(require/check
   "core-structs.rkt"
   "gregor-structs.rkt"
-  (only-in racket/math exact-round exact-floor))
-
-(require (only-in
+)
+(require/check (only-in
   "hmsn.rkt"
     NS/DAY ;Natural]
     NS/SECOND ;Natural]
 ))
-(require (only-in
+(require/check (only-in
   "date.rkt"
     date->iso8601 ;(-> Date String)]
     date->jdn ;(-> Any Integer)]
@@ -24,7 +26,7 @@
     date ;(->* (Natural) (Month Natural) Date)]
     date=? ;(-> Date Date Boolean)]
 ))
-(require (only-in "time.rkt"
+(require/check (only-in "time.rkt"
     time->iso8601 ;(-> Time String)]
     time->ns ;(-> Any Natural)]
     day-ns->time ;(-> Natural Time)]

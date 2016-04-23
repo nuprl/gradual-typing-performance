@@ -6,15 +6,16 @@
   seconds->samples
   emit)
 
-(require (only-in "array-struct.rkt"
+(require benchmark-util
+         (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
+         (only-in racket/math exact-floor))
+(require/check (only-in "array-struct.rkt"
            array?
            array-shape
            unsafe-array-proc
            array-size
            array-strictness)
-         (only-in racket/unsafe/ops unsafe-fx+ unsafe-fx<)
-         (only-in "array-utils.rkt" next-indexes!)
-         (only-in racket/math exact-floor))
+         (only-in "array-utils.rkt" next-indexes!))
 
 ;; --- from array-sequence.rkt
 

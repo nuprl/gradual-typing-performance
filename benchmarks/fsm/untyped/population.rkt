@@ -11,7 +11,8 @@
 )
 
 ;; =============================================================================
-(require benchmark-util
+(require benchmark-util)
+(require/check
  "automata.rkt"
  "utilities.rkt"
 )

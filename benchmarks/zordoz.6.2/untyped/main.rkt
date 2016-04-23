@@ -1,6 +1,7 @@
 #lang racket/base
+(require benchmark-util)
 
-(require (only-in "zo-shell.rkt" init))
+(require/check (only-in "zo-shell.rkt" init))
 
 ;; Stress tests: search entire bytecode for the fairly-common branch struct
 (define SELF-TEST '("../base/zo-shell.zo" "../base/zo-find.zo" "../base/zo-string.zo" "../base/zo-transition.zo"))

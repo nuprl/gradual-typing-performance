@@ -1,4 +1,4 @@
-#lang typed/racket/base
+#lang benchmark-util/adaptor
 
 (provide
  Board

@@ -1,16 +1,18 @@
 #lang racket/base
 
-(require (only-in "array-struct.rkt"
-                  array-size
-                  make-array
-                  build-array
-                  unsafe-vector->array)
-         (only-in "array-utils.rkt"
-                  array-shape-size
-                  check-array-shape)
-         (only-in "array-transform.rkt" array-append*)
-         (only-in "synth.rkt" fs seconds->samples)
-         "data.rkt")
+(require benchmark-util)
+(require/check
+  (only-in "array-struct.rkt"
+           array-size
+           make-array
+           build-array
+           unsafe-vector->array)
+  (only-in "array-utils.rkt"
+           array-shape-size
+           check-array-shape)
+  (only-in "array-transform.rkt" array-append*)
+  (only-in "synth.rkt" fs seconds->samples)
+  "data.rkt")
 
 (provide drum)
 

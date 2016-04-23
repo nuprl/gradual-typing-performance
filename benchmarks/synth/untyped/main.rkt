@@ -1,11 +1,14 @@
 #lang racket/base
+(require
+  benchmark-util
+  (for-syntax racket/base syntax/parse)
+  racket/stxparam)
+(require/check
+  (only-in "sequencer.rkt" note sequence)
+  (only-in "drum.rkt" drum)
+  (only-in "mixer.rkt" mix)
+  (only-in "synth.rkt" emit sawtooth-wave))
 
-(require (only-in "sequencer.rkt" note sequence)
-         (only-in "drum.rkt" drum)
-         (only-in "mixer.rkt" mix)
-         (only-in "synth.rkt" emit sawtooth-wave))
-
-(require (for-syntax racket/base syntax/parse) racket/stxparam)
 
 (begin-for-syntax
  (define-syntax-class mixand

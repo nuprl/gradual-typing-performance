@@ -3,9 +3,11 @@
 ;; Create a few examples and run abstract interpretation
 
 (require
-  "structs.rkt"
-  "ui.rkt"
+  benchmark-util
 )
+(require/check
+  "structs.rkt"
+  "ui.rkt")
 
 ;; =============================================================================
 

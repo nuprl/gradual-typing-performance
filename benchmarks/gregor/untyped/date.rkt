@@ -21,14 +21,16 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  "core-structs.rkt"
-  "gregor-structs.rkt"
   benchmark-util
   (only-in racket/math exact-round)
   (only-in racket/format ~r)
-  racket/match)
-
-(require (only-in
+  racket/match
+)
+(require/check
+  "core-structs.rkt"
+  "gregor-structs.rkt"
+)
+(require/check (only-in
   "ymd.rkt"
     ymd->jdn ;(-> YMD Integer)]
     jdn->ymd ;(-> Exact-Rational YMD)]

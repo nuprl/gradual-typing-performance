@@ -26,7 +26,11 @@
 
  require/adapted
  ;; for typed modules
- ;; Same as typed require, but can be overriden by a benchmark-config.rktd file
+ ;; same as typed require, but includes the name of the adaptee module
+
+ require/external/typed
+ require/external/untyped
+ require/external/adapted
 
   require/typed/if
   ;; (require/typed/if T E)
@@ -39,11 +43,13 @@
 )
 
 (require
-  (for-syntax
+ (for-syntax
+  racket/function
     typed/untyped-utils
     syntax/parse
     (only-in racket/base prefix-in)
     "override-boundary.rkt")
+  (for-syntax racket/syntax)
   (only-in typed/racket require/typed)
   (prefix-in typed: (only-in typed/racket
                              require
@@ -58,25 +64,57 @@
   (define (i-am-typed)
     (syntax-local-typed-context?)))
 
-;; =============================================================================
-;; TODO: check for overrides in this and require/adapted
-;;
+;; Syntax for parsing require specifications
+(begin-for-syntax
+  (define-syntax-class require-spec
+    #:attributes (
+      module-name
+      ;; (Syntaxof String)
+      ;; Syntax object containing the (string) name of the required module
+    )
+    #:literals (except-in only-in prefix-in)
+    (pattern m:str
+     #:attr module-name #'m)
+    (pattern (prefix-in m:str n*:id ...)
+     #:attr module-name #'m)
+    (pattern (only-in m:str n*:id ...)
+     #:attr module-name #'m)
+    (pattern (except-in m:str n*:id ...)
+     #:attr module-name #'m)
+  )
+
+  ;; Replace the module name required in `old-stx` with `new-stx`
+  (define (subst/require-spec old-stx new-stx)
+    (syntax-parse old-stx
+     #:literals (except-in only-in prefix-in)
+     [m:str
+      new-stx]
+     [(only-in m:str n*:id ...)
+      #`(only-in #,new-stx n* ...)]
+     [(except-in pre:id m:str)
+      #`(prefix-in pre #,new-stx)]
+     [(prefix-in pre:id m:str)
+      #`(prefix-in pre #,new-stx)]))
+
+  (define (insert-unsafe-if p? mod-name m)
+    (cond [(p? mod-name) m]
+          [else
+           (define submod-ref (datum->syntax mod-name (list 'submod mod-name 'unsafe)))
+           (subst/require-spec m submod-ref)])))
 
 (define-syntax (require/check stx)
   (syntax-parse stx
-    #:literals (prefix-in)
-    [(_ (prefix-in p m:str) rt-clause ...)
-     (cond [(or (not (they-are-typed #'m))
-                (keep-boundary? #'m))
-            #'(require (prefix-in p m))]
-           [else
-            #'(require (prefix-in p (submod m unsafe)))])]
-    [(_ m:str rt-clause ...)
-     (cond [(or (not (they-are-typed #'m))
-                (keep-boundary? #'m))
-            #'(require m)]
-           [else
-            #'(require (submod m unsafe))])]))
+    [(_ m*:require-spec ...)
+     (define (p? mod-name)
+       (or (not (they-are-typed mod-name))
+           (keep-boundary? mod-name)))
+     (define m+ (map (curry insert-unsafe-if p?)
+                     (syntax-e    #'(m*.module-name ...))
+                     (syntax->list #'(m* ...))))
+     #`(require #,@m+)]
+    [_
+     (raise-user-error
+      'require/check "Bad/unrecognized syntax in '~a'" (syntax->datum stx))]))
 
 (define-for-syntax (param-require/typed/check stx my-require/typed)
   (syntax-parse stx
@@ -115,24 +153,48 @@
 (define-syntax (require/adapted stx)
   (syntax-parse stx
     #:literals (prefix-in)
-    [(_ m-adaptee:str m-adaptor:str rt-clause ...)
-     ;; here I check if the boundary with the adaptee is present, the
-     ;; adaptor is always typed
-     (cond
-       [(keep-boundary? #'m-adaptee)
-        #'(typed:require m-adaptor rt-clause ...)]
-       [#'(typed:require (submod m-adaptor unsafe) rt-clause ...)])]))
+    [(_ m-adaptee:str m-adaptor:require-spec)
+     (define new-m
+       (insert-unsafe-if (λ (_e) (keep-boundary? #'m-adaptee))
+                         (attribute m-adaptor.module-name)
+                         #'m-adaptor))
+     #`(typed:require #,new-m)]))
+
+
+(define-syntax (require/external/typed stx)
+  (syntax-parse stx
+    [(_ m rt-clause ...)
+     (cond [(act-like-untyped?)
+            #`(require/typed m rt-clause ...)]
+           [else
+            #`(typed:require m)])]))
+
+(define-syntax (require/external/untyped stx)
+  (syntax-parse stx
+    [(_ m rt-clause ...)
+     (cond [(act-like-untyped?)
+            #`(typed:unsafe-require/typed m rt-clause ...)]
+           [else
+            #`(require/typed m rt-clause ...)])]))
+
+(define-syntax (require/external/adapted stx)
+  (syntax-parse stx
+    [(_ m*:require-spec ...)
+     (define new-ms (map (insert-unsafe-if (λ (_e) (act-like-untyped?)))
+                         (syntax-e     #'(m*.module-name ...))
+                         (syntax->list #'(m* ...))))
+     #`(typed:require #,@new-ms)]))
 
 (define-syntax (require/typed/if stx)
   (syntax-parse stx
     [(_ t e) (if (syntax-local-typed-context?)
-           #'(require t)
-           #'(require e))]))
+                 #'(require t)
+                 #'(require e))]))
 
 (define-syntax (safe-and-unsafe-provide stx)
   (syntax-parse stx
     [(_ p-clause ...)
      #'(begin
          (typed:provide p-clause ...)
-         (module* unsafe #f
+         (module+ unsafe
            (typed:unsafe-provide p-clause ...)))]))
