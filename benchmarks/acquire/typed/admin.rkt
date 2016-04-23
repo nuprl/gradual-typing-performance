@@ -191,7 +191,7 @@
       (if (empty? (state-players state/eliminate))
           (list EXHAUSTED '(all players failed) (reverse states))
           (continue (generate-tree state/eliminate))))
-          
+
     ;; [ (cons Tile [Listof Tile]) -> Tile ] -> Tree Tile [Maybe Hotel] Decisions [Listof Hotel]
     ;; (Any -> Any) -- success continuation 
     ;; (Any -> Any) -- failure continuation 

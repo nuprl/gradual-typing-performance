@@ -5,6 +5,7 @@
 
 (provide
  random-players
+ ordered-players
  inf-loop-player
  )
 
@@ -104,6 +105,9 @@
 
 (define (random-players n)
   (players random-s n))
+
+(define (ordered-players n)
+  (players ordered-s n))
 
 (define (inf-loop-player n)
   (define m 0)

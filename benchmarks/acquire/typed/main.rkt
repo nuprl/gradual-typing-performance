@@ -17,6 +17,7 @@
   )
 (require/typed/check "player.rkt"
  (random-players (-> Natural (Listof (Instance Player%))))
+ (ordered-players (-> Natural (Listof (Instance Player%))))
  (inf-loop-player (-> Natural (Instance Player%)))
 )
 (require/typed/check "auxiliaries.rkt"
@@ -27,10 +28,11 @@
 
 (: go (-> (Instance Player%) Void))
 (define (go extra)
-  (define p1 (random-players 5))
-  (define p (cons extra p1))
+  (define p0 (ordered-players 10))
+  (define p1 (random-players 10))
+  (define p (cons extra (append p0 p1)))
   (define-values (two-status _score two-run)
-    (let ([r (run p 99 #:show show #:choice randomly-pick)])
+    (let ([r (run p 10 #:show show #:choice randomly-pick)])
       (values (car r) (cadr r) (caddr r))))
   ;(displayln `(,(length two-run) ,two-status))
   (void))
@@ -51,6 +53,6 @@
 (: main (-> Natural Void))
 (define (main n)
   (for ((i (in-range n)))
-    (go (inf-loop-player 0))))
+    (go (inf-loop-player 99))))
 
-(time (main 1))
+(time (main 10))

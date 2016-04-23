@@ -5,6 +5,7 @@
 
 (provide
  random-players
+ ordered-players
  inf-loop-player
  )
 
@@ -112,6 +113,10 @@
 (: random-players (-> Natural (Listof (Instance Player%))))
 (define (random-players n)
   (players random-s n))
+
+(: ordered-players (-> Natural (Listof (Instance Player%))))
+(define (ordered-players n)
+  (players ordered-s n))
 
 (: inf-loop-player (-> Natural (Instance Player%)))
 (define (inf-loop-player n)
