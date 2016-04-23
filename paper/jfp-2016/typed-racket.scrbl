@@ -731,3 +731,19 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
   @(render-lnm-table)
 ]
 
+
+@; -----------------------------------------------------------------------------
+@section[#:tag "sec:compare"]{Comparing Typed Rackets}
+
+There are small but statistically significant variations in the untyped running
+ times of a few benchmark programs.
+Strictly speaking this means that overheads from one version of Racket are
+ not directly comparable to another for those benchmarks, but such are the hazards of benchmarking
+ a large system.
+At any rate, we hold that users' decision to invest in gradual typing will
+ be influenced mostly by the overhead they witness---regardless of whether
+ that overhead is due to enforcing type soundness or because untyped Racket
+ is magically faster than all of Typed Racket.
+For completeness we list all untyped runtimes in Appendix @todo{ref}.
+
+@; - 
