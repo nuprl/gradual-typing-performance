@@ -102,8 +102,8 @@ Most benchmarks are self-contained, but where relevant we note their external
     Consequently, our benchmark is slightly modified after version 6.2 to
      accomodate the new format.
     As it turns out, the changes improved the typed/untyped ratio from
-     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.2"))] in v6.2 to
-     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.3"))] in v6.3 because
+     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.2"))]x in v6.2 to
+     @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.3"))]x in v6.3 because
      the more recent bytecode structures generate less expensive type contracts.
   }
 )
@@ -361,7 +361,9 @@ Most benchmarks are self-contained, but where relevant we note their external
     We have two versions of @bm{quad}:
      the first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
      provided by the original author.
-    This version has a high typed/untyped ratio because it uses the type system
+    This version has a high typed/untyped ratio
+     (@add-commas[(rnd (typed/untyped-ratio 'quadMB "6.2"))]x in v6.2)
+     because it uses the type system
      to enforce more datatype invariants than the untyped program.
     In other words, the typed version is slower because it does more work.
     Our second version, @tt{quadBG}, uses types as weak as the untyped
