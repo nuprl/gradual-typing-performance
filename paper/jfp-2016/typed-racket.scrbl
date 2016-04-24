@@ -73,7 +73,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   @elem{
     Builds a map of Boston's subway system and
      answers a series of reachability queries.
-    The map is an object and encapsulates a boundary to Racket's untyped
+    The map is represented as an object and encapsulates a boundary to Racket's untyped
      @tt{graph} library; when the map is typed, the boundary to @tt{graph}
      causes noticable overhead.
     Although the original program ran an asynchronous client/server framework,
@@ -98,11 +98,11 @@ Most benchmarks are self-contained, but where relevant we note their external
     The Racket bytecode format changed between versions 6.2 and 6.3 with
      the release of the set-of-scopes macro expander@~cite[f-popl-2016].
     Consequently, our benchmark is slightly modified after version 6.2 to
-     accomodate the new bytecode structures.
+     accomodate the new format.
     As it turns out, the changes improved the typed/untyped ratio from
      @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.2"))] in v6.2 to
      @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.3"))] in v6.3 because
-     the new bytecode structures generate less expensive type contracts.
+     the v6.3 bytecode structures generate less expensive type contracts.
   }
 )
 @(benchmark
@@ -115,7 +115,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   @elem{
     Computes longest common subsequences by converting strings to a suffix
      tree representation and comparing the trees.
-    The benchmark compares lines of English text; each line is no
+    The benchmark compares lines of text; each line is no
      more than 80 characters long.
 
     All @bm{suffixtree} datatype definitions are in a single module, separate
@@ -242,10 +242,8 @@ Most benchmarks are self-contained, but where relevant we note their external
      library@~cite[saf-cc-2015].
     Our benchmark incorporates the relevant library modules to form a
      self-contained program; however,
-    @; TODO if the limitation doesn't belong here, where should it go?
-     we monomorphized the core array data structure
-     because opaque, polymorphic structures may not be sent across
-     type boundaries in Typed Racket.
+     we monomorphized the core array data structure because Typed Racket v6.2
+     could not convert the original to a contract.
   }
 )
 @(benchmark
@@ -280,12 +278,11 @@ Most benchmarks are self-contained, but where relevant we note their external
     Originally, the program used two external libraries: the math library
      for array operations and @tt{racket/dict} for a generic dictionary interface.
     We removed both these dependencies.
-    Replacing the array library with vectors was necessary because the
-     higher-order, polymorphic datatype used to represent arrays cannot be made
-     into a contract.
+    Replacing the array library with vectors was necessary because Typed Racket
+     v6.2 could not compile the type @racket[(Mutable-Array (Class))] to a contract.
     Replacing the dict interface was a choice made so that the results for
      @bm{dungeon} describe internal type boundaries rather than the type
-     boundary to the untyped, optional dict interface.
+     boundary to the untyped dict interface.
   }
 )
 @(benchmark
@@ -329,9 +326,8 @@ Most benchmarks are self-contained, but where relevant we note their external
     Simulates a board game where players invest in real estate.
     The program is written in a stateful, object-oriented style.
     For the benchmark, we run a game between AI players.
-
-    @; TODO re-run
-    @; TODO comment on runtime breakdown
+    Overhead is low because only small, first-order values cross type
+     boundaries.
   }
 )
 @(benchmark
@@ -390,8 +386,6 @@ Most benchmarks are self-contained, but where relevant we note their external
 
 @; -----------------------------------------------------------------------------
 @subsection{Static Benchmark Characteristics}
-
-@;
 
 @Figure-ref{fig:bm} gives static characteristics
  of our benchmark programs as a coarse measure of their size and diversity.

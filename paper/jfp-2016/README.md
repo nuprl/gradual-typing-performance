@@ -1,7 +1,12 @@
 jfp
 ===
 
-- rename to kdu
+- clean out s4
+- untyped histogram
+- segregate OO
+- IDK
+
+===
 
 
  Typed Racket to the object-oriented aspects of Racket, in which we
