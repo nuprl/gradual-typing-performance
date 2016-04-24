@@ -1,0 +1,46 @@
+ModuleGraph for acquire:
+========================
+
+Requires for 'admin.rkt'
+  - board.rkt : 157
+  - basics.rkt : 0
+  - state.rkt : 169
+Total: 326
+
+Requires for 'basics.rkt'
+  - auxiliaries.rkt : 0
+Total: 0
+
+Requires for 'board.rkt'
+  - basics.rkt : 720
+  - auxiliaries.rkt : 0
+Total: 720
+
+Requires for 'main.rkt'
+  - player.rkt : 2
+  - board.rkt : 0
+  - state.rkt : 0
+  - auxiliaries.rkt : 1
+  - admin.rkt : 1
+Total: 4
+
+Requires for 'player.rkt'
+  - admin.rkt : 0
+  - strategy.rkt : 1
+  - basics.rkt : 6
+  - state.rkt : 139
+Total: 146
+
+Requires for 'state.rkt'
+  - auxiliaries.rkt : 1
+  - board.rkt : 260
+  - basics.rkt : 62
+Total: 323
+
+Requires for 'strategy.rkt'
+  - state.rkt : 0
+  - basics.rkt : 1
+  - board.rkt : 0
+  - auxiliaries.rkt : 2
+Total: 3
+

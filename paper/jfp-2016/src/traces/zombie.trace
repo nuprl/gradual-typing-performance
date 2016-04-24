@@ -1,0 +1,12 @@
+ModuleGraph for zombie:
+=======================
+
+Requires for 'main.rkt'
+  - zombie.rkt : 400
+Total: 400
+
+Requires for 'zombie.rkt'
+  - math.rkt : 8100
+  - image.rkt : 2
+Total: 8102
+

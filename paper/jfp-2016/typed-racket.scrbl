@@ -678,3 +678,5 @@ For completeness we list all untyped runtimes in Appendix @todo{ref}.
 @; - how to compare curves?
 @; - exciting changes?
 @; - the problem with OO?
+@; - why did zombie get worse?
+@; - why did quadMB get worse?
