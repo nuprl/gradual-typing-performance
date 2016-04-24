@@ -1,0 +1,53 @@
+ModuleGraph for synth:
+======================
+
+Requires for 'array-broadcast.rkt'
+  - array-struct.rkt : 110
+  - array-utils.rkt : 0
+  - data.rkt : 0
+Total: 110
+
+Requires for 'array-struct.rkt'
+  - array-utils.rkt : 17734
+  - data.rkt : 554
+Total: 18288
+
+Requires for 'array-transform.rkt'
+  - array-broadcast.rkt : 112
+  - array-struct.rkt : 336
+  - data.rkt : 0
+  - array-utils.rkt : 220
+Total: 668
+
+Requires for 'drum.rkt'
+  - array-transform.rkt : 3
+  - array-struct.rkt : 7
+  - array-utils.rkt : 2
+  - synth.rkt : 3
+  - data.rkt : 0
+Total: 15
+
+Requires for 'main.rkt'
+  - drum.rkt : 1
+  - synth.rkt : 2
+  - sequencer.rkt : 11
+  - mixer.rkt : 1
+Total: 15
+
+Requires for 'mixer.rkt'
+  - array-broadcast.rkt : 4
+  - array-struct.rkt : 13
+Total: 17
+
+Requires for 'sequencer.rkt'
+  - array-transform.rkt : 1
+  - mixer.rkt : 0
+  - array-struct.rkt : 40
+  - synth.rkt : 1
+Total: 42
+
+Requires for 'synth.rkt'
+  - array-struct.rkt : 6
+  - array-utils.rkt : 445631
+Total: 445637
+

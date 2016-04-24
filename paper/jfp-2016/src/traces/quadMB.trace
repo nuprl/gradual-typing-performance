@@ -1,0 +1,56 @@
+ModuleGraph for quadMB:
+=======================
+
+Requires for 'hyphenate.rkt'
+  - exceptions.rkt : 1
+  - patterns-hashed.rkt : 1
+Total: 2
+
+Requires for 'main.rkt'
+  - world.rkt : 2
+  - render.rkt : 1
+  - quad-main.rkt : 1
+  - quick-sample.rkt : 1
+Total: 5
+
+Requires for 'ocm.rkt'
+  - ocm-struct.rkt : 28072
+Total: 28072
+
+Requires for 'quad-main.rkt'
+  - quads.rkt : 5291
+  - sugar-list.rkt : 2
+  - measure.rkt : 4
+  - utils.rkt : 125
+  - world.rkt : 523
+  - wrap.rkt : 116
+Total: 6061
+
+Requires for 'quick-sample.rkt'
+  - quads.rkt : 17
+Total: 17
+
+Requires for 'render.rkt'
+  - quads.rkt : 4304
+  - world.rkt : 4362
+  - utils.rkt : 1
+Total: 8667
+
+Requires for 'utils.rkt'
+  - quads.rkt : 84551
+  - hyphenate.rkt : 514
+  - world.rkt : 112337
+  - measure.rkt : 54
+Total: 197456
+
+Requires for 'wrap.rkt'
+  - quads.rkt : 100085
+  - ocm-struct.rkt : 0
+  - utils.rkt : 7375
+  - ocm.rkt : 7207
+  - measure.rkt : 21272
+  - penalty-struct.rkt : 24404
+  - world.rkt : 120569
+  - sugar-list.rkt : 118
+Total: 281030
+

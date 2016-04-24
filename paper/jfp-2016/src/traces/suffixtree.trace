@@ -1,0 +1,29 @@
+ModuleGraph for suffixtree:
+===========================
+
+Requires for 'label.rkt'
+  - data.rkt : 143989951
+Total: 143989951
+
+Requires for 'lcs.rkt'
+  - ukkonen.rkt : 48672
+  - data.rkt : 10488312
+  - structs.rkt : 48672
+  - label.rkt : 6842636
+Total: 17428292
+
+Requires for 'main.rkt'
+  - lcs.rkt : 24336
+Total: 24336
+
+Requires for 'structs.rkt'
+  - data.rkt : 62738185
+  - label.rkt : 83088299
+Total: 145826484
+
+Requires for 'ukkonen.rkt'
+  - data.rkt : 13129357
+  - label.rkt : 14472206
+  - structs.rkt : 15339495
+Total: 42941058
+
