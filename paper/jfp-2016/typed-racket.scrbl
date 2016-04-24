@@ -6,6 +6,7 @@
   (except-in gtp-summarize/lnm-parameters defparam)
 ]
 
+@profile-point{sec:tr}
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
 To validate our framework, we apply it to a suite of
@@ -30,6 +31,7 @@ Most benchmarks are self-contained, but where relevant we note their external
 @; -----------------------------------------------------------------------------
 @subsection{Benchmark Descriptions}
 
+@profile-point{sec:tr:descriptions}
 @render-benchmark-descriptions[
 @(benchmark
   #:name 'sieve
@@ -102,7 +104,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     As it turns out, the changes improved the typed/untyped ratio from
      @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.2"))] in v6.2 to
      @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.3"))] in v6.3 because
-     the v6.3 bytecode structures generate less expensive type contracts.
+     the more recent bytecode structures generate less expensive type contracts.
   }
 )
 @(benchmark
@@ -137,7 +139,7 @@ Most benchmarks are self-contained, but where relevant we note their external
 
   @elem{
     While writing this paper, we built a small library of scripts to analyze
-     and graph the data shown in @Secref{sec:lnm-plot}.
+     and graph the data shown in @Secref{sec:plots}.
     The @bm{lnm} benchmark creates one such graph for a 13-module benchmark.
     Most of the computation time is spent in calls to Racket's
      typed statistics and plotting libraries, so performance typically
@@ -243,7 +245,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     Our benchmark incorporates the relevant library modules to form a
      self-contained program; however,
      we monomorphized the core array data structure because Typed Racket v6.2
-     could not convert the original to a contract.
+     could not convert its type to a contract.
   }
 )
 @(benchmark
@@ -385,6 +387,7 @@ Most benchmarks are self-contained, but where relevant we note their external
 
 
 @; -----------------------------------------------------------------------------
+@profile-point{sec:tr:characteristics}
 @subsection{Static Benchmark Characteristics}
 
 @Figure-ref{fig:bm} gives static characteristics
@@ -413,6 +416,7 @@ The exports count the total number of unique identifiers that cross any
 
 
 @; -----------------------------------------------------------------------------
+@profile-point{sec:tr:protocol}
 @section[#:tag "sec:protocol"]{Experimental Protocol}
 
 Our experiment measured the running time of all
@@ -423,7 +427,7 @@ We performed the same experiment on @integer->word[(length (*RKT-VERSIONS*))]
 @; {In particular,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
 The machine we used to take measurements was a Linux machine with
- physical two AMD Opteron 6376 2.3GHz processors and 128GB RAM.
+ two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
 Each processor has 16 cores, giving us a total of 32.
 We dedicated at most 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
@@ -440,9 +444,8 @@ If these 10 timings were not normally distributed, we ran an additional 20
 Otherwise, we reported the 10 runs and began the next configuration.
 The means and standard errors in our analysis are computed from these sequences
  of 10 or 30 timings.
-
-The scripts we used to run our experiments and the data we collected
- are available in the online supplement to this paper: @todo{update artifact}.
+All scripts we used to run our experiments and the data we collected
+ are available in the online supplement to this paper.
 
 
 @; -----------------------------------------------------------------------------
@@ -536,7 +539,8 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 
 
 @; -----------------------------------------------------------------------------
-@section[]{Results}
+@profile-point{sec:tr:plots}
+@section[#:tag "sec:plots"]{Results}
 
 @(render-lnm-plot
   (lambda (pict*)
@@ -605,20 +609,25 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
          exhibit less than 20x overhead.
 
         The right column of plots shows the effect of adding types
-         to @math{k=1} additional untyped modules, chosen angelically.
-        Again using @bm{sieve} as the example, 100% of configurations can
+         to at most @math{k=1} additional untyped modules.
+        A point @math{(X,Y)} on these curves again represents the percentage @math{Y}
+         of configurations @exact{$c_1$} such that there exists a configuration
+         @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
+         runs at most @math{X} times slower than the untyped configuration.
+        Note that @exact{$c_1$} and @exact{$c_2$} may be the same---they
+         are certainly the same when @exact{$c_1$} is the fully-typed configuration.
+        Again using @bm{sieve} as an example, 100% of configurations can
          reach a configuration with at most 1x overhead after at most one
          type conversion step.
         This is because the fully-typed configuration happens to be
          @deliverable{1} and both of the gradually typed configurations
          become fully-typed after one conversion step.
-        As a larger example, consider the plots for @bm{mbta}.
+        For a larger example, consider the plots for @bm{mbta}.
         Freedom to type one extra module has no effect on the number of
          @deliverable{1.2} configurations.
         In other words, even if the programmer at a @deliverable{1.2} configuration
          happens to convert the untyped module best-suited to improve performance,
          their next configuration will be no better than @deliverable{1.2}.
-        @; Add teaser for Sec 6?
 
         @; -- all about data, ideal shape
         Ideally, every curve in the left column would be a flat line at the
@@ -665,4 +674,7 @@ At any rate, we hold that users' decision to invest in gradual typing will
  is magically faster than all of Typed Racket.
 For completeness we list all untyped runtimes in Appendix @todo{ref}.
 
-@; - 
+@; what else to say?
+@; - how to compare curves?
+@; - exciting changes?
+@; - the problem with OO?

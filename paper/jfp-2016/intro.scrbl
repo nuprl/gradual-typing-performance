@@ -9,6 +9,7 @@
 
 @require["common.rkt" "typed-racket.rkt"]
 
+@profile-point{sec:intro}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
 @; Programmers use dynamic languages, dynamic languages don't scale super well
