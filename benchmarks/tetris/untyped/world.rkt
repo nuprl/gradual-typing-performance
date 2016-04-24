@@ -10,10 +10,6 @@
 (provide world-key-move
          next-world
          ghost-blocks)
-#;
-(provide/contract [world-key-move (WORLD/C string? . -> . WORLD/C)]
-                  [next-world (WORLD/C . -> . WORLD/C)]
-                  [ghost-blocks (WORLD/C . -> . BSET/C)])
 
 ;; touchdown : World -> World
 ;; Add the current tetra's blocks onto the world's block list,

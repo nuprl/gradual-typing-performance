@@ -17,6 +17,3 @@
                                                    bs i)))]))
 (provide
  eliminate-full-rows)
-#;
-(provide/contract
- [eliminate-full-rows (BSET/C . -> . BSET/C)])
