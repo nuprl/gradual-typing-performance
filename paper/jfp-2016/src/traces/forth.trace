@@ -1,0 +1,16 @@
+ModuleGraph for forth:
+======================
+
+Requires for 'command.rkt'
+  - stack.rkt : 352
+Total: 352
+
+Requires for 'eval.rkt'
+  - stack.rkt : 1
+  - command.rkt : 2
+Total: 3
+
+Requires for 'main.rkt'
+  - eval.rkt : 1
+Total: 1
+

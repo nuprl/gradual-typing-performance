@@ -1,0 +1,16 @@
+ModuleGraph for echo:
+=====================
+
+Requires for 'client.rkt'
+  - constants.rkt : 400002
+Total: 400002
+
+Requires for 'main.rkt'
+  - server.rkt : 1
+  - client.rkt : 1
+Total: 2
+
+Requires for 'server.rkt'
+  - constants.rkt : 2
+Total: 2
+
