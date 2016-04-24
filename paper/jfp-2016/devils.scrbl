@@ -129,13 +129,62 @@ Removing these predicate contracts therefore caused a significant part of the
 @section[#:tag "sec:devils:types"]{Iceberg Contracts}
 @; -- AKA unexpectedly large
 
-@; Quad
+When an apparently simple type @exact|{$\RktMeta{T}$}| generates a large or
+ unexpectedly slow contract @exact|{$\ctc{\RktMeta{T}}$}|,
+ we call @exact|{$\ctc{\RktMeta{T}}$}| an @emph{iceberg contract}.
+One example of iceberg contracts are the types used in @bm{quadMB}, for instance:
 
-@; avoiding chaperones
-@; kcfa hashtable?
-@; john clements or can I be less lazy?
+@racketblock[
+  (define-type Quad (Pairof Symbol (Listof Quad)))
+]
+
+ generates a recursive contract over @math{n}-ary trees.
+@(let* ([tu* (for/list ([v (*RKT-VERSIONS*)]) (typed/untyped-ratio 'quadMB v))]
+        [tu-lo (add-commas (rnd (apply min tu*)))]
+        [tu-hi (add-commas (rnd (apply max tu*)))])
+   @elem{
+     These tree types caused typed/untyped ratios ranging from
+      @id[tu-lo]x to @id[tu-hi]x across versions of @bm{quadMB}.
+   })
+Incidentally, the developer who created these types was hoping Typed Racket would
+ improve the performance of a typesetting system.
+The overhead of testing whether large input files were well-formed @bm{Quad}
+ data came as a surprise.
+
+Another Typed Racket user recently published the following untyped script to
+ the Racket mailing list.
+Changing the @exact{$\RktMeta{\#lang}$} line to @racket[typed/racket]
+ improves performance from 10 seconds to 1 millisecond.
+
+@(begin
+#reader scribble/comment-reader
+@codeblock|{
+#lang racket
+(require pfds/trie) ;; -- a Typed Racket library
+
+(define t (trie (list (range 128))))
+(define u (time (bind (range 128) 0 t)))
+}|)
+
+The underlying issue is quite subtle: it happens that the @racket[trie] library
+ uses an immutable hashtable as its core datatype but Typed Racket can
+ only generate contracts for @emph{mutable} hashtables.
+Therefore trie values are wrapped in a contract that is both expensive to install
+ and adds an indirection layer to every subsequent operation---all this to
+ duplicate the guarantee that an immutable value is never mutated.
+
+Our @bm{kcfa} benchmark also uses immutable hashtables and pays the
+ run-time cost of contracts for mutable data.
+Removing just those hashtable contracts would improve the worst-case
+ performance of @bm{kcfa} from 8x to 5x on Racket v6.4.
 
 @; future work: cost model for contracts?
+These bottlenecks due to type-generated contracts spell out a need
+ for a user-facing cost model of enforcing type soundness.
+Even if language designers can remove most of the overhead, users of
+ gradual type systems would benefit from tools to statically approximate the runtime
+ cost of enforcing specific types and profilers to dynamically attribute
+ runtime overhead to specific types or values.
 
 
 @; -----------------------------------------------------------------------------
