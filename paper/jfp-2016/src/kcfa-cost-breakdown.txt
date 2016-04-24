@@ -1,0 +1,52 @@
+Run on NSA, 1 core, Racket 6.4.0.15
+---
+
+cpu time: 178194 real time: 178158 gc time: 21572
+Running time is 80.96% contracts
+144377/178330 ms
+
+(-> (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set ... 68121 ms
+denotable-adapted.rkt:22:4                                      
+    store-join                                                   68121 ms
+
+(-> any/c (hash/c Binding? (set/c Closure?)))                    23828.5 ms
+denotable-adapted.rkt::-1                                       
+    State-store                                                  23828.5 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c any/c (hash/c B ... 22929 ms
+denotable-adapted.rkt:21:4                                      
+    store-update*                                                22929 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c (set/c Closure?))   17263 ms
+denotable-adapted.rkt:19:4                                      
+    store-lookup                                                 17263 ms
+
+(-> any/c (hash/c Symbol Binding?) (hash/c Binding? (set/c C ... 12043 ms
+#<blame>::-1                                                    
+    State3                                                       12043 ms
+
+(-> (hash/c Symbol Binding?) any/c Binding?)                     53.5 ms
+benv-adapted.rkt:16:3                                           
+    benv-lookup                                                  53.5 ms
+
+(-> any/c (-> any/c Binding?))                                   40 ms
+time-adapted.rkt:13:3                                           
+    alloc                                                        40 ms
+
+(-> any/c (hash/c Symbol Binding?))                              40 ms
+denotable-adapted.rkt::-1                                       
+    State-benv                                                   20 ms
+    Closure-benv                                                 20 ms
+
+(-> (hash/c Symbol Binding?) any/c any/c (hash/c Symbol Bind ... 28.5 ms
+benv-adapted.rkt:18:3                                           
+    benv-extend*                                                 28.5 ms
+
+(-> any/c (hash/c Symbol Binding?) Closure?)                     20 ms
+#<blame>::-1                                                    
+    Closure3                                                     20 ms
+
+(-> any/c (or/c exp? Ref? Lam? Call?))                           10 ms
+structs-adapted.rkt::-1                                         
+    Lam-call                                                     10 ms
+
