@@ -7,6 +7,7 @@
 @require["common.rkt" "typed-racket.rkt"]
 @(require racket/file benchmark-util/data-lattice)
 
+@profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
 @; TR is for real, TR is gradual

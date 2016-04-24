@@ -28,6 +28,8 @@
          id
          PHIL
          todo ;; Remove this export before submission
+
+         profile-point
          )
 
 (require "bib.rkt"
@@ -162,3 +164,10 @@
 
 (define (todo x)
   (make-element 'bold @string-append["TODO: " x]))
+
+(define (profile-point message)
+  (display "[PROFILE] ")
+  (display (current-process-milliseconds))
+  (display "ms : ")
+  (displayln message))
+

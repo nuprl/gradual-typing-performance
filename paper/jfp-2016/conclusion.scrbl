@@ -5,6 +5,7 @@
 
 @require["common.rkt" "typed-racket.rkt"]
 
+@profile-point{sec:conclusion}
 @title[#:tag "sec:fut"]{Long Live Sound Gradual Typing}
 
 Our goal is to foster expressive, safe, and performant implementations of gradual typing.
