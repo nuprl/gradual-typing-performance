@@ -2,6 +2,7 @@
 
 @require["common.rkt" benchmark-util/data-lattice]
 
+@profile-point{sec:framework}
 @title[#:tag "sec:framework"]{Evaluation Framework}
 
 Performance evaluation for gradually typed languages must reflect how
@@ -163,6 +164,7 @@ Using this metric, configurations one module away from a usable configuration
       or a @usable[] configuration.
     }
 
+@profile-point{sec:framework:example}
 @(define sample-data
   (let* ([mean+std* '#((2 . 0) (1.5 . 0) (3.5 . 0) (1 . 0))]
          [mean (lambda (i) (car (vector-ref mean+std* i)))])
