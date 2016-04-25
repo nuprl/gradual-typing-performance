@@ -1,14 +1,15 @@
 #lang racket/base
 
 ;; TODO
-;; - quadbg 6.2 data
-;; - zombie consistent inputs?
 ;; - dungeon data
 
 ;; Supporting code for `typed-racket.scrbl`
 ;; - Render & organize benchmarks
 ;; - Make L-N/M figures
 
+(provide ;; TEMPORARY
+  new-untyped-bars
+)
 (provide
   count-benchmarks
   count-new-oo-benchmarks
@@ -583,11 +584,11 @@
                  [*SINGLE-PLOT?* #f]
                  [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
                                           (for/list ([i (in-range 4 20 2)]) i))]
-                 [*X-TICK-LINES?* #t] ;; TODO
+                 [*X-TICK-LINES?* #t]
                  [*X-TICKS* '(1 2 20)]
-                 ;[*Y-MINOR-TICKS* '(25 75)] ;; # TODO discuss ticks with asumu
+                 ;[*Y-MINOR-TICKS* '(25 75)]
                  [*Y-NUM-TICKS* 3]
-                 [*Y-TICK-LINES?* #t]  ;; TODO
+                 [*Y-TICK-LINES?* #t]
                  [*Y-STYLE* '%])
     (define cache? (*CACHE?*))
     (pict*->elem
@@ -631,6 +632,18 @@
    (lambda ()
      (call-with-values new-lnm-table-data list))))
 
+(define (new-untyped-data)
+  (let loop ([rktd** (get-lnm-rktd**)])
+    (if (null? rktd**)
+      (values '() '())
+      (let-values ([(n* r**) (loop (cdr rktd**))]
+                   [(_) (collect-garbage 'major)]
+                   [(S*) (for/list ([rktd (in-list (car rktd**))])
+                           (from-rktd rktd))])
+        (values
+          (cons (fname->title (caar rktd**)) n*)
+          (cons (map untyped-mean S*) r**))))))
+
 (define (new-lnm-table-data)
   (let loop ([rktd** (get-lnm-rktd**)])
     (if (null? rktd**)
@@ -645,6 +658,13 @@
           (cons (map typed/untyped-ratio S*) r**)
           (cons (map avg-overhead S*) m**)
           (cons (map max-overhead S*) x**))))))
+
+(define (new-untyped-bars)
+  (parameterize ([*PLOT-WIDTH* 420]
+                 [*PLOT-HEIGHT* 140]
+                 [*PLOT-FONT-SCALE* 0.04]
+                 [*LOG-TRANSFORM?* #t])
+    (apply render-untyped-bars (call-with-values new-untyped-data list))))
 
 (define (new-lnm-bars)
   (parameterize ([*PLOT-WIDTH* 420]

@@ -14,6 +14,9 @@
 ;; -----------------------------------------------------------------------------
 ;; --- plumbing
 
+(define-syntax-rule (deftype id t)
+  (begin (define-type id t) (provide id)))
+
 ;; Should look `*LIKE-THIS*`, with asterisks on either end and capital letters or
 ;;  dashes in-between.
 (define-for-syntax (well-styled-param? id)
@@ -138,3 +141,6 @@
 
 (defparam *TOO-MANY-BYTES* Natural (expt 10 9))
 ;; Files larger than this should not be loaded
+
+(deftype BarType (U 'overhead 'ratio 'runtime))
+

@@ -4,6 +4,7 @@
 
 (provide
  render-bars
+ render-untyped-bars ;; hack
  render-dots
  render-lnm
 
@@ -472,29 +473,89 @@
 ;; -----------------------------------------------------------------------------
 (define-type Real** (Listof (Listof Real)))
 
+;;; For command-line clients
+;(: renderbar (-> (Listof Path-String) Symbol Pict))
+;(define (renderbar dir* bar-type)
+;  (assert-directory-exists* dir*)
+;  (define-values (S->data render-proc)
+;    (case bar-type
+;     [(ratio)
+;      ]
+;     [(mean)
+;      ]
+;     [(max)
+;      ]
+;     [(untyped)
+;      ]
+;     [else
+;      (raise-user-error 'renderbar "Unknown barchart type '~a'" bar-type)]))
+;  (define rktd**
+;    (for/list : (Listof (Listof String))
+;              ([d (in-list dir*)])
+;      (define str (if (string? d) d (path->string d)))
+;      (glob (string-append str "/*.rktd"))))
+;  (define name*
+;    (for/list : (Listof String)
+;              ([rktd (in-list (car rktd**))])
+;      (fname->title rktd)))
+;  (define data**
+;    (for*/list : Real**
+;               ([rktd* 
+;  (render-proc name* data**))
+
+(: render-untyped-bars (-> (Listof String) Real** Pict))
+(define (render-untyped-bars name* r**)
+  (parameterize ([*GRAPH-VSPACE* (assert (/ (*GRAPH-VSPACE*) 2) index?)])
+    (vr-append (* (*GRAPH-VSPACE*) 6)
+      (render-runtime-bars r** #:title "Untyped")
+      (render-bars-legend (* 3.3 (*GRAPH-HSPACE*)) name*))))
+
 (: render-bars (-> (Listof String) Real** Real** Real** Pict))
 (define (render-bars name* ratio** mean** max**)
-  (define VTHIN (exact-round (/ (*GRAPH-VSPACE*) 2)))
-  (define VTHICK (* VTHIN 6))
-  (vr-append VTHICK
-    (vl-append VTHIN
-      (hb-append VTHIN
-        (title-text "Typed/Untyped Ratio")
-        (subtitle-text "quotient of fully-typed and fully-untyped performance"))
-      (hc-append 0
-        (blank SHIM-FOR-BARCHART-ALIGNMENT 0)
-        (lnm-bar ratio** 'ratio)))
-    (vl-append VTHIN
-      (hb-append VTHIN
-        (title-text "Average Overhead")
-        (subtitle-text "computed over all gradually typed configurations"))
-      (lnm-bar mean** 'overhead))
-    (vl-append VTHIN
-      (hb-append VTHIN
-        (title-text "Max Overhead")
-        (subtitle-text "worst-case of any gradually typed configuration"))
-      (lnm-bar max** 'overhead))
-    (render-bars-legend (* 3.3 (*GRAPH-HSPACE*)) name*)))
+  (parameterize ([*GRAPH-VSPACE* (assert (/ (*GRAPH-VSPACE*) 2) index?)])
+    (vr-append (* (*GRAPH-VSPACE*) 6)
+      (render-typed/untyped-ratio-bars ratio**)
+      (render-mean-overhead-bars mean**)
+      (render-max-overhead-bars max**)
+      (render-bars-legend (* 3.3 (*GRAPH-HSPACE*)) name*))))
+
+(: render-typed/untyped-ratio-bars (-> Real** Pict))
+(define (render-typed/untyped-ratio-bars ratio**)
+  (define VTHIN (*GRAPH-VSPACE*))
+  (vl-append VTHIN
+    (hb-append VTHIN
+      (title-text "Typed/Untyped Ratio")
+      (subtitle-text "quotient of fully-typed and fully-untyped performance"))
+    (hc-append 0
+      (blank SHIM-FOR-BARCHART-ALIGNMENT 0)
+      (lnm-bar ratio** 'ratio))))
+
+(: render-mean-overhead-bars (-> Real** Pict))
+(define (render-mean-overhead-bars r**)
+  (render-overhead-bars r** #:title "Average"
+    #:subtitle "computed over all gradually typed configurations"))
+
+(: render-max-overhead-bars (-> Real** Pict))
+(define (render-max-overhead-bars r**)
+  (render-overhead-bars r** #:title "Max"
+    #:subtitle "worst-case of any gradually typed configuration"))
+
+(: render-runtime-bars (->* [Real**] [#:title String #:subtitle (U String #f)] Pict))
+(define (render-runtime-bars data** #:title [title "???"] #:subtitle [subtitle #f])
+  (render-generic-bars data** 'runtime title subtitle))
+
+(: render-overhead-bars (->* [Real**] [#:title String #:subtitle (U String #f)] Pict))
+(define (render-overhead-bars data** #:title [title "???"] #:subtitle [subtitle #f])
+  (render-generic-bars data** 'overhead title subtitle))
+
+(: render-generic-bars (-> Real** BarType String (U #f String) Pict))
+(define (render-generic-bars data** bar-type title subtitle)
+  (define VTHIN (*GRAPH-VSPACE*))
+  (vl-append VTHIN
+    (hb-append VTHIN
+      (title-text (string-append title " " (string-titlecase (symbol->string bar-type))))
+      (if subtitle (subtitle-text subtitle) (blank 0 0)))
+    (lnm-bar data** bar-type)))
 
 (: render-bars-legend (-> Real (Listof String) Pict))
 (define (render-bars-legend hspace name*)
