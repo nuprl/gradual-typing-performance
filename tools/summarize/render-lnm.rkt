@@ -4,6 +4,7 @@
 
 (provide
  render-bars
+ render-means ;; hack
  render-exact ;; hack
  render-untyped-bars ;; hack
  render-dots
@@ -664,19 +665,25 @@
 
 ;; -----------------------------------------------------------------------------
 
+(define-syntax-rule (simple-commandline-plot make-plot)
+  (lambda ([vec : (Vectorof String)])
+    (ensure-dir "./compiled")
+    (command-line
+     #:program "render-plot"
+     #:argv vec
+     #:args FNAME*
+     ;; -- Filter valid arguments, assert that we got anything to render
+     (define arg* (filter-valid-filenames FNAME*))
+     (when (null? arg*)
+       (raise-user-error "Usage: render-plot.rkt DATA.rktd ..."))
+     ;; -- Create a pict
+     (make-plot (for/list : (Listof Summary) ([r (in-list arg*)]) (from-rktd r))))))
+
 (: render-exact (-> (Vectorof String) Pict))
-(define (render-exact vec)
-  (ensure-dir "./compiled")
-  (command-line
-   #:program "render-exact"
-   #:argv vec
-   #:args FNAME*
-   ;; -- Filter valid arguments, assert that we got anything to render
-   (define arg* (filter-valid-filenames FNAME*))
-   (when (null? arg*)
-     (raise-user-error "Usage: render-exact.rkt DATA.rktd ..."))
-   ;; -- Create a pict
-   (lnm-exact-bars (for/list : (Listof Summary) ([r (in-list arg*)]) (from-rktd r)))))
+(define render-exact (simple-commandline-plot plot-exact-configurations))
+
+(: render-means (-> (Vectorof String) Pict))
+(define render-means (simple-commandline-plot plot-mean-bars))
 
 ;; -----------------------------------------------------------------------------
 
