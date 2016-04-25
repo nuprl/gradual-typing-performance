@@ -12,7 +12,9 @@
   integer->brush-style
   integer->line-width
 
-  lnm-exact-bars
+  plot-mean-bars
+  plot-exact-configurations
+
   ;; ---
 
   lnm-plot
@@ -297,8 +299,8 @@
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
 
-(: lnm-exact-bars (-> (Listof Summary) pict))
-(define (lnm-exact-bars S*)
+(: plot-mean-bars (-> (Listof Summary) pict))
+(define (plot-mean-bars S*)
   (define num-series (length S*))
   (define p
     (plot-pict
@@ -326,6 +328,40 @@
       #:width (*PLOT-WIDTH*)
       #:height (*PLOT-HEIGHT*)))
   (cast p pict))
+
+(: plot-exact-configurations (-> (Listof Summary) pict))
+(define (plot-exact-configurations S*)
+  (define num-configs (get-num-configurations (car S*)))
+  (parameterize ([plot-x-ticks (list->ticks (range num-configs))])
+    (define p
+      (plot-pict
+        (append
+          (for/list : (Listof renderer2d)
+                    ([i (in-range (+ 1 num-configs))])
+            (vrule (- i 0.5)
+            #:width 0.6
+            #:color 0))
+          (for/list : (Listof renderer2d)
+                    ([S (in-list S*)]
+                     [i (in-naturals 1)])
+              (points
+                (for*/list : (Listof (List Real Real))
+                          ([cfg (all-configurations S)]
+                           [t (in-list (configuration->runtimes S cfg))])
+                  (list (bitstring->natural cfg) t))
+                #:color i
+                #:alpha 0.6
+                #:sym 'fullcircle
+                #:size 6
+                #:x-jitter 0.4
+                #:label (format "~a" (summary->version S)))))
+        #:x-label "Config.#"
+        #:y-label "Time (ms)"
+        #:x-max num-configs
+        #:legend-anchor (*LEGEND-ANCHOR*)
+        #:width (*PLOT-WIDTH*)
+        #:height (*PLOT-HEIGHT*)))
+    (cast p pict)))
 
 (: lnm-bar (-> (Listof (Listof Real)) BarType pict))
 (define (lnm-bar r** btype)
