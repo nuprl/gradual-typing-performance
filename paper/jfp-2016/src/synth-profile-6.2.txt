@@ -1,0 +1,159 @@
+Running time is 72.09% contracts
+5721/7936 ms
+
+
+BY CONTRACT
+
+(-> (vectorof Integer) any/c (box/c (or/c #f #t)) (-> any) (-> (vectorof Integer) any) Array?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/typed-data.rkt #f #f #f 0)
+  4025/2 ms
+
+(-> any/c (-> (vectorof Integer) Float)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  1969 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) Float) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-struct.rkt 25 1 698 18)
+  1969/2 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc array-utils.rkt 14 0 298 13)
+  697 ms
+
+(->* ((listof (vectorof Integer))) ((or/c #f #t permissive)) (vectorof Integer)) @ #(struct:srcloc array-broadcast.rkt 23 9 734 21)
+  48 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  10 ms
+
+
+BY CALLEE
+
+(-> (vectorof Integer) any/c (box/c (or/c #f #t)) (-> any) (-> (vectorof Integer) any) Array?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/typed-data.rkt #f #f #f 0)
+  Array3
+  4025/2 ms
+
+(-> any/c (-> (vectorof Integer) Float)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  Array-unsafe-proc
+  1969 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) Float) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-struct.rkt 25 1 698 18)
+  unsafe-build-array
+  759 ms
+  build-array
+  451/2 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc array-utils.rkt 14 0 298 13)
+  next-indexes!
+  697 ms
+
+(->* ((listof (vectorof Integer))) ((or/c #f #t permissive)) (vectorof Integer)) @ #(struct:srcloc array-broadcast.rkt 23 9 734 21)
+  array-shape-broadcast
+  48 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  Array?
+  10 ms
+
+
+BY CALLER
+
+(-> (vectorof Integer) any/c (box/c (or/c #f #t)) (-> any) (-> (vectorof Integer) any) Array?) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/typed-data.rkt #f #f #f 0)
+  4025/2 ms
+
+(-> any/c (-> (vectorof Integer) Float)) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  1969 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) Float) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-struct.rkt 25 1 698 18)
+  1857/2 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) Float) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-struct.rkt 25 1 698 18)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-struct.rkt 225 29 9418 100)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-transform.rkt 86 16 3752 250)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 28 45 882 22)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 42 49 1651 37)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt #f #f #f #f)
+  59/2 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) Float) any) @ #(struct:srcloc array-struct.rkt 25 1 698 18)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 28 45 882 22)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 42 49 1651 37)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  33/2 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) Float) any) @ #(struct:srcloc array-struct.rkt 25 1 698 18)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 28 45 882 22)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 42 49 1651 37)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt #f #f #f #f)
+  10 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc array-utils.rkt 14 0 298 13)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt #f #f #f #f)
+  376 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-utils.rkt 14 0 298 13)
+  411/2 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc array-utils.rkt 14 0 298 13)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  45 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc array-utils.rkt 14 0 298 13)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  57/2 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-utils.rkt 14 0 298 13)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-utils.rkt 153 2 5746 352)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  32 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-utils.rkt 14 0 298 13)
+  loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-utils.rkt 153 2 5746 352)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt #f #f #f #f)
+  10 ms
+
+(->* ((listof (vectorof Integer))) ((or/c #f #t permissive)) (vectorof Integer)) @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/array-broadcast.rkt 23 9 734 21)
+  59/2 ms
+
+(->* ((listof (vectorof Integer))) ((or/c #f #t permissive)) (vectorof Integer)) @ #(struct:srcloc array-broadcast.rkt 23 9 734 21)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 42 49 1651 37)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt #f #f #f #f)
+  17/2 ms
+
+(->* ((listof (vectorof Integer))) ((or/c #f #t permissive)) (vectorof Integer)) @ #(struct:srcloc array-broadcast.rkt 23 9 734 21)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 28 45 882 22)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/mixer.rkt 42 49 1651 37)
+  for-loop @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 85 2 2508 320)
+  emit @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/synth.rkt 95 0 2916 69)
+  #f @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt 108 24 2291 25)
+  contract-profile-thunk @ #(struct:srcloc /home/ben/code/racket/6.2/share/pkgs/contract-profile/main.rkt 243 0 9745 65)
+  [running body] @ #(struct:srcloc /home/ben/code/racket/benchmark/gradual-typing-performance/benchmarks/synth/benchmark/configuration1111000000/main.rkt #f #f #f #f)
+  10 ms
+
+(-> any/c boolean?) @ #(struct:srcloc typed-data.rkt #f #f #f 0)
+  10 ms
+
