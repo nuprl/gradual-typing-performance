@@ -392,6 +392,17 @@
         (and (data-line? ln) (string->index* ln)))
       (raise-user-error 'read-untyped "No data lines in current input port")))
 
+(: read-configuration (-> Integer (Listof Real)))
+(define (read-configuration i)
+  (define j : (Boxof Integer) (box -1))
+  (or (for/or : (U #f (Listof Index))
+              ([ln (in-lines)]
+               #:when (and (data-line? ln)
+                           (set-box! j (+ 1 (unbox j)))
+                           (= i (unbox j))))
+        (string->index* ln))
+      (raise-user-error 'read-configuration "Failed to read configuration '~a'" i)))
+
 (: read-typed (-> (Listof Real)))
 (define (read-typed)
   (define last-line
@@ -590,6 +601,12 @@
 (: configuration->stddev (-> Summary Bitstring Real))
 (define (configuration->stddev S v)
   (index->stddev S (bitstring->natural v)))
+
+(: configuration->overhead (-> (U Summary Path-String) Bitstring Real))
+(define (configuration->overhead data v)
+  (if (summary? data)
+    (configuration->overhead/summary data v)
+    (configuration->overhead/path data v)))
 
 (: configuration->overhead/summary (-> Summary Bitstring Real))
 (define (configuration->overhead/summary S v)
