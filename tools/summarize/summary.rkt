@@ -47,6 +47,10 @@
    (-> Summary Real))
   ;; Get the mean runtime of the Summary's untyped configuration
 
+  (configuration->runtimes
+   (-> Summary Bitstring (Listof Real)))
+  ;; Get all runtimes for a configuration
+
   (configuration->mean-runtime
    (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
@@ -557,6 +561,10 @@
 (: typed-mean (-> Summary Real))
 (define (typed-mean sm)
   (mean (typed-runtimes sm)))
+
+(: configuration->runtimes (-> Summary Bitstring (Listof Real)))
+(define (configuration->runtimes S v)
+  (index->runtimes S (bitstring->natural v)))
 
 (: configuration->mean-runtime (-> Summary Bitstring Real))
 (define (configuration->mean-runtime S v)
