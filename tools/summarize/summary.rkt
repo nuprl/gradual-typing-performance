@@ -65,7 +65,7 @@
   ;; Get the standard deviation runtime of a configuration
 
   (configuration->overhead
-   (-> Summary Bitstring Real))
+   (-> (U Summary Path-String) Bitstring Real))
   ;; Get the overhead of a configuration, relative to untyped
 
   (predicate->configurations
@@ -311,6 +311,17 @@
         (and (data-line? ln) (string->index* ln)))
       (raise-user-error 'read-untyped "No data lines in current input port")))
 
+(: read-configuration (-> Integer (Listof Real)))
+(define (read-configuration i)
+  (define j : (Boxof Integer) (box -1))
+  (or (for/or : (U #f (Listof Index))
+              ([ln (in-lines)]
+               #:when (and (data-line? ln)
+                           (set-box! j (+ 1 (unbox j)))
+                           (= i (unbox j))))
+        (string->index* ln))
+      (raise-user-error 'read-configuration "Failed to read configuration '~a'" i)))
+
 (: read-typed (-> (Listof Real)))
 (define (read-typed)
   (define last-line
@@ -506,9 +517,24 @@
 (define (configuration->stddev S v)
   (index->stddev S (bitstring->natural v)))
 
-(: configuration->overhead (-> Summary Bitstring Real))
-(define (configuration->overhead S v)
+(: configuration->overhead (-> (U Summary Path-String) Bitstring Real))
+(define (configuration->overhead data v)
+  (if (summary? data)
+    (configuration->overhead/summary data v)
+    (configuration->overhead/path data v)))
+
+(: configuration->overhead/summary (-> Summary Bitstring Real))
+(define (configuration->overhead/summary S v)
   (/ (configuration->mean-runtime S v) (untyped-mean S)))
+
+(: configuration->overhead/path (-> Path-String Bitstring Real))
+(define (configuration->overhead/path p v)
+  (define i (bitstring->natural v))
+  (with-input-from-file p
+    (lambda ()
+      (define u-mean (mean (read-untyped)))
+      (define c-mean (mean (read-configuration (- i 1))))
+      (/ c-mean u-mean))))
 
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime S i)
@@ -823,6 +849,11 @@
   ;; -- config->overhead
   (check-equal? (configuration->overhead S "0000") 1)
   (check-equal? (configuration->overhead S "0101") 15221/14165)
+  (let ([cfg "0010"]
+        [src (summary-source S)])
+    (check-equal? (configuration->overhead S cfg)
+                  (configuration->overhead src cfg)))
+
 
   ;; -- predicate->configs
   (check-equal?
