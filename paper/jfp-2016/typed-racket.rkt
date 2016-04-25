@@ -67,7 +67,10 @@
   render-lnm-plot
   ;; (-> (-> (Listof Pict) Elem) Any)
 
-  (rename-out [ext:typed/untyped-ratio typed/untyped-ratio])
+  percent-diff
+  (rename-out
+    [ext:typed/untyped-ratio typed/untyped-ratio]
+    [ext:configuration->overhead configuration->overhead])
 )
 
 (require
@@ -292,12 +295,17 @@
 ;; -----------------------------------------------------------------------------
 ;; --- Paths / Caching
 
+(define ((cache-read-error cache-file) exn)
+  (WARNING "Failed to read cachefile '~a', got exception:\n~a" cache-file (exn-message exn))
+  #f)
+
 (define (with-cache cache-file thunk #:read [read-proc #f] #:write [write-proc #f])
   (let ([read-proc (or read-proc values)]
         [write-proc (or write-proc values)])
     (or (and (*CACHE?*)
              (file-exists? cache-file)
-             (let ([v (read-proc (file->value cache-file))])
+             (let ([v (with-handlers ([exn:fail? (cache-read-error cache-file)])
+                        (read-proc (file->value cache-file)))])
                (and v
                     (INFO "reading cachefile '~a'" cache-file)
                     v)))
@@ -678,6 +686,11 @@
 
 (define (ext:typed/untyped-ratio sym version)
   (typed/untyped-ratio (data-path sym version)))
+
+(define (ext:configuration->overhead sym version cfg)
+  (string-append
+    (rnd (configuration->overhead (data-path sym version) cfg))
+    "x"))
 
 ;; =============================================================================
 
