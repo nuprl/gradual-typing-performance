@@ -296,9 +296,17 @@
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
 
-(: lnm-bar (-> (Listof (Listof Real)) (U 'overhead 'ratio) pict))
-(define (lnm-bar r** type)
-  (define overhead? (eq? type 'overhead))
+(: bar-type->units (-> BarType String))
+(define (bar-type->units bt)
+  (case bt
+   [(ratio) ""]
+   [(overhead) "x"]
+   [(runtime) "ms"]
+   [else (raise-user-error 'bar-type->units "Unknown bar type '~a'" bt)]))
+
+(: lnm-bar (-> (Listof (Listof Real)) BarType pict))
+(define (lnm-bar r** btype)
+  (define overhead? (not (eq? btype 'ratio)))
   (define y-major-ticks
     (let-values (((lo hi)
                   (if overhead?
@@ -311,7 +319,7 @@
     (if overhead?
       '()
       '(1/5 2/5 3/5 4/5 2 4 6 8)))
-  (define units (if overhead? "x" ""))
+  (define units (bar-type->units btype))
   (parameterize ([plot-x-axis? #t]
                  [plot-y-axis? #t]
                  [plot-font-face (*PLOT-FONT-FACE*)]

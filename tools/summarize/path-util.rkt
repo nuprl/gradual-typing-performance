@@ -1,6 +1,12 @@
 #lang typed/racket/base
 
 (provide:
+  (assert-directory-exists
+   (-> Path-String Void))
+
+  (assert-directory-exists*
+   (-> (Listof Path-String) Void))
+
   (ensure-dir
    (-> Path-String Void))
   ;; Check whether a directory exists.
@@ -17,6 +23,16 @@
   (only-in racket/list split-at))
 
 ;; =============================================================================
+
+(: assert-directory-exists (-> Path-String Void))
+(define (assert-directory-exists p)
+  (unless (directory-exists? p)
+    (raise-user-error 'assert-directory "Directory '~a' does not exist, cannot proceed" p)))
+
+(: assert-directory-exists* (-> (Listof Path-String) Void))
+(define (assert-directory-exists* p*)
+  (for ([p (in-list p*)])
+    (assert-directory-exists p)))
 
 (: ensure-dir (-> Path-String Void))
 (define (ensure-dir path)
