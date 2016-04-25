@@ -4,6 +4,7 @@
 
 (provide
  render-bars
+ render-exact ;; hack
  render-untyped-bars ;; hack
  render-dots
  render-lnm
@@ -507,7 +508,10 @@
 (define (render-untyped-bars name* r**)
   (parameterize ([*GRAPH-VSPACE* (assert (/ (*GRAPH-VSPACE*) 2) index?)])
     (vr-append (* (*GRAPH-VSPACE*) 6)
-      (render-runtime-bars r** #:title "Untyped")
+      (parameterize ([*Y-STYLE* 'X])
+        (render-runtime-bars r** #:title "(Normalized) Untyped"))
+      (parameterize ([*Y-STYLE* '%])
+        (render-runtime-bars r** #:title "(% Diff) Untyped"))
       (render-bars-legend (* 3.3 (*GRAPH-HSPACE*)) name*))))
 
 (: render-bars (-> (Listof String) Real** Real** Real** Pict))
@@ -517,7 +521,7 @@
       (render-typed/untyped-ratio-bars ratio**)
       (render-mean-overhead-bars mean**)
       (render-max-overhead-bars max**)
-      (render-bars-legend (* 3.3 (*GRAPH-HSPACE*)) name*))))
+      (render-bars-legend (* 3 (*GRAPH-HSPACE*)) name*))))
 
 (: render-typed/untyped-ratio-bars (-> Real** Pict))
 (define (render-typed/untyped-ratio-bars ratio**)
@@ -657,6 +661,22 @@
             (disk (diameter (* target-area (+ 1 (/ (- n n0) n0))))
              #:draw-border? #f)))
              (cast color (List Byte Byte Byte)))))))
+
+;; -----------------------------------------------------------------------------
+
+(: render-exact (-> (Vectorof String) Pict))
+(define (render-exact vec)
+  (ensure-dir "./compiled")
+  (command-line
+   #:program "render-exact"
+   #:argv vec
+   #:args FNAME*
+   ;; -- Filter valid arguments, assert that we got anything to render
+   (define arg* (filter-valid-filenames FNAME*))
+   (when (null? arg*)
+     (raise-user-error "Usage: render-exact.rkt DATA.rktd ..."))
+   ;; -- Create a pict
+   (lnm-exact-bars (for/list : (Listof Summary) ([r (in-list arg*)]) (from-rktd r)))))
 
 ;; -----------------------------------------------------------------------------
 
