@@ -248,13 +248,45 @@ Future work should identify high-overhead boundaries and give actionable
 @section[#:tag "sec:devils:wrapping"]{Duplicate Contracts}
 @; -- AKA repeated wrapping
 
+@; TODO this text sucks
+
+Higher-order contracts' potential to accumulate on values is a well known issue
+ and there are many published techniques for identifying redundant contracts.
+@todo{cite}
+Racket uses a predicate @todo{contract-stronger?} which can often identify
+ redundant contracts.
+Still, our evaluation revealed a few pathologies due to repeated wrapping.
+
+@; Why include this code snip?
+First, a positive story.
+The following program repeatedly sends a simple object across a type boundary.
+
+  @todo{program}
+
+On Racket v6.@todo{23}, each boundary-crossing installs two new contracts
+ on the object @todo{name}: one on the domain
+ to make sure the value coming from untyped
+ code obeys the @todo{type} type and one on the codomain
+ to protect the now-typed object
+ from being modified after it is released to untyped code.
+As these contracts accumulate, performance slows exponentially.
+The issue is fixed on Racket v6.4 as a consequence of a larger optimization
+ @todo{late-neg}.
+@; should probly mention late-neg in "comparing TRs"
+
+However, similar pathologies arose in our @bm{dungeon},
+ @bm{fsm}, @bm{forth}, and @tt{zombie} benchmarks.
+Happened with classes, vectors, objects, and functions.
+
 @; functions in zombie
-@; objects in forth,fsm(,acquire)
 @; classes in dungeon?
 
 @; ENCAPSULATION
-@; acquire,take5 vs fsm,forth
-@; better to do stateful than functional OO
+To users of gradual type systems looking for a solution immediately,
+ we recommend using state and global variables instead of using
+ classes and vectors in a functional style.
+Case in point, the main loop of fsm/fsmoo:
+
 
 
 @; -----------------------------------------------------------------------------
