@@ -17,6 +17,7 @@
   integer->brush-style
   integer->line-width
 
+  lnm-exact-bars
   ;; ---
 
   lnm-plot
@@ -301,30 +302,43 @@
                 ([F-config* (in-list F-config**)])
         (make-plot F-config*)))))
 
-(: bar-type->units (-> BarType String))
-(define (bar-type->units bt)
-  (case bt
-   [(ratio) ""]
-   [(overhead) "x"]
-   [(runtime) "ms"]
-   [else (raise-user-error 'bar-type->units "Unknown bar type '~a'" bt)]))
+(: lnm-exact-bars (-> (Listof Summary) pict))
+(define (lnm-exact-bars S*)
+  (define num-series (length S*))
+  (define p
+    (plot-pict
+      (for/list : (Listof renderer2d)
+                ([S (in-list S*)]
+                 [i (in-naturals 2)])
+        (define c (->pen-color i))
+        (define lbl (format "~a" (summary->version S)))
+        (discrete-histogram
+          (for/list : (Listof (List Any Real))
+                    ([cfg (all-configurations S)])
+            (list (bitstring->natural cfg) (configuration->mean-runtime S cfg)))
+          #:add-ticks? #t
+          #:style (integer->brush-style i)
+          #:label lbl
+          #:line-width 1
+          #:line-color c
+          #:color c
+          #:x-min i
+          #:skip (+ 1 num-series)))
+      #:x-label "Config #"
+      #:y-label "Time (ms)"
+      #:legend-anchor 'bottom-right
+      #:y-min 0
+      #:width (*PLOT-WIDTH*)
+      #:height (*PLOT-HEIGHT*)))
+  (cast p pict))
 
 (: lnm-bar (-> (Listof (Listof Real)) BarType pict))
 (define (lnm-bar r** btype)
   (define overhead? (not (eq? btype 'ratio)))
-  (define y-major-ticks
-    (let-values (((lo hi)
-                  (if overhead?
-                    (values 0 5)
-                    (values -1 2))))
-        (for*/list : (Listof Real)
-                   ([mag (in-range lo hi)])
-          (expt 10 mag))))
-  (define y-minor-ticks
-    (if overhead?
-      '()
-      '(1/5 2/5 3/5 4/5 2 4 6 8)))
+  (define y-major-ticks (bar-type->major-ticks btype))
+  (define y-minor-ticks (bar-type->minor-ticks btype))
   (define units (bar-type->units btype))
+  (define select (bar-type->selector btype))
   (parameterize ([plot-x-axis? #t]
                  [plot-y-axis? #t]
                  [plot-font-face (*PLOT-FONT-FACE*)]
@@ -337,7 +351,10 @@
                  [plot-x-far-ticks no-ticks])
     (define num-series (length (car r**)))
     (define all-time-max : (Boxof Real) (box 0))
-    (cast (plot-pict
+    ;; -- series   = bars that touch each other
+    ;; -- datasets = separate groups of bars
+    (cast (plot-pict (append
+      (if (eq? btype 'runtime) (list (y-tick-lines)) '())
       (for/list : (Listof renderer2d)
                 ([series-num (in-range 1 (+ 1 (length (car r**))))])
         ;; 2016-04-18: brush colors are lighter
@@ -346,7 +363,7 @@
           (for/list : (Listof (List Any Real))
                     ([r* (in-list r**)]
                      [dataset-num (in-naturals 1)])
-            (define v (list-ref r* (- series-num 1)))
+            (define v (select r* (- series-num 1)))
             (when (> v (unbox all-time-max))
               (set-box! all-time-max v))
             (list (integer->letter dataset-num) v))
@@ -357,11 +374,11 @@
           #:style (integer->brush-style series-num)
           #:line-color series-num ;color
           #:line-width 1
-          #:color color))
+          #:color color)))
       #:x-label #f ;(and (*AXIS-LABELS?*) "foo")
       #:y-label #f ;(*AXIS-LABELS?*) ylabel)
-      #:y-min (if overhead? 1 0.1)
-      #:y-max (* 13 (expt 10 (if overhead? 3 0)))
+      #:y-min (bar-type->y-min btype)
+      #:y-max (bar-type->y-max btype)
       #:width (assert (- (*PLOT-WIDTH*) (if overhead? 0 SHIM-FOR-BARCHART-ALIGNMENT)) positive?)
       #:height (*PLOT-HEIGHT*)) pict)))
 
@@ -718,6 +735,12 @@
       #:line-width (*ERROR-BAR-LINE-WIDTH*)
       #:width (*ERROR-BAR-WIDTH*))))
 
+(: exponential-seq (-> Real Real (Listof Real)))
+(define (exponential-seq lo hi)
+  (for*/list : (Listof Real)
+             ([e (in-range lo hi)])
+    (expt 10 e)))
+
 ;; Compute `num-ticks` evenly-spaced y ticks between 0 and `max-y`.
 ;; Round all numbers down a little, except for numbers in the optional
 ;;  list `exact`.
@@ -755,7 +778,7 @@
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
            (for/list : (Listof String) ([pt (in-list pre-ticks)])
              (define v (pre-tick-value pt))
-             (define str (format "~a" v))
+             (define str (~r v #:precision 2))
              (if (= v max-r)
                (string-append str units)
                str)))))
@@ -783,6 +806,115 @@
 (: ticks-add? (-> ticks (U #f (Listof Real)) ticks))
 (define (ticks-add? ts xs)
   (if xs (ticks-add ts xs #f) ts))
+
+(: unknown-bar-type (All (A) (-> Any A)))
+(define (unknown-bar-type bt)
+  (raise-user-error 'lnm "Unknown bar type '~a'" bt))
+
+(: unknown-y-style (All (A) (-> A)))
+(define (unknown-y-style)
+  (raise-user-error 'lnm "Unknown y-style type '~a'" (*Y-STYLE*)))
+
+(: bar-type->selector (-> BarType (-> (Listof Real) Integer Real)))
+(define (bar-type->selector bt)
+  (cond
+   [(eq? bt 'runtime)
+    (cond
+     [(eq? (*Y-STYLE*) '%)
+      (lambda ([r* : (Listof Real)] [i : Integer])
+        (let ([a (car r*)]
+              [b (list-ref r* i)])
+          (/ (- b a) a)))]
+     [(eq? (*Y-STYLE*) 'X)
+      (lambda ([r* : (Listof Real)] [i : Integer])
+        (/ (list-ref r* i) (car r*)))]
+     [else
+      (unknown-y-style)])]
+   [(eq? bt 'runtime)
+    list-ref]
+   [else
+    (unknown-bar-type bt)]))
+
+(: bar-type->y-min (-> BarType Real))
+(define (bar-type->y-min bt)
+  (cond
+   [(or (eq? bt 'ratio)
+        (eq? bt 'runtime))
+    (if (*LOG-TRANSFORM?*) 0.1 0)]
+   [(eq? bt 'overhead)
+    1]
+   [else
+    (unknown-bar-type bt)]))
+
+(: bar-type->y-max (-> BarType (U #f Real)))
+(define (bar-type->y-max bt)
+  (cond
+   [(or (eq? bt 'ratio)
+        (and (eq? (*Y-STYLE*) '%)
+             (eq? bt 'runtime)))
+    1]
+   [(and (eq? bt 'runtime)
+         (eq? (*Y-STYLE*) 'X))
+    #f]
+   [(or (eq? bt 'overhead)
+        (eq? bt 'runtime))
+    (* 13 (expt 10 3))]
+   [else
+    (unknown-bar-type bt)]))
+
+(: bar-type->units (-> BarType String))
+(define (bar-type->units bt)
+  (cond
+   [(eq? bt 'ratio)
+    ""]
+   [(eq? bt 'overhead)
+    "x"]
+   [(eq? bt 'runtime)
+    (case (*Y-STYLE*)
+     [(%) "%"]
+     [(X) "x"]
+     [(count) "ms"]
+     [else (unknown-y-style)])]
+   [else
+    (unknown-bar-type bt)]))
+
+(: bar-type->major-ticks (-> BarType (Listof Real)))
+(define (bar-type->major-ticks bt)
+  (cond
+   [(eq? bt 'ratio)
+    (if (*LOG-TRANSFORM?*)
+      (exponential-seq -1 2)
+      (range 10))]
+   [(and (eq? bt 'runtime)
+         (eq? (*Y-STYLE*) '%))
+    (range 0 2 1/10)]
+   [(eq? bt 'runtime)
+    (range 1 11)]
+   [(eq? bt 'overhead)
+    (exponential-seq 0 5)]
+   [else
+    (unknown-bar-type bt)]))
+
+(: bar-type->minor-ticks (-> BarType (Listof Real)))
+(define (bar-type->minor-ticks bt)
+  (cond
+   [(or (eq? bt 'ratio)
+        (and (eq? (*Y-STYLE*) 'X)
+             (eq? bt 'runtime)))
+    (if (*LOG-TRANSFORM?*)
+      '(1/5 2/5 3/5 4/5 2 4 6 8)
+      (range 0 2 1/10))]
+   [(and (eq? (*Y-STYLE*) '%)
+         (eq? bt 'runtime))
+    '()]
+   [(or (eq? bt 'overhead)
+        (eq? bt 'runtime))
+    '()]
+   [else
+    (unknown-bar-type bt)]))
+
+;; -----------------------------------------------------------------------------
+;; --- Very Miscellaneous
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
