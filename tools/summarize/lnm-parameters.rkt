@@ -3,7 +3,6 @@
 ;; Calls to (defparam id ...) expand to a (provide id)
 (provide
   defparam
-  Y-Style
 )
 
 (require
@@ -110,7 +109,7 @@
 (defparam *Y-NUM-TICKS* Natural 3)
 (defparam *Y-TICK-LINES?* Boolean #t)
 (defparam *Y-TICKS* (U #f (Listof Real)) #f)
-(define-type Y-Style (U 'count '%))
+(deftype Y-Style (U 'count '% 'X))
 (defparam *Y-STYLE* Y-Style '%)
 
 ;; --- Boolean flags
