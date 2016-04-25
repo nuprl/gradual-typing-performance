@@ -1,0 +1,24 @@
+Running time is 38.39% contracts
+1975/5144 ms
+
+(-> any/c (-> (vectorof Integer) Float))                         824 ms
+typed-data.rkt::-1                                              
+    Array-unsafe-proc                                            824 ms
+
+(-> (vectorof Integer) any/c (box/c (or/c #f #t)) any/c (->  ... 450.5 ms
+#<blame>::-1                                                    
+    Array3                                                       450.5 ms
+
+(-> (vectorof Integer) Integer (vectorof Integer) any)           418 ms
+array-utils.rkt:17:0                                            
+    next-indexes!                                                418 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) Float) any)        272.5 ms
+array-struct.rkt:27:1                                           
+    unsafe-build-array                                           239.5 ms
+    build-array                                                  33 ms
+
+(-> any/c (vectorof Integer))                                    10 ms
+typed-data.rkt::-1                                              
+    Array-shape                                                  10 ms
+
