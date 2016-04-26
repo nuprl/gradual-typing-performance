@@ -783,6 +783,13 @@
                                 #:institution "Microsoft")
    #:date 2013))
 
+(define g-popl-2015
+  (make-bib
+   #:title "Space-Efficient Manifest Contracts"
+   #:author "Michael Greenberg"
+   #:location (proceedings-location popl #:pages '(181 194))
+   #:date 2015))
+
 ;; ----------------------------------------
 ; Components and modules
 

@@ -663,7 +663,7 @@
   (parameterize ([*PLOT-WIDTH* 420]
                  [*PLOT-HEIGHT* 140]
                  [*PLOT-FONT-SCALE* 0.04]
-                 [*LOG-TRANSFORM?* #t])
+                 [*LOG-TRANSFORM?* #f])
     (apply render-untyped-bars (call-with-values new-untyped-data list))))
 
 (define (new-lnm-bars)
