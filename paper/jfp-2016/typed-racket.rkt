@@ -71,7 +71,8 @@
   percent-diff
   (rename-out
     [ext:typed/untyped-ratio typed/untyped-ratio]
-    [ext:configuration->overhead configuration->overhead])
+    [ext:configuration->overhead configuration->overhead]
+    [ext:min-overhead min-overhead])
 )
 
 (require
@@ -710,6 +711,11 @@
 (define (ext:configuration->overhead sym version cfg)
   (string-append
     (rnd (configuration->overhead (data-path sym version) cfg))
+    "x"))
+
+(define (ext:min-overhead sym version)
+  (string-append
+    (rnd (min-overhead (from-rktd (data-path sym version))))
     "x"))
 
 ;; =============================================================================

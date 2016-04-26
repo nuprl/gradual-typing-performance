@@ -376,16 +376,32 @@ This is the source of overhead in @bm{zombie}.
 @section[#:tag "sec:devils:library"]{Ecological Contracts}
 @; -- AKA library
 
-MBTA Zordoz just got worse.
-Conversely lnm got better.
-Because benchmarks depended on libraries that were untyped and typed, respectively.
-Part of the Racket ecosystem.
+Many of our benchmarks are self-contained, but others
+ depend on libraries within the Racket ecosystem.
+Except in the rare case of core Racket libraries that are untyped but
+ assumed type-correct by Typed Racket, these libraries are @emph{either}
+ typed or untyped.
+Hence some clients are forced to communicate through a type boundary.
 
-@; mbta, zordoz
-@; dungeon (removed)
+Our @bm{mbta} and @bm{zordoz} benchmarks rely on untyped libraries,
+ so they have relatively large typed/untyped ratios
+ (@rnd[@typed/untyped-ratio['mbta "6.2"]]x and
+  @rnd[@typed/untyped-ratio['zordoz "6.2"]]x
+  on v6.2, respectively).
+For the same reason, the @math{k=1} plots for these benchmarks are similar
+ to the @math{k=0} plots, as typing additional modules is likely to introduce
+ a type boundary with the library.
+Conversely, @bm{lnm} uses two typed libraries.
+Removing the type boundaries to these libraries improves performance
+ to at most @min-overhead['lnm "6.2"] the untyped runtime on Racket v6.2.
 
-How to migrate code / generate typed.
-More interesting: generate docs \& stackoverflow.
+Typed clients of untyped libraries have the additional burden of giving type
+ annotations matching their use-case.
+These annotations appear in @bm{mbta} and @bm{zordoz}, but also in @bm{acquire}
+ and @bm{dungeon} on built-in Racket functions that are not part of
+ the trusted type environment.
 
-@; Need to convert the ecosystem
-
+Based on these observations, we conclude that the task of migrating a language
+ ecosystem from untyped to typed deserves nearly as much attention as migrating
+ a language's semantics or programs.
+@todo{say more}
