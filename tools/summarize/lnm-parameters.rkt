@@ -143,3 +143,5 @@
 
 (deftype BarType (U 'overhead 'ratio 'runtime))
 
+(defparam *TRACE-NUM-COLORS* Index 3)
+
