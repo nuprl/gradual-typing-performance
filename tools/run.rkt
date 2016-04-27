@@ -23,6 +23,7 @@
          math/statistics
          mzlib/os
          pict
+         glob
          pkg/lib
          racket/class
          racket/cmdline
@@ -50,6 +51,8 @@
 (define num-iterations (make-parameter #f))
 (define min-iterations (make-parameter 10))
 (define max-iterations (make-parameter 30))
+(define *NUM-WARMUP* (make-parameter 1))
+(define *PERMUTE* (make-parameter values))
 
 ;; The number of jobs to spawn for the configurations. When jobs is
 ;; greater than 1, the configuration space is split evenly and allocated
@@ -75,6 +78,9 @@
   (let ([message (format "Error running configuration ~a in '~a'" var-idx var)])
     (*ERROR-MESSAGES* (cons message (*ERROR-MESSAGES*)))
     (error 'run:runtime message)))
+
+(define (timestamp)
+  (date->string (current-date) #t))
 
 ;; Get paths for all configuration directories
 ;; Path Path -> Listof Path
@@ -114,7 +120,8 @@
               (<= n (string->number max))))
        (filter in-range? all-vars)]
       [else
-       (mk-configurations basepath entry-point)]))
+       ((*PERMUTE*)
+        (mk-configurations basepath entry-point))]))
   ;; allocate a slice of the configurations per job
   (define slice-size (ceiling (/ (length configurations) jobs)))
   (define threads
@@ -144,20 +151,22 @@
              ;; avoid OS caching issues
              (unless (only-compile?)
                (printf "job#~a, throwaway build/run to avoid OS caching~n" job#)
-               (match-define (list in out _ err control)
-                 (process (format "~a~aracket ~a"
-                            (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-                            (*racket-bin*)
-                            (path->string file))))
-               ;; make sure to block on this run
-               (control 'wait)
-               (close-input-port in)
-               (close-input-port err)
-               (close-output-port out))
+               (for ([i (in-range (*NUM-WARMUP*))])
+                 (match-define (list in out _ err control)
+                   (process (format "~a~aracket ~a"
+                              (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                              (*racket-bin*)
+                              (path->string file))))
+                 ;; make sure to block on this run
+                 (control 'wait)
+                 (close-input-port in)
+                 (close-input-port err)
+                 (close-output-port out)))
 
              ;; run the iterations that will count for the data
              (define exact-iters (num-iterations))
-             (unless (and (only-compile?) compile-ok?)
+             (unless (or (and (only-compile?) compile-ok?)
+                         (file-exists? (output-path)))
                (for ([i (in-range 0
                                   (or exact-iters (+ 1 (max-iterations)))
                                   1)]
@@ -203,6 +212,7 @@
 (define (write-results times [dir (current-directory)])
   (with-output-to-file (build-path dir (output-path)) #:exists 'append
     (lambda ()
+      (display ";; ") (displayln (timestamp))
       (write times))))
 
 ;; Get the most recent commit hash for the chosen Racket install
@@ -239,6 +249,33 @@
         (printf "Failed to find package 'typed-racket' in 'installation pkg-table\n")))
     (printf "Failed to get 'installed-pkg-table'\n")))
 
+;; Read a string, return a permutation function on lists
+;; (-> String (All (A) (-> (Listof A) (Listof A))))
+(define (read-permutation str)
+  (cond
+   [(string=? str "reverse")
+    reverse]
+   [(string=? str "shuffle")
+    shuffle]
+   [(string->number str)
+    => rotate]
+   [else
+    values]))
+
+;; Rotate a list
+(define ((rotate i) x*)
+  (let-values (((a b) (split-at x* (modulo i (length x*)))))
+    (append b a)))
+
+;; Read a .rktd file which SHOULD contain 1 list of runtimes.
+;; Raise an error if there's more than 1 list or the data is malformed.
+(define (result-file->data-row fname)
+  (with-handlers ([exn:fail? (lambda (e) (raise-user-error 'run "Error collecting data from file '~a', please inspect & try again.\n~a" fname (exn-message e)))])
+    (define v (file->value fname))
+    (unless (and (list? v) (for/and ([x (in-list v)]) (integer? x)))
+      (raise-user-error 'run "Data was not a list of numbers"))
+    v))
+
 (define (run-benchmark vec)
   (define basepath
     (command-line #:program "benchmark-runner"
@@ -251,6 +288,14 @@
                                       "Run the configurations between min and max inclusive"
                                       (min-max-config (list min max))]
                   #:once-each
+                  [("-w" "--warmup")
+                   w
+                   "Set number of warmup iterations"
+                   (*NUM-WARMUP* (string->number w))]
+                  [("-p" "--permute")
+                   p
+                   "Change order of configurations"
+                   (*PERMUTE* (read-permutation p))]
                   [("-n" "--no-affinity")
                    "Do NOT set task affinity (runs all jobs on current core)"
                    (*AFFINITY?* #f)]
@@ -309,7 +354,7 @@
     (date-display-format 'iso-8601)
     (output-path (string-append (last (string-split basepath "/"))
                                 "-"
-                                (date->string (current-date) #t)
+                                (timestamp)
                                 ".rktd")))
 
   ;; Need at least 2 CPUs since our controller thread is pinned to core 0 and workers
@@ -344,8 +389,7 @@
         (for ([result-file (in-glob (format "~a/benchmark/configuration*/~a"
                                      basepath
                                      (output-path)))])
-          (with-input-from-file result-file
-            (lambda () (for ([ln (in-lines)]) (displayln ln)))))
+          (displayln (result-file->data-row result-file)))
         (displayln ")"))
       #:mode 'text
       #:exists 'replace))
