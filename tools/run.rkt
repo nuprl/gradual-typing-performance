@@ -4,6 +4,8 @@
 ;; - finish working with unixtime struct
 ;; - add monitor thread for temperature
 ;; - add option to change governor, default to something reasonable
+;; - use `proc stat ...` for short-running configs?
+;; TEST ON LINUX
 
 ;; Benchmark driver
 ;;
@@ -55,7 +57,16 @@
 (define num-iterations (make-parameter #f))
 (define min-iterations (make-parameter 10))
 (define max-iterations (make-parameter 30))
+
+;; # warmup iterations to run. Throw these numbers away
 (define *NUM-WARMUP* (make-parameter 1))
+
+;; Processes that finish quicker than *MIN-MILLISECONDS*
+;;  are very likely to be affected by OS effects
+(define *MIN-MILLISECONDS* (make-parameter (* 1.3 1000)))
+
+;; Apply transformation to the list of configurations before running
+;; TODO should be a sequence
 (define *PERMUTE* (make-parameter values))
 
 ;; The number of jobs to spawn for the configurations. When jobs is
@@ -71,12 +82,13 @@
 (define *racket-bin* (make-parameter "")) ;; Path-String
 (define *AFFINITY?* (make-parameter #t)) ;; Boolean
 (define *ERROR-MESSAGES* (make-parameter '())) ;; (Listof String)
+(define *DATA-TMPFILE* (make-parameter #f))
+(define *TIME-TMPFILE* (make-parameter "time.tmp"))
 
 ;; -----------------------------------------------------------------------------
 
-(define TIME-CMD
-  "/usr/bin/time -f 'TIME %x exit    %e real    %U user    %S sys    %M max-kbytes    %D udata    %p ustack    %c ictx    %w vctx'")
-;0.09 user 0.00 sys  21436 max-kbytes  0 unshared-data 0 unshared-stack  12 inv-ctx  12 vol-ctx
+(define TIME-FMT
+  "'TIME %e real    %U user    %S sys    %M max-kbytes    %D udata    %p ustack    %c ictx    %w vctx    %x exit'")
 
 (define TIME-RX
   #rx"^TIME ([0-9:.]+) real    ([0-9.]+) user    ([0-9.]+) sys    ([0-9]+) max-kbytes    ([0-9]+) udata    ([0-9]+) ustack    ([0-9]+) ictx    ([0-9]+) vctx    ([0-9]+) exit$")
@@ -97,18 +109,22 @@
   (cond
    [(regexp-match TIME-RX str)
     => (lambda (m)
-      (apply unixtime (cons (seconds->milliseconds (cadr m)) (map string->number (cddr m)))))]
+      (apply unixtime (cons (real-time->milliseconds (cadr m)) (map string->number (cddr m)))))]
+   [(string-prefix? str "TIME")
+    (raise-user-error 'yolo "strin->unix failed ~a" str)]
    [else
     #f]))
 
 (define (real-time->milliseconds str)
   (define-values (h-str m-str s+ms-str)
-    (match (string-spit str ":")
+    (match (string-split str ":")
      [(list h-str m-str s+ms-str)
       (values h-str m-str s+ms-str)]
      [(list m-str s+ms-str)
-      (values "0" m-str s+ms-str)]))
-  (match-define (list sec ms) (string-split s+ms-str "."))
+      (values "0" m-str s+ms-str)]
+     [(list s+ms-str)
+      (values "0" "0" s+ms-str)]))
+  (match-define (list s-str ms-str) (string-split s+ms-str "."))
   (+ (hours->milliseconds (string->number h-str))
      (minutes->milliseconds (string->number m-str))
      (seconds->milliseconds (string->number s-str))
@@ -122,6 +138,9 @@
 
 (define (seconds->milliseconds s)
   (* 1000 s))
+
+(define (unixtime*->min ut*)
+  (apply min (map unixtime-real ut*)))
 
 ;; --- time
 ;; -----------------------------------------------------------------------------
@@ -153,31 +172,79 @@
     (define var-str (format "configuration~a" bits))
     (build-path basepath "benchmark" var-str entry-point)))
 
-(define ((make-run-command job#) stub #:iters [iters 1])
+;; Start a thread to monitor CPU temperature
+;; Delay before returning
+(define (make-temperature-monitor)
+  (define t-file (string-append (output-path) ".heat"))
+  (and (check-system-command "sensors")
+       (process
+         (string-append
+           (format "local TEMPERATURE_LOG=~a; " t-file)
+           "sensors -u > $TEMPERATURE_LOG; "
+           "while true; do sleep 3; sensors -u >> $TEMPERATURE_LOG; done"))))
+
+(define (system-command-exists? cmd-str)
+  (if (system (format "hash ~a &> /dev/null" cmd-str)) #t #f))
+
+(define (check-system-command cmd-str)
+  (unless (system-command-exists? cmd-str)
+    (printf "WARNING: `sensors` command not found, cannot monitor temperature\n")
+    #f))
+
+(define (system-command-fallback . cmd-str*)
+  (or (for/or ([cmd (in-list cmd-str*)]
+               #:when (system-command-exists? cmd))
+        cmd)
+      (raise-user-error 'run "sys command fallback failed ~a" cmd-str*)))
+
+(define (kill-temperature-monitor TM)
+  (when TM
+    (match-define (list out in pid err control) TM)
+    (control 'kill)
+    (control 'wait)
+    (close-output-port in)
+    (close-input-port out)
+    (close-input-port err))
+  (void))
+
+;; (-> Natural (-> String #:iters Natural #:stat? Boolean (Listof unixtime)))
+(define ((make-run-command job#) stub #:iters [iters 1] #:stat? [stat? #f])
+  (define time-cmd (system-command-fallback "gtime" "/usr/bin/time"))
+  (define time-tmpfile (*TIME-TMPFILE*))
+  (when (file-exists? time-tmpfile)
+    (delete-file time-tmpfile))
   (define cmd
     (string-append
       (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-      TIME-CMD
-      (string-append (format " for i in `seq 0 ~a`; do " iters)
+      (string-append (format " (for i in `seq 1 ~a`; do " iters)
+                     time-cmd
+                     " -o "
+                     time-tmpfile
+                     " --append "
+                     " -f "
+                     TIME-FMT
+                     " "
                      stub
-                     "; done;")))
-  (match-define (list in out _ err control) (process cmd #:set-pwd? #t))
+                     "; done);")))
+  (printf "#### exec `~a` in `~a`\n" stub (current-directory))
+  (match-define (list out in pid err control) (process cmd #:set-pwd? #t))
   (control 'wait)
   (for-each displayln (port->lines err))
   (define ut*
-    (for/fold ([acc '()])
-              ([ln (in-lines out)])
-      (define ut (string->unixtime ln))
-      (if ut
-        (if (zero? (unixtime-exit ut))
-          (cons ut acc)
-          (raise-user-error 'run-command
-            "Process terminated with non-zero exit code '~a'. Full command was '~a'"
-            (unixtime-exit ut) cmd))
-        acc)))
-  (close-input-port in)
+    (with-input-from-file time-tmpfile (lambda ()
+      (for/fold ([acc '()])
+                ([ln (in-lines)])
+        (define ut (string->unixtime ln))
+        (if ut
+          (if (zero? (unixtime-exit ut))
+            (cons ut acc)
+            (raise-user-error 'run-command
+              "Process terminated with non-zero exit code '~a'. Full command was '~a'"
+              (unixtime-exit ut) cmd))
+          acc)))))
+  (close-input-port out)
   (close-input-port err)
-  (close-output-port out)
+  (close-output-port in)
   ut*)
 
 ;; Run the configurations for each configuration directory
@@ -206,9 +273,10 @@
       [else
        ((*PERMUTE*)
         (mk-configurations basepath entry-point))]))
+  (define hot-proc (make-temperature-monitor))
   ;; allocate a slice of the configurations per job
   (define slice-size (ceiling (/ (length configurations) jobs)))
-  (define threads
+  (define thread*
     (for/list ([var-slice (in-slice slice-size (in-values-sequence (in-indexed (in-list configurations))))]
                [job# (in-range 1 (add1 jobs))])
       ;; Spawn a control thread for each job, which will in turn spawn an OS process.
@@ -227,37 +295,33 @@
              ;; run the iterations that will count for the data
              (define exact-iters (num-iterations))
              (unless (or (only-compile?)
-                         (file-exists? (output-path)))
-               (define rkt-command "~aracket ~a" (*racket-bin*) file-str))
-               ;; -- throwaway builds
-               (void (run-command #:iters (*NUM-WARMUP*) rkt-command))
-               ;; -- real thing
-               (define times
-                 (let* ([ut0* (run-command rkt-command #:iters (or exact-iters (min-iterations)))]
+                         (file-exists? (*DATA-TMPFILE*)))
+               (define ut*
+                 (let* ([rkt-command (format "~aracket ~a" (*racket-bin*) file-str)]
+                        ;; -- throwaway builds (use to get baseline time)
+                        [time0 (unixtime*->min (run-command #:iters (*NUM-WARMUP*) rkt-command))]
+                        [use-stat? (< time0 (*MIN-MILLISECONDS*))]
+                        [run  (lambda (i)
+                                (run-command rkt-command #:iters i #:stat? use-stat?))]
+                        ;; -- real thing
+                        [ut0* (run (or exact-iters (min-iterations)))]
                         [ut1* (if (or exact-iters
-                                          (anderson-darling? (map unixtime-real ut:0-10)))
+                                      (anderson-darling? (map unixtime-real ut0*)))
                                     '()
-                                    (run-command rkt-command #:iters (- (+ 1 (max-iterations) (min-iterations)))))])
-                   (map unixtime-real (append ut0* ut1*))))
-                 ;(printf "job#~a, iteration #~a of ~a started~n" job# i var)
-                 ;(define command `(time (dynamic-require ,(path->string file) #f)))
-                 ;; block on the run, just in case
-                 ;; (the blocking of `port->lines` should be enough)
-                 (control 'wait)
-                 ;; we're reponsible for closing these
-                 (close-input-port in)
-                 (close-input-port err)
-                 (close-output-port out))
-               (write-results (reverse times)))))))))
+                                    (run (- (+ 1 (max-iterations) (min-iterations)))))])
+                   (append ut0* ut1*)))
+               (write-results (reverse ut*)))))))))
   ;; synchronize on all jobs
-  (for ([thd (in-list threads)]) (thread-wait thd))
+  (for ([thd (in-list thread*)]) (thread-wait thd))
+  (kill-temperature-monitor hot-proc)
   #t)
 
 (define (write-results times [dir (current-directory)])
-  (with-output-to-file (build-path dir (output-path)) #:exists 'append
+  (with-output-to-file (build-path dir (*DATA-TMPFILE*)) #:exists 'append
     (lambda ()
-      (display ";; ") (displayln (timestamp))
-      (write times))))
+      (display "(") (writeln (timestamp))
+      (for-each writeln times)
+      (displayln ")"))))
 
 ;; Get the most recent commit hash for the chosen Racket install
 (define (racket-checksum)
@@ -313,12 +377,14 @@
 
 ;; Read a .rktd file which SHOULD contain 1 list of runtimes.
 ;; Raise an error if there's more than 1 list or the data is malformed.
-(define (result-file->data-row fname)
+(define (result-file->time* fname)
   (with-handlers ([exn:fail? (lambda (e) (raise-user-error 'run "Error collecting data from file '~a', please inspect & try again.\n~a" fname (exn-message e)))])
     (define v (file->value fname))
-    (unless (and (list? v) (for/and ([x (in-list v)]) (integer? x)))
-      (raise-user-error 'run "Data was not a list of numbers"))
-    v))
+    (unless (and (list? v) (not (null? (cdr v)))
+                 (for/and ([x (in-list (cdr v))])
+                   (unixtime? x)))
+      (raise-user-error 'run "Malformed tmp data ~a" v))
+    (map unixtime-real (cdr v))))
 
 (define (run-benchmark vec)
   (define basepath
@@ -393,10 +459,9 @@
   ;; Set a default output path based on the "basepath" if one is not provided
   (unless (output-path)
     (date-display-format 'iso-8601)
-    (output-path (string-append (last (string-split basepath "/"))
-                                "-"
-                                (timestamp)
-                                ".rktd")))
+    (define tag (last (string-split basepath "/")))
+    (output-path (string-append tag "-" (timestamp) ".rktd"))
+    (*DATA-TMPFILE* (string-append tag ".rktd")))
 
   ;; Need at least 2 CPUs since our controller thread is pinned to core 0 and workers
   ;; to cores 1 and above.
@@ -430,11 +495,12 @@
         (displayln "#(")
         (for ([result-file (in-glob (format "~a/benchmark/configuration*/~a"
                                      basepath
-                                     (output-path)))])
-          (displayln (result-file->data-row result-file)))
+                                     (*DATA-TMPFILE*)))])
+          (displayln (result-file->time* result-file)))
         (displayln ")"))
       #:mode 'text
       #:exists 'replace))
+  (printf "### saved results to '~a'\n" (output-path))
   (void))
 
 ;; =============================================================================
