@@ -20,9 +20,8 @@
   ;; Same as calling from the command line, just pass argv vector
 )
 
-(require benchmark-util/data-lattice
+(require benchmark-util/unixtime
          "stats-helpers.rkt"
-         "unixtime.rkt"
          (only-in glob in-glob)
          (only-in racket/file file->value)
          (only-in racket/format ~a ~r)
