@@ -1,8 +1,6 @@
 #lang racket/base
 
 ;; TODO 
-;; - finish working with unixtime struct
-;; - add monitor thread for temperature
 ;; - add option to change governor, default to something reasonable
 ;; - use `proc stat ...` for short-running configs?
 ;; TEST ON LINUX
@@ -84,6 +82,7 @@
 (define *ERROR-MESSAGES* (make-parameter '())) ;; (Listof String)
 (define *DATA-TMPFILE* (make-parameter #f))
 (define *TIME-TMPFILE* (make-parameter "time.tmp"))
+(define *TEMPERATURE-FREQUENCY* (make-parameter 1))
 
 ;; -----------------------------------------------------------------------------
 
@@ -177,11 +176,17 @@
 (define (make-temperature-monitor)
   (define t-file (string-append (output-path) ".heat"))
   (and (check-system-command "sensors")
-       (process
-         (string-append
-           (format "local TEMPERATURE_LOG=~a; " t-file)
-           "sensors -u > $TEMPERATURE_LOG; "
-           "while true; do sleep 3; sensors -u >> $TEMPERATURE_LOG; done"))))
+       (printf "### Monitoring temperature at '~a'\n" t-file)
+       (let ([p (process
+                  (string-append
+                    "sensors -u > " t-file "; "
+                    "while true; do "
+                      "sleep " (*TEMPERATURE-FREQUENCY*) "; "
+                      "echo ';; ---' >> " t-file "; "
+                      "sensors -u >> " t-file " ; "
+                    "done"))])
+         (sleep 2) ;; For temperature readings to stabilize
+         p)))
 
 (define (system-command-exists? cmd-str)
   (if (system (format "hash ~a &> /dev/null" cmd-str)) #t #f))
@@ -202,6 +207,7 @@
     (match-define (list out in pid err control) TM)
     (control 'kill)
     (control 'wait)
+    (for-each displayln (port->lines err))
     (close-output-port in)
     (close-input-port out)
     (close-input-port err))
