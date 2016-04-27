@@ -660,15 +660,19 @@
 (define index->runtimes/vector vector-ref)
 
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
-(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
-(define (fold-lattice S f #:init [init #f])
+;; #:init : initial value for the fold
+;; #:pre : converts a row of absolute runtimes to a single real number
+;;         defaults to the `mean` of the absolute runtimes
+(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real) #:pre (U #f (-> (Listof Real) Real))] Real))
+(define (fold-lattice S f #:init [init #f] #:pre [pre #f])
+  (define pre+ (if pre pre mean))
   (define D (summary-dataset S))
   (if (dataset-empty? D)
-    (fold-lattice/path (summary-source S) f init)
-    (fold-lattice/vector D f init)))
+    (fold-lattice/path (summary-source S) f init pre+)
+    (fold-lattice/vector D f init pre+)))
 
-(: fold-lattice/path (-> Path-String (-> Real Real Real) (U #f Real) Real))
-(define (fold-lattice/path p f init)
+(: fold-lattice/path (-> Path-String (-> Real Real Real) (U #f Real) (-> (Listof Real) Real) Real))
+(define (fold-lattice/path p f init pre)
   (with-input-from-file p
     (lambda ()
       (define prev-box : (Boxof (U #f Real)) (box #f))
@@ -676,7 +680,7 @@
                     ([acc : (U #f Real) init])
                     ([ln (in-lines)]
                      #:when (data-line? ln))
-            (define curr (mean (string->index* ln)))
+            (define curr (pre (string->index* ln)))
             (define prev (unbox prev-box))
             (set-box! prev-box curr)
             (cond
@@ -689,15 +693,16 @@
              [else (raise-user-error 'fold-lattice/path "Everything is #f")]))
         0))))
 
-
-(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) Real))
-(define (fold-lattice/vector D f init)
+(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) (-> (Listof Real) Real) Real))
+(define (fold-lattice/vector D f init pre)
   (or
     (for/fold : (U #f Real)
               ([prev : (U #f Real) init])
               ([i    (in-range (vector-length D))])
-      (define val (mean (vector-ref D i)))
-      (or (and prev (f prev val)) val))
+      (define val (pre (vector-ref D i)))
+      (if prev
+        (f prev val)
+        val))
     0))
 
 (: min* (-> (Listof Real) Real))
@@ -745,6 +750,10 @@
 (: avg-overhead (-> Summary Real))
 (define (avg-overhead S)
   (/ (avg-lattice-point S) (untyped-mean S)))
+
+(: min-overhead (-> Summary Real))
+(define (min-overhead S)
+  (/ (min-lattice-point S) (untyped-mean S)))
 
 (: max-overhead (-> Summary Real))
 (define (max-overhead S)
@@ -1016,28 +1025,6 @@
 
   ;; -- all configurations
 
-  (let* ([p "#s(unixtime 0 1 2 3 4 5 6 7 8)"]
-         [u (prefab->unixtime p)]
-         [u* (prefab*->unixtime* (list p p p p))])
-    (check-true (unixtime? u))
-    (check-equal? (unixtime-real u) 0)
-    (check-equal? (unixtime-exit u) 8)
-    (check-true (list? u*))
-    (check-equal? (unixtime-vctx (caddr u*)) 7)
-    (check-equal? (unixtime*->index* u*) '(0 0 0 0)))
-
-  (let* ([t 99]
-         [u (time->unixtime t)])
-    (check-true (unixtime? u))
-    (check-equal? (unixtime-real u) t)
-    (check-equal? (unixtime*->index* (list u)) (list t)))
-
-  (let* ([d (vector (list 1 2 3)
-                    (list "timestamp" "#s(unixtime 0 1 2 3 4 5 6 7 8)"))]
-         [v (dataset? d)])
-    (check-true (and v #t))
-    (check-true (vector? v))
-    (check-equal? (unixtime-real (cadr (vector-ref v 0))) 2))
 
 
 )
