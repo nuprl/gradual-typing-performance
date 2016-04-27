@@ -124,6 +124,15 @@
   (avg-overhead
    (-> Summary Real))
 
+  (min-runtime
+   (-> Summary Real))
+
+  (max-runtime
+   (-> Summary Real))
+
+  (min-overhead
+   (-> Summary Real))
+
   (max-overhead
    (-> Summary Real))
 
@@ -652,15 +661,19 @@
   (unixtime*->index* (vector-ref D i)))
 
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
-(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
-(define (fold-lattice S f #:init [init #f])
+;; #:init : initial value for the fold
+;; #:pre : converts a row of absolute runtimes to a single real number
+;;         defaults to the `mean` of the absolute runtimes
+(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real) #:pre (U #f (-> (Listof Real) Real))] Real))
+(define (fold-lattice S f #:init [init #f] #:pre [pre #f])
+  (define pre+ (if pre pre mean))
   (define D (summary-dataset S))
   (if (dataset-empty? D)
-    (fold-lattice/path (summary-source S) f init)
-    (fold-lattice/vector D f init)))
+    (fold-lattice/path (summary-source S) f init pre+)
+    (fold-lattice/vector D f init pre+)))
 
-(: fold-lattice/path (-> Path-String (-> Real Real Real) (U #f Real) Real))
-(define (fold-lattice/path p f init)
+(: fold-lattice/path (-> Path-String (-> Real Real Real) (U #f Real) (-> (Listof Real) Real) Real))
+(define (fold-lattice/path p f init pre)
   (with-input-from-file p
     (lambda ()
       (define prev-box : (Boxof (U #f Real)) (box #f))
@@ -668,7 +681,7 @@
                     ([acc : (U #f Real) init])
                     ([ln (in-lines)]
                      #:when (data-line? ln))
-            (define curr (mean (string->index* ln)))
+            (define curr (pre (string->index* ln)))
             (define prev (unbox prev-box))
             (set-box! prev-box curr)
             (cond
@@ -681,16 +694,43 @@
              [else (raise-user-error 'fold-lattice/path "Everything is #f")]))
         0))))
 
-
-(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) Real))
-(define (fold-lattice/vector D f init)
+(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) (-> (Listof Real) Real) Real))
+(define (fold-lattice/vector D f init pre)
   (or
     (for/fold : (U #f Real)
               ([prev : (U #f Real) init])
               ([i    (in-range (vector-length D))])
       (define val (mean (unixtime*->index* (vector-ref D i))))
-      (or (and prev (f prev val)) val))
+      (if prev
+        (f prev val)
+        val))
     0))
+
+(: min* (-> (Listof Real) Real))
+(define (min* r*)
+  (or (for/fold ([prev : (U #f Real) #f])
+                ([r (in-list r*)])
+        (if prev
+          (min prev r)
+          r))
+      (raise-user-error 'min* "Empty list")))
+
+(: max* (-> (Listof Real) Real))
+(define (max* r*)
+  (or (for/fold ([prev : (U #f Real) #f])
+                ([r (in-list r*)])
+        (if prev
+          (max prev r)
+          r))
+      (raise-user-error 'max* "Empty list")))
+
+(: min-runtime (-> Summary Real))
+(define (min-runtime S)
+  (fold-lattice S min #:pre min*))
+
+(: max-runtime (-> Summary Real))
+(define (max-runtime S)
+  (fold-lattice S max #:pre max*))
 
 (: max-lattice-point (-> Summary Real))
 (define (max-lattice-point sm)
@@ -711,6 +751,10 @@
 (: avg-overhead (-> Summary Real))
 (define (avg-overhead S)
   (/ (avg-lattice-point S) (untyped-mean S)))
+
+(: min-overhead (-> Summary Real))
+(define (min-overhead S)
+  (/ (min-lattice-point S) (untyped-mean S)))
 
 (: max-overhead (-> Summary Real))
 (define (max-overhead S)
@@ -954,6 +998,17 @@
     (sequence->list
       (sequence-map (lambda ([p : LatticePath]) (path->max-runtime S p)) (all-paths S)))
    '(20883/10 20463/10 20883/10 62093/30 20463/10 62017/30 20883/10 20463/10 12703/6 12703/6 20463/10 31594/15 10563/5 10563/5 12703/6 12703/6 10563/5 10563/5 20463/10 62017/30 20463/10 31594/15 62777/30 31594/15))
+
+  ;; -- min-overhead max-overhead min-runtime max-runtime
+  (let ([lo-r (min-runtime S)]
+        [lo-o (min-overhead S)]
+        [hi-o (max-overhead S)]
+        [hi-r (max-runtime S)]
+        [u-r (untyped-mean S)])
+    (check-true (< lo-r hi-r))
+    (check-true (< lo-o hi-o))
+    (check-true (< (/ lo-r u-r) lo-o))
+    (check-true (< hi-o (/ hi-r u-r))))
 
   ;; -- summary->label
   (check-equal? (summary->label S) "echo-data")
