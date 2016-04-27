@@ -1,5 +1,10 @@
 #lang racket/base
 
+;; TODO 
+;; - finish working with unixtime struct
+;; - add monitor thread for temperature
+;; - add option to change governor, default to something reasonable
+
 ;; Benchmark driver
 ;;
 ;; Usage:
@@ -22,7 +27,6 @@
          (only-in racket/format ~a ~r)
          math/statistics
          mzlib/os
-         pict
          glob
          pkg/lib
          racket/class
@@ -61,13 +65,66 @@
 
 ;; Paths to write results/diagrams
 (define output-path (make-parameter #f))
-(define lattice-path (make-parameter #f))
 (define entry-point-param (make-parameter #f))
 (define exclusive-config (make-parameter #f))
 (define min-max-config (make-parameter #f))
 (define *racket-bin* (make-parameter "")) ;; Path-String
 (define *AFFINITY?* (make-parameter #t)) ;; Boolean
 (define *ERROR-MESSAGES* (make-parameter '())) ;; (Listof String)
+
+;; -----------------------------------------------------------------------------
+
+(define TIME-CMD
+  "/usr/bin/time -f 'TIME %x exit    %e real    %U user    %S sys    %M max-kbytes    %D udata    %p ustack    %c ictx    %w vctx'")
+;0.09 user 0.00 sys  21436 max-kbytes  0 unshared-data 0 unshared-stack  12 inv-ctx  12 vol-ctx
+
+(define TIME-RX
+  #rx"^TIME ([0-9:.]+) real    ([0-9.]+) user    ([0-9.]+) sys    ([0-9]+) max-kbytes    ([0-9]+) udata    ([0-9]+) ustack    ([0-9]+) ictx    ([0-9]+) vctx    ([0-9]+) exit$")
+
+(struct unixtime (
+  real        ;; Elapsed real (wall clock) time used by the process, in milliseconds
+  user        ;; Total number of CPU-seconds that the process used directly (in user mode), in seconds.
+  sys         ;; Total number of CPU-seconds used by the system on behalf of the process (in kernel mode), in seconds.
+  max-kbytes  ;; Maximum resident set size of the process during its lifetime, in Kilobytes.
+  udata       ;; Average size of the process's unshared data area, in Kilobytes.
+  ustack      ;; Average unshared stack size of the process, in Kilobytes.
+  ictx        ;; Number of times the process was context-switched involuntarily (because the time slice expired).
+  vctx        ;; Number of times that the program was context-switched voluntarily, for instance while waiting for an I/O operation to complete.
+  exit        ;; Process exit code
+) #:prefab )
+
+(define (string->unixtime str)
+  (cond
+   [(regexp-match TIME-RX str)
+    => (lambda (m)
+      (apply unixtime (cons (seconds->milliseconds (cadr m)) (map string->number (cddr m)))))]
+   [else
+    #f]))
+
+(define (real-time->milliseconds str)
+  (define-values (h-str m-str s+ms-str)
+    (match (string-spit str ":")
+     [(list h-str m-str s+ms-str)
+      (values h-str m-str s+ms-str)]
+     [(list m-str s+ms-str)
+      (values "0" m-str s+ms-str)]))
+  (match-define (list sec ms) (string-split s+ms-str "."))
+  (+ (hours->milliseconds (string->number h-str))
+     (minutes->milliseconds (string->number m-str))
+     (seconds->milliseconds (string->number s-str))
+     (string->number ms-str)))
+
+(define (hours->milliseconds h)
+  (minutes->milliseconds (* 60 h)))
+
+(define (minutes->milliseconds m)
+  (seconds->milliseconds (* 60 m)))
+
+(define (seconds->milliseconds s)
+  (* 1000 s))
+
+;; --- time
+;; -----------------------------------------------------------------------------
 
 (define-syntax-rule (compile-error path)
   (let ([message (format "Compilation failed in '~a/~a'" (current-directory) path)])
@@ -95,6 +152,33 @@
         (~r i #:base 2 #:min-width num-modules #:pad-string "0")))
     (define var-str (format "configuration~a" bits))
     (build-path basepath "benchmark" var-str entry-point)))
+
+(define ((make-run-command job#) stub #:iters [iters 1])
+  (define cmd
+    (string-append
+      (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+      TIME-CMD
+      (string-append (format " for i in `seq 0 ~a`; do " iters)
+                     stub
+                     "; done;")))
+  (match-define (list in out _ err control) (process cmd #:set-pwd? #t))
+  (control 'wait)
+  (for-each displayln (port->lines err))
+  (define ut*
+    (for/fold ([acc '()])
+              ([ln (in-lines out)])
+      (define ut (string->unixtime ln))
+      (if ut
+        (if (zero? (unixtime-exit ut))
+          (cons ut acc)
+          (raise-user-error 'run-command
+            "Process terminated with non-zero exit code '~a'. Full command was '~a'"
+            (unixtime-exit ut) cmd))
+        acc)))
+  (close-input-port in)
+  (close-input-port err)
+  (close-output-port out)
+  ut*)
 
 ;; Run the configurations for each configuration directory
 ;; Optional argument gives the exact configuration to run.
@@ -132,71 +216,31 @@
       ;; the `taskset` command.
       (thread
        (λ ()
+         (define run-command (make-run-command job#))
          (for ([var-in-slice var-slice])
            (match-define (list var var-idx) var-in-slice)
            (define-values (new-cwd file _2) (split-path var))
-           (define times null)
+           (define file-str (path->string file))
            (parameterize ([current-directory new-cwd])
              ;; first compile the configuration
-             (define compile-ok?
-               (system (format "~a~araco make -v ~a"
-                         (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-                         (*racket-bin*)
-                         (path->string file))))
-
-             (unless compile-ok?
-               (compile-error (path->string file)))
-
-             ;; run an extra run of the configuration to throw away in order to
-             ;; avoid OS caching issues
-             (unless (only-compile?)
-               (printf "job#~a, throwaway build/run to avoid OS caching~n" job#)
-               (for ([i (in-range (*NUM-WARMUP*))])
-                 (match-define (list in out _ err control)
-                   (process (format "~a~aracket ~a"
-                              (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-                              (*racket-bin*)
-                              (path->string file))))
-                 ;; make sure to block on this run
-                 (control 'wait)
-                 (close-input-port in)
-                 (close-input-port err)
-                 (close-output-port out)))
-
+             (void (run-command (format "~araco make -v ~a" (*racket-bin*) file-str)))
              ;; run the iterations that will count for the data
              (define exact-iters (num-iterations))
-             (unless (or (and (only-compile?) compile-ok?)
+             (unless (or (only-compile?)
                          (file-exists? (output-path)))
-               (for ([i (in-range 0
-                                  (or exact-iters (+ 1 (max-iterations)))
-                                  1)]
-                     ;; Stop early if user did NOT give an exact iterations
-                     ;;  and Anderson-Darling does not reject null normality hypothesis
-                     #:break (and (not exact-iters)
-                                  (= i (min-iterations))
-                                  (anderson-darling? times)))
-                 (printf "job#~a, iteration #~a of ~a started~n" job# i var)
-                 (define command `(time (dynamic-require ,(path->string file) #f)))
-                 (match-define (list in out pid err control)
-                   (process (format "~a~aracket -e '~s'"
-                              (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-                              (*racket-bin*)
-                              command)
-                            #:set-pwd? #t))
-                 ;; if this match fails, something went wrong since we put time in above
-                 (define time-info
-                   (for/or ([line (in-list (port->lines in))])
-                     (regexp-match #rx"cpu time: (.*) real time: (.*) gc time: (.*)" line)))
-                 (match time-info
-                   [(list full (app string->number cpu)
-                               (app string->number real)
-                               (app string->number gc))
-                    (printf "job#~a, iteration#~a - cpu: ~a real: ~a gc: ~a~n"
-                            job# i cpu real gc)
-                    (set! times (cons real times))]
-                   [#f (runtime-error var var-idx)])
-                 ;; print anything we get on stderr so we can detect errors
-                 (for-each displayln (port->lines err))
+               (define rkt-command "~aracket ~a" (*racket-bin*) file-str))
+               ;; -- throwaway builds
+               (void (run-command #:iters (*NUM-WARMUP*) rkt-command))
+               ;; -- real thing
+               (define times
+                 (let* ([ut0* (run-command rkt-command #:iters (or exact-iters (min-iterations)))]
+                        [ut1* (if (or exact-iters
+                                          (anderson-darling? (map unixtime-real ut:0-10)))
+                                    '()
+                                    (run-command rkt-command #:iters (- (+ 1 (max-iterations) (min-iterations)))))])
+                   (map unixtime-real (append ut0* ut1*))))
+                 ;(printf "job#~a, iteration #~a of ~a started~n" job# i var)
+                 ;(define command `(time (dynamic-require ,(path->string file) #f)))
                  ;; block on the run, just in case
                  ;; (the blocking of `port->lines` should be enough)
                  (control 'wait)
@@ -304,9 +348,6 @@
                   [("-o" "--output") o-p
                                      "A path to write data to"
                                      (output-path o-p)]
-                  [("-l" "--lattice") l-p
-                                     "A path to write the lattice diagram to"
-                                     (lattice-path l-p)]
                   [("-e" "--entry-point") e-p
                                           "The main file to execute. (Defaults to 'main.rkt'.)"
                                           (entry-point-param e-p)]
@@ -385,6 +426,7 @@
         (printf ";; ~a~n" (version))
         (printf ";; base @ ~a~n" (racket-checksum))
         (printf ";; typed-racket @ ~a~n" (typed-racket-checksum))
+        (printf ";; ~a~n" (timestamp))
         (displayln "#(")
         (for ([result-file (in-glob (format "~a/benchmark/configuration*/~a"
                                      basepath
@@ -393,16 +435,6 @@
         (displayln ")"))
       #:mode 'text
       #:exists 'replace))
-
-  ;; TODO: update lattice to account for empty-result startup time
-  (when (lattice-path)
-    (define averaged-results
-      (vector-map (λ (times) (cons (mean times) (stddev times))) (file->value (output-path))))
-    (send ;; default size is too small to see, so apply a scaling factor
-          (pict->bitmap (scale (make-performance-lattice averaged-results) 3))
-          save-file
-          (lattice-path)
-          'png))
   (void))
 
 ;; =============================================================================
