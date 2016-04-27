@@ -463,6 +463,10 @@
       r
       (error 'get-num-paths "Factorial too large, not an index!\n"))))
 
+(: get-num-iterations (-> Summary Index))
+(define (get-num-iterations S)
+  (assert (fold-lattice S max #:pre length) index?))
+
 (: get-num-configurations (-> Summary Index))
 (define (get-num-configurations S)
   (assert (expt 2 (get-num-modules S)) index?))
