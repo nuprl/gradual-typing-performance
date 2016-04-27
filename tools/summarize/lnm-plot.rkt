@@ -22,6 +22,10 @@
 
   ;; ---
 
+  plot-traces
+  ;; (-> Path-String Pict)
+  ;; Plot convergence for each configuration
+
   lnm-plot
   ;; Create an L-NM plot based on the given parameters
   ;; Returns a list of plots:
@@ -330,6 +334,46 @@
       #:y-label "Time (ms)"
       #:legend-anchor 'bottom-right
       #:y-min 0
+      #:width (*PLOT-WIDTH*)
+      #:height (*PLOT-HEIGHT*)))
+  (cast p pict))
+
+;; Make a line for each configuration in the dataset
+(: plot-traces (-> (Listof Summary) pict))
+(define (plot-traces S*)
+  (define S
+    (if (and (not (null? S*)) (null? (cdr S*)))
+      (car S*)
+      (raise-user-error 'plot-traces "Sorry expected exactly 1 summary, got '~a'" S*)))
+  (define lo (min-runtime S))
+  (define hi (max-runtime S))
+  (define num-iters (get-num-iterations S))
+  (define num-configs (get-num-configurations S))
+  (define band-size : Real
+    (ceiling (/ (- hi lo) (*TRACE-NUM-COLORS*))))
+  (define (runtime->line-color (r : Real)) : Natural
+    (let loop : Natural ([acc : Natural 0])
+      (if (< r (* (+ 1 acc) band-size))
+        (assert (max (- (*TRACE-NUM-COLORS*) acc) 0) index?)
+        (loop (+ acc 1)))))
+  (define p
+    (plot-pict
+      (for/list : (Listof renderer2d)
+                ([cfg (all-configurations S)])
+        (define r* (configuration->runtimes S cfg))
+        (lines
+          (for/list : (Listof (List Real Real))
+                    ([r (in-list r*)]
+                     [i (in-naturals)])
+            (list i r))
+          #:color (runtime->line-color (car r*))
+          ;#:label (and (< num-configs 64) cfg)
+          #:alpha 0.6))
+      #:x-min 0
+      #:x-max num-iters
+      #:x-label "Iteration #"
+      #:y-label "Time (ms)"
+      ;#:legend-anchor (*LEGEND-ANCHOR*)
       #:width (*PLOT-WIDTH*)
       #:height (*PLOT-HEIGHT*)))
   (cast p pict))
