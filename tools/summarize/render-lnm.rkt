@@ -6,6 +6,7 @@
  render-bars
  render-means ;; hack
  render-exact ;; hack
+ render-traces
  render-untyped-bars ;; hack
  render-dots
  render-lnm
@@ -681,6 +682,9 @@
 
 (: render-exact (-> (Vectorof String) Pict))
 (define render-exact (simple-commandline-plot plot-exact-configurations))
+
+(: render-traces (-> (Vectorof String) Pict))
+(define render-traces (simple-commandline-plot plot-traces))
 
 (: render-means (-> (Vectorof String) Pict))
 (define render-means (simple-commandline-plot plot-mean-bars))

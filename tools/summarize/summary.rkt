@@ -17,6 +17,9 @@
    (-> Summary Natural))
   ;; Get the number of configurations from a Summary
 
+  (get-num-iterations
+   (-> Summary Natural))
+
   (get-num-configurations
    (-> Summary Natural))
   ;; Get the number of configurations from a Summary
@@ -394,6 +397,10 @@
     (if (index? r)
       r
       (error 'get-num-paths "Factorial too large, not an index!\n"))))
+
+(: get-num-iterations (-> Summary Index))
+(define (get-num-iterations S)
+  (assert (fold-lattice S max #:pre length) index?))
 
 (: get-num-configurations (-> Summary Index))
 (define (get-num-configurations S)
@@ -940,6 +947,9 @@
     (check-true (< lo-o hi-o))
     (check-true (< (/ lo-r u-r) lo-o))
     (check-true (< hi-o (/ hi-r u-r))))
+
+  ;; -- get-num-iterations
+  (check-equal? (get-num-iterations S) 30)
 
   ;; -- summary->label
   (check-equal? (summary->label S) "echo-data")
