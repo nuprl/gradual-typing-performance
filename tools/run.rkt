@@ -2,7 +2,7 @@
 
 ;; TODO 
 ;; - add option to change governor, default to something reasonable
-;; - use `proc stat ...` for short-running configs?
+;; - 
 ;; TEST ON LINUX
 
 ;; Benchmark driver

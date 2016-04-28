@@ -104,18 +104,19 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+  (only-in math/number-theory factorial)
+  (only-in racket/file file->value)
+  (only-in racket/format ~r)
+  (only-in racket/list last range) ;; because in-range has the wrong type
+  (only-in racket/string string-split)
+  (only-in racket/port with-input-from-string)
+  (only-in racket/vector vector-append)
+  gtp-summarize/bitstring
+  gtp-summarize/modulegraph
   math/statistics
   racket/path
   racket/sequence
   typed/pict
-  (only-in math/number-theory factorial)
-  (only-in racket/list last range) ;; because in-range has the wrong type
-  (only-in racket/file file->value)
-  (only-in racket/vector vector-append)
-  (only-in racket/format ~r)
-  (only-in racket/string string-split)
-  gtp-summarize/modulegraph
-  gtp-summarize/bitstring
 )
 
 (require/typed version/utils
@@ -125,14 +126,79 @@
 
 (define-type Pict pict)
 
+;; -----------------------------------------------------------------------------
+;; copied from benchmark-util/unixtime.rkt
+
+(struct unixtime (
+  [real       : Milliseconds]
+  [user       : CPU-Seconds]
+  [sys        : CPU-Seconds]
+  [max-kbytes : KB]
+  [udata      : KB]
+  [ustack     : KB]
+  [ictx       : Natural]
+  [vctx       : Natural]
+  [exit       : Natural]
+) #:transparent )
+(define-type UnixTime unixtime)
+(define-type Milliseconds Index) ;; legacy
+(define-type CPU-Seconds Flonum)
+(define-type KB Natural)
+
+(: time->unixtime (-> Integer UnixTime))
+(define (time->unixtime real)
+  (unixtime (assert real index?) 0 0 0 0 0 0 0 0))
+
+(: unixtime*->index* (-> (Listof UnixTime) (Listof Index)))
+(define (unixtime*->index* ut*)
+  (for/list : (Listof Index) ([ut (in-list ut*)])
+    (unixtime-real ut)))
+
 ;; =============================================================================
 ;; -- data definition: summary
 
-(define-type Dataset (Vectorof (Listof Index)))
+(define-type Dataset (Vectorof (Listof UnixTime)))
 
+(: prefab*->unixtime* (-> (Listof Any) (Listof UnixTime)))
+(define (prefab*->unixtime* a*)
+  (for/list : (Listof (UnixTime))
+            ([a (in-list a*)])
+    (prefab->unixtime a)))
+
+(: prefab->unixtime (-> Any UnixTime))
+(define (prefab->unixtime a)
+  (define num*
+    (with-input-from-string (substring (format "~a" a) 2)
+      (lambda () (cast (read) (Listof Any)))))
+  (unless (eq? 'unixtime (car num*))
+    (raise-user-error 'prefab->unixtime "Error parsing '~a'" a))
+  (unixtime
+    (assert (list-ref num* 1) index?)
+    (assert (list-ref num* 2) flonum?)
+    (assert (list-ref num* 3) flonum?)
+    (assert (list-ref num* 4) index?)
+    (assert (list-ref num* 5) index?)
+    (assert (list-ref num* 6) index?)
+    (assert (list-ref num* 7) index?)
+    (assert (list-ref num* 8) index?)
+    (assert (list-ref num* 9) index?)))
+
+;; Cast an untyped value to a UnixTime dataset
 (: dataset? (-> Any Dataset))
-(define (dataset? vec)
-  (cast vec Dataset))
+(define (dataset? vec0)
+  (define vec (cast vec0 (Vectorof (Listof Any))))
+  (for ([x* (in-vector vec)]
+        [i (in-naturals)])
+    (if (and (list? x*) (not (null? x*)) (index? (car x*)))
+      (vector-set! vec i
+        (for/list : (Listof UnixTime)
+                  ([x x*])
+          (time->unixtime (assert x index?))))
+      (vector-set! vec i
+        ;; First element should be a string
+        (and (assert (car x*) string?)
+             (prefab*->unixtime* (cdr x*))))))
+  (cast vec (Vectorof (Listof UnixTime))))
 
 (struct summary (
   [source : Path-String] ;; the data's origin
@@ -316,7 +382,7 @@
 ;; Return all data for the untyped configuration
 (: untyped-runtimes (-> Summary (Listof Index)))
 (define (untyped-runtimes sm)
-  (vector-ref (summary-dataset sm) 0))
+  (unixtime*->index* (vector-ref (summary-dataset sm) 0)))
 
 (: untyped-mean (-> Summary Real))
 (define (untyped-mean sm)
@@ -326,7 +392,7 @@
 (: typed-runtimes (-> Summary (Listof Index)))
 (define (typed-runtimes sm)
   (define vec (summary-dataset sm))
-  (vector-ref vec (sub1 (vector-length vec))))
+  (unixtime*->index* (vector-ref vec (sub1 (vector-length vec)))))
 
 (: typed-mean (-> Summary Real))
 (define (typed-mean sm)
@@ -341,7 +407,8 @@
 (define (configuration->stddev S v)
   (let ([m (configuration->mean-runtime S v)]
         [i (bitstring->natural v)])
-    (stddev/mean m (vector-ref (summary-dataset S) i))))
+    ;; TODO index->runtimes
+    (stddev/mean m (unixtime*->index* (vector-ref (summary-dataset S) i)))))
 
 (: configuration->overhead (-> Summary Bitstring Real))
 (define (configuration->overhead S v)
@@ -349,7 +416,7 @@
 
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime sm i)
-  (mean (vector-ref (summary-dataset sm) i)))
+  (mean (unixtime*->index* (vector-ref (summary-dataset sm) i))))
 
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
 (: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
@@ -359,7 +426,7 @@
     (for/fold : (U #f Real)
               ([prev : (U #f Real) init])
               ([i    (in-range 1 (sub1 (vector-length vec)))])
-      (define val (mean (vector-ref vec i)))
+      (define val (mean (unixtime*->index* (vector-ref vec i))))
       (or (and prev (f prev val)) val))
     0))
 
