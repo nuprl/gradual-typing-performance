@@ -7,6 +7,11 @@
 ;;  subject to at most L additional conversion steps
 
 (provide
+
+  ;; TODO
+  ;; load a summary to an interactive plot
+  ;; summary = vectorof listof unixtime
+
   lnm-plot
   ;; Create an L-NM plot based on the given parameters
   ;; Returns a list of plots:

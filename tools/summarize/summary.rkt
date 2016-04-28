@@ -142,7 +142,7 @@
 ) #:transparent )
 (define-type UnixTime unixtime)
 (define-type Milliseconds Index) ;; legacy
-(define-type CPU-Seconds Flonum)
+(define-type CPU-Seconds Real)
 (define-type KB Natural)
 
 (: time->unixtime (-> Integer UnixTime))
@@ -161,7 +161,7 @@
 
 (: prefab*->unixtime* (-> (Listof Any) (Listof UnixTime)))
 (define (prefab*->unixtime* a*)
-  (for/list : (Listof (UnixTime))
+  (for/list : (Listof UnixTime)
             ([a (in-list a*)])
     (prefab->unixtime a)))
 
@@ -174,8 +174,8 @@
     (raise-user-error 'prefab->unixtime "Error parsing '~a'" a))
   (unixtime
     (assert (list-ref num* 1) index?)
-    (assert (list-ref num* 2) flonum?)
-    (assert (list-ref num* 3) flonum?)
+    (assert (list-ref num* 2) real?)
+    (assert (list-ref num* 3) real?)
     (assert (list-ref num* 4) index?)
     (assert (list-ref num* 5) index?)
     (assert (list-ref num* 6) index?)
@@ -659,5 +659,29 @@
   ;              '("0000" "0001" "0010" "0011" "0100" "0101" "0110" "0111" "1000" "1001" "1010" "1011" "1100" "1101" "1110" "1111"))
 
   ;; -- all configurations
+
+  (let* ([p "#s(unixtime 0 1 2 3 4 5 6 7 8)"]
+         [u (prefab->unixtime p)]
+         [u* (prefab*->unixtime* (list p p p p))])
+    (check-true (unixtime? u))
+    (check-equal? (unixtime-real u) 0)
+    (check-equal? (unixtime-exit u) 8)
+    (check-true (list? u*))
+    (check-equal? (unixtime-vctx (caddr u*)) 7)
+    (check-equal? (unixtime*->index* u*) '(0 0 0 0)))
+
+  (let* ([t 99]
+         [u (time->unixtime t)])
+    (check-true (unixtime? u))
+    (check-equal? (unixtime-real u) t)
+    (check-equal? (unixtime*->index* (list u)) (list t)))
+
+  (let* ([d (vector (list 1 2 3)
+                    (list "timestamp" "#s(unixtime 0 1 2 3 4 5 6 7 8)"))]
+         [v (dataset? d)])
+    (check-true (and v #t))
+    (check-true (vector? v))
+    (check-equal? (unixtime-real (cadr (vector-ref v 0))) 2))
+
 
 )
