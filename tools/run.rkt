@@ -1,9 +1,8 @@
 #lang racket/base
+(date-display-format 'iso-8601)
 
 ;; TODO 
 ;; - add option to change governor, default to something reasonable
-;; - 
-;; TEST ON LINUX
 
 ;; Benchmark driver
 ;;
@@ -161,17 +160,17 @@
     (delete-file time-tmpfile))
   (define cmd
     (string-append
+      (format " for i in `seq 1 ~a`; do " iters)
       (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
-      (string-append (format " (for i in `seq 1 ~a`; do " iters)
-                     time-cmd
-                     " -o "
-                     time-tmpfile
-                     " --append "
-                     " -f "
-                     TIME-FMT
-                     " "
-                     stub
-                     "; done);")))
+      time-cmd
+      " -o "
+      time-tmpfile
+      " --append "
+      " -f "
+      TIME-FMT
+      " "
+      stub
+      "; done;"))
   (printf "#### exec `~a` in `~a`\n" stub (current-directory))
   (match-define (list out in pid err control) (process cmd #:set-pwd? #t))
   (control 'wait)
@@ -403,11 +402,15 @@
     (raise-user-error (format "expected a number, given ~a" (num-jobs))))
 
   ;; Set a default output path based on the "basepath" if one is not provided
-  (unless (output-path)
+  ;; Also set *DATA-TMPFILE*
+  (cond
+   [(output-path)
+    (*DATA-TMPFILE* (output-path))]
+   [else
     (date-display-format 'iso-8601)
     (define tag (last (string-split basepath "/")))
     (output-path (string-append tag "-" (timestamp) ".rktd"))
-    (*DATA-TMPFILE* (string-append tag ".rktd")))
+    (*DATA-TMPFILE* (string-append tag ".rktd"))])
 
   ;; Need at least 2 CPUs since our controller thread is pinned to core 0 and workers
   ;; to cores 1 and above.
