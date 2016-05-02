@@ -123,7 +123,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     All @bm{suffixtree} datatype definitions are in a single module, separate
      from the functions that manipulate and traverse the data.
     The data are also mutable, therefore the frequently-crossed type boundary
-     between data definitions and their clients is protected by expensive
+     between data definitions and their core functionality is protected by expensive
      contracts.
   }
 )
@@ -310,9 +310,9 @@ Most benchmarks are self-contained, but where relevant we note their external
 
   @elem{
     Object-oriented calculator for Forth programs.
-    The interpreter maintains an environment of first-class objects representing
+    The interpreter maintains an list of first-class objects representing
      calculator commands.
-    If this environment repeatedly crosses type boundaries it accumulates
+    If this list repeatedly crosses type boundaries it accumulates
      higher-order contract wrappers.
     These wrappers lead to an exponential slowdown in some configurations.
   }
@@ -430,7 +430,7 @@ We performed the same experiment on @integer->word[(length (*RKT-VERSIONS*))]
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
 The machine we used to take measurements was a Linux machine with
  two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
-Each processor has 16 cores, giving us a total of 32.
+Each processor has 16 cores, giving us a total of 32 cores.
 We dedicated at most 29 of the machine's cores to running our experiment;
  each configuration was pinned to a single core and each benchmark program
  was run to completion before starting the next benchmark.
@@ -448,6 +448,8 @@ The means and standard errors in our analysis are computed from these sequences
  of 10 or 30 timings.
 All scripts we used to run our experiments and the data we collected
  are available in the online supplement to this paper.
+For threats to validity regarding our experimental protocol,
+ see @Secref{sec:threats:protocol}.
 
 
 @; -----------------------------------------------------------------------------
@@ -469,6 +471,7 @@ We further assume by the law of large numbers that our sample mean after
 None of these assumptions are clearly valid@~cite[kj-tr-2013], but we believe the
  relative differences we observed between configurations in a lattice are correct,
  especially since we have observed similar differences on other machines@~cite[tfgnvf-popl-2016].
+@; TODO cite samth
 
 Running even 30 iterations, however, is prohibitive given the size of our experiment.
 In total, we measured @add-commas[(count-all-configurations)] configurations
@@ -560,8 +563,8 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
         @(apply Figure-ref name*) present our experimental results in
          a series of performance graphs.
         Each graph is a cumulative distribution function showing the number
-         of @deliverable{D} configurations for real-valued @math{D} between
-         1 and @id[(*MAX-OVERHEAD*)].
+         of @deliverable{D} configurations for real-valued @math{D}
+         between 1x and @id[(*MAX-OVERHEAD*)]x.
         Specifically, the x-axes represent overhead factors
          relative to the untyped configuration of each benchmark.
         The y-axes count the percentage of each benchmark's configurations
@@ -579,10 +582,10 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
         Granted, there may be software teams that require overhead
          under 1x---that is, a speedup relative to the untyped program---or
          can work with slowdowns exceeding 20x, but we expect most users
-         will tolerate a small performance overhead.
+         will tolerate only a small performance overhead.
         As such we use a log scale on the x-axis to emphasize the practical
          value of low overheads.
-        Minor tick lines are drawn at 1.2x, 1.4x, etc and again at 4x, 6x, etc.
+        Minor tick lines are drawn at 1.2x, 1.4x, etc. and again at 4x, 6x, etc.
          for ease of reference.
         For example, the number of @deliverable{1.2} configurations can be found
          by studying the first minor tick and the number of @usable["1.2" "1.4"]
@@ -612,7 +615,7 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
 
         The right column of plots shows the effect of adding types
          to at most @math{k=1} additional untyped modules.
-        A point @math{(X,Y)} on these curves again represents the percentage @math{Y}
+        A point @math{(X,Y)} on these curves represents the percentage @math{Y}
          of configurations @exact{$c_1$} such that there exists a configuration
          @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
          runs at most @math{X} times slower than the untyped configuration.
@@ -630,6 +633,9 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
         In other words, even if the programmer at a @deliverable{1.2} configuration
          happens to convert the untyped module best-suited to improve performance,
          their next configuration will be no better than @deliverable{1.2}.
+        @; Theoretically, a developer might try every way of typing the next
+        @;  one module, but at that point they have all the annotations to go
+        @;  anywhere in the lattice.
 
         @; -- all about data, ideal shape
         Ideally, every curve in the left column would be a flat line at the
@@ -641,7 +647,8 @@ The value 1 was determined experimentally by Stephens for a @math{p}-value of
         Conversely, the worst scenario would have flat lines at the bottom of every
          plot, indicating that any configuration with at least one typed module
          is more than 20x slower than the untyped configuration.
-        Here too, freedom to type an additional module will not change performance.
+        Here too, freedom to type an additional module will not change performance
+         and so the @math{k=0} and @math{k=1} plots will be identical.
 
         The reality is that each benchmark determines a unique curve.
         Using a different version of Racket or moving from @math{k=0} to @math{k=1}
