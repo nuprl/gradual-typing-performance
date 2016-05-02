@@ -397,13 +397,42 @@ Conversely, @bm{lnm} uses two typed libraries.
 Removing the type boundaries to these libraries improves performance
  to at most @min-overhead['lnm "6.2"] relative to the untyped runtime on Racket v6.2.
 
-Typed clients of untyped libraries have the additional burden of supplying type
- annotations matching their use-case.
-These annotations appear in @bm{mbta} and @bm{zordoz}, but also in @bm{acquire}
- and @bm{dungeon} on built-in Racket functions that are not part of
- the trusted type environment.
+The obvious fix is to migrate the untyped libraries to Typed Racket and
+ the typed libraries to untyped Racket, but this replaces the performance
+ overhead with software maintenance overhead as library authors will need to
+ manage two subtly different versions of the same code.
+For instance, suppose there is an untyped library for managing elections that
+ includes a function for adding votes to a global tally:
 
-Based on these observations, we conclude that the task of migrating a language
- ecosystem from untyped to typed deserves nearly as much attention as migrating
- a language's semantics or programs.
-@todo{say more}
+@(begin
+#reader scribble/comment-reader
+@codeblock|{
+  ;; Add `n` votes to the global variable `total-votes`
+  (define (add-votes n)
+    (unless (exact-nonnegative-integer? n)
+      (error "Number of votes must be a Natural number"))
+    (set! total-votes (+ total-votes n)))
+}|)
+
+Crucially, the untyped code uses an assertion to make sure its argument is a
+ natural number.
+If this invariant is not checked, the value of @racket[total-votes] may become
+ negative and trigger an error elsewhere in the code.
+Of course, a typed version of the same function can replace the dynamic
+ assertion with a type declaration:
+
+@(begin
+#reader scribble/comment-reader
+@codeblock|{
+  (: add-votes (Natural -> Void))
+  (define (add-votes n)
+    (set! total-votes (+ total-votes n)))
+}|)
+
+Now we have two out-of-sync versions of the same function.
+The untyped version contains the minimal dynamic assertions necessary for
+ correctness and the typed version replaces these with types.
+@todo{this example is obvious to translate, can we use a less obvious one where the types cost more?}
+
+@todo{how to gradually migrate docs, examples, faqs?}
+
