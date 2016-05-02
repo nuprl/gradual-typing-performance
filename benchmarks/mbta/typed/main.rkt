@@ -5,7 +5,7 @@
 ;; ===================================================================================================
 (require benchmark-util)
 (require (only-in racket/string string-join))
-(require/typed "run-t.rkt"
+(require/typed/check "run-t.rkt"
                [EOM String]
                [run-t (-> String String)])
 
