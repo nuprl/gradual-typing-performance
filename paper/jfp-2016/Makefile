@@ -14,6 +14,8 @@ paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 pkg:
 	raco pkg install --skip-installed glob
 	raco pkg install --skip-installed unstable
+	raco pkg install --skip-installed ../../tools/benchmark-util
+	raco pkg install --skip-installed ../../tools/summarize
 
 one: compiled/paper_scrbl.zo texstyle.tex
 	sed -f onecolumn.sed $(PAPER).scrbl > $(PAPER)1.scrbl
