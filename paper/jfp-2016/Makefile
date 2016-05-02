@@ -12,9 +12,10 @@ paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 	scribble ++style texstyle.tex --latex $(PAPER).scrbl
 
 pkg:
-	raco pkg install --auto --skip-installed glob
-	raco pkg install --auto --skip-installed ../../tools/benchmark-util
-	raco pkg install --auto --skip-installed ../../tools/summarize
+	raco pkg install --skip-installed glob
+	raco pkg install --skip-installed unstable
+	raco pkg install --skip-installed ../../tools/benchmark-util
+	raco pkg install --skip-installed ../../tools/summarize
 
 one: compiled/paper_scrbl.zo texstyle.tex
 	sed -f onecolumn.sed $(PAPER).scrbl > $(PAPER)1.scrbl
