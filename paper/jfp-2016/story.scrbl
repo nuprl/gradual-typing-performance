@@ -24,12 +24,13 @@ These annotations are compiled to
  code matches its type specification.
 Untyped modules may freely use bindings from typed modules.
 The imported typed code is protected with automatically generated
- contracts to ensure type-correct use in untyped contexts.
+ contracts to enforce type-correct use in untyped contexts.
 
 Racket programmers frequently mix typed and untyped code.
 For example, the standard matrix, statistics, and plotting libraries are implemented
  in Typed Racket and used by many untyped programs.
 Conversely, Racket's core libraries are untyped and used by nearly all typed programs.
+
 Within a single project, we find that Typed Racket users have diverse motivations
  for choosing which modules to type and which to leave untyped.
 Some of the most common use-cases are:
@@ -62,7 +63,7 @@ Consider a large untyped codebase in which a bug is traced to an
 The programmer tasked with fixing the bug must first understand how the module
  is intended to work by reading documentation, unit tests, and the code; only
  then can the bug be fixed.
-A side effect of this investigation is that the programmer uncovers the implicit
+A side effect of this investigation is that the programmer uncovers the @emph{implicit}
  type signatures of functions and datatypes in the module.
 Typed Racket makes it easy to record these types.
 The programmer
@@ -86,8 +87,8 @@ But annotating a module is not guaranteed to improve performance and may introdu
 
 As language designers, we must also remember that adding types is always
  a software engineering burden.
-Even in the "campground" scenario@note{Golden rule of camping: always leave the campground cleaner than you found it.}
- outlined above, converting untyped code to
+Even in the campground@note{Golden rule of camping: always leave the campground cleaner than you found it.}
+ scenario outlined above, converting untyped code to
  Typed Racket is orthogonal to developers' primary goal of delivering a working
  software product.
 @; Quote Matthew?
@@ -137,7 +138,7 @@ Tracking blame and dynamically enforcing types can, however, be costly.
 Each call to @racket[complex-*] requires six assertions to check and traverse both pairs.
 This is relatively inexpensive, but folding @racket[complex-*] over a list of
  @math{n} complex numbers requires @math{3n + 1} assertions.
-In brief, costs can quickly accumulate as the size of data
+In general, costs can quickly accumulate as the size of data
  and number of calls increases.
 
 @; TODO example here, to show "surprising costs"?
@@ -150,11 +151,12 @@ In brief, costs can quickly accumulate as the size of data
 @; TODO connect example to soundness?
 
 Despite the potential overhead, it is crucial that each call to @racket[complex-*]
- is guarded against type errors.
-Although inputs such as the string @racket{NaN} will cause an error
- when applied to @racket[+], ill-typed calls such as:
+ is guarded against type errors even though untyped Racket is a memory-safe
+ programming language and will catch e.g. inputs like the string @racket{NaN}
+ when they reach the @racket[+] function.
+The problem is with ill-typed calls such as:
     @racketblock[(complex-* '(-1 . -1) '(-3 . 0))]
- fail @emph{silently}.
+ which fail @emph{silently}.
 If we are lucky, the silent failure will trigger an error later in the program,
  but since the polar product of @racket['(-1 . -1)] and @racket['(-3 . 0)] is
  the well-typed complex number @racket['(3 . -1)] it is more likely that the
