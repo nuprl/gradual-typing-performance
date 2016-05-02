@@ -15,13 +15,9 @@
 Many of our high-overhead benchmarks exhibit similar pathologies.
 Here are some of the most interesting.
 
-@; Of course contracts and boundary structure make it slow.
-@; But some are worse than others. Or at least more interesting.
-
 We hope that language designers manage to reduce the overhead caused by
  these pathological cases.
-But in the worst case, these may serve as anti-patterns for performance-minded
- applications.
+But in the worst case, these may serve as anti-patterns for developers.
 
 
 @; -----------------------------------------------------------------------------
@@ -52,23 +48,23 @@ One common scenario is demonstrated by the following stack data structure
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
-#lang racket ;; -- enclosing module is untyped
+#lang racket ;; Enclosing module is untyped
 
-;; -- typed submodule
+;; -- Typed submodule
 (module stack typed/racket
   (define-type (Stack A) (Listof A))
-  ;; -- represent stacks as homogenous lists
+  ;; represent stacks as homogenous lists
   (: stack-empty? (All (A) ((Stack A) -> Boolean)))
   (define (stack-empty? stk)
     (null? stk))
   (provide stack-empty?))
 ;; -- End of typed submodule
+
 (require 'stack)
-;; -- Create a stack of 20 elements
+;; Create a stack of 20 elements
 (define stk (range 20))
-(for ([_i (in-range (expt 10 6))])
-  ;; -- Repeatedly cross a type boundary
-  (stack-empty? stk))
+(for ([i (in-range (expt 10 6))])
+  (stack-empty? stk)) ;; Repeatedly cross a type boundary
 }|)
 
 Each of the million boundary-crossings in this program triggers a contract
@@ -91,7 +87,8 @@ Our second suggestion is to check contracts @emph{by-need}; in other words,
 If applied to this program, by-need contracts would eliminate all traversals
  because @racket[stack-empty?] never reads or writes to its argument.
 What remains to be seen is whether implementing this behavior would
- typically improve performance in realistic programs.
+ typically improve performance in realistic programs or if the bookkeeping
+ overhead slows down common cases.
 
 @; any->bool
 A similar pathology regarding the contracts generated for user-defined
@@ -107,7 +104,8 @@ When a programmer creates a struct
 }|)
 
 Naturally, the accessors @racket[Point-x] and @racket[Point-y] require
- their argument to be a @racket[Point] value and should be protected by a contract.
+ their argument to be a @racket[Point] value and must be protected by a contract
+ when used in untyped code.
 But the predicate @racket[Point?] has type @racket[(Any -> Boolean)].
 Enforcing this type with a higher-order contract is unnecessary:
  any value will pass the @racket[Any] contract and @racket[Point?] is guaranteed
@@ -150,16 +148,16 @@ Incidentally, the developer who created these types was hoping Typed Racket woul
 The overhead of testing whether large input files were well-formed @racket[Quad]
  data came as a surprise.
 
-Another Typed Racket user recently published the following untyped script to
+Another Racket user recently posted the following untyped script to
  the Racket mailing list.
 Changing the @exact{$\RktMeta{\#lang}$} line to @racket[typed/racket]
- improves performance from 10 seconds to 1 millisecond.
+ improves performance from approximately 10 seconds to less than 1 millisecond.
 
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
 #lang racket
-(require pfds/trie) ;; -- a Typed Racket library
+(require pfds/trie) ;; a Typed Racket library
 
 (define t (trie (list (range 128))))
 (define u (time (bind (range 128) 0 t)))
@@ -172,17 +170,18 @@ Therefore trie values are wrapped in a contract that is both expensive to instal
  and adds an indirection layer to every subsequent operation---all this to
  duplicate the guarantee that an immutable value is never mutated.
 
+@; Source of truth ???
 Our @bm{kcfa} benchmark also uses immutable hashtables and pays the
  run-time cost of contracts for mutable data.
-Removing just those hashtable contracts would improve the worst-case
- performance of @bm{kcfa} from 8x to 5x on Racket v6.4.
+We estimate that removing just those hashtable contracts would improve the
+ worst-case performance of @bm{kcfa} from 8x to 5x on Racket v6.4.
 
 @; future work: cost model for contracts?
 These bottlenecks due to type-generated contracts spell out a need
  for a user-facing cost model of enforcing type soundness.
 Even if language designers can remove most of the overhead, users of
  gradual type systems would benefit from tools to statically approximate the runtime
- cost of enforcing specific types and profilers to dynamically attribute
+ cost of enforcing each type and profilers to dynamically attribute
  runtime overhead to specific types or values.
 
 
@@ -226,8 +225,8 @@ What happened was that a macro definition in the math library captured reference
  to the private functions.
 Expanding the macro in untyped code introduced the new and unexpected type
  boundaries.
-Ironically, the macro was designed as a fast, low-level array iterator;
- the optimization backfired in untyped code by putting a type boundary
+Ironically, the macro was designed as a fast, low-level array iterator
+ but the optimization backfired in untyped code by putting a type boundary
  into the hot part of the loop.
 
 This phenomena of functions tunnelling through a macro and introducing
@@ -236,13 +235,13 @@ This phenomena of functions tunnelling through a macro and introducing
  of programs is often complex.
 Even small programs like @bm{synth} have surprising static boundaries.
 Large programs, or programs with dynamically introduced boundaries will
- face similar issues---the programmer seeking to address a performance issue
- first needs to learn about all high-overhead type boundaries.
-Therefore we use the term @emph{tunnelling contracts} to denote the contracts
+ face similar issues; therefore, it is likely that a programmer working to
+ diagnose a performance problem is not aware of all the type boundaries in
+ the program at hand.
+We use the term @emph{tunnelling contracts} to denote the contracts
  on type boundaries that the programmer was unaware of.
-An interesting tooling challenge is to identify high-overhead
- type boundaries and suggest ways to either bypass or remove them.
-@; rly need that last sentence?
+An important tooling challenge is to identify the high-overhead type boundaries
+ and suggest ways to either bypass or remove them.
 
 
 @; -----------------------------------------------------------------------------
@@ -259,7 +258,8 @@ This issue is well known and there are many published techniques for identifying
  redundant contracts@~cite[htf-hosc-2010 sw-popl-2010 g-popl-2015].
 Racket implements a predicate-based technique: for each class of contracts
  there is a binary predicate that decides whether a contract in the class
- subsumes another, arbitrary contract.
+ subsumes another, arbitrary contract---similar to have every Java object
+ has a built-in equality predicate.
 Nonetheless, we found a few pathologies due to repeated wrapping
  and therefore include them here as test cases for future work.
 
@@ -299,8 +299,8 @@ Whether @racket[Population] was implemented as a vector (in @bm{fsm})
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
-#lang typed/racket
-(: evolve (-> Population Natural Real))
+#lang typed/racket ;; Exceprt from fsm benchmark
+(: evolve (Population Natural -> Real))
 (define (evolve p iters)
   (cond
     [(zero? iters) (get-payoff p)]
@@ -317,8 +317,9 @@ Each command @racket[c] in @racket[env] is an object that produces
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
-#lang typed/racket
-(define (eval (input : Input-Port)) : Env
+#lang typed/racket ;; Excerpt from forth benchmark
+(: eval (Input-Port -> Env))
+(define (eval input)
   (for/fold ([env  : Env    (base-env)])
             ([line : String (in-lines input)])
     ;; Cycle through commands in `env` until we get
@@ -359,7 +360,8 @@ It is therefore useful to provide ``getter'' functions for each method:
 #reader scribble/comment-reader
 @codeblock|{
 #lang typed/racket
-(define (stream-nxt (s : Stream)) : (-> Stream)
+(: stream-nxt (Stream -> Stream))
+(define (stream-nxt s)
   (define key 'nxt)
   (define r (s key))
   (if (eq? (car r) key)
@@ -393,9 +395,9 @@ For the same reason, the @math{k=1} plots for these benchmarks are similar
  a type boundary with the library.
 Conversely, @bm{lnm} uses two typed libraries.
 Removing the type boundaries to these libraries improves performance
- to at most @min-overhead['lnm "6.2"] the untyped runtime on Racket v6.2.
+ to at most @min-overhead['lnm "6.2"] relative to the untyped runtime on Racket v6.2.
 
-Typed clients of untyped libraries have the additional burden of giving type
+Typed clients of untyped libraries have the additional burden of supplying type
  annotations matching their use-case.
 These annotations appear in @bm{mbta} and @bm{zordoz}, but also in @bm{acquire}
  and @bm{dungeon} on built-in Racket functions that are not part of
