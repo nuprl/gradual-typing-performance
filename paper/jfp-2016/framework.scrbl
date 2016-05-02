@@ -45,7 +45,7 @@ This lattice-based approach to performance measurements was introduced in our
     A (@emph{software system}) @emph{configuration} is a sequence of
      @math{N} modules where each module is either typed or untyped.
   }
-  @item{
+  @item{ @emph{Proposition:}
     For a fixed sequence of @math{N} modules there are @math{2^N} possible
      configurations.
   }
@@ -69,11 +69,11 @@ This lattice-based approach to performance measurements was introduced in our
   }
 
   @item{
-    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_n\,\subset\,\leq$}
-     such that @exact{$c_1 \rightarrow_n c_2$} if and only if @exact{$c_1 \leq c_2$}
-     and the sum @exact{$\Sigma_i\,c_2(i) - c_1(i)$} is less than or equal to @exact{$n$}.
-    If @exact|{$c_1 \rightarrow_n c_2$}| we say that @exact{$c_2$} is reachable from
-     @exact{$c_1$} in at most @exact{$n$} @emph{type conversion steps}.
+    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_k\,\subset\,\leq$}
+     such that @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
+     and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
+    If @exact|{$c_1 \rightarrow_k c_2$}| we say that @exact{$c_2$} is reachable from
+     @exact{$c_1$} in at most @exact{$k$} @emph{type conversion steps}.
   }
 ]
 
@@ -216,9 +216,9 @@ Using white squares to represent untyped modules and black squares for typed
   })
 
 Practitioners curious about the feasibility of gradual typing should
- replace our parameters with concrete values tailored to their needs.
-If our experimental results show that a large number of configurations are
- deliverable under the actual parameters, then the same results may
- hold for other projects.
+ replace the parameters with concrete values tailored to their needs.
+If our experimental results in @Secref{sec:plots} show that a large number of
+ configurations are deliverable under the actual parameters,
+ then the same results may hold for other projects.
 Language implementors should work to make more configurations deliverable
  or diagnose the cause of the worst performance overhead.
