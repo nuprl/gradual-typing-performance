@@ -357,8 +357,8 @@
     (with-output-to-string
       (lambda ()
         (set-box! ok? (system "git rev-parse --show-toplevel")))))
-  (when (not (string-contains? outs GTP))
-    (printf "WARNING: unrecognized git repo '~a', was expecting '~a'. Proceeding anyway.\n" GTP))
+  #;(when (not (string-contains? outs GTP))
+    (printf "WARNING: unrecognized git repo '~a', was expecting '~a'. Proceeding anyway.\n" outs GTP))
   (if (unbox ok?)
     (string-trim outs)
     (raise-user-error 'modulegraph "Must be in `gradual-typing-performance` repo to use script")))
