@@ -103,8 +103,8 @@ Given an untyped program and a fixed type assignment for all modules in the
  program, the method considers the performance of every @emph{configuration}
  obtained by typing a subset of the modules.
 Hence a program with @exact{$N$} modules has @exact{$2^N$} configurations
- ranging from the configuration with 0 typed modules to the @exact{$N$}
- configurations with 1 typed module to the fully-typed configuration.
+ ranging from the configuration with zero typed modules to the @exact{$N$}
+ configurations with one typed module to the fully-typed configuration.
 We apply our method to Typed Racket.
 The evaluation affirms that Typed Racket programs may suffer
  order-of-magnitude overhead, but also suggests concrete improvements.
