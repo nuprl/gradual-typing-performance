@@ -525,7 +525,7 @@
     (tex-row
      (format "{~a}" (benchmark-name b))
      (format "~a" uloc)
-     (format-percent-diff tloc uloc)
+     (if (zero? uloc) "0" (format-percent-diff tloc uloc))
      (format-num-modules M #:adaptor num-adaptor)
      (number->string (modulegraph->num-edges M))
      (number->string (modulegraph->num-identifiers M)))))
