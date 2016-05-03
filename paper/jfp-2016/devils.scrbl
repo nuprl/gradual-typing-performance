@@ -376,7 +376,10 @@ This is the source of overhead in @bm{zombie}.
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:devils:library"]{Ecological Contracts}
-@; -- AKA library
+@; -- AKA library. The problem = gradualizing an entire language
+@;                             = core language
+@;                             = packages, maintaining untyped compat.
+@;                             = docs, examples, faqs
 
 Many of our benchmarks are self-contained, but others
  depend on libraries within the Racket ecosystem.
@@ -407,6 +410,8 @@ For instance, suppose there is an untyped library for managing elections that
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
+  (define total-votes 0) ;; Invariant: `(<= 0 total-votes)`
+
   ;; Add `n` votes to the global variable `total-votes`
   (define (add-votes n)
     (unless (exact-nonnegative-integer? n)
@@ -414,8 +419,7 @@ For instance, suppose there is an untyped library for managing elections that
     (set! total-votes (+ total-votes n)))
 }|)
 
-Crucially, the untyped code uses an assertion to make sure its argument is a
- natural number.
+The function depends on an assertion to guarantee its argument is a natural number.
 If this invariant is not checked, the value of @racket[total-votes] may become
  negative and trigger an error elsewhere in the code.
 Of course, a typed version of the same function can replace the dynamic
@@ -424,15 +428,22 @@ Of course, a typed version of the same function can replace the dynamic
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
+  (define total-votes : Natural 0)
+
   (: add-votes (Natural -> Void))
   (define (add-votes n)
     (set! total-votes (+ total-votes n)))
 }|)
 
-Now we have two out-of-sync versions of the same function.
-The untyped version contains the minimal dynamic assertions necessary for
- correctness and the typed version replaces these with types.
-@todo{this example is obvious to translate, can we use a less obvious one where the types cost more?}
+Type annotations aside, we now have two different versions of the same function.
+Just erasing types in the second version will @emph{not} produce a safe untyped program!
+Given this scenario, if the performance cost of type boundaries cannot be eliminated
+ then we need developer tools to manage versions of a codebase specialized to
+ typed and untyped clients.
 
-@todo{how to gradually migrate docs, examples, faqs?}
-
+@; TODO doesn't fit
+@;On a final, related note, adding types to an untyped program is currently only the first
+@; step in converting the program to Typed Racket.
+@;The program's documentation also needs to be converted to use and reflect the
+@; type annotations.
+@; -- also migrate FAQs, examples
