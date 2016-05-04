@@ -782,14 +782,18 @@
 (: directory->loc (-> Path-String Natural))
 (define (directory->loc d)
   ;; First compute dummy output
-  (parameterize ([current-output-port (open-output-nowhere)])
-    (unless (sloccount d)
-      (raise-user-error 'test-loc "Failed to get LOC for '~a'" d)))
-  (define row*
-    (with-output-to-string
-      (lambda () (sloccount d #:cache? #t))))
-  (for/sum : Natural ([line (in-list (string-split row* "\n"))])
-    (assert (string->number (car (string-split line))) index?)))
+  (define got-sloc?
+    (parameterize ([current-output-port (open-output-nowhere)])
+      (sloccount d)))
+  (if got-sloc?
+    (let ([row*
+           (with-output-to-string
+             (lambda () (sloccount d #:cache? #t)))])
+      (for/sum : Natural ([line (in-list (string-split row* "\n"))])
+        (assert (string->number (car (string-split line))) index?)))
+    (begin
+      ;(printf "WARNING: sloccount command not found\n")
+      0)))
 
 (: sloccount (->* [Path-String] [#:cache? Boolean] Boolean))
 (define (sloccount d #:cache? [cache? #f])
