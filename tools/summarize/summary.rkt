@@ -4,143 +4,143 @@
 ;; Handles queries for raw data and statistical summary data.
 
 (provide Summary)
-(provide:
-  (from-rktd
-   (->* [Path-String] [#:graph (U Path #f)] Summary))
+(provide
+  from-rktd
+  ; (->* [Path-String] [#:graph (U Path #f)] Summary))
   ;; Convert a filepath to a summary object
 
-  (get-num-paths
-   (-> Summary Natural))
+  get-num-paths
+  ; (-> Summary Natural))
   ;; Count the number of possible paths through a lattice
 
-  (get-num-modules
-   (-> Summary Natural))
+  get-num-modules
+  ; (-> Summary Natural))
   ;; Get the number of configurations from a Summary
 
-  (get-num-iterations
-   (-> Summary Natural))
+  get-num-iterations
+  ; (-> Summary Natural))
 
-  (get-num-configurations
-   (-> Summary Natural))
+  get-num-configurations
+  ; (-> Summary Natural))
   ;; Get the number of configurations from a Summary
 
-  (get-project-name
-   (-> Summary String))
+  get-project-name
+  ; (-> Summary String))
   ;; Get the project name from a Summary
 
-  (has-typed?
-   (-> Summary Bitstring (Listof String) Boolean))
+  has-typed?
+  ; (-> Summary Bitstring (Listof String) Boolean))
   ;; (has-typed? S v name*)
   ;; True if the module names `name*` are all typed in configuration `v`
 
-  (has-untyped?
-   (-> Summary Bitstring (Listof String) Boolean))
+  has-untyped?
+  ; (-> Summary Bitstring (Listof String) Boolean))
   ;; (has-untyped? S v name*)
   ;; True if all module names `name*` are untyped in configuration `v`
 
-  (typed-modules
-   (-> Summary Bitstring (Listof String)))
+  typed-modules
+  ; (-> Summary Bitstring (Listof String)))
   ;; Return a list of modules that are typed in this configuration
 
-  (untyped-modules
-   (-> Summary Bitstring (Listof String)))
+  untyped-modules
+  ; (-> Summary Bitstring (Listof String)))
   ;; Return a list of modules that are untyped in this configuration
 
-  (untyped-mean
-   (-> Summary Real))
+  untyped-mean
+  ; (-> Summary Real))
   ;; Get the mean runtime of the Summary's untyped configuration
 
-  (configuration->runtimes
-   (-> Summary Bitstring (Listof Real)))
+  configuration->runtimes
+  ; (-> Summary Bitstring (Listof Real)))
   ;; Get all runtimes for a configuration
 
-  (configuration->mean-runtime
-   (-> Summary Bitstring Real))
+  configuration->mean-runtime
+  ; (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
-  (configuration->confidence
-   (-> Summary Bitstring (Pairof Real Real)))
+  configuration->confidence
+  ; (-> Summary Bitstring (Pairof Real Real)))
 
-  (configuration->confidence-lo
-   (-> Summary Bitstring Real))
+  configuration->confidence-lo
+  ; (-> Summary Bitstring Real))
 
-  (configuration->confidence-hi
-   (-> Summary Bitstring Real))
+  configuration->confidence-hi
+  ; (-> Summary Bitstring Real))
 
-  (configuration->stddev
-   (-> Summary Bitstring Real))
+  configuration->stddev
+  ; (-> Summary Bitstring Real))
   ;; Get the standard deviation runtime of a configuration
 
-  (configuration->overhead
-   (-> (U Summary Path-String) Bitstring Real))
+  configuration->overhead
+  ; (-> (U Summary Path-String) Bitstring Real))
   ;; Get the overhead of a configuration, relative to untyped
 
-  (predicate->configurations
-   (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
+  predicate->configurations
+  ; (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
   ;; Return a stream of configurations satisfying the predicate
 
-  (all-configurations
-   (-> Summary (Sequenceof Bitstring)))
+  all-configurations
+  ; (-> Summary (Sequenceof Bitstring)))
   ;; Return a stream of all configurations in the Summary
 
-  (all-paths
-   (-> Summary (Sequenceof LatticePath)))
+  all-paths
+  ; (-> Summary (Sequenceof LatticePath)))
   ;; Return a stream of all paths through the lattice
 
-  (path->max-runtime
-   (-> Summary LatticePath Real))
+  path->max-runtime
+  ; (-> Summary LatticePath Real))
   ;; Get the max runtime of any lattice point along a path
 
-  (summary->label
-   (-> Summary String))
+  summary->label
+  ; (-> Summary String))
 
-  (summary->version
-   (-> Summary String))
+  summary->version
+  ; (-> Summary String))
 
-  (summary->pict
-   (->* [Summary
-         #:font-face String
-         #:font-size Index
-         #:N Index
-         #:M Index
-         #:height Real
-         #:width Real]
-        [#:title (U String #f)]
-        Pict))
+  summary->pict
+  ; (->* [Summary
+  ;       #:font-face String
+  ;       #:font-size Index
+  ;       #:N Index
+  ;       #:M Index
+  ;       #:height Real
+  ;       #:width Real]
+  ;      [#:title (U String #f)]
+  ;      Pict))
   ;; Return a pict representation of the summary. A kind of TLDR.
 
-  (summary-modulegraph
-   (-> Summary ModuleGraph))
+  summary-modulegraph
+  ; (-> Summary ModuleGraph))
 
-  (untyped-configuration
-   (-> Summary Bitstring))
+  untyped-configuration
+  ; (-> Summary Bitstring))
 
-  (typed-configuration
-   (-> Summary Bitstring))
+  typed-configuration
+  ; (-> Summary Bitstring))
 
-  (string->version
-   (-> String (U #f String)))
+  string->version
+  ; (-> String (U #f String)))
 
-  (N-deliverable
-   (-> Real (-> Summary Natural)))
+  N-deliverable
+  ; (-> Real (-> Summary Natural)))
 
-  (avg-overhead
-   (-> Summary Real))
+  avg-overhead
+  ; (-> Summary Real))
 
-  (min-runtime
-   (-> Summary Real))
+  min-runtime
+  ; (-> Summary Real))
 
-  (max-runtime
-   (-> Summary Real))
+  max-runtime
+  ; (-> Summary Real))
 
-  (min-overhead
-   (-> Summary Real))
+  min-overhead
+  ; (-> Summary Real))
 
-  (max-overhead
-   (-> Summary Real))
+  max-overhead
+  ; (-> Summary Real))
 
-  (typed/untyped-ratio
-   (-> (U Path-String Summary) Real))
+  typed/untyped-ratio
+  ; (-> (U Path-String Summary) Real))
 )
 (provide
   (rename-out

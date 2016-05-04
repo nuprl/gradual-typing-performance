@@ -1,22 +1,22 @@
 #lang typed/racket/base
 
-(provide:
-  (assert-directory-exists
-   (-> Path-String Void))
+(provide
+  assert-directory-exists
+  ; (-> Path-String Void))
 
-  (assert-directory-exists*
-   (-> (Listof Path-String) Void))
+  assert-directory-exists*
+  ; (-> (Listof Path-String) Void))
 
-  (ensure-dir
-   (-> Path-String Void))
+  ensure-dir
+  ; (-> Path-String Void))
   ;; Check whether a directory exists.
   ;; If not, create it.
 
-  (split-list
-   (All (A) (-> Natural (Listof A) (Listof (Listof A)))))
+  split-list
+  ; (All (A) (-> Natural (Listof A) (Listof (Listof A)))))
 
-  (integer->letter
-   (-> Integer Char))
+  integer->letter
+  ; (-> Integer Char))
 )
 
 (require
