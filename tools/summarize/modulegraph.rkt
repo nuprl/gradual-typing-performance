@@ -6,79 +6,105 @@
 ;; (because their layout requires human intervention)
 ;; so this file provides a (brittle) parser.
 
-(provide:
+(provide
   ;; -- things that should not be here
-  (get-git-root
-   (-> Path-String))
+  get-git-root
+  ; (-> Path-String))
 
   ;; ---
 
-  (project-name->modulegraph (-> (U Symbol String) ModuleGraph))
-  (directory->modulegraph (-> Path-String ModuleGraph))
+  project-name->modulegraph
+  ; (-> (U Symbol String) ModuleGraph))
+  directory->modulegraph
+  ; (-> Path-String ModuleGraph))
   ;; Parse a directory into a module graph.
   ;; Does not collect module dependency information.
 
-  (tex->modulegraph (-> Path-String ModuleGraph))
+  tex->modulegraph
+  ;(-> Path-String ModuleGraph))
   ;; Parse a tex file into a module graph
 
-  (modulegraph->tex (-> ModuleGraph Output-Port Void))
+  modulegraph->tex
+  ;(-> ModuleGraph Output-Port Void))
   ;; Print a modulegraph to .tex
 
-  (modulegraph->num-modules (-> ModuleGraph Natural))
+  modulegraph->num-modules
+  ;(-> ModuleGraph Natural))
 
-  (modulegraph->num-edges (-> ModuleGraph Natural))
+  modulegraph->num-edges
+  ;(-> ModuleGraph Natural))
 
-  (modulegraph->num-identifiers (-> ModuleGraph Natural))
+  modulegraph->num-identifiers
+  ;(-> ModuleGraph Natural))
 
-  (modulegraph=? (-> ModuleGraph ModuleGraph Boolean))
+  modulegraph=?
+  ;(-> ModuleGraph ModuleGraph Boolean))
 
-  (adjlist=? (-> AdjList AdjList Boolean))
+  adjlist=?
+  ;(-> AdjList AdjList Boolean))
 
-  (modulegraph->untyped-loc (-> ModuleGraph Natural))
-  (modulegraph->typed-loc (-> ModuleGraph Natural))
-  (modulegraph->other-loc (-> ModuleGraph Natural))
+  modulegraph->untyped-loc
+  ; (-> ModuleGraph Natural))
+  modulegraph->typed-loc
+  ; (-> ModuleGraph Natural))
+  modulegraph->other-loc
+  ; (-> ModuleGraph Natural))
   ;; Count lines of code
 
-  (boundaries (-> ModuleGraph (Listof Boundary)))
+  boundaries
+  ; (-> ModuleGraph (Listof Boundary)))
   ;; Return a list of identifier-annotated edges in the program
   ;; Each boundary is a list (TO FROM PROVIDED)
   ;;  where PROVIDED is a list of type Provided (see the data definition below for 'struct provided')
 
-  (boundary-to (-> Boundary String))
-  (boundary-from (-> Boundary String))
-  (boundary-provided* (-> Boundary (Listof Provided)))
+  boundary-to
+  ;(-> Boundary String))
+  boundary-from
+  ;(-> Boundary String))
+  boundary-provided*
+  ;(-> Boundary (Listof Provided)))
 
-  (in-edges (-> ModuleGraph (Sequenceof (Pairof String String))))
+  in-edges
+  ;(-> ModuleGraph (Sequenceof (Pairof String String))))
   ;; Iterate through the edges in a module graph.
   ;; Each edges is a pair of (TO . FROM)
   ;;  the idea is, each edges is a "require" from TO to FROM
   ;; Order of edges is unspecified.
 
-  (module-names (-> ModuleGraph (Listof String)))
+  module-names
+  ;(-> ModuleGraph (Listof String)))
   ;; Return a list of all module names in the project
 
-  (path->project-name (-> Path-String String))
+  path->project-name
+  ;(-> Path-String String))
   ;; Parse a project's name from a filename.
 
-  (project-name (-> ModuleGraph String))
+  project-name
+  ;(-> ModuleGraph String))
   ;; Get the project name direct from the modulegraph
 
-  (name->index (-> ModuleGraph String Natural))
+  name->index
+  ;(-> ModuleGraph String Natural))
   ;; Get the module's index into bitstrings
 
-  (index->name (-> ModuleGraph Natural String))
+  index->name
+  ;(-> ModuleGraph Natural String))
 
-  (provides (-> ModuleGraph String (Listof String)))
+  provides
+  ;(-> ModuleGraph String (Listof String)))
   ;; List of modules that require the given one; i.e., modules the current provides to
 
-  (requires (-> ModuleGraph String (Listof String)))
+  requires
+  ;(-> ModuleGraph String (Listof String)))
   ;; (-> ModuleGraph String (Listof String))
   ;; List of modules required by the given one
 
-  (strip-suffix (-> Path-String String))
+  strip-suffix
+  ;(-> Path-String String))
   ;; Remove the file extension from a path string
 
-  (infer-project-dir (-> (U Symbol String) Path-String))
+  infer-project-dir
+  ;(-> (U Symbol String) Path-String))
   ;; Guess where the project is located in the GTP repo
 )
 (provide
