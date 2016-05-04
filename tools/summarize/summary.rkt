@@ -58,8 +58,8 @@
   ; (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
 
-  (configuration->confidence
-   (-> Summary Bitstring (Pairof Real Real)))
+  configuration->confidence
+  ; (-> Summary Bitstring (Pairof Real Real)))
 
   configuration->confidence-lo
   ; (-> Summary Bitstring Real))
