@@ -118,11 +118,14 @@
        (printf "### Monitoring temperature at '~a'\n" t-file)
        (let ([p (process
                   (string-append
-                    "sensors -u > " t-file "; "
+                    (format "echo '(~a ' > " (timestamp)) t-file "; "
+                    "sensors -u >> " t-file "; "
+                    "echo ')' >> " t-file "; "
                     "while true; do "
                       (format "sleep ~a; " (*TEMPERATURE-FREQUENCY*))
-                      "echo ';; ---' >> " t-file "; "
-                      "sensors -u >> " t-file " ; "
+                      (format "echo '(~a ' >> " (timestamp)) t-file "; "
+                      "sensors -u >> " t-file "; "
+                      "echo ') ' >> " t-file "; "
                     "done"))])
          (sleep 2) ;; For temperature readings to stabilize
          p)))
