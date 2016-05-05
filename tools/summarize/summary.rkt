@@ -707,7 +707,7 @@
     (for/fold : (U #f Real)
               ([prev : (U #f Real) init])
               ([i    (in-range (vector-length D))])
-      (define val (mean (unixtime*->index* (vector-ref D i))))
+      (define val (pre (unixtime*->index* (vector-ref D i))))
       (if prev
         (f prev val)
         val))
@@ -981,7 +981,6 @@
         [src (summary-source S)])
     (check-equal? (configuration->overhead S cfg)
                   (configuration->overhead src cfg)))
-
 
   ;; -- predicate->configs
   (check-equal?
