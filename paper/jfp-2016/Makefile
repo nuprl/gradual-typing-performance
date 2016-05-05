@@ -1,6 +1,7 @@
 PAPER=paper
 
-all: paper.pdf
+all: paper.tex
+	pdflatex paper.tex
 
 compiled/paper_scrbl.zo: *.rkt *.scrbl
 	raco make -v $(PAPER).scrbl
