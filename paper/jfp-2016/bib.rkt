@@ -1201,6 +1201,7 @@
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
 ;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
 ;https://www.quora.com/What-language-is-Facebook-written-in
+;https://blog.twitter.com/2011/twitter-search-is-now-3x-faster
 ;http://www.artima.com/scalazine/articles/twitter_on_scala.html
 ;; TR users
 ;https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ
