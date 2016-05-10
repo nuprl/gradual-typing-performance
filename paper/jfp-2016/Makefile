@@ -12,7 +12,7 @@ paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 	scribble ++style texstyle.tex --latex $(PAPER).scrbl
 
 pkg:
-	raco pkg install --auto --skip-installed glob
+	raco pkg install --auto --skip-installed glob syntax-sloc
 	raco pkg install --auto --skip-installed ../../tools/benchmark-util
 	raco pkg install --auto --skip-installed ../../tools/summarize
 

@@ -1203,6 +1203,7 @@
 ;https://www.quora.com/What-language-is-Facebook-written-in
 ;https://blog.twitter.com/2011/twitter-search-is-now-3x-faster
 ;http://www.artima.com/scalazine/articles/twitter_on_scala.html
+;http://www.zdnet.com/article/why-facebook-hasnt-ditched-php
 ;; TR users
 ;https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ
 ;https://twitter.com/ID_AA_Carmack/status/695702976745381889

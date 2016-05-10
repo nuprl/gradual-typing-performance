@@ -129,6 +129,8 @@
   (only-in racket/file delete-directory/files)
   (only-in racket/string string-split string-contains? string-trim string-join)
 )
+(require/typed syntax-sloc
+  (directory-sloc (-> Path-String Natural)))
 (require/typed syntax/modcode
   (get-module-code
    (-> Path Any)))
@@ -768,39 +770,16 @@
 
 (: modulegraph->untyped-loc (-> ModuleGraph Natural))
 (define (modulegraph->untyped-loc M)
-  (directory->loc (build-path (assert-src M) "untyped")))
+  (directory-sloc (build-path (assert-src M) "untyped")))
 
 (: modulegraph->typed-loc (-> ModuleGraph Natural))
 (define (modulegraph->typed-loc M)
-  (directory->loc (build-path (assert-src M) "typed")))
+  (directory-sloc (build-path (assert-src M) "typed")))
 
 (: modulegraph->other-loc (-> ModuleGraph Natural))
 (define (modulegraph->other-loc M)
-  (+ (directory->loc (build-path (assert-src M) "base"))
-     (directory->loc (build-path (assert-src M) "both"))))
-
-(: directory->loc (-> Path-String Natural))
-(define (directory->loc d)
-  ;; First compute dummy output
-  (define got-sloc?
-    (parameterize ([current-output-port (open-output-nowhere)])
-      (sloccount d)))
-  (if got-sloc?
-    (let ([row*
-           (with-output-to-string
-             (lambda () (sloccount d #:cache? #t)))])
-      (for/sum : Natural ([line (in-list (string-split row* "\n"))])
-        (assert (string->number (car (string-split line))) index?)))
-    (begin
-      ;(printf "WARNING: sloccount command not found\n")
-      0)))
-
-(: sloccount (->* [Path-String] [#:cache? Boolean] Boolean))
-(define (sloccount d #:cache? [cache? #f])
-  (system
-    (format "sloccount --details ~a ~a"
-            (if cache? "--cached" "")
-            d)))
+  (+ (directory-sloc (build-path (assert-src M) "base"))
+     (directory-sloc (build-path (assert-src M) "both"))))
 
 (: decr-right (-> String String))
 (define (decr-right str)
@@ -886,12 +865,12 @@
   ;; -- modulegraph->lines-of-code
   (let ([uloc (modulegraph->untyped-loc MGd)]
         [udir (infer-untyped-dir (infer-project-dir SAMPLE-MG-PROJECT-NAME))])
-    (check-equal?  uloc (directory->loc udir))
+    (check-equal?  uloc (directory-sloc udir))
     (check-true (< uloc 900))
     (check-true (< 10 uloc))
     (let ([tdir (build-path udir ".." "typed")]
           [tloc (modulegraph->typed-loc MGd)])
-      (check-equal? tloc (directory->loc tdir))
+      (check-equal? tloc (directory-sloc tdir))
       (check-true (< uloc tloc))))
 
   ;; -- name->index
