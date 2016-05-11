@@ -96,6 +96,19 @@
 (define (timestamp)
   (date->string (current-date) #t))
 
+(define (time? t)
+  (or (unixtime? t) (real? t)))
+
+(define (time*->min t*)
+  (if (unixtime? (car t*))
+    (unixtime*->min t*)
+    (apply min t*)))
+
+(define (time->real t)
+  (if (unixtime? t)
+    (unixtime-real t)
+    t))
+
 ;; Get paths for all configuration directories
 ;; Path Path -> Listof Path
 (define (mk-configurations basepath entry-point)
@@ -155,8 +168,35 @@
     (close-input-port err))
   (void))
 
+(define ((make-run-command/racket job#) stub #:iters [iters 1] #:stat? [stat? #f])
+  (define cmd (string-append
+                (if (*AFFINITY?*) (format "taskset -c ~a " job#) "")
+                " " stub))
+  (for/list ([i (in-range iters)])
+    (match-define (list out in pid err control) (process cmd #:set-pwd? #t))
+    (control 'wait)
+    (for-each displayln (port->lines err))
+    (define t
+      (let ([time-info ;; 2016-05-10: can also use for/first
+             (for/last ([line (in-list (port->lines out))])
+              (regexp-match #rx"cpu time: (.*) real time: (.*) gc time: (.*)" line))])
+        (match time-info
+         [(list full
+             (app string->number cpu)
+             (app string->number real)
+             (app string->number gc))
+          (printf "job#~a, iteration#~a - cpu: ~a real: ~a gc: ~a~n" job# i cpu real gc)
+          real]
+         [#f
+          (when (regexp-match? "racket " stub)
+            (runtime-error 'run stub))])))
+    (close-input-port out)
+    (close-input-port err)
+    (close-output-port in)
+    t))
+
 ;; (-> Natural (-> String #:iters Natural #:stat? Boolean (Listof unixtime)))
-(define ((make-run-command job#) stub #:iters [iters 1] #:stat? [stat? #f])
+(define ((make-run-command/gnutime job#) stub #:iters [iters 1] #:stat? [stat? #f])
   (define time-cmd (system-command-fallback "gtime" "/usr/bin/time"))
   (define time-tmpfile (*TIME-TMPFILE*))
   (when (file-exists? time-tmpfile)
@@ -182,14 +222,17 @@
     (with-input-from-file time-tmpfile (lambda ()
       (for/fold ([acc '()])
                 ([ln (in-lines)])
-        (define ut (string->unixtime ln))
-        (if ut
-          (if (zero? (unixtime-exit ut))
-            (cons ut acc)
-            (raise-user-error 'run-command
-              "Process terminated with non-zero exit code '~a'. Full command was '~a'"
-              (unixtime-exit ut) cmd))
-          acc)))))
+        (cond
+         [(string->unixtime ln)
+          => (lambda (ut)
+            (if (zero? (unixtime-exit ut))
+              (cons ut acc)
+              (raise-user-error 'run-command
+                "Process terminated with non-zero exit code '~a'. Full command was '~a'"
+                (unixtime-exit ut) cmd)))]
+         [(string->number ln)
+          => (lambda (n) (cons n acc))]
+         [else acc])))))
   (close-input-port out)
   (close-input-port err)
   (close-output-port in)
@@ -232,7 +275,7 @@
       ;; the `taskset` command.
       (thread
        (λ ()
-         (define run-command (make-run-command job#))
+         (define run-command (make-run-command/racket job#))
          (for ([var-in-slice var-slice])
            (match-define (list var var-idx) var-in-slice)
            (define-values (new-cwd file _2) (split-path var))
@@ -245,16 +288,19 @@
              (unless (or (only-compile?)
                          (file-exists? (*DATA-TMPFILE*)))
                (define ut*
-                 (let* ([rkt-command (format "~aracket ~a" (*racket-bin*) file-str)]
+                 (let* (;[rkt-command (format "~aracket ~a" (*racket-bin*) file-str)]
+                        [rkt-command (format "~aracket -e '~s'"
+                                       (*racket-bin*)
+                                       `(time (dynamic-require ,file-str #f)))]
                         ;; -- throwaway builds (use to get baseline time)
-                        [time0 (unixtime*->min (run-command #:iters (*NUM-WARMUP*) rkt-command))]
+                        [time0 (time*->min (run-command #:iters (*NUM-WARMUP*) rkt-command))]
                         [use-stat? (< time0 (*MIN-MILLISECONDS*))]
                         [run  (lambda (i)
                                 (run-command rkt-command #:iters i #:stat? use-stat?))]
                         ;; -- real thing
                         [ut0* (run (or exact-iters (min-iterations)))]
                         [ut1* (if (or exact-iters
-                                      (anderson-darling? (map unixtime-real ut0*)))
+                                      (anderson-darling? (map time->real ut0*)))
                                     '()
                                     (run (- (+ 1 (max-iterations) (min-iterations)))))])
                    (append ut0* ut1*)))
@@ -330,9 +376,9 @@
     (define v (file->value fname))
     (unless (and (list? v) (not (null? (cdr v)))
                  (for/and ([x (in-list (cdr v))])
-                   (unixtime? x)))
+                   (time? x)))
       (raise-user-error 'run "Malformed tmp data ~a" v))
-    (map unixtime-real (cdr v))))
+    (map time->real (cdr v))))
 
 (define (run-benchmark vec)
   (define basepath
