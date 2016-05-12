@@ -111,6 +111,7 @@
 (defparam *Y-TICKS* (U #f (Listof Real)) #f)
 (deftype Y-Style (U 'count '% 'X))
 (defparam *Y-STYLE* Y-Style '%)
+(defparam *Y-MAX* (U #f Real) #f)
 
 ;; --- Boolean flags
 (defparam *AXIS-LABELS?*   Boolean #t) ;; If #t, label all plot axes
