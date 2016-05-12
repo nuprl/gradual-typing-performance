@@ -663,7 +663,10 @@
     (usage-error))
   (define out-file "output.tex")
   (define name (vector-ref (current-command-line-arguments) 0))
-  (directory->tikz (string->path name) out-file)
+  (define p (if (directory-exists? name)
+              (string->path name)
+              (infer-project-dir name)))
+  (directory->tikz p out-file)
   (printf "Saved module graph to '~a'\n" out-file)
 )
 
