@@ -127,7 +127,7 @@
 (define-type Pict pict)
 
 ;; -----------------------------------------------------------------------------
-;; copied from benchmark-util/unixtime.rkt
+;; copied from benchmark-run/unixtime
 
 (struct unixtime (
   [real       : Milliseconds]

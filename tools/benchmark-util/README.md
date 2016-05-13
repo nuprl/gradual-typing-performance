@@ -1,7 +1,10 @@
 benchmark-utils
 ===
 
-Tools for running performance lattice experiments.
+Tools for performance lattice experiments.
+
+Files here are _required_ by modules in the experiment.
+These files help manage type definitions and boundaries.
 
 
 API
