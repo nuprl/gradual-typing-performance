@@ -8,6 +8,7 @@
   glob
   racket/sequence
   benchmark-run/benchmark-data
+  benchmark-run/parameters
   benchmark-run/utilities
   (only-in racket/list last append*)
   (only-in racket/string string-split)
@@ -18,11 +19,12 @@
 (define (filename->tag str)
   (car (string-split str "-")))
 
-(define (collect-rktd dir)
+(define (collect-rktd dir #:delete? [delete? #t])
   (define tag (last (string-split dir "/")))
-  (collect-rktd/filename (glob (string-append tag "*rktd"))))
+  (collect-rktd/filename (glob (format "~a-v~a-*.tmp.rktd" tag (*RACKET-VERSION*)))
+                         #:delete? delete?))
 
-(define (collect-rktd/filename fname*)
+(define (collect-rktd/filename fname* #:delete? [delete? #t])
   (define out (output-file (filename->tag (car fname*))))
   (with-output-to-file out #:exists 'replace
     (lambda ()
@@ -34,7 +36,9 @@
             (writeln (append* (map (compose1 cdr read-string) v*)))]
            [else
             (displayln (car v*))]))
-        (apply in-parallel (map (lambda (p) (in-lines p)) port*))))))
+        (apply in-parallel (map (lambda (p) (in-lines p)) port*)))))
+  (when delete?
+    (for-each delete-file fname*)))
 
 (define (check-tags rktd*)
   (for/fold ([acc #f])

@@ -40,9 +40,9 @@
 (define (timestamp)
   (date->string (current-date) #t))
 
-(define (output-file dirname)
+(define (output-file dirname #:tmp? [tmp? #f])
   (define tag (last (string-split dirname "/")))
-  (string-append tag "-" (*UID*) "-" (timestamp) ".rktd"))
+  (string-append tag "-v" (*RACKET-VERSION*) "-" (timestamp) (if tmp? ".tmp.rktd" ".rktd")))
 
 (define (read-string x)
   (with-input-from-string x read))

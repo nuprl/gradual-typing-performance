@@ -10,7 +10,7 @@
 ;;   If non-normal, run more--until `max-iterations`
 (define *MIN-ITERATIONS* (make-parameter 10))
 (define *MAX-ITERATIONS* (make-parameter 30))
-(define *NUM-ITERATIONS* (make-parameter 2))
+(define *NUM-ITERATIONS* (make-parameter 8))
 
 (define *RACKET-VERSION* (make-parameter "6.5"))
 (define *UID* (make-parameter "default"))

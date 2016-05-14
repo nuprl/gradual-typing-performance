@@ -147,7 +147,7 @@
              (app string->number cpu)
              (app string->number real)
              (app string->number gc))
-          (printf "job#~a, iteration#~a - cpu: ~a real: ~a gc: ~a~n" job# i cpu real gc)
+          ;;(printf "job#~a, iteration#~a - cpu: ~a real: ~a gc: ~a~n" job# i cpu real gc)
           real]
          [#f
           (when (regexp-match? "racket " stub)
@@ -450,7 +450,8 @@
       (λ ()
         ;; first write a comment that encodes the commandline args / version
         (printf ";; ~a~n" (current-command-line-arguments))
-        (printf ";; ~a~n" (version))
+        (printf ";; ~a~n" (*RACKET-VERSION*))
+        (printf ";; binaries in ~a~n" (*RACKET-BIN*))
         (printf ";; base @ ~a~n" (racket-checksum))
         (printf ";; typed-racket @ ~a~n" (typed-racket-checksum))
         (printf ";; ~a~n" (timestamp))
