@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{2}{player}};
+  \node (10) [left of=00,xshift=-2cm] {\rkt{0}{dealer}};
+  \node (20) [left of=10,xshift=-2cm] {\rkt{1}{main}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (20) edge[bend left=25] (00);
+  \draw[->] (20) -- (10);
+
+\end{tikzpicture}

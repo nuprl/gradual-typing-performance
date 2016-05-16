@@ -1,0 +1,11 @@
+\begin{tikzpicture}
+
+  \node (00) {\rkt{2}{Player}};
+  \node (10) [left of=10,xshift=-2cm] {\rkt{0}{Dealer}};
+  \node (20) [left of=20,xshift=-2cm] {\rkt{1}{Main}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (20) -- (00);
+  \draw[->] (20) -- (10);
+
+\end{tikzpicture}

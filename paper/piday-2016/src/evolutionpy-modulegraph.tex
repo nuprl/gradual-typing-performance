@@ -1,0 +1,52 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{0}{basics}};
+  \node (01) [below of=00,yshift=-1cm] {\rkt{3}{common}};
+  \node (02) [below of=01,yshift=-1cm] {\rkt{10}{traits}};
+  \node (10) [left of=00,xshift=-2cm] {\rkt{1}{board}};
+  \node (11) [below of=10,yshift=-1cm] {\rkt{2}{cards}};
+  \node (12) [below of=11,yshift=-1cm] {\rkt{5}{internal-external}};
+  \node (20) [left of=10,xshift=-2cm] {\rkt{6}{next}};
+  \node (21) [below of=20,yshift=-1cm] {\rkt{7}{player-base}};
+  \node (30) [left of=20,xshift=-2cm] {\rkt{8}{player-external}};
+  \node (31) [below of=30,yshift=-1cm] {\rkt{9}{player-internal}};
+  \node (40) [left of=30,xshift=-2cm] {\rkt{4}{dealer}};
+
+  \draw[->] (10) -- (01);
+  \draw[->] (10) -- (00);
+  \draw[->] (10) -- (02);
+  \draw[->] (11) -- (02);
+  \draw[->] (12) -- (01);
+  \draw[->] (12) -- (00);
+  \draw[->] (20) -- (01);
+  \draw[->] (20) edge[bend left=25] (00);
+  \draw[->] (20) -- (11);
+  \draw[->] (20) -- (10);
+  \draw[->] (21) edge[bend right=25] (01);
+  \draw[->] (21) -- (02);
+  \draw[->] (21) -- (00);
+  \draw[->] (21) -- (11);
+  \draw[->] (21) -- (10);
+  \draw[->] (30) -- (01);
+  \draw[->] (30) edge[bend left=25] (10);
+  \draw[->] (30) -- (02);
+  \draw[->] (30) -- (21);
+  \draw[->] (30) edge[bend left=25] (00);
+  \draw[->] (30) -- (11);
+  \draw[->] (30) -- (20);
+  \draw[->] (31) edge[bend right=25] (01);
+  \draw[->] (31) -- (12);
+  \draw[->] (31) -- (21);
+  \draw[->] (31) -- (20);
+  \draw[->] (31) -- (00);
+  \draw[->] (31) edge[bend right=25] (11);
+  \draw[->] (31) -- (10);
+  \draw[->] (40) -- (01);
+  \draw[->] (40) -- (02);
+  \draw[->] (40) edge[bend left=25] (10);
+  \draw[->] (40) -- (31);
+  \draw[->] (40) edge[bend left=25] (00);
+  \draw[->] (40) -- (11);
+  \draw[->] (40) edge[bend left=25] (20);
+
+\end{tikzpicture}
