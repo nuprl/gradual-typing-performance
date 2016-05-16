@@ -717,12 +717,27 @@
     (: get-tikzid (-> String String))
     (define (get-tikzid name)
       (cdr (or (assoc name name+tikzid*) (error 'NONAME))))
+    (: get-pos (-> Natural (-> String Natural)))
+    (define ((get-pos i) tikzid)
+      (cast (string->number (string (string-ref tikzid i))) Natural))
+    (define get-x-pos (get-pos 0))
+    (define get-y-pos (get-pos 1))
     (for* ([group (in-list tsort)]
            [name (in-list group)]
            [req (in-list (requires MG name))])
-      (printf "  \\draw[->] (~a) -- (~a);\n"
-        (get-tikzid name)
-        (get-tikzid req)))
+      (define this-id (get-tikzid name))
+      (define this-x (get-x-pos this-id))
+      (define this-y (get-y-pos this-id))
+      (define that-id (get-tikzid req))
+      (define that-x (get-x-pos that-id))
+      (define that-y (get-y-pos that-id))
+      (printf "  \\draw[->] (~a) ~a (~a);\n"
+        this-id
+        (if (and (= this-y that-y)
+                 (< 1 (- this-x that-x)))
+          "edge[bend left=25]"
+          "--")
+        that-id))
     (displayln "\n\\end{tikzpicture}")))
 
 (: modulegraph->num-edges (-> ModuleGraph Natural))
