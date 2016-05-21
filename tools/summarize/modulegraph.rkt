@@ -123,7 +123,7 @@
   (only-in racket/set set-count)
   (only-in racket/system system)
   (only-in racket/port with-output-to-string open-output-nowhere)
-  (only-in racket/list make-list last drop-right)
+  (only-in racket/list make-list last drop-right append*)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
   (only-in racket/file delete-directory/files)
@@ -131,9 +131,8 @@
 )
 (require/typed syntax-sloc
   (directory-sloc (-> Path-String Natural)))
-(require/typed syntax/modcode
-  (get-module-code
-   (-> Path Any)))
+(require/typed syntax/modresolve
+  (resolve-module-path (-> Path (U #f Path) Path)))
 (require/typed racket/string
   (string-contains? (-> String String Any)))
 
@@ -304,15 +303,9 @@
       (list to from (cdr maybe-provided*))
       (raise-user-error 'boundaries (format "Failed to get provides for module '~a'" from)))))
 
-(: path->compiled (-> Path Compiled-Module-Expression))
-(define (path->compiled p)
-  (define gmc (get-module-code p))
-  (cast gmc Compiled-Module-Expression))
-
 (: absolute-path->provided* (-> Path (Listof Provided)))
 (define (absolute-path->provided* p)
-  (define cm (path->compiled p))
-  (define-values (p* s*) (module-compiled-exports cm))
+  (define-values (p* s*) (path->exports p))
   (append
    (parse-provided p*)
    (parse-provided s* #:syntax? #t)))
@@ -633,13 +626,27 @@
                      #:when (member (strip-suffix mod-abspath) src-name*))
             (strip-suffix mod-abspath)))))
 
+;; FYI would be nice to use polymorphism here
+(: path-string->imports (-> Path-String (Listof (Pairof (U #f Integer) (Listof Module-Path-Index)))))
+(define (path-string->imports ps)
+  (define p (if (path? ps) ps (string->path ps)))
+  (define r (resolve-module-path p #f))
+  (parameterize ([current-namespace (make-base-namespace)])
+    (dynamic-require r (void))
+    (module->imports r)))
+
+(: path->exports (-> Path (Values (Listof RawProvided) (Listof RawProvided))))
+(define (path->exports p)
+  (define r (resolve-module-path p #f))
+  (parameterize ([current-namespace (make-base-namespace)])
+    (dynamic-require r (void))
+    (module->exports r)))
+
 (: absolute-path->imports (-> Path-String (Listof Path)))
 (define (absolute-path->imports ps)
-  (define p (if (path? ps) ps (string->path ps)))
-  (define mc (path->compiled p))
   (for/fold : (Listof Path)
             ([acc : (Listof Path) '()])
-            ([mpi (in-list (apply append (module-compiled-imports mc)))])
+            ([mpi (in-list (apply append (path-string->imports ps)))])
     (if (module-path-index? mpi)
       (let-values (((name _2) (module-path-index-split mpi)))
         (if (string? name)
