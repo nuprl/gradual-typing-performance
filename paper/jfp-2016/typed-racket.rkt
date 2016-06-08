@@ -9,6 +9,7 @@
 
 (provide ;; TEMPORARY
   new-untyped-bars
+  weigh-functions
 )
 (provide
   count-benchmarks
@@ -79,6 +80,7 @@
  benchmark-util/data-lattice
  glob
  gtp-summarize
+ (only-in gtp-summarize/bitstring natural->bitstring log2 bit-high?)
  racket/match
  (only-in "common.rkt" etal cite exact parag rnd)
  (only-in racket/file file->value)
@@ -717,6 +719,50 @@
   (string-append
     (rnd (min-overhead (from-rktd (data-path sym version))))
     "x"))
+
+;; -----------------------------------------------------------------------------
+
+;; For each benchmark, assign each function a weight of importance
+;;  (2016-06-07: unitless for now, but will eventually make this official)
+(define (weigh-functions)
+  ;; for benchmarks, get-lnm-data* ...
+  (with-output-to-file "yolo.txt" #:exists 'replace (lambda ()
+  (for ([rktd* (in-list (get-lnm-rktd**))])
+    (define rktd (last rktd*))
+    (define title (fname->title rktd))
+    (define mg (symbol->modulegraph (string->symbol title)))
+    (define f* (module-names mg))
+    (printf "title: ~a, dataset: ~a\n" title rktd)
+    (for ([w (in-list (get-weights f* rktd))])
+      (printf "- ~a\n" w))))))
+
+(define (mean2 xs)
+  (rnd (call-with-values
+         (lambda () (for/fold ((sum 0) (len 0)) ((x (in-list xs))) (values (+ x sum) (+ 1 len))))
+         /)))
+
+(define (get-weights f* rktd)
+  (define v (file->value rktd))
+  (define num-modules (length f*))
+  (define (nat->bits n)
+    (natural->bitstring n #:pad num-modules))
+  (for/list ((f (in-list f*))
+             (fun-idx (in-naturals)))
+    ;; fun-idx corresponds to a function we want to compare typed/untyped
+    (define-values (u* t*)
+      (for/fold ([u* '()]
+                 [t* '()])
+                ([row (in-vector v)]
+                 [row-idx (in-naturals)])
+        (define cfg (nat->bits row-idx))
+        (if (bit-high? cfg fun-idx)
+          (values u* (append row t*))
+          (values (append row u*) t*))))
+    (when (or (null? u*) (null? t*))
+      (raise-user-error 'fuck "not good for ~a at ~a ~a ~a" rktd f num-modules))
+    (define um (mean2 u*))
+    (define tm (mean2 t*))
+    (list f um tm (abs (- (string->number um) (string->number tm))))))
 
 ;; =============================================================================
 
