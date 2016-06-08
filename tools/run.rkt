@@ -19,7 +19,7 @@
   ;; Same as calling from the command line, just pass argv vector
 )
 
-(require benchmark-util/unixtime
+(require benchmark-run/unixtime
          "stats-helpers.rkt"
          (only-in glob in-glob)
          (only-in racket/file file->value)
