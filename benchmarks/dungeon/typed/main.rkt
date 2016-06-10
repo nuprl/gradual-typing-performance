@@ -1,5 +1,5 @@
 #lang typed/racket
-(random-seed 4)
+;(random-seed 4)
 
 ;(provide
 ;  generate-dungeon
@@ -61,6 +61,7 @@
   (show-grid (-> Grid String))
 )
 (require/typed/check "utils.rkt"
+  (random (-> Integer Natural))
   (random-between (-> Integer Integer Integer))
   (random-from (All (A) (-> (Listof A) A)))
 )

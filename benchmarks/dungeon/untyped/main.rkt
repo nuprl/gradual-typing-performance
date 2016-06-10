@@ -1,5 +1,5 @@
 #lang racket
-(random-seed 4)
+;(random-seed 4) ;; the old, unused random seed
 
 ;(provide
 ;  generate-dungeon
@@ -55,6 +55,7 @@
 (require (only-in "utils.rkt"
   random-between
   random-from
+  random
 ))
 
 ;; =============================================================================
