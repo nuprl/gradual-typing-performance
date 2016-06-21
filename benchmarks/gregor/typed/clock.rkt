@@ -20,7 +20,6 @@
 
 (require
   benchmark-util
-  (only-in racket/math exact-round)
   "../base/types.rkt"
   "tzinfo-adapter.rkt"
   "gregor-adapter.rkt"
@@ -80,7 +79,7 @@
 
 (: current-posix-seconds (-> Natural))
 (define (current-posix-seconds)
-  (let ([r (exact-round (/ (inexact->exact (current-inexact-milliseconds)) 1000))])
+  (let ([r (/ (inexact->exact (current-inexact-milliseconds)) 1000)])
     (unless (index? r) (error "current-posix-seconds"))
     r))
 

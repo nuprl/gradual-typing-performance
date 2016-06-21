@@ -86,9 +86,9 @@
   (match-define (YMD y m d) ymd)
   (date y m d))
 
-(: jdn->date (-> Exact-Rational Date))
+(: jdn->date (-> Integer Date))
 (define (jdn->date jdn)
-  (Date (jdn->ymd jdn) (exact-round jdn)))
+  (Date (jdn->ymd jdn) jdn))
 
 (: date->iso-week (-> Date Natural))
 (define (date->iso-week d)

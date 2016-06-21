@@ -24,7 +24,6 @@
   "core-structs.rkt"
   "gregor-structs.rkt"
   benchmark-util
-  (only-in racket/math exact-round)
   (only-in racket/format ~r)
   racket/match)
 
@@ -74,7 +73,7 @@
 
 ;(: jdn->date (-> Exact-Rational Date))
 (define (jdn->date jdn)
-  (Date (jdn->ymd jdn) (exact-round jdn)))
+  (Date (jdn->ymd jdn) jdn))
 
 ;(: date->iso-week (-> Date Natural))
 (define (date->iso-week d)

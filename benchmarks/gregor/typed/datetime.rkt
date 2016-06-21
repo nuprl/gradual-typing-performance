@@ -96,7 +96,7 @@
 (define (date+time->datetime d t)
   (DateTime d t (date+time->jd d t)))
 
-(: jd->datetime (-> Exact-Rational DateTime))
+(: jd->datetime (-> Real DateTime))
 (define (jd->datetime jd)
   (define ejd (inexact->exact jd))
   (define-values (d t) (jd->date+time ejd))
@@ -142,7 +142,7 @@
 
   (values d t))
 
-(: jd->jdn (-> Exact-Rational Exact-Rational))
+(: jd->jdn (-> Exact-Rational Integer))
 (define (jd->jdn jd)
   (define lo (exact-floor jd))
 

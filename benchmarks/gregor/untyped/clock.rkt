@@ -26,7 +26,6 @@
 
 (require
   benchmark-util
-  (only-in racket/math exact-round)
   "gregor-structs.rkt"
 )
 (require (only-in "moment.rkt"
@@ -84,7 +83,7 @@
 
 ;(: current-posix-seconds (-> Natural))
 (define (current-posix-seconds)
-  (let ([r (exact-round (/ (inexact->exact (current-inexact-milliseconds)) 1000))])
+  (let ([r (/ (inexact->exact (current-inexact-milliseconds)) 1000)])
     r))
 
 ;(: current-clock (Parameterof (-> Exact-Rational)))
