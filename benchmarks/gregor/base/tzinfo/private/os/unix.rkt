@@ -34,7 +34,7 @@
 
   (and (file-exists? /etc/localtime)
        default-zoneinfo-dir
-       (let ([rel (find-relative-path default-zoneinfo-dir (resolve-path /etc/localtime))])
+       (let ([rel (find-relative-path default-zoneinfo-dir (normalize-path /etc/localtime "/etc"))])
          (match (explode-path rel)
            [(cons 'up _) (find-matching-zone)]
            [_ (path->string rel)]))))

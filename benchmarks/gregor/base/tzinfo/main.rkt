@@ -9,9 +9,9 @@
 
 ;; Load the zoneinfo-data package, if it's installed
 ;; (as it should be on Windows, for example).
-(define ZONEINFO-DATA #f)
-  ;; (and (file-exists? (resolve-module-path 'tzinfo/zoneinfo-data #f))
-  ;;      (dynamic-require 'tzinfo/zoneinfo-data 'ZONEINFO-DATA)))
+(define ZONEINFO-DATA
+  (and (file-exists? (resolve-module-path 'tzinfo/zoneinfo-data #f))
+       (dynamic-require 'tzinfo/zoneinfo-data 'ZONEINFO-DATA)))
 
 (provide (struct-out tzoffset)
          (struct-out tzgap)
