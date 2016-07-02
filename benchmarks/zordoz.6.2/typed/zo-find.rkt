@@ -8,7 +8,7 @@
  ;; Search a struct recursively for member zo-structs matching a string.
  zo-find
  ;; Search result: a zo-struct and the path to reach it
- result result? result-z result-path)
+ (struct-out result))
 
 (require (only-in racket/list empty?)
          (only-in racket/string string-split string-trim)
@@ -43,7 +43,7 @@
   ;; (-> zo? string? (listof result?))
   (define-values (_ children) (parse-zo z))
   (append-all (for/list : (Listof (Listof result)) ([z* : zo children])
-                        (zo-find-aux z* '() str 1 lim '()))))
+                        (zo-find-aux z* '() str 1 lim))))
 
 ;; ;; --- private functions
 
@@ -51,32 +51,31 @@
 ;; 2015-01-23: So far as I know, only closures may loop.
 (: may-loop? (-> String Boolean))
 (define (may-loop? str)
-  (if (member str (list "closure"))
+  (if (member str '("closure"))
       #t #f))
 
 ;; Recursive helper for `zo-find`.
 ;; Add the current struct to the results, if it matches.
 ;; Check struct members for matches unless the search has reached its limit.
-(: zo-find-aux (-> zo (Listof zo) String Natural (U Natural #f) (Listof zo) (Listof result)))
-(define (zo-find-aux z hist str i lim seen)
+(: zo-find-aux (-> zo (Listof zo) String Natural (U Natural #f) (Listof result)))
+(define (zo-find-aux z hist str i lim)
   (define-values (title children) (parse-zo z))
+  (define zstr (format "~a" z))
   (: results (Listof result))
   (define results
     (cond
      [(and lim (<= lim i))
       '()]
      ;; Terminate search if we're seeing a node for the second time
-     [(and (may-loop? title) (member z seen))
+     [(and (may-loop? title) (memq z hist))
       '()]
      [else
       ;; Remember current node if we might see it again.
-      (: seen* (Listof zo))
-      (define seen* (if (may-loop? title) (cons z seen) seen))
       (: hist* (Listof zo))
       (define hist* (cons z hist))
       (append-all (for/list : (Listof (Listof result)) ([z* : zo children])
-                              (zo-find-aux z* hist* str (add1 i) lim seen*)))]))
-  (if (and (string=? str title) (not (member z seen)))
+                              (zo-find-aux z* hist* str (add1 i) lim)))]))
+  (if (and (string=? str title) (not (memq z (map result-z results))))
       (cons (result z hist) results)
       results))
 
@@ -109,4 +108,3 @@
      (cond [(not success?) (get-children z tl)]
            [(list? r)      (append (filter zo? r) (get-children z tl))]
            [(zo?   r)      (cons r (get-children z tl))])]))
-                
