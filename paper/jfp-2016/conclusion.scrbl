@@ -201,3 +201,7 @@ Matthew Might, Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jo
 Zeppieri for providing benchmark code bases. Brian LaChance and Sam
 Tobin-Hochstadt provided valuable feedback on earlier drafts.
 
+@; - Stephen Chang for helping us adapt
+@; - Brian + Milo + Zeina for comments
+@;
+

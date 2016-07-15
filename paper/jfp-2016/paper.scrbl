@@ -57,15 +57,10 @@
 @include-section{story.scrbl}
 @include-section{framework.scrbl}
 @include-section{typed-racket.scrbl}
+@include-section{threats.scrbl}
 @include-section{devils.scrbl}
-@;@include-section{death.scrbl}
 @;@include-section{experience.scrbl}
 @;@include-section{flavors.scrbl}
 @;@include-section{conclusion.scrbl}
-
-@; @section{Acknowledgments}
-@; - Stephen Chang for helping us adapt
-@; - Brian + Milo + Zeina for comments
-@;
 
 @generate-bibliography[]
