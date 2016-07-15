@@ -243,21 +243,17 @@
 (: dataset? (-> Any Dataset))
 (define (dataset? vec0)
   (define vec (cast vec0 (Vectorof (Listof Any))))
-  (for ([x* (in-vector vec)]
-        [i (in-naturals)])
-    (if (and (list? x*)
-             (not (null? x*))
+  (for/vector : Dataset #:length (vector-length vec)
+              ([x* : (Listof Any) (in-vector vec)])
+    (if (and (not (null? x*))
              (or (real? (car x*))
                  (and (string? (car x*)) (real? (cadr x*)))))
-      (vector-set! vec i
-        (for/list : (Listof UnixTime)
-                  ([x (in-list (if (string? (car x*)) (cdr x*) x*))])
-          (time->unixtime (assert x real?))))
-      (vector-set! vec i
-        ;; First element should be a string
-        (and (assert (car x*) string?)
-             (prefab*->unixtime* (cdr x*))))))
-  (cast vec (Vectorof (Listof UnixTime))))
+      (for/list : (Listof UnixTime)
+                ([x (in-list (if (string? (car x*)) (cdr x*) x*))])
+        (time->unixtime (assert x real?)))
+      ;; First element should be a string
+      (and (assert (car x*) string?)
+           (prefab*->unixtime* (cdr x*))))))
 
 (struct summary (
   [source : Path-String] ;; the data's origin
