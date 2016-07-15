@@ -1,0 +1,24 @@
+;; #(-v (6.4 6.3) benchmarks/morsecode benchmarks/fsm benchmarks/forth benchmarks/take5 benchmarks/zordoz.6.3 benchmarks/zombie benchmarks/suffixtree benchmarks/snake benchmarks/tetris benchmarks/synth benchmarks/kcfa benchmarks/lnm benchmarks/mbta benchmarks/acquire benchmarks/dungeon)
+;; 6.3
+;; binaries in /home/ben/code/racket/6.3/bin/
+;; base @ <unknown-commit>
+;; typed-racket @ 495da1bd
+;; 2016-06-11T07:44:16
+#(
+(4398 4398 4383 4297 4318 4202)
+(6164 6036 6245 5856 6217 6185)
+(10823 10614 10471 10818 10714 10263)
+(8890 8963 8905 8726 9118 8904)
+(4215 4218 4153 4100 4257 4226)
+(6054 6178 6118 6085 5924 5899)
+(11113 11033 10823 10999 10823 10977)
+(8974 8934 8854 8613 8342 8953)
+(4141 4095 4153 4043 4154 4165)
+(6387 6398 6302 6445 6363 6254)
+(11029 10564 11014 10845 11077 11212)
+(9084 9241 9054 9173 9119 9203)
+(4393 4519 4469 4293 4395 4418)
+(6166 6255 6254 6226 6256 6108)
+(11153 10469 10605 10824 10554 11041)
+(8832 8905 8934 8596 8365 8927)
+)
