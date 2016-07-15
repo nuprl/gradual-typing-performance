@@ -46,7 +46,7 @@ This lattice-based approach to performance measurements was introduced in our
      @math{N} modules where each module is either typed or untyped.
   }
   @item{ @emph{Proposition:}
-    For a fixed sequence of @math{N} modules there are @math{2^N} possible
+    For a fixed sequence of @math{N} modules there are @exact{$2^N$} possible
      configurations.
   }
   @item{
