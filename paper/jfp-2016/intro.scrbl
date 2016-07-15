@@ -125,11 +125,11 @@ The method was originally presented in a conference publication@~cite[tfgnvf-pop
 This paper extends that prior work with:
 @itemlist[
   @item{
-    a comparative analysis of three versions of Typed Racket,
-     using the method to measure differences between versions;
+    a comparative analysis of @integer->word[(length (*RKT-VERSIONS*))] versions
+     of Typed Racket, using the method to measure differences between versions;
   }
   @item{
-    results for @id[(integer->word (count-new-oo-benchmarks))]
+    results for @integer->word[(count-new-oo-benchmarks)]
      object-oriented benchmark programs, augmenting our previous suite of
      @id[(- (count-benchmarks) (count-new-oo-benchmarks))]
      mostly-functional benchmark programs;
