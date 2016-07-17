@@ -1,6 +1,6 @@
 #lang typed/racket
 
-(require benchmark-util
+(require require-typed-check
          "data-adaptor.rkt")
 (require/typed/check "const.rkt"
                      [BOARD-WIDTH Integer]

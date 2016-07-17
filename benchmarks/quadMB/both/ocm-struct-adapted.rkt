@@ -21,7 +21,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
 )
 
 (require/typed/check "ocm-struct.rkt"

@@ -21,7 +21,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "../base/quad-types.rkt"
   (only-in racket/list append-map empty? empty split-at-right first splitf-at)
   (only-in racket/string string-append*)

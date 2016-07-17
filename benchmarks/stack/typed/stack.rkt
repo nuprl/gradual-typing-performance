@@ -4,9 +4,10 @@
 
 (provide
  Stack
- (type-out
-  [init (-> Stack)]
-  [push (Stack Integer . -> . Stack)]))
+ init push)
+
+(: init (-> Stack))
+(: push (Stack Integer . -> . Stack))
 
 
 (define (init)

@@ -8,7 +8,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   racket/file
   (only-in racket/include include)
 (only-in "quads.rkt"

@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "../base/quad-types.rkt"
  (only-in typed/racket/class new send))
 

@@ -8,7 +8,7 @@
 (require
   "automata-adapted.rkt"
   "population-adapted.rkt"
-  benchmark-util
+  require-typed-check
 )
 (require/typed/check "utilities.rkt"
  (relative-average (-> [Listof Real] Real Real))

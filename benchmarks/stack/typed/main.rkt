@@ -2,7 +2,7 @@
 
 (define-type Stack (Listof Integer))
 
-(require benchmark-util)
+(require require-typed-check)
 (require/typed/check "stack.rkt"
   [init (-> Stack)]
   [push (Stack Integer . -> . Stack)])

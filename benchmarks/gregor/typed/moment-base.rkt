@@ -12,7 +12,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   racket/match
   "gregor-adapter.rkt"
   (only-in racket/format ~r)

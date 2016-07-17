@@ -16,7 +16,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "pict-adapted.rkt"
   "summary-adapted.rkt"
   plot/typed/pict

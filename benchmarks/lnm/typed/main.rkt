@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require
-  benchmark-util
+  require-typed-check
   "summary-adapted.rkt"
 )
 (require/typed/check "spreadsheet.rkt"

@@ -17,7 +17,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   racket/path
   math/statistics
   (only-in racket/file file->value)

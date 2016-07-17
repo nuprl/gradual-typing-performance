@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  (only-in racket/class new send)
 (only-in "world.rkt"
   world:allow-hyphenated-last-word-in-paragraph

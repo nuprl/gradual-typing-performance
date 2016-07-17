@@ -1,7 +1,7 @@
 #lang racket/base
 
 (require
-  benchmark-util
+  require-typed-check
   "gregor-structs.rkt"
 )
 

@@ -3,7 +3,7 @@
 ;; Moments in time
 
 (require
-  benchmark-util
+  require-typed-check
   racket/match
   "gregor-structs.rkt"
   (only-in racket/math exact-round)

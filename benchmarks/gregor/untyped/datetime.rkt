@@ -4,7 +4,7 @@
 ;; (i.e. dates and times at the same time)
 
 (require
-  benchmark-util
+  require-typed-check
   racket/match
   "core-structs.rkt"
   "gregor-structs.rkt"

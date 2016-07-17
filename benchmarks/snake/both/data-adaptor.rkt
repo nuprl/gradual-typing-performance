@@ -1,6 +1,6 @@
 #lang typed/racket
 
-(require benchmark-util)
+(require require-typed-check)
 
 (require/typed/check "data.rkt"
   [#:struct posn ([x : Real]

@@ -10,7 +10,7 @@
   (struct-out Settable-Array)
   (struct-out Mutable-Array))
 
-(require benchmark-util)
+(require require-typed-check)
 
 (require/typed/check "data.rkt"
   [#:struct Array ([shape : Indexes]

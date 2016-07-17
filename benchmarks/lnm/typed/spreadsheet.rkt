@@ -17,7 +17,7 @@
 ;; ----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   (only-in racket/file file->value)
 )
 (require/typed/check "bitstring.rkt"

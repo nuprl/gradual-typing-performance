@@ -16,7 +16,7 @@
   "deck-types.rkt"
   "player-types.rkt"
   racket/list
-  benchmark-util
+  require-typed-check
   typed/racket/class)
 
 (require/typed/check "basics.rkt"

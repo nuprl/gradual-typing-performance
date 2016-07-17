@@ -50,7 +50,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "../base/quad-types.rkt"
  (only-in racket/string string-append*))
 

@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   racket/file
 )
 (require (only-in "quads.rkt"

@@ -6,7 +6,7 @@
  main)
 
 (require
-  benchmark-util
+  require-typed-check
   racket/class
   "../base/untyped.rkt"
 )

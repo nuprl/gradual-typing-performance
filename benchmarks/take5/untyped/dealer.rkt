@@ -10,7 +10,7 @@
 
 (require
   racket/list
-  benchmark-util
+  require-typed-check
   racket/class)
 (require "card.rkt")
 (require (only-in "basics.rkt"

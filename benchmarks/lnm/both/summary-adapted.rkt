@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require
- benchmark-util
+ require-typed-check
  "modulegraph-adapted.rkt"
  )
 

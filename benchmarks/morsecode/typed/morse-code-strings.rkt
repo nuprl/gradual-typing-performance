@@ -11,7 +11,7 @@
 
 (provide string->morse)
 
-(require benchmark-util)
+(require require-typed-check)
 
 (require/typed/check "morse-code-table.rkt"
   [char-table (HashTable Char String)])

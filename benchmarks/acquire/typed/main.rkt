@@ -6,7 +6,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   racket/list
   typed/racket/class
   "board-adapted.rkt"

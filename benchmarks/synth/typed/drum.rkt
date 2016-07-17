@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require benchmark-util
+(require require-typed-check
          "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"

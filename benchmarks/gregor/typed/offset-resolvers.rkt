@@ -3,7 +3,7 @@
 ;; Resolving offsets between moments
 
 (require
-  benchmark-util
+  require-typed-check
   "tzinfo-adapter.rkt"
   "core-adapter.rkt"
   "gregor-adapter.rkt"

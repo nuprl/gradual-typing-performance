@@ -1,7 +1,7 @@
 #lang typed/racket
 
 (require "base-types.rkt")
-(require benchmark-util)
+(require require-typed-check)
 (require/typed/check "aux.rkt"
   [list-pick-random (-> (Listof Tetra) Tetra)]
   [tetras (Listof Tetra)])

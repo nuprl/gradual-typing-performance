@@ -23,7 +23,7 @@
 (require
   "core-structs.rkt"
   "gregor-structs.rkt"
-  benchmark-util
+  require-typed-check
   (only-in racket/format ~r)
   racket/match)
 

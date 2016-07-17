@@ -1,10 +1,9 @@
 #lang typed/racket/base
 
 (require
-  benchmark-util
+  require-typed-check
   "image-adapted.rkt"
 )
-;(require (prefix-in t: benchmark-util/typed))
 (require/typed/check "zombie.rkt"
   (w0 World)
   (world-on-mouse (-> World (-> Real Real String World)))

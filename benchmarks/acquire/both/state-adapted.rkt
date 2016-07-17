@@ -7,7 +7,7 @@
 ;; including a data structure for internalizing the state of the players
 
 (require
- benchmark-util
+ require-typed-check
  "board-adapted.rkt"
  "../base/types.rkt"
  typed/racket/class)

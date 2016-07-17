@@ -31,7 +31,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "../base/types.rkt")
 
 (define-type Board (HashTable Tile Content))

@@ -90,7 +90,7 @@
 ;; ---------------------------------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "../base/types.rkt"
 )
 (require/typed/check "auxiliaries.rkt"

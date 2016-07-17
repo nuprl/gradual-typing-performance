@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require benchmark-util
+(require require-typed-check
  (only-in racket/file file->lines file->string))
 
 (require/typed/check "lcs.rkt"

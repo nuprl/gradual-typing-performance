@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "../base/core-types.rkt"
  "../base/quad-types.rkt"
  (only-in racket/list filter-not)

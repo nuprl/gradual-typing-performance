@@ -1,7 +1,7 @@
 #lang typed/racket
 
 (require "base-types.rkt")
-(require benchmark-util)
+(require require-typed-check)
 (require/typed/check "block.rkt"
   [block-rotate-ccw (-> Posn Block Block)]
   [block-rotate-cw (-> Posn Block Block)]

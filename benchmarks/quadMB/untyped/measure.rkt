@@ -11,7 +11,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "../base/core.rkt"
  (only-in racket/class new send)
  (only-in math/flonum fl)

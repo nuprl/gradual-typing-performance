@@ -11,7 +11,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   racket/match
   "core-adapter.rkt"
   "gregor-adapter.rkt"

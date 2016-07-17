@@ -27,7 +27,7 @@
   (-> Population Natural [#:random (U False Real)] Population))
 
 ;; =============================================================================
-(require benchmark-util
+(require require-typed-check
  "automata-adapted.rkt")
 (require/typed/check "utilities.rkt"
  (choose-randomly

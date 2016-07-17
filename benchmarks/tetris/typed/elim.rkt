@@ -1,7 +1,7 @@
 #lang typed/racket
 
 (require "base-types.rkt")
-(require benchmark-util)
+(require require-typed-check)
 (require/typed/check "bset.rkt"
    [blocks-move (-> Real Real BSet BSet)]
    [full-row? (-> BSet Natural Boolean)]

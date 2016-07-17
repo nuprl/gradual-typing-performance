@@ -9,7 +9,7 @@
   --face)
 
 (require
-  benchmark-util
+  require-typed-check
   "basics-types.rkt")
 (require/typed/check "card.rkt"
  (#:struct card (

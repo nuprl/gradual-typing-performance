@@ -3,7 +3,7 @@
 ;; Use the partner file "streams.rkt" to implement the Sieve of Eratosthenes.
 ;; Then compute and print the 10,000th prime number.
 
-(require benchmark-util)
+(require require-typed-check)
 
 (require/typed/check "streams.rkt"
   [#:struct stream ([first : Natural]

@@ -1,6 +1,6 @@
 #lang typed/racket
 
-(require benchmark-util
+(require require-typed-check
          "data-adaptor.rkt")
 (require/typed/check "cut-tail.rkt"
                      [cut-tail ((NEListof Posn) . -> . (Listof Posn))])

@@ -43,7 +43,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "../base/core.rkt"
  (only-in racket/string string-append*))
 

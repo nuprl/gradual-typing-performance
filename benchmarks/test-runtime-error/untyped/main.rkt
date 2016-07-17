@@ -1,6 +1,6 @@
 #lang racket/base
 
-(require benchmark-util)
+(require require-typed-check)
 (require/typed/check "aux.rkt"
   (NUM-SLEEP String))
 

@@ -1,7 +1,7 @@
 #lang typed/racket/base
 
 (require
-  benchmark-util
+  require-typed-check
   "../base/types.rkt"
   "gregor-adapter.rkt"
   "tzinfo-adapter.rkt"

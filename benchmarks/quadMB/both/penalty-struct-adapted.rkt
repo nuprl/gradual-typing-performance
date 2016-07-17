@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "../base/core-types.rkt")
 
 (require/typed/check "penalty-struct.rkt"

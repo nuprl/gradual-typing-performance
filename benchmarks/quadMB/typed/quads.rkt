@@ -46,7 +46,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  (only-in racket/string string-append*)
  "../base/lib-typed.rkt"
  "../base/quad-types.rkt"

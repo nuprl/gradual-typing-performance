@@ -3,7 +3,7 @@
 ;; Resolving offsets between moments
 
 (require
-  benchmark-util
+  require-typed-check
   "../base/tzinfo/main.rkt"
   "core-structs.rkt"
   "gregor-structs.rkt"

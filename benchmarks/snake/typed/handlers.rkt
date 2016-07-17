@@ -1,7 +1,7 @@
 #lang typed/racket
 ;; Movie handlers
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(require benchmark-util
+(require require-typed-check
          "data-adaptor.rkt")
 (require/typed/check "collide.rkt"
                      [snake-wall-collide? (Snake . -> . Boolean)]

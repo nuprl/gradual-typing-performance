@@ -2,7 +2,7 @@
 
 (require racket/vector
          (only-in racket/fixnum fx+)
-         benchmark-util
+         require-typed-check
          "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"

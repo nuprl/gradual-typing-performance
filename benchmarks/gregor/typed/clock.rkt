@@ -19,7 +19,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "../base/types.rkt"
   "tzinfo-adapter.rkt"
   "gregor-adapter.rkt"

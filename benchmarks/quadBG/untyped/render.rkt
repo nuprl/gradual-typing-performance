@@ -5,7 +5,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  (only-in racket/list filter-not)
  (only-in racket/draw font% make-font current-ps-setup pdf-dc% the-color-database)
  (only-in racket/class inherit define/override send* class new super-new send define/public object% this)

@@ -5,7 +5,7 @@
 ;; (A value is a closure)
 
 (require
-  benchmark-util
+  require-typed-check
   racket/set
   "structs.rkt"
   "benv.rkt"

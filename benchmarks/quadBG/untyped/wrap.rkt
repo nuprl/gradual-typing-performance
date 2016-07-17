@@ -12,7 +12,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "ocm-struct.rkt"
   "penalty-struct.rkt"
   (only-in math/flonum fl+ fl= fl fl/ fl- fl> fl* fllog flabs flmax flexpt)

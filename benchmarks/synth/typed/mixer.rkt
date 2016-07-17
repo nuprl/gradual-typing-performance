@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require benchmark-util
+(require require-typed-check
          "typed-data.rkt"
          (for-syntax racket/base)
          (only-in racket/list first second rest))

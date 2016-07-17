@@ -14,7 +14,7 @@
   set-node-parent!
   set-node-suffix-link!)
 
-(require benchmark-util)
+(require require-typed-check)
 
 (require/typed/check "data.rkt"
   [#:struct label ([datum : (Vectorof (U Char Symbol))]

@@ -7,7 +7,7 @@
  make-random-automaton
 )
 
-(require benchmark-util)
+(require require-typed-check)
 (require/typed/check "automata.rkt"
  (make-random-automaton
   (-> Natural oAutomaton)))

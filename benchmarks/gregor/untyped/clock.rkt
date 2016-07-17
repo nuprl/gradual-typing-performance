@@ -25,7 +25,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "gregor-structs.rkt"
 )
 (require (only-in "moment.rkt"

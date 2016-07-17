@@ -21,7 +21,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   (only-in racket/math exact-round)
   (only-in racket/format ~r)
   "core-adapter.rkt"

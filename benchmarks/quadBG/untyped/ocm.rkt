@@ -10,7 +10,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  "ocm-struct.rkt"
  (only-in racket/list argmin)
  (only-in racket/sequence sequence->list)

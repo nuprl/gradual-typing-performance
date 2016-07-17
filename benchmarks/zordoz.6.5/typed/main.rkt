@@ -1,6 +1,6 @@
 #lang typed/racket/base
 
-(require benchmark-util)
+(require require-typed-check)
 
 (require/typed/check "zo-shell.rkt"
   [init (-> (Vectorof String) Void)])

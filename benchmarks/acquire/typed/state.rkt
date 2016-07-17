@@ -139,7 +139,7 @@
 ;; IMPLEMENTATION: 
 
 (require
- benchmark-util
+ require-typed-check
  "../base/types.rkt"
  "board-adapted.rkt"
  )

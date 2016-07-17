@@ -6,7 +6,7 @@
 )
 (require
   "automata-adapted.rkt"
-  benchmark-util)
+  require-typed-check)
 
 (require/typed/check "population.rkt"
  (build-random-population

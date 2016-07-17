@@ -6,7 +6,7 @@
 
 (require
  (except-in "typed-data.rkt" make-label)
- benchmark-util
+ require-typed-check
 )
 (require/typed/check "label.rkt"
   [label-length (-> Label Index)]

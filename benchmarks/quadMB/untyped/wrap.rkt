@@ -12,7 +12,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "../base/core.rkt"
   "ocm-struct.rkt"
   "penalty-struct.rkt"

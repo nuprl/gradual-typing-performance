@@ -1,5 +1,5 @@
 #lang typed/racket/base
-(require benchmark-util
+(require require-typed-check
          (except-in "typed-data.rkt" make-label)
          racket/list)
 

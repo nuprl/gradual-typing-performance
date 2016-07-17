@@ -10,7 +10,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
- benchmark-util
+ require-typed-check
  (only-in racket/string string-replace string-join)
  (only-in racket/list partition drop-right drop make-list filter-not take splitf-at)
 )

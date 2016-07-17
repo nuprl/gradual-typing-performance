@@ -7,7 +7,7 @@
 ;; ----------------------------------------------------------------------------
 
 (require
-  benchmark-util
+  require-typed-check
   "../base/core.rkt"
   (only-in racket/list append* empty empty? split-at drop-right)
   racket/class

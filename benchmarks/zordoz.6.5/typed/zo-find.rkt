@@ -12,7 +12,7 @@
 
 (require (only-in racket/list empty?)
          (only-in racket/string string-split string-trim)
-         benchmark-util
+         require-typed-check
          "../base/typed-zo-structs.rkt"
          racket/match)
 

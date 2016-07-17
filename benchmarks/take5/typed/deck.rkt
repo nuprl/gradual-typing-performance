@@ -16,7 +16,7 @@
   "deck-types.rkt"
   "stack-types.rkt"
   racket/list
-  benchmark-util
+  require-typed-check
 )
 
 (require/typed/check "basics.rkt"
