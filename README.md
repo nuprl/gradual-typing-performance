@@ -11,6 +11,7 @@ We have a few scripts in the project root, but most of the content is in a subfo
 - `benchmarks`     : root folder for typed/untyped programs, the rolling suite of motivation
 - `data`           : collected datasets
 - `experimental`   : micro-benchmarks & unproven ideas
+- `karst`          : scripts for running on Indiana University's [Karst cluster](https://kb.iu.edu/d/bezu)
 - `paper`          : writings on gradual typing performance
 - `pre-benchmark`  : programs that are not yet ready to run
 - `post-benchmark` : obsolete benchmarks
