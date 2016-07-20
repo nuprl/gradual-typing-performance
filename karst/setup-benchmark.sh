@@ -1,4 +1,4 @@
-GTP="/N/u/bengree/Karst/gradual-typing-performance"
+GTP="/N/u/bengree/Karst/gtp"
 RKT="/N/u/bengree/Karst/racket/6.5/bin"
 
 find ${GTP} -name "benchmark" | xargs rm -r
