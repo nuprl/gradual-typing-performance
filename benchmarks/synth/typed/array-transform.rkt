@@ -18,7 +18,7 @@
 (require/typed/check "array-utils.rkt"
   [unsafe-vector-remove (-> Indexes Integer Indexes)]
   [vector-copy-all (-> Indexes Indexes)]
-  [unsafe-vector-insert (-> Indexes Integer Any Indexes)])
+  [unsafe-vector-insert (-> Indexes Integer Integer Indexes)])
 
 (provide array-append*)
 

@@ -32,7 +32,7 @@
   "ymd.rkt"
     [ymd->jdn (-> YMD Integer)]
     [jdn->ymd (-> Exact-Rational YMD)]
-    [jdn->iso-wday (-> Integer (U 0 1 2 3 4 5 6))]
+    [jdn->iso-wday (-> Integer (U 1 2 3 4 5 6 7))]
     [ymd->yday (-> YMD Natural)]
     [iso-weeks-in-year (-> Natural (U 52 53))]
 )

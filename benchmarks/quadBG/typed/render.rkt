@@ -30,7 +30,7 @@
   [world:x-position-key Symbol]
   [world:y-position-key Symbol]
   [world:ascent-key Symbol]
-  [world:quality-default (Parameterof Index)]
+  [world:quality-default (Parameterof Integer)]
   [world:draft-quality Index]
   [world:page-key Symbol]
 )

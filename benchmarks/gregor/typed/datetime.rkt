@@ -19,7 +19,7 @@
   "date.rkt"
     [date->iso8601 (-> Date String)]
     [date->jdn (-> Date Integer)]
-    [jdn->date (-> Exact-Rational Date)]
+    [jdn->date (-> Integer Date)]
     [date->ymd (-> Date YMD)]
     [date (->* (Natural) (Month Natural) Date)]
     [date=? (-> Date Date Boolean)]

@@ -4,11 +4,10 @@
          "typed-data.rkt")
 
 (require/typed/check "array-struct.rkt"
-  [build-array (-> (Vectorof Nonnegative-Integer) (-> Indexes Flonum) Array)])
+  [build-array (-> Indexes (-> Indexes Flonum) Array)])
 
 (require/typed/check "array-transform.rkt"
-  [array-append* (case-> ((Listof Array) -> Array)
-                         ((Listof Array) Integer -> Array))])
+  [array-append* ((Listof Array) -> Array)])
 
 (require/typed/check "synth.rkt"
   [fs Natural])

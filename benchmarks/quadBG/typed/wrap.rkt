@@ -27,8 +27,8 @@
     (only-in racket/string string-trim))
 )
 (require/typed/check "measure.rkt"
-  (measure-ascent (->* (String Float String) (Font-Weight Font-Style) Float))
-  (measure-text (-> String Float String Font-Weight Font-Style Float))
+  (measure-ascent (->* (String Positive-Flonum String) (Font-Weight Font-Style) Float))
+  (measure-text (-> String Positive-Flonum String Font-Weight Font-Style Float))
   [round-float (-> Float Float)]
 )
 (require/typed/check "quads.rkt"
@@ -62,7 +62,7 @@
   [world:hanging-chars (Listof String)]
   [world:use-optical-kerns? Boolean]
   [world:before-break-key Symbol]
-  [world:default-word-break-list (Parameterof (Listof (U Symbol String)))]
+  [world:default-word-break-list (Parameterof (Listof (U 'bb 'nb String)))]
   [world:no-break-key Symbol]
   [world:word-break-key Symbol]
   [world:spaces (Listof String)]
@@ -71,7 +71,7 @@
   [world:soft-hyphen Char]
   [world:unbreakable-key Symbol]
   [world:minimum-last-line-chars Index]
-  [world:measure-default (Parameterof Any)]
+  [world:measure-default (Parameterof Float)]
   [world:measure-key Symbol]
   [world:font-size-key Symbol]
   [world:font-size-default (Parameterof Float)]
@@ -106,7 +106,7 @@
    (Quad Symbol Any -> Quad))
 )
 (require/typed/check "ocm.rkt"
-  (make-ocm ((Matrix-Proc-Type ($penalty -> Value-Type)) (Entry-Type) . ->* . OCM-Type))
+  (make-ocm ((Matrix-Proc-Type Entry->Value-Type) (Entry-Type) . ->* . OCM-Type))
   (ocm-min-index (OCM-Type Index-Type -> (U Index-Type No-Value-Type)))
   (ocm-min-entry (OCM-Type Index-Type -> Entry-Type))
 )

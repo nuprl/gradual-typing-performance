@@ -73,6 +73,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+ (only-in typed/racket/draw Font-Style Font-Weight)
  (for-syntax
   racket/base
   racket/syntax))
@@ -94,10 +95,10 @@
 (define font-name-default (make-parameter "Triplicate T4"))
 ;; (define-key-and-parameter font-weight 'weight 'normal Font-Weight)
 (define font-weight-key 'weight)
-(define font-weight-default (make-parameter 'normal))
+(define font-weight-default : (Parameterof Font-Weight) (make-parameter 'normal))
 ;; (define-key-and-parameter font-style 'style 'normal Font-Style)
 (define font-style-key 'style)
-(define font-style-default (make-parameter 'normal))
+(define font-style-default : (Parameterof Font-Style) (make-parameter 'normal))
 ;; (define-key-and-parameter font-color 'color "black" String)
 (define font-color-key 'color)
 (define font-color-default (make-parameter "black"))
