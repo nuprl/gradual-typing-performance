@@ -1,8 +1,6 @@
 #lang racket/base
 
-(require require-typed-check)
-(require/typed/check "aux.rkt"
-  (NUM-SLEEP String))
+(require "aux.rkt")
 
 (define (main)
   (add1 NUM-SLEEP)

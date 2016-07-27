@@ -45,5 +45,5 @@
 (define *MIN-MAX-CONFIG* (make-parameter #f))
 
 ;; --- begin WARNING: do not set this parameter
-(define *RACKET-BIN* (make-parameter #f))
+(define *RACKET-BIN* (make-parameter ""))
 ;; --- end WARNING

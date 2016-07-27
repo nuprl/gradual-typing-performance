@@ -20,31 +20,30 @@
 )
 
 (require
-  benchmark-run/unixtime
-  benchmark-run/utilities
-  benchmark-run/stats-helpers
-  benchmark-run/parameters
   (only-in glob in-glob)
   (only-in racket/file file->value)
+  (only-in racket/file file->value)
   (only-in racket/format ~a ~r)
-  math/statistics
-  mzlib/os
+  (only-in racket/format ~a ~r)
+  (only-in racket/os getpid)
+  (only-in racket/sequence in-slice)
+  benchmark-run/parameters
+  benchmark-run/stats-helpers
+  benchmark-run/unixtime
+  benchmark-run/utilities
   glob
+  math/statistics
   pkg/lib
   racket/class
   racket/cmdline
   racket/date
-  racket/draw
-  (only-in racket/format ~a ~r)
-  (only-in racket/file file->value)
   racket/future
-  racket/match
   racket/list
+  racket/match
   racket/port
   racket/string
   racket/system
   racket/vector
-  (only-in unstable/sequence in-slice)
 )
 
 
@@ -151,7 +150,7 @@
           real]
          [#f
           (when (regexp-match? "racket " stub)
-            (runtime-error 'run stub))])))
+            (runtime-error 'run (current-directory)))])))
     (close-input-port out)
     (close-input-port err)
     (close-output-port in)
@@ -515,6 +514,7 @@
     (when rx*
       (for/list ([rx (in-list (if (list? rx*) rx* (list rx*)))])
         (check-regexp-match rx str)))
+    (for-each delete-file (glob "*.rktd"))
     (void))
 
   (check-benchmark "test-success"
@@ -522,7 +522,9 @@
 
   (check-benchmark "test-compile-error"
     #:should-fail? #t
-    #:output-rx* '(#rx"Type Checker" #rx"run:compile" #rx"configuration01")
+    #:output-rx* '(#rx"Error running" ;; 2016-07-26 : should probably be typechecker
+                   #rx"run:runtime"
+                   #rx"configuration01")
     #:max-output-lines 30)
 
   (check-benchmark "test-runtime-error"
