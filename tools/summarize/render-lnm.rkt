@@ -269,7 +269,7 @@
            [S (car S*)]
            [first-lbl (title-text (or title (get-project-name S)))]
            [mid-lbl   (blank 0 (pict-height first-lbl))]
-           [last-lbl  (title-text (format "~a configurations" (get-num-configurations S)))])
+           [last-lbl  (title-text (format "~a configurations" (add-commas (get-num-configurations S))))])
       (cons
         (vl-append V first-lbl (car L-pict*))
         (let loop : (Listof Pict)

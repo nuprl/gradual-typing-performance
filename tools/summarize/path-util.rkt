@@ -1,6 +1,9 @@
 #lang typed/racket/base
 
 (provide
+  add-commas
+  ; (-> Real String)
+
   assert-directory-exists
   ; (-> Path-String Void))
 
@@ -20,9 +23,33 @@
 )
 
 (require
+  (only-in racket/string string-split string-join)
   (only-in racket/list split-at))
 
 ;; =============================================================================
+
+(: add-commas (-> Real String))
+(define (add-commas n)
+  (define str (if (string? n) n (number->string n)))
+  (define str* (string-split str "."))
+  (string-append (add-commas/integer (car str*))
+                 (if (or (null? (cdr str*)) (> (string-length str) 4))
+                   ""
+                   (string-append "." (cadr str*)))))
+
+(: add-commas/integer (-> String String))
+(define (add-commas/integer str)
+  (define L (string-length str))
+  (string-join
+    (let loop : (Listof String)
+              ([i   : Integer           L]
+               [acc : (Listof String) '()])
+      (let ([i-3 (- i 3)])
+        (cond
+         [(<= i-3 0)
+          (cons (substring str 0 i) acc)]
+         [else
+          (loop i-3 (cons "," (cons (substring str i-3 i) acc)))]))) ""))
 
 (: assert-directory-exists (-> Path-String Void))
 (define (assert-directory-exists p)
