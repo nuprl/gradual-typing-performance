@@ -44,7 +44,7 @@ Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
 The idea is to extend an existing, dynamically-typed language to allow the incremental
  addition of static types.
 Programmers enable typechecking by writing type annotations.
-These annotations are checked and enforced by the compiler.
+The compiler validates and enforces these annotations.
 Unannotated parts of the program have no static guarantees but may freely
  interact with typed code by sharing values across so-called @emph{type boundaries}.
 At runtime, the gradual type system dynamically checks untyped values flowing
@@ -78,13 +78,13 @@ Each new extension must address challenges unique to its base language,
 Soundness for gradual type systems is traditionally formulated as a
  type soundness theorem guaranteeing that typed parts of a program never
  commit runtime type errors@~cite[thf-dls-2006].
-Typed code may raise a type error at runtime upon receiving untyped data
+Typed code may signal a type error at runtime upon receiving untyped data
  that does not match the type checker's assumptions, but typed code will never
  execute a single instruction using invalid data.
 Consequently, type errors in a gradually typed program always reference a
  boundary where an unexpected value flowed into typed code.
 With this information, a programmer can determine whether the untyped value
- or static type annotation is at fault.
+ or static type annotation is at fault and correct the impedence mismatch.
 
 Gradual type systems enforce type soundness by inserting dynamic checks at
  type boundaries.
@@ -104,7 +104,7 @@ Dynamic checks, however, introduce performance overhead and slowdowns of
  appear in the literature.
 @; Allende (DLS'13) dont seem to report a slowdown. Just,
 @;  "as type annotations are added to a library, performance tends to degrade"
-These performance problems imply a steep tradeoff between preserving type
+These figures imply a steep tradeoff between preserving type
  soundness and maintaining performance when adding types to an untyped program.
 The aim of this paper is to provide a foundation for measuring
  and understanding the tradeoff.
@@ -115,7 +115,7 @@ Given a fixed granularity for type boundaries and both fully-untyped and
 In other words, if a benchmark has @math{N} locations that may be type-annotated
  then there are @exact{$2^N$} configurations to measure.
 The performance overhead of these configurations relative to the fully-untyped
- benchmark is, we claim, the most accurate measure for the performance of the
+configuration is, we claim, the most accurate measure for the performance of the
  whole gradual type system.
 
 @; In general, the granularity of type boundaries is fixed by the gradual type system,
@@ -125,7 +125,8 @@ The performance overhead of these configurations relative to the fully-untyped
 
 We apply the method to Typed Racket, where type boundaries are module boundaries.
 The evaluation affirms that Typed Racket programs may suffer order-of-magnitude
- overhead when gradually typed, but also suggests concrete improvements.
+ overhead when gradually typed, but conversely offers insights for reducing some
+ pathologies.
 Furthermore, the method is useful for quantifying improvements and identifying
  regressions across different versions of Typed Racket.
 

@@ -25,7 +25,7 @@
    system, as gradual typing offers a spectrum of possible ways for existing
    programs to evolve.
   Performance evaluation of a gradual type system, or any system for mixing
-   languages within a program, @emph{must} consider all possibilities combinations
+   languages within a program, must consider all combinations
    the system opens to programmers.
 
   This paper is an extended report on our evaluation method for gradual
