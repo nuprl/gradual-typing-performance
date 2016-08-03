@@ -26,6 +26,7 @@
          usable
 
          id
+         library
          PHIL
          todo ;; Remove this export before submission
 
@@ -157,6 +158,9 @@
 ;; Usage: @id[x]
 (define (id x)
   (make-element plain @format["~a" x]))
+
+(define (library x)
+  (tt x))
 
 (define (PHIL)
   ;; Dammit Phil

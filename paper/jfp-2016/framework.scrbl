@@ -6,7 +6,7 @@
 @title[#:tag "sec:framework"]{Evaluation Framework}
 
 Performance evaluation for gradually typed languages must reflect how
- developers use such languages.
+ programmers use such languages.
 Migrating an entire project from untyped to typed is rarely the initial goal,
  but rather a symptom of an exceptional initiative or a need to remove type
  boundaries.
@@ -15,12 +15,12 @@ Consequently, the question of whether there exists a
  performance overhead is purely academic.
 In practice, a subset of modules are given types for
  reasons known only to the original developers.
-The overall performance of the hybrid program is then compared to the previous
- version of the program.
+The programmers then compare the overall performance of the hybrid program to
+ the performance of the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the developers may either accept the performance of the hybrid system
  or seek ways to reduce the cost of type boundaries.
-This process repeats over time as the program evolves.
+As the program evolves, this process repeats.
 
 We formalize these lessons in two stages: first by describing the @emph{space}
  over which a performance evaluation must take place and second by giving
@@ -31,10 +31,10 @@ We formalize these lessons in two stages: first by describing the @emph{space}
 
 @section{Performance Lattice}
 
-The promise of macro-level gradual typing is that any subset of modules
+The promise of Typed Racket's macro-level gradual typing is that any subset of modules
  in an untyped program may be given types.
-Performance evaluation must therefore consider the space of all @emph{configurations}
- of a program that can be obtained by adding types to a subset of the program's modules.
+Performance evaluation must therefore consider the space of all program
+ @emph{configurations} reachable by typing a subset of the program's modules.
 We describe this space as a static lattice representing all combinations of typed and
  untyped modules.
 This lattice-based approach to performance measurements was introduced in our
@@ -73,7 +73,7 @@ This lattice-based approach to performance measurements was introduced in our
      such that @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
      and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
     If @exact|{$c_1 \rightarrow_k c_2$}| we say that @exact{$c_2$} is reachable from
-     @exact{$c_1$} in at most @exact{$k$} @emph{type conversion steps}.
+     @exact{$c_1$} in at most @exact{$k$} type conversion steps.
   }
 ]
 
@@ -81,9 +81,9 @@ A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|
  generated from a sequence of modules.
 After framing the lattice for a given program, language evaluators must measure
  the performance of each configuration and generate a labeling @exact{$l$}
- such that @exact{$\forall c \in S$} the performance of
+ such that for all @exact{$c \in S$} the performance of
  configuration @math{c} is expressed by @exact{$l(c)$}.
-Once the data is aggregated, we can draw lessons and make comparisons
+Once this data is aggregated, researchers can draw lessons and make comparisons
  using the lattice and labeling.
 
 
@@ -107,11 +107,11 @@ Hence we characterize the relative performance of fully-typed programs
 
 Determining whether speedups or slowdowns are the norm for fully typed programs
  may influence a software team's decision to experiment with gradual typing.
-But once a team is already using gradual typing, the important performance
+But for users of gradual type systems, the important performance
  question is how much overhead their current configuration suffers due
  to gradual typing.
 If the performance overhead is low enough, the configuration can be
- released and used by clients.
+ released to clients.
 Depending on the nature of the software and clients' expectations,
  an appropriate substitute for "low enough" might take any value between zero overhead
  and an order-of-magnitude slowdown.
@@ -127,8 +127,8 @@ To account for the varying requirements of software teams, we formulate
 Even if a configuration is not deliverable, it might be suitably fast to
  run the test suites and prototype designs.
 A software engineering team can
- use such a configuration for development purposes, but it may not
- release it to clients.
+ use such a configuration for development purposes without releasing
+ it to clients.
 @;In practice, usable configurations may act as checkpoints for a team to ensure
 @; the product is working correctly before implementing performance optimizations.
 Using a second parameter to capture the meaning of "suitably fast",
@@ -155,8 +155,8 @@ Finally, if a software project is currently in an unacceptable
  deliverable or usable configuration.
 We propose as a coarse measure of "work" the number of modules that must be
  annotated with types before performance improves.
-Using this metric, configurations one module away from a usable configuration
- are recognized as nearly usable themselves.
+Using this metric, configurations one type conversion step away from a usable
+ configuration are recognized as nearly usable themselves.
 
     @def[#:term @list{@step{}}]{
      A configuration is @step[] if it is unacceptable and at most @math{k}
@@ -210,7 +210,7 @@ Using white squares to represent untyped modules and black squares for typed
     Both gradually typed configurations are
       @deliverable[@id[g-overhead]]
       because they run within @id[(* g-overhead (sample-data 'c00))] seconds.
-    These configurations are also @step[t-str t-str t-str]
+    Lastly, these configurations are @step[t-str t-str t-str]
      because each is one conversion step
      from the fully-typed configuration.
   })
