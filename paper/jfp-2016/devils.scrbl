@@ -11,13 +11,13 @@
 @title[#:tag "sec:devils"]{The Devil's Contracts}
 @; -- AKA "Four contracts of the apocalypse"
 
-@; TODO better intro, urgently
-Many of our high-overhead benchmarks exhibit similar pathologies.
-Here are some of the most interesting.
-
-We hope that language designers manage to reduce the overhead caused by
- these pathological cases.
-But in the worst case, these may serve as anti-patterns for developers.
+Many of the large performance overheads apparent in our benchmarks stem from
+ similar pathologies.
+This section reviews the most common problematic cases, in the hope that
+ language designers will address the issues in future gradual
+ type systems.
+At the very least, these pathologies might serve as anti-patterns for
+ developers to avoid.
 
 
 @; -----------------------------------------------------------------------------
@@ -25,7 +25,8 @@ But in the worst case, these may serve as anti-patterns for developers.
 @; -- AKA high-frequency
 
 Some module boundaries are crossed extremely often in a benchmark execution.
-We deem these boundaries @emph{highways}.
+If we view a program as a network of roads carrying values between modules,
+ these boundaries are the highways.
 @(let ([highway* '((morsecode  821060 372100)
                    (quadBG     5 28160 2878 17 8696 339674 323648)
                    (sieve      200000000)
@@ -69,8 +70,7 @@ One common scenario is demonstrated by the following stack data structure
 
 Each of the million boundary-crossings in this program triggers a contract
  check on the stack @tt{stk} to ensure it is a homogenous list.
-This check requires walking the list and validating each of its 20
- elements.@note{In general, contracts on list take linear time in the size of their input.}
+This check requires walking the list and validating each of its 20 elements.
 Although one such traversal takes a fraction of a second and thousands are
  hardly noticable, the contract checks in the above program dominate its
  running time.
@@ -79,22 +79,22 @@ We suggest two potential solutions to this pathology.
 First is to memoize the outcome of contract assertions.
 After the untyped value @racket[stk] is validated by the
  @exact{$\ctc{\RktMeta{(Stack A)}}$} contract for the first time,
- the value should be given a certificate that obviates the need for future checks.
-Mutating @racket[stk] should be allowed and should invalidate the certificate.
+ the value could be marked with a certificate that obviates the need for future checks.
+Mutating @racket[stk] should be allowed and must invalidate the certificate.
 
 Our second suggestion is to check contracts @emph{by-need}; in other words,
  only when a typed function accesses part of the untyped value @racket[stk].
 If applied to this program, by-need contracts would eliminate all traversals
  because @racket[stack-empty?] never reads or writes to its argument.
-What remains to be seen is whether implementing this behavior would
- typically improve performance in realistic programs or if the bookkeeping
- overhead slows down common cases.
+@;What remains to be seen is whether implementing this behavior would
+@; typically improve performance in realistic programs or if the bookkeeping
+@; overhead slows down common cases.
 
 @; any->bool
 A similar pathology regarding the contracts generated for user-defined
  structure types was fixed between Racket v6.3 and v6.4.
-When a programmer creates a struct
- like the following, Racket generates a predicate and accessor functions.
+When a programmer creates a struct, e.g.:
+
 
 @(begin
 #reader scribble/comment-reader
@@ -103,6 +103,7 @@ When a programmer creates a struct
 (struct Point ([x : Real] [y : Real]))
 }|)
 
+Racket generates a predicate and accessor functions.
 Naturally, the accessors @racket[Point-x] and @racket[Point-y] require
  their argument to be a @racket[Point] value and must be protected by a contract
  when used in untyped code.
@@ -113,13 +114,13 @@ Enforcing this type with a higher-order contract is unnecessary:
 The generated contract also executes fairly quickly; nevertheless, we
  found that checking these predicate contracts accounted for up to
  30% of some configurations @emph{total} running time@~cite[tfgnvf-popl-2016].
-
 This overhead was due to extremely frequent checks.
 As @racket[Point?] is the only way to identify values of type @racket[Point?],
  calls to functions like @racket[Point-x] trigger calls to @racket[Point?] as
  part of their own contracts.
 Removing these predicate contracts therefore caused a significant part of the
- performance improvement between versions 6.3 and 6.4.
+ performance improvement on the @bm{suffixtree} and @bm{snake} benchmarks
+ between versions 6.3 and 6.4.
 
 
 @; -----------------------------------------------------------------------------
@@ -145,13 +146,13 @@ One example of iceberg contracts are the types used in @bm{quadMB}, for instance
    })
 Incidentally, the developer who created these types was hoping Typed Racket would
  improve the performance of a typesetting system.
-The overhead of testing whether large input files were well-formed @racket[Quad]
- data came as a surprise.
+The overhead of using a runtime predicate compiled from this type
+ came as a surprise.
 
 Another Racket user recently posted the following untyped script to
  the Racket mailing list.
 Changing the @exact{$\RktMeta{\#lang}$} line to @racket[typed/racket]
- improves performance from approximately 10 seconds to less than 1 millisecond.
+ improves performance from approximately @|PFDS-BEFORE| to less than @|PFDS-AFTER|.
 
 @(begin
 #reader scribble/comment-reader
@@ -160,10 +161,10 @@ Changing the @exact{$\RktMeta{\#lang}$} line to @racket[typed/racket]
 (require pfds/trie) ;; a Typed Racket library
 
 (define t (trie (list (range 128))))
-(define u (time (bind (range 128) 0 t)))
+(time (bind (range 128) 0 t))
 }|)
 
-The underlying issue is quite subtle: it happens that the @racket[trie] library
+The underlying issue is subtle: it happens that the @racket[trie] library
  uses an immutable hashtable as its core datatype but Typed Racket can
  only generate contracts for @emph{mutable} hashtables.
 Therefore trie values are wrapped in a contract that is both expensive to install
@@ -183,6 +184,11 @@ Even if language designers can remove most of the overhead, users of
  gradual type systems would benefit from tools to statically approximate the runtime
  cost of enforcing each type and profilers to dynamically attribute
  runtime overhead to specific types or values.
+Racket's feature-specific profiler@~cite[saf-cc-2015] provides a framework for
+ achieving this goal.
+
+   @; but still hard to count up "cost of (Vector Int) is cost of Vector plus
+   @;  cost of all the associated Ints"
 
 
 @; -----------------------------------------------------------------------------
@@ -233,7 +239,7 @@ This phenomena of functions tunnelling through a macro and introducing
  a type boundary after expansion is unique to languages with syntax
  extensions, but it highlights a general issue that the graph structure
  of programs is often complex.
-Even small programs like @bm{synth} have surprising static boundaries.
+Even small programs like @bm{synth} have surprising boundaries.
 Large programs, or programs with dynamically introduced boundaries will
  face similar issues; therefore, it is likely that a programmer working to
  diagnose a performance problem is not aware of all the type boundaries in
@@ -258,8 +264,9 @@ This issue is well known and there are many published techniques for identifying
  redundant contracts@~cite[htf-hosc-2010 sw-popl-2010 g-popl-2015].
 Racket implements a predicate-based technique: for each class of contracts
  there is a binary predicate that decides whether a contract in the class
- subsumes another, arbitrary contract---similar to have every Java object
- has a built-in equality predicate.
+ subsumes another, arbitrary contract.
+   @;---similar to the @tt{equals} predicate
+   @;packaged with every Java and Scala object.
 Nonetheless, we found a few pathologies due to repeated wrapping
  and therefore include them here as test cases for future work.
 
@@ -299,7 +306,7 @@ Whether @racket[Population] was implemented as a vector (in @bm{fsm})
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
-#lang typed/racket ;; Exceprt from fsm benchmark
+#lang typed/racket ;; From the 'fsm' benchmark
 (: evolve (Population Natural -> Real))
 (define (evolve p iters)
   (cond
@@ -317,7 +324,7 @@ Each command @racket[c] in @racket[env] is an object that produces
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
-#lang typed/racket ;; Excerpt from forth benchmark
+#lang typed/racket ;; From the 'forth' benchmark
 (: eval (Input-Port -> Env))
 (define (eval input)
   (for/fold ([env  : Env    (base-env)])
@@ -371,11 +378,11 @@ It is therefore useful to provide ``getter'' functions for each method:
 
 however, untyped clients using these accessor methods now repeatedly send
  higher-order functions across a type boundary.
-This is the source of overhead in @bm{zombie}.
+Contracts on similar functions are the source of overhead in @bm{zombie}.
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:library"]{Ecological Contracts}
+@section[#:tag "sec:devils:library"]{Ecosystem Contracts}
 @; -- AKA library. The problem = gradualizing an entire language
 @;                             = core language
 @;                             = packages, maintaining untyped compat.
@@ -398,19 +405,21 @@ For the same reason, the @math{k=1} plots for these benchmarks are similar
  a type boundary with the library.
 Conversely, @bm{lnm} uses two typed libraries.
 Removing the type boundaries to these libraries improves performance
- to at most @min-overhead['lnm "6.2"] relative to the untyped runtime on Racket v6.2.
+ to at best @min-overhead['lnm "6.2"] relative to the untyped runtime on Racket v6.2.
 
 The obvious fix is to migrate the untyped libraries to Typed Racket and
  the typed libraries to untyped Racket, but this replaces the performance
- overhead with software maintenance overhead as library authors will need to
- manage two subtly different versions of the same code.
+ overhead with software maintenance overhead.
+Library authors will need to
+ manage two subtly different versions of the same code or accept inefficiencies
+ in one of the versions.
 For instance, suppose there is an untyped library for managing elections that
  includes a function for adding votes to a global tally:
 
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
-  (define total-votes 0) ;; Invariant: `(<= 0 total-votes)`
+  (define total-votes 0) ;; Invariant: `0 <= total-votes`
 
   ;; Add `n` votes to the global variable `total-votes`
   (define (add-votes n)
@@ -436,10 +445,10 @@ Of course, a typed version of the same function can replace the dynamic
 }|)
 
 Type annotations aside, we now have two different versions of the same function.
-Just erasing types in the second version will @emph{not} produce a safe untyped program!
-Given this scenario, if the performance cost of type boundaries cannot be eliminated
- then we need developer tools to manage versions of a codebase specialized to
- typed and untyped clients.
+Just erasing types in the second version will @emph{not} produce a safe untyped program.
+The difference is small, but these small incompatibilities are common and
+ impose an undue maintenance cost of developers using current software management
+ tools.
 
 @; TODO doesn't fit
 @;On a final, related note, adding types to an untyped program is currently only the first

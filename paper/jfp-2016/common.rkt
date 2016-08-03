@@ -30,6 +30,9 @@
          PHIL
          todo ;; Remove this export before submission
 
+         PFDS-BEFORE
+         PFDS-AFTER
+
          profile-point
          )
 
@@ -168,6 +171,12 @@
 
 (define (todo x)
   (make-element 'bold @string-append["TODO: " x]))
+
+(define PFDS-BEFORE
+  "12 seconds")
+
+(define PFDS-AFTER
+  "1 millisecond")
 
 (define (profile-point message)
   (display "[PROFILE] ")

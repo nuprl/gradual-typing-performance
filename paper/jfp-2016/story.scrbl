@@ -96,7 +96,7 @@ For example, Typed Racket developers have experienced pathologies including
  and 25x-50x slowdowns when using the standard math library.
 One potential solution is to convert additional modules to Typed Racket.
 Indeed,
- one user reported a speedup from 12 seconds to 1 millisecond after converting
+ one user reported a speedup from @|PFDS-BEFORE| to @|PFDS-AFTER| after converting
  a script from Racket to Typed Racket.
 But annotating a module is not guaranteed to improve performance and may introduce
  new type boundaries with even larger overhead.
