@@ -594,7 +594,7 @@ Lessons from graphs:
     @(let ([num-bad (length '(sieve forth fsm fsmoo zombie suffixtree tetris synth quadMB))])
       @elem{
         Even worse, nearly half the configurations in @id[num-bad] benchmarks
-         (@id[(* 100 (rnd (/ num-bad (count-benchmarks))))]%) have over 20x overhead.
+         (@id[(round (* 100 (/ num-bad (count-benchmarks))))]%) have over 20x overhead.
       })
   }
   @item{
