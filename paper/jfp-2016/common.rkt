@@ -165,7 +165,7 @@
 (define (library x)
   (tt x))
 
-(define (PHIL)
+(define PHIL
   ;; Dammit Phil
   "Nguy{\\~{\\^{e}}}n")
 

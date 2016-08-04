@@ -55,7 +55,7 @@ Typed Racket compiles to Racket, which uses
 It makes no attempt to reduce the overhead of contracts or to exploit contracts
  for optimizations.
 It remains to be seen whether contract-aware compilers such as those being
- explored at the University of Maryland@~cite[nthvh-icfp-2014]
+ explored at the University of Maryland (@exact{@|PHIL|} @|etal| 2014) @; TODO HACK @elem{@~cite[nthvh-icfp-2014]}
  and Indiana University@~cite[bauman-et-al-icfp-2015]
  can reduce the significant overhead that our evaluation shows.
 Nevertheless, we are convinced that even if the magnitude of the slowdowns are

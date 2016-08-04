@@ -49,6 +49,6 @@
 @include-section{devils.scrbl}
 @;@include-section{experience.scrbl}
 @;@include-section{flavors.scrbl}
-@;@include-section{conclusion.scrbl}
+@include-section{conclusion.scrbl}
 
 @generate-bibliography[]

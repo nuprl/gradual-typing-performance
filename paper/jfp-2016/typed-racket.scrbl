@@ -216,7 +216,7 @@ Most benchmarks are self-contained, but where relevant we note their external
   @elem{
     Game in which a growing and moving snake avoids walls and its own tail.
     Our benchmark is a gradually typed version of the @bm{snake} game from
-     @PHIL{} @|etal| and runs a pre-recorded sequence of state-changing moves
+     @|PHIL| @|etal| and runs a pre-recorded sequence of state-changing moves
      simulating user input@~cite[nthvh-icfp-2014].
   }
 )
@@ -452,7 +452,7 @@ Each run used a fresh instance of the Racket VM with the JIT compiler
 All scripts we used to run our experiments and the data we collected
  are available in the online supplement to this paper.
 For threats to validity regarding our experimental protocol,
- see @Secref{sec:threats:protocol}.
+ see @Secref{sec:threats}.
 
 
 @; -----------------------------------------------------------------------------
