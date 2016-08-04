@@ -14,7 +14,7 @@
 Our research is motivated by practical experience with Typed Racket@~cite[TypedRacket],
  the gradually-typed sister language of Racket@~cite[plt-tr1].
 Typed Racket implements @emph{macro-level} gradual typing; that is,
- every Racket module is explicitly typed or untyped.@note{Typed Racket
+ every module in a Racket program is explicitly typed or untyped.@note{Typed Racket
   does allow typed expressions and definitions within untyped modules, but our
   benchmarks do not use these so-called @emph{typed regions}.}
 Programmers invoke the type checker by writing @hash-lang[] @racket[typed/racket]
@@ -23,6 +23,7 @@ In contrast, @hash-lang[] @racket[racket] modules are untyped.
 The syntax of Typed Racket is a superset of Racket, the difference being the
  statically-checked type annotations that Typed Racket programmers use to
  document their intentions and guide the type checker.
+@; TODO ew
 Converting a program between Racket and Typed Racket is by design only a matter
  of adding or removing type annotations.
 
@@ -47,7 +48,7 @@ Put another way, every @emph{logical} type @exact|{$\RktMeta{T}$}| in Typed
 Racket programmers frequently mix typed and untyped code.
 For example, the standard matrix, statistics, and plotting libraries are implemented
  in Typed Racket and used by many untyped programs.
-Conversely, Racket's core libraries are untyped and used by nearly all typed programs.
+Conversely, Racket's core libraries are untyped and used by all typed programs.
 Within a single project, we find that Typed Racket users have diverse motivations
  for choosing which modules to type and which to leave untyped.
 Some of the most common use-cases are:
@@ -103,13 +104,13 @@ But annotating a module is not guaranteed to improve performance and may introdu
 
 As language designers, we must also remember that adding types is always
  a software engineering burden.
-Even in the @emph{campground}@note{Golden rule of camping: always leave the campground cleaner than you found it.}
+Even in the @emph{campground} @note{Golden rule of camping: always leave the campground cleaner than you found it.}
  scenario outlined above, converting untyped code to
  Typed Racket is orthogonal to developers' primary goal of delivering a working
  software product.
 @; Quote Matthew?
 We must therefore improve the @emph{implementation} of gradual typing rather
- than ask developers to refactor their code.
+ than leave performance issues to language users.
 
 
 @; -----------------------------------------------------------------------------
@@ -152,7 +153,7 @@ Correct blame is essential to Typed Racket's soundness guarantee, which states
  that typed code is never the cause of run-time type errors.
 Rather, all type errors are either detected statically or dynamically caught
  and attributed to a type boundary.
-Tracking blame and dynamically enforcing types can, however, be costly.
+Tracking blame and dynamically enforcing types can, however, be computationally expensive.
 Each call to @racket[complex-*] requires six assertions to check and traverse both pairs.
 Individual assertions are relatively inexpensive, but folding
  @racket[complex-*] over a list of @math{n} complex numbers requires

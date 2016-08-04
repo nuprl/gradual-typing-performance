@@ -78,7 +78,7 @@ Each new extension must address challenges unique to its base language,
 Soundness for gradual type systems is traditionally formulated as a
  type soundness theorem guaranteeing that typed parts of a program never
  commit runtime type errors@~cite[thf-dls-2006].
-Typed code may signal a type error at runtime upon receiving untyped data
+In particular, typed code may signal a type error at runtime upon receiving untyped data
  that does not match the type checker's assumptions, but typed code will never
  execute a single instruction using invalid data.
 Consequently, type errors in a gradually typed program always reference a
@@ -130,7 +130,7 @@ The evaluation affirms that Typed Racket programs may suffer order-of-magnitude
 Furthermore, the method is useful for quantifying improvements and identifying
  regressions across different versions of Typed Racket.
 
-The method was originally presented in a conference publication@~cite[tfgnvf-popl-2016].
+The method was introduced in a conference publication@~cite[tfgnvf-popl-2016].
 This paper extends that prior work with:
 @itemlist[
   @item{
@@ -141,16 +141,16 @@ This paper extends that prior work with:
     results for @integer->word[(count-new-oo-benchmarks)]
      object-oriented benchmark programs, augmenting our previous suite of
      @id[(- (count-benchmarks) (count-new-oo-benchmarks))]
-     mostly-functional benchmark programs;
+     primarily functional benchmark programs;
   }
   @item{
     in-depth discussions of performance bottlenecks in each benchmark and,
      where applicable, their resolution;
   }
-  @item{
-    preliminary reports on a method for predicting the performance overhead for
-     any of a program's @exact{$2^N$} configurations after taking @exact{$O(N)$}
-     measurements.
-  }
+  @;@item{
+  @;  preliminary reports on a method for predicting the performance overhead for
+  @;   any of a program's @exact{$2^N$} configurations after taking @exact{$O(N)$}
+  @;   measurements.
+  @;}
 ]
 

@@ -90,7 +90,7 @@ Once this data is aggregated, researchers can draw lessons and make comparisons
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:measurements"]{Measuring Performance}
 
-The most basic question one might ask about a gradually typed language is
+The most basic question about a gradually typed language is
  whether fully-typed programs can be faster than untyped programs.
 In principle, static types enable optimizations and can serve in place of the
  run-time tags used in safe dynamic languages, so one would expect a speedup.
