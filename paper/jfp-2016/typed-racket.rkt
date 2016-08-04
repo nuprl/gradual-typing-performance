@@ -91,6 +91,7 @@
  scribble/core
  scribble/base
  version/utils
+ with-cache
  ;;
  racket/contract
 )
@@ -295,29 +296,6 @@
 (define (bm name)
   (assert-benchmark (string->symbol name))
   (tt name))
-
-;; -----------------------------------------------------------------------------
-;; --- Paths / Caching
-
-(define ((cache-read-error cache-file) exn)
-  (WARNING "Failed to read cachefile '~a', got exception:\n~a" cache-file (exn-message exn))
-  #f)
-
-(define (with-cache cache-file thunk #:read [read-proc #f] #:write [write-proc #f])
-  (let ([read-proc (or read-proc values)]
-        [write-proc (or write-proc values)])
-    (or (and (*CACHE?*)
-             (file-exists? cache-file)
-             (let ([v (with-handlers ([exn:fail? (cache-read-error cache-file)])
-                        (read-proc (file->value cache-file)))])
-               (and v
-                    (INFO "reading cachefile '~a'" cache-file)
-                    v)))
-        (let ([r (thunk)])
-          (INFO "writing cachefile '~a'" cache-file)
-          (with-output-to-file cache-file #:exists 'replace
-            (lambda () (writeln (write-proc r))))
-          r))))
 
 ;; Example #:write proc
 (define (cache-table T)
