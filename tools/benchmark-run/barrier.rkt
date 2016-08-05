@@ -1,7 +1,6 @@
 #lang racket/base
 
 ;; TODO
-;; - is shuffle a good idea?
 ;; - manage "ALL" benchmarks
 
 (require
@@ -32,7 +31,7 @@
   (run-benchmark (vector
                          "-o" fname
                          "-i" (number->string 1)
-                         "-p" "shuffle" ;; Good idea?
+                         "-p" "shuffle"
                          benchmark)))
 
 (define (run-round dir)
@@ -70,7 +69,7 @@
    (begin
      (when (null? BENCHMARK-DIR*)
        (raise-user-error 'gtp-run "Usage: raco gtp-run [OPTION] ... <BENCHMARK-NAME> ..."))
-     (define outer-iters (*NUM-ITERATIONS*))
+     (define outer-iters(*NUM-ITERATIONS*))
      (info "Validating benchmark directories")
      (for-each assert-benchmark? BENCHMARK-DIR*)
      (for ([i (in-range outer-iters)])
