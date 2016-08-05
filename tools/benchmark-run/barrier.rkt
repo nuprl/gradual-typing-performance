@@ -54,7 +54,7 @@
 (module+ main
   (require racket/cmdline)
   (command-line
-   #:program "gtp-barrier"
+   #:program "gtp-run"
    #:once-each
    [("-j" "--jobs") j "Number of parallel jobs" (*NUM-JOBS* (string->number j))]
    [("-i" "--iters") i "Number of iterations to run." (*NUM-ITERATIONS* (string->number i))]
@@ -68,6 +68,8 @@
            (raise-argument-error 'gtp-barrier "Racket version, or list of versions" v*))))]
    #:args BENCHMARK-DIR*
    (begin
+     (when (null? BENCHMARK-DIR*)
+       (raise-user-error 'gtp-run "Usage: raco gtp-run [OPTION] ... <BENCHMARK-NAME> ..."))
      (define outer-iters (*NUM-ITERATIONS*))
      (info "Validating benchmark directories")
      (for-each assert-benchmark? BENCHMARK-DIR*)
