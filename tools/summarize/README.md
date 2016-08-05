@@ -37,7 +37,7 @@ To render a dataset as an L-N/M figure, run:
     raco gtp-lnm FILE.rktd
 ```
 
-There are many options you can pass to `gtp-lnm` to create different images.
+The `gtp-lnm` command accepts many flags.
 Run `raco gtp-lnm --help` for a full list.
 
 

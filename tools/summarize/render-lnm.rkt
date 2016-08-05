@@ -260,9 +260,13 @@
 (define (file->pict* data-file* #:title title)
   (define S* (for/list : (Listof Summary) ([d : String data-file*]) (from-rktd d)))
   (define L-pict* : (Listof Pict)
-    (if (*SHOW-PATHS?*)
-      (path-plot S*)
-      (lnm-plot S*)))
+    (cond
+     [(*SHOW-PATHS?*)
+      (path-plot S*)]
+     [(*DISCRETE?*)
+      (list (plot-exact-configurations S*))]
+     [else
+      (lnm-plot S*)]))
   (if (*SINGLE-PLOT?*)
     L-pict*
     (let* ([V 2]
@@ -464,7 +468,7 @@
          (regexp-match? #rx"\\.rktd$" fname))
     #t]
    [else
-    (printf "Skipping invalid file '~a'\n" fname)
+    (printf "Skipping invalid/missing file '~a'\n" fname)
     #f]))
 
 ;; Remove everything after the first . or - in the filename
