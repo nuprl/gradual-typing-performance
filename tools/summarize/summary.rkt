@@ -313,7 +313,10 @@
       (tex->modulegraph gp)
       (begin
         (printf "Inferring module graph for '~a'.\n" filename)
-        (project-name->modulegraph (path->project-name filename)))))
+        (with-handlers ([exn:fail:user? (lambda (exn)
+                                          (printf "Could not infer modulegraph, synthesizing a placeholder\n")
+                                          (discrete-modulegraph (dataset->num-modules dataset)))])
+          (project-name->modulegraph (path->project-name filename))))))
   (validate-modulegraph path dataset mg)
   (summary path dataset mg))
 
@@ -482,6 +485,10 @@
 (: get-num-modules (-> Summary Exact-Positive-Integer))
 (define (get-num-modules S)
   (assert (modulegraph->num-modules (summary-modulegraph S)) exact-positive-integer?))
+
+(: dataset->num-modules (-> Dataset Natural))
+(define (dataset->num-modules v)
+  (log2 (vector-length v)))
 
 (: get-project-name (-> Summary String))
 (define (get-project-name sm)

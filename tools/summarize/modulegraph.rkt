@@ -19,6 +19,9 @@
   ; (-> Path-String ModuleGraph))
   ;; Parse a directory into a module graph.
   ;; Does not collect module dependency information.
+  discrete-modulegraph
+  ; (->* [Natural] [String] ModuleGraph)
+  ;; Make a modulegraph with no edges and N anonymous modules
 
   tex->modulegraph
   ;(-> Path-String ModuleGraph))
@@ -368,6 +371,13 @@
       (format "~a" project-name)
       (path->project-name dir)))
   (modulegraph pn adjlist dir))
+
+(: discrete-modulegraph (->* [Natural] [String] ModuleGraph))
+(define (discrete-modulegraph n [name "<anon-modulegraph>"])
+  (define adjlist
+    (for/list : AdjList ([i (in-range n)])
+      (list (format "mod~a" i))))
+  (modulegraph name adjlist #f))
 
 (define GTP "gradual-typing-performance")
 
@@ -1110,5 +1120,14 @@
   ;; -- string->texedge TODO
   ;; -- texnode->modulegraph TODO
   ;; -- directory->adjlist TODO
+
+  (let* ([n 10]
+         [d (discrete-modulegraph n)])
+    (check-equal?
+      (modulegraph->num-modules d)
+      n)
+    (check-equal?
+      (modulegraph->num-edges d)
+      0))
 )
 
