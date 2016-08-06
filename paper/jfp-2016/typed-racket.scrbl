@@ -271,7 +271,7 @@ Most benchmarks are self-contained, but where relevant we note their external
      unit tests.
     Notably, the benchmark does not test @bm{gregor}'s string-parsing
      functions because those functions rely on an untyped library for
-     ad-hoc polymorphism that is not yet supported by Typed Racket.
+     ad-hoc polymorphism that Typed Racket does not yet support.
   }
 )
 @(benchmark
@@ -401,7 +401,7 @@ Most benchmarks are self-contained, but where relevant we note their external
 
 @Figure-ref{fig:bm} gives static characteristics
  of our benchmark programs as a coarse measure of their size and diversity.
-Program size is measured by the lines of code (LOC) and number of modules.
+The lines of code (LOC) and number of modules approximate program size.
 Of these two measures, the number of modules is a slightly better indicator
  as it also determines the size of our gradual typing experiment;
  given @exact{$N$} modules, there are @exact{$2^N$} configurations.
@@ -416,7 +416,7 @@ Lastly, the ``Boundaries'' and ``Exports'' columns describe the graph
  structure of each benchmark.
 Boundaries are import statements from one module in the benchmark to another.
 This count omits external boundaries.
-The Exports are the total number of unique identifiers that cross any
+The exports are the total number of unique identifiers that cross any
  of a benchmark's boundaries.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
