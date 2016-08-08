@@ -1,6 +1,6 @@
 #lang scribble/base
 
-@require["common.rkt" benchmark-util/data-lattice]
+@require["common.rkt" "util.rkt" benchmark-util/data-lattice]
 
 @profile-point{sec:framework}
 @title[#:tag "sec:framework"]{Evaluation Framework}

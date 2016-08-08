@@ -1,6 +1,6 @@
 #lang scribble/base
 
-@require["common.rkt" "fig-contract-profile.rkt" "typed-racket.rkt"]
+@require["common.rkt" "fig-contract-profile.rkt" "jfp-parameters.rkt" "benchmark.rkt" "util.rkt"]
 
 @title[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
@@ -8,7 +8,7 @@
 The application of our evaluation method projects a very negative image of
  sound gradual typing.
 We have measured every possible way of gradually adding types to
- @id[(count-benchmarks)] programs and found that only a small fraction of
+ @id[(*NUM-BENCHMARKS*)] programs and found that only a small fraction of
  configurations run with practical overhead.
 @todo{y-axis average for 2x?}
 While we are confident that the method captures the spirit of the goals of
@@ -19,7 +19,7 @@ First, our benchmarks are relatively small due to constraints on our
 Gradual typing offers the most promise for maintainers of large (100+ module)
  projects, but with our framework benchmarking even 20 modules is prohibitively
  time-consuming.
-Even on the mid-sized @bm{quad} benchmark, just compiling each configuration
+Even on the mid-sized @bm[quad] benchmark, just compiling each configuration
  sequentially took a week on a standard desktop machine.
 To run the benchmarks in a reasonable amount of time we used @todo{the cluster, what are the tradeoffs / confounders?}
 @;Running benchmarks simultaneously on different cores of the same machine
@@ -40,7 +40,7 @@ Regardless, given the low typed/untyped ratios of benchmarks with external
 Third, the feasible set of type annotations for a program component is
  rarely unique in a gradually typed system.
 Since types are translated into contracts in Typed Racket, the choice of
- type annotations affects performance; however, except for @bm{quadBG} and @bm{quadMB}
+ type annotations affects performance; however, except for @tt{quadBG} and @tt{quadMB}
   which differ only in their type annotations, we benchmarked only one fixed
   set of type annotations for each program.
 Generally speaking, our results may not be fully representative.

@@ -17,6 +17,10 @@
 
   benchmark<?
   ;; (-> Benchmark Benchmark Boolean)
+
+  (rename-out [format:bm bm])
+  ;; (-> Benchmark Elem)
+  ;; For formatting
 )
 
 (require
@@ -27,7 +31,7 @@
   gtp-summarize/modulegraph
   (for-syntax racket/base syntax/parse)
   with-cache
-  (only-in scribble/base
+  (only-in scribble/base tt
     hyperlink)
   (only-in "common.rkt"
     library)
@@ -329,7 +333,16 @@
         (raise-user-error 'benchmark msg name*)))))
 
 (define (benchmark-modulegraph bm)
-  (modulegraph (benchmark-name bm) (benchmark-adjlist bm) #f))
+  (define pn
+    (if (eq? (benchmark-name bm) 'zordoz)
+      "zordoz.6.3"
+      (symbol->string (car (benchmark-alt* bm)))))
+  (modulegraph pn
+               (benchmark-adjlist bm)
+               (build-path (get-git-root) "benchmarks" pn)))
+
+(define (format:bm benchmark)
+  (tt (symbol->string (benchmark-name benchmark))))
 
 ;; =============================================================================
 

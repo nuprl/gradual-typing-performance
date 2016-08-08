@@ -1,6 +1,6 @@
 #lang scribble/base
 
-@require["common.rkt" "typed-racket.rkt"]
+@require["common.rkt" "benchmark.rkt" "typed-racket.rkt" "util.rkt"]
 
 @profile-point{sec:conclusion}
 @title[#:tag "sec:fut"]{Long Live Sound Gradual Typing}
@@ -38,7 +38,7 @@ Users must tolerate more than 20x performance overhead before all the static/dyn
  variations promised by gradual typing qualify as "performant".
 For programmers with more stringent performance requirements, the challenge
  is now to navigate the lattice of possibilities to find e.g. one of the
- @deliverable{3} @bm{acquire} configurations and avoid the 256 other configurations.
+ @deliverable{3} @bm[acquire] configurations and avoid the 256 other configurations.
 With larger programs, the space of possibilities will be even more difficult to manage.
 If gradual typing is to succeed, implementors must resolve this performance issue.
 

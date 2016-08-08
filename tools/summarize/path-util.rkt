@@ -28,7 +28,7 @@
 
 ;; =============================================================================
 
-(: add-commas (-> Real String))
+(: add-commas (-> (U String Real) String))
 (define (add-commas n)
   (define str (if (string? n) n (number->string n)))
   (define str* (string-split str "."))

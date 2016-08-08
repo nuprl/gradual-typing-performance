@@ -1,9 +1,13 @@
 #lang scribble/base
 
 @require[
+  "benchmark.rkt"
   "common.rkt"
   "typed-racket.rkt"
- (except-in gtp-summarize/lnm-parameters defparam)
+  "util.rkt"
+  "jfp-parameters.rkt"
+  (only-in gtp-summarize/path-util add-commas)
+  (except-in gtp-summarize/lnm-parameters defparam)
 ]
 
 
@@ -36,8 +40,8 @@ If we view a program as a network of roads carrying values between modules,
                    (tetris     7 82338320 41605597 90270 2063 22534 23191))])
   @; See `src/traces` folder for details on boundaries
   @elem{
-    For example, @bm{snake} has five boundaries that are crossed over
-     5 million times each in our benchmark; @bm{suffixtree} has three boundaries
+    For example, @bm[snake] has five boundaries that are crossed over
+     5 million times each in our benchmark; @bm[suffixtree] has three boundaries
      that are crossed over 100 million times.
   })
 When a highway is also a type boundary, any contracts guarding it
@@ -119,7 +123,7 @@ As @racket[Point?] is the only way to identify values of type @racket[Point?],
  calls to functions like @racket[Point-x] trigger calls to @racket[Point?] as
  part of their own contracts.
 Removing these predicate contracts therefore caused a significant part of the
- performance improvement on the @bm{suffixtree} and @bm{snake} benchmarks
+ performance improvement on the @bm[suffixtree] and @bm[snake] benchmarks
  between versions 6.3 and 6.4.
 
 
@@ -130,19 +134,19 @@ Removing these predicate contracts therefore caused a significant part of the
 When an apparently simple type @exact|{$\RktMeta{T}$}| generates a large or
  unexpectedly slow contract @exact|{$\ctc{\RktMeta{T}}$}|,
  we call @exact|{$\ctc{\RktMeta{T}}$}| an @emph{iceberg contract}.
-One example of iceberg contracts are the types used in @bm{quadMB}, for instance:
+One example of iceberg contracts are the types used in @tt{quadMB}, for instance:
 
 @racketblock[
   (define-type Quad (Pairof Symbol (Listof Quad)))
 ]
 
  generates a recursive contract over @math{n}-ary trees.
-@(let* ([tu* (for/list ([v (*RKT-VERSIONS*)]) (typed/untyped-ratio 'quadMB v))]
+@(let* ([tu* (for/list ([v (*RKT-VERSIONS*)]) (typed/untyped-ratio (benchmark-rktd quad v 'quadMB)))]
         [tu-lo (add-commas (rnd (apply min tu*)))]
         [tu-hi (add-commas (rnd (apply max tu*)))])
    @elem{
      These tree types caused typed/untyped ratios ranging from
-      @id[tu-lo]x to @id[tu-hi]x across versions of @bm{quadMB}.
+      @id[tu-lo]x to @id[tu-hi]x across versions of @tt{quadMB}.
    })
 Incidentally, the developer who created these types was hoping Typed Racket would
  improve the performance of a typesetting system.
@@ -172,10 +176,10 @@ Therefore trie values are wrapped in a contract that is both expensive to instal
  duplicate the guarantee that an immutable value is never mutated.
 
 @; Source of truth ???
-Our @bm{kcfa} benchmark also uses immutable hashtables and pays the
+Our @bm[kcfa] benchmark also uses immutable hashtables and pays the
  run-time cost of contracts for mutable data.
 We estimate that removing just those hashtable contracts would improve the
- worst-case performance of @bm{kcfa} from 8x to 5x on Racket v6.4.
+ worst-case performance of @bm[kcfa] from 8x to 5x on Racket v6.4.
 
 @; future work: cost model for contracts?
 These bottlenecks due to type-generated contracts spell out a need
@@ -197,11 +201,11 @@ Racket's feature-specific profiler@~cite[saf-cc-2015] provides a framework for
 
 Typed Racket's math library is known to cause performance overhead when used
  in untyped programs.
-Part of this library is included in our @bm{synth} benchmark, whose main
+Part of this library is included in our @bm[synth] benchmark, whose main
  functionality is to build a short musical piece.
-As expected, the @bm{synth} configuration where all math library modules
+As expected, the @bm[synth] configuration where all math library modules
  are typed and all music-generating modules are untyped exhibits large performance
- overhead (@configuration->overhead['synth "6.4" "1111000000"] on v6.4).
+ overhead (@configuration->overhead[@benchmark-rktd[synth "6.4"] "1111000000"] on v6.4).
 
 @; Source of truth: `src/synth-profile*.txt`
 @(let* ([total-runtime      5144]
@@ -239,7 +243,7 @@ This phenomena of functions tunnelling through a macro and introducing
  a type boundary after expansion is unique to languages with syntax
  extensions, but it highlights a general issue that the graph structure
  of programs is often complex.
-Even small programs like @bm{synth} have surprising boundaries.
+Even small programs like @bm[synth] have surprising boundaries.
 Large programs, or programs with dynamically introduced boundaries will
  face similar issues; therefore, it is likely that a programmer working to
  diagnose a performance problem is not aware of all the type boundaries in
@@ -253,8 +257,6 @@ An important tooling challenge is to identify the high-overhead type boundaries
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:devils:wrapping"]{Duplicate Contracts}
 @; -- AKA repeated wrapping
-
-@; TODO Be positive, don't hurt Robby's feelings
 
 A @exact{na\"ive} implementation of higher-order contracts will wrap
  function and mutable values with a contract each time the values cross a
@@ -296,11 +298,11 @@ Installing a contract is necessary the first time an untyped object crosses
  @racket[id] wraps @racket[obj] in two new contracts.
 On Racket v6.4 the issue is fixed.
 
-Similar issues arose in the @bm{fsm} and @bm{forth} benchmarks.
-Both versions of @bm{fsm} functionally update a value @racket[p]
+Similar issues arose in the @bm[fsm] and @bm[forth] benchmarks.
+Both versions of @bm[fsm] functionally update a value @racket[p]
  of type @racket[Population] in their top-level loop.
-Whether @racket[Population] was implemented as a vector (in @bm{fsm})
- or an object (in @bm{fsmoo}), it was wrapped in two new contracts each time it
+Whether @racket[Population] was implemented as a vector (in @bm[fsm])
+ or an object (in @tt{fsmoo}), it was wrapped in two new contracts each time it
  crossed type boundaries via @racket[match-up*] and @racket[death-birth].
 
 @(begin
@@ -316,7 +318,7 @@ Whether @racket[Population] was implemented as a vector (in @bm{fsm})
           (evolve p3 (- iters 1))]))
 }|)
 
-The @bm{forth} benchmark builds a environment @racket[env] of interpreter
+The @bm[forth] benchmark builds a environment @racket[env] of interpreter
  commands as it reads a file of definitions and statements.
 Each command @racket[c] in @racket[env] is an object that produces
  a new environment given the current environment and a line of input.
@@ -338,12 +340,12 @@ Each command @racket[c] in @racket[env] is an object that produces
 Threading @racket[env] through each evaluation step lets commands extend or
  modify the environment, but it also adds a layer of contracts to @emph{each}
  command for every line in the input stream.
-On the other hand, implementing @bm{forth} with a global environment that
+On the other hand, implementing @bm[forth] with a global environment that
  is updated statefully removes nearly all performance overhead.
 
-Lastly, the @bm{zombie} benchmark implements a functional encoding of objects
+Lastly, the @bm[zombie] benchmark implements a functional encoding of objects
  that is prone to accumulate contracts.
-As a minimal example, the following is a @bm{zombie}-encoded stream object
+As a minimal example, the following is a @bm[zombie]-encoded stream object
  with methods @tt{obs} and @tt{nxt}, for observing the current value of
  the stream and advancing its state.
 
@@ -378,7 +380,7 @@ It is therefore useful to provide ``getter'' functions for each method:
 
 however, untyped clients using these accessor methods now repeatedly send
  higher-order functions across a type boundary.
-Contracts on similar functions are the source of overhead in @bm{zombie}.
+Contracts on similar functions are the source of overhead in @bm[zombie].
 
 
 @; -----------------------------------------------------------------------------
@@ -395,17 +397,17 @@ Except in the rare case of core Racket libraries that are untyped but
  typed or untyped.
 Hence some clients are forced to communicate through a type boundary.
 
-Our @bm{mbta} and @bm{zordoz} benchmarks rely on untyped libraries,
+Our @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries,
  so they have relatively large typed/untyped ratios
- (@rnd[@typed/untyped-ratio['mbta "6.2"]]x and
-  @rnd[@typed/untyped-ratio['zordoz "6.2"]]x
+ (@rnd[@typed/untyped-ratio[@benchmark-rktd[mbta "6.2"]]]x and
+  @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x
   on v6.2, respectively).
 For the same reason, the @math{k=1} plots for these benchmarks are similar
  to the @math{k=0} plots, as typing additional modules is likely to introduce
  a type boundary with the library.
-Conversely, @bm{lnm} uses two typed libraries.
+Conversely, @bm[lnm] uses two typed libraries.
 Removing the type boundaries to these libraries improves performance
- to at best @min-overhead['lnm "6.2"] relative to the untyped runtime on Racket v6.2.
+ to at best @min-overhead[@benchmark-rktd[lnm "6.2"]] relative to the untyped runtime on Racket v6.2.
 
 The obvious fix is to migrate the untyped libraries to Typed Racket and
  the typed libraries to untyped Racket, but this replaces the performance

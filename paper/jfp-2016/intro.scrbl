@@ -4,7 +4,7 @@
 @;  order in a finite, but very large, discrete universe that is intricately
 @;  intertwined."  -- Dijkstra, 1979 (from Emina's thesis)
 
-@require["common.rkt" "typed-racket.rkt"]
+@require["common.rkt" "util.rkt" "jfp-parameters.rkt"]
 
 @profile-point{sec:intro}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
@@ -138,9 +138,9 @@ This paper extends that prior work with:
      of Typed Racket, using the method to measure differences between versions;
   }
   @item{
-    results for @integer->word[(count-new-oo-benchmarks)]
+    results for @integer->word[(*NUM-OO-BENCHMARKS*)]
      object-oriented benchmark programs, augmenting our previous suite of
-     @id[(- (count-benchmarks) (count-new-oo-benchmarks))]
+     @id[(- (*NUM-BENCHMARKS*) (*NUM-OO-BENCHMARKS*))]
      primarily functional benchmark programs;
   }
   @item{

@@ -162,9 +162,6 @@
 (define bits
   tt)
 
-(define (bm benchmark)
-  (tt (benchmark-name benchmark)))
-
 ;; Example #:write proc
 (define (cache-table T)
   (cons BENCHMARK-NAMES T))
@@ -259,11 +256,11 @@
     "}\n\n"))
 
 (define (benchmark->tex-file b)
-  (define pn (benchmark-name b))
   (define M (benchmark-modulegraph b))
+  (define pn (modulegraph-project-name M))
   (define mgd MODULE-GRAPH)
   (ensure-dir mgd)
-  (define mgf (string-append mgd "/" pn ".tex"))
+  (define mgf (format "~a/~a.tex"  mgd pn))
   (unless (file-exists? mgf)
     (WARNING "could not find modulegraph for project '~a', creating graph now." pn)
     (call-with-output-file mgf
@@ -273,7 +270,8 @@
 ;; (-> Benchmark * Any)
 (define (render-benchmark-descriptions . b+d*)
   (define key (equal-hash-code (map cdr b+d*)))
-  (parameterize ([*current-cache-keys* (list (lambda () key))])
+  (parameterize ([*current-cache-keys* (list (lambda () key))]
+                 [*use-cache?* #f]) ;; Sorry, can't serialize scribble elements
     (with-cache (cachefile "benchmark-descriptions.rktd")
       #:read deserialize
       #:write serialize
@@ -519,14 +517,13 @@
   (typed/untyped-ratio rktd))
 
 (define (ext:configuration->overhead rktd cfg)
-  (string-append
-    (rnd (configuration->overhead rktd cfg))
-    "x"))
+  (add-x (rnd (configuration->overhead rktd cfg))))
 
-(define (ext:min-overhead rktd version)
-  (string-append
-    (rnd (min-overhead (from-rktd rktd)))
-    "x"))
+(define (add-x str)
+  (string-append str "x"))
+
+(define (ext:min-overhead rktd)
+  (add-x (rnd (min-overhead (from-rktd rktd)))))
 
 ;; -----------------------------------------------------------------------------
 ;

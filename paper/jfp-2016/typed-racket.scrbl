@@ -1,8 +1,13 @@
 #lang scribble/base
 
 @require[
+  "benchmark.rkt"
   "common.rkt"
   "typed-racket.rkt"
+  "util.rkt"
+  "jfp-parameters.rkt"
+  (only-in gtp-summarize/path-util add-commas)
+  (only-in racket/string string-join)
   (except-in gtp-summarize/lnm-parameters defparam)
 ]
 
@@ -33,28 +38,16 @@ Most benchmarks are self-contained, but where relevant we note their external
 
 @profile-point{sec:tr:descriptions}
 @render-benchmark-descriptions[
-@(benchmark
-  #:name 'sieve
-  #:author "Ben Greenman"
-  #:num-adaptor 0
-  #:origin "Synthetic"
-  #:purpose "Generate prime numbers"
+@(cons sieve
   @elem{
     Demonstrates a scenario where user
      code closely interacts with higher-order library code.
     In this case, the library implements a stream data structure.
-    When fully typed or untyped, @bm{sieve} computes quickly; however,
+    When fully typed or untyped, @bm[sieve] computes quickly; however,
      introducing a type boundary between the two modules adds
      significant overhead.
-  }
-)
-@(benchmark
-  #:name 'morsecode
-  #:author "John Clements and Neil Van Dyke"
-  #:num-adaptor 0
-  #:origin @hyperlink["https://github.com/jbclements/morse-code-trainer/tree/master/morse-code-trainer"]{Library}
-  #:purpose "Morse code Trainer"
-
+  })
+(cons morsecode
   @elem{
     The morse code benchmark is derived from a training program that
      converts a random word to morse code, gives the codeword to the user,
@@ -63,16 +56,8 @@ Most benchmarks are self-contained, but where relevant we note their external
     For our benchmark we remove the I/O and random features but otherwise
      compute morse code translations and Levenshtein distances for a fixed
      sequence of word pairs.
-  }
-)
-@(benchmark
-  #:name 'mbta
-  #:author "Matthias Felleisen"
-  #:num-adaptor 0
-  #:origin "Educational"
-  #:purpose "Interactive map"
-  #:external-libraries (list @hyperlink["http://github.com/stchang/graph"]{@library{graph}})
-
+  })
+(cons mbta
   @elem{
     Builds a map of Boston's subway system and
      answers a series of reachability queries.
@@ -82,16 +67,8 @@ Most benchmarks are self-contained, but where relevant we note their external
     Although the original program ran an asynchronous client/server framework,
      our benchmark is single-threaded to cooperate with Racket's sampling
      profiler.
-  }
-)
-@(benchmark
-  #:name 'zordoz
-  #:author "Ben Greenman"
-  #:num-adaptor 0
-  #:origin @hyperlink["http://github.com/bennn/zordoz"]{Library}
-  #:purpose "Explore Racket bytecode"
-  #:external-libraries (list @hyperlink["http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29"]{@library{compiler-lib}})
-
+  })
+(cons zordoz
   @elem{
     Provides a shell-style interface for traversing
      Racket bytecode (@tt{.zo} files).
@@ -106,59 +83,35 @@ Most benchmarks are self-contained, but where relevant we note their external
     @todo{how does this affect results?}
     @;As it turns out, the change from 6.2 to 6.3 improved the typed/untyped ratio
     @; from
-    @; @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.2"))]x in v6.2 to
-    @; @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.3"))]x in v6.3 because
+    @; @add-commas[(rnd (typed/untyped-ratio (benchmark-rktd zordoz "6.2")))]x in v6.2 to
+    @; @add-commas[(rnd (typed/untyped-ratio (benchmark-rktd zordoz "6.3")))]x in v6.3 because
     @; the more recent bytecode structures generate less expensive type contracts.
     @;The ratio for the newest bytecode format is
-    @; @add-commas[(rnd (typed/untyped-ratio 'zordoz "6.5"))]x.
-  }
-)
-@(benchmark
-  #:name 'suffixtree
-  #:author "Danny Yoo"
-  #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/dyoo/suffixtree"]{Library}
-  #:purpose "Ukkonen's suffix tree algorithm"
-
+    @; @add-commas[(rnd (typed/untyped-ratio (benchmark-rktd zordoz "6.5")))]x.
+  })
+(cons suffixtree
   @elem{
     Computes longest common subsequences by converting strings to a suffix
      tree representation and comparing the trees.
     The benchmark compares lines of text; each line is no
      more than 80 characters long.
 
-    All @bm{suffixtree} datatype definitions are in a single module, separate
+    All @bm[suffixtree] datatype definitions are in a single module, separate
      from the functions that manipulate and traverse the data.
     The data are also mutable, therefore the frequently-crossed type boundary
      between data definitions and their core functionality is protected by expensive
      contracts.
-  }
-)
-@(benchmark
-  #:name 'lnm
-  #:author "Ben Greenman"
-  #:num-adaptor 0
-  #:origin "Synthetic"
-  #:purpose "Graphing"
-  #:external-libraries (list @hyperlink["https://docs.racket-lang.org/plot/"]{@library{plot}}
-                             ", "
-                             @hyperlink["https://docs.racket-lang.org/math/stats.html"]{math/statistics})
-
+  })
+(cons lnm
   @elem{
     While writing this paper, we built a small library of scripts to analyze
      and graph the data shown in @Secref{sec:plots}.
-    The @bm{lnm} benchmark creates one such graph for the @bm{gregor} benchmark.
+    The @bm[lnm] benchmark creates one such graph for the @bm[gregor] benchmark.
     Most of the computation time is spent in calls to Racket's
      typed statistics and plotting libraries, so performance
-     greatly improves as more @bm{lnm} modules are typed.
-  }
-)
-@(benchmark
-  #:name 'kcfa
-  #:author "Matt Might"
-  #:num-adaptor 4
-  #:origin @hyperlink["http://matt.might.net/articles/implementation-of-kcfa-and-0cfa/"]{Blog post}
-  #:purpose "Demo k-CFA algorithm"
-
+     greatly improves as more @bm[lnm] modules are typed.
+  })
+(cons kcfa
   @elem{
     Simple, inefficient implementation of k-CFA@~cite[shivers-dissertation-1991].
     Our benchmark runs 1-CFA on a lambda calculus term
@@ -166,15 +119,8 @@ Most benchmarks are self-contained, but where relevant we note their external
     The performance overhead in this benchmark comes primarily from contracts
      protecting the binding environment, which is implemented as a hashtable
      and threaded across the program.
-  }
-)
-@(benchmark
-  #:name 'zombie
-  #:author "David Van Horn"
-  #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
-  #:purpose "Game"
-
+  })
+(cons zombie
   @elem{
     A game where players must keep their marker away from
      computer-controlled "zombie" markers.
@@ -204,45 +150,24 @@ Most benchmarks are self-contained, but where relevant we note their external
     @; types would be more straightforward than the tagged codomains used here,
     @; but Typed Racket does not yet support intersections.
 
-  }
-)
-@(benchmark
-  #:name 'snake
-  #:author "David Van Horn"
-  #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
-  #:purpose "Game"
-
+  })
+(cons snake
   @elem{
     Game in which a growing and moving snake avoids walls and its own tail.
-    Our benchmark is a gradually typed version of the @bm{snake} game from
+    Our benchmark is a gradually typed version of the @bm[snake] game from
      @|PHIL| @|etal| and runs a pre-recorded sequence of state-changing moves
      simulating user input@~cite[nthvh-icfp-2014].
-  }
-)
-@(benchmark
-  #:name 'tetris
-  #:author "David Van Horn"
-  #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/philnguyen/soft-contract"]{Educational}
-  #:purpose "Game"
-
+  })
+(cons tetris
   @elem{
     Implements the eponymous game.
     The benchmark runs a deterministic sequence of moves and is
      adapted from work on soft contract verification @|etal|@~cite[nthvh-icfp-2014].
-    Most of the overhead in @bm{tetris}, and also @bm{snake}, is due
+    Most of the overhead in @bm[tetris], and also @bm[snake], is due
      to repeatedly passing the game state and subsidiary data structures
      across type boundaries.
-  }
-)
-@(benchmark
-  #:name 'synth
-  #:author "Vincent St. Amour and Neil Toronto"
-  #:num-adaptor 1
-  #:origin @hyperlink["http://github.com/stamourv/synth"]{Library}
-  #:purpose "Music synthesis DSL"
-
+  })
+(cons synth
   @elem{
     Converts a description of notes and drum beats to a playable @tt{.wav} format.
     The original program was known to suffer overhead from a type boundary
@@ -252,34 +177,17 @@ Most benchmarks are self-contained, but where relevant we note their external
      self-contained program; however,
      we monomorphized the core array data structure because Typed Racket v6.2
      could not convert its type to a contract.
-  }
-)
-@(benchmark
-  #:name 'gregor
-  #:author "Jon Zeppieri"
-  #:num-adaptor 2
-  #:origin @hyperlink["https://docs.racket-lang.org/gregor/index.html"]{Library}
-  #:purpose "Date and time library"
-  #:external-libraries
-    (list @hyperlink["https://docs.racket-lang.org/cldr-core/index.html"]{@library{cldr}}
-          ", "
-          @hyperlink["https://docs.racket-lang.org/tzinfo/index.html"]{@library{tzinfo}})
-
+  })
+(cons gregor
   @elem{
     Provides tools for manipulating date objects.
     For the benchmark, we build a range of date values and use them to run
      unit tests.
-    Notably, the benchmark does not test @bm{gregor}'s string-parsing
+    The benchmark does not test @bm[gregor]'s string-parsing
      functions because those functions rely on an untyped library for
      ad-hoc polymorphism that Typed Racket does not yet support.
-  }
-)
-@(benchmark
-  #:name 'dungeon
-  #:author "Vincent St. Amour"
-  #:num-adaptor 0
-  #:origin "Game"
-  #:purpose "Maze generator"
+  })
+(cons dungeon
   @elem{
     Builds a grid of wall and floor objects by selecting first-class classes
      from a map of ``template'' pieces.
@@ -289,31 +197,18 @@ Most benchmarks are self-contained, but where relevant we note their external
     Replacing the array library with vectors was necessary because Typed Racket
      v6.2 could not compile the type @racket[(Mutable-Array (Class))] to a contract.
     Replacing the dict interface was a choice made so that the results for
-     @bm{dungeon} describe internal type boundaries rather than the type
+     @bm[dungeon] describe internal type boundaries rather than the type
      boundary to the untyped dict interface.
-  }
-)
-@(benchmark
-  #:name 'take5
-  #:author "Matthias Felleisen"
-  #:num-adaptor 1
-  #:origin "Game"
-  #:purpose "Card game"
+  })
+(cons take5
   @elem{
     Object-oriented implementation of a classic German card game.
     The AI players we use implement a greedy strategy, playing locally optimal
      cards in each turn.
     Much of the functionality is encapsulated in objects that seldom
      communicate, so gradual typing imposes fairly low overhead.
-  }
-)
-@(benchmark
-  #:name 'forth
-  #:author "Ben Greenman"
-  #:num-adaptor 0
-  #:origin @hyperlink["http://docs.racket-lang.org/forth/index.html"]{Library}
-  #:purpose "Forth interpreter"
-
+  })
+(cons forth
   @elem{
     Object-oriented calculator for Forth programs.
     The interpreter maintains a dynamically-extensible list of first-class
@@ -321,54 +216,32 @@ Most benchmarks are self-contained, but where relevant we note their external
     If this list repeatedly crosses type boundaries it accumulates
      higher-order contract wrappers.
     These wrappers lead to an exponential slowdown in some configurations.
-  }
-)
-@(benchmark
-  #:name 'acquire
-  #:author "Matthias Felleisen"
-  #:num-adaptor 2
-  #:origin @hyperlink["https://github.com/mfelleisen/Acquire"]{Educational}
-  #:purpose "Game"
-
+  })
+(cons acquire
   @elem{
     Simulates a board game where players invest in real estate.
     The program is written in a stateful, object-oriented style.
     For the benchmark, we run a game between AI players.
     Overhead is low because only small, first-order values cross type
      boundaries.
-  }
-)
-@(benchmark
-  #:name 'fsm
-  #:author "Matthias Felleisen"
-  #:num-adaptor 1
-  #:origin @hyperlink["https://github.com/mfelleisen/sample-fsm"]{Educational}
-  #:purpose "Economy Simulator"
-
+  })
+(cons fsm
   @elem{
     Simulates the interactions of a population of finite-state automata.
-    We measure two versions of this benchmark, one functional (@bm{fsm}) and
+    We measure two versions of this benchmark, one functional (@bm[fsm]) and
      one object-oriented (@tt{fsmoo}).
     The object-oriented verion frequently sends first-class
      objects across type boundaries; the functional version does the same
      with a mutable vector.
-  }
-)
-@(benchmark
-  #:name 'quad
-  #:author "Matthew Butterick"
-  #:num-adaptor 2
-  #:origin @hyperlink["https://github.com/mbutterick/quad"]{Library}
-  #:purpose "Typesetting"
-  #:external-libraries (list @hyperlink["https://github.com/mbutterick/csp"]{@library{csp}})
-
+  })
+(cons quad
   @elem{
     Converts S-expression source code to @tt{.pdf} format.
-    We have two versions of @bm{quad}:
+    We have two versions of @bm[quad]:
      the first, @tt{quadMB}, uses fully-untyped and fully-typed configurations
      provided by the original author.
     This version has a high typed/untyped ratio
-     (@add-commas[(rnd (typed/untyped-ratio 'quadMB "6.2"))]x in v6.2)
+     (@add-commas[(rnd (typed/untyped-ratio (benchmark-rktd quad "6.2" 'quadMB)))]x in v6.2)
      because it explicitly compiles types to runtime predicates
      and uses these predicates to eagerly check data invariants.
     In other words, the typed version is slower because it does more work.
@@ -390,8 +263,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     As such, the predicate asserting that a value has type @racket[QuadMB]
      is a linear-time tree traversal, whether or not the value is statically typed.
     On the other hand, the predicate for @racket[QuadBG] is significantly faster.
-  }
-)
+  })
 ]
 
 
@@ -433,8 +305,7 @@ The exports are the total number of unique identifiers that cross any
 Our experiment measured the running time of all
  configurations in each benchmark's performance lattice.
 We performed the same experiment on @integer->word[(length (*RKT-VERSIONS*))]
- versions of Racket: version 6.2,
- version 6.3, and a development build of version 6.4.
+ versions of Racket: @string-join[(*RKT-VERSIONS*) "," #:before-last ", and "].
 @; {In particular,
 @;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
 The machine we used to take measurements was a Linux machine with
@@ -492,8 +363,8 @@ For threats to validity regarding our experimental protocol,
          overhead users of gradual type systems will accept.
         Granted, there may be software teams that require overhead
          under 1x---that is, a speedup relative to the untyped program---or
-         can work with slowdowns exceeding 20x, but we expect most users
-         will tolerate only a small performance overhead.
+         can work with slowdowns exceeding @id[(*MAX-OVERHEAD*)]x,
+         but we expect most users will tolerate only a small performance overhead.
         To emphasize the practical value of low overheads
          we use a log scale on the x-axis with minor tick lines at
          1.2x, 1.4x, etc. and again at 4x, 6x, etc.
@@ -516,10 +387,10 @@ For threats to validity regarding our experimental protocol,
          represents the percentage @math{Y} of configurations
          that run at most @math{X} times slower than the benchmark's
          untyped configuration.
-        Taking @bm{sieve} as an example, 50% of configurations run at most
+        Taking @bm[sieve] as an example, 50% of configurations run at most
          2x slower than the untyped configuration.
         On all Racket versions, the same 50% of configurations
-         are the only ones that run within a 20x overhead.
+         are the only ones that run within a @id[(*MAX-OVERHEAD*)]x overhead.
         @;bg; NEW DATA
 
         The right column of plots shows the effect of adding types
@@ -530,13 +401,13 @@ For threats to validity regarding our experimental protocol,
          runs at most @math{X} times slower than the untyped configuration.
         Note that @exact{$c_1$} and @exact{$c_2$} may be the same;
          they are certainly the same when @exact{$c_1$} is the fully-typed configuration.
-        Again using @bm{sieve} as an example, 100% of configurations can
+        Again using @bm[sieve] as an example, 100% of configurations can
          reach a configuration with at most 1x overhead after at most one
          type conversion step.
         This is because the fully-typed configuration happens to be
          @deliverable{1} and both of the gradually typed configurations
          become fully-typed after one conversion step.
-        For a larger example, consider the plots for @bm{mbta}.
+        For a larger example, consider the plots for @bm[mbta].
         Freedom to type one extra module has no effect on the number of
          @deliverable{1.2} configurations.
         In other words, even if the programmer at a @deliverable{1.2} configuration
@@ -556,7 +427,7 @@ For threats to validity regarding our experimental protocol,
          configuration (itself) in at most one type conversion step.
         Conversely, a worst-case gradual type system would exhibit flat lines
          at the bottom of every plot, indicating that any configuration with at
-         least one typed module is more than 20x slower than the untyped configuration.
+         least one typed module is more than @id[(*MAX-OVERHEAD*)]x slower than the untyped configuration.
         Here too, freedom to type an additional module will not change performance
          and so the @math{k=0} and @math{k=1} plots will be identical.
 
@@ -571,7 +442,7 @@ For threats to validity regarding our experimental protocol,
          the majority of configurations suffer very large performance overhead.
         Where large overheads are due to a pathological boundary between two
          tightly-coupled modules, the associated @math{k=1} graph should
-         exhibit much better performance, as is the case for @bm{sieve}.
+         exhibit much better performance, as is the case for @bm[sieve].
       }
       (for/list ([p (in-list pict*)]
                  [name (in-list name*)]
@@ -594,11 +465,11 @@ Lessons from graphs:
     @(let ([num-bad (length '(sieve forth fsm fsmoo zombie suffixtree tetris synth quadMB))])
       @elem{
         Even worse, nearly half the configurations in @id[num-bad] benchmarks
-         (@id[(round (* 100 (/ num-bad (count-benchmarks))))]%) have over 20x overhead.
+         (@id[(round (* 100 (/ num-bad (count-benchmarks))))]%) have over @id[(*MAX-OVERHEAD*)]x overhead.
       })
   }
   @item{
-    At @math{k=1}, only @bm{synth} and @bm{quadMB} have any configurations that
+    At @math{k=1}, only @bm[synth] and @tt{quadMB} have any configurations that
      cannot reach a @deliverable{20} configuration.
     This suggests that many of the absolute worst overheads are due to one or
      two problematic type boundaries.
@@ -611,7 +482,7 @@ Lessons from graphs:
      a poor strategy for reducing overhead introduced by gradual typing.
   }
   @item{
-    All benchmarks, even @bm{snake} and @bm{synth}, have a handful of configurations
+    All benchmarks, even @bm[snake] and @bm[synth], have a handful of configurations
      with less than 2x overhead.
     Can we guide developers to those configurations?
   }
@@ -636,7 +507,49 @@ Lessons from graphs:
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:compare"]{Comparing Typed Rackets}
 
-Overhead plots give high-level differences.
+@; really, don't worry about writing well right now
+
+Overhead plots capture the high-level performance of a gradual type system
+ and can make broad comparisons between different gradual type systems for
+ the same language.
+Each version of Typed Racket is essentially a new gradual type system for Racket;
+ these plots confirm that the general trend in subsequent versions is to improve
+ performance.
+
+For more fine-grained comparisons, overhead plots are not very good,
+ as they are tailored to users of gradual typing rather than implementors.
+Potential clients of gradual typing need to know the likelihood that a configuration
+ they find useful will also be performant.
+Later, after clients have decided to really use gradual typing, they no longer
+ need our plots to address their performance issues.
+Implementors, on the other hand, care about the absolute performance of all
+ configurations.
+Overhead plots are two steps removed from this data: first they report overhead
+ instead of absolute running time and second the "overhead" of a configuration
+ is actually the mean of repeated runs.
+@todo{this 'mean vs. absolute' is not very motivating}
+
+@; 
+@(let ([ex1 morsecode]
+       [ex2 suffixtree])
+      ;; LNM is also interesting
+@list[@elem{
+  @Figure-ref{fig:exact-runtimes} shows the exact data we collected for two
+   benchmarks, 
+
+
+  Wow, everything there in the middle for suffixtree is just hidden in the
+   graphs.
+  Missed the regression in 6.3 and major improvement in 6.4.
+  }
+
+      @figure["fig:exact-runtimes" "Exact running times"
+         @render-exact-plot[ex1 ex2]
+      ]
+])
+@; 
+
+
 Need also scatterplots to really compare versions (with @emph{confidence}).
 @todo{add plots}
 
