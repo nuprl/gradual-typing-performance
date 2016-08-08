@@ -378,15 +378,20 @@
 (: plot-exact-configurations (-> (Listof Summary) pict))
 (define (plot-exact-configurations S*)
   (define num-configs (get-num-configurations (car S*)))
-  (parameterize ([plot-x-ticks (list->ticks (range num-configs))])
+  (define small-enough? (< num-configs (expt 2 6)))
+  (parameterize ([plot-x-ticks (if small-enough? (list->ticks (range num-configs)) no-ticks)]
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-ticks (linear-ticks #:number 3)])
     (define p
       (plot-pict
         (append
-          (for/list : (Listof renderer2d)
-                    ([i (in-range (+ 1 num-configs))])
-            (vrule (- i 0.5)
-            #:width 0.6
-            #:color 0))
+          (if small-enough?
+            (for/list : (Listof renderer2d)
+                      ([i (in-range (+ 1 num-configs))])
+              (vrule (- i 0.5)
+              #:width 0.6
+              #:color 0))
+            '())
           (for/list : (Listof renderer2d)
                     ([S (in-list S*)]
                      [i (in-naturals 1)])
@@ -407,11 +412,11 @@
                 #:alpha 0.6
                 #:sym 'fullcircle
                 #:size 6
-                #:label (format "~a" (summary->version S)))))
-        #:x-label "Config.#"
+                #:label (and (*LEGEND?*) (format "~a" (summary->version S))))))
+        #:x-label "Configuration"
         #:y-label "Time (ms)"
         #:y-max (*Y-MAX*)
-        #:x-max num-configs
+        #:x-max (- num-configs 0.5)
         #:legend-anchor (*LEGEND-ANCHOR*)
         #:width (*PLOT-WIDTH*)
         #:height (*PLOT-HEIGHT*)))

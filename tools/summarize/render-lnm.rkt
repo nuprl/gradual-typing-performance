@@ -5,7 +5,8 @@
 (provide
  render-bars
  render-means ;; hack
- render-exact ;; hack
+ render-exact
+ render-exact*
  render-traces
  render-untyped-bars ;; hack
  render-dots
@@ -682,10 +683,24 @@
      (when (null? arg*)
        (raise-user-error "Usage: render-plot.rkt DATA.rktd ..."))
      ;; -- Create a pict
-     (make-plot (for/list : (Listof Summary) ([r (in-list arg*)]) (from-rktd r))))))
+     (vl-append (*TITLE-VSPACE*)
+       (title-text (fname->title (vector-ref vec 0)))
+       (make-plot (for/list : (Listof Summary) ([r (in-list arg*)]) (from-rktd r)))))))
 
 (: render-exact (-> (Vectorof String) Pict))
 (define render-exact (simple-commandline-plot plot-exact-configurations))
+
+;; Make a separate plot for each argument, return the appended picts
+(: render-exact* (-> (Listof (Vectorof String)) Pict))
+(define (render-exact* vec*)
+  (define pict*
+    (for/list : (Listof Pict) ([vec (in-list vec*)])
+      (render-exact vec)))
+  (for/fold : Pict
+            ([acc (car pict*)])
+            ([vec (in-list vec*)]
+             [p (in-list (cdr pict*))])
+    (vc-append (*GRAPH-VSPACE*) acc p)))
 
 (: render-traces (-> (Vectorof String) Pict))
 (define render-traces (simple-commandline-plot plot-traces))
