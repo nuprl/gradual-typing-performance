@@ -1,13 +1,17 @@
 #lang racket/base
 
 (provide
-  add-commas
   integer->word*
   integer->word
   rnd
+  profile-point
+  INFO
+  WARNING
+  glob-first
 )
 
 (require
+  glob
   racket/match
   racket/format
   racket/string
@@ -103,52 +107,40 @@
    [w*
     (raise-user-error 'integer->word "Integer ~a produced multiple words ~a" N w*)]))
 
-(define (add-commas n)
-  (define str (if (string? n) n (number->string n)))
-  (define str* (string-split str "."))
-  (string-append (add-commas/integer (car str*))
-                 (if (or (null? (cdr str*)) (> (string-length str) 4))
-                   ""
-                   (string-append "." (cadr str*)))))
-
-(define (add-commas/integer str)
-  (define L (string-length str))
-  (apply string-append
-    (let loop ([i L]
-               [acc '()])
-      (let ([i-3 (- i 3)])
-        (cond
-         [(<= i-3 0)
-          (cons (substring str 0 i) acc)]
-         [else
-          (loop i-3 (cons "," (cons (substring str i-3 i) acc)))])))))
-
 (define (rnd n)
   (~r n #:precision 2))
+
+(define (profile-point message)
+  (display "[PROFILE] ")
+  (display (current-process-milliseconds))
+  (display "ms : ")
+  (displayln message))
+
+(define-syntax-rule (INFO msg arg* ...)
+  (begin
+    (display "INFO: ")
+    (printf msg arg* ...)
+    (newline)))
+
+(define-syntax-rule (WARNING msg arg* ...)
+  (begin
+    (display "WARNING: ")
+    (printf msg arg* ...)
+    (newline)))
+
+(define (glob-first str)
+  (match (glob str)
+   [(cons r '())
+    r]
+   ['()
+    (raise-user-error 'glob-first "No results for glob '~a'" str)]
+   [r*
+    (WARNING "ambiguous results for glob '~a'. Returning the first." str)
+    (car r*)]))
 
 ;; =============================================================================
 
 (module+ test
   (require rackunit rackunit-abbrevs)
-
-  (check-apply* add-commas
-   [1
-    => "1"]
-   [10
-    => "10"]
-   [100
-    => "100"]
-   [1000
-    => "1,000"]
-   [999999
-    => "999,999"]
-   [12
-    => "12"]
-   [1234.56789
-    => "1,234.56789"]
-   [123456789
-    => "123,456,789"]
-   [12456789
-    => "12,456,789"])
-
+  ;; TODO
 )

@@ -14,9 +14,6 @@
          exact
          generate-bibliography
          nrightarrow
-         add-commas
-         integer->word
-         rnd
          parag
          sf
 
@@ -32,13 +29,11 @@
 
          PFDS-BEFORE
          PFDS-AFTER
-
-         profile-point
          )
 
 (require "bib.rkt"
          "gradual-bib.rkt" ; copied from the github repo
-         "util.rkt"
+         glob
          racket/class
          racket/require
          scribble/core
@@ -177,10 +172,4 @@
 
 (define PFDS-AFTER
   "1 millisecond")
-
-(define (profile-point message)
-  (display "[PROFILE] ")
-  (display (current-process-milliseconds))
-  (display "ms : ")
-  (displayln message))
 
