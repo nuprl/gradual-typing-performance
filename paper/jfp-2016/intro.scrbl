@@ -141,11 +141,11 @@ This paper extends that prior work with:
     results for @integer->word[(*NUM-OO-BENCHMARKS*)]
      object-oriented benchmark programs, augmenting our previous suite of
      @id[(- (*NUM-BENCHMARKS*) (*NUM-OO-BENCHMARKS*))]
-     primarily functional benchmark programs;
+     primarily functional benchmark programs; and
   }
   @item{
     in-depth discussions of performance bottlenecks in each benchmark and,
-     where applicable, their resolution;
+     where applicable, their resolution.
   }
   @;@item{
   @;  preliminary reports on a method for predicting the performance overhead for
