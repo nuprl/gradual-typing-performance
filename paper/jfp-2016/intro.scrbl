@@ -13,40 +13,28 @@ Dynamically-typed languages have become a staple of the software
  engineering world.
 Programmers use these languages to build applications
  ranging from telecommunications software@~cite[armstrong-2007]
- to social networking websites (Facebook, Twitter)
- to an entire country's pension system@~cite[v-aplwa-2010].
+ to high-profile startups (Dropbox, Facebook, Twitter)
+ and a country's pension system@~cite[v-aplwa-2010].
 These software systems often begin as prototypes in which the flexibility of
  dynamic typing speeds development.
-But as programs grow in size and complexity, software maintenance
- becomes the bottleneck.
-When this happens, the assurance provided by a static type system becomes
- increasingly desirable; however, migrating an existing untyped project to a
- typed language is a prohibitively large engineering investment.
-@; Twitter made the jump (TODO where to put this?)
+As programs grow in size and complexity, however, software maintenance
+ becomes a significant bottleneck. @; M: due to the lack of types
+When this happens, the assurances of a static type system become increasingly desirable.
+In fact Twitter recently migrated their codebase from Ruby to Scala because
+ of performance and reliability concerns,@note{http://www.artima.com/scalazine/articles/twitter_on_scala.html}
+ despite the engineering and opportunity cost of the migration.
 @; ### https://blog.twitter.com/2011/twitter-search-is-now-3x-faster
-@; - switched from ruby-on-rails to java "frontend" to the database
-@; - changed database: mysql -> lucene
-@; - better code: no thread blocks on IO
-@; ### http://www.artima.com/scalazine/articles/twitter_on_scala.html
-@; - rails great for front-end, had performance limitations in back-end
-@; - "the Ruby language lacks some things that contribute to reliable, high performance code, which is something we’re very interested in as we’re growing as a business"
-@; - Ruby is bad environment for long-lived processes
-@; - Scala has non-painful static typingA
-@; - "Sometimes it would be really nice in Ruby to say things like, here’s an optional type annotation"
-@; - green threads aren't good enough
-@; - GC not as good as Java's
-@; - "As our system has grown, a lot of the logic in our Ruby system sort of replicates a type system, either in our unit tests or as validations on models"
-@; - scala very performant and stable
 
 @; Enter GT
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
- solution to resolve the tradeoffs between dynamic and static typing.
+ solution to assist developers with the migration from dynamically typed
+ scripts to statically typed programs.
 The idea is to extend an existing, dynamically-typed language to allow the incremental
  addition of static types.
 Programmers enable typechecking by writing type annotations.
 The compiler validates and enforces these annotations.
 Unannotated parts of the program have no static guarantees but may freely
- interact with typed code by sharing values across so-called @emph{type boundaries}.
+ interact with typed code across so-called @emph{type boundaries}.
 At runtime, the gradual type system dynamically checks untyped values flowing
  into typed code and dynamically protects typed values entering untyped code.
 From programmers' perspective, the interaction is seamless.
@@ -81,7 +69,7 @@ Soundness for gradual type systems is traditionally formulated as a
 In particular, typed code may signal a type error at runtime upon receiving untyped data
  that does not match the type checker's assumptions, but typed code will never
  execute a single instruction using invalid data.
-Consequently, type errors in a gradually typed program always reference a
+Consequently, every runtime type error raised by a gradual type system references
  boundary where an unexpected value flowed into typed code.
 With this information, a programmer can determine whether the untyped value
  or static type annotation is at fault and correct the impedence mismatch.
@@ -96,7 +84,8 @@ For example, if the type checker assumes that an untyped function has type
  @racket[(Int -> Int)] then every value returned by the function at run-time
  is dynamically checked against the specification @exact|{$\ctc{\RktMeta{Int}}$}|.
 
-Dynamic checks, however, introduce performance overhead and slowdowns of
+Dynamic checks introduce performance overhead.
+Slowdowns of
  4x@~cite[tfdffthf-ecoop-2015],
  10x@~cite[vksb-dls-2014],
  and
@@ -108,9 +97,11 @@ These figures imply a steep tradeoff between preserving type
  soundness and maintaining performance when adding types to an untyped program.
 The aim of this paper is to provide a foundation for measuring
  and understanding the tradeoff.
+@; BLAH
 Given a fixed granularity for type boundaries and both fully-untyped and
  fully-typed versions for a representative suite of benchmarks, this paper
- recommends measuring the performance of all so-called @emph{configurations}
+ recommends @; BLAH
+ measuring the performance of all so-called @emph{configurations}
  obtained by annotating a subset of possible locations in each benchmark with types.
 In other words, if a benchmark has @math{N} locations that may be type-annotated
  then there are @exact{$2^N$} configurations to measure.
@@ -124,8 +115,9 @@ configuration is, we claim, the most accurate measure for the performance of the
 @;  but otherwise the method offers a strict protocol.
 
 We apply the method to Typed Racket, where type boundaries are module boundaries.
-The evaluation affirms that Typed Racket programs may suffer order-of-magnitude
- overhead when gradually typed, but conversely offers insights for reducing some
+The evaluation affirms that Typed Racket programs may suffer from an order-of-magnitude
+ overhead when gradually typed.
+Conversely, the evaluation offers insights for reducing some
  pathologies.
 Furthermore, the method is useful for quantifying improvements and identifying
  regressions across different versions of Typed Racket.
