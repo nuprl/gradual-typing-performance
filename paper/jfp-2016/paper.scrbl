@@ -1,6 +1,6 @@
 #lang scribble/jfp
 
-@require["common.rkt" "typed-racket.rkt"]
+@require["common.rkt" "jfp-parameters.rkt" "util.rkt"]
 
 @title{How to Evaluate the Performance of Gradual Type Systems}
 
@@ -18,23 +18,23 @@
     "Northwestern University" (affiliation-mark "2")))
 
 @abstract{
-  Gradual typing opens a spectrum of possibilities;
-   any program with @exact{$N$} locations that can be either typed or untyped
-   can migrate to at least @exact{$2^N$} typed/untyped @emph{configurations}.
-  Users will never explore this space, but performance evaluation of gradual
-   type systems needs to summarize it, so that programmers know what to expect
-   as they add typings were convenient.
+  @; TODO needs work
+  @; - "however"
+  @; - "it is unclear"
+  Every sound gradual type system guarantees that untyped components of a program can never break the type systems' static guarantees.
+  The literature on gradual typing is, however, remarkably silent about the @emph{performance} of such mixed programs.
+  It is unclear how to quantify the overall performance of a gradual type system.
+  It is equally unclear how to compare the performance of two gradual type systems.
+  Clients therefore cannot assess whether a particular gradual type system will be practical given their performance requirements.
+  Furthermore, implementors cannot measure the net effect of changes to a gradually typed language.
 
-  Second challenge: comparing two implementations of gradual typing for a
-   fixed language.
-  If one improves performance of fully typed programs, but always slows typed/untyped programs,
-   is it really better?
-
-  We propose methods for answering both questions: performance for users and
-   comparisons for implementors.
-  We evaluate these methods by applying them to Typed Racket.
-  Our evaluation reports large overheads due to gradual typing, but on the
-   other hand quantifies improvements between versions of Typed Racket.
+  This paper presents a method for evaluating the performance of gradual type systems.
+  The method quantifies both the
+   @emph{absolute performance} of a gradual type system on representative programs
+   and the @emph{relative performance} of two gradual type systems for a fixed base language.
+  Our validation of the method includes a comprehensive evaluation of
+   @id[(integer->word (*NUM-BENCHMARKS*))] functional and object oriented benchmark
+   programs on @id[(integer->word (length (*RKT-VERSIONS*)))] versions of Typed Racket.
 }
 
 @include-section{intro.scrbl}
