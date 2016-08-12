@@ -4,7 +4,7 @@
 @;  order in a finite, but very large, discrete universe that is intricately
 @;  intertwined."  -- Dijkstra, 1979 (from Emina's thesis)
 
-@require["common.rkt" "util.rkt" "jfp-parameters.rkt"]
+@require["common.rkt" "util.rkt" "benchmark.rkt"]
 
 @profile-point{sec:intro}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
@@ -20,15 +20,14 @@ These software systems often begin as prototypes in which the flexibility of
 As programs grow in size and complexity, however, software maintenance
  becomes a significant bottleneck. @; M: due to the lack of types
 When this happens, the assurances of a static type system become increasingly desirable.
-In fact Twitter recently migrated their codebase from Ruby to Scala because
- of performance and reliability concerns,@note{http://www.artima.com/scalazine/articles/twitter_on_scala.html}
- despite the engineering and opportunity cost of the migration.
+In fact Twitter recently migrated their codebase from Ruby to Scala because of
+ the performance and reliability Scala's type system offers.@note{http://www.artima.com/scalazine/articles/twitter_on_scala.html}
 @; ### https://blog.twitter.com/2011/twitter-search-is-now-3x-faster
 
 @; Enter GT
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
- solution to assist developers with the migration from dynamically typed
- scripts to statically typed programs.
+ solution resolve the tradeoffs of dynamic and static typing.
+   @; it is NOT about software migration! NON ONONONONON because fully-typed isn't the goal
 The idea is to extend an existing, dynamically-typed language to allow the incremental
  addition of static types.
 Programmers enable typechecking by writing type annotations.
@@ -37,107 +36,72 @@ Unannotated parts of the program have no static guarantees but may freely
  interact with typed code across so-called @emph{type boundaries}.
 At runtime, the gradual type system dynamically checks untyped values flowing
  into typed code and dynamically protects typed values entering untyped code.
-From programmers' perspective, the interaction is seamless.
 
-@; So-called @emph{macro}-level gradual type systems implement type boundaries
-@;  as module boundaries.
-@; That is, any module in the program is either fully typed or fully untyped.
-@; @emph{Micro}-level gradual type systems allow type boundaries
-@;  between expressions within any module.
-@; For example, a function may require its arguments be typed but produce an
-@;  untyped result.
-
-In the decade since gradual typing was first proposed, research groups have
- equipped
- JavaScript@~cite[rnv-ecoop-2015 rsfbv-popl-2015],
- Python@~cite[vksb-dls-2014],
- Racket@~cite[TypedRacket],
- @; Ruby@~cite[furr-dissertation-2009],
- and
- Smalltalk@~cite[acftd-scp-2013]
- with gradual type systems.
-Each new extension must address challenges unique to its base language,
- but in general these gradual type systems have three broad goals:
- @itemlist[
-   @item{@emph{Expressiveness:} describe all untyped features with useful types}
-   @item{@emph{Soundness:} enforce the semantics of types at run-time}
-   @item{@emph{Performance:} leverage types in efficient compilers and IDE tools}
- ]
-Soundness for gradual type systems is traditionally formulated as a
- type soundness theorem guaranteeing that typed parts of a program never
- commit runtime type errors@~cite[thf-dls-2006].
-In particular, typed code may signal a type error at runtime upon receiving untyped data
- that does not match the type checker's assumptions, but typed code will never
- execute a single instruction using invalid data.
-Consequently, every runtime type error raised by a gradual type system references
- boundary where an unexpected value flowed into typed code.
-With this information, a programmer can determine whether the untyped value
- or static type annotation is at fault and correct the impedence mismatch.
-
-Gradual type systems enforce type soundness by inserting dynamic checks at
- type boundaries.
-These systems compile a static type @exact|{$\RktMeta{T}$}| to an assertion
- @exact|{$\ctc{\RktMeta{T}}$}| that guarantees the run-time behavior of an
- untyped program component matches the component's type, as assigned by an
- inferred or explicit type annotation@~cite[aft-dls-2013 TypedRacket sw-popl-2010].
-For example, if the type checker assumes that an untyped function has type
- @racket[(Int -> Int)] then every value returned by the function at run-time
- is dynamically checked against the specification @exact|{$\ctc{\RktMeta{Int}}$}|.
-
-Dynamic checks introduce performance overhead.
-Slowdowns of
- 4x@~cite[tfdffthf-ecoop-2015],
+From a syntactic perspective, the interaction is seamless; however,
+ dynamic checks introduce runtime overhead.
+When an untyped function @racket[f] flows into typed code at type @racket[(Int -> Int)],
+ every subsequent call to @racket[f] triggers a runtime assertion that the value
+ produced by @racket[f] actually has type @racket[Int].
+In general, these "runtime type checks" can have an arbitrarily large cost if
+ values with intricate types frequently cross type boundaries.
+In practice, sound gradual type systems for Racket, Python, and JavaScript
+ have demonstrated overheads of
+ 3.4x@~cite[tfdffthf-ecoop-2015],
  10x@~cite[vksb-dls-2014],
  and
- 72x@~cite[rsfbv-popl-2015]
- appear in the literature.
+ 72x@~cite[rsfbv-popl-2015].
 @; Allende (DLS'13) dont seem to report a slowdown. Just,
 @;  "as type annotations are added to a library, performance tends to degrade"
-These figures imply a steep tradeoff between preserving type
- soundness and maintaining performance when adding types to an untyped program.
-The aim of this paper is to provide a foundation for measuring
- and understanding the tradeoff.
-@; BLAH
-Given a fixed granularity for type boundaries and both fully-untyped and
- fully-typed versions for a representative suite of benchmarks, this paper
- recommends @; BLAH
- measuring the performance of all so-called @emph{configurations}
- obtained by annotating a subset of possible locations in each benchmark with types.
-In other words, if a benchmark has @math{N} locations that may be type-annotated
- then there are @exact{$2^N$} configurations to measure.
-The performance overhead of these configurations relative to the fully-untyped
-configuration is, we claim, the most accurate measure for the performance of the
- whole gradual type system.
+@; Richards @~cite[rnv-ecoop-2015] only reports
+@;  fully-typed vs. typescript. Also, "blame was intolerable"
 
-@; In general, the granularity of type boundaries is fixed by the gradual type system,
-@;  but there are many valid typings for a single program.
-@; Choosing a representative suite of benchmarks is, as always, a subjective matter,
-@;  but otherwise the method offers a strict protocol.
+In particular, Vitousek @|etal| report the 10x slowdown for a fully typed
+ hash algorithm relative to Python's performance on the same program with all
+ types removed.
+This is the only overhead relative to Python reported in the paper.
+The 72x figure for Safe TypeScript was the worst overhead the authors observed
+ on six fully-untyped benchmarks.
+The average overhead for their untyped benchmarks was 22x, and the minimum overhead was 2.4x.
+When fully typed, the same benchmarks' average overhead fell to 0.065x.
 
-We apply the method to Typed Racket, where type boundaries are module boundaries.
-The evaluation affirms that Typed Racket programs may suffer from an order-of-magnitude
- overhead when gradually typed.
-Conversely, the evaluation offers insights for reducing some
- pathologies.
-Furthermore, the method is useful for quantifying improvements and identifying
- regressions across different versions of Typed Racket.
+Performance of gradual type systems is clearly an issue, but the @emph{meta-issue}
+ belied by the reported overhead is that @emph{prior evaluations of gradual type systems
+ fail to consider the performance of gradually-typed programs}.
+Each of the Python and JavaScript benchmarks can mix typed and untyped code in
+ exponentially many ways.
+None of these mixed programs are represented in the evaluations.
 
-The method was introduced in a conference publication@~cite[tfgnvf-popl-2016].
-This paper extends that prior work with:
+Takikawa @|etal|, on the other hand, measure the entire lattice of typed/untyped
+ configurations for two object-oriented games.
+    @; FYI their 3.4x figure was the worst overhead relative to untyped Racket (on a pre-patch TR)
+Starting with a fully typed program, they consider all ways of removing types
+ from parts of the program.
+Typed Racket types may be removed at a module-level granularity, so a program
+ with @exact{$N$} modules determines a lattice of @exact{$2^N$} configurations
+ where configurations at the @exact{$i^{{\footnotesize\rm th}}$} level of the lattice have
+ exactly @exact{$i$} typed modules.
+This paper builds on their technique.
+
+This paper also builds on a conference version that introduced our method for
+ performance evaluation and applied it to measure the absolute performance of
+ Typed Racket on a suite of benchmark programs@~cite[tfgnvf-popl-2016].
+Relative to the conference version, this paper contributes:
 @itemlist[
   @item{
-    a comparative analysis of @integer->word[(length (*RKT-VERSIONS*))] versions
-     of Typed Racket, using the method to measure differences between versions;
-  }
-  @item{
-    results for @integer->word[(*NUM-OO-BENCHMARKS*)]
+    data for @integer->word[(*NUM-OO-BENCHMARKS*)]
      object-oriented benchmark programs, augmenting our previous suite of
-     @id[(- (*NUM-BENCHMARKS*) (*NUM-OO-BENCHMARKS*))]
-     primarily functional benchmark programs; and
+     @integer->word[(- (*NUM-BENCHMARKS*) (*NUM-OO-BENCHMARKS*))]
+     primarily functional benchmark programs;
   }
   @item{
-    in-depth discussions of performance bottlenecks in each benchmark and,
-     where applicable, their resolution.
+    a comparison of @integer->word[(length (*RKT-VERSIONS*))] versions
+     of Typed Racket, demonstrating that our method captures the @emph{relative}
+     performance of two gradual type systems for the same language;
+  }
+  @item{
+    and in-depth discussions of performance bottlenecks in each benchmark,
+     their resolution,
+     and general lessons for implementors of gradually typed languages.
   }
   @;@item{
   @;  preliminary reports on a method for predicting the performance overhead for
@@ -146,3 +110,5 @@ This paper extends that prior work with:
   @;}
 ]
 
+@parag{Disclaimer:} 3x overhead is not "deliverable" performance.
+We never claimed so in the conference version and our opinion certainly has not changed.

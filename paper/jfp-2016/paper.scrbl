@@ -1,6 +1,6 @@
 #lang scribble/jfp
 
-@require["common.rkt" "jfp-parameters.rkt" "util.rkt"]
+@require["common.rkt" "benchmark.rkt" "util.rkt"]
 
 @title{How to Evaluate the Performance of Gradual Type Systems}
 
@@ -19,7 +19,7 @@
 
 @abstract{
   @; TODO needs work
-  @; - "however"
+  @; - "however"   --> cost of the guarantee?
   @; - "it is unclear"
   Every sound gradual type system guarantees that untyped components of a program can never break the type systems' static guarantees.
   The literature on gradual typing is, however, remarkably silent about the @emph{performance} of such mixed programs.
@@ -33,8 +33,8 @@
    @emph{absolute performance} of a gradual type system on representative programs
    and the @emph{relative performance} of two gradual type systems for a fixed base language.
   Our validation of the method includes a comprehensive evaluation of
-   @id[(integer->word (*NUM-BENCHMARKS*))] functional and object oriented benchmark
-   programs on @id[(integer->word (length (*RKT-VERSIONS*)))] versions of Typed Racket.
+   @integer->word[(*NUM-BENCHMARKS*)] functional and object oriented benchmark
+   programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
 }
 
 @include-section{intro.scrbl}
