@@ -25,6 +25,7 @@
 (define Symposium "Symposium ")
 (define Transactions "Transactions on ")
 
+(define racket-con (list "In " (emph "RacketCon")))
 
 (define/short aplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
 (define/short asplos "ASPLOS" (string-append ACM International Conference "on Architectural Support for Programming Languages and Operating Systems"))
@@ -482,6 +483,13 @@
 
 ;; ----------------------------------------
 ; Misc
+
+(define r-icfp-2014
+  (make-bib
+    #:author "Norman Ramsey"
+    #:title "On Teaching 'How to Design Programs'"
+    #:location (proceedings-location icfp #:pages '(153 166))
+    #:date 2014))
 
 (define cm-tech-1985
   (make-bib
@@ -1099,6 +1107,31 @@
    #:title "Of Scripts and Programs, Tall Tales, Urban Legends and Future Prospects"
    #:location (proceedings-location aplwa)
    #:date 2010))
+
+(define b-rc-2015
+  ;; Uses Typed Racket
+  ;; http://con.racket-lang.org/2015/burns.pdf
+  (make-bib
+    #:author "Marc Burns"
+    #:title "Rocking with Racket"
+    #:location racket-con
+    #:date 2015))
+
+(define p-rc-2014
+  ;; Uses Racket (probably not Typed)
+  (make-bib
+    #:author "Daniel Prager"
+    #:title "YouPatch: A Racket-powered startup"
+    #:location racket-con
+    #:date 2014))
+
+(define l-rc-2014
+  ;; Uses Racket (maybe Typed, but not sure)
+  (make-bib
+    #:author "Dan Liebgold"
+    #:title "Racket on the Playstation 3? It's Not What you Think!"
+    #:location racket-con
+    #:date 2013))
 
 (define tmv-esop-2014
   (make-bib

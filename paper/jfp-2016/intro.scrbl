@@ -9,6 +9,9 @@
 @profile-point{sec:intro}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
+@(define twitter1 "http://www.artima.com/scalazine/articles/twitter_on_scala.html")
+@(define twitter2 "https://blog.twitter.com/2011/twitter-search-is-now-3x-faster")
+
 Dynamically-typed languages have become a staple of the software
  engineering world.
 Programmers use these languages to build applications
@@ -21,8 +24,7 @@ As programs grow in size and complexity, however, software maintenance
  becomes a significant bottleneck. @; M: due to the lack of types
 When this happens, the assurances of a static type system become increasingly desirable.
 In fact Twitter recently migrated their codebase from Ruby to Scala because of
- the performance and reliability Scala's type system offers.@note{http://www.artima.com/scalazine/articles/twitter_on_scala.html}
-@; ### https://blog.twitter.com/2011/twitter-search-is-now-3x-faster
+ the performance and reliability Scala's type system offers.@note{@hyperlink[twitter1 twitter1]}
 
 @; Enter GT
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based

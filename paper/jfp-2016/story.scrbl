@@ -10,40 +10,41 @@
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
+Typed Racket@~cite[TypedRacket] is the oldest implementation of sound gradual typing and
+ supports clients in both academia and industry@~cite[b-rc-2015].
+   @; as well as a few prolific hobbyists.@note{MB}
+Users frequently encounter performance overhead when mixing Racket and Typed
+ Racket modules, so it is a natural context for our performance evaluation.
+
 @; TR is for real, TR is gradual
-Our research is motivated by practical experience with Typed Racket@~cite[TypedRacket],
- the gradually-typed sister language of Racket@~cite[plt-tr1].
-Typed Racket implements @emph{macro-level} gradual typing; that is,
- every module in a Racket program is explicitly typed or untyped.@note{Typed Racket
-  does allow typed expressions and definitions within untyped modules, but our
-  benchmarks do not use these so-called @emph{typed regions}.}
-Programmers invoke the type checker by writing @hash-lang[] @racket[typed/racket]
+Typed Racket implements so-called @emph{macro-level} gradual typing; that is,
+ every module in a Racket program is explicitly typed or
+ untyped.@note{Typed Racket
+    does allow typed expressions and definitions within untyped modules, but our
+    benchmarks do not use these so-called @emph{typed regions}.}
+Programmers opt-in to Typed Racket by writing @hash-lang[] @racket[typed/racket]
  at the top of a module.
 In contrast, @hash-lang[] @racket[racket] modules are untyped.
-The syntax of Typed Racket is a superset of Racket, the difference being the
- statically-checked type annotations that Typed Racket programmers use to
- document their intentions and guide the type checker.
-@; TODO ew
-Converting a program between Racket and Typed Racket is by design only a matter
- of adding or removing type annotations.
+The syntax of Typed Racket is a superset of Racket, so that converting a
+ Racket module to Typed Racket is primarily a matter of writing type annotations.
+Intuitively, modifying working untyped code just to satisfy the type checker
+ is an unnecessary opportunity to introduce bugs.
 
- @;bg; insert a figure here?
- @;, as demonstrated in @figure-ref{fig:racket-v-typed}.
- @; @figure*["fig:racket-v-typed" "Merging lists in Racket (left) and Typed Racket (right)"
- @;   @exact|{\input{fig-racket-v-typed}}|
- @; ]
+    @;bg; insert a figure here?
+    @;, as demonstrated in @figure-ref{fig:racket-v-typed}.
+    @; @figure*["fig:racket-v-typed" "Merging lists in Racket (left) and Typed Racket (right)"
+    @;   @exact|{\input{fig-racket-v-typed}}|
+    @; ]
 
-When a typed module uses definitions from an untyped module, programmers
- must supply type annotations in the import statement.
-These annotations are compiled to
- contracts@~cite[ff-icfp-2002] to ensure that the dynamic behavior of the untyped
- code matches its type specification.
+When a typed module imports definitions from an untyped module, programmers
+ must supply type annotations.
+The type system compiles these annotations to
+ contracts@~cite[ff-icfp-2002] that ensure the untyped code matches its type specification.
 Untyped modules may use definitions from typed modules without any annotation.
-The imported typed code is protected with automatically generated
- contracts to enforce type-correct use in untyped contexts.
+The type system generates contracts to protect the typed values from untyped contexts.
 Put another way, every @emph{logical} type @exact|{$\RktMeta{T}$}| in Typed
  Racket has a @emph{computational} projection @exact|{$\ctc{\RktMeta{T}}$}|
- capable of checking whether an arbitrary value has type @exact|{$\RktMeta{T}$}|.
+ capable of dynamically checking whether an arbitrary value has type @exact|{$\RktMeta{T}$}|.
 
 Racket programmers frequently mix typed and untyped code.
 For example, the standard matrix, statistics, and plotting libraries are implemented
@@ -59,8 +60,7 @@ Some of the most common use-cases are:
      for end-of-file symbols when reading from a port.
   }
   @item{ @bold{Documentation:}
-    The typed modules are stable modules whose interfaces are unlikely to
-     change.
+    The typed modules have stable interfaces.
     Type signatures serve as machine-checked and enforced APIs.
   }
   @item{ @bold{Ease:}
@@ -68,22 +68,19 @@ Some of the most common use-cases are:
     These could be the smallest modules or the ones with the fewest dependencies.
   }
   @item{ @bold{Necessity:}
-    The typed modules are tightly-coupled to other typed modules or to typed
-     library code.
-    Such coupling between a typed module and an untyped module may entail
-     a large run-time cost due to checking contracts on the type boundary.
-    Typing both modules eliminates the boundary.
+    The typed modules are tightly-coupled to other typed modules or to typed library code.
+    Tight coupling between an untyped module and a typed modules leads to frequent dynamic type checks.
+    Typing both modules statically discharges the runtime checks.
   }
 ]
 Over time, programmers may convert additional modules in a program to Typed Racket.
-Consider a large untyped codebase in which a bug is traced to an untyped
- module that was written years ago by a developer who is no longer with the project.
-The programmer tasked with fixing the bug must first understand how the module
- is intended to work by reading documentation, unit tests, and the code; only
- then can they fix the issue.
-A side effect of this investigation is that the programmer uncovers the @emph{implicit}
- type signatures of functions and datatypes in the module.
-Typed Racket makes it easy to record these types.
+Imagine for example a large codebase in which a bug is traced to an untyped module deep within the project.
+The module is sparsely documented and its original author has long since left the project.
+The new programmer tasked with fixing this bug is forced to read the code
+ and its unit tests to uncover the @emph{implicit} specifications of components in the module.
+Armed with these specifications, the programmer can finally address the bug.
+
+Typed Racket makes it easy to convert these inferred specifications into type signatures.
 The programmer only needs to write these implicit signatures, annotate imports
  from untyped modules, and change the @hash-lang[] line from @racket[racket]
  to @racket[typed/racket].
@@ -91,7 +88,7 @@ After converting, the module is now hardened against bugs due to type errors
  and documented with type annotations for future maintainers.
 
 Introducing types in one module while leaving others untyped, however,
- introduces type boundaries that may lead to significant performance overhead.
+ introduces type boundaries that may cause significant performance overhead.
 For example, Typed Racket developers have experienced pathologies including
  a 50% overhead in a commercial web server
  and 25x-50x slowdowns when using the standard math library.
@@ -100,7 +97,7 @@ Indeed,
  one user reported a speedup from @|PFDS-BEFORE| to @|PFDS-AFTER| after converting
  a script from Racket to Typed Racket.
 But annotating a module is not guaranteed to improve performance and may introduce
- new type boundaries with even larger overhead.
+ new, high-overhead type boundaries.
 
 As language designers, we must also remember that adding types is always
  a software engineering burden.
@@ -122,16 +119,14 @@ As a concrete example, @figure-ref{fig:complex-multiply} implements
  multiplication for complex numbers represented in polar form.
 When this typed function is imported by an untyped module, we say it crosses a
  @emph{type boundary}.
-During the import, the function's type signature is compiled into a
- higher-order contract @exact|{$\ctc{\RktMeta{(C C -> C)}}$}|
- to dynamically enforce correct usage.
+During the import, Typed Racket compiles the function's type signature to a
+ higher-order contract @exact|{$\ctc{\RktMeta{(C C -> C)}}$}|.
 The contract asserts that each call to @racket[complex-*] in untyped code
- is made with two arguments accepted by the @exact|{$\ctc{\RktMeta{C}}$}| contract;
+ supplies two arguments passing the @exact|{$\ctc{\RktMeta{C}}$}| contract;
  that is, two pairs of real numbers where the first component of each pair is
  non-negative.
-Invalid arguments such as the string @racket{NaN}
- are detected immediately, before @racket[complex-*] is invoked, and
- the untyped code is blamed@~cite[ff-icfp-2002] for supplying arguments of the wrong type.
+Consequently, the contract detects invalid arguments such as the string @racket{NaN}
+ and immediately blames@~cite[ff-icfp-2002] the caller for making a type error.
 
     @figure["fig:complex-multiply" "Multiplication for polar form complex numbers"
       @(begin
@@ -150,11 +145,10 @@ Invalid arguments such as the string @racket{NaN}
     ]
 
 Correct blame is essential to Typed Racket's soundness guarantee, which states
- that typed code is never the cause of run-time type errors.
-Rather, all type errors are either detected statically or dynamically caught
- and attributed to a type boundary.
-Tracking blame and dynamically enforcing types can, however, be computationally expensive.
-Each call to @racket[complex-*] requires six assertions to check and traverse both pairs.
+ that typed code is never the cause of runtime type errors.
+Rather, all runtime type errors are dynamically caught and attributed to a type boundary.
+Of course, tracking blame and dynamically enforcing types can be computationally expensive.
+Each call to @racket[complex-*] requires in total six assertions to check and traverse both pairs.
 Individual assertions are relatively inexpensive, but folding
  @racket[complex-*] over a list of @math{n} complex numbers requires
  @math{3n + 1} assertions.
@@ -172,7 +166,7 @@ In general, costs can quickly accumulate as the size of data
 
 Despite the potential overhead, it is crucial that calls to @racket[complex-*]
  are guarded against type errors even though untyped Racket is a memory-safe
- programming language and will catch e.g. inputs like the string @racket{NaN}
+ programming language and will detect e.g. inputs like the string @racket{NaN}
  when they reach the @racket[+] function.
 The danger is with ill-typed calls such as:
     @racketblock[(complex-* '(-1 . -1) '(-3 . 0))]
