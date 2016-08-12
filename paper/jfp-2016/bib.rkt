@@ -70,6 +70,8 @@
 (define/short gpce "GPCE" "Generative Programming: Concepts & Experiences")
 (define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications"))
 (define/short issta "ISSTA" (string-append International Symposium "on Software Testing and Analysis"))
+(define/short ppdp "PPDP" (string-append International Symposium "on Principles and Practice of Declarative Programming"))
+(define/short stop "STOP" (string-append "Script to Program Evolution Workshop"))
 
 ;; ----------------------------------------
 
@@ -169,6 +171,42 @@
    #:title "The Art of the Metaobject Protocol"
    #:location (book-location #:publisher "MIT Press")
    #:date "1991"))
+
+(define ls-ppdp-2006
+  (make-bib
+   #:author (authors "Tobias Lindahl" "Konstantinos Sagonas")
+   #:title "Practical Type Inference Based on Success Typings"
+   #:location (proceedings-location ppdp #:pages '(167 178))
+   #:date 2006))
+
+(define l-stop-2015
+  (make-bib
+   #:author "Jukka Lehtosalo"
+   #:title "MyPy, an Optionally-Typed Python"
+   #:location (proceedings-location stop)
+   #:date 2015))
+
+(define aemopssy-oopsla-2014
+  (make-bib
+   #:author (authors "Keith Adams"
+                     "Jason Evans"
+                     "Bertrand Maher"
+                     "Guilherme Ottoni"
+                     "Andrew Paroski"
+                     "Brett Simmers"
+                     "Edwin Smith"
+                     "Owen Yamauchi")
+   #:title "The HipHop Virtual Machine"
+   #:location (proceedings-location oopsla #:pages '(777 790))
+   #:date 2014))
+
+(define t-artima-2009
+  (make-bib
+   #:author "Bill Venners"
+   #:title "Twitter on Scala"
+   #:location (hyperlink "http://www.artima.com/scalazine/articles/twitter_on_scala.html" "http://www.artima.com/scalazine/articles/twitter_on_scala.html")
+   #:date 2009))
+; "https://blog.twitter.com/2011/twitter-search-is-now-3x-faster"
 
 (define armstrong-2007
   (make-bib
@@ -798,6 +836,13 @@
    #:location (proceedings-location popl #:pages '(181 194))
    #:date 2015))
 
+(define g-tfp-2016
+  (make-bib
+   #:author "Michael Greenberg"
+   #:title "Space-Efficient Latent Contracts"
+   #:location (proceedings-location tfp)
+   #:date 2016))
+
 ;; ----------------------------------------
 ; Components and modules
 
@@ -1235,6 +1280,13 @@
    #:author (authors "Edd Barrett" "Carl Friedrich Bolz" "Lukas Diekmann" "Laurence Tratt")
    #:location (proceedings-location ecoop #:pages '(3:1 3:27))
    #:date 2016))
+
+(define gct-popl-2016
+ (make-bib
+  #:title "Abstracting Gradual Typing"
+  #:author (authors "Ronald Garcia" "Alison M. Clark" "Éric Tanter")
+  #:location (proceedings-location popl #:pages '(429 442))
+  #:date 2016))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html

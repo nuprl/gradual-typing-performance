@@ -23,6 +23,8 @@
   ;; For formatting
 
   (all-from-out "jfp-parameters.rkt")
+
+  NUM-POPL
 )
 
 (require
@@ -42,6 +44,9 @@
 )
 
 ;; =============================================================================
+
+(define NUM-POPL
+  (length '(sieve morsecode mbta zordoz suffixtree lnm kcfa snake tetris synth gregor quadMB)))
 
 (struct benchmark (
   name         ;; Symbol, canonical name of benchmark, like `fsm`

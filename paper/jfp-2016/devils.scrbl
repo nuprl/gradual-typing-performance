@@ -196,6 +196,8 @@ Racket's feature-specific profiler@~cite[saf-cc-2015] provides a framework for
 @section[#:tag "sec:devils:boundary"]{Tunnelling Contracts}
 @; -- AKA surprise boundaries
 
+@; TODO also each chaperone is a "new" boundary... functions classes vectors hashes
+
 Typed Racket's math library is known to cause performance overhead when used
  in untyped programs.
 Part of this library is included in our @bm[synth] benchmark, whose main
