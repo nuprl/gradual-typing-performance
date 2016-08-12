@@ -21,6 +21,8 @@
   (rename-out [format:bm bm])
   ;; (-> Benchmark Elem)
   ;; For formatting
+
+  (all-from-out "jfp-parameters.rkt")
 )
 
 (require

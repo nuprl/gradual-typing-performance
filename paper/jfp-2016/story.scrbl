@@ -4,7 +4,7 @@
 @; - fix suffixtree numbers
 @; - orphans/widows
 
-@require["common.rkt" "jfp-parameters.rkt" "util.rkt"]
+@require["common.rkt" "benchmark.rkt" "util.rkt"]
 @(require racket/file benchmark-util/data-lattice)
 
 @profile-point{sec:story}

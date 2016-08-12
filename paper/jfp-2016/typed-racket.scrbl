@@ -5,7 +5,6 @@
   "common.rkt"
   "typed-racket.rkt"
   "util.rkt"
-  "jfp-parameters.rkt"
   (only-in gtp-summarize/path-util add-commas)
   (only-in racket/string string-join)
   (except-in gtp-summarize/lnm-parameters defparam)
@@ -527,7 +526,6 @@ Implementors, on the other hand, care about the absolute performance of all
 Overhead plots are two steps removed from this data: first they report overhead
  instead of absolute running time and second the "overhead" of a configuration
  is actually the mean of repeated runs.
-@todo{this 'mean vs. absolute' is not very motivating}
 
 @; 
 @(let ([ex1 morsecode]

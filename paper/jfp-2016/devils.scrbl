@@ -5,7 +5,6 @@
   "common.rkt"
   "typed-racket.rkt"
   "util.rkt"
-  "jfp-parameters.rkt"
   (only-in gtp-summarize/path-util add-commas)
   (except-in gtp-summarize/lnm-parameters defparam)
 ]

@@ -90,7 +90,6 @@
  ;;
  racket/contract
  "benchmark.rkt"
- "jfp-parameters.rkt"
  "util.rkt"
 )
 (require (only-in racket/serialize

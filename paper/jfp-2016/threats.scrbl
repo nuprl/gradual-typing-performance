@@ -1,6 +1,6 @@
 #lang scribble/base
 
-@require["common.rkt" "fig-contract-profile.rkt" "jfp-parameters.rkt" "benchmark.rkt" "util.rkt"]
+@require["common.rkt" "fig-contract-profile.rkt" "benchmark.rkt" "util.rkt"]
 
 @title[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
