@@ -14,8 +14,7 @@
 @title[#:tag "sec:devils"]{The Devil's Contracts}
 @; -- AKA "Four contracts of the apocalypse"
 
-Many of the large performance overheads apparent in our benchmarks stem from
- similar pathologies.
+Many of the large performance overheads apparent in our benchmarks stem from similar causes.
 This section reviews the most common problematic cases, in the hope that
  language designers will address the issues in future gradual
  type systems.
@@ -40,7 +39,7 @@ If we view a program as a network of roads carrying values between modules,
   @; See `src/traces` folder for details on boundaries
   @elem{
     For example, @bm[snake] has five boundaries that are crossed over
-     5 million times each in our benchmark; @bm[suffixtree] has three boundaries
+     5 million times each; @bm[suffixtree] has three boundaries
      that are crossed over 100 million times.
   })
 When a highway is also a type boundary, any contracts guarding it
@@ -52,23 +51,23 @@ One common scenario is demonstrated by the following stack data structure
 @(begin
 #reader scribble/comment-reader
 @codeblock|{
-#lang racket ;; Enclosing module is untyped
-
-;; -- Typed submodule
-(module stack typed/racket
-  (define-type (Stack A) (Listof A))
-  ;; represent stacks as homogenous lists
-  (: stack-empty? (All (A) ((Stack A) -> Boolean)))
-  (define (stack-empty? stk)
-    (null? stk))
-  (provide stack-empty?))
-;; -- End of typed submodule
+#lang typed/racket
+(define-type (Stack A) (Listof A))
+;; represent stacks as homogenous lists
+(: stack-empty? (All (A) ((Stack A) -> Boolean)))
+(define (stack-empty? stk)
+  (null? stk))
+(provide stack-empty?)
+}|
+@tt{--------------------------------------------------------------------------------}
+@codeblock|{
+#lang racket
 
 (require 'stack)
 ;; Create a stack of 20 elements
 (define stk (range 20))
 (for ([i (in-range (expt 10 6))])
-  (stack-empty? stk)) ;; Repeatedly cross a type boundary
+  (stack-empty? stk))
 }|)
 
 Each of the million boundary-crossings in this program triggers a contract
@@ -110,9 +109,9 @@ Racket generates a predicate and accessor functions.
 Naturally, the accessors @racket[Point-x] and @racket[Point-y] require
  their argument to be a @racket[Point] value and must be protected by a contract
  when used in untyped code.
-But the predicate @racket[Point?] has type @racket[(Any -> Boolean)].
-Enforcing this type with a higher-order contract is unnecessary:
- any value will pass the @racket[Any] contract and @racket[Point?] is guaranteed
+On the other hand, protecting the predicate @racket[Point?] with the higher-order contract
+ @racket[(Any -> Boolean)] is unnecessary.
+Any value will pass the @racket[Any] contract and @racket[Point?] is guaranteed
  by construction to return a @racket[Boolean] value.
 The generated contract also executes fairly quickly; nevertheless, we
  found that checking these predicate contracts accounted for up to
@@ -121,9 +120,8 @@ This overhead was due to extremely frequent checks.
 As @racket[Point?] is the only way to identify values of type @racket[Point?],
  calls to functions like @racket[Point-x] trigger calls to @racket[Point?] as
  part of their own contracts.
-Removing these predicate contracts therefore caused a significant part of the
- performance improvement on the @bm[suffixtree] and @bm[snake] benchmarks
- between versions 6.3 and 6.4.
+Removing these predicate contracts therefore caused significant
+ improvement between versions 6.3 and 6.4.
 
 
 @; -----------------------------------------------------------------------------
@@ -235,22 +233,19 @@ What happened was that a macro definition in the math library captured reference
 Expanding the macro in untyped code introduced the new and unexpected type
  boundaries.
 Ironically, the macro was designed as a fast, low-level array iterator
- but the optimization backfired in untyped code by putting a type boundary
- into the hot part of the loop.
+The optimization backfired in untyped code by inserting a type boundary
+ into the hottest part of the loop.
 
 This phenomena of functions tunnelling through a macro and introducing
  a type boundary after expansion is unique to languages with syntax
  extensions, but it highlights a general issue that the graph structure
  of programs is often complex.
 Even small programs like @bm[synth] have surprising boundaries.
-Large programs, or programs with dynamically introduced boundaries will
- face similar issues; therefore, it is likely that a programmer working to
- diagnose a performance problem is not aware of all the type boundaries in
- the program at hand.
+Large programs, or programs with dynamically introduced boundaries will face similar issues.
 We use the term @emph{tunnelling contracts} to denote the contracts
  on type boundaries that the programmer was unaware of.
-An important tooling challenge is to identify the high-overhead type boundaries
- and suggest ways to either bypass or remove them.
+Going forward, we propose a @emph{boundary profiler} that identifies
+ high-overhead type boundaries and suggest ways to either bypass or remove them.
 
 
 @; -----------------------------------------------------------------------------
@@ -284,7 +279,9 @@ The details of @racket[C%] are unimportant except that it needs a method
   (Class
     (equals (-> (Instance C%) (Instance C%) Boolean))))
 
-(define id (λ ([x : (Instance C%)]) x))
+(: id (-> (Instance C%) (Instance C%)))
+(define (id x)
+  x)
 }|)
 
 Calling @racket[(id obj)] in untyped code wraps @racket[obj] with two
@@ -308,6 +305,8 @@ Whether @racket[Population] was implemented as a vector (in @bm[fsm])
 #reader scribble/comment-reader
 @codeblock|{
 #lang typed/racket ;; From the 'fsm' benchmark
+(require (only-in "population.rkt" match-up* death-birth))
+
 (: evolve (Population Natural -> Real))
 (define (evolve p iters)
   (cond
@@ -318,9 +317,9 @@ Whether @racket[Population] was implemented as a vector (in @bm[fsm])
 }|)
 
 The @bm[forth] benchmark builds a environment @racket[env] of interpreter
- commands as it reads a file of definitions and statements.
-Each command @racket[c] in @racket[env] is an object that produces
- a new environment given the current environment and a line of input.
+ commands as it reads definitions and statements.
+Each command @racket[c] in @racket[env] is an object implementing a method
+ @racket[eval-line] for updating the current @racket[env].
 
 @(begin
 #reader scribble/comment-reader
@@ -337,10 +336,10 @@ Each command @racket[c] in @racket[env] is an object that produces
 }|)
 
 Threading @racket[env] through each evaluation step lets commands extend or
- modify the environment, but it also adds a layer of contracts to @emph{each}
+ modify the environment, but it also adds a layer of contracts to every
  command for every line in the input stream.
 On the other hand, implementing @bm[forth] with a global environment that
- is updated statefully removes nearly all performance overhead.
+ is updated statefully removes nearly all gradual typing overhead.
 
 Lastly, the @bm[zombie] benchmark implements a functional encoding of objects
  that is prone to accumulate contracts.
@@ -359,10 +358,10 @@ As a minimal example, the following is a @bm[zombie]-encoded stream object
      (Pairof 'nxt (-> Stream)))))
 }|)
 
-In other words, streams are functions from method names to methods.
-The one complication is that we use pairs in the codomain to distinguish
- the function types representing methods.
-It is therefore useful to provide ``getter'' functions for each method:
+In other words, streams are essentially functions from method names to methods.
+We need pairs in the codomain to tag the different zero-arity alternatives in
+ the union.
+Another helper function can deal with the untagging,
 
 @(begin
 #reader scribble/comment-reader
@@ -377,9 +376,9 @@ It is therefore useful to provide ``getter'' functions for each method:
     (error 'key-error)))
 }|)
 
-however, untyped clients using these accessor methods now repeatedly send
- higher-order functions across a type boundary.
-Contracts on similar functions are the source of overhead in @bm[zombie].
+but untyped clients using this accessor send
+ higher-order functions across a type boundary, resulting in higher-order contract wrappers.
+This is the source of overhead in @bm[zombie].
 
 
 @; -----------------------------------------------------------------------------
@@ -391,13 +390,12 @@ Contracts on similar functions are the source of overhead in @bm[zombie].
 
 Many of our benchmarks are self-contained, but others
  depend on libraries within the Racket ecosystem.
-Except in the rare case of core Racket libraries that are untyped but
- assumed type-correct by Typed Racket, these libraries are @emph{either}
- typed or untyped.
+With the exception of core Racket libraries trusted by the typechecker,
+ these libraries are @emph{either} typed or untyped.
 Hence some clients are forced to communicate through a type boundary.
 
 Our @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries,
- so they have relatively large typed/untyped ratios
+ so they have relatively high typed/untyped ratios
  (@rnd[@typed/untyped-ratio[@benchmark-rktd[mbta "6.2"]]]x and
   @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x
   on v6.2, respectively).
@@ -408,12 +406,8 @@ Conversely, @bm[lnm] uses two typed libraries.
 Removing the type boundaries to these libraries improves performance
  to at best @min-overhead[@benchmark-rktd[lnm "6.2"]] relative to the untyped runtime on Racket v6.2.
 
-The obvious fix is to migrate the untyped libraries to Typed Racket and
- the typed libraries to untyped Racket, but this replaces the performance
- overhead with software maintenance overhead.
-Library authors will need to
- manage two subtly different versions of the same code or accept inefficiencies
- in one of the versions.
+The obvious fix is to provide typed and untyped versions of each library,
+ but this replaces the performance overhead with software maintenance overhead.
 For instance, suppose there is an untyped library for managing elections that
  includes a function for adding votes to a global tally:
 

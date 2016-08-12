@@ -1229,6 +1229,13 @@
                                 #:pages '(765 769))
    #:date 1954))
 
+(define bbdt-ecoop-2016
+  (make-bib
+   #:title "Fine-grained Language Composition: A Case Study"
+   #:author (authors "Edd Barrett" "Carl Friedrich Bolz" "Lukas Diekmann" "Laurence Tratt")
+   #:location (proceedings-location ecoop #:pages '(3:1 3:27))
+   #:date 2016))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf

@@ -14,8 +14,7 @@ We have measured every possible way of gradually adding types to
 While we are confident that the method captures the spirit of the goals of
  gradual typing, our particular application must be put in perspective.
 
-First, our benchmarks are relatively small due to constraints on our
- computing infrastructure.
+First, our benchmarks are relatively small.
 Gradual typing offers the most promise for maintainers of large (100+ module)
  projects, but with our framework benchmarking even 20 modules is prohibitively
  time-consuming.
@@ -27,6 +26,9 @@ To run the benchmarks in a reasonable amount of time we used @todo{the cluster, 
 @;We have attempted to control for this case and, as far as we can tell,
 @; executing on an unloaded machine does not make a significant difference.
 
+@; QUESTION: how to scale?
+
+@;bg I don't understand this threat
 Second, several of our benchmarks are not self-contained, but import
  code from an external library.
 These external boundaries impose a cost on many configurations and in principle
@@ -41,9 +43,8 @@ Third, the feasible set of type annotations for a program component is
  rarely unique in a gradually typed system.
 Since types are translated into contracts in Typed Racket, the choice of
  type annotations affects performance; however, except for @tt{quadBG} and @tt{quadMB}
-  which differ only in their type annotations, we benchmarked only one fixed
+  which differ only in their type annotations, we benchmarked one fixed
   set of type annotations for each program.
-Generally speaking, our results may not be fully representative.
 Then again, it is still a failure of gradual typing if a programmer must
  divine the best possible type annotations to obtain reasonable
  performance.
@@ -58,8 +59,3 @@ It remains to be seen whether contract-aware compilers such as those being
  explored at the University of Maryland (@exact{@|PHIL|} @|etal| 2014) @; TODO HACK @elem{@~cite[nthvh-icfp-2014]}
  and Indiana University@~cite[bauman-et-al-icfp-2015]
  can reduce the significant overhead that our evaluation shows.
-Nevertheless, we are convinced that even if the magnitude of the slowdowns are
- reduced, some pathologies will remain.
-
-
-

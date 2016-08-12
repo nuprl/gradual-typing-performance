@@ -17,7 +17,7 @@ To validate our evaluation framework, we apply it to a suite of
  @id[(count-benchmarks)] Typed Racket programs.
 For each program we have collected running times over a full performance lattice.
 In general the lattices are too large to print or analyze, so we present
- our results using so-called @emph{overhead graphs} to count the number of
+ our results using so-called @emph{overhead graphs} that count the number of
  deliverable and usable configurations.
 
 
@@ -42,8 +42,8 @@ Most benchmarks are self-contained, but where relevant we note their external
     Demonstrates a scenario where user
      code closely interacts with higher-order library code.
     In this case, the library implements a stream data structure.
-    When fully typed or untyped, @bm[sieve] computes quickly; however,
-     introducing a type boundary between the two modules adds
+    When fully typed or untyped, @bm[sieve] runs quickly.
+    Introducing a type boundary between the two modules adds
      significant overhead.
   })
 (cons morsecode
@@ -126,11 +126,10 @@ Most benchmarks are self-contained, but where relevant we note their external
     We benchmark the game on a pre-defined sequence of commands and remove the
      I/O features.
 
-    The original program was implemented in an object-oriented style but converted
+    The program was originally object-oriented but the authors converted it
      to a functional encoding as a test case for soft contract verification@~cite[nthvh-icfp-2014].
-    We benchmark a typed version of the functional game on a small input
-     (100 lines) because repeatedly sending encoded objects across
-     a type boundary leads to exponential slowdowns.
+    We benchmark a typed version of the functional game on a small input (100 lines).
+    Repeatedly sending encoded objects across a type boundary leads to exponential slowdowns.
 
     @; --- 2016-04-22 : this type is a little too awkward to talk about
     @;As an example of the encoding, the following type signature implements a
@@ -163,8 +162,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     The benchmark runs a deterministic sequence of moves and is
      adapted from work on soft contract verification @|etal|@~cite[nthvh-icfp-2014].
     Most of the overhead in @bm[tetris], and also @bm[snake], is due
-     to repeatedly passing the game state and subsidiary data structures
-     across type boundaries.
+     to repeatedly passing the game state across type boundaries.
   })
 (cons synth
   @elem{
@@ -189,13 +187,12 @@ Most benchmarks are self-contained, but where relevant we note their external
 (cons dungeon
   @elem{
     Builds a grid of wall and floor objects by selecting first-class classes
-     from a map of ``template'' pieces.
-    Originally, the program used two external libraries: the math library
+     from a map of ``wall template'' pieces.
+    Originally, the program imported the Racket @library{math} library
      for array operations and @library{racket/dict} for a generic dictionary interface.
-    We removed both these dependencies.
-    Replacing the array library with vectors was necessary because Typed Racket
+    We replaced the array code with (built-in) vectors because Typed Racket
      v6.2 could not compile the type @racket[(Mutable-Array (Class))] to a contract.
-    Replacing the dict interface was a choice made so that the results for
+    We replaced @library{racket/dict} so that the results for
      @bm[dungeon] describe internal type boundaries rather than the type
      boundary to the untyped dict interface.
   })
@@ -229,7 +226,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     Simulates the interactions of a population of finite-state automata.
     We measure two versions of this benchmark, one functional (@bm[fsm]) and
      one object-oriented (@tt{fsmoo}).
-    The object-oriented verion frequently sends first-class
+    The object-oriented version frequently sends first-class
      objects across type boundaries; the functional version does the same
      with a mutable vector.
   })
@@ -260,8 +257,8 @@ Most benchmarks are self-contained, but where relevant we note their external
 
     The former is a homogenous, recursive type.
     As such, the predicate asserting that a value has type @racket[QuadMB]
-     is a linear-time tree traversal, whether or not the value is statically typed.
-    On the other hand, the predicate for @racket[QuadBG] is significantly faster.
+     is a linear-time tree traversal.
+    The predicate for @racket[QuadBG] runs significantly faster.
   })
 ]
 
@@ -279,16 +276,15 @@ Of these two measures, the number of modules is a slightly better indicator
 Adaptor modules (discussed in @Secref{sec:adaptor}) roughly correspond
  to the number of user-defined datatypes in each benchmark.
 Regarding lines of code, the ``Annotation'' column is an
- upper bound on the number of type annotations needed to fully type each program.
-This column is an over-approximation because it includes type annotatons for
+ upper bound on the number of type annotations we used to fully type each program.
+This column is an over-approximation because it includes type annotations for
  each import in a benchmark; in practice,
  only imports from untyped modules into typed modules need annotations.
 Lastly, the ``Boundaries'' and ``Exports'' columns describe the graph
  structure of each benchmark.
 Boundaries are import statements from one module in the benchmark to another.
 This count omits external boundaries.
-The exports are the total number of unique identifiers that cross any
- of a benchmark's boundaries.
+Exports are values provided by any module in the benchmark.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
   @render-benchmarks-table{}
@@ -355,7 +351,8 @@ For threats to validity regarding our experimental protocol,
          lines corresponding to the @id[NUMV]
          versions of Racket we tested; newer versions have thicker lines.
         Plots in the left column of each figure show @step["0" "D" "U"]
-         configurations and plots in the right column show @step["1" "D" "U"] configurations.
+         configurations.
+        Plots in the right column show @step["1" "D" "U"] configurations.
 
         @; -- choice of x-axis, log scale, bode diagrams, picking D/U
         The range of values on the x-axes are plausible bounds on the
@@ -369,9 +366,9 @@ For threats to validity regarding our experimental protocol,
          1.2x, 1.4x, etc. and again at 4x, 6x, etc.
         For example, the y-value at the first minor tick gives the number
          of @deliverable{1.2} configurations.
-        To derive the number of @usable["1.2" "1.4"] configurations,
+        To derive the number of @usable["1.2" "1.6"] configurations,
          subtract the number of @deliverable{1.2} configurations from
-         the number of configurations deliverable at the second minor tick.
+         the number of configurations deliverable at the third minor tick.
 
         @; -- choice of y-axis
         To encourage comparisons across benchmarks, the y-axes show
@@ -386,8 +383,8 @@ For threats to validity regarding our experimental protocol,
          represents the percentage @math{Y} of configurations
          that run at most @math{X} times slower than the benchmark's
          untyped configuration.
-        Taking @bm[sieve] as an example, 50% of configurations run at most
-         2x slower than the untyped configuration.
+        For example, 50% of @bm[sieve] configurations run within
+         2x slower relative to the untyped configuration.
         On all Racket versions, the same 50% of configurations
          are the only ones that run within a @id[(*MAX-OVERHEAD*)]x overhead.
         @;bg; NEW DATA
@@ -406,9 +403,8 @@ For threats to validity regarding our experimental protocol,
         This is because the fully-typed configuration happens to be
          @deliverable{1} and both of the gradually typed configurations
          become fully-typed after one conversion step.
-        For a larger example, consider the plots for @bm[mbta].
-        Freedom to type one extra module has no effect on the number of
-         @deliverable{1.2} configurations.
+        On the other hand, freedom to type one extra module has no effect on the number of
+         @deliverable{1.2} configurations in @bm[mbta].
         In other words, even if the programmer at a @deliverable{1.2} configuration
          happens to convert the untyped module best-suited to improve performance,
          their next configuration will be no better than @deliverable{1.2}.

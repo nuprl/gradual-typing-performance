@@ -1,5 +1,9 @@
 #lang scribble/base
 
+@; TODO
+@; - conjecture, multi-langugage systems
+@; - ack "experts" at king's college (what was the word M used?)
+
 @require["common.rkt" "benchmark.rkt" "typed-racket.rkt" "util.rkt"]
 
 @profile-point{sec:conclusion}
@@ -22,7 +26,7 @@ This diversity is a challenge for implementors, but also the source
 
 @; - our method
 The method we advocate is to
- (0) fix an "atomic" unit for type annotations,
+ (0) fix a granularity for type annotations,
  (1) fully type-annotate a representative suite of benchmarks,
  (2) incrementally remove annotations, measure the performance of each configuration thus obtained
  (3) report the performance overhead of these configurations relative to the fully-untyped baseline.
@@ -30,32 +34,37 @@ To present this data in a concise and relevant manner, we continuously vary the
  @emph{overhead} users may tolerate against
  the number of configurations that run within the chosen overhead.
 
+Although we developed this method to evaluate gradual type systems,
+ the method is a foundation for rigorous performance evaluation of any multi-language system.
+For example, the SoftDev group at King's College has an IDE and JIT compiler
+ that integrates PHP and Python@~cite[bbdt-ecoop-2016].
+It would be useful to see how performance overhead varies across all
+ the different interleavings their system allows.
+
 @; - TR
 In the context of Typed Racket, where every module in a program is either
  typed or untyped, we find that gradual typing introduces significant performance
  overhead.
-Users must tolerate more than 20x performance overhead before all the static/dynamic
- variations promised by gradual typing qualify as "performant".
+Users must tolerate more than 20x performance overhead in our benchmarks before all the hybrid
+ configurations promised by gradual typing qualify as "performant".
 For programmers with more stringent performance requirements, the challenge
  is now to navigate the lattice of possibilities to find e.g. one of the
  @deliverable{3} @bm[acquire] configurations and avoid the 256 other configurations.
 With larger programs, the space of possibilities will be even more difficult to manage.
-If gradual typing is to succeed, implementors must resolve this performance issue.
 
 Our result calls for three orthogonal research efforts.
 First, Typed Racket is only one implementation of sound gradual typing,
  and it supports only coarse-grained interoperability.
-Applying our framework to other languages like Safe TypeScript@~cite[rsfbv-popl-2015]
- and Reticulated Python@~cite[vksb-dls-2014] may yield different results.
+Applying our framework to other languages like Reticulated Python@~cite[vksb-dls-2014]
+ and Safe TypeScript@~cite[rsfbv-popl-2015] may yield different results.
 At the same time, we are also challenged to scale our evaluation method
  to so called @emph{micro-level} gradual typing, where programmers can equip any variable
  with a type annotation and leave the surrounding context untouched.
 We conjecture that annotating complete functions or methods
  is an appropriate starting point for such an adaptation experiment.
 
-Second, Typed Racket's implementation can be improved on two levels.
-For one, the conversion from types to contracts could be tuned to
- generate more efficient checks.
+Second, Typed Racket's implementation can improve on two levels.
+For one, the conversion from types to contracts could generate more efficient checks.
 There are other language design issues, such as encouraging abstract types
  or using type inference to shrink the total size of a type boundary.
 The other level is to explore a typed runtime system or alternative JIT technology.

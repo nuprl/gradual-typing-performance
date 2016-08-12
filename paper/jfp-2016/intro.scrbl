@@ -71,7 +71,7 @@ Performance of gradual type systems is clearly an issue, but the @emph{meta-issu
  fail to consider the performance of gradually-typed programs}.
 Each of the Python and JavaScript benchmarks can mix typed and untyped code in
  exponentially many ways.
-None of these mixed programs are represented in the evaluations.
+None of these hybrid programs are represented in the evaluations.
 
 Takikawa @|etal|, on the other hand, measure the entire lattice of typed/untyped
  configurations for two object-oriented games.

@@ -298,13 +298,13 @@
    #:cache (benchmarks-table-cache-file)))
 
 (define (new-benchmarks-table)
-  (for/list ([b (in-list ALL-BENCHMARKS)])
+  (for/list ([b (in-list (sort ALL-BENCHMARKS benchmark<?))])
     (define M (benchmark-modulegraph b))
     (define num-adaptor (benchmark-num-adaptor b))
     (define uloc (modulegraph->untyped-loc M))
     (define tloc (modulegraph->typed-loc M))
     (tex-row
-     (format "{~a}" (benchmark-name b))
+     (format "{\\tt ~a}" (benchmark-name b))
      (format "~a" uloc)
      (if (zero? uloc) "0" (format-percent-diff tloc uloc))
      (format-num-modules M #:adaptor num-adaptor)
@@ -315,7 +315,7 @@
   (if adaptor
     (format "~a\\,~~(~a)"
       (modulegraph->num-modules M)
-      adaptor)
+      (if (zero? adaptor) "-" adaptor))
     (number->string (modulegraph->num-modules M))))
 
 (define (format-percent-diff meas exp)
