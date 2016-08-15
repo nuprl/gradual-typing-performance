@@ -42,7 +42,7 @@
 (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
 (define/short jfp "JFP" (string-append Journal "Functional Programming"))
 (define/short asa "JASA" (string-append Journal "the American Statistical Association"))
-(define/short hosc "HOSC" "Higher-Order and Symbolic Programming")
+(define/short hosc "HOSC" "Higher-Order and Symbolic Computation")
 (define/short lsc "LSC" "LISP and Symbolic Computation")
 (define/short ifl "IFL" (string-append International Symposium "Functional and Logic Programming"))
 (define/short ip "Information Processing" "Information Processing")
@@ -200,12 +200,12 @@
    #:location (proceedings-location oopsla #:pages '(777 790))
    #:date 2014))
 
-(define t-artima-2009
-  (make-bib
-   #:author "Bill Venners"
-   #:title "Twitter on Scala"
-   #:location (hyperlink "http://www.artima.com/scalazine/articles/twitter_on_scala.html" "http://www.artima.com/scalazine/articles/twitter_on_scala.html")
-   #:date 2009))
+;(define t-artima-2009
+;  (make-bib
+;   #:author "Bill Venners"
+;   #:title "Twitter on Scala"
+;   #:location (hyperlink "http://www.artima.com/scalazine/articles/twitter_on_scala.html" "http://www.artima.com/scalazine/articles/twitter_on_scala.html")
+;   #:date 2009))
 ; "https://blog.twitter.com/2011/twitter-search-is-now-3x-faster"
 
 (define armstrong-2007
@@ -1288,13 +1288,21 @@
   #:location (proceedings-location popl #:pages '(429 442))
   #:date 2016))
 
+(define mfsw-hosc-2005
+  (make-bib
+    #:title "Selectors Make Set-Based Analysis Too Hard"
+    #:author (authors "Philippe Meunier" "Robert Bruce Findler" "Paul Steckler" "Mitchell Wand")
+    #:location (journal-location hosc
+                                 #:volume 18
+                                 #:number 3
+                                 #:pages '(245 269))
+    #:date 2005))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
 ;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
 ;https://www.quora.com/What-language-is-Facebook-written-in
-;https://blog.twitter.com/2011/twitter-search-is-now-3x-faster
-;http://www.artima.com/scalazine/articles/twitter_on_scala.html
 ;http://www.zdnet.com/article/why-facebook-hasnt-ditched-php
 ;; TR users
 ;https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ
