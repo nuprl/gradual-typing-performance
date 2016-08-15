@@ -9,7 +9,7 @@ Nodes in the graphs represent modules in the program that our experiment
 Edges represent static import statements.
 For example, the leftmost node in each graph represents the program's main module,
  which imports from other modules but is never itself imported.
-Finally, we color and thicken each edge in proportion to the run-time cost
+Finally, we color and thicken each edge in proportion to the runtime cost
  associated with the edge.
 @todo{what are colors/what mean?}
 

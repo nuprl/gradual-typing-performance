@@ -5,25 +5,20 @@
 @profile-point{sec:framework}
 @title[#:tag "sec:framework"]{Evaluation Framework}
 
-Performance evaluation for gradually type systems must reflect how
+Performance evaluation for gradual type systems must reflect how
  programmers use such systems.
-Migrating an entire project from untyped to typed is rarely the initial goal,
- but rather a symptom of an exceptional initiative or a need to remove type
- boundaries.
-Consequently, the question of whether there exists a
- smooth conversion path from fully-untyped to fully-typed that avoids
- performance overhead@~cite[tfdffthf-ecoop-2015] is purely academic.
-In practice, programmers choose to type a subset of modules in the program.
-They then compare the overall performance of the hybrid program to
- the performance of the previous version.
+Migrating an entire project from untyped to typed is rare,
+ while incremental transitions are common.
+Programmers tend to add types to a few modules, then compare the performance
+ of the new mixed program against the previous running version.
 If type-driven optimizations result in a performance improvement, all is well.
-Otherwise, the developers may either accept the performance of the hybrid program
- or seek ways to reduce the cost of type boundaries.
+Otherwise, the developers may seek ways to reduce the cost of type boundaries.
 As the program evolves, this process repeats.
 
-We formalize these lessons in two stages: first by describing the @emph{space}
- over which a performance evaluation must take place and second by giving
- @emph{metrics} for judging the performance of a gradually typed program.
+We turn this observation into an evaluation method in three stages:
+ first by describing the @emph{space} over which a performance evaluation must take place,
+ second by giving @emph{metrics} relevant to the performance of a gradually typed program,
+ and third by introducing a graphical shorthand for concisely representing exponentially large datasets.
 
 
 @; -----------------------------------------------------------------------------
@@ -31,20 +26,17 @@ We formalize these lessons in two stages: first by describing the @emph{space}
 @section{Performance Lattice}
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may
- add types to subset of modules in an untyped program.
-Performance evaluation must therefore consider the space of all program
- @emph{configurations} a programmer could possibly reach through gradual typing.
+ add types to any subset of modules in an untyped program.
+Performance evaluation must therefore consider the space of all
+ @emph{configurations} a programmer could possibly create.
 We describe this space as a static lattice representing all combinations of typed and
- untyped modules.
-This lattice-based approach to performance measurements originates from our
- preliminary evaluation of Typed Racket's object-oriented
- features@~cite[tfdffthf-ecoop-2015]; here we summarize the key points:
+ untyped modules:
 @itemlist[
   @item{
     A (@emph{software system}) @emph{configuration} is a sequence of
      @math{N} modules. Each module is either typed or untyped.
   }
-  @item{ @emph{Proposition:}
+  @item{
     For a fixed sequence of @math{N} modules there are @exact{$2^N$} possible
      configurations.
   }
@@ -58,10 +50,13 @@ This lattice-based approach to performance measurements originates from our
 
   @item{
     Define @exact|{$\leq\,\subseteq S \times S$}| as:
-     @exact|{$c_1 \leq c_2 \iff \forall i\,. (c_1(i) = 1) \Rightarrow c_2(i) = 1$}|.
+     @exact|{$c_1 \leq c_2$}|
+     if and only if
+     @exact|{$(c_1(i) = 1) \Rightarrow c_2(i) = 1$}|
+     for all non-negative @exact{$i \le N$}.
   }
 
-  @item{ @emph{Proposition:}
+  @item{
     @exact|{$(S, \leq)$}| is a complete lattice.
     The fully untyped configuration is the
      bottom element and the fully-typed configuration is the top
@@ -74,11 +69,12 @@ This lattice-based approach to performance measurements originates from our
     If @exact|{$c_1 \rightarrow_k c_2$}| we say that @exact{$c_2$} is reachable from
      @exact{$c_1$} in at most @exact{$k$} type conversion steps.
   }
+  @item{
+    A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|.
+  }
 ]
 
-A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|
- generated from a sequence of modules.
-After framing the lattice for a given program, language evaluators must
+After framing the performance lattice for a given program, language evaluators must
  generate a labeling @exact{$l$} such that for all @exact{$c \in S$} the performance of
  configuration @math{c} is expressed by @exact{$l(c)$}.
 Researchers can then draw lessons and make comparisons using the labeling.
@@ -88,14 +84,16 @@ Researchers can then draw lessons and make comparisons using the labeling.
 @section[#:tag "sec:measurements"]{Measuring Performance}
 
 The most basic question about a gradually typed language is
- whether fully-typed programs can be faster than untyped programs.
+ how fast fully-typed programs are in comparison to their fully untyped relative.
 In principle, static types enable optimizations and can serve in place of the
- run-time tags used in safe dynamic languages.
-So one would expect a speedup; however,
- the net effect of these improvements may be offset in programs
+ runtime tags used in safe dynamic languages.
+The net effect of such improvements may, however, be offset in programs
  that rely heavily on an untyped library.
 Hence we characterize the relative performance of fully-typed programs
  using a ratio to capture the possibility of speedups and slowdowns.
+
+@; Determining whether speedups or slowdowns are the norm for fully typed programs
+@;  may influence a software team's decision to experiment with gradual typing.
 
     @def[#:term "typed/untyped ratio"]{
      The typed/untyped ratio of a performance
@@ -103,11 +101,9 @@ Hence we characterize the relative performance of fully-typed programs
       time needed to run the bottom configuration.
     }
 
-Determining whether speedups or slowdowns are the norm for fully typed programs
- may influence a software team's decision to experiment with gradual typing.
 For users of gradual type systems, the important performance
- question is how much overhead their current configuration suffers due
- to gradual typing.
+ question is how much overhead due to gradual typing their current configuration suffers
+ relative to the original program.
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
 Depending on the nature of the software and clients' expectations,
@@ -117,8 +113,8 @@ To account for these varying requirements, we use
  the following parameterized definition of deliverable configurations.
 
     @def[#:term @list{@deliverable{}}]{
-     A configuration in a performance
-      lattice is @deliverable{} if its performance is no worse than a
+     A configuration
+      is @deliverable{} if its performance is no worse than a
       @math{D}x slowdown compared to the untyped configuration.
     }
 
@@ -153,8 +149,6 @@ Finally, if a software project is currently in an unacceptable
  deliverable or usable configuration.
 We propose as a coarse measure of "work" the number of modules that must be
  annotated with types before performance improves.
-Using this metric, configurations one type conversion step away from a usable
- configuration are recognized as nearly usable themselves.
 
     @def[#:term @list{@step{}}]{
      A configuration is @step[] if it is at most @math{k}
@@ -164,7 +158,7 @@ Using this metric, configurations one type conversion step away from a usable
 
 @profile-point{sec:framework:example}
 @(define sample-data
-  (let* ([mean+std* '#((2 . 0) (1.5 . 0) (3.5 . 0) (1 . 0))]
+  (let* ([mean+std* '#((20 . 0) (15 . 0) (35 . 0) (10 . 0))]
          [mean (lambda (i) (car (vector-ref mean+std* i)))])
     (lambda (tag)
       (case tag
@@ -177,10 +171,9 @@ Using this metric, configurations one type conversion step away from a usable
 @(define (sample-overhead cfg)
   (ceiling (/ (sample-data cfg) (sample-data 'c00))))
 
-The four notions of the typed/untyped ratio, @deliverable{},
- @usable[], and @step[] form the basis of our evaluation
- framework.
-As an example of these terms' use, suppose we have a project with
+These four notions form the basis of our evaluation method.
+Let us illustrate these terms with a concrete example.
+Suppose we have a project with
  two modules where the untyped configuration runs in @id[(sample-data 'c00)]
  seconds and the typed configuration runs in @id[(sample-data 'c11)] second.
 Furthermore, suppose the gradually typed configurations run in
@@ -199,7 +192,7 @@ Using white squares to represent untyped modules and black squares for typed
        [t-str @id[(sample-overhead 'c11)]]
        [g-overhead (inexact->exact (max (sample-overhead 'c10) (sample-overhead 'c01)))])
   @elem{
-    In terms of our metrics, typed/untyped ratio is @id[tu-ratio],
+    The typed/untyped ratio is @id[tu-ratio],
      indicating a performance improvement due to adding types.
     The typed configuration is also
       @deliverable[t-str]
@@ -213,11 +206,18 @@ Using white squares to represent untyped modules and black squares for typed
      from the fully-typed configuration.
   })
 
-Practitioners curious about the feasibility of gradual typing in Racket should
+Practitioners curious about the feasibility of gradual typing in Racket must
  replace the parameters with concrete values tailored to their needs.
 If our experimental results in @Secref{sec:plots} show that a large number of
- configurations are deliverable under their actual parameters,
+ configurations are deliverable under the chosen parameters,
  then the same results may hold for other projects.
 Language implementors are meanwhile working to
  diagnose the most severe overheads and to improve the average-case overheads
  introduced by gradual typing.
+
+
+@; -----------------------------------------------------------------------------
+@section[#:tag "sec:graphs"]{Overhead Graphs}
+
+@todo{how to presetn this huge amount of data in a comprehensible fashion}
+

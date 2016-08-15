@@ -257,7 +257,7 @@ Some general advice on converting from Racket to Typed Racket:
   }
   @item{
     Consider using opaque types across boundaries.
-    Opaque types hide the implementation of a type and leave run-time checking
+    Opaque types hide the implementation of a type and leave runtime checking
      to a predicate.
     Normally this predicate is faster that verifying the structural properties
      of the type.

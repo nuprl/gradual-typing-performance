@@ -1298,6 +1298,13 @@
                                  #:pages '(245 269))
     #:date 2005))
 
+(define n-mthesis-2014
+  (make-bib
+   #:title "Tough Behavior in Repeated Bargaining game, A Computer Simulation Study"
+   #:author "Linh Chi Nguyen"
+   #:location (dissertation-location #:institution "University of Trento" #:degree "Master in Economics")
+   #:date 2014))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf

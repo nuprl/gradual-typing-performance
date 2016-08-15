@@ -26,7 +26,7 @@ They document the code, find bugs at compile-time, and enable the IDE to
  assist programmers.
 Sound type systems are useful @emph{and} meaningful.
 A soundly typed program cannot go wrong,
- up to a well-defined set of run-time exceptions@~cite[type-soundness].
+ up to a well-defined set of runtime exceptions@~cite[type-soundness].
 When a typed program raises an exception, the accompanying message usually
  pinpoints the location of the problem in the program source. 
 

@@ -50,15 +50,13 @@
 
 (struct benchmark (
   name         ;; Symbol, canonical name of benchmark, like `fsm`
-  alt*         ;; (U #f (Listof Symbol)), optional, names of benchmark folders
-               ;;                         that belong to this benchmark, like '(fsm fsmoo)
-  author       ;; String, original author of benchmark
+  author       ;; Elem, original author of benchmark
   num-adaptor  ;; Natural, number of adaptor modules in the benchmark
   origin       ;; Elem, quick description of where the benchmark came from (educational, synthetic, lib)
   purpose      ;; String, short description of what the benchmark does
   lib*         ;; (U #f (Listof Elem)), external libraries the benchmark uses
   adjlist      ;; (Listof (Listof String)), module graph structure for the benchmark
-  rktd**       ;; (HashTable Version Path-String), map from Racket versions to rktd
+  rktd*        ;; (Listof (Pairof Version Path-String)), map from Racket versions to datasets (.rktd files)
 ) #:prefab )
 
 (define *ALL-BENCHMARKS* (box '()))
@@ -80,28 +78,10 @@
     (WARNING "got different modulegraphs for '~a'. Ignoring all but the last." name*)
     (last M*)]))
 
-(define (name*->modulegraph name*)
-  (if (eq? (car name*) 'zordoz)
+(define (name->modulegraph name)
+  (if (eq? name 'zordoz)
     (project-name->modulegraph 'zordoz.6.3)
-    (cond
-     [(null? (cdr name*))
-      ;; Easy! Compile & return the modulegraph.
-      (project-name->modulegraph (car name*))]
-     [else
-      ;; Hard!
-      ;; - Compile all names in `cdr` to modulegraphs. If they fail, ignore them.
-      ;; - Filter duplicate modulegraphs from the list.
-      ;; - Return only a single modulegraph
-      (choose-modulegraph #:src name*
-        (for/fold ([acc '()])
-                  ([name (in-list name*)])
-          ;; Try compiling a modulegraph, don't worry if it fails.
-          (define M (with-handlers ([exn:fail? (lambda (e) (WARNING (exn-message e)) #f)])
-                      (project-name->modulegraph name)))
-          (if (and M (not (for/or ([M2 (in-list acc)])
-                            (adjlist=? (modulegraph-adjlist M) (modulegraph-adjlist M2)))))
-            (cons M acc)
-            acc)))])))
+    (project-name->modulegraph name)))
 
 (define (benchmark->num-modules b)
   (length (benchmark-adjlist b)))
@@ -113,36 +93,47 @@
 
 (define-syntax (define-benchmark stx)
   (syntax-parse stx
-   [(_ name:id (~optional [maybe-alt*:id ...])
-               #:author author:str
+   [(_ name:id parent:id)
+    #'(begin
+        (define name
+          (make-benchmark 'name
+                          (benchmark-author parent)
+                          (benchmark-num-adaptor parent)
+                          (benchmark-origin parent)
+                          (benchmark-purpose parent)
+                          (benchmark-lib* parent)))
+        (register-benchmark! name)
+        (provide name))]
+   [(_ name:id #:author author
                #:num-adaptor num-adaptor:nat
                #:origin origin
                #:purpose purpose:str
                (~optional (~seq #:external-libraries maybe-lib*)))
-    #:with alt* (or (attribute maybe-alt*) (list (syntax-e #'name)))
-    #:with num-alt* (if (syntax-e #'alt*) (length (syntax-e #'alt*)) 0)
-    #:with cache-rktd (format "cache-~a.rktd" (syntax-e #'name))
     #:with lib* (or (attribute maybe-lib*) #'#f)
     #'(begin
         (define name
-          (parameterize ([*with-cache-log?* #f])
-            (with-cache (cachefile 'cache-rktd)
-              #:read deserialize
-              #:write serialize
-              (lambda ()
-                (define M
-                  (modulegraph-adjlist (name*->modulegraph 'alt*)))
-                (define rktd**
-                  (for/list ([alt (in-list 'alt*)])
-                    (cons alt
-                      (for/list ([v (in-list (*RKT-VERSIONS*))])
-                        (cons v (data-path alt v))))))
-                (benchmark 'name 'alt* author num-adaptor origin purpose lib* M rktd**)))))
-        (set-box! *ALL-BENCHMARKS* (cons name (unbox *ALL-BENCHMARKS*)))
-        (*NUM-BENCHMARKS* (+ 'num-alt* (*NUM-BENCHMARKS*)))
-        (*TOTAL-NUM-CONFIGURATIONS* (+ (* 'num-alt* (expt 2 (benchmark->num-modules name)))
-                                       (*TOTAL-NUM-CONFIGURATIONS*)))
+          (make-benchmark 'name author num-adaptor origin purpose lib*))
+        (register-benchmark! name)
         (provide name))]))
+
+(define (make-benchmark name author num-adaptor origin purpose lib*)
+  (define cache-rktd (format "cache-~a.rktd" name))
+  (with-cache (cachefile cache-rktd)
+    #:read deserialize
+    #:write serialize
+    (lambda ()
+      (define M
+        (modulegraph-adjlist (name->modulegraph name)))
+      (define rktd*
+        (for/list ([v (in-list (*RKT-VERSIONS*))])
+          (cons v (data-path name v))))
+      (benchmark name author num-adaptor origin purpose lib* M rktd*))))
+
+(define (register-benchmark! name)
+  (set-box! *ALL-BENCHMARKS* (cons name (unbox *ALL-BENCHMARKS*)))
+  (*NUM-BENCHMARKS* (+ 1 (*NUM-BENCHMARKS*)))
+  (*TOTAL-NUM-CONFIGURATIONS* (+ (expt 2 (benchmark->num-modules name))
+                                 (*TOTAL-NUM-CONFIGURATIONS*))))
 
 (define-benchmark sieve
   #:author "Ben Greenman"
@@ -154,7 +145,7 @@
   #:author "John Clements and Neil Van Dyke"
   #:num-adaptor 0
   #:origin (hyperlink "https://github.com/jbclements/morse-code-trainer/tree/master/morse-code-trainer" "Library")
-  #:purpose "Morse code Trainer"
+  #:purpose "Morse code trainer"
 )
 (define-benchmark mbta
   #:author "Matthias Felleisen"
@@ -188,25 +179,25 @@
 (define-benchmark kcfa
   #:author "Matt Might"
   #:num-adaptor 4
-  #:origin (hyperlink "http://matt.might.net/articles/implementation-of-kcfa-and-0cfa/" "Blog post")
-  #:purpose "Demo k-CFA algorithm"
+  #:origin (hyperlink "http://matt.might.net/articles/implementation-of-kcfa-and-0cfa/" "Educational")
+  #:purpose "Explanation of k-CFA"
 )
 (define-benchmark zombie
   #:author "David Van Horn"
   #:num-adaptor 1
-  #:origin (hyperlink "https://github.com/philnguyen/soft-contract" "Educational")
+  #:origin (hyperlink "https://github.com/philnguyen/soft-contract" "Research")
   #:purpose "Game"
 )
 (define-benchmark snake
   #:author "David Van Horn"
   #:num-adaptor 1
-  #:origin (hyperlink "https://github.com/philnguyen/soft-contract" "Educational")
+  #:origin (hyperlink "https://github.com/philnguyen/soft-contract" "Research")
   #:purpose "Game"
 )
 (define-benchmark tetris
   #:author "David Van Horn"
   #:num-adaptor 1
-  #:origin (hyperlink "https://github.com/philnguyen/soft-contract" "Educational")
+  #:origin (hyperlink "https://github.com/philnguyen/soft-contract" "Research")
   #:purpose "Game"
 )
 (define-benchmark synth
@@ -228,7 +219,7 @@
 (define-oo-benchmark dungeon
   #:author "Vincent St. Amour"
   #:num-adaptor 0
-  #:origin "Game"
+  #:origin "Library"
   #:purpose "Maze generator"
 )
 (define-oo-benchmark take5
@@ -249,19 +240,24 @@
   #:origin (hyperlink "https://github.com/mfelleisen/Acquire" "Educational")
   #:purpose "Game"
 )
-(define-oo-benchmark fsm (fsm fsmoo)
-  #:author "Matthias Felleisen"
+(define-benchmark fsm
+  #:author (list "Linh Chi Nguyen and Matthias Felleisen")
   #:num-adaptor 1
-  #:origin (hyperlink "https://github.com/mfelleisen/sample-fsm" "Educational")
+  #:origin (hyperlink "https://github.com/mfelleisen/sample-fsm" "Economics Research")
   #:purpose "Economy Simulator"
 )
-(define-benchmark quad (quadBG quadMB)
+(define-oo-benchmark fsmoo fsm)
+(define-benchmark quadBG
   #:author "Matthew Butterick"
   #:num-adaptor 2
   #:origin (hyperlink "https://github.com/mbutterick/quad" "Library")
   #:purpose "Typesetting"
   #:external-libraries (list (hyperlink "https://github.com/mbutterick/csp" (library "csp")))
 )
+(define-benchmark quadMB quadBG)
+
+(define quad (gensym 'quad))
+(provide quad)
 
 ;; -----------------------------------------------------------------------------
 ;; --- Assertions & Predicates
@@ -300,21 +296,8 @@
       (and (= m1 m2)
            (symbol<? (benchmark-name b1) (benchmark-name b2)))))
 
-(define (benchmark->name* b)
-  (benchmark-alt* b))
-
-(define (benchmark-rktd bm v [alt #f])
-  (define alt->v->rktd (benchmark-rktd** bm))
-  (define v->rktd
-    (cond
-     [(and (not alt) (null? (cdr alt->v->rktd)))
-      (cdar alt->v->rktd)]
-     [alt
-      (assoc/fail alt alt->v->rktd)]
-     [else
-      (raise-user-error 'benchmark-rktd "Have multiple data files for ~a version ~a. Choose from ~a."
-        (benchmark-name bm) v (map car alt->v->rktd))]))
-  (assoc/fail v v->rktd))
+(define (benchmark-rktd bm v)
+  (assoc/fail v (benchmark-rktd* bm)))
 
 (define (assoc/fail str pair*)
   (or
@@ -341,13 +324,15 @@
   (define pn
     (if (eq? (benchmark-name bm) 'zordoz)
       "zordoz.6.3"
-      (symbol->string (car (benchmark-alt* bm)))))
+      (symbol->string (benchmark-name bm))))
   (modulegraph pn
                (benchmark-adjlist bm)
                (build-path (get-git-root) "benchmarks" pn)))
 
 (define (format:bm benchmark)
-  (tt (symbol->string (benchmark-name benchmark))))
+  (if (eq? benchmark quad)
+    (tt "quad")
+    (tt (symbol->string (benchmark-name benchmark)))))
 
 (define ALL-BENCHMARKS (sort (unbox *ALL-BENCHMARKS*) benchmark<?))
 
@@ -402,28 +387,21 @@
      [acquire => 9]
      [tetris  => 9]
      [gregor  => 13]
-     [quad    => 14]))
+     [quadBG  => 14]))
 
   (test-case "num-benchmarks"
     (check-equal? (*NUM-OO-BENCHMARKS*) 5)
     (check-equal? (*NUM-BENCHMARKS*) 20)
-    (check-equal? (length ALL-BENCHMARKS) 18) ;; missing fsmoo, quadBG
+    (check-equal? (length ALL-BENCHMARKS) 20)
     (check-equal? (*TOTAL-NUM-CONFIGURATIONS*) 43940))
 
   (test-case "define-benchmark"
     (check-apply* benchmark-name
      [sieve => 'sieve]
      [morsecode => 'morsecode]
-     [quad => 'quad]
+     [quadMB => 'quadMB]
      [zordoz => 'zordoz]
      [acquire => 'acquire])
-
-    (check-apply* benchmark-alt*
-     [sieve => '(sieve)]
-     [zordoz => '(zordoz)]
-     [fsm => '(fsm fsmoo)]
-     [quad => '(quadBG quadMB)]
-     [suffixtree => '(suffixtree)])
 
     (check-apply* benchmark-author
      [sieve => "Ben Greenman"]
@@ -463,7 +441,7 @@
      [lnm => 3]
      [zombie => #f]
      [gregor => 3]
-     [quad => 1])
+     [quadBG => 1])
   )
 
   (test-case "benchmark-adjlist"
@@ -476,18 +454,17 @@
       6)
   )
 
-  (test-case "benchmark-rktd**"
-    (let ([rktd** (benchmark-rktd** zordoz)])
-      (check-equal? (length rktd**) 1)
-      (check-equal? (length (cdar rktd**)) (length (*RKT-VERSIONS*))))
+  (test-case "benchmark-rktd*"
+    (let ([rktd* (benchmark-rktd* zordoz)])
+      (check-equal? (length rktd*) (length (*RKT-VERSIONS*))))
   )
 
   (test-case "benchmark<?"
-    (let* ([b* (list mbta sieve quad)]
+    (let* ([b* (list mbta sieve quadMB)]
            [b+* (sort b* benchmark<?)])
       (check-equal?
         (map benchmark-name b+*)
-        '(sieve mbta quad)))
+        '(sieve mbta quadMB)))
     (let* ([b* (list zombie forth fsm take5)]
            [b+* (sort b* benchmark<?)])
       (check-equal?

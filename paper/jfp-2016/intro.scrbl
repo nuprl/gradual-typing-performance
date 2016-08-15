@@ -52,9 +52,6 @@ If functions or large data structures frequently cross these
  @emph{type boundaries},
  the runtime cost of enforcing type soundness could be tremendous.
 
-@(define gt-bib "https://github.com/samth/gradual-typing-bib")
-@(define num-gt-bib "over 75")
-
 Optimistically, researchers continued to explore the theory and practice of sound
  gradual typing@~cite[htf-tfp-2007
                       sgt-esop-2009
@@ -65,7 +62,7 @@ Optimistically, researchers continued to explore the theory and practice of soun
                       rnv-ecoop-2015
                       vksb-dls-2014
                       rsfbv-popl-2015
-                      gc-popl-2015].@note{See @hyperlink[gt-bib]{@tt{@|gt-bib|}} for a full bibliography.}
+                      gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a full bibliography.}
 Some research groups invested significant resources implementing sound gradual type systems.
 These implementations often revealed dynamically typed features that conventional
  type systems cannot express; research on types and dynamic enforcement for such features continues.

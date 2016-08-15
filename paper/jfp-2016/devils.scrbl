@@ -131,19 +131,19 @@ Removing these predicate contracts therefore caused significant
 When an apparently simple type @exact|{$\RktMeta{T}$}| generates a large or
  unexpectedly slow contract @exact|{$\ctc{\RktMeta{T}}$}|,
  we call @exact|{$\ctc{\RktMeta{T}}$}| an @emph{iceberg contract}.
-One example of iceberg contracts are the types used in @tt{quadMB}, for instance:
+One example of iceberg contracts are the types used in @bm[quadMB], for instance:
 
 @racketblock[
   (define-type Quad (Pairof Symbol (Listof Quad)))
 ]
 
  generates a recursive contract over @math{n}-ary trees.
-@(let* ([tu* (for/list ([v (*RKT-VERSIONS*)]) (typed/untyped-ratio (benchmark-rktd quad v 'quadMB)))]
+@(let* ([tu* (for/list ([v (*RKT-VERSIONS*)]) (typed/untyped-ratio (benchmark-rktd quadMB v)))]
         [tu-lo (add-commas (rnd (apply min tu*)))]
         [tu-hi (add-commas (rnd (apply max tu*)))])
    @elem{
      These tree types caused typed/untyped ratios ranging from
-      @id[tu-lo]x to @id[tu-hi]x across versions of @tt{quadMB}.
+      @id[tu-lo]x to @id[tu-hi]x across versions of @bm[quadMB].
    })
 Incidentally, the developer who created these types was hoping Typed Racket would
  improve the performance of a typesetting system.
@@ -174,7 +174,7 @@ Therefore trie values are wrapped in a contract that is both expensive to instal
 
 @; Source of truth ???
 Our @bm[kcfa] benchmark also uses immutable hashtables and pays the
- run-time cost of contracts for mutable data.
+ runtime cost of contracts for mutable data.
 We estimate that removing just those hashtable contracts would improve the
  worst-case performance of @bm[kcfa] from 8x to 5x on Racket v6.4.
 
@@ -300,7 +300,7 @@ Similar issues arose in the @bm[fsm] and @bm[forth] benchmarks.
 Both versions of @bm[fsm] functionally update a value @racket[p]
  of type @racket[Population] in their top-level loop.
 Whether @racket[Population] was implemented as a vector (in @bm[fsm])
- or an object (in @tt{fsmoo}), it was wrapped in two new contracts each time it
+ or an object (in @bm[fsmoo]), it was wrapped in two new contracts each time it
  crossed type boundaries via @racket[match-up*] and @racket[death-birth].
 
 @(begin

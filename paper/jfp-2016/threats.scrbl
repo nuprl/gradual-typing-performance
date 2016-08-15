@@ -5,10 +5,10 @@
 @title[#:tag "sec:threats"]{Threats to Validity of Conclusion}
 
 
-The application of our evaluation method projects a very negative image of
+The application of our evaluation method projects a negative image of
  sound gradual typing.
-We have measured every possible way of gradually adding types to
- @id[(*NUM-BENCHMARKS*)] programs and found that only a small fraction of
+Our measurements of every possible way of gradually adding types to
+ @id[(*NUM-BENCHMARKS*)] programs and show that only a small fraction of
  configurations run with practical overhead.
 @todo{y-axis average for 2x?}
 While we are confident that the method captures the spirit of the goals of
@@ -16,7 +16,7 @@ While we are confident that the method captures the spirit of the goals of
 
 First, our benchmarks are relatively small.
 Gradual typing offers the most promise for maintainers of large (100+ module)
- projects, but with our framework benchmarking even 20 modules is prohibitively
+ projects, but with our method benchmarking even 20 modules is prohibitively
  time-consuming.
 Even on the mid-sized @bm[quad] benchmark, just compiling each configuration
  sequentially took a week on a standard desktop machine.

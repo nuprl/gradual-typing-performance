@@ -53,7 +53,6 @@
   ;; (-> Any)
 
   render-exact-plot
-  ;; (-> 
 
   render-exact-table
 
@@ -224,22 +223,24 @@
 ;; -----------------------------------------------------------------------------
 ;; --- Lattice
 
-(define (render-data-lattice bm v [alt #f])
+(define (render-data-lattice bm v)
   (with-cache (lattice-cache-file bm v "*")
     #:read deserialize
     #:write serialize
-    (lambda () (file->performance-lattice (benchmark-rktd bm v alt)))))
+    (lambda () (file->performance-lattice (benchmark-rktd bm v)))))
 
 ;; -----------------------------------------------------------------------------
 ;; --- Benchmarks
 
 ;; (-> benchmark String)
 (define (render-benchmark b+d)
-  (define b (car b+d))
+  (define b* (car b+d))
   (define d (cdr b+d))
   (elem
     "\\benchmark{"
-    (symbol->string (benchmark-name b))
+    (if (list? b*)
+      (string-join (map (compose1 symbol->string benchmark-name)) ", ")
+      (symbol->string (benchmark-name b)))
     "}{"
     (benchmark-author b)
     "}{"
@@ -315,7 +316,7 @@
   (if adaptor
     (format "~a\\,~~(~a)"
       (modulegraph->num-modules M)
-      (if (zero? adaptor) "-" adaptor))
+      (if (zero? adaptor) "\\hbox[1en]{-}" adaptor))
     (number->string (modulegraph->num-modules M))))
 
 (define (format-percent-diff meas exp)
@@ -382,8 +383,9 @@
 ;; Get data for each benchmark for each version of racket
 (define (get-lnm-rktd**)
   (for*/list ([b (in-list ALL-BENCHMARKS)]
-              [alt+v->rktd (in-list (benchmark-rktd** b))])
-    (map cdr (cdr alt+v->rktd))))
+              [v->rktd (in-list (benchmark-rktd* b))])
+    ;; Drops the version tags
+    (map cdr v->rktd)))
 
 (define LNM-TABLE-TITLE* '(
   "Benchmark"
@@ -483,9 +485,9 @@
 
 ;; -----------------------------------------------------------------------------
 
-(define (benchmark->rktd* bm [alt #f])
+(define (benchmark->rktd* bm)
   (for/list ([v (in-list (*RKT-VERSIONS*))])
-    (benchmark-rktd bm v alt)))
+    (benchmark-rktd bm v)))
 
 (define (render-exact-plot . bm*)
   (with-cache (exact-cache-file bm*)
@@ -584,10 +586,10 @@
     (let ([z6.2 (ext:typed/untyped-ratio (benchmark-rktd zordoz "6.2"))]
           [z6.3 (ext:typed/untyped-ratio (benchmark-rktd zordoz "6.3"))])
       (check-true (< z6.3 z6.2)))
-    (let ([fsm6.2 (ext:typed/untyped-ratio (benchmark-rktd fsm "6.2" 'fsm))]
-          [fsm6.3 (ext:typed/untyped-ratio (benchmark-rktd fsm "6.3" 'fsm))]
-          [fsmoo6.2 (ext:typed/untyped-ratio (benchmark-rktd fsm "6.2" 'fsmoo))]
-          [fsmoo6.3 (ext:typed/untyped-ratio (benchmark-rktd fsm "6.3" 'fsmoo))])
+    (let ([fsm6.2 (ext:typed/untyped-ratio (benchmark-rktd fsm "6.2"))]
+          [fsm6.3 (ext:typed/untyped-ratio (benchmark-rktd fsm "6.3"))]
+          [fsmoo6.2 (ext:typed/untyped-ratio (benchmark-rktd fsmoo "6.2"))]
+          [fsmoo6.3 (ext:typed/untyped-ratio (benchmark-rktd fsmoo "6.3"))])
       (check-true (> fsm6.3 fsm6.2))
       (check-true (= fsmoo6.3 fsmoo6.2))))
 )

@@ -101,7 +101,7 @@ In practice unit testing should reveal dynamic type errors, but the fact remains
 As a corollary, type-based optimizations are unsafe because they rely
  on information that may not be valid at runtime. @; memory error
 But you get what you pay for, and optional types are ``free'' in the sense
- that they impose zero run-time cost on a program.
+ that they impose zero runtime cost on a program.
 
 @; Should TypeScript optimize with types? [devs say no]
 @;   https://github.com/Microsoft/TypeScript/issues/1151
@@ -124,7 +124,7 @@ Sound gradual type systems statically check typed code for type errors,
  the semantics of types at runtime.
 The enforcement is what separates gradual types from optional types,
  as the latter make no guarantee about the behavior of typed terms at runtime.
-In contrast, a gradual type system compiles types to run-time assertions
+In contrast, a gradual type system compiles types to runtime assertions
  that preserve the compile-time semantics of typed terms.
 When two typed parts of a program interact the runtime assertions
  are skipped, but the boundary between typed and untyped code is always guarded.
@@ -142,7 +142,7 @@ When an ill-typed call is in an untyped module, as we have written it on the rig
  half of @Figure-ref{fig:tr-example}, compilation
  succeeds and running the program raises an exception
  at the call site for @racket[norm] detailing the type error.
-This type error is guaranteed to occur by Typed Racket's soundness: run-time
+This type error is guaranteed to occur by Typed Racket's soundness: runtime
  type errors are detected immediately and attributed to the
  responsible party @todo{cite}.
 

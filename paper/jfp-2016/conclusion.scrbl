@@ -1,9 +1,5 @@
 #lang scribble/base
 
-@; TODO
-@; - conjecture, multi-langugage systems
-@; - ack "experts" at king's college (what was the word M used?)
-
 @require["common.rkt" "benchmark.rkt" "typed-racket.rkt" "util.rkt"]
 
 @profile-point{sec:conclusion}
