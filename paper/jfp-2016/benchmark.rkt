@@ -263,8 +263,6 @@
   #:external-libraries (list (hyperlink "https://github.com/mbutterick/csp" (library "csp")))
 )
 
-(define ALL-BENCHMARKS (unbox *ALL-BENCHMARKS*))
-
 ;; -----------------------------------------------------------------------------
 ;; --- Assertions & Predicates
 
@@ -350,6 +348,8 @@
 
 (define (format:bm benchmark)
   (tt (symbol->string (benchmark-name benchmark))))
+
+(define ALL-BENCHMARKS (sort (unbox *ALL-BENCHMARKS*) benchmark<?))
 
 ;; =============================================================================
 

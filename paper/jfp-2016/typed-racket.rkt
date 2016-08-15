@@ -298,7 +298,7 @@
    #:cache (benchmarks-table-cache-file)))
 
 (define (new-benchmarks-table)
-  (for/list ([b (in-list (sort ALL-BENCHMARKS benchmark<?))])
+  (for/list ([b (in-list ALL-BENCHMARKS)])
     (define M (benchmark-modulegraph b))
     (define num-adaptor (benchmark-num-adaptor b))
     (define uloc (modulegraph->untyped-loc M))
