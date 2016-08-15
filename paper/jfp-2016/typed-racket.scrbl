@@ -543,6 +543,28 @@ Overhead plots are two steps removed from this data: first they report overhead
 ])
 @; 
 
+@; LESSONS
+@; - standard error of measurements, for all configs (histogram?)
+@; - careful of trends along dots
+@;   - zscore as function of time??? take R2 for that?
+@;     orjust R2(y, time) FOR EACH CONFIG ... maybe can plot on 1 diagram
+@; - confidence interval, #configs with stat. sig. diff 
+@; - something about magnitude of difference (just mean is maybe ok)
+
+@; Good "STE" might be DEFINED as Z ~ (68 95 100)
+@;
+@; (data integrity table)
+@; | BM | STE | Z < 1 | Z < 2 | Z < 3 |
+@;   ??? 3 versions OH just color-code the data in columns
+
+@; (comparing versions)
+@;   - possible to compare 3 versions simultaneously?
+@;     IF NOT, other tables can go in appendix
+@;   - "overall gain" as function of deltas?
+@; | BM | % better | % worse | % same (mean/median)
+@;   ??? could also be triple-columns,
+@;    but do 1-col first and see how it fits
+
 
 Need also scatterplots to really compare versions (with @emph{confidence}).
 @todo{add plots}
