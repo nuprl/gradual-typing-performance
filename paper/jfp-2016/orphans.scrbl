@@ -4,6 +4,54 @@
 @; =============================================================================
 @; =============================================================================
 @; =============================================================================
+In practice, sound gradual type systems for Racket, Python, and JavaScript
+ have demonstrated overheads of
+ 3.4x@~cite[tfdffthf-ecoop-2015],
+ 10x@~cite[vksb-dls-2014],
+ and
+ 72x@~cite[rsfbv-popl-2015].
+@; Allende (DLS'13) dont seem to report a slowdown. Just,
+@;  "as type annotations are added to a library, performance tends to degrade"
+@; Richards @~cite[rnv-ecoop-2015] only reports
+@;  fully-typed vs. typescript. Also, "blame was intolerable"
+
+In particular, Vitousek @|etal| report the 10x slowdown for a fully typed
+ hash algorithm relative to Python's performance on the same program with all
+ types removed.
+This is the only overhead relative to Python reported in the paper.
+The 72x figure for Safe TypeScript was the worst overhead the authors observed
+ on six fully-untyped benchmarks.
+The average overhead for their untyped benchmarks was 22x, and the minimum overhead was 2.4x.
+When fully typed, the same benchmarks' average overhead fell to 0.065x.
+
+
+
+@; So-called @emph{macro}-level gradual type systems implement type boundaries
+@;  as module boundaries.
+@; That is, any module in the program is either fully typed or fully untyped.
+@; @emph{Micro}-level gradual type systems allow type boundaries
+@;  between expressions within any module.
+@; For example, a function may require its arguments be typed but produce an
+@;  untyped result.
+
+ but in general these gradual type systems have three broad goals:
+ @itemlist[
+   @item{@emph{Expressiveness:} describe all untyped features with useful types}
+   @item{@emph{Soundness:} enforce the semantics of types at run-time}
+   @item{@emph{Performance:} leverage types in efficient compilers and IDE tools}
+ ]
+Soundness for gradual type systems is traditionally formulated as a
+ type soundness theorem guaranteeing that typed parts of a program never
+ commit runtime type errors@~cite[thf-dls-2006].
+In particular, typed code may signal a type error at runtime upon receiving untyped data
+ that does not match the type checker's assumptions, but typed code will never
+ execute a single instruction using invalid data.
+Consequently, every runtime type error raised by a gradual type system references
+ boundary where an unexpected value flowed into typed code.
+With this information, a programmer can determine whether the untyped value
+ or static type annotation is at fault and correct the impedence mismatch.
+
+
 
 @; -----------------------------------------------------------------------------
 @section{Lattice-Based Evaluation}
