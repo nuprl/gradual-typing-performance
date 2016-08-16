@@ -2,8 +2,8 @@
 
 @require["common.rkt" "util.rkt" benchmark-util/data-lattice]
 
-@profile-point{sec:framework}
-@title[#:tag "sec:framework"]{Evaluation Framework}
+@profile-point{sec:method}
+@title[#:tag "sec:method"]{Evaluation Method}
 
 Performance evaluation for gradual type systems must reflect how
  programmers use such systems.
@@ -156,7 +156,7 @@ We propose as a coarse measure of "work" the number of modules that must be
       or a @usable[] configuration.
     }
 
-@profile-point{sec:framework:example}
+@profile-point{sec:method:example}
 @(define sample-data
   (let* ([mean+std* '#((20 . 0) (15 . 0) (35 . 0) (10 . 0))]
          [mean (lambda (i) (car (vector-ref mean+std* i)))])

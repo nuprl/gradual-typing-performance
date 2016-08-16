@@ -51,7 +51,7 @@ With larger programs, the space of possibilities will be even more difficult to 
 Our result calls for three orthogonal research efforts.
 First, Typed Racket is only one implementation of sound gradual typing,
  and it supports only coarse-grained interoperability.
-Applying our framework to other languages like Reticulated Python@~cite[vksb-dls-2014]
+Applying our method to other languages like Reticulated Python@~cite[vksb-dls-2014]
  and Safe TypeScript@~cite[rsfbv-popl-2015] may yield different results.
 At the same time, we are also challenged to scale our evaluation method
  to so called @emph{micro-level} gradual typing, where programmers can equip any variable

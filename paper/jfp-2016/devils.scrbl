@@ -185,7 +185,7 @@ Even if language designers can remove most of the overhead, users of
  gradual type systems would benefit from tools to statically approximate the runtime
  cost of enforcing each type and profilers to dynamically attribute
  runtime overhead to specific types or values.
-Racket's feature-specific profiler@~cite[saf-cc-2015] provides a framework for
+Racket's feature-specific profiler@~cite[saf-cc-2015] provides a method for
  achieving this goal.
 
    @; but still hard to count up "cost of (Vector Int) is cost of Vector plus
