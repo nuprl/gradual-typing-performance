@@ -286,9 +286,10 @@
   "Benchmark"
   "\\twoline{Untyped}{LOC}"
   "\\twoline{Annotation}{LOC}"
-  "\\twoline{\\# Modules}{(Adaptors)}"
-  "\\# Boundaries"
-  "\\# Exports"
+  "\\# Mod."
+  "\\# Adt."
+  "\\# Bnd."
+  "\\# Exp."
 ))
 
 (define EXACT-TABLE-TITLE* '(
@@ -308,18 +309,12 @@
     (define tloc (modulegraph->typed-loc M))
     (tex-row
      (format "{\\tt ~a}" (benchmark-name b))
-     (format "~a" uloc)
+     (number->string uloc)
      (if (zero? uloc) "0" (format-percent-diff tloc uloc))
-     (format-num-modules M #:adaptor num-adaptor)
+     (number->string (modulegraph->num-modules M))
+     (number->string num-adaptor)
      (number->string (modulegraph->num-edges M))
      (number->string (modulegraph->num-identifiers M)))))
-
-(define (format-num-modules M #:adaptor [adaptor #f])
-  (if adaptor
-    (format "~a\\,~~(~a)"
-      (modulegraph->num-modules M)
-      (if (zero? adaptor) "-" adaptor))
-    (number->string (modulegraph->num-modules M))))
 
 (define (format-percent-diff meas exp)
   (define diff (- meas exp))

@@ -250,22 +250,24 @@ Most benchmarks are self-contained, but where relevant we note their external
 
 @Figure-ref{fig:bm} gives static characteristics
  of our benchmark programs as a coarse measure of their size and diversity.
-The lines of code (LOC) and number of modules approximate program size.
+The lines of code (LOC) and number of modules (# Mod.) approximate program size.
 Of these two measures, the number of modules is a slightly better indicator
  as it also determines the size of our gradual typing experiment;
  given @exact{$N$} modules, there are @exact{$2^N$} configurations.
-Adaptor modules (discussed in @Secref{sec:adaptor}) roughly correspond
+Adaptor modules (# Adt.) roughly correspond
  to the number of user-defined datatypes in each benchmark.
-Regarding lines of code, the ``Annotation'' column is an
+The ``Annotation'' column is an
  upper bound on the number of type annotations we used to fully type each program.
+@; TODO ugly sentence pls fix
 This column is an over-approximation because it includes type annotations for
  each import in a benchmark; in practice,
  only imports from untyped modules into typed modules need annotations.
-Lastly, the ``Boundaries'' and ``Exports'' columns describe the graph
+Lastly, the boundaries (# Bnd.) and exports (# Exp.) columns describe the graph
  structure of each benchmark.
 Boundaries are import statements from one module in the benchmark to another.
 This count omits external boundaries.
-Exports are values provided by any module in the benchmark.
+Exports are identifiers provided by any module in the benchmark; for example,
+ 8 identifiers cross static module boundaries in @bm[mbta].
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
   @render-benchmarks-table{}
