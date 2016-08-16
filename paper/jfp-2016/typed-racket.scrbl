@@ -211,7 +211,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     Overhead is low because only small, first-order values cross type
      boundaries.
   })
-(cons quad
+(cons (list quadBG quadMB)
   @elem{
     Converts S-expression source code to @tt{PDF} format.
     We have two versions of @bm[quad]:

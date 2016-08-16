@@ -155,7 +155,7 @@
 ;; -----------------------------------------------------------------------------
 ;; --- Formatting
 
-(define BENCHMARK-NAMES (map benchmark-alt* ALL-BENCHMARKS))
+(define BENCHMARK-NAMES (map benchmark-name ALL-BENCHMARKS))
 
 (define bits
   tt)
@@ -235,12 +235,14 @@
 ;; (-> benchmark String)
 (define (render-benchmark b+d)
   (define b* (car b+d))
+  (define-values (b name)
+    (if (list? b*)
+      (values (car b*) (string-join (map (compose1 symbol->string benchmark-name) b*) ", "))
+      (values b* (symbol->string (benchmark-name b*)))))
   (define d (cdr b+d))
   (elem
     "\\benchmark{"
-    (if (list? b*)
-      (string-join (map (compose1 symbol->string benchmark-name)) ", ")
-      (symbol->string (benchmark-name b)))
+    name
     "}{"
     (benchmark-author b)
     "}{"
@@ -277,7 +279,7 @@
       #:write serialize
       (lambda ()
         ;(check-missing-benchmarks (map (compose1 benchmark-name car) b+d*))
-        (define b+d*+ (sort b+d* benchmark<? #:key car))
+        (define b+d*+ (sort b+d* benchmark<? #:key (lambda (x) (if (list? (car x)) (caar x) (car x)))))
         (apply exact (map render-benchmark b+d*+))))))
 
 (define BENCHMARKS-TABLE-TITLE* '(
@@ -316,7 +318,7 @@
   (if adaptor
     (format "~a\\,~~(~a)"
       (modulegraph->num-modules M)
-      (if (zero? adaptor) "\\hbox[1en]{-}" adaptor))
+      (if (zero? adaptor) "-" adaptor))
     (number->string (modulegraph->num-modules M))))
 
 (define (format-percent-diff meas exp)
@@ -382,10 +384,10 @@
 
 ;; Get data for each benchmark for each version of racket
 (define (get-lnm-rktd**)
-  (for*/list ([b (in-list ALL-BENCHMARKS)]
-              [v->rktd (in-list (benchmark-rktd* b))])
-    ;; Drops the version tags
-    (map cdr v->rktd)))
+  (for/list ([b (in-list ALL-BENCHMARKS)])
+    (for/list ([v->rktd (in-list (benchmark-rktd* b))])
+      ;; Drops the version tags
+      (cdr v->rktd))))
 
 (define LNM-TABLE-TITLE* '(
   "Benchmark"
@@ -500,9 +502,8 @@
                      [*PLOT-HEIGHT* 160]
                      [*PLOT-WIDTH* 430])
         (render-exact*
-          (for*/list ([bm (in-list bm*)]
-                      [alt (in-list (benchmark-alt* bm))])
-            (list->vector (benchmark->rktd* bm alt))))))))
+          (for*/list ([bm (in-list bm*)])
+            (list->vector (benchmark->rktd* bm))))))))
 
 (define (render-exact-table bm)
   (render-table
