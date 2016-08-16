@@ -28,7 +28,7 @@
   Clients therefore cannot assess whether a particular gradual type system will be practical given their performance requirements.
   Furthermore, implementors cannot measure the net effect of changes to a gradually typed language.
 
-  This paper presents a method for evaluating the performance characteristics of gradual type systems.
+  This paper presents a method for the comprehensive evaluation of the performance characteristics of gradual type systems.
   The method quantifies both the
    @emph{absolute performance} of a gradual type system on representative programs
    and the @emph{relative performance} of two gradual type systems for a fixed base language.
@@ -39,7 +39,7 @@
 
 @include-section{intro.scrbl}
 @include-section{story.scrbl}
-@include-section{framework.scrbl}
+@include-section{method.scrbl}
 @include-section{typed-racket.scrbl}
 @include-section{threats.scrbl}
 @include-section{devils.scrbl}

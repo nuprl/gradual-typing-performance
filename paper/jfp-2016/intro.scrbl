@@ -63,13 +63,13 @@ Optimistically, researchers have continued to explore the theory and practice of
                       rsfbv-popl-2015
                       gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a full bibliography.}
 Some research groups have invested significant resources implementing sound gradual type systems.
-Suprisingly few groups rigourously evaluated the performance of gradual typing.
+Suprisingly few groups have rigourously evaluated the performance of gradual typing.
 Most acknowledge an issue with performance in passing.
 Worse yet, others report only the performance ratio of fully typed programs relative to
  fully untyped programs, ironically ignoring the entire space of programs
  that mix typed and untyped components.
 
-This paper introduces a method for the comprehensive evaluation of the performance characteristics of gradual type systems.
+This paper presents a method for the comprehensive evaluation of the performance characteristics of gradual type systems.
 The method is to
  (1) fix a granularity for adding or removing type annotations,
  (2) fully type a suite of representative benchmark programs,
