@@ -9,70 +9,67 @@
 @profile-point{sec:intro}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
-Dynamically typed languages are a staple of the software engineering world.
+Programmers use dynamically typed languages to build all kinds of software systems.
 Telecom companies have been running Erlang programs for years@~cite[armstrong-2007],
  Sweden's pension system is a Perl program@~cite[v-aplwa-2010],
  and the @emph{lingua franca} of the Internet is JavaScript.
-New companies frequently choose languages like Python, PHP, and Ruby;
+New companies frequently build server-side applications using languages such as Python, PHP, and Ruby;
  see for example, Dropbox, Facebook, and Twitter.
 
-Regardless of why programmers build applications in dynamically typed languages,
+Regardless of why programmers choose dynamically typed languages,
  the maintainers of these applications inevitably find the lack of explicit type
  annotations an obstacle to their work.
+Explicit annotations crystallize a programmer's intent to other human readers.
+Furthermore, the toolchain can check the annotations for inconsistencies
+ and leverage types to improve the efficiency of compiled code.
+Despite many attempts to infer type information from dynamically typed programs@~cite[cf-pldi-1991 mfsw-hosc-2005 acfh-popl-2011],
+ there is no substitute for programmer-supplied annotations.
      @; Confirming problem, and responses:
      @; - PEP type hints
      @; - pycharm parsing comments
      @; - type-testing JITS for php/js
      @; - typescript flow
-Explicit annotations clarify a programmer's intent to other human readers.
-Furthermore, automated tools can use the annotations to detect inconsistencies
- and compile more efficient code.
-Despite many attempts to infer type information from dynamically typed programs@~cite[cf-pldi-1991 mfsw-hosc-2005 acfh-popl-2011],
- there is no substitute for explicit annotations.
 
 @; Enter GT
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006]@note{We prefer the more descriptive term @emph{incremental typing}, but defer to the better sloganeer.}
- is a linguistic solution to the problem. @; What problem? Is it really clear enough?
+ is a linguistic approach to overcome the problem. @; What problem? Is it really clear enough?
     @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
     @;       but the cast calculus & gradualizer/foundations have their place
 In a gradually typed language,
  programmers can incrementally add type annotations to dynamically typed code.
-At the lexical boundaries between annotated (or type-inferred) code and dynamically
+At the lexical boundaries between annotated code and dynamically
  typed code, the type system inserts runtime checks to guarantee the soundness
  of the type annotations.
 
 From a syntactic perspective the interaction is seamless, but dynamic checks introduce runtime overhead.
 During execution, if an untyped function flows into a variable @racket[f] with
  type @racket[(Int -> Int)] then a dynamic check must
- follow @emph{every} subsequent call to @racket[f].
-The check must assert that the result each each call would have the syntactic type @racket[Int].
+ follow every subsequent call to @racket[f] because typed code can never trust
+ that the untyped function produces values that have the syntactic type @racket[Int].
 Conversely, typed functions flowing into untyped code must dynamically check
  their argument values.
 If functions or large data structures frequently cross these
  @emph{type boundaries},
- the runtime cost of enforcing type soundness could be tremendous.
+ enforcing type soundness might impose a huge runtime cost.
 
-Optimistically, researchers continued to explore the theory and practice of sound
+Optimistically, researchers have continued to explore the theory and practice of sound
  gradual typing@~cite[htf-tfp-2007
                       sgt-esop-2009
                       TypedRacket
                       wgta-ecoop-2011
                       acftd-scp-2013
-                      aft-dls-2013
                       rnv-ecoop-2015
                       vksb-dls-2014
                       rsfbv-popl-2015
                       gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a full bibliography.}
-Some research groups invested significant resources implementing sound gradual type systems.
-These implementations often revealed dynamically typed features that conventional
- type systems cannot express; research on types and dynamic enforcement for such features continues.
-Suprisingly few groups evaluate the performance of gradual typing in their system.
-Most acknowledge performance in passing, as subject for future work.
-Worse yet, others report the performance ratio of fully typed programs relative to
+Some research groups have invested significant resources implementing sound gradual type systems.
+Suprisingly few groups rigourously evaluated the performance of gradual typing.
+Most acknowledge an issue with performance in passing.
+Worse yet, others report only the performance ratio of fully typed programs relative to
  fully untyped programs, ironically ignoring the entire space of programs
- mixing typed and untyped components.
+ that mix typed and untyped components.
 
-This paper offers a foundation for the comprehensive performance evaluation of gradual type systems.
+This paper introduces a method for the comprehensive evaluation of the performance characteristics of gradual type systems.
 The method is to
  (1) fix a granularity for adding or removing type annotations,
  (2) fully type a suite of representative benchmark programs,
@@ -112,4 +109,4 @@ Building on the evaluation method introduced in an earlier conference version@~c
 ]
 
 @parag{Disclaimer:} 3x overhead is not "deliverable" performance.
-ae never claimed so in the conference version and our opinion certainly has not changed.
+We never claimed so in the conference version and our opinion certainly has not changed.
