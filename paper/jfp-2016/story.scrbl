@@ -33,9 +33,8 @@ In particular, removing all type annotations from a Typed Racket module yields
  a syntactically valid Racket module.
 
 Given the close integration of Racket and Typed Racket, programmers tend to
- incrementally migrate untyped modules to Typed Racket.
-Their reasons for migrating are diverse.
-Below are a few common use cases, but in general we cannot predict why or how programmers add typed components.
+ incrementally type untyped modules.
+Below are a few common use cases, but in general we cannot predict why or how programmers choose to add types.
 @itemlist[
   @item{ @bold{Assurance:}
     The typechecker guards against common bugs, for example,
@@ -62,7 +61,7 @@ Imagine a large codebase in which an error is traced to an untyped module
  whose author has long since left the project.
 Unless the internals of this module have documentation, the new programmer
  tasked with fixing the bug must recover the implicit type specifications
- throughout the module by reading the code and stepping though its unit tests.
+ throughout the module by reading the code and analyzing its unit tests.
 This type recovery process might take hours or weeks.
 
 After fixing the bug, the programmer can formally state these recovered specifications by converting the module to Typed Racket.
@@ -102,33 +101,41 @@ But annotating one additional module is not guaranteed to improve performance an
 @section[#:tag "sec:overhead"]{A Case for Sound Gradual Typing}
 
 Typed Racket is a sound type system.
-Any statem
+Every statement it makes about a variable during compilation holds true for
+ all values that variable represents at runtime.
+@; TODO abstract explanation? (yes)
+This is possible because every Typed Racket type @type{T} has a computational
+ interpretation @ctc{T} capable of deciding whether arbitrary values belong to
+ the syntactic type @type{T}.
 
-@; When a typed module imports definitions from an untyped module, programmers
-@;  must supply type annotations.
-@; The type system compiles these annotations to
-@;  contracts@~cite[ff-icfp-2002] that ensure the untyped code matches its type specification.
-@; Untyped modules may use definitions from typed modules without any annotation.
-@; The type system generates contracts to protect the typed values from untyped contexts.
-@; Put another way, every @emph{logical} type @exact|{$\RktMeta{T}$}| in Typed
-@;  Racket has a @emph{computational} projection @exact|{$\ctc{\RktMeta{T}}$}|
-@;  capable of dynamically checking whether an arbitrary value has type @exact|{$\RktMeta{T}$}|.
+As a simple example, suppose we represent a voting machine as a mutable cell
+ containing a natural number.
+The Typed Racket type for such a value is @racket[(Boxof Natural)].
+Typed code that interacts with the voting machine must evidently adhere to this type;
+ if not, type checking halts with a compile-time type error.
+Untyped code that interacts with the voting machine is not subject to type checking.
+Nevertheless, the type system must prevent untyped code from replacing the contents
+ of the voting machine with values that have e.g. the static types @type{String}
+ or @type{Negative-Real}.
+It does so by compiling the type to a contract @ctc{Boxof Natural} and applying this contract to values that cross a type boundary.
+The contract proxies the voting machine and dynamically enforces type-correct use by checking every write to the machine.
 
-Boundaries between typed and untyped modules are the source of the performance costs
- in Typed Racket.
-@todo{add abstract explanation}
+At first glance, the proxy may seem overly conservative.
+After all, untyped Racket is a memory safe programming language.
+If untyped code replaces the contents of a voting machine with a @type{String}, then the program is sure to raise an exception when it treats the string as a number.
 
-As a concrete example, @figure-ref{fig:complex-multiply} implements
- multiplication for complex numbers represented in polar form.
-When this typed function is imported by an untyped module, we say it crosses a
- @emph{type boundary}.
-During the import, Typed Racket compiles the function's type signature to a
- higher-order contract @exact|{$\ctc{\RktMeta{(C C -> C)}}$}|.
-The contract asserts that each call to @racket[complex-*] in untyped code
- supplies two arguments passing the @exact|{$\ctc{\RktMeta{C}}$}| contract;
- that is, two pairs of real numbers where the first component of each pair is
- non-negative.
-Consequently, the contract immediately detects invalid arguments such as the string @racket{NaN}.
+The true danger is that untyped code might put an ill-typed number such as a @type{Real} or @type{Negative-Integer} in the machine.
+Suppose the program manages several voting machines and eventually sums their contents.
+If one voting machine contains a real number, the program will silently compute a nonsensical sum.
+The whole purpose of a type system is to prevent such failures.
+A proxy fulfills this purpose by detecting and immediately reporting
+ any mismatch between the type system and runtime values.
+
+   @remark[]{
+     A runtime type error only demonstrates a value that the type system did not expect.
+     Neither the typed code nor the untyped code is necessarily at fault.
+     @; The type may be wrong; this is especially likely when one adds type annotations to untyped code.
+   }
 
     @figure["fig:complex-multiply" "Multiplication for polar form complex numbers"
       @(begin
@@ -136,29 +143,40 @@ Consequently, the contract immediately detects invalid arguments such as the str
       @codeblock|{
         #lang typed/racket
 
-        (define-type C (List Nonnegative-Real Real))
-        ;; C = (Distance from origin, Radians)
+        (define-type JR (List Nonnegative-Real Real))
+        ;; JR = (Distance from origin, Radians)
 
-        (: complex-* (C C -> C))
-        (define (complex-* c1 c2)
-          (list (* (first c1) (first c2))
-                (+ (second c1) (second c2))))
+        (: reynolds-* (JR JR -> JR))
+        (define (reynolds-* jr1 jr2)
+          (list (* (first jr1) (first jr2))
+                (+ (second jr1) (second jr2))))
       }|)
     ]
 
-@; TODO 
-Correct blame is essential to Typed Racket's soundness guarantee, which states
- that typed code is never the cause of runtime type errors.
-Rather, all runtime type errors are dynamically caught and attributed to a type boundary.
-Of course, tracking blame and dynamically enforcing types can be computationally expensive.
-Each call to @racket[complex-*] requires in total six assertions to check and traverse both pairs.
-Individual assertions are relatively inexpensive, but folding
- @racket[complex-*] over a list of @math{n} complex numbers requires
- @math{3n + 1} assertions.
-In general, costs can quickly accumulate as the size of data
- and number of calls to @racket[complex-*] increases.
+For a concrete example, the Typed Racket function in @figure-ref{fig:complex-multiply}
+ implements multiplication for complex numbers represented in polar form.
+The type system guards calls to @racket[reynolds-*] from untyped code with the
+ higher-order contract @ctc{JR JR -> JR}.
+In other words, each call must supply two pairs of real numbers where the first component of each pair is non-negative.
 
-    @; TODO example here, to show "surprising costs"?
+Each call to @racket[reynolds-*] requires in total six assertions to check and traverse both pairs.
+Individual assertions are relatively inexpensive, but folding
+ @racket[reynolds-*] over a sequence of @math{n} complex numbers requires
+ @math{3n + 1} assertions.
+The cost of such checks quickly accumulates.
+
+As with the voting machine, these checks are indispensable.
+Without them, ill-typed calls such as:
+    @racketblock[(reynolds-* '(-1 -1) '(-3 0))]
+ fail silently.
+If we are lucky, the silent failure triggers an error later in the program,
+ but because the polar product of @racket['(-1 -1)] and @racket['(-3 0)] is
+ the well-typed complex number @racket['(3 -1)], it is more likely that the
+ program computes an incorrect result.
+The programmer and the program's users receive no clue that an erroneous computation occurred.
+Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
+
+    @; add example to show "surprising costs"?
     @; - Derivatives of complex numbers
     @; - Taylor series expansion
     @; The program in @Figure-ref{TODO} underscores this point.
@@ -166,18 +184,4 @@ In general, costs can quickly accumulate as the size of data
     @; When the script is typed, it runs in XXXms. Untyped, the same code takes
     @;  YYYms to run.
     @; TODO connect example to soundness?
-
-Despite the potential overhead, Typed Racket must guard calls to @racket[complex-*]
- against type errors even though untyped Racket is a memory-safe
- programming language and will detect e.g. inputs like the string @racket{NaN}
- when they reach the @racket[+] function.
-The danger is with ill-typed calls such as:
-    @racketblock[(complex-* '(-1 . -1) '(-3 . 0))]
- which fail @emph{silently}.
-If we are lucky, this silent failure triggers an error later in the program,
- but because the polar product of @racket['(-1 . -1)] and @racket['(-3 . 0)] is
- the well-typed complex number @racket['(3 . -1)], it is more likely that the
- program computes an incorrect result.
-The programmer and the program's users receive no clue that an erroneous computation occurred.
-Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
 

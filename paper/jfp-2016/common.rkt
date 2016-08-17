@@ -19,6 +19,7 @@
 
          step
          def
+         remark
          deliverable
          usable
 
@@ -26,6 +27,9 @@
          library
          PHIL
          todo ;; Remove this export before submission
+
+         type
+         ctc ;; aka, 'contract'
 
          PFDS-BEFORE
          PFDS-AFTER
@@ -36,6 +40,7 @@
          glob
          racket/class
          racket/require
+         racket/string
          scribble/core
          scribble/eval
          scribble/manual
@@ -133,15 +138,22 @@
 
 (define (mt-line) (parag))
 
-(define (def #:term (term #false) . x)
-  (make-paragraph plain
-    (list
-      (mt-line)
-      (exact #:style #f "\\vspace{-4ex}\\begin{center}\\begin{minipage}{0.88\\textwidth}\n")
-      (bold "Definition")
-      (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
-      (exact #:style #f "\\end{minipage}\\end{center}\n")
-      (mt-line))))
+(define (make-defthing str)
+  (lambda (#:term (term #false) . x)
+    (make-paragraph plain
+      (list
+        (mt-line)
+        (exact #:style #f "\\vspace{-4ex}\\begin{center}\\begin{minipage}{0.88\\textwidth}\n")
+        (bold str)
+        (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
+        (exact #:style #f "\\end{minipage}\\end{center}\n")
+        (mt-line)))))
+
+(define def
+  (make-defthing "Definition"))
+
+(define remark
+  (make-defthing "Remark"))
 
 (define (deliverable [d "D"])
   (make-element plain @list{@(math d)-deliverable}))
@@ -172,4 +184,10 @@
 
 (define PFDS-AFTER
   "1 millisecond")
+
+(define (type t)
+  (exact (string-append "\\RktMeta{" t "}")))
+
+(define (ctc . t)
+  (exact (string-append "$\\ctc{\\RktMeta{" (string-join t) "}}$")))
 
