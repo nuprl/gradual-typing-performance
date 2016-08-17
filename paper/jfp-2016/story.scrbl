@@ -1,83 +1,91 @@
 #lang scribble/base
 
-@; Intuitively, modifying working untyped code just to satisfy the type checker
-@;  is an unnecessary opportunity to introduce bugs.
-
 @require["common.rkt" "benchmark.rkt" "util.rkt"]
 @(require racket/file benchmark-util/data-lattice)
 
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
-Typed Racket@~cite[TypedRacket] is by far the oldest implementation of sound gradual typing.
-It supports clients in both academia and industry@note{@url{http://con.racket-lang.org/2015/burns.pdf}}.
+Typed Racket@~cite[TypedRacket] is the oldest and most developed implementation of sound gradual typing.
+It supports clients in both academia and industry.@note{@url{http://con.racket-lang.org/2015/burns.pdf}}
    @; as well as a few prolific hobbyists.@note{MB}
-Users frequently report steep performance penalties when they mix Racket and Typed Racket modules in a single application.
+These users frequently report steep performance penalties when they mix Racket and Typed Racket modules in a single application.
+Nonetheless, programmers continue to use Typed Racket because it accomodates the idioms of Racket and helps catch "subtle reasoning errors".@note{Personal communication with one Typed Racket user.}
+For example, the widely-used math, statistics, and plotting libraries are all typed.
 
-@; TR is for real, TR is gradual
-Typed Racket implements so-called @emph{macro-level} gradual typing; that is,
- every module in a Racket program is either completely typed or untyped.@note{Typed Racket
-    does allow typed expressions and definitions within untyped modules, but our
-    benchmarks do not use these so-called @emph{typed regions}.}
-Programmers opt-in to Typed Racket by writing @hash-lang[] @racket[typed/racket]
- at the top of a module.
-In contrast, @hash-lang[] @racket[racket] modules are untyped.
-Converting a
- Racket module to Typed Racket is primarily a matter of writing type definitions
- and annotating variables and fields with type specifications.
+Typed Racket programs, as opposed to scripts, frequently incorporate untyped components and use untyped libraries.
+Conversely, untyped programs often depend on typed libraries.
+In other words, gradual typing is widespread.
 
-    @;bg; insert a figure here?
-    @;, as demonstrated in @figure-ref{fig:racket-v-typed}.
-    @; @figure*["fig:racket-v-typed" "Merging lists in Racket (left) and Typed Racket (right)"
-    @;   @exact|{\input{fig-racket-v-typed}}|
-    @; ]
+The prevalence of gradual typing is largely due to the low syntactic burden
+ of mixing typed and untyped code.
+Racket programmers may import most typed values as if they were untyped.
+The only restriction is that typed compiler extensions cannot run in untyped contexts.
+Typed Racket programmers can import untyped values by writing an explicit type
+ annotation for each import.
 
-When a typed module imports definitions from an untyped module, programmers
- must supply type annotations.
-The type system compiles these annotations to
- contracts@~cite[ff-icfp-2002] that ensure the untyped code matches its type specification.
-Untyped modules may use definitions from typed modules without any annotation.
-The type system generates contracts to protect the typed values from untyped contexts.
-Put another way, every @emph{logical} type @exact|{$\RktMeta{T}$}| in Typed
- Racket has a @emph{computational} projection @exact|{$\ctc{\RktMeta{T}}$}|
- capable of dynamically checking whether an arbitrary value has type @exact|{$\RktMeta{T}$}|.
+Converting a module between the Racket and Typed Racket languages is also straightforward.
+The first line in every module declares its language, e.g. 
+ @hash-lang[] @racket[racket] or @hash-lang[] @racket[typed/racket].
+Typed Racket modules require annotations on function parameters, class fields,
+ and mutable variables; otherwise, the syntax of Racket and Typed Racket is identical.
+In particular, removing all type annotations and casts from a Typed Racket module yields
+ a syntactically valid Racket module.
 
-Racket programmers frequently mix typed and untyped code.
-For example, the widely-used matrix, statistics, and plotting libraries are implemented in Typed Racket.
-Conversely, Typed Racket modules import many of untyped Racket's core libraries.
-Within a single project, Typed Racket users have diverse motivations for choosing which modules to type and which to leave untyped.
-Some of the most common use-cases are:
+Given the close integration of Racket and Typed Racket, programmers tend to
+ incrementally migrate untyped modules to Typed Racket.
+Their reasons for migrating are diverse.
+Below are a few common use cases, but in general we cannot predict why or how programmers add typed components.
 @itemlist[
   @item{ @bold{Assurance:}
-    The typed modules implement core functionality and the typechecker
-     guards against common bugs, for example, forgetting to check
-     for end-of-file symbols when reading from a port.
+    The typechecker guards against common bugs, for example,
+     forgetting to check for end-of-file symbols when reading from a port.
+  }
+  @item{ @bold{Compatibility:}
+    Maintainers of untyped libraries provide annotations for library exports,
+     saving Typed Racket clients the need to supply their own.
   }
   @item{ @bold{Documentation:}
-    Type signatures serve as machine-checked and enforced documentation that programmers may rely on.
+    Type signatures serve as machine-enforced documentation.
   }
-  @item{ @bold{Ease:}
-    Programmers convert those modules that are the least effort to type.
-    These could be the smallest modules or the ones with the fewest dependencies.
-  }
-  @item{ @bold{Necessity:}
-    The typed modules are tightly-coupled to other typed modules or to typed library code.
-    Tight coupling between an untyped module and a typed modules leads to frequent dynamic type checks.
-    Typing both modules statically discharges the runtime checks.
+  @;@item{ @bold{Ease:}
+  @;  Programmers convert those modules that are the least effort to type.
+  @;  These modules could be the smallest, or have the fewest dependencies.
+  @;}
+  @item{ @bold{Performance:}
+    Typed modules benefit from the Typed Racket optimizer@~cite[stf-optimization-coaching]
+     and, unlike untyped modules, suffer no dynamic cost if tightly-coupled to other typed modules.
   }
 ]
-Over time, programmers may convert additional modules to Typed Racket.
-Imagine for example a large codebase in which an error is traced to an untyped module
+Let us illustrate one possible evolution.
+Imagine a large codebase in which an error is traced to an untyped module
  whose author has long since left the project.
-Because the new programmer tasked with fixing this bug is forced to read the code
- and its unit tests to recover the implicit type specifications of the pieces in this module.
-Armed with these specifications, the programmer can finally address the bug.
+Unless the internals of this module have documentation, the new programmer
+ tasked with fixing the bug must recover the implicit type specifications
+ throughout the module by reading the code and stepping though its unit tests.
+This type recovery process might take hours or weeks.
 
-Typed Racket encourages programmers to formalize these recovered specifications as type signatures.
-The programmer only needs to write these implicit signatures, annotate imports
- from untyped modules, and change the @hash-lang[] line from @racket[racket]
- to @racket[typed/racket].
-After converting, the module is now properly documented for future maintainers.
+After fixing the bug, the programmer can formally state these recovered specifications by converting the module to Typed Racket.
+If the programmer takes this step, the module is now properly documented with type annotations for future maintainers.
+
+
+@section{YOLO}
+Maybe don't need subsection
+
+Despite apparent benefits, must remember costs
+- actually converting is not part of workflow
+- orthogonal to primary goals
+- changing code is possibility to add bugs
+- type boundaries could kill ya
+
+
+One crucial design goal of Typed Racket is that such conversions only require
+
+
+If the developer
+
+
+@todo{STOP}
 
 Introducing types in one module while leaving others untyped, however,
  introduces type boundaries that may cause significant performance overhead.
@@ -104,6 +112,16 @@ We must therefore improve the @emph{implementation} of gradual typing rather
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:overhead"]{The Source of Performance Overhead}
+
+@; When a typed module imports definitions from an untyped module, programmers
+@;  must supply type annotations.
+@; The type system compiles these annotations to
+@;  contracts@~cite[ff-icfp-2002] that ensure the untyped code matches its type specification.
+@; Untyped modules may use definitions from typed modules without any annotation.
+@; The type system generates contracts to protect the typed values from untyped contexts.
+@; Put another way, every @emph{logical} type @exact|{$\RktMeta{T}$}| in Typed
+@;  Racket has a @emph{computational} projection @exact|{$\ctc{\RktMeta{T}}$}|
+@;  capable of dynamically checking whether an arbitrary value has type @exact|{$\RktMeta{T}$}|.
 
 Boundaries between typed and untyped modules are the source of the performance costs
  in Typed Racket.
