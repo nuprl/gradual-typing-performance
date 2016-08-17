@@ -29,7 +29,7 @@ The first line in every module declares its language, e.g.
  @hash-lang[] @racket[racket] or @hash-lang[] @racket[typed/racket].
 Typed Racket modules require annotations on function parameters, class fields,
  and mutable variables; otherwise, the syntax of Racket and Typed Racket is identical.
-In particular, removing all type annotations and casts from a Typed Racket module yields
+In particular, removing all type annotations from a Typed Racket module yields
  a syntactically valid Racket module.
 
 Given the close integration of Racket and Typed Racket, programmers tend to
@@ -69,49 +69,40 @@ After fixing the bug, the programmer can formally state these recovered specific
 If the programmer takes this step, the module is now properly documented with type annotations for future maintainers.
 
 
-@section{YOLO}
-Maybe don't need subsection
+@; -----------------------------------------------------------------------------
+@section{The Costs of Type Conversion}
 
-Despite apparent benefits, must remember costs
-- actually converting is not part of workflow
-- orthogonal to primary goals
-- changing code is possibility to add bugs
-- type boundaries could kill ya
+Even in the scenario outlined above, where the programmer likely spent hours
+ recovering type information, converting an untyped module to Typed Racket is
+ orthogonal to programmers' main goal of delivering a working software product.
+If the programmer does attempt to formalize types, there are other tradeoffs to bear in mind.
 
+For one, Typed Racket is a @emph{macro-level} gradual type system.
+Every statement within a @hash-lang[] @racket[typed/racket] module must pass typechecking.
+In practice, this means that every function needs a complete type signature
+ and every @tt{while} or @tt{for} loop needs an explicit return type.
+The types a programmer has in mind are almost certainly a strict subset of what the type checker requires.@note{@emph{Micro-level} gradual typing is an alternative, see @secref{sec:flavors} for details.}
 
-One crucial design goal of Typed Racket is that such conversions only require
+Second, any refactoring is an unnecessary chance to introduce bugs.
+If converting to Typed Racket is @emph{only} a matter of adding type annotations
+ then the risk is minimized, but type checkers cannot always follow programmers' reasoning.
 
-
-If the developer
-
-
-@todo{STOP}
-
-Introducing types in one module while leaving others untyped, however,
- introduces type boundaries that may cause significant performance overhead.
+Third, and most importantly, converting a single module to Typed Racket introduces type boundaries to neighboring untyped modules.
+Values that cross type boundaries at runtime must pass a dynamic type check;
+ these checks may entail significant runtime overhead.
 For example, Typed Racket developers have experienced pathologies including
  a 50% overhead in a commercial web server
- and 25x-50x slowdowns when using the standard math library.
+ and 25x-50x slowdowns when using the math library.
 One potential solution is to convert additional modules to Typed Racket.
-Indeed,
- one user reported a speedup from @|PFDS-BEFORE| to @|PFDS-AFTER| after converting
- a script from Racket to Typed Racket.
-But annotating one additional module is not guaranteed to improve performance and may introduce
- new, high-overhead type boundaries.
-
-As language designers, we must also remember that adding types is always
- a software engineering burden.
-Even in the @emph{campground} @note{Golden rule of camping: always leave the campground cleaner than you found it.}
- scenario outlined above, converting untyped code to
- Typed Racket is orthogonal to developers' primary goal of delivering a working
- software product.
-@; Quote Matthew?
-We must therefore improve the @emph{implementation} of gradual typing rather
- than leave performance issues to language users.
+Indeed, one user reported a speedup from @|PFDS-BEFORE| to @|PFDS-AFTER| after converting a script to Typed Racket.
+But annotating one additional module is not guaranteed to improve performance and may introduce new type boundaries.
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:overhead"]{The Source of Performance Overhead}
+@section[#:tag "sec:overhead"]{A Case for Sound Gradual Typing}
+
+Typed Racket is a sound type system.
+Any statem
 
 @; When a typed module imports definitions from an untyped module, programmers
 @;  must supply type annotations.
