@@ -1,7 +1,6 @@
 #lang scribble/base
 
-@require["common.rkt" "benchmark.rkt" "util.rkt"]
-@(require racket/file benchmark-util/data-lattice)
+@require["common.rkt" "benchmark.rkt" "util.rkt" racket/file]
 
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
@@ -21,14 +20,14 @@ The prevalence of gradual typing is largely due to the low syntactic burden
  of mixing typed and untyped code.
 Racket programmers may import most typed values as if they were untyped.
 The only restriction is that typed compiler extensions cannot run in untyped contexts.
-Typed Racket programmers can import untyped values by writing an explicit type
- annotation for each import.
+Typed Racket programmers can import untyped values by giving each import an
+ explicit type annotation.
 
 Converting a module between the Racket and Typed Racket languages is also straightforward.
 The first line in every module declares its language, e.g. 
  @hash-lang[] @racket[racket] or @hash-lang[] @racket[typed/racket].
 Typed Racket modules require annotations on function parameters, class fields,
- and mutable variables; otherwise, the syntax of Racket and Typed Racket is identical.
+ mutable variables, and untyped imports; otherwise, the syntax of Racket and Typed Racket is identical.
 In particular, removing all type annotations from a Typed Racket module yields
  a syntactically valid Racket module.
 
@@ -41,7 +40,7 @@ Below are a few common use cases, but in general we cannot predict why or how pr
      forgetting to check for end-of-file symbols when reading from a port.
   }
   @item{ @bold{Compatibility:}
-    Maintainers of untyped libraries provide annotations for library exports,
+    Maintainers of untyped libraries provide type annotations for library exports,
      saving Typed Racket clients the need to supply their own.
   }
   @item{ @bold{Documentation:}
@@ -66,7 +65,8 @@ This type recovery process might take hours or weeks.
 
 After fixing the bug, the programmer can formally state these recovered specifications by converting the module to Typed Racket.
 If the programmer takes this step, the module is now properly documented with type annotations for future maintainers.
-
+@; Types may spread in this manner throughout the codebase
+@; (contracts are infectious)
 
 @; -----------------------------------------------------------------------------
 @section{The Costs of Type Conversion}
@@ -80,7 +80,7 @@ For one, Typed Racket is a @emph{macro-level} gradual type system.
 Every statement within a @hash-lang[] @racket[typed/racket] module must pass typechecking.
 In practice, this means that every function needs a complete type signature
  and every @tt{while} or @tt{for} loop needs an explicit return type.
-The types a programmer has in mind are almost certainly a strict subset of what the type checker requires.@note{@emph{Micro-level} gradual typing is an alternative, see @secref{sec:flavors} for details.}
+The type annotations a programmer has in mind are almost certainly fewer than what the type checker requires.@note{@emph{Micro-level} gradual typing is an alternative, see @secref{sec:flavors} for a comparison.}
 
 Second, any refactoring is an unnecessary chance to introduce bugs.
 If converting to Typed Racket is @emph{only} a matter of adding type annotations
@@ -105,20 +105,20 @@ Every statement it makes about a variable during compilation holds true for
  all values that variable represents at runtime.
 @; TODO abstract explanation? (yes)
 This is possible because every Typed Racket type @type{T} has a computational
- interpretation @ctc{T} capable of deciding whether arbitrary values belong to
+ interpretation @ctc{T} capable of deciding whether arbitrary (untyped) values belong to
  the syntactic type @type{T}.
 
 As a simple example, suppose we represent a voting machine as a mutable cell
  containing a natural number.
 The Typed Racket type for such a value is @racket[(Boxof Natural)].
-Typed code that interacts with the voting machine must evidently adhere to this type;
+Typed code that interacts with a voting machine must evidently adhere to this type;
  if not, type checking halts with a compile-time type error.
-Untyped code that interacts with the voting machine is not subject to type checking.
+Untyped code that interacts with a voting machine is not subject to type checking.
 Nevertheless, the type system must prevent untyped code from replacing the contents
- of the voting machine with values that have e.g. the static types @type{String}
+ of a voting machine with values that have e.g. the static types @type{String}
  or @type{Negative-Real}.
-It does so by compiling the type to a contract @ctc{Boxof Natural} and applying this contract to values that cross a type boundary.
-The contract proxies the voting machine and dynamically enforces type-correct use by checking every write to the machine.
+It does so by compiling the type to a contract @ctc{Boxof Natural} and applying this contract to voting machines that cross a type boundary.
+The contract proxies a voting machine and dynamically enforces type-correct use by checking every write to the machine.
 
 At first glance, the proxy may seem overly conservative.
 After all, untyped Racket is a memory safe programming language.
@@ -157,15 +157,14 @@ For a concrete example, the Typed Racket function in @figure-ref{fig:complex-mul
  implements multiplication for complex numbers represented in polar form.
 The type system guards calls to @racket[reynolds-*] from untyped code with the
  higher-order contract @ctc{JR JR -> JR}.
-In other words, each call must supply two pairs of real numbers where the first component of each pair is non-negative.
+In other words, untyped clients must supply two pairs of real numbers where the first component of each pair is non-negative.
 
-Each call to @racket[reynolds-*] requires in total six assertions to check and traverse both pairs.
+Each call to the protected @racket[reynolds-*] requires a total of six assertions to check and traverse both pairs.
 Individual assertions are relatively inexpensive, but folding
  @racket[reynolds-*] over a sequence of @math{n} complex numbers requires
  @math{3n + 1} assertions.
 The cost of such checks quickly accumulates.
-
-As with the voting machine, these checks are indispensable.
+But these checks are again indispensable.
 Without them, ill-typed calls such as:
     @racketblock[(reynolds-* '(-1 -1) '(-3 0))]
  fail silently.
