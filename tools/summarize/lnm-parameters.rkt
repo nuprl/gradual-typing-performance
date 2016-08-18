@@ -122,6 +122,7 @@
 (defparam *LOG-TRANSFORM?* Boolean #f)
 (defparam *PDF?*           Boolean #f) ;; If #t, plot the Probabilistic Distribution Function
 (defparam *SINGLE-PLOT?*   Boolean #t) ;; If #t, make 1 plot for each L
+(defparam *GROUP-BY-TITLE?* Boolean #t)
 
 (defparam *SHOW-PATHS?* Boolean #f)
 ;; If #t, make a path picture
@@ -137,7 +138,7 @@
 
 (defparam *DISCRETE?* Boolean #f)
 
-(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'bottom-right)
+(defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
 
 (defparam *TOO-MANY-BYTES* Natural (expt 10 9))
 ;; Files larger than this should not be loaded

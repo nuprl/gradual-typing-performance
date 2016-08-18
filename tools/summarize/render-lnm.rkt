@@ -20,6 +20,7 @@
  ;;  are re-used (when called with the same tag & dataset list)
 
  fname->title
+ pict->png
 )
 
 ;; -----------------------------------------------------------------------------
@@ -355,21 +356,23 @@
         maybe-title*)
         (for/list : (Listof #f) ([x (in-list rktd*)]) #f)))
   ;; Combine duplicate titles
-  (reverse
-    (for/fold : (Listof (Pairof (U String #f) (Listof String)))
-              ([acc : (Listof (Pairof (U String #f) (Listof String)))
-                      '()])
-              ([t (in-list title*)]
-               [r (in-list rktd*)])
-      (cond
-       [(and t (assoc t acc))
-        (for/list ([t+r (in-list acc)])
-          (define hd (car t+r))
-          (if (and (string? hd) (string=? hd t))
-            (list* t r (cdr t+r))
-            t+r))]
-       [else
-        (cons (list t r) acc)]))))
+  (if (not (*GROUP-BY-TITLE?*))
+    (list (cons (car title*) rktd*))
+    (reverse
+      (for/fold : (Listof (Pairof (U String #f) (Listof String)))
+                ([acc : (Listof (Pairof (U String #f) (Listof String)))
+                        '()])
+                ([t (in-list title*)]
+                 [r (in-list rktd*)])
+        (cond
+         [(and t (assoc t acc))
+          (for/list ([t+r (in-list acc)])
+            (define hd (car t+r))
+            (if (and (string? hd) (string=? hd t))
+              (list* t r (cdr t+r))
+              t+r))]
+         [else
+          (cons (list t r) acc)])))))
 
 (: get-deathscore-pict (->* [(Listof String)] [#:titles (U #f (Listof String))] Pict))
 (define (get-deathscore-pict rktd* #:titles [maybe-title* #f])
@@ -773,6 +776,10 @@
    [("--l-label")
     "Show L labels above each plot"
     (*L-LABELS?* #t)]
+   [("-g" "--group-by-title")
+    gb
+    "If #f, put everything on the same plot"
+    (*GROUP-BY-TITLE?* (assert (reads gb) boolean?))]
    [("--cutoff")
     c
     "Set red line with a number in [0,1] (#f by default)"

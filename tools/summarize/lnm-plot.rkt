@@ -132,18 +132,19 @@
   (define ymax : Index
     ;; Assert that all summaries have the same number of configurations
     ;; (Sorry the error-handling is a little wild)
-    (or
-     (for/fold : (Option Index)
-               ([prev : (Option Index) #f])
-               ([S (in-list S*)]
-                [i (in-naturals)])
-       (define nv (get-num-configurations S))
-       (if (and prev (not (= prev nv)))
-         (let ([p1 (get-project-name (list-ref S* (assert (- i 1) index?)))]
-               [p2 (get-project-name S)])
-           (raise-user-error 'lnm (format "datasets for '~a' and '~a' have ~a and ~a modules, cannot plot on same graph" p1 p2 nv prev)))
-         (assert nv index?)))
-     (raise-user-error 'lnm "got 0 datasets to summarize")))
+    (assert (get-num-configurations (car S*)) index?))
+    ;(or
+    ; (for/fold : (Option Index)
+    ;           ([prev : (Option Index) #f])
+    ;           ([S (in-list S*)]
+    ;            [i (in-naturals)])
+    ;   (define nv (get-num-configurations S))
+    ;   (if (and prev (not (= prev nv)))
+    ;     (let ([p1 (get-project-name (list-ref S* (assert (- i 1) index?)))]
+    ;           [p2 (get-project-name S)])
+    ;       (raise-user-error 'lnm (format "datasets for '~a' and '~a' have ~a and ~a modules, cannot plot on same graph" p1 p2 nv prev)))
+    ;     (assert nv index?)))
+    ; (raise-user-error 'lnm "got 0 datasets to summarize")))
   (define cutoff-point (and cutoff-proportion (* cutoff-proportion ymax)))
   ;; Make renderers for the lines
   (define N-line
@@ -219,7 +220,9 @@
                    [i (in-naturals 1)])
             (define lbl (and (*LINE-LABELS?*)
                              (format "~a~a"
-                               (summary->version S)
+                               (if (*GROUP-BY-TITLE?*)
+                                 (summary->version S)
+                                 (summary->label S))
                                (if (< 1 (length L*))
                                  (format " (L=~a)" L)
                                  ""))))
