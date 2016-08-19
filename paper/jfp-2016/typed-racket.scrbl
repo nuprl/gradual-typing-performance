@@ -332,9 +332,9 @@ For threats to validity regarding our experimental protocol,
          that run within the overhead shown on the x-axes.
         The @id[NUMV] lines on each plot correspond to versions of Racket;
          newer versions have thicker lines.
-        Plots in the left column of each figure show @step["0" "D" "U"]
+        Plots in the left column of each figure show @step["0" "D"]
          configurations.
-        Plots in the right column show @step["1" "D" "U"] configurations.
+        Plots in the right column show @step["1" "D"] configurations.
 
         @; -- choice of x-axis, log scale, bode diagrams, picking D/U
         The range of values on the x-axes are plausible bounds on the

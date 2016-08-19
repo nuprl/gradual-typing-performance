@@ -1,6 +1,14 @@
 #lang scribble/base
 
-@require["common.rkt" "util.rkt" benchmark-util/data-lattice]
+@require[ 
+  "common.rkt"
+  "util.rkt"
+  "benchmark.rkt"
+  benchmark-util/data-lattice
+  "typed-racket.rkt"
+  (only-in pict blank hc-append scale)
+  (only-in with-cache *use-cache?*)
+]
 
 @profile-point{sec:method}
 @title[#:tag "sec:method"]{Evaluation Method}
@@ -26,7 +34,7 @@ We turn this observation into an evaluation method in three stages:
 @section{Performance Lattice}
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may
- add types to any subset of modules in an untyped program.
+ add types to any subset of the modules in an untyped program.
 Performance evaluation must therefore consider the space of all
  @emph{configurations} a programmer could possibly create.
 We describe this space as a static lattice representing all combinations of typed and
@@ -52,8 +60,10 @@ We describe this space as a static lattice representing all combinations of type
     Define @exact|{$\leq\,\subseteq S \times S$}| as:
      @exact|{$c_1 \leq c_2$}|
      if and only if
-     @exact|{$(c_1(i) = 1) \Rightarrow c_2(i) = 1$}|
-     for all non-negative @exact{$i \le N$}.
+     @exact|{$c_1(i) = 1$}|
+     implies
+     @exact|{$c_2(i) = 1$}|
+     for all @exact{$i$} such that @exact{$0 \le i < N$}.
   }
 
   @item{
@@ -73,6 +83,11 @@ We describe this space as a static lattice representing all combinations of type
     A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|.
   }
 ]
+
+@; TODO clarify that lattice is a static artifact
+@;       doesn't say anything about performance per se
+@;      after measuring have some data,
+@;       next challenge is how to get relevant lessons from data
 
 After framing the performance lattice for a given program, language evaluators must
  generate a labeling @exact{$l$} such that for all @exact{$c \in S$} the performance of
@@ -118,32 +133,6 @@ To account for these varying requirements, we use
       @math{D}x slowdown compared to the untyped configuration.
     }
 
-Even if a configuration is not deliverable, it might be suitably fast to
- run the test suites and prototype designs.
-A software engineering team can
- use such a configuration for development purposes without releasing
- it to clients.
-@;In practice, usable configurations may act as checkpoints for a team to ensure
-@; the product is working correctly before implementing performance optimizations.
-Using a second parameter to capture the meaning of "suitably fast",
- we define a notion of usable configurations.
-
-    @def[#:term @list{@usable[]}]{
-     A configuration in a performance
-      lattice is @usable[] if its performance is worse than a
-      @math{D}x slowdown but no worse than a @math{U}x slowdown compared to
-      the untyped configuration.
-    }
-
-On the other hand, the performance overhead of gradual typing may render
- some configurations too slow even for development purposes.
-These might be configurations where running the unit tests takes hours
- or days longer than normal.
-
-    @def[#:term "unacceptable"]{
-     An unacceptable configuration is neither @deliverable{} nor @usable[].
-    }
-
 Finally, if a software project is currently in an unacceptable
  configuration we ask how much work a team needs to invest to reach a
  deliverable or usable configuration.
@@ -152,8 +141,7 @@ We propose as a coarse measure of "work" the number of modules that must be
 
     @def[#:term @list{@step{}}]{
      A configuration is @step[] if it is at most @math{k}
-      type conversion steps from a @deliverable{}
-      or a @usable[] configuration.
+      type conversion steps from a @deliverable{} configuration.
     }
 
 @profile-point{sec:method:example}
@@ -183,8 +171,8 @@ Using white squares to represent untyped modules and black squares for typed
  configurations' overhead (relative to the untyped configuration) as labels.
 
 @centered[@elem[
-  (parameterize ([*LATTICE-HSPACE* 30]
-                 [*LATTICE-VSPACE* 4])
+  (parameterize ([*LATTICE-CONFIG-MARGIN* 30]
+                 [*LATTICE-LEVEL-MARGIN* 4])
     (make-performance-lattice (sample-data 'all)))
 ]]
 
@@ -201,7 +189,7 @@ Using white squares to represent untyped modules and black squares for typed
     Both gradually typed configurations are
       @deliverable[@id[g-overhead]]
       because they run within @id[(* g-overhead (sample-data 'c00))] seconds.
-    Lastly, these configurations are @step[t-str t-str t-str]
+    Lastly, these configurations are @step[t-str t-str]
      because each is one conversion step
      from the fully-typed configuration.
   })
@@ -215,9 +203,63 @@ Language implementors are meanwhile working to
  diagnose the most severe overheads and to improve the average-case overheads
  introduced by gradual typing.
 
+@subsection{Auxilliary Notions}
+
+@emph{Note} usable was a core definition in POPL, but we find it confuses things.
+
+Even if a configuration is not deliverable, it might be suitably fast to
+ run the test suites and prototype designs.
+A software engineering team can
+ use such a configuration for development purposes without releasing
+ it to clients.
+@;In practice, usable configurations may act as checkpoints for a team to ensure
+@; the product is working correctly before implementing performance optimizations.
+Using a second parameter to capture the meaning of "suitably fast",
+ we define a notion of usable configurations.
+
+    @def[#:term @list{@usable[]}]{
+     A configuration in a performance
+      lattice is @usable[] if its performance is worse than a
+      @math{D}x slowdown but no worse than a @math{U}x slowdown compared to
+      the untyped configuration.
+    }
+
+On the other hand, the performance overhead of gradual typing may render
+ some configurations too slow even for development purposes.
+These might be configurations where running the unit tests takes hours
+ or days longer than normal.
+
+    @def[#:term "unacceptable"]{
+     An unacceptable configuration is neither @deliverable{} nor @usable[].
+    }
+
+
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:graphs"]{Overhead Graphs}
 
 @todo{how to presetn this huge amount of data in a comprehensible fashion}
+
+    @figure*["fig:suffixtree-lattice" "64"
+      @(parameterize ([*LATTICE-CONFIG-MARGIN* 3]
+                      [*LATTICE-LEVEL-MARGIN* 8]
+                      [*LATTICE-FONT-SIZE* 9]
+                      [*LATTICE-BOX-HEIGHT* 6]
+                      [*LATTICE-BOX-WIDTH* 3]
+                      [*LATTICE-BOX-SEP* 0]
+                      [*LATTICE-BOX-TOP-MARGIN* 0]
+                      [*LATTICE-TRUNCATE-DECIMALS?* #t]
+                      [*LATTICE-BOX-BOT-MARGIN* 1])
+        (render-data-lattice suffixtree "6.2"))
+    ]
+
+More and more
+
+    @figure*["fig:fsm-lattice" "FSM"
+      @(parameterize ([*LATTICE-BOX-SEP* 0])
+         (hc-append
+           (render-data-lattice fsm "6.2")
+           (blank 24 0)
+           (render-data-lattice fsm "6.4")))
+    ]
 

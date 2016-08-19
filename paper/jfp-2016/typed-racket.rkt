@@ -224,7 +224,7 @@
 ;; --- Lattice
 
 (define (render-data-lattice bm v)
-  (with-cache (lattice-cache-file bm v "*")
+  (with-cache (lattice-cache-file (benchmark-name bm) v "*")
     #:read deserialize
     #:write serialize
     (lambda () (file->performance-lattice (benchmark-rktd bm v)))))

@@ -14,8 +14,6 @@
          pict)
 
 (provide
-  *LATTICE-HSPACE*
-  *LATTICE-VSPACE*
   (contract-out
     [file->performance-lattice
      (-> path-string? pict?)]
@@ -24,8 +22,19 @@
                 power-of-two-length?)
          pict?)]))
 
-(define *LATTICE-HSPACE* (make-parameter 5))
-(define *LATTICE-VSPACE* (make-parameter 10))
+(define-syntax-rule (define/provide nm x* ...)
+  (begin (define nm x* ...) (provide nm)))
+
+(define/provide *LATTICE-BORDER-WIDTH* (make-parameter 1))
+(define/provide *LATTICE-BOX-BOT-MARGIN* (make-parameter 4))
+(define/provide *LATTICE-BOX-HEIGHT* (make-parameter 10))
+(define/provide *LATTICE-BOX-SEP* (make-parameter 1.5))
+(define/provide *LATTICE-BOX-TOP-MARGIN* (make-parameter 2))
+(define/provide *LATTICE-BOX-WIDTH* (make-parameter 6))
+(define/provide *LATTICE-CONFIG-MARGIN* (make-parameter 5))
+(define/provide *LATTICE-LEVEL-MARGIN* (make-parameter 10))
+(define/provide *LATTICE-FONT-SIZE* (make-parameter 9))
+(define/provide *LATTICE-TRUNCATE-DECIMALS?* (make-parameter #f))
 
 (module+ test (require rackunit))
 
@@ -46,7 +55,7 @@
   (define level-picts
     (for/list ([on-bits (in-range total-bits -1 -1)])
       (define perms (select (- total-bits on-bits) total-bits))
-      (apply hc-append (*LATTICE-HSPACE*)
+      (apply hc-append (*LATTICE-CONFIG-MARGIN*)
        (for/list ([perm (in-list perms)])
          (define bv (apply bit-vector perm))
          (define num (string->number (bit-vector->string bv) 2))
@@ -55,7 +64,7 @@
                                   (vector-ref data-vec 0)))
          (vector-set! pict-vec num pict)
          pict))))
-  (define no-lines-yet (apply vc-append (*LATTICE-VSPACE*) level-picts))
+  (define no-lines-yet (apply vc-append (*LATTICE-LEVEL-MARGIN*) level-picts))
   no-lines-yet)
 
 ;; taken from MF's version
@@ -74,16 +83,20 @@
   (define style "Liberation Serif")
   (define box-pict
     (apply hc-append
-           1.5
+           (*LATTICE-BOX-SEP*)
            (for/list ([bit (in-bit-vector bv)])
-             (filled-rectangle 6 10
+             (filled-rectangle (*LATTICE-BOX-WIDTH*) (*LATTICE-BOX-HEIGHT*)
                              #:color (if bit "black" "white")
-                             #:border-width 1
+                             #:border-width (*LATTICE-BORDER-WIDTH*)
                              #:border-color "black"))))
-  (vc-append (blank 1 2)
+  (define mean-str
+    (if (and (*LATTICE-TRUNCATE-DECIMALS?*) (<= 1 normalized-mean))
+      (number->string (round normalized-mean))
+      (~r normalized-mean #:precision 1)))
+  (vc-append (blank 1 (*LATTICE-BOX-TOP-MARGIN*))
              box-pict
-             (blank 1 4)
-             (text (~a (~r normalized-mean #:precision 1) "x") style 9)))
+             (blank 1 (*LATTICE-BOX-BOT-MARGIN*))
+             (text (~a mean-str "x") style (*LATTICE-FONT-SIZE*))))
 
 ;; adds lines between elements in levels
 (define (add-all-lines base vec bits)
