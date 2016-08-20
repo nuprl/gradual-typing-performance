@@ -15,6 +15,11 @@
   benchmark-modulegraph
   ;; (-> Benchmark ModuleGraph)
 
+  benchmark->num-configurations
+  benchmark->num-modules
+  benchmark->num-iterations
+  ;; (-> Benchmark Natural)
+
   benchmark<?
   ;; (-> Benchmark Benchmark Boolean)
 
@@ -30,6 +35,8 @@
 (require
   (only-in racket/list
     last)
+  (only-in racket/file
+    file->value)
   racket/serialize
   gtp-summarize/summary
   gtp-summarize/modulegraph
@@ -82,6 +89,17 @@
   (if (eq? name 'zordoz)
     (project-name->modulegraph 'zordoz.6.3)
     (project-name->modulegraph name)))
+
+(define (benchmark->num-iterations b v)
+  (for/fold ([min-iters #f])
+            ([x* (in-vector (file->value (benchmark-rktd b v)))])
+    (define l (length x*))
+    (if (or (not min-iters) (< l min-iters))
+      l
+      min-iters)))
+
+(define (benchmark->num-configurations b)
+  (expt 2 (benchmark->num-modules b)))
 
 (define (benchmark->num-modules b)
   (length (benchmark-adjlist b)))
@@ -458,6 +476,24 @@
     (let ([rktd* (benchmark-rktd* zordoz)])
       (check-equal? (length rktd*) (length (*RKT-VERSIONS*))))
   )
+
+  (test-case "num-configurations"
+    (check-apply* benchmark->num-configurations
+     [suffixtree => 64]
+     [kcfa => 128]
+     [sieve => 4]
+     [synth => 1024]))
+
+  (test-case "num-modules"
+    (check-apply* benchmark->num-modules
+     [suffixtree => 6]
+     [kcfa => 7]
+     [sieve => 2]
+     [synth => 10]))
+
+  (test-case "num-iterations"
+    (check-apply* benchmark->num-iterations
+     [suffixtree "6.2" => 10]))
 
   (test-case "benchmark<?"
     (let* ([b* (list mbta sieve quadMB)]

@@ -16,11 +16,13 @@
 Performance evaluation for gradual type systems must reflect how
  programmers use such systems.
 Migrating an entire project from untyped to typed is rare,
- while incremental transitions are common.
-Programmers tend to add types to a few modules, then compare the performance
- of the new mixed program against the previous running version.
+ while incremental transition is common.
+@; TODO still ifffy
+Consequently, programmers tend to judge the performance of gradual typing
+ by comparing the performance of a program mixing typed and untyped components
+ against the program's previous running version.
 If type-driven optimizations result in a performance improvement, all is well.
-Otherwise, the developers may seek ways to reduce the cost of type boundaries.
+Otherwise, the programmer may seek ways to reduce the cost of type boundaries.
 As the program evolves, this process repeats.
 
 We turn this observation into an evaluation method in three stages:
@@ -35,13 +37,13 @@ We turn this observation into an evaluation method in three stages:
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may
  add types to any subset of the modules in an untyped program.
-Performance evaluation must therefore consider the space of all
+Performance evaluation must therefore consider the space of program
  @emph{configurations} a programmer could possibly create.
 We describe this space as a static lattice representing all combinations of typed and
  untyped modules:
 @itemlist[
   @item{
-    A (@emph{software system}) @emph{configuration} is a sequence of
+    A (@emph{program}) @emph{configuration} is a sequence of
      @math{N} modules. Each module is either typed or untyped.
   }
   @item{
@@ -57,7 +59,7 @@ We describe this space as a static lattice representing all combinations of type
   }
 
   @item{
-    Define @exact|{$\leq\,\subseteq S \times S$}| as:
+    Define @exact|{$\leq$}| (a subset of @exact|{$S \times S$}|) as:
      @exact|{$c_1 \leq c_2$}|
      if and only if
      @exact|{$c_1(i) = 1$}|
@@ -73,8 +75,8 @@ We describe this space as a static lattice representing all combinations of type
   }
 
   @item{
-    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_k\,\subset\,\leq$}
-     such that @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
+    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_k$} (a subset of @exact{$\leq$}) as:
+     @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
      and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
     If @exact|{$c_1 \rightarrow_k c_2$}| we say that @exact{$c_2$} is reachable from
      @exact{$c_1$} in at most @exact{$k$} type conversion steps.
@@ -84,15 +86,49 @@ We describe this space as a static lattice representing all combinations of type
   }
 ]
 
-@; TODO clarify that lattice is a static artifact
-@;       doesn't say anything about performance per se
-@;      after measuring have some data,
-@;       next challenge is how to get relevant lessons from data
+    @(define suffixtree-lattice-version "6.2")
+    @(define suffixtree-num-configs (number->string (benchmark->num-configurations suffixtree)))
 
-After framing the performance lattice for a given program, language evaluators must
- generate a labeling @exact{$l$} such that for all @exact{$c \in S$} the performance of
- configuration @math{c} is expressed by @exact{$l(c)$}.
-Researchers can then draw lessons and make comparisons using the labeling.
+A performance lattice is a static artifact representing a program's configurations.
+Equipped with a labeling @exact{$l$} such that @exact{$l(c)$} characterizes the
+ performance of configuration @exact{$c$}, a lattice gives a picture of one
+ program's performance under gradual typing.
+
+@Figure-ref{fig:suffixtree-lattice} is a labeled lattice for one mid-sized program from
+ our benchmark suite.
+The program, @bm[suffixtree], has @integer->word[@benchmark->num-modules[suffixtree]] modules.
+Thus the lattice has @|suffixtree-num-configs| configurations,
+ rendered as @integer->word[@benchmark->num-modules[suffixtree]]-segment rectangles.
+The bottom element in the lattice represents the untyped configuration.
+Directly above it, the first level of the lattice represents all configurations with one typed module;
+ these configurations' rectangles have 1 filled segment.
+In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all configurations
+ with @math{i} typed modules, and the top element is a black rectangle representing the fully typed configuration.
+
+The label below each rectangle is the configuration's overhead@note{Ratio of two means over @id[@benchmark->num-iterations[suffixtree suffixtree-lattice-version]] samples.}
+ relative to the untyped configuration.
+For instance, the fully typed configuration runs 40% faster than the untyped configuration
+ and the slowest configuration is @id[@round[@max-overhead[@[benchmark-rktd suffixtree "6.2"]]]]x slower than untyped.
+With this wealth of data, one can answer nearly any question about @bm[suffixtree]'s performance overhead due to gradual typing.
+
+As a visualization technique, the lattice is no help in answering such questions.
+Moreover, performance lattices for even seven-module programs are too large to print.
+The next section therefore identifiers key questions to draw from lattices and the
+ final section gives a tailored visualization.
+
+    @figure*["fig:suffixtree-lattice" @elem{Performance overhead in @bm[suffixtree], on Racket v@|suffixtree-lattice-version|}
+      @(parameterize ([*LATTICE-CONFIG-MARGIN* 3]
+                      [*LATTICE-LEVEL-MARGIN* 8]
+                      [*LATTICE-FONT-SIZE* 9]
+                      [*LATTICE-BOX-HEIGHT* 6]
+                      [*LATTICE-BOX-WIDTH* 3]
+                      [*LATTICE-BOX-SEP* 0]
+                      [*LATTICE-BOX-TOP-MARGIN* 0]
+                      [*LATTICE-TRUNCATE-DECIMALS?* #t]
+                      [*LATTICE-BOX-BOT-MARGIN* 1])
+        (render-data-lattice suffixtree suffixtree-lattice-version))
+    ]
+
 
 
 @; -----------------------------------------------------------------------------
@@ -239,19 +275,6 @@ These might be configurations where running the unit tests takes hours
 @section[#:tag "sec:graphs"]{Overhead Graphs}
 
 @todo{how to presetn this huge amount of data in a comprehensible fashion}
-
-    @figure*["fig:suffixtree-lattice" "64"
-      @(parameterize ([*LATTICE-CONFIG-MARGIN* 3]
-                      [*LATTICE-LEVEL-MARGIN* 8]
-                      [*LATTICE-FONT-SIZE* 9]
-                      [*LATTICE-BOX-HEIGHT* 6]
-                      [*LATTICE-BOX-WIDTH* 3]
-                      [*LATTICE-BOX-SEP* 0]
-                      [*LATTICE-BOX-TOP-MARGIN* 0]
-                      [*LATTICE-TRUNCATE-DECIMALS?* #t]
-                      [*LATTICE-BOX-BOT-MARGIN* 1])
-        (render-data-lattice suffixtree "6.2"))
-    ]
 
 More and more
 

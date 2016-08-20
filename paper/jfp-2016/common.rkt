@@ -161,8 +161,8 @@
 (define (usable [d "D"] [u "U"])
   (make-element plain @list{@(math d"/"u)-usable}))
 
-(define (step [k "k"] [d "D"] [u "U"])
-  (make-element plain @list{@(math k)-step @(math d "/" u)-usable}))
+(define (step [k "k"] [d "D"])
+  (make-element plain @list{@(math k)-step @(math d)-deliverable}))
 
 ;; Format an identifier
 ;; Usage: @id[x]

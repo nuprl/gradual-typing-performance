@@ -66,6 +66,7 @@
 
   (rename-out
     [ext:typed/untyped-ratio typed/untyped-ratio]
+    [ext:max-overhead max-overhead]
     [ext:configuration->overhead configuration->overhead]
     [ext:min-overhead min-overhead])
 )
@@ -509,6 +510,9 @@
 (define (new-exact-table)
   (for/list ([b (in-list ALL-BENCHMARKS)])
     (tex-row "?")))
+
+(define (ext:max-overhead rktd)
+  (max-overhead (from-rktd rktd)))
 
 (define (ext:typed/untyped-ratio rktd)
   (typed/untyped-ratio rktd))
