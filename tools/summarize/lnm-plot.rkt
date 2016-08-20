@@ -7,6 +7,12 @@
 ;;  subject to at most L additional conversion steps
 
 (provide
+  count-configurations/mean ;; TODO not a great interface
+
+  ;; TODO
+  ;; load a summary to an interactive plot
+  ;; summary = vectorof listof unixtime
+
   SHIM-FOR-BARCHART-ALIGNMENT
   integer->pen-style
   integer->brush-style

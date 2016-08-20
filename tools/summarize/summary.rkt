@@ -121,7 +121,7 @@
   string->version
   ; (-> String (U #f String)))
 
-  N-deliverable
+  D-deliverable
   ; (-> Real (-> Summary Natural)))
 
   avg-overhead
@@ -476,7 +476,7 @@
 
 (: get-num-iterations (-> Summary Index))
 (define (get-num-iterations S)
-  (assert (fold-lattice S max #:pre length) index?))
+  (assert (fold-lattice S min #:pre length) index?))
 
 (: get-num-configurations (-> Summary Index))
 (define (get-num-configurations S)
@@ -811,9 +811,9 @@
      ;; 2016-04-16: pretty sure 'inst' could fix this
      (cast (fold-lattice sm count-N #:init 0) Natural)))
 
-(: N-deliverable (-> Real (-> Summary Natural)))
-(define ((N-deliverable N) S)
-  (deliverable S N))
+(: D-deliverable (-> Real (-> Summary Natural)))
+(define ((D-deliverable D) S)
+  (deliverable S D))
 
 (: usable (-> Summary Index Index Natural))
 (define (usable sm N M)

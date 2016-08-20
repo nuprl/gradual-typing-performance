@@ -8,10 +8,20 @@
   "typed-racket.rkt"
   (only-in pict blank hc-append scale)
   (only-in with-cache *use-cache?*)
+  (only-in gtp-summarize/summary
+    from-rktd
+    get-num-modules
+    get-num-iterations
+    D-deliverable
+    get-num-configurations)
+  (only-in gtp-summarize/lnm-plot
+    count-configurations/mean)
 ]
 
 @profile-point{sec:method}
 @title[#:tag "sec:method"]{Evaluation Method}
+
+@todo{fixup}
 
 Performance evaluation for gradual type systems must reflect how
  programmers use such systems.
@@ -28,7 +38,8 @@ As the program evolves, this process repeats.
 We turn this observation into an evaluation method in three stages:
  first by describing the @emph{space} over which a performance evaluation must take place,
  second by giving @emph{metrics} relevant to the performance of a gradually typed program,
- and third by introducing a graphical shorthand for concisely representing exponentially large datasets.
+ and third by introducing a graphical shorthand for concisely presenting the
+ metrics on exponentially large datasets.
 
 
 @; -----------------------------------------------------------------------------
@@ -39,8 +50,9 @@ The promise of Typed Racket's macro-level gradual typing is that programmers may
  add types to any subset of the modules in an untyped program.
 Performance evaluation must therefore consider the space of program
  @emph{configurations} a programmer could possibly create.
-We describe this space as a static lattice representing all combinations of typed and
- untyped modules:
+That is, all ways of choosing a single module to type, all ways of choosing two
+ modules to type, and so on to include every combination of typed and untyped modules.
+We describe this space as a lattice.
 @itemlist[
   @item{
     A (@emph{program}) @emph{configuration} is a sequence of
@@ -71,7 +83,7 @@ We describe this space as a static lattice representing all combinations of type
   @item{
     @exact|{$(S, \leq)$}| is a complete lattice.
     The fully untyped configuration is the
-     bottom element and the fully-typed configuration is the top
+     bottom element and the fully-typed configuration is the top element.
   }
 
   @item{
@@ -86,36 +98,58 @@ We describe this space as a static lattice representing all combinations of type
   }
 ]
 
-    @(define suffixtree-lattice-version "6.2")
-    @(define suffixtree-num-configs (number->string (benchmark->num-configurations suffixtree)))
+@(let* ([suffixtree-lattice-version "6.2"]
+        [S (from-rktd (benchmark-rktd suffixtree suffixtree-lattice-version))]
+        [suffixtree-num-modules (integer->word (get-num-modules S))]
+        [suffixtree-num-configs (number->string (get-num-configurations S))]
+        [suffixtree-num-iters   (number->string (get-num-iterations S))]
+        [suffixtree-sample-D    2]
+        [suffixtree-num-D       (integer->word ((D-deliverable suffixtree-sample-D) S))]
+        [suffixtree-sample-k    1]
+        [suffixtree-num-k       (integer->word ((count-configurations/mean S suffixtree-sample-k) suffixtree-sample-D))]
+       )
+  (list
+    @elem{
+      A performance lattice is a static artifact representing a program's configurations.
+      Equipped with a labeling @exact{$l$} such that @exact{$l(c)$} characterizes the
+       performance of configuration @exact{$c$}, a lattice gives a picture of one
+       program's performance under gradual typing.
+      Creating a lattice is difficult (requires type annotations for every module in the program)
+       and generating a labeling is time consuming (requires exponentially many measurements)
+       but this is the reality of gradual typing.
+      @; NOTE:
+      @; - generating a lattice is not for users -- requires a full typing
+      @; - generating a labeleing is exponentially time consuming.
 
-A performance lattice is a static artifact representing a program's configurations.
-Equipped with a labeling @exact{$l$} such that @exact{$l(c)$} characterizes the
- performance of configuration @exact{$c$}, a lattice gives a picture of one
- program's performance under gradual typing.
+      @Figure-ref{fig:suffixtree-lattice} is a labeled lattice for one mid-sized program from
+       our benchmark suite.
+      The program, @bm[suffixtree], has @|suffixtree-num-modules| modules.
+      Thus the lattice has @|suffixtree-num-configs| configurations,
+       rendered as @|suffixtree-num-modules|-segment rectangles.
+      The bottom element in the lattice represents the untyped configuration.
+      Directly above it, the first level of the lattice represents all configurations with one typed module;
+       these configurations' rectangles have 1 filled segment.
+      In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all configurations
+       with @math{i} typed modules, and the top element is a black rectangle representing the fully typed configuration.
 
-@Figure-ref{fig:suffixtree-lattice} is a labeled lattice for one mid-sized program from
- our benchmark suite.
-The program, @bm[suffixtree], has @integer->word[@benchmark->num-modules[suffixtree]] modules.
-Thus the lattice has @|suffixtree-num-configs| configurations,
- rendered as @integer->word[@benchmark->num-modules[suffixtree]]-segment rectangles.
-The bottom element in the lattice represents the untyped configuration.
-Directly above it, the first level of the lattice represents all configurations with one typed module;
- these configurations' rectangles have 1 filled segment.
-In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all configurations
- with @math{i} typed modules, and the top element is a black rectangle representing the fully typed configuration.
+      The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.}
+       relative to the untyped configuration.
+      @;For instance, the fully typed configuration runs 40% faster than the untyped configuration
+      @; and the slowest configuration is @id[@round[@max-overhead[@[benchmark-rktd suffixtree "6.2"]]]]x slower than untyped.
+      With this data, one can answer nearly any question about @bm[suffixtree]'s performance overhead due to gradual typing.
+      For instance, only @|suffixtree-num-D|
+       configurations run within a @id[suffixtree-sample-D]x overhead
+       and only @|suffixtree-num-k|
+        configurations are at most @id[suffixtree-sample-k] type conversion step
+        from a configuration with no more than @id[suffixtree-sample-D]x overhead.
 
-The label below each rectangle is the configuration's overhead@note{Ratio of two means over @id[@benchmark->num-iterations[suffixtree suffixtree-lattice-version]] samples.}
- relative to the untyped configuration.
-For instance, the fully typed configuration runs 40% faster than the untyped configuration
- and the slowest configuration is @id[@round[@max-overhead[@[benchmark-rktd suffixtree "6.2"]]]]x slower than untyped.
-With this wealth of data, one can answer nearly any question about @bm[suffixtree]'s performance overhead due to gradual typing.
-
-As a visualization technique, the lattice is no help in answering such questions.
-Moreover, performance lattices for even seven-module programs are too large to print.
-The next section therefore identifiers key questions to draw from lattices and the
- final section gives a tailored visualization.
-
+      A lattice, however, is a poor visual aid for answering such questions.
+      Images such as @figure-ref{fig:suffixtree-lattice} successfully
+       convey the spectrum of migration paths available to programmers, but evaluating
+       performance with a lattice is difficult at best.
+      In the next subsection, we identify key questions that a performance lattice can answer.
+      The following subsection introduces a alternative visualization tailored to these questions.
+    }
     @figure*["fig:suffixtree-lattice" @elem{Performance overhead in @bm[suffixtree], on Racket v@|suffixtree-lattice-version|}
       @(parameterize ([*LATTICE-CONFIG-MARGIN* 3]
                       [*LATTICE-LEVEL-MARGIN* 8]
@@ -128,7 +162,7 @@ The next section therefore identifiers key questions to draw from lattices and t
                       [*LATTICE-BOX-BOT-MARGIN* 1])
         (render-data-lattice suffixtree suffixtree-lattice-version))
     ]
-
+))
 
 
 @; -----------------------------------------------------------------------------
