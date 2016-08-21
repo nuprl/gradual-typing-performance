@@ -110,13 +110,13 @@ We describe this space as a lattice.
        )
   (list
     @elem{
-      A performance lattice is a static artifact representing a program's configurations.
+      A performance lattice illustrates a program's configurations.
       Equipped with a labeling @exact{$l$} such that @exact{$l(c)$} characterizes the
-       performance of configuration @exact{$c$}, a lattice gives a picture of one
-       program's performance under gradual typing.
+       performance of configuration @exact{$c$}, a lattice is a full description of
+       one program's performance under gradual typing.
       Creating a lattice is difficult (requires type annotations for every module in the program)
        and generating a labeling is time consuming (requires exponentially many measurements)
-       but this is the reality of gradual typing.
+       but such is the design space.
       @; NOTE:
       @; - generating a lattice is not for users -- requires a full typing
       @; - generating a labeleing is exponentially time consuming.
@@ -137,9 +137,9 @@ We describe this space as a lattice.
       @;For instance, the fully typed configuration runs 40% faster than the untyped configuration
       @; and the slowest configuration is @id[@round[@max-overhead[@[benchmark-rktd suffixtree "6.2"]]]]x slower than untyped.
       With this data, one can answer nearly any question about @bm[suffixtree]'s performance overhead due to gradual typing.
-      For instance, only @|suffixtree-num-D|
+      For instance, @|suffixtree-num-D|
        configurations run within a @id[suffixtree-sample-D]x overhead
-       and only @|suffixtree-num-k|
+       and @|suffixtree-num-k|
         configurations are at most @id[suffixtree-sample-k] type conversion step
         from a configuration with no more than @id[suffixtree-sample-D]x overhead.
 
@@ -148,7 +148,7 @@ We describe this space as a lattice.
        convey the spectrum of migration paths available to programmers, but evaluating
        performance with a lattice is difficult at best.
       In the next subsection, we identify key questions that a performance lattice can answer.
-      The following subsection introduces a alternative visualization tailored to these questions.
+      The following subsection introduces an alternative visualization tailored to these questions.
     }
     @figure*["fig:suffixtree-lattice" @elem{Performance overhead in @bm[suffixtree], on Racket v@|suffixtree-lattice-version|}
       @(parameterize ([*LATTICE-CONFIG-MARGIN* 3]
@@ -166,14 +166,14 @@ We describe this space as a lattice.
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:measurements"]{Measuring Performance}
+@section[#:tag "sec:measurements"]{Performance Metrics}
 
 The most basic question about a gradually typed language is
  how fast fully-typed programs are in comparison to their fully untyped relative.
 In principle, static types enable optimizations and can serve in place of the
  runtime tags used in safe dynamic languages.
-The net effect of such improvements may, however, be offset in programs
- that rely heavily on an untyped library.
+The net effect of such improvements may, however, be offset by runtime type checks
+ in programs that rely heavily on an untyped library.
 Hence we characterize the relative performance of fully-typed programs
  using a ratio to capture the possibility of speedups and slowdowns.
 
@@ -186,7 +186,7 @@ Hence we characterize the relative performance of fully-typed programs
       time needed to run the bottom configuration.
     }
 
-For users of gradual type systems, the important performance
+For users of a gradual type system, the important performance
  question is how much overhead due to gradual typing their current configuration suffers
  relative to the original program.
 If the performance overhead is low enough, programmers can release the
@@ -195,7 +195,7 @@ Depending on the nature of the software and clients' expectations,
  an appropriate substitute for "low enough" might take any value between zero overhead
  and an order-of-magnitude slowdown.
 To account for these varying requirements, we use
- the following parameterized definition of deliverable configurations.
+ the following parameterized definition of a deliverable configuration.
 
     @def[#:term @list{@deliverable{}}]{
      A configuration
@@ -203,9 +203,11 @@ To account for these varying requirements, we use
       @math{D}x slowdown compared to the untyped configuration.
     }
 
-Finally, if a software project is currently in an unacceptable
- configuration we ask how much work a team needs to invest to reach a
- deliverable or usable configuration.
+    @; NOTE: really should be using %, but Sec 4 shows why we stick to x
+
+If a software project is currently in a non-deliverable configuration,
+ the next question is how much work a team must invest to reach a
+ deliverable configuration.
 We propose as a coarse measure of "work" the number of modules that must be
  annotated with types before performance improves.
 
@@ -229,22 +231,21 @@ We propose as a coarse measure of "work" the number of modules that must be
 @(define (sample-overhead cfg)
   (ceiling (/ (sample-data cfg) (sample-data 'c00))))
 
-These four notions form the basis of our evaluation method.
-Let us illustrate these terms with a concrete example.
+Let us illustrate these terms with an example.
 Suppose we have a project with
  two modules where the untyped configuration runs in @id[(sample-data 'c00)]
- seconds and the typed configuration runs in @id[(sample-data 'c11)] second.
+ seconds and the typed configuration runs in @id[(sample-data 'c11)] seconds.
 Furthermore, suppose the gradually typed configurations run in
   @id[(sample-data 'c01)] and @id[(sample-data 'c10)] seconds.
-Using white squares to represent untyped modules and black squares for typed
- modules, we can visualize this scenario in a performance lattice with
- configurations' overhead (relative to the untyped configuration) as labels.
+@Figure-ref{fig:demo-lattice} is a performance lattice for this hypothetical program.
+The label below each configuration is its overhead relative to the untyped configuration.
 
-@centered[@elem[
-  (parameterize ([*LATTICE-CONFIG-MARGIN* 30]
-                 [*LATTICE-LEVEL-MARGIN* 4])
-    (make-performance-lattice (sample-data 'all)))
-]]
+    @figure["fig:demo-lattice" "Sample performance lattice"
+      (parameterize ([*LATTICE-CONFIG-MARGIN* 30]
+                     [*LATTICE-LEVEL-MARGIN* 4]
+                     [*LATTICE-BOX-SEP* 0])
+        (make-performance-lattice (sample-data 'all)))
+    ]
 
 @(let ([tu-ratio (/ (sample-data 'c11) (sample-data 'c00))]
        [t-str @id[(sample-overhead 'c11)]]
@@ -264,45 +265,14 @@ Using white squares to represent untyped modules and black squares for typed
      from the fully-typed configuration.
   })
 
-Practitioners curious about the feasibility of gradual typing in Racket must
- replace the parameters with concrete values tailored to their needs.
-If our experimental results in @Secref{sec:plots} show that a large number of
- configurations are deliverable under the chosen parameters,
- then the same results may hold for other projects.
-Language implementors are meanwhile working to
- diagnose the most severe overheads and to improve the average-case overheads
- introduced by gradual typing.
-
-@subsection{Auxilliary Notions}
-
-@emph{Note} usable was a core definition in POPL, but we find it confuses things.
-
-Even if a configuration is not deliverable, it might be suitably fast to
- run the test suites and prototype designs.
-A software engineering team can
- use such a configuration for development purposes without releasing
- it to clients.
-@;In practice, usable configurations may act as checkpoints for a team to ensure
-@; the product is working correctly before implementing performance optimizations.
-Using a second parameter to capture the meaning of "suitably fast",
- we define a notion of usable configurations.
-
-    @def[#:term @list{@usable[]}]{
-     A configuration in a performance
-      lattice is @usable[] if its performance is worse than a
-      @math{D}x slowdown but no worse than a @math{U}x slowdown compared to
-      the untyped configuration.
-    }
-
-On the other hand, the performance overhead of gradual typing may render
- some configurations too slow even for development purposes.
-These might be configurations where running the unit tests takes hours
- or days longer than normal.
-
-    @def[#:term "unacceptable"]{
-     An unacceptable configuration is neither @deliverable{} nor @usable[].
-    }
-
+The ratio of @deliverable{D} configurations in such a lattice is a measure of
+ the overall feasibility of gradual typing.
+When the ratio is high, then no matter how the software evolves performance will
+ likely remain acceptable.
+Conversely, a low ratio means the team may struggle to retain performance after
+ incrementally typing a few modules.
+Practitioners with fixed performance requirements can thereby extrapolate
+ the performance of a gradual type system based on the number of deliverable configurations.
 
 
 @; -----------------------------------------------------------------------------
