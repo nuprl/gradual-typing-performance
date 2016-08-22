@@ -346,12 +346,15 @@
     (parag (symbol->string (lnm-name l)))
     (elem (lnm-description l))))
 
-(define (render-lnm-plot pict*->elem)
+(define (render-lnm-plot pict*->elem #:rktd*** [rktd*** #f])
   ;; Sort & make figures of with 6 plots each or whatever
   (parameterize ([*AXIS-LABELS?* #f]
                  [*L* '(0 1)]
                  [*L-LABELS?* #t]
-                 [*LEGEND?* #t]
+                 [*LEGEND?* (or (not rktd***)
+                                (for*/or ([rktd** (in-list rktd***)]
+                                          [rktd*  (in-list rktd**)])
+                                  (< 1 (length rktd*))))]
                  [*LINE-LABELS?* #f]
                  [*LOG-TRANSFORM?* #t]
                  [*M* #f]
@@ -372,7 +375,7 @@
                  [*Y-STYLE* '%])
     (define cache? (*CACHE?*))
     (pict*->elem
-      (for/list ([rktd** (in-list (split-list 5 (get-lnm-rktd**)))]
+      (for/list ([rktd** (in-list (or rktd*** (split-list 5 (get-lnm-rktd**))))]
                  [i (in-naturals 1)])
         (parameterize ([*CACHE-TAG* (if cache? (number->string i) #f)])
           (collect-garbage 'major)
