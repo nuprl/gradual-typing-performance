@@ -1,8 +1,62 @@
 @; LOOKING FOR A HOME
 
 @; =============================================================================
+@; Even in the scenario outlined above, where the programmer likely spent hours
+@;  recovering type information, converting an untyped module to Typed Racket is
+@;  orthogonal to programmers' main goal of delivering a working software product.
+@; If the programmer does attempt to formalize types, there are other tradeoffs to bear in mind.
+
+
 @; =============================================================================
+These users frequently report steep performance penalties when they mix Racket and Typed Racket modules in a single application.
+Nonetheless, programmers continue to use Typed Racket because it accomodates the idioms of Racket and helps catch ``subtle reasoning errors.''@note{Matthew Butterick, personal email, 2015-05-20.}
+For example, the widely-used math, statistics, and plotting libraries are all typed.
+
+Typed Racket programs, as opposed to scripts, frequently incorporate untyped components and use untyped libraries.
+Conversely, untyped programs often depend on typed libraries.
+In other words, gradual typing is widespread.
+
+The prevalence of gradual typing is largely due to the low syntactic burden
+ of mixing typed and untyped code.
+Racket programmers may import most typed values as if they were untyped.
+The only restriction is that typed compiler extensions cannot run in untyped contexts.
+Typed Racket programmers can import untyped values by giving each import an
+ explicit type annotation.
+
+Given the close integration of Racket and Typed Racket, programmers tend to
+ incrementally type untyped modules.
+Below are a few common use cases, but in general we cannot predict why or how programmers choose to add types.
 @; =============================================================================
+@subsection{Auxilliary Notions}
+
+@emph{Note} usable was a core definition in POPL, but we find it confuses things.
+
+Even if a configuration is not deliverable, it might be suitably fast to
+ run the test suites and prototype designs.
+A software engineering team can
+ use such a configuration for development purposes without releasing
+ it to clients.
+@;In practice, usable configurations may act as checkpoints for a team to ensure
+@; the product is working correctly before implementing performance optimizations.
+Using a second parameter to capture the meaning of "suitably fast",
+ we define a notion of usable configurations.
+
+    @def[#:term @list{@usable[]}]{
+     A configuration in a performance
+      lattice is @usable[] if its performance is worse than a
+      @math{D}x slowdown but no worse than a @math{U}x slowdown compared to
+      the untyped configuration.
+    }
+
+On the other hand, the performance overhead of gradual typing may render
+ some configurations too slow even for development purposes.
+These might be configurations where running the unit tests takes hours
+ or days longer than normal.
+
+    @def[#:term "unacceptable"]{
+     An unacceptable configuration is neither @deliverable{} nor @usable[].
+    }
+
 @; =============================================================================
 In practice, sound gradual type systems for Racket, Python, and JavaScript
  have demonstrated overheads of
@@ -37,7 +91,7 @@ When fully typed, the same benchmarks' average overhead fell to 0.065x.
  but in general these gradual type systems have three broad goals:
  @itemlist[
    @item{@emph{Expressiveness:} describe all untyped features with useful types}
-   @item{@emph{Soundness:} enforce the semantics of types at run-time}
+   @item{@emph{Soundness:} enforce the semantics of types at runtime}
    @item{@emph{Performance:} leverage types in efficient compilers and IDE tools}
  ]
 Soundness for gradual type systems is traditionally formulated as a

@@ -41,6 +41,7 @@
 (define/short algorithmica "Algorithmica"  "Algorithmica")
 (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
 (define/short jfp "JFP" (string-append Journal "Functional Programming"))
+(define/short cj "The Computer Journal" "The Computer Journal")
 (define/short asa "JASA" (string-append Journal "the American Statistical Association"))
 (define/short hosc "HOSC" "Higher-Order and Symbolic Computation")
 (define/short lsc "LSC" "LISP and Symbolic Computation")
@@ -1304,6 +1305,30 @@
    #:author "Linh Chi Nguyen"
    #:location (dissertation-location #:institution "University of Trento" #:degree "Master in Economics")
    #:date 2014))
+
+(define h-cj-1989
+  (make-bib
+   #:title "Why Functional Programming Matters"
+   #:author "John Hughes"
+   #:location (journal-location cj
+                                #:volume 32
+                                #:number 2
+                                #:pages '(98 107))
+   #:date 1989))
+
+(define l-mthesis-2016
+  (make-bib
+    #:title "Typed Contracts for Gradual Typing"
+    #:author "Brian LaChance"
+    #:location (dissertation-location #:institution "Northeastern University" #:degree "Master in Computer Science")
+    #:date 2016))
+
+(define stf-esop-2009
+  (make-bib
+   #:title "Practical Variable-Arity Polymorphism"
+   #:author (authors "T. Stephen Strickland" "Sam Tobin-Hochstadt" "Matthias Felleisen")
+   #:location (proceedings-location esop #:pages '(32 46))
+   #:date 2009))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
