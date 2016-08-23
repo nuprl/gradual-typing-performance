@@ -40,7 +40,8 @@
 (define/short sigplan-notices "SIGPLAN Notices" (string-append ACM "SIGPLAN Notices"))
 (define/short algorithmica "Algorithmica"  "Algorithmica")
 (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
-(define/short jfp "JFP" (string-append Journal "Functional Programming"))
+(define/short jfp "JFP" (string-append Journal "of Functional Programming"))
+(define/short spe "SPE" (string-append Journal "of Software --- Practices & Experience"))
 (define/short cj "The Computer Journal" "The Computer Journal")
 (define/short asa "JASA" (string-append Journal "the American Statistical Association"))
 (define/short hosc "HOSC" "Higher-Order and Symbolic Computation")
@@ -1329,6 +1330,17 @@
    #:author (authors "T. Stephen Strickland" "Sam Tobin-Hochstadt" "Matthias Felleisen")
    #:location (proceedings-location esop #:pages '(32 46))
    #:date 2009))
+
+(define b-spe-1993
+  ; http://www.cs.colorado.edu/department/publications/reports/docs/CU-CS-573-92.pdf
+  (make-bib
+   #:title "The measured cost of conservative garbage collection"
+   #:author "Ben Zorn"
+   #:location (journal-location spe
+                                #:volume 23
+                                #:number 7
+                                #:pages '(733 756))
+   #:date 1993))
 
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html

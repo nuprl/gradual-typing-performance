@@ -44,7 +44,7 @@ We turn this observation into an evaluation method in three stages:
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may
  add types to any subset of the modules in an untyped program.
-A comprehensive evaluation must therefore consider the space of
+A comprehensive performance evaluation must therefore consider the space of
  @emph{configurations} a programmer could possibly create by typing some modules.
 That is, all ways of choosing a single module to type, all ways of choosing two
  modules to type, and so on to include every combination of typed and untyped modules.
@@ -116,8 +116,7 @@ The bottom element in the lattice represents the untyped configuration.
 The first level of the lattice represents all configurations with one typed module;
  these configurations' rectangles have 1 filled segment.
 In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all configurations
- with @math{i} typed modules.
-The top element represents the fully typed configuration.
+ with @math{i} typed modules as rectangles with @math{i} filled segments.
 
 The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.}
  relative to the untyped configuration.
@@ -174,13 +173,13 @@ Hence we characterize the relative performance of fully-typed programs
 @;  may influence a software team's decision to experiment with gradual typing.
 
     @def[#:term "typed/untyped ratio"]{
-     The typed/untyped (τ/λ) ratio of a performance
+     The typed/untyped ratio of a performance
       lattice is the time needed to run the top configuration divided by the
       time needed to run the bottom configuration.
     }
 
 For users of a gradual type system, the important performance
- question is how much overhead due to gradual typing their current configuration suffers
+ question is how much overhead their current configuration suffers
  relative to the original program.
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
@@ -198,9 +197,9 @@ To account for these varying requirements, we use
 
     @; NOTE: really should be using %, but Sec 4 shows why we stick to x
 
-If a software project is currently in a non-deliverable configuration,
+If a software project is currently in a non-@deliverable[] configuration,
  the next question is how much work a team must invest to reach a
- deliverable configuration.
+ @deliverable[] configuration.
 We propose as a coarse measure of "work" the number of modules that must be
  annotated with types before performance improves.
 
@@ -304,7 +303,7 @@ Practitioners with fixed performance requirements can therefore use the number
         Viewed as a cumulative distribution function, the plot demonstrates
          a tradeoff between performance overhead and
          the number of deliverable configurations.
-        In this case, the shallow slope implies that the tradeoff is not very good;
+        In this case, the shallow slope implies that the tradeoff is poor;
          few configurations become deliverable as the programmer accepts a larger performance overhead.
         The ideal slope would have a steep incline and a large y-intercept,
          meaning that very few configurations suffer large overhead and many
@@ -313,7 +312,7 @@ Practitioners with fixed performance requirements can therefore use the number
         @;Nonetheless, the plot effectively summarizes this large dataset.
         @;Similar plots will handle arbitrarily large programs.
 
-        The plot on the right half of @figure-ref{fig:suffixtree-plot} presents
+        The plot on the right half of @figure-ref{fig:suffixtree-plot} gives
          the number of @step{1} configurations.
         A point @math{(X,Y)} on this plot represents the percentage @math{Y}
          of configurations @exact{$c_1$} such that there exists a configuration
@@ -339,11 +338,13 @@ Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions
 The @emph{first assumption} is that configurations with less than 2x overhead are significantly
  more practical than configurations with over 10x overhead.
 Hence the plots use a log-scaled x-axis
- to encourage fine-grained comparison in the 20-60% overhead range@note{GC}
+ to encourage fine-grained comparison in the 20-60% overhead range
  and simultaneously blur the distinction between, e.g., 14x and 18x slowdowns.
 
+@; Zorn: 30% of execution time in storage management "represent the worst-case overhead that that might be expected to be associated with garbage collection."
+
 @; - assn: 20x
-This leads to the @emph{second assumption}, that configurations with more than 20x
+The @emph{second assumption} is that configurations with more than 20x
  overhead are completely unusable in practice.
 Pathologies like the 100x slowdowns in @figure-ref{fig:suffixtree-lattice}
  represent a challenge for implementors, but if these overheads suddenly
@@ -357,6 +358,8 @@ The @emph{first limitation} of the overhead plots is that they hide
  configurations' identity.
 One cannot distinguish the fully-typed configuration; moreover,
  the @exact{$\leq$} and @exact{$\rightarrow_k$} relations are lost.
+To compensate for the former we give the typed/untyped ratio above the left plot.
+Unfortunately, the other configurations remain anonymous.
 
 @; - limit: angelic choice
 The @emph{second limitation} is that the @step{1} plot optimistically chooses the

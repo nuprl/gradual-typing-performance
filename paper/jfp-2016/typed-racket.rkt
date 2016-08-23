@@ -197,9 +197,9 @@
     (string-join (map (compose1 symbol->string benchmark-name) bm*) "-")
     ".rktd"))
 
-(define (lattice-cache-file bm v tag)
+(define (lattice-cache-file bm v)
   (ensure-dir COMPILED)
-  (string-append COMPILED "/cache-lattice-" (symbol->string bm) "-" v "-" tag ".rktd"))
+  (string-append COMPILED "/cache-lattice-" (symbol->string bm) "-" v ".rktd"))
 
 (define (benchmarks-table-cache-file)
   (ensure-dir COMPILED)
@@ -225,10 +225,11 @@
 ;; --- Lattice
 
 (define (render-data-lattice bm v)
-  (with-cache (lattice-cache-file (benchmark-name bm) v "*")
-    #:read deserialize
-    #:write serialize
-    (lambda () (file->performance-lattice (benchmark-rktd bm v)))))
+  (parameterize ([*current-cache-keys* (list *LATTICE-BORDER-WIDTH* *LATTICE-BOX-BOT-MARGIN* *LATTICE-BOX-HEIGHT* *LATTICE-BOX-SEP* *LATTICE-BOX-TOP-MARGIN* *LATTICE-BOX-WIDTH* *LATTICE-CONFIG-MARGIN* *LATTICE-LEVEL-MARGIN* *LATTICE-FONT-SIZE* *LATTICE-TRUNCATE-DECIMALS?*)])
+    (with-cache (lattice-cache-file (benchmark-name bm) v)
+      #:read deserialize
+      #:write serialize
+      (lambda () (file->performance-lattice (benchmark-rktd bm v))))))
 
 ;; -----------------------------------------------------------------------------
 ;; --- Benchmarks
