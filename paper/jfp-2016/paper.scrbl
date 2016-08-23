@@ -21,14 +21,14 @@
   @; TODO needs work
   @; - "however"   --> cost of the guarantee?
   @; - "it is unclear"
-  Every sound gradual type system guarantees that untyped components of a program can never break the type systems' static guarantees.
+  Every sound gradual type system guarantees that untyped components of a program can never break static type guarantees.
   The literature on gradual typing is, however, remarkably silent about the @emph{performance} of programs that mix typed and untyped components.
   It moreover lacks rigorous methods to quantify the overall performance of a gradual type system
    and to compare the performance of two gradual type systems.
   Clients therefore cannot assess whether a particular gradual type system will be practical given their performance requirements.
   Furthermore, implementors cannot measure the net effect of changes to a gradually typed language.
 
-  This paper presents a method for the comprehensive evaluation of the performance characteristics of gradual type systems.
+  This paper presents a method for the performance evaluation of gradual type systems.
   The method quantifies both the
    @emph{absolute performance} of a gradual type system on representative programs
    and the @emph{relative performance} of two gradual type systems for a fixed base language.
@@ -44,7 +44,7 @@
 @include-section{threats.scrbl}
 @include-section{devils.scrbl}
 @;@include-section{experience.scrbl}
-@;@include-section{flavors.scrbl}
+@include-section{flavors.scrbl}
 @include-section{conclusion.scrbl}
 
 @generate-bibliography[]

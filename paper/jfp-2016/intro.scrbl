@@ -22,7 +22,7 @@ Regardless of why programmers choose dynamically typed languages,
 Explicit annotations crystallize a programmer's intent to other human readers.
 Furthermore, the toolchain can check the annotations for inconsistencies
  and leverage types to improve the efficiency of compiled code.
-Despite many attempts to infer type information from dynamically typed programs@~cite[cf-pldi-1991 mfsw-hosc-2005 acfh-popl-2011],
+Despite many attempts to infer type information from dynamically typed programs,
  there is no substitute for programmer-supplied annotations.
      @; Confirming problem, and responses:
      @; - PEP type hints
@@ -32,7 +32,7 @@ Despite many attempts to infer type information from dynamically typed programs@
 
 @; Enter GT
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006]@note{We prefer the more descriptive term @emph{incremental typing}, but defer to the better sloganeer.}
- is a linguistic approach to overcome the problem. @; What problem? Is it really clear enough?
+ is a linguistic approach to the problem. @; What problem? Is it really clear enough?
     @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
     @;       but the cast calculus & gradualizer/foundations have their place
 In a gradually typed language,
@@ -43,9 +43,9 @@ At the lexical boundaries between annotated code and dynamically
 
 From a syntactic perspective the interaction is seamless, but dynamic checks introduce runtime overhead.
 During execution, if an untyped function flows into a variable @racket[f] with
- type @racket[(Int -> Int)] then a dynamic check must
+ type @racket[(Real -> Real)] then a dynamic check must
  follow every subsequent call to @racket[f] because typed code can never trust
- that the untyped function produces values that have the syntactic type @racket[Int].
+ that the untyped function produces values that have the syntactic type @racket[Real].
 Conversely, typed functions flowing into untyped code must dynamically check
  their argument values.
 If functions or large data structures frequently cross these
@@ -90,14 +90,14 @@ Building on the evaluation method introduced in an earlier conference version@~c
     data for @integer->word[(*NUM-OO-BENCHMARKS*)]
      object-oriented benchmark programs and
      @integer->word[(- (*NUM-BENCHMARKS*) (*NUM-OO-BENCHMARKS*) NUM-POPL)]
-     additional functional programs;
+     new functional programs;
   }
   @item{
-    comparisons across @integer->word[(length (*RKT-VERSIONS*))] versions
-     of Typed Racket;
+    a comparitive evaluation of @integer->word[(length (*RKT-VERSIONS*))] versions
+     of Typed Racket; and
   }
   @item{
-    and in-depth discussions of performance bottlenecks in each benchmark,
+    in-depth discussions of performance bottlenecks in each benchmark,
      their resolution,
      and general lessons for implementors of gradually typed languages.
   }
