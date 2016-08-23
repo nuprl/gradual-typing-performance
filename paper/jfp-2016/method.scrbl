@@ -22,16 +22,12 @@
 @profile-point{sec:method}
 @title[#:tag "sec:method"]{Evaluation Method}
 
-@todo{fixup}
-
 Performance evaluation for gradual type systems must reflect how
  programmers use such systems.
 Migrating an entire project from untyped to typed is rare,
  while incremental transition is common.
-@; TODO still ifffy
-Consequently, programmers tend to judge the performance of gradual typing
- by comparing the performance of a program mixing typed and untyped components
- against the program's previous running version.
+Consequently, programmers tend to judge the performance of a gradual type system @emph{locally},
+ by comparing the performance of an incrementally modified program against the program's previous running version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may seek ways to reduce the cost of type boundaries.
 As the program evolves, this process repeats.
@@ -39,8 +35,7 @@ As the program evolves, this process repeats.
 We turn this observation into an evaluation method in three stages:
  first by describing the @emph{space} over which a performance evaluation must take place,
  second by giving @emph{metrics} relevant to the performance of a gradually typed program,
- and third by introducing a graphical shorthand for concisely presenting the
- metrics on exponentially large datasets.
+ and third by introducing a visualization that concisely presents the metrics on exponentially large datasets.
 
 
 @; -----------------------------------------------------------------------------
@@ -49,8 +44,8 @@ We turn this observation into an evaluation method in three stages:
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may
  add types to any subset of the modules in an untyped program.
-Performance evaluation must therefore consider the space of program
- @emph{configurations} a programmer could possibly create.
+A comprehensive evaluation must therefore consider the space of
+ @emph{configurations} a programmer could possibly create by typing some modules.
 That is, all ways of choosing a single module to type, all ways of choosing two
  modules to type, and so on to include every combination of typed and untyped modules.
 We describe this space as a lattice.
@@ -78,11 +73,11 @@ We describe this space as a lattice.
      @exact|{$c_1(i) = 1$}|
      implies
      @exact|{$c_2(i) = 1$}|
-     for all @exact{$i$} such that @exact{$0 \le i < N$}.
+     for all @exact|{$i \in [0, N)$}|.
   }
 
   @item{
-    @exact|{$(S, \leq)$}| is a complete lattice.
+    @exact|{$(S, \leq)$}| is a complete lattice; henceforth, a @emph{performance lattice}.
     The fully untyped configuration is the
      bottom element and the fully-typed configuration is the top element.
   }
@@ -93,9 +88,6 @@ We describe this space as a lattice.
      and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
     If @exact|{$c_1 \rightarrow_k c_2$}| we say that @exact{$c_2$} is reachable from
      @exact{$c_1$} in at most @exact{$k$} type conversion steps.
-  }
-  @item{
-    A @italic{performance lattice} is a pair @exact|{$(S, \leq)$}|.
   }
 ]
 
@@ -112,45 +104,45 @@ We describe this space as a lattice.
 @(define suffixtree-num-k           ((count-configurations/mean S suffixtree-sample-k) suffixtree-sample-D))
 @(define suffixtree-num-k-str       (integer->word suffixtree-num-k))
 
-A performance lattice illustrates a program's configurations.
+A performance lattice collects one program's configurations.
 Equipped with a labeling @exact{$l$} such that @exact{$l(c)$} characterizes the
  performance of configuration @exact{$c$}, a lattice is a full description of
- one program's performance under gradual typing.
-Creating a lattice is difficult (requires type annotations for every module in the program)
- and generating a labeling is time consuming (requires exponentially many measurements)
- but such is the design space.
-@; NOTE:
-@; - generating a lattice is not for users -- requires a full typing
-@; - generating a labeleing is exponentially time consuming.
+ the program's performance under gradual typing.
 
-@Figure-ref{fig:suffixtree-lattice} is a labeled lattice for one mid-sized program from
- our benchmark suite.
-The program, @bm[suffixtree], has @|suffixtree-num-modules| modules.
-Thus the lattice has @|suffixtree-num-configs-str| configurations,
- rendered as @|suffixtree-num-modules|-segment rectangles.
+@Figure-ref{fig:suffixtree-lattice} is a labeled lattice for @bm[suffixtree], a mid-sized program from our benchmark suite.
+The program consists of @|suffixtree-num-modules| modules, thus the lattice has @|suffixtree-num-configs-str| configurations.
+Each configuration is rendered as a @|suffixtree-num-modules|-segment rectangle.
 The bottom element in the lattice represents the untyped configuration.
-Directly above it, the first level of the lattice represents all configurations with one typed module;
+The first level of the lattice represents all configurations with one typed module;
  these configurations' rectangles have 1 filled segment.
 In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all configurations
- with @math{i} typed modules, and the top element is a black rectangle representing the fully typed configuration.
+ with @math{i} typed modules.
+The top element represents the fully typed configuration.
 
 The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.}
  relative to the untyped configuration.
 @;For instance, the fully typed configuration runs 40% faster than the untyped configuration
 @; and the slowest configuration is @id[@round[@max-overhead[@[benchmark-rktd suffixtree "6.2"]]]]x slower than untyped.
-With this data, one can answer nearly any question about @bm[suffixtree]'s performance overhead due to gradual typing.
+With this data, a language implementor can answer nearly any question about this benchmark's
+ performance overhead due to gradual typing.
 For instance, @|suffixtree-num-D-str|
  configurations run within a @id[suffixtree-sample-D]x overhead
  and @|suffixtree-num-k-str|
   configurations are at most @id[suffixtree-sample-k] type conversion step
-  from a configuration with no more than @id[suffixtree-sample-D]x overhead.
+  from a configuration that runs within @id[suffixtree-sample-D]x overhead.
 
-A lattice, however, is a poor visual aid for answering such questions.
-Images such as @figure-ref{fig:suffixtree-lattice} successfully
- convey the spectrum of migration paths available to programmers, but evaluating
- performance with a lattice is difficult at best.
-In the next subsection, we identify key questions that a performance lattice can answer.
-The following subsection introduces an alternative visualization tailored to these questions.
+A performance lattice, however, is a poor visual aid for answering such questions.
+Images such as @figure-ref{fig:suffixtree-lattice} do not scale.
+@(let* ([too-many-modules 8]
+        [num-bm-with-too-many (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS))])
+  @elem{
+     @string-titlecase[@integer->word[num-bm-with-too-many]]
+      of our benchmarks have
+      over @integer->word[too-many-modules] modules;
+      their lattices do not fit in print.
+  })
+Realisitic programs will be much larger.
+For example the Typed Racket @library{plot} library has over 80 modules.
 
     @figure*["fig:suffixtree-lattice" @elem{Performance overhead in @bm[suffixtree], on Racket v@|suffixtree-lattice-version|.}
       @(parameterize ([*LATTICE-CONFIG-MARGIN* 3]
@@ -161,6 +153,7 @@ The following subsection introduces an alternative visualization tailored to the
                       [*LATTICE-BOX-SEP* 0]
                       [*LATTICE-BOX-TOP-MARGIN* 0]
                       [*LATTICE-TRUNCATE-DECIMALS?* #t]
+                      [*LATTICE-BORDER-WIDTH* 0.5]
                       [*LATTICE-BOX-BOT-MARGIN* 1])
         (render-data-lattice suffixtree suffixtree-lattice-version))
     ]
@@ -181,7 +174,7 @@ Hence we characterize the relative performance of fully-typed programs
 @;  may influence a software team's decision to experiment with gradual typing.
 
     @def[#:term "typed/untyped ratio"]{
-     The typed/untyped ratio of a performance
+     The typed/untyped (τ/λ) ratio of a performance
       lattice is the time needed to run the top configuration divided by the
       time needed to run the bottom configuration.
     }
@@ -269,10 +262,10 @@ The ratio of @deliverable{D} configurations in such a lattice is a measure of
  the overall feasibility of gradual typing.
 When the ratio is high, then no matter how the software evolves performance will
  likely remain acceptable.
-Conversely, a low ratio means a team may struggle to retain performance after
+Conversely, a low ratio means a team may struggle to recover performance after
  incrementally typing a few modules.
-Practitioners with fixed performance requirements can thereby extrapolate
- the performance of a gradual type system based on the number of deliverable configurations.
+Practitioners with fixed performance requirements can therefore use the number
+ of @deliverable[] configurations to extrapolate the performance of a gradual type system.
 
 
 @; -----------------------------------------------------------------------------
@@ -298,12 +291,12 @@ Practitioners with fixed performance requirements can thereby extrapolate
          @deliverable{} configurations.
         The plot on the left half of @figure-ref{fig:suffixtree-plot} presents this
          information for the @bm[suffixtree] benchmark.
-        On the x-axis, possible values for @math{D} range continuously from 1 to @id[(*MAX-OVERHEAD*)].
+        On the x-axis, possible values for @math{D} range continuously from one to @integer->word[(*MAX-OVERHEAD*)].
         Dashed lines to the left of the 2x tick pinpoint overheads of 1.2x, 1.4x, 1.6x, and 1.8x.
         To the right of the 2x tick, similar dashed lines pinpoint 4x, 6x, 8x, etc.
         The y-axis gives the proportion of configurations in the lattice that
          suffer at most @math{D}x performance overhead.
-        At a glance, one can confirm our earlier observation that @|suffixtree-num-D-str|
+        Using this plot, one can confirm our earlier observation that @|suffixtree-num-D-str|
          of the @|suffixtree-num-configs-str| configurations
          (@(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))%)
          run within a @id[suffixtree-sample-D]x overhead.
@@ -328,7 +321,7 @@ Practitioners with fixed performance requirements can thereby extrapolate
          runs at most @math{X} times slower than the untyped configuration.@note{Note that @exact{$c_1$} and @exact{$c_2$} may be the same. They are definitely the same when @exact{$c_1$} is the fully-typed configuration.}
         Intuitively, this plot has a similar shape to the (0-step) @deliverable[] plot
          because accounting for one type conversion step only makes more configurations ``deliverable''.
-        It does not change the performance characteristics of the benchmark.
+        It does not change the overall characteristics of the benchmark.
 
         These @emph{overhead plots} concisely summarize the @bm[suffixtree] dataset.
         The same technique scales to arbitrarily large benchmarks.
@@ -338,52 +331,37 @@ Practitioners with fixed performance requirements can thereby extrapolate
 
 @subsection{Assumptions and Limitations}
 
-Plots in the style of @figure-ref{fig:suffixtree-plot} rest on three major assumptions
- and evince two significant limitations.
-One must keep these in mind when interpreting our results.
+Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions
+ and evince two significant limitations, which readers
+ must keep these in mind when interpreting our results.
 
 @; - assn: log scale
-The first assumption is that configurations with less than 2x overhead are significantly
+The @emph{first assumption} is that configurations with less than 2x overhead are significantly
  more practical than configurations with over 10x overhead.
-Hence the plots use a log-scaled x-axis.
-On one hand, the log scale emphasizes the practical value of low overheads.
-In particular, early garbage collectors strove for less than 20% performance overhead@~cite[u-sde-1984];
- gradual typing may fail if it cannot meet similar requirements.
-On the other hand, the log scale blurs the distinction between e.g. 14x and 16x overheads.
-We suspect programmers will similarly regard any overhead above a certain threshold
- as too slow even for prototyping or running unit tests.@note{This notion of @emph{usable} configurations was central in Takikawa @|etal|, but in retrospect we find it overcomplicates the method.}
+Hence the plots use a log-scaled x-axis
+ to encourage fine-grained comparison in the 20-60% overhead range@note{GC}
+ and simultaneously blur the distinction between, e.g., 14x and 18x slowdowns.
 
 @; - assn: 20x
-This leads to the second assumption; configurations with more than 20x
+This leads to the @emph{second assumption}, that configurations with more than 20x
  overhead are completely unusable in practice.
 Pathologies like the 100x slowdowns in @figure-ref{fig:suffixtree-lattice}
  represent a challenge for implementors, but if these overheads suddenly
  dropped to 30x the configurations would still be useless to developers.
 
 @; - assn: ok to take means
-@;bg  no, not really worth mentioning. Sure it's a threat, but not here.
-
-@; - assn: all configs equally likely
-The third assumption is that all configurations are equally probable.
-In other words, when a programmer incrementally adds types we assume the
- program could transition to any configuration.
-This assumption is clearly false, but without a model for how programs typically
- evolve it is our best unbiased guess.
+@; meh whocares
 
 @; - limit: no identity, no relation between configs (where is typed?)
-Along the same lines, the first limitation of the overhead plots is that they hide
+The @emph{first limitation} of the overhead plots is that they hide
  configurations' identity.
 One cannot distinguish the fully-typed configuration; moreover,
  the @exact{$\leq$} and @exact{$\rightarrow_k$} relations are lost.
 
 @; - limit: angelic choice
-The second limitation is that the @step{1} plot uses angelic choice.
-A non-deliverable configuration can reach @exact{$O(N!\,/\,(N-k)!)$} configurations in @math{k} type conversion steps.
-Overhead plots only show that one of these configurations is deliverable.
-In practice, a programmer needs to find or guess the right configuration.
-
-None of the above invalidate our method, but rather show opportunities for future work.
-In particular, it would be a great improvement if overhead plots could incorporate
- constraints about how the programmer intends to navigate a lattice.
-For instance, if two modules will always be both untyped or both typed then
- evaluation can ignore half the performance lattice.
+The @emph{second limitation} is that the @step{1} plot optimistically chooses the
+ best type conversion step.
+In a program with @math{N} modules, a programmer has up to @math{N} type conversion steps to choose from,
+ some of which may not lead to a @deliverable[] configuration.
+For example, the untyped configuration in @bm[suffixtree] is @step["1" "2"],
+ but only one of the six possible steps leads to a @deliverable{2} configuration.

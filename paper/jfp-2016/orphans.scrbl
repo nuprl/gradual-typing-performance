@@ -1,6 +1,16 @@
 @; LOOKING FOR A HOME
 
 @; =============================================================================
+
+all configurations are equally probable.
+but some mixes of types and untyped actually dont make sense
+
+ALSO, when a programmer incrementally adds types we assume the
+ program could transition to any configuration.
+This assumption is clearly false, but without a model for how programs typically
+ evolve it is our best unbiased guess.
+
+@; =============================================================================
 @; Even in the scenario outlined above, where the programmer likely spent hours
 @;  recovering type information, converting an untyped module to Typed Racket is
 @;  orthogonal to programmers' main goal of delivering a working software product.
