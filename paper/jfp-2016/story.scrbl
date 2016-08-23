@@ -7,7 +7,7 @@
 
 Typed Racket@~cite[TypedRacket] is the oldest and most developed implementation of sound gradual typing.
 @; TODO "it ... it" bo-ring
-It supports clients in both academia and industry.@note{@todo{collect 10 tr users}} @; @url{http://con.racket-lang.org/2015/burns.pdf}
+It supports clients in both academia and industry.@note{See @url{http://www.google.com} for a partial list.}
 Typed Racket attracts these clients because it supports the idioms of Racket.
 In fact, a major design goal of Typed Racket is that converting a Racket program
  to Typed Racket is only a matter of adding type annotations.
@@ -16,7 +16,7 @@ Existing code can remain unchanged, including code using
  first-class classes@~cite[tsdthf-oopsla-2012],
  delimited continuations@~cite[tsth-esop-2013].
  or contracts@~cite[l-mthesis-2016].
-Conversely, removing the types from any Typed Racket program yields a syntactically valid Racket program.
+Conversely, removing all types from a Typed Racket program yields a syntactically valid Racket program.
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single program.
 Furthermore, programmers often migrate Racket modules to Typed Racket as the software evolves.
@@ -122,20 +122,23 @@ Nevertheless, the type system must prevent untyped code from replacing the conte
 It does so by compiling the type to a contract @ctc{Boxof Natural} and applying this contract to voting machines that cross a type boundary.
 The contract proxies a voting machine and dynamically enforces type-correct use by checking every write to the machine.
 
-At first glance, the proxy may seem overly conservative.
-After all, untyped Racket is a memory safe programming language.
-If untyped code replaces the contents of a voting machine with a @type{String}, then the program is sure to raise an exception when it treats the string as a number.
+The proxy may seem overly conservative.
+After all, untyped Racket is a dynamically typed programming language.
+If untyped code replaces the contents of a voting machine with a @type{String}, then the program is sure to raise an exception later, when it treats the string as a number.
 
-The true danger is that untyped code might put an ill-typed number such as a @type{Real} or @type{Negative-Integer} in the machine.
-Suppose the program manages several voting machines and eventually sums their contents.
-If one voting machine contains a real number, the program will silently compute a nonsensical sum.
-The whole purpose of a type system is to prevent such failures.
-A proxy fulfills this purpose by detecting and immediately reporting
- any mismatch between the type system and runtime values.
+On the contrary, there are two deep motivations for enforcing type soundness.
+The first is that dynamic type errors are hard to diagnose in higher-order functional languages.
+Programmers who follow John Hughes' advice and compose their programs from small, re-usable functions@~cite[h-cj-1989] will find that the cause of a dynamic type error is often far removed from the point of failure.
+Enforcing type soundness catches such errors immediately, as soon as an untyped value contradicts a static type annotation.
+@; laziness does not pay for debugging -- the static guys know this already
 
-@; @cite[h-cj-1989]
-@;  higher-order functions, lazy evaluation, small general modules
-@;  This is one place we cannot afford to be lazy 
+The second reason is that dynamic checks are not faithful to all static types.
+Tag-checking enforces minimal constraints;
+ na@exact{\"i}vely substituting tags for types opens the door to silent semantic failures.
+Suppose a program manages several voting machines and eventually sums their contents.
+If untyped code puts a real number in one voting machine, the program will still compute a sum without error.
+The result, however, will be nonsense.
+This is precisely the sort of nonsense a type system is supposed to prevent.
 
     @figure["fig:complex-multiply" "Multiplication for polar form complex numbers"
       @(begin
@@ -157,16 +160,16 @@ A proxy fulfills this purpose by detecting and immediately reporting
      Runtime @emph{type boundary errors} arise when type annotations impose
       new constraints that untyped code does not live up to.
      Such errors may indicate latent bugs in the untyped code, but the fault may lie in the @emph{new} type annotations.
-     Put differently, the catchphrase ``well-typed programs can't be blamed'' comes from theoretical work that does not align with the pragmatics of gradual typing.
+     Put differently, the slogan @exact{``well-typed programs can't be blamed''} does not match the pragmatics of gradual typing.
    }
 
 As a second example, the Typed Racket function in @figure-ref{fig:complex-multiply}
  implements multiplication for complex numbers represented in polar form.
-The type system guards calls to @racket[reynolds-*] from untyped code with the
+The type system guards @racket[reynolds-*] from untyped code with the
  higher-order contract @ctc{JR JR -> JR}.
 In other words, untyped clients must supply two pairs of real numbers where the first component of each pair is non-negative.
 
-Each call to the protected @racket[reynolds-*] requires a total of six assertions to check and traverse both pairs.
+Each call to the protected @racket[reynolds-*] requires six assertions to check and traverse both pairs.
 Individual assertions are relatively inexpensive, but folding
  @racket[reynolds-*] over a sequence of @math{n} complex numbers requires
  @math{3n + 1} assertions.

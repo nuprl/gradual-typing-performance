@@ -312,3 +312,22 @@ This net improvement is due to Typed Racket's optimizer, which specializes
 Without dynamic checks to shadow these optimizations, the program reflects well
  on Typed Racket.
 
+@; =============================================================================
+
+ @;dynamic features@~cite[tsth-esop-2013 vksb-dls-2014 sfrbcsb-popl-2014] in gradual type systems,
+ @;continuation-passing@~cite[tsth-esop-2013],
+ @;object identity checks@~cite[vksb-dls-2014], and
+ @;runtime evaluation@~cite[sfrbcsb-popl-2014],
+
+@; =============================================================================
+
+@; Different inputs
+As a final note, our experiment runs the benchmarks using fixed inputs,
+ but the results should be the same on different inputs.
+We have in fact experimented with inputs of various size and content
+ for select benchmarks but found
+ the relative overheads due to type boundaries remained the same.
+For the purpose of the experiment, the final input size we used was a compromise
+ between having an untyped runtime long enough to be stable against
+ operating system effects but short enough that the slowest
+ configurations finished reasonably quickly.
