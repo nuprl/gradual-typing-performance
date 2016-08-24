@@ -28,6 +28,7 @@
 (require
  (for-syntax racket/base syntax/parse)
  (only-in racket/file file->value)
+ (only-in racket/format ~r)
  (only-in racket/math exact-round pi)
  (only-in racket/port with-input-from-string open-output-nowhere)
  typed/racket/draw
@@ -273,7 +274,7 @@
     L-pict*
     (let* ([V 2]
            [S (car S*)]
-           [first-lbl (title-text (or title (get-project-name S)))]
+           [first-lbl (title-text (format "~a  (τ/λ ratio: ~ax)" (or title (get-project-name S)) (~r (typed/untyped-ratio S) #:precision 1)))]
            [mid-lbl   (blank 0 (pict-height first-lbl))]
            [last-lbl  (title-text (format "~a configurations" (add-commas (get-num-configurations S))))])
       (cons
