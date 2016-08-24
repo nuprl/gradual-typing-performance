@@ -29,7 +29,7 @@ In general one cannot predict why or how such conversions happen, but some
   }
   @item{
     Racket libraries maintain an interface of @emph{compatible} type annotations,
-     saving Typed Racket clients the need to supply their own.
+     saving typed clients the need to supply their own.
   }
   @item{
     Type signatures serve as machine-enforced @emph{documentation}.
@@ -96,40 +96,44 @@ Typed Racket insists on gradual type soundness, therefore types need runtime enf
 
 Recall that types are checkable statements about program expressions.
 Soundness means that every checked statement always holds as the program is executed.
-Statically typed languages provide this guarantee by executing only well-typed code. @;@note{In a trusted runtime system.}
-Gradually typed languages provide the same guarantee in the presence of dynamically typed code by chaperoning the interactions of typed and untyped program components.
-Where typed code claims an untyped expression has type @type{T}, the gradual type system interposes a runtime check @ctc{T} capable of deciding whether an arbitrary (untyped) value belongs to the syntactic type @type{T}.
-If a predicate @ctc{T} fails, the program halts with a @emph{type boundary error}.
+Statically typed languages provide this guarantee by checking every expression.
+In a gradually typed languages, the type system cannot check every expression because some are intentionally unannotated.
+Therefore sound gradual type systems chaperone the interaction of typed and untyped program components at runtime.
+Where typed code claims an untyped expression has type @type{$\tau$}, the gradual type system interposes a runtime check @ctc{$\tau$} capable of deciding whether an arbitrary value belongs to the denotation of the syntactic type @type{$\tau$}.
+If this predicate @ctc{$\tau$} fails, the program halts with a @emph{type boundary error}.
 
    @remark[]{
-     Type boundary errors arise when type annotations impose new constraints that untyped code does not meet.
+     Type boundary errors arise when type annotations impose new constraints that untyped code does not satisfy.
      Such errors may indicate latent bugs in the untyped code @emph{or} mistakes in the new type annotations.
      Put differently, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] does not match the philosophy of gradual typing.
    }
 
    @; type boundary?
 
-The Typed Racket function in @Figure-ref{fig:complex-multiply} implements multiplication for complex numbers represented in polar form.
-Let us suppose a gradually typed program uses this function.
-Gradual type soundness demands that at runtime, every value that flows from untyped code to @racket[reynolds-*] passes the @ctc{JR} predicate.
-Consequently, if a trace of the program invokes @racket[reynolds-*] a total of @math{n} times from untyped contexts, all @math{2n} argument values factor through the predicate.
+For example, the Typed Racket function in @Figure-ref{fig:complex-multiply} implements multiplication for polar-form complex numbers.@note{Racket and Typed Racket have native support for complex numbers.} @;This example is adapted from Reynolds' paper@~cite[r-ip-1983].
+Suppose a gradually typed program uses this function.
+Gradual type soundness demands that at runtime, every value that flows from untyped code to @racket[reynolds-*] passes the predicate @ctc{JR}.
 
-The runtime cost of checking @ctc{JR} and similar predicates can be arbitrarily large.
-Nevertheless, these checks are indispensible because
- Typed Racket's static types operate at a higher level of abstraction than Racket's dynamic typing.
+These checks are indispensible because Typed Racket's static types operate at a higher level of abstraction than Racket's dynamic typing.
 In particular, the tag checks performed by @racket[first] and @racket[*] do not enforce the @type{JR} type.
-Unsoundly omitting the @ctc{JR} check permits the call
+Omitting the @ctc{JR} check permits the call
     @racket[(reynolds-* '(-1 -1) '(-3 0))],
  which produces a well-typed complex number from two ill-typed inputs.
-This is a silent program failure; the programmer and the program's users receive no clue that an erroneous computation occurred.
+Racket's runtime cannot detect this erroneous behavior.
+The program and the program's users receive no clue how the program went wrong.
 Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
 
-Even if a tag check uncovers an error that sound gradual typing would have caught, debugging such errors in a higher-order functional language is often difficult.
-Good functional programmers follow John Hughes' advice and compose their programs from small, highly re-usable functions@~cite[h-cj-1989].
-Unfortunately, this means the root of a tag error may be far removed from the point of failure.
+Furthermore, even if a tag check uncovers an error that sound gradual typing would have caught, debugging such errors in a higher-order functional language is often difficult.
+Well-trained functional programmers follow John Hughes' advice and compose their programs from small, highly re-usable functions@~cite[h-cj-1989].
+Unfortunately, this means the root cause of a runtime exception is usually far removed from the point of logical failure.
+Laziness does not pay in the context of type checking.
 
-In summary, laziness does not pay in the context of type checking.
-Unsound gradual typing invites hard-to-debug runtime errors and mission-critical semantic failures.
+In contrast, sound gradual typing guarantees that typed code never executes a single instruction using ill-typed data.
+Programmers can trust that every type annotation holds at runtime.
+The interposed predicates furthermore detect type boundary errors immediately.
+If a type boundary error occurs, the programmer receives both the relevant type annotation and the incompatible value.
+Runtime checks are the price for these guarantees.
+Performance evaluation quantifies their cost.
 
     @figure["fig:complex-multiply" "Multiplication for polar form complex numbers"
       @(begin
