@@ -153,7 +153,7 @@
   (make-defthing "Definition"))
 
 (define remark
-  (make-defthing "Remark"))
+  (make-defthing "Remark "))
 
 (define (deliverable [d "D"])
   (make-element plain @list{@(math d)-deliverable}))
