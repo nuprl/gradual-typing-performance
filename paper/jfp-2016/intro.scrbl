@@ -22,9 +22,8 @@ Regardless of why programmers choose dynamically typed languages,
 Explicit annotations crystallize a programmer's intent to other human readers.
 Furthermore, the toolchain can check the annotations for inconsistencies
  and leverage types to improve the efficiency of compiled code.
-Despite many attempts to infer type information from dynamically typed programs,
- there is no substitute for programmer-supplied annotations.
-@; TODO weakkkkk
+Researchers have tried to overcome the lack of type annotations with numerous inference algorithms,
+ but there is no substitute for programmer-supplied annotations.
      @; Confirming problem, and responses:
      @; - PEP type hints
      @; - pycharm parsing comments
@@ -48,8 +47,7 @@ During execution, if an untyped function flows into a variable @racket[f] with
  type @racket[(Real -> Real)] then a dynamic check must
  follow every subsequent call to @racket[f] because typed code can never trust
  that the untyped function produces values that have the syntactic type @racket[Real].
-Conversely, typed functions flowing into untyped code must dynamically check
- their argument values.
+Conversely, typed functions invoked by untyped code must dynamically check their argument values.
 If functions or large data structures frequently cross these
  @emph{type boundaries},
  enforcing type soundness might impose a huge runtime cost.
@@ -99,7 +97,7 @@ Building on the evaluation method introduced in an earlier conference version@~c
      of Typed Racket; and
   }
   @item{
-    in-depth discussions of performance bottlenecks in each benchmark,
+    in-depth discussions of the performance bottlenecks in each benchmark,
      their resolution,
      and general lessons for implementors of gradually typed languages.
   }

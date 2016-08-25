@@ -9,7 +9,7 @@ Typed Racket@~cite[TypedRacket] is the oldest and most developed implementation 
 It supports clients in both academia and industry.
 Typed Racket attracts these clients because it supports the idioms of Racket.
 In fact, a major design goal of Typed Racket is that equipping a Racket program
- with types is only a matter of annotating function parameters, class fields, and recursive definitions.
+ with types is only a matter of annotating function parameters, class fields/methods, and recursive definitions.
 The underlying Racket code can remain unchanged, including code using
  variable-arity polymorphism@~cite[stf-esop-2009],
  first-class classes@~cite[tsdthf-oopsla-2012],
@@ -45,8 +45,8 @@ In general one cannot predict why or how such conversions happen, but some commo
 Let us illustrate one possible evolution.
 Imagine a large application in which an error is traced to an untyped module that was written years ago.
 In all likelihood, the programmer tasked with fixing the bug must recover type specifications that the original developer had in mind---but did not write down.
-Doing so requires studying the code and analyzing its unit tests, a significant burden.
-Typed Racket can preserve these specifications for future maintainers,
+Doing so involves studying the code and analyzing its unit tests, a significant burden.
+Typed Racket can validate these specifications and preserve them for future maintainers,
  provided the programmer makes the investment of formalizing the recovered types.
 @; a little scatterbrained
 
@@ -80,7 +80,8 @@ Indeed, one user reported a speedup from @|PFDS-BEFORE| to @|PFDS-AFTER| after c
 But annotating one additional module is not guaranteed to improve performance and may introduce new type boundaries.
 
 Of these three costs, the performance overhead is the most troublesome.
-Part of the issue is that the cost is implicit; unlike the tangible cost of
+Part of the issue is that the cost is implicit.
+Unlike the tangible cost of
  writing type annotations or the perennial risk of introducing bugs, the
  performance overhead of enforcing type soundness is not apparent until runtime.
 Additionally, experience with other languages does not give an intuition for the performance cost of gradual typing.
