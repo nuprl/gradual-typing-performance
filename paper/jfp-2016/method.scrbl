@@ -22,17 +22,18 @@
 @profile-point{sec:method}
 @title[#:tag "sec:method"]{Evaluation Method}
 
-Performance evaluation for gradual type systems must reflect how
- programmers use such systems.
-Migrating an entire project from untyped to typed is rare,
- while incremental transition is common.
-Consequently, programmers tend to judge the performance of a gradual type system @emph{locally},
- by comparing the performance of an incrementally modified program against the program's previous running version.
+Performance evaluation for gradual type systems must reflect how programmers use such systems.
+Experience with Typed Racket shows that programmers frequently combine typed and untyped code within an application.
+These applications may undergo incremental transitions that add or remove some type annotations;
+ however, it is extremely rare that a programmer adds explicit annotations to every module in the program.
+
+After incrementally typing part of an application, programmers judge the performance of the modified program
+ by comparing it to the previous running version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may seek ways to reduce the cost of type boundaries.
 As the program evolves, this process repeats.
 
-We turn this observation into an evaluation method in three stages:
+We turn these observations into an evaluation method in three stages:
  first by describing the @emph{space} over which a performance evaluation must take place,
  second by giving @emph{metrics} relevant to the performance of a gradually typed program,
  and third by introducing a visualization that concisely presents the metrics on exponentially large datasets.
