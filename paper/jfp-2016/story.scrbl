@@ -18,10 +18,9 @@ The underlying Racket code can remain unchanged, including code using
 Finally, a typed module may incorporate definitions from a Racket module with a type-annotated import statement;
  a Racket module may use definitions from a Typed Racket module without knowledge that the provider is typed.
 
-Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single program.
-Furthermore, programmers often migrate Racket modules to Typed Racket as the software evolves.
-In general one cannot predict why or how such conversions happen, but some
- common motivations are:
+Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
+Furthermore, programmers often migrate Racket modules to Typed Racket as the application evolves.
+In general one cannot predict why or how such conversions happen, but some common motivations are:
 @itemlist[
   @item{
     The typechecker provides @emph{assurance} against common bugs, for example,
@@ -44,8 +43,8 @@ In general one cannot predict why or how such conversions happen, but some
   }
 ]
 Let us illustrate one possible evolution.
-Imagine a large repository in which an error is traced to an untyped module.
-In all likelihood, the programmer tasked with fixing the bug must recover the type specifications that the original developer had in mind---but did not write down.
+Imagine a large application in which an error is traced to an untyped module that was written years ago.
+In all likelihood, the programmer tasked with fixing the bug must recover type specifications that the original developer had in mind---but did not write down.
 Doing so requires studying the code and analyzing its unit tests, a significant burden.
 Typed Racket can preserve these specifications for future maintainers,
  provided the programmer makes the investment of formalizing the recovered types.
@@ -56,8 +55,7 @@ Typed Racket can preserve these specifications for future maintainers,
 @section{The Costs of Incremental Typing}
 
 Adding types to an untyped module is a tradeoff.
-Performing the type conversion may yield long-term benefits,
- but incurs immediate engineering costs.
+Performing the type conversion may yield long-term benefits, but incurs immediate engineering costs.
 
 The first cost is the burden of writing type annotations.
 In particular, Typed Racket is a @emph{macro-level}@note{As opposed to @emph{micro-level}, see @secref{sec:flavors}.} gradual type system.
@@ -68,7 +66,7 @@ Maintaining these annotations is another cost.
 The second cost is the risk of introducing bugs during the conversion.
 Typed Racket mitigates this risk by accomodating many Racket idioms,
  but occasionally programmers must refactor code to satisfy the type checker.
-Refactoring is always a chance to introduce bugs.
+Refactoring can always spawn bugs.
 
 The third cost is performance overhead.
 Converting a single module to Typed Racket introduces so-called @emph{type boundaries} to neighboring untyped modules.
@@ -83,8 +81,8 @@ But annotating one additional module is not guaranteed to improve performance an
 
 Of these three costs, the performance overhead is the most troublesome.
 Part of the issue is that the cost is implicit; unlike the tangible cost of
- writing type annotations or the perennial risk of introducing bugs, the dynamic
- cost of enforcing type soundness is not apparent until runtime.
+ writing type annotations or the perennial risk of introducing bugs, the
+ performance overhead of enforcing type soundness is not apparent until runtime.
 Additionally, experience with other languages does not give an intuition for the performance cost of gradual typing.
 Programmers familiar with statically typed languages do not expect any overhead.
 Programmers familiar with optionally-typed dynamic languages, such as TypeScript, also expect that types impose no runtime cost.
@@ -108,19 +106,17 @@ If this predicate @ctc{$\tau$} fails, the program halts with a @emph{type bounda
      Put differently, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] does not match the philosophy of gradual typing.
    }
 
-   @; type boundary?
-
 For example, the Typed Racket function in @Figure-ref{fig:complex-multiply} implements multiplication for polar-form complex numbers.@note{Racket and Typed Racket have native support for complex numbers.} @;This example is adapted from Reynolds' paper@~cite[r-ip-1983].
 Suppose a gradually typed program uses this function.
 Gradual type soundness demands that at runtime, every value that flows from untyped code to @racket[reynolds-*] passes the predicate @ctc{JR}.
+@; If there are @math{n} calls to the function from untyped contexts, all @math{2n} values factor through the predicate.
 
 These checks are indispensible because Typed Racket's static types operate at a higher level of abstraction than Racket's dynamic typing.
 In particular, the tag checks performed by @racket[first] and @racket[*] do not enforce the @type{JR} type.
 Omitting the @ctc{JR} check permits the call
     @racket[(reynolds-* '(-1 -1) '(-3 0))],
  which produces a well-typed complex number from two ill-typed inputs.
-Racket's runtime cannot detect this erroneous behavior.
-The program and the program's users receive no clue how the program went wrong.
+Racket's runtime cannot detect this erroneous behavior, therefore the program and the program's users receive no clue about how the program went wrong.
 Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
 
 Furthermore, even if a tag check uncovers an error that sound gradual typing would have caught, debugging such errors in a higher-order functional language is often difficult.

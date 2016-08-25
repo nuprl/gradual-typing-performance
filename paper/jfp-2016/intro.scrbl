@@ -9,11 +9,11 @@
 @profile-point{sec:intro}
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
-Programmers use dynamically typed languages to build all kinds of software systems.
+Programmers use dynamically typed languages to build all kinds of applications.
 Telecom companies have been running Erlang programs for years@~cite[armstrong-2007],
  Sweden's pension system is a Perl program@~cite[v-aplwa-2010],
  and the @emph{lingua franca} of the Internet is JavaScript.
-New companies frequently build server-side applications using languages such as Python, PHP, and Ruby;
+New companies frequently use languages such as Python, PHP, and Ruby in server-side applications;
  see for example, Dropbox, Facebook, and Twitter.
 
 Regardless of why programmers choose dynamically typed languages,
@@ -24,6 +24,7 @@ Furthermore, the toolchain can check the annotations for inconsistencies
  and leverage types to improve the efficiency of compiled code.
 Despite many attempts to infer type information from dynamically typed programs,
  there is no substitute for programmer-supplied annotations.
+@; TODO weakkkkk
      @; Confirming problem, and responses:
      @; - PEP type hints
      @; - pycharm parsing comments
@@ -32,7 +33,8 @@ Despite many attempts to infer type information from dynamically typed programs,
 
 @; Enter GT
 Gradual typing@~cite[st-sfp-2006 thf-dls-2006]@note{We prefer the more descriptive term @emph{incremental typing}, but defer to the better sloganeer.}
- is a linguistic approach to the problem. @; What problem? Is it really clear enough?
+ is a linguistic approach to the problem.
+ @; What problem? Is it really clear enough?
     @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
     @;       but the cast calculus & gradualizer/foundations have their place
 In a gradually typed language,
@@ -69,7 +71,7 @@ Worse yet, others report only the performance ratio of fully typed programs rela
  fully untyped programs, ironically ignoring the entire space of programs
  that mix typed and untyped components.
 
-This paper presents a method for the comprehensive evaluation of the performance characteristics of gradual type systems.
+This paper presents a method for the performance evaluation of gradual type systems.
 The method is to
  (1) fix a granularity for adding or removing type annotations,
  (2) fully type a suite of representative benchmark programs,
