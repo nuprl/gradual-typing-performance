@@ -19,10 +19,10 @@ New companies frequently use languages such as Python, PHP, and Ruby in server-s
 Regardless of why programmers choose dynamically typed languages,
  the maintainers of these applications inevitably find the lack of explicit type
  annotations an obstacle to their work.
-Explicit annotations crystallize a programmer's intent to other human readers.
+Explicit annotations communicate a programmer's intent to other human readers.
 Furthermore, the toolchain can check the annotations for inconsistencies
  and leverage types to improve the efficiency of compiled code.
-Researchers have tried to overcome the lack of type annotations with numerous inference algorithms,
+Researchers have tried to overcome the lack of type annotations with inference algorithms,
  but there is no substitute for programmer-supplied annotations.
      @; Confirming problem, and responses:
      @; - PEP type hints
@@ -33,11 +33,11 @@ Researchers have tried to overcome the lack of type annotations with numerous in
 One solution to the problem is to rewrite the entire application in a statically typed language.
 This solution assumes that the application is small enough and the problem is recognized soon enough to make a wholesale migration feasible.
 For example, Twitter was able to port their server-side code from Ruby to Scala because they understood the problem early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
-In other cases, the codebase becomes too large for this to work.
+In other cases, the codebase becomes too large for this approach.
 
 @; Enter GT
-Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006]@note{We prefer the more descriptive term @emph{incremental typing}, but defer to the established slogan.},
- which uses a linguistic approach.
+Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006],@note{We prefer the more descriptive term @emph{incremental typing}, but defer to the established slogan.}
+ a linguistic approach.
  @; What problem? Is it really clear enough?
     @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
     @;       but the cast calculus & gradualizer/foundations have their place
@@ -66,25 +66,24 @@ Optimistically, researchers have continued to explore the theory and practice of
                       rnv-ecoop-2015
                       vksb-dls-2014
                       rsfbv-popl-2015
-                      gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a bibliography with over 75 entries as of August 2016.}}
+                      gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a bibliography with over 75 entries on gradual typing as of August 2016.}
 Some research groups have invested significant resources implementing sound gradual type systems.
 Suprisingly few groups have rigourously evaluated the performance of gradual typing.
 Most acknowledge an issue with performance in passing.
-Worse yet, others report only the performance ratio of fully typed programs relative to
+Worse, others report only the performance ratio of fully typed programs relative to
  fully untyped programs, ironically ignoring the entire space of programs
  that mix typed and untyped components.
 
-This paper presents a method for the performance evaluation of gradual type systems.
-The method is to
+This paper presents a method for the performance evaluation of gradual type systems:
  @itemlist[#:style 'ordered
    @item{
      fix a granularity for adding or removing type annotations;
    }
    @item{
-     fully annotate a suite of representative benchmark programs;
+     annotate a suite of representative benchmark programs as fully as possible;
    }
    @item{
-     according to the fixed granularity, consider all possible ways of removing a subset of type annotations in each program;
+     consider all possible ways of removing a subset of type annotations in each program, subject to the granularity as fixed in (1);
    }
    @item{
      report the overhead of these gradually typed @emph{configurations}
@@ -94,26 +93,16 @@ The method is to
 We demonstrate that the method characterizes
  both the @emph{absolute} performance of a gradual type system and the @emph{relative}
  performance of two implementations of gradual typing for the same untyped language.
-In particular, we evaluate the performance of @integer->word[(length (*RKT-VERSIONS*))]
+To validate the method, we evaluate the performance of @integer->word[(length (*RKT-VERSIONS*))]
  Typed Racket versions on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional
  and object-oriented benchmark programs ranging in size and complexity.
 
-Building on the evaluation method introduced in an earlier conference version@~cite[tfgnvf-popl-2016],
- this paper contributes
-    @integer->word[(*NUM-OO-BENCHMARKS*)]
-     object-oriented benchmark programs and
-     @integer->word[(- (*NUM-BENCHMARKS*) (*NUM-OO-BENCHMARKS*) NUM-POPL)]
-     new functional programs;
-    a comparitive evaluation of @integer->word[(length (*RKT-VERSIONS*))] versions
-     of Typed Racket; and
-    in-depth discussions of the performance bottlenecks in each benchmark,
-     their resolution,
-     and general lessons for implementors of gradually typed languages.
-  @;@item{
-  @;  preliminary reports on a method for predicting the performance overhead for
-  @;   any of a program's @exact{$2^N$} configurations after taking @exact{$O(N)$}
-  @;   measurements.
-  @;}
+Building on the evaluation method introduced in the conference version of this paper@~cite[tfgnvf-popl-2016],
+ we contribute
+ the first comparitive evaluation of different implementations of the same gradual type system;
+ @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs;
+ an in-depth analysis of the performance bottlenecks in these benchmarks;
+ and general lessons for implementors of gradually typed languages.
 
 @parag{Disclaimer:} 3x overhead is not "deliverable" performance.
 We never claimed so in the conference version and our opinion certainly has not changed.

@@ -18,22 +18,22 @@
     "Northwestern University" (affiliation-mark "2")))
 
 @abstract{
-  @; TODO needs work
-  @; - "however"   --> cost of the guarantee?
-  @; - "it is unclear"
-  Every sound gradual type system guarantees that untyped components of a program can never break static type guarantees.
-  The literature on gradual typing is, however, remarkably silent about the @emph{performance} of programs that mix typed and untyped components.
-  It moreover lacks rigorous methods to quantify the overall performance of a gradual type system
-   and to compare the performance of two gradual type systems.
-  Clients therefore cannot assess whether a particular gradual type system will be practical given their performance requirements.
-  Furthermore, implementors cannot measure the net effect of changes to a gradually typed language.
+  Every sound gradual type system ensures that untyped components of a program can never break static type guarantees.
+  This assurance requires dynamic type enforcement, which imposes runtime overhead.
+  Surprisingly, the archival literature on gradual typing is silent about the @emph{performance} of programs that mix typed and untyped components.
+  In particular, it lacks descriptions of rigorous methods for measuring the overall performance of a gradual type system
+   and comparing the performance of two gradual type systems.
 
-  This paper presents a method for the performance evaluation of gradual type systems.
+  This gap has consequences for developers using gradual type systems and the implementors of such systems.
+  Developers cannot assess whether a gradual type system will meet their performance requirements.
+  Implementors cannot assess the effect of changes to a gradually typed language.
+
+  This journal paper presents the first method for evaluating the performance of gradual type systems.
   The method quantifies both the
    @emph{absolute performance} of a gradual type system on representative programs
-   and the @emph{relative performance} of two gradual type systems for a fixed base language.
-  Our validation of the method includes a comprehensive evaluation of
-   @integer->word[(*NUM-BENCHMARKS*)] functional and object oriented benchmark
+   and the @emph{relative performance} of two implementations of the same gradual type system.
+  Our validation includes a comprehensive evaluation of
+   @integer->word[(*NUM-BENCHMARKS*)] functional and object-oriented benchmark
    programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
 }
 

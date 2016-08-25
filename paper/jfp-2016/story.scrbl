@@ -9,8 +9,8 @@ Typed Racket@~cite[TypedRacket] is the oldest and most developed implementation 
 It supports clients in both academia and industry.
 Typed Racket attracts these clients because it supports the idioms of Racket.
 In fact, a major design goal of Typed Racket is that equipping a Racket program
- with types is only a matter of annotating function parameters, class fields/methods, and recursive definitions.
-The underlying Racket code can remain unchanged, including code using
+ with types is only a matter of annotating function parameters, class members, and recursive definitions.
+Much of the underlying Racket program can remain unchanged, including code using
  variable-arity polymorphism@~cite[stf-esop-2009],
  first-class classes@~cite[tsdthf-oopsla-2012],
  delimited continuations@~cite[tsth-esop-2013],
@@ -20,7 +20,7 @@ Finally, a typed module may incorporate definitions from a Racket module with a 
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
 Furthermore, programmers often migrate Racket modules to Typed Racket as the application evolves.
-In general one cannot predict why or how such conversions happen, but some common motivations are:
+In general one cannot predict why or how such incremental migrations happen, but some common motivations are:
 @itemlist[
   @item{
     The typechecker provides @emph{assurance} against common bugs, for example,
@@ -44,7 +44,7 @@ In general one cannot predict why or how such conversions happen, but some commo
 ]
 Let us illustrate one possible evolution.
 Imagine a large application in which an error is traced to an untyped module that was written years ago.
-In all likelihood, the programmer tasked with fixing the bug must recover type specifications that the original developer had in mind---but did not write down.
+In all likelihood, the programmer tasked with fixing the bug must recover the type specifications that the original developer had in mind---but did not write down.
 Doing so involves studying the code and analyzing its unit tests, a significant burden.
 Typed Racket can validate these specifications and preserve them for future maintainers,
  provided the programmer makes the investment of formalizing the recovered types.
@@ -58,9 +58,9 @@ Adding types to an untyped module is a tradeoff.
 Performing the type conversion may yield long-term benefits, but incurs immediate engineering costs.
 
 The first cost is the burden of writing type annotations.
-In particular, Typed Racket is a @emph{macro-level}@note{As opposed to @emph{micro-level}, see @secref{sec:flavors}.} gradual type system.
+In particular, Typed Racket is a @emph{macro-level}@exact{\,}@note{As opposed to @emph{micro-level}, see @secref{sec:flavors}.} gradual type system.
 Every expression within a Typed Racket module must pass the type checker.
-Consequently, every function needs a complete type signature and every class field needs an explicit type.
+Consequently, every parameter to a function and every field or method in a class needs a type annotation.
 Maintaining these annotations is another cost.
 
 The second cost is the risk of introducing bugs during the conversion.
@@ -96,8 +96,8 @@ Typed Racket insists on gradual type soundness, therefore types need runtime enf
 Recall that types are checkable statements about program expressions.
 Soundness means that every checked statement always holds as the program is executed.
 Statically typed languages provide this guarantee by checking every expression.
-In a gradually typed languages, the type system cannot check every expression because some are intentionally unannotated.
-Therefore sound gradual type systems chaperone the interaction of typed and untyped program components at runtime.
+In a gradually typed language, the type system cannot check every expression because some are intentionally unannotated.
+Therefore a sound gradual type system chaperones the interaction of typed and untyped program components at runtime.
 Where typed code claims an untyped expression has type @type{$\tau$}, the gradual type system interposes a runtime check @ctc{$\tau$} capable of deciding whether an arbitrary value belongs to the denotation of the syntactic type @type{$\tau$}.
 If this predicate @ctc{$\tau$} fails, the program halts with a @emph{type boundary error}.
 
@@ -143,7 +143,7 @@ We therefore need a performance evaluation method to quantify their cost.
 
         (: reynolds-* (JR JR -> JR))
         (define (reynolds-* jr1 jr2)
-          (list (* (first jr1) (first jr2))
+          (list (* (first  jr1) (first  jr2))
                 (+ (second jr1) (second jr2))))
       }|)
     ]

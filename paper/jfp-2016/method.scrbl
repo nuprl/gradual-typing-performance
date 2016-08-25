@@ -25,10 +25,10 @@
 Performance evaluation for gradual type systems must reflect how programmers use such systems.
 Experience with Typed Racket shows that programmers frequently combine typed and untyped code within an application.
 These applications may undergo incremental transitions that add or remove some type annotations;
- however, it is extremely rare that a programmer adds explicit annotations to every module in the program.
+ however, it is rare that a programmer adds explicit annotations to every module in the program.
 
 After incrementally typing part of an application, programmers judge the performance of the modified program
- by comparing it to the previous running version.
+ by comparing it to the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may seek ways to reduce the cost of type boundaries.
 As the program evolves, this process repeats.
@@ -44,7 +44,7 @@ We turn these observations into an evaluation method in three stages:
 @section{Performance Lattice}
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may
- add types to any subset of the modules in an untyped program.
+ convert any subset of the modules in an untyped program to Typed Racket.
 A comprehensive performance evaluation must therefore consider the space of
  @emph{configurations} a programmer could possibly create by typing some modules.
 That is, all ways of choosing a single module to type, all ways of choosing two
@@ -170,9 +170,6 @@ The net effect of such improvements may, however, be offset by runtime type chec
 Hence we characterize the relative performance of fully-typed programs
  using a ratio to capture the possibility of speedups and slowdowns.
 
-@; Determining whether speedups or slowdowns are the norm for fully typed programs
-@;  may influence a software team's decision to experiment with gradual typing.
-
     @def[#:term "typed/untyped ratio"]{
      The typed/untyped ratio of a performance
       lattice is the time needed to run the top configuration divided by the
@@ -184,7 +181,7 @@ For users of a gradual type system, the important performance
  relative to the original program.
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
-Depending on the nature of the software and clients' expectations,
+Depending on the nature of the application and clients' expectations,
  an appropriate substitute for "low enough" might take any value between zero overhead
  and an order-of-magnitude slowdown.
 To account for these varying requirements, we use
@@ -198,7 +195,7 @@ To account for these varying requirements, we use
 
     @; NOTE: really should be using %, but Sec 4 shows why we stick to x
 
-If a software project is currently in a non-@deliverable[] configuration,
+If an application is currently in a non-@deliverable[] configuration,
  the next question is how much work a team must invest to reach a
  @deliverable[] configuration.
 We propose as a coarse measure of "work" the number of modules that must be
@@ -260,7 +257,7 @@ The label below each configuration is its overhead relative to the untyped confi
 
 The ratio of @deliverable{D} configurations in such a lattice is a measure of
  the overall feasibility of gradual typing.
-When the ratio is high, then no matter how the software evolves performance will
+When the ratio is high, then no matter how the application evolves performance will
  likely remain acceptable.
 Conversely, a low ratio means a team may struggle to recover performance after
  incrementally typing a few modules.
@@ -339,8 +336,8 @@ Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions
 The @emph{first assumption} is that configurations with less than 2x overhead are significantly
  more practical than configurations with over 10x overhead.
 Hence the plots use a log-scaled x-axis
- to encourage fine-grained comparison in the 20-60% overhead range
- and simultaneously blur the distinction between, e.g., 14x and 18x slowdowns.
+ to simultaneously encourage fine-grained comparison in the 20-60% overhead range
+ and blur the distinction between, e.g., 14x and 18x slowdowns.
 
 @; Zorn: 30% of execution time in storage management "represent the worst-case overhead that that might be expected to be associated with garbage collection."
 
