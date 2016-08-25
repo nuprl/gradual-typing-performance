@@ -128,12 +128,12 @@ Well-trained functional programmers follow John Hughes' advice and compose their
 Unfortunately, this means the root cause of a runtime exception is usually far removed from the point of logical failure.
 Laziness does not pay in the context of type checking.
 
-In contrast, sound gradual typing guarantees that typed code never executes a single instruction using ill-typed data.
-Programmers can trust that every type annotation holds at runtime.
-The interposed predicates furthermore detect type boundary errors immediately.
-If a type boundary error occurs, the programmer receives both the relevant type annotation and the incompatible value.
-Runtime checks are the price for these guarantees.
-Performance evaluation quantifies their cost.
+In contrast, sound gradual typing guarantees that typed code never executes a single instruction using ill-typed values.
+Programmers can trust that every type annotation is a true statement.
+Furthermore, the interposed predicates detect type boundary errors as soon as possible.
+If a type boundary error occurs, the runtime enforcement system points the programmer to the relevant type and incompatible value, thus narrowing the search space for the logical mistake.
+Runtime checks are the price for these guarantees and improvements in productivity.
+We therefore need a performance evaluation method to quantify their cost.
 
     @figure["fig:complex-multiply" "Multiplication for polar form complex numbers"
       @(begin
