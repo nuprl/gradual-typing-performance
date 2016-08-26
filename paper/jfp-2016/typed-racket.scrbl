@@ -23,10 +23,9 @@ This section briefly describes each benchmark, documents our protocol for collec
 
 The benchmarks are representative of actual user code yet
  small enough to make exhaustive performance evaluation tractable.
-The following descriptions briefly explain the purpose of
- each benchmark.
-Most benchmarks are self-contained, but where relevant we note their external
- dependencies.
+The following descriptions, arranged from smallest performance lattice to largest,
+ briefly explain the purpose of each benchmark.
+Most benchmarks are self-contained, but where relevant we note their external dependencies.
 
 @emph{Note on terminology:} Racket's @emph{chaperones} are lightweight proxies that preserve object equality@~cite[chaperones-impersonators].
 Typed Racket compiles higher-order types on a type boundary to chaperones and applies these proxies to values that cross the boundary.
@@ -132,8 +131,8 @@ Typed Racket compiles higher-order types on a type boundary to chaperones and ap
 (cons lnm
   @elem{
     Renders overhead graphs@~cite[tfgnvf-popl-2016].
-    Tightly-coupled to Typed Racket's statistics and plotting libraries;
-     therefore, performance improves with the number of typed modules.
+    Two modules are tightly-coupled to Typed Racket libraries.
+    Removing their type boundaries improves performance.
   })
 (cons suffixtree
   @elem{
@@ -213,26 +212,18 @@ Typed Racket compiles higher-order types on a type boundary to chaperones and ap
 @profile-point{sec:tr:characteristics}
 @subsection{Static Benchmark Characteristics}
 
-@Figure-ref{fig:bm} gives static characteristics
- of our benchmark programs as a coarse measure of their size and diversity.
+@Figure-ref{fig:bm} lists static characteristics of the benchmark programs as a coarse measure of their size and complexity.
 The lines of code (LOC) and number of modules (# Mod.) approximate program size.
-Of these two measures, the number of modules is a slightly better indicator
- as it also determines the size of our gradual typing experiment;
- given @exact{$N$} modules, there are @exact{$2^N$} configurations.
+Note that the number modules determines the number of gradually typed configurations.
 Adaptor modules (# Adt.) roughly correspond
- to the number of user-defined datatypes in each benchmark.
-The ``Annotation'' column is an
- upper bound on the number of type annotations we used to fully type each program.
-@; TODO ugly sentence pls fix
-This column is an over-approximation because it includes type annotations for
- each import in a benchmark; in practice,
- only imports from untyped modules into typed modules need annotations.
-Lastly, the boundaries (# Bnd.) and exports (# Exp.) columns describe the graph
- structure of each benchmark.
-Boundaries are import statements from one module in the benchmark to another.
-This count omits external boundaries.
+ to the number of user-defined datatypes in each benchmark
+See @secref{sec:todo} for a precise definition.
+The ``Annotation'' column is the number of type annotations in the fully typed
+ version of the benchmark.@note{The benchmarks use more annotations than Typed Racket requires in practice, as they provide full type signatures for each import. Only untyped modules require such signatures.}
+Lastly, the boundaries (# Bnd.) and exports (# Exp.) describe the graph structure of each benchmark.
+Boundaries are import statements from one module in the benchmark to another (omits external boundaries).
 Exports are identifiers provided by any module in the benchmark; for example,
- 8 identifiers cross static module boundaries in @bm[mbta].
+ eight identifiers cross static module boundaries in @bm[mbta].
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
   @render-benchmarks-table{}
