@@ -22,7 +22,7 @@
   This assurance requires dynamic type enforcement, which imposes runtime overhead.
   Surprisingly, the archival literature on gradual typing is silent about the @emph{performance} of programs that mix typed and untyped components.
   In particular, it lacks descriptions of rigorous methods for measuring the overall performance of a gradual type system
-   and comparing the performance of two gradual type systems.
+   and for comparing the performance of two gradual type systems.
 
   This gap has consequences for developers using gradual type systems and the implementors of such systems.
   Developers cannot assess whether a gradual type system will meet their performance requirements.

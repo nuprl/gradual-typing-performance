@@ -36,7 +36,7 @@ As the program evolves, this process repeats.
 We turn these observations into an evaluation method in three stages:
  first by describing the @emph{space} over which a performance evaluation must take place,
  second by giving @emph{metrics} relevant to the performance of a gradually typed program,
- and third by introducing a visualization that concisely presents the metrics on exponentially large datasets.
+ and third by introducing a @emph{visualization} that concisely presents the metrics on exponentially large spaces.
 
 
 @; -----------------------------------------------------------------------------
@@ -317,13 +317,14 @@ Practitioners with fixed performance requirements can therefore use the number
          @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
          runs at most @math{X} times slower than the untyped configuration.@note{Note that @exact{$c_1$} and @exact{$c_2$} may be the same. They are definitely the same when @exact{$c_1$} is the fully-typed configuration.}
         Intuitively, this plot has a similar shape to the (0-step) @deliverable[] plot
-         because accounting for one type conversion step only makes more configurations ``deliverable''.
-        It does not change the overall characteristics of the benchmark.
+         because accounting for one type conversion step does not change the overall
+         characteristics of the benchmark, but only makes
+         more configurations @deliverable[].
 
         These @emph{overhead plots} concisely summarize the @bm[suffixtree] dataset.
         The same technique scales to arbitrarily large benchmarks.
-        Furthermore, one can make high-level comparisons between two implementations
-         of gradual typing by plotting their curves on the same axes.
+        Furthermore, one can make high-level comparisons between multiple implementations
+         of a gradual type system by plotting their curves on the same axes.
       })))
 
 @subsection{Assumptions and Limitations}
@@ -364,5 +365,5 @@ The @emph{second limitation} is that the @step{1} plot optimistically chooses th
  best type conversion step.
 In a program with @math{N} modules, a programmer has up to @math{N} type conversion steps to choose from,
  some of which may not lead to a @deliverable[] configuration.
-For example, the untyped configuration in @bm[suffixtree] is @step["1" "2"],
- but only one of the six possible steps leads to a @deliverable{2} configuration.
+For example, there are six configurations with exactly one typed module in @bm[suffixtree]
+ but only one of these is @deliverable{2}.

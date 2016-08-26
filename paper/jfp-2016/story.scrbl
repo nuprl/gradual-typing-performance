@@ -85,8 +85,8 @@ Unlike the tangible cost of
  writing type annotations or the perennial risk of introducing bugs, the
  performance overhead of enforcing type soundness is not apparent until runtime.
 Additionally, experience with other languages does not give an intuition for the performance cost of gradual typing.
-Programmers familiar with statically typed languages do not expect any overhead.
-Programmers familiar with optionally-typed dynamic languages, such as TypeScript, also expect that types impose no runtime cost.
+Programmers familiar with statically typed languages do not expect any overhead, nor do
+ programmers familiar with optionally-typed dynamic languages such as TypeScript.
 Typed Racket insists on gradual type soundness, therefore types need runtime enforcement.
 
 
@@ -107,7 +107,9 @@ If this predicate @ctc{$\tau$} fails, the program halts with a @emph{type bounda
      Put differently, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] does not match the philosophy of gradual typing.
    }
 
-For example, the Typed Racket function in @Figure-ref{fig:complex-multiply} implements multiplication for polar-form complex numbers.@note{Racket and Typed Racket have native support for complex numbers.} @;This example is adapted from Reynolds' paper@~cite[r-ip-1983].
+@; @note{In fact, Ren and Foster recently applied just-in-time type checking to six Ruby programs and found @emph{zero} latent type errors.}
+
+For example, the Typed Racket function in @Figure-ref{fig:complex-multiply} implements multiplication for polar-form complex numbers.@note{Racket and Typed Racket have native support for complex numbers.} @; This is just an example@~cite[r-ip-1983].}
 Suppose a gradually typed program uses this function.
 Gradual type soundness demands that at runtime, every value that flows from untyped code to @racket[reynolds-*] passes the predicate @ctc{JR}.
 @; If there are @math{n} calls to the function from untyped contexts, all @math{2n} values factor through the predicate.
