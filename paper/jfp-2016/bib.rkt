@@ -1342,6 +1342,13 @@
                                 #:pages '(733 756))
    #:date 1993))
 
+(define rf-pldi-2016
+  (make-bib
+   #:title "Just-in-time Static Type Checking for Dynamic Languages"
+   #:author (authors "Brianna M. Ren" "Jeffrey S. Foster")
+   #:location (proceedings-location pldi #:pages '(462 476))
+   #:date 2016))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf

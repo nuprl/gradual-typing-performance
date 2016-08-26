@@ -13,23 +13,23 @@
 @profile-point{sec:tr}
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-To validate our evaluation method, we apply it to a suite of
- @id[(count-benchmarks)] Typed Racket programs.
-For each program we have collected running times over a full performance lattice.
-In general the lattices are too large to print or analyze, so we present
- our results using so-called @emph{overhead graphs} that count the number of
- deliverable and usable configurations.
+To validate the evaluation method, we apply it to a suite of @integer->word[(count-benchmarks)] Typed Racket programs.
+This section briefly describes each benchmark, documents our protocol for collecting performance lattice data, and presents the overhead graphs we derived from the data.
+@; comparisons?
 
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:bm"]{The Benchmark Programs}
 
-The benchmarks themselves are representative of actual user code yet
+The benchmarks are representative of actual user code yet
  small enough to make exhaustive performance evaluation tractable.
-The following descriptions briefly explain the purpose and history of
+The following descriptions briefly explain the purpose of
  each benchmark.
 Most benchmarks are self-contained, but where relevant we note their external
  dependencies.
+
+@emph{Note on terminology:} Racket's @emph{chaperones} are lightweight proxies that preserve object equality@~cite[chaperones-impersonators].
+Typed Racket compiles higher-order types on a type boundary to chaperones and applies these proxies to values that cross the boundary.
 
 
 @; -----------------------------------------------------------------------------
@@ -40,45 +40,46 @@ Most benchmarks are self-contained, but where relevant we note their external
 @(cons sieve
   @elem{
     Demonstrates a scenario where user code is tightly coupled to higher-order library code.
-    In this case, the library implements a stream data structure.
-    When fully typed or untyped, @bm[sieve] runs quickly.
-    Introducing a type boundary between the two modules adds
-     significant overhead.
+    The library implements a stream data structure; the user creates a stream of prime numbers.
+    Introducing a type boundary between these modules introduces significant overhead.
   })
 (cons forth
   @elem{
-    Object-oriented calculator for Forth programs.
-    The interpreter maintains a dynamically-extensible list of first-class
-    objects representing calculator commands.
-    As this list repeatedly crosses type boundaries,
-     it accumulates higher-order contract wrappers,
-     which leads to an exponential slowdown in some configurations.
+    Interprets Forth programs.
+    The interpreter represents calculator commands with a growable list of objects.
+    These objects accumulate chaperones as they cross type boundaries.
   })
 (cons (list fsm fsmoo)
   @elem{
     Simulates the interactions of economic agents, modeled as finite-state automata@~cite[n-mthesis-2014].
-    This benchmark has functional (@bm[fsm]) and
-     one object-oriented (@bm[fsmoo]) implementations.
-    The object-oriented version frequently sends first-class
-     objects across type boundaries; the functional version does the same
-     with a mutable vector.
+    This benchmark has functional (@bm[fsm]) and object-oriented (@bm[fsmoo]) implementations.
+    The object-oriented version frequently sends first-class objects across type boundaries; the functional version does the same with a mutable vector.
   })
 (cons mbta
   @elem{
     Builds a map of Boston's subway system and answers a series of reachability queries.
-    The map is represented as an object and encapsulates a boundary to Racket's untyped
-     @library{graph} library; when the map is typed, the boundary to @library{graph}
-     causes noticable overhead.
+    The map encapsulates a boundary to Racket's untyped @library{graph} library; when the map is typed, the boundary to @library{graph} becomes a significant type boundary.
   })
 (cons morsecode
   @elem{
-    Computes Levenshtein distances and morse code translations for a fixed
-     sequence of word pairs.
+    Computes Levenshtein distances and morse code translations for a fixed sequence of pairs of words.
+    Every function that crosses a type boundary in @bm[morsecode] operates on strings and integers.
+    Performance overhead is therefore low.
   })
 (cons zombie
   @elem{
-    Implements a game where players must keep their marker away from
-     computer-controlled "zombie" markers.
+    Implements a game where players dodge computer-controlled ``zombies''.
+    Curried functions over symbols (i.e. ``method names'') implement game entities.
+    These functions accumulate chaperones when they cross a type boundary.
+
+    @;@racket[
+    @;  (define-type Point
+    @;    ((U 'x 'y 'move)
+    @;     ->
+    @;     (U (Pairof 'x (-> Real))
+    @;        (Pairof 'y (-> Real))
+    @;        (Pairof 'move (Real Real -> Point)))))
+    @;]
 
     @;The program was originally object-oriented but the authors converted it
     @; to a functional encoding as a test case for soft contract verification@~cite[nthvh-icfp-2014].
@@ -89,15 +90,7 @@ Most benchmarks are self-contained, but where relevant we note their external
     @;As an example of the encoding, the following type signature implements a
     @; point object.
     @;By supplying a symbol, clients get access to a (tagged) method.
-    @;
-    @;@codeblock{
-    @;  (define-type Point
-    @;    ((U 'x 'y 'move)
-    @;     ->
-    @;     (U (Pairof 'x (-> Real))
-    @;        (Pairof 'y (-> Real))
-    @;        (Pairof 'move (Real Real -> Point)))))
-    @;}
+
     @;Intersection
     @; types would be more straightforward than the tagged codomains used here,
     @; but Typed Racket does not yet support intersections.
@@ -105,29 +98,29 @@ Most benchmarks are self-contained, but where relevant we note their external
   })
 (cons dungeon
   @elem{
-    Builds a grid of wall and floor objects by selecting first-class classes
-     from a map of ``wall template'' pieces.
-    Originally, the program imported the Racket @library{math} library
-     for array operations and @library{racket/dict} for a generic dictionary interface.
-    The benchmark uses Racket's vectors instead of the @library{math} library's arrays
-     because Typed Racket v6.2 could not compile the type @racket[(Mutable-Array (Class))] to a contract.
-    The benchmark does not use @library{racket/dict} so that the results for
-     @bm[dungeon] describe internal type boundaries rather than the type
-     boundary to the untyped dict interface.
+    Builds a grid of wall and floor objects by choosing first-class classes from a list of ``template'' pieces.
+    This list accumulates chaperones when it crosses a type boundary.
+
+    @;Originally, the program imported the Racket @library{math} library
+    @; for array operations and @library{racket/dict} for a generic dictionary interface.
+    @;The benchmark uses Racket's vectors instead of the @library{math} library's arrays
+    @; because Typed Racket v6.2 could not compile the type @racket[(Mutable-Array (Class))] to a contract.
+    @;The benchmark does not use @library{racket/dict} so that the results for
+    @; @bm[dungeon] describe internal type boundaries rather than the type
+    @; boundary to the untyped dict interface.
   })
 (cons zordoz
   @elem{
-    Provides a shell-style interface for traversing
-     Racket bytecode (@tt{.zo} files).
-    Our benchmark decompiles its own bytecode and
-     counts the number of branch instructions in the resulting tree structure.
+    Traverses Racket bytecode (@tt{.zo} files).
+    The @library{compiler-lib} library defines the bytecode data structures.
+    Typed code interacting with the library suffers overhead.
 
-    The Racket bytecode format changed between versions 6.2 and 6.3 with
-     the release of the set-of-scopes macro expander@~cite[f-popl-2016]
-     and again between versions 6.4 and 6.5.
-    Consequently, our benchmark is slightly modified after versions 6.2 and 6.4
-     to accomodate the new formats.
-    @todo{how does this affect results?}
+    @emph{Note}:
+     the Racket bytecode format changed between versions 6.2 and 6.3 with
+     the release of the set-of-scopes macro expander@~cite[f-popl-2016].
+    This change makes a significant difference in the running time and overhead of @bm[zordoz].
+    @todo{doublecheck}
+
     @;As it turns out, the change from 6.2 to 6.3 improved the typed/untyped ratio
     @; from
     @; @add-commas[(rnd (typed/untyped-ratio (benchmark-rktd zordoz "6.2")))]x in v6.2 to
@@ -138,108 +131,80 @@ Most benchmarks are self-contained, but where relevant we note their external
   })
 (cons lnm
   @elem{
-    Renders graphs similar to those in @Secref{sec:plots}.
-    Most of the computation time is spent in calls to Racket's
-     typed statistics and plotting libraries, so performance
-     greatly improves as more @bm[lnm] modules are typed.
+    Renders overhead graphs@~cite[tfgnvf-popl-2016].
+    Tightly-coupled to Typed Racket's statistics and plotting libraries;
+     therefore, performance improves with the number of typed modules.
   })
 (cons suffixtree
   @elem{
-    Computes longest common subsequences by converting strings to a suffix
-     tree representation and comparing the trees.
-    The benchmark compares lines of text; each line is no
-     more than 80 characters long.
-
-    All @bm[suffixtree] datatype definitions are in a single module, separate
-     from the functions that manipulate and traverse the data.
-    Configurations where a type boundary separates these modules suffer large overhead.
+    Computes longest common subsequences between strings.
+    The largest performance overheads come from a boundary between data definitions and functions manipulating the data.
   })
 (cons kcfa
   @elem{
-    Simple, inefficient implementation of @math{k}-CFA@~cite[shivers-dissertation-1991].
-    Our benchmark runs 1-CFA on a lambda calculus term
-     that computes @exact|{~$\RktMeta{2*(1+3) = 2*1 + 2*3}$}| via Church numerals.
-    The performance overhead in this benchmark comes primarily from contracts
-     protecting the binding environment, which is implemented as a hashtable
-     and threaded through the program.
+    Performs 1-CFA on a lambda calculus term that computes @exact|{~$\RktMeta{2*(1+3) = 2*1 + 2*3}$}| via Church numerals.
+    The (mutable) binding environment flows throughout the program.
+    When this environment crosses a type boundary, it acquires a new chaperone.
   })
 (cons snake
   @elem{
-    @; TODO
-    Game in which a growing and moving snake avoids walls and its own tail.
-    Our benchmark is a gradually typed version of the @bm[snake] game from
-     @|PHIL| @|etal| and runs a pre-recorded sequence of state-changing moves
-     simulating user input@~cite[nthvh-icfp-2014].
+    Implements the Snake game;
+     the benchmark replays a sequence of moves.
+    Mostly first-order data crosses the module boundaries in @bm[snake], however the frequency of boundary-crossings is very high.
   })
 (cons take5
   @elem{
-    Object-oriented implementation of a classic German card game.
-    Our AI players implement a greedy strategy, playing locally optimal cards at each turn.
-    Much of the functionality is encapsulated in objects that seldom
-     communicate, so gradual typing imposes a fairly low overhead.
+    Runs a card game between AI players.
+    These AI communicate infrequently, so gradual typing adds relatively little overhead.
+  })
+(cons acquire
+  @elem{
+    Simulates a board game; implemented in a stateful, object-oriented style.
+    Few values cross module boundaries, therefore performance overhead is low.
   })
 (cons tetris
   @elem{
-    Implements the eponymous game.
-    The benchmark runs a deterministic sequence of moves and is
-     adapted from work on soft contract verification @|etal|@~cite[nthvh-icfp-2014].
-    Most of its overhead is due to repeatedly passing the game state across type boundaries.
+    Replays a pre-recorded game of Tetris.
+    Frequent interactions, rather than proxies or expensive runtime checks, are the source of performance overhead.
   })
 (cons synth
   @elem{
-    @; TODO
-    Converts a description of notes and drum beats to a playable @tt{WAV} format.
-    The original program suffers overhead from a type boundary
-     to Typed Racket's @hyperlink["https://docs.racket-lang.org/math/array.html"]{@library{math/array}}
-     library@~cite[saf-cc-2015].
-    Our benchmark incorporates the relevant library modules to form a
-     self-contained program; however,
-     we monomorphized the core array data structure because Typed Racket v6.2
-     could not convert its type to a contract.
-    @; Proof that 6.3 can handle it: TODO
+    Converts a description of notes and drum beats to @tt{WAV} format.
+    Modules in the benchmark come from two sources, a music library and an array library.
+    The worst overhead occurs when arrays frequently cross type boundaries.
   })
 (cons gregor
   @elem{
     Provides tools for manipulating calendar dates.
-    The benchmark builds a range of date values and runs unit tests.
-  })
-(cons acquire
-  @elem{
-    Simulates a board game where players invest in real estate.
-    The program is written in a stateful, object-oriented style.
-    For the benchmark, we run a game between AI players.
-    Overhead is low because only small, first-order values cross type
-     boundaries.
+    The benchmark builds tens of date values and runs unit tests on these values.
   })
 (cons (list quadBG quadMB)
   @elem{
     Converts S-expression source code to @tt{PDF} format.
-    We have two versions of @bm[quad]:
-     the first, @bm[quadMB], uses fully-untyped and fully-typed configurations
-     provided by the original author.
+    We have two versions of @bm[quad], each with very different performance characteristics.
+
+    The first version, @bm[quadMB], uses type annotations by the original author.
     This version has a high typed/untyped ratio
-     (@add-commas[(rnd (typed/untyped-ratio (benchmark-rktd quadMB "6.2")))]x in v6.2)
      because it explicitly compiles types to runtime predicates
      and uses these predicates to eagerly check data invariants.
-    In other words, the typed version is slower because it performs more work.
-    Our second version, @bm[quadBG], uses the same code but weakens
-     types to match the untyped
-     program and is therefore suitable for judging the implementation
+    In other words, the typed version is slower because it performs more work than the untyped program.
+
+    The second version, @bm[quadBG], uses identical code but weakens types to match the untyped program.
+    This version is therefore suitable for judging the implementation
      of Typed Racket rather than the user experience of Typed Racket.
     The conference version of this paper gave data only for
      @bm[quadMB]@~cite[tfgnvf-popl-2016].
 
-    To give a concrete example of different types, here are the definitions
-     for the core @tt{Quad} datatype from both @bm[quadMB] and @bm[quadBG].
+    @; To give a concrete example of different types, here are the definitions
+    @;  for the core @tt{Quad} datatype from both @bm[quadMB] and @bm[quadBG].
 
-    @racket[(define-type QuadMB (Pairof Symbol (Listof QuadMB)))]
+    @; @racket[(define-type QuadMB (Pairof Symbol (Listof QuadMB)))]
 
-    @racket[(define-type QuadBG (Pairof Symbol (Listof Any)))]
+    @; @racket[(define-type QuadBG (Pairof Symbol (Listof Any)))]
 
-    The former is a homogenous, recursive type.
-    As such, the predicate asserting that a value has type @racket[QuadMB]
-     is a linear-time tree traversal.
-    The predicate for @racket[QuadBG] runs significantly faster.
+    @; The former is a homogenous, recursive type.
+    @; As such, the predicate asserting that a value has type @racket[QuadMB] is a linear-time tree traversal.
+    @; The predicate for @racket[QuadBG] runs significantly faster.
   })
 ]
 

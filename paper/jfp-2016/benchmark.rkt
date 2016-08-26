@@ -135,7 +135,7 @@
         (provide name))]))
 
 (define (make-benchmark name author num-adaptor origin purpose lib*)
-  (define cache-rktd (format "cache-~a.rktd" name))
+  (define cache-rktd (format "cache-bm-~a.rktd" name))
   (with-cache (cachefile cache-rktd)
     #:read deserialize
     #:write serialize
@@ -259,7 +259,7 @@
   #:purpose "Game"
 )
 (define-benchmark fsm
-  #:author (list "Linh Chi Nguyen and Matthias Felleisen")
+  #:author "Linh Chi Nguyen" ; and matthias
   #:num-adaptor 1
   #:origin (hyperlink "https://github.com/mfelleisen/sample-fsm" "Economics Research")
   #:purpose "Economy Simulator"
