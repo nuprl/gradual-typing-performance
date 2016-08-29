@@ -805,11 +805,9 @@
     (if (<= val baseline)
       (+ 1 acc)
       acc))
-  (+ 1 ;;untyped
-     (if (<= (typed-mean sm) baseline) 1 0)
-     ;; Cast should be unnecessary, but can't do polymorphic keyword args in fold-lattice
-     ;; 2016-04-16: pretty sure 'inst' could fix this
-     (cast (fold-lattice sm count-N #:init 0) Natural)))
+   ;; Cast should be unnecessary, but can't do polymorphic keyword args in fold-lattice
+   ;; 2016-04-16: pretty sure 'inst' could fix this
+   (cast (fold-lattice sm count-N #:init 0) Natural))
 
 (: D-deliverable (-> Real (-> Summary Natural)))
 (define ((D-deliverable D) S)
