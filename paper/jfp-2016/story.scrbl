@@ -16,7 +16,7 @@ Much of the underlying Racket program can remain the same, including code using
  delimited continuations@~cite[tsth-esop-2013],
  or contracts@~cite[l-mthesis-2016].
 Finally, a typed module may incorporate definitions from a Racket module with a type-annotated import statement;
- a Racket module may use definitions from a Typed Racket module without knowledge that the providing module is typed.
+ conversely, a Racket module may use definitions from a Typed Racket module without knowledge that the providing module is typed.
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
 Furthermore, programmers often migrate Racket modules to Typed Racket as their application evolves.
@@ -48,19 +48,17 @@ In general one cannot predict why or how such incremental migrations happen, but
   @;  These modules could be the smallest, or have the fewest dependencies.
   @;}
 Regarding the final point, there are two sources of friction between typed and untyped code.
-First is the aforementioned burden on clients to give type annotations for untyped library imports.
-Maintainers of untyped libraries can remove this inconvenience by maintaining a bridge module with type annotations.
+First is the above-mentioned requirement that typed clients must supply type annotations to use imports from an untyped library.
+Maintainers of such libraries can instead provide a bridge module with the necessary annotations.
 Second is the performance overhead of typed/untyped interaction.
-Suffice to say, if a few modules in an untyped program are tightly coupled to a Typed Racket library,
- the program may run faster if those modules are typed as well.
+Suffice to say, an application's performance may improve if the developer adds types to an untyped module that is tightly coupled to other typed modules.
 
 Let us now illustrate one possible evolution.
 Imagine a large application in which an error is traced to an untyped module that was written years ago.
 In all likelihood, the programmer tasked with fixing the bug must recover the type specifications that the original developer had in mind---but did not write down.
 Doing so involves studying the code and analyzing its unit tests.
 This is a significant burden, but if the developer converts the
- module to Typed Racket, these specifications will henceforth be enforced by the compiler
- and available to future maintainers.
+ module to Typed Racket, future maintainers can re-use these specifications.
 
 
 @; -----------------------------------------------------------------------------
@@ -121,9 +119,9 @@ Gradual type soundness demands that at runtime, every value that flows from unty
 These checks are indispensible because Typed Racket's static types operate at a higher level of abstraction than Racket's dynamic typing.
 In particular, the tag checks performed by @racket[first] and @racket[*] do not enforce the @type{JR} type.
 If we were to omit the @ctc{JR} check, the call
-    @racket[(reynolds-* '(-1 -1) '(-3 0))],
- would produces a well-typed complex number from two ill-typed inputs.
-Racket's runtime would not detect this erroneous behavior, therefore the program and the program's users would not receive any clue about how the program went wrong.
+    @racket[(reynolds-* '(-1 -1) '(-3 0))]
+ would produce a well-typed complex number from two ill-typed inputs.
+Racket's runtime would not detect this erroneous behavior, therefore the program would silently go wrong.
 Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
 
 Furthermore, even if a tag check uncovers an error that sound gradual typing would have caught, debugging such errors in a higher-order functional language is often difficult.
@@ -134,8 +132,8 @@ Laziness does not pay in the context of type checking.
 In contrast, sound gradual typing guarantees that typed code never executes a single instruction using ill-typed values.
 Programmers can trust that every type annotation is a true statement.
 Furthermore, the interposed predicates detect type boundary errors as soon as possible.
-If a type boundary error occurs, the runtime enforcement system points the programmer to the relevant type annotation and supplies the incompatible value as a witness to the logical mistake.
-These guarantees and improvements in developer productivity come at the price of runtime checks.
+If such an error occurs, the runtime enforcement system points the programmer to the relevant type annotation and supplies the incompatible value as a witness to the logical mistake.
+These guarantees and improvements in developer productivity are valuable, but come at the price of runtime checks.
 Therefore, we need a performance evaluation method to quantify their cost.
 
     @figure["fig:complex-multiply" "Multiplication for polar form complex numbers"

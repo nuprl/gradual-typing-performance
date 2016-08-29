@@ -85,7 +85,7 @@ This paper presents a method for the performance evaluation of gradual type syst
      annotate a suite of representative benchmark programs as fully as possible;
    }
    @item{
-     consider all possible ways of removing a subset of type annotations in each program, subject to the granularity as fixed in (1);
+     consider all possible ways of removing a subset of type annotations in each program, subject to the granularity fixed in (1);
    }
    @item{
      report the overhead of these gradually typed @emph{configurations}
@@ -94,13 +94,13 @@ This paper presents a method for the performance evaluation of gradual type syst
  ]
 We demonstrate that the method characterizes
  both the @emph{absolute} performance of a gradual type system and the @emph{relative}
- performance of two implementations of gradual typing for the same untyped language.
+ performance of two implementations of the same gradual type system.
 To validate the method, we evaluate the performance of @integer->word[(length (*RKT-VERSIONS*))]
  Typed Racket versions on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional
  and object-oriented benchmark programs ranging in size and complexity.
 
 Building on the evaluation method introduced in the conference version of this paper@~cite[tfgnvf-popl-2016],
- we contribute
+ this paper contributes
  the first comparitive evaluation of different implementations of the same gradual type system;
  @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs;
  an in-depth analysis of the performance bottlenecks in these benchmarks;

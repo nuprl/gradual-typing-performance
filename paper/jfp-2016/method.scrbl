@@ -79,7 +79,7 @@ We describe this space as a lattice.
 
   @item{
     @exact|{$(S, \leq)$}| is a complete lattice; henceforth, a @emph{performance lattice}.
-    The fully untyped configuration is the
+    The untyped configuration is the
      bottom element and the fully-typed configuration is the top element.
   }
 
@@ -103,7 +103,7 @@ We describe this space as a lattice.
 @(define suffixtree-num-D-str       (integer->word suffixtree-num-D))
 @(define suffixtree-sample-k        1)
 @(define suffixtree-num-k           ((count-configurations/mean S suffixtree-sample-k) suffixtree-sample-D))
-@(define suffixtree-num-k-str       (integer->word suffixtree-num-k))
+@(define suffixtree-num-k-str       (number->string suffixtree-num-k))
 
 A performance lattice collects one program's configurations.
 Equipped with a labeling @exact{$l$} such that @exact{$l(c)$} characterizes the
@@ -163,8 +163,7 @@ For example the Typed Racket @library{plot} library has over 80 modules.
 
 The most basic question about a gradually typed language is
  how fast fully-typed programs are in comparison to their fully untyped relative.
-In principle, static types enable optimizations and can serve in place of the
- runtime tags used in safe dynamic languages.
+In principle, static types enable optimizations and can serve in place of runtime tag checks.
 The net effect of such improvements may, however, be offset by runtime type checks
  in programs that rely heavily on an untyped library.
 Hence we characterize the relative performance of fully-typed programs
@@ -181,7 +180,7 @@ For users of a gradual type system, the important performance
  relative to the original program.
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
-Depending on the nature of the application and clients' expectations,
+Depending on the nature of the application,
  an appropriate substitute for "low enough" might take any value between zero overhead
  and an order-of-magnitude slowdown.
 To account for these varying requirements, we use
@@ -205,6 +204,10 @@ We propose as a coarse measure of "work" the number of modules that must be
      A configuration is @step[] if it is at most @math{k}
       type conversion steps from a @deliverable{} configuration.
     }
+
+@; One potential solution is to convert additional modules to Typed Racket.
+@; Indeed, one user reported a speedup from @|PFDS-BEFORE| to @|PFDS-AFTER| after converting a script to Typed Racket.
+@; But annotating one additional module is not guaranteed to improve performance and may introduce new type boundaries.
 
 @profile-point{sec:method:example}
 @(define sample-data
@@ -259,7 +262,7 @@ The ratio of @deliverable{D} configurations in such a lattice is a measure of
  the overall feasibility of gradual typing.
 When the ratio is high, then no matter how the application evolves performance will
  likely remain acceptable.
-Conversely, a low ratio means a team may struggle to recover performance after
+Conversely, a low ratio implies that a team may struggle to recover performance after
  incrementally typing a few modules.
 Practitioners with fixed performance requirements can therefore use the number
  of @deliverable[] configurations to extrapolate the performance of a gradual type system.

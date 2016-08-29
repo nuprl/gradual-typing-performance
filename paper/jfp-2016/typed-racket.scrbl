@@ -25,10 +25,9 @@ The benchmarks are representative of actual user code yet
  small enough to make exhaustive performance evaluation tractable.
 The following descriptions, arranged from smallest performance lattice to largest,
  briefly explain the purpose of each benchmark.
-Most benchmarks are self-contained, but where relevant we note their external dependencies.
 
-@emph{Note on terminology:} Racket's @emph{chaperones} are lightweight proxies that preserve object equality@~cite[chaperones-impersonators].
-Typed Racket compiles higher-order types on a type boundary to chaperones and applies these proxies to values that cross the boundary.
+@emph{Note on terminology:} Racket's @emph{chaperones} are proxies that may perform only side effects but preserve object equality@~cite[chaperones-impersonators].
+Typed Racket compiles each higher-order type annotating a type boundary to a chaperone and applies this proxy to all runtime values that cross the boundary.
 
 
 @; -----------------------------------------------------------------------------
@@ -45,31 +44,29 @@ Typed Racket compiles higher-order types on a type boundary to chaperones and ap
 (cons forth
   @elem{
     Interprets Forth programs.
-    The interpreter represents calculator commands with a growable list of objects.
+    The interpreter represents calculator commands as a list of first-class objects.
     These objects accumulate chaperones as they cross type boundaries.
   })
 (cons (list fsm fsmoo)
   @elem{
     Simulates the interactions of economic agents, modeled as finite-state automata@~cite[n-mthesis-2014].
     This benchmark has functional (@bm[fsm]) and object-oriented (@bm[fsmoo]) implementations.
-    The object-oriented version frequently sends first-class objects across type boundaries; the functional version does the same with a mutable vector.
+    The object-oriented version frequently sends first-class objects across type boundaries; the functional version does the same with mutable vectors.
   })
 (cons mbta
   @elem{
-    Builds a map of Boston's subway system and answers a series of reachability queries.
+    Builds a map of Boston's subway system and answers reachability queries.
     The map encapsulates a boundary to Racket's untyped @library{graph} library; when the map is typed, the boundary to @library{graph} becomes a significant type boundary.
   })
 (cons morsecode
   @elem{
     Computes Levenshtein distances and morse code translations for a fixed sequence of pairs of words.
-    Every function that crosses a type boundary in @bm[morsecode] operates on strings and integers.
-    Performance overhead is therefore low.
+    Every function that crosses a type boundary in @bm[morsecode] operates on strings and integers, thus overhead is relatively low.
   })
 (cons zombie
   @elem{
     Implements a game where players dodge computer-controlled ``zombies''.
-    Curried functions over symbols (i.e. ``method names'') implement game entities.
-    These functions accumulate chaperones when they cross a type boundary.
+    Curried functions over symbols (i.e. ``method names'') implement game entities and repeatedly cross type boundaries.
 
     @;@racket[
     @;  (define-type Point
@@ -148,7 +145,7 @@ Typed Racket compiles higher-order types on a type boundary to chaperones and ap
 (cons snake
   @elem{
     Implements the Snake game;
-     the benchmark replays a sequence of moves.
+     the benchmark replays a fixed sequence of moves.
     Mostly first-order data crosses the module boundaries in @bm[snake], however the frequency of boundary-crossings is very high.
   })
 (cons take5
@@ -191,6 +188,7 @@ Typed Racket compiles higher-order types on a type boundary to chaperones and ap
     The second version, @bm[quadBG], uses identical code but weakens types to match the untyped program.
     This version is therefore suitable for judging the implementation
      of Typed Racket rather than the user experience of Typed Racket.
+
     The conference version of this paper gave data only for
      @bm[quadMB]@~cite[tfgnvf-popl-2016].
 
@@ -214,7 +212,7 @@ Typed Racket compiles higher-order types on a type boundary to chaperones and ap
 
 @Figure-ref{fig:bm} lists static characteristics of the benchmark programs as a coarse measure of their size and complexity.
 The lines of code (LOC) and number of modules (# Mod.) approximate program size.
-Note that the number modules determines the number of gradually typed configurations.
+    @; Note that the number modules determines the number of gradually typed configurations.
 Adaptor modules (# Adt.) roughly correspond
  to the number of user-defined datatypes in each benchmark
 See @secref{sec:todo} for a precise definition.
@@ -222,8 +220,9 @@ The ``Annotation'' column is the number of type annotations in the fully typed
  version of the benchmark.@note{The benchmarks use more annotations than Typed Racket requires in practice, as they provide full type signatures for each import. Only untyped modules require such signatures.}
 Lastly, the boundaries (# Bnd.) and exports (# Exp.) describe the graph structure of each benchmark.
 Boundaries are import statements from one module in the benchmark to another (omits external boundaries).
-Exports are identifiers provided by any module in the benchmark; for example,
- eight identifiers cross static module boundaries in @bm[mbta].
+Exports are identifiers that cross such boundaries statically.
+For example, there is one module boundary in @tt{sieve} and nine identifiers cross this boundary.
+@; At runtime, these nine identifiers are repeatedly invoked as functions; however, the number of invocations is not part of @figure-ref{fig:bm}.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
   @render-benchmarks-table{}
@@ -234,30 +233,25 @@ Exports are identifiers provided by any module in the benchmark; for example,
 @profile-point{sec:tr:protocol}
 @section[#:tag "sec:protocol"]{Experimental Protocol}
 
-@todo{update with cluster stats/protocol}
+@(define MIN-ITERS-STR "2")
+@(define MAX-ITERS-STR "30")
+@(define FREQ-STR "1.40 GHz")
 
-Our experiment measured the running time of all
- configurations in each benchmark's performance lattice.
-We performed the same experiment on @integer->word[(length (*RKT-VERSIONS*))]
- versions of Racket: @string-join[(*RKT-VERSIONS*) "," #:before-last ", and "].
-@; {In particular,
-@;  commit @hyperlink["https://github.com/racket/racket/commit/86a9c2e493d2b6ad70b3a80fef32a9e810c4e2db"]{86a9c2e4} from January 26, 2016.}
-The machine we used to take measurements was a Linux machine with
- two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
-Each processor has 16 cores, giving us a total of 32 cores.
-We dedicated at most 29 of the machine's cores to running our experiment;
- each configuration was pinned to a single core and each benchmark program
- was run to completion before starting the next benchmark.
+We measured configurations' running times on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
+The machine used at most two of its 32 cores to collect data; each core ran at minimum frequency (@|FREQ-STR|) via the @tt{powersave} CPU governor.
 
-Timing information for a single configuration was obtained by compiling the
- code ahead of time and then running the configuration's main module repeatedly.
-Each run used a fresh instance of the Racket VM with the JIT compiler
- enabled.
-@todo{how many iterations?}
+For each benchmark, we chose a random permutation of its configurations and ran each configuration through one warmup and one collecting iteration.
+Depending on the time needed to collect this data, we repeated the process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR|.
+We manually confirmed that the data for each configuration were unimodal.
+In total, across @integer->word[(*NUM-BENCHMARKS*)] benchmarks and @integer->word[(length (*RKT-VERSIONS*))] versions of Racket,
+ we measured @add-commas[(* (length (*RKT-VERSIONS*)) (apply + (map benchmark->num-configurations ALL-BENCHMARKS)))] such configurations.
+
 All scripts we used to run our experiments and the data we collected
- are available in the online supplement to this paper.
-For threats to validity regarding our experimental protocol,
- see @Secref{sec:threats}.
+ are available in the online supplement to this paper and in the @tt{jfp}
+ branch of this paper's public repository.@note{@url{https://github.com/nuprl/gradual-typing-performance}}
+
+@;For threats to validity regarding our experimental protocol,
+@; see @Secref{sec:threats}.
 
 
 @; -----------------------------------------------------------------------------
