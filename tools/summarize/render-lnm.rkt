@@ -258,6 +258,13 @@
         [size (assert (- (*TABLE-FONT-SIZE*) 1) index?)])
       (text s face size angle)))
 
+(: sort-by-version (-> (Listof Summary) (Listof Summary)))
+(define sort-by-version
+  (let ([s<? (lambda ([s1 : Summary] [s2 : Summary])
+               (string<? (summary->version s1) (summary->version s2)))])
+    (lambda (S*)
+      (sort S* s<?))))
+
 ;; Create a summary and L-N/M picts for a data file.
 (: file->pict* (->* [(Listof String) #:title (U String #f)] (Listof Pict)))
 (define (file->pict* data-file* #:title title)
@@ -274,7 +281,22 @@
     L-pict*
     (let* ([V 2]
            [S (car S*)]
-           [first-lbl (title-text (format "~a  (τ/λ ratio: ~ax)" (or title (get-project-name S)) (~r (typed/untyped-ratio S) #:precision 1)))]
+           [HSHIM (- (*GRAPH-HSPACE*) 2)]
+           [first-lbl (hc-append HSHIM
+                        (title-text (format "~a" (or title (get-project-name S))))
+                        (for/fold : Pict ([acc : Pict (blank 0 0)])
+                                ([S (in-list (sort-by-version S*))]
+                                 [i (in-naturals 1)])
+                          (define v (summary->version S))
+                          (define t/u (~r (typed/untyped-ratio S) #:precision '(= 1)))
+                          (define c
+                            (let-values ([(str c0) (int->color i)])
+                              (cast c0 (List Byte Byte Byte))))
+                          (hc-append HSHIM
+                                     acc
+                                     (hc-append 0
+                                       (colorize (title-text (format "v~a" v)) c)
+                                       (title-text (format ": ~ax" t/u))))))]
            [mid-lbl   (blank 0 (pict-height first-lbl))]
            [last-lbl  (title-text (format "~a configurations" (add-commas (get-num-configurations S))))])
       (cons
@@ -666,12 +688,12 @@
           (fl* 2.0 (flsqrt (fl/ (real->double-flonum area) 3.14))))
         (define target-area 100)
         (define-values (_str color) (int->color i))
-          (colorize
-        (hc-append* HSHIM
-          (for/list ([n (in-list num*)])
-            (disk (diameter (* target-area (+ 1 (/ (- n n0) n0))))
-             #:draw-border? #f)))
-             (cast color (List Byte Byte Byte)))))))
+        (colorize
+          (hc-append* HSHIM
+            (for/list ([n (in-list num*)])
+              (disk (diameter (* target-area (+ 1 (/ (- n n0) n0))))
+               #:draw-border? #f)))
+          (cast color (List Byte Byte Byte)))))))
 
 ;; -----------------------------------------------------------------------------
 
