@@ -284,7 +284,7 @@ All scripts we used to run our experiments and the data we collected
         @; -- overall, bleak picture
         @(let* ([num-bm (length ALL-BENCHMARKS)]
                 [num-bm-str (integer->word num-bm)]
-                [max-str (format "~ax" (*MAX-OVERHEAD*))]
+                [max-str (format "~a" (*MAX-OVERHEAD*))]
                 [suffixtree-num-modules (integer->word 6)]
                 [num-max-deliverable 9] ; TODO, use *MAX-OVERHEAD*
                 [num-max-deliverable-str (integer->word num-max-deliverable)]
@@ -298,53 +298,52 @@ All scripts we used to run our experiments and the data we collected
                 [absolute-min-overhead-bm "synth"]
                )
           @elem{
-            These plots are mostly bad news for Typed Racket.
-            First, many benchmarks demonstrate significant performance overhead.
-            Out of @|num-bm-str| benchmark programs, @|num-max-deliverable-str| have configurations with over @|max-str| overhead on every version of Racket.
-            These extreme configurations are unfortunately common, and many more configurations exhibit lesser performance overhead.
-            At least half the configurations in @integer->word[(- num-bm num-mostly-2-deliverable)] benchmarks are not even @deliverable{2}.
-
-            Second, only @|num-good-slope-str| curves have steep slopes.
-            Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common slope is a flat line.
+            Many curves have low slopes.
+            These demonstrate that gradual typing introduces large and widespread performance overhead.
+            Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common slope is a flat line near the 50% mark.
             Such lines imply that the performance of a family of configurations is dominated by a single type boundary.
-            For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present;
-             all eight configurations with this boundary have over @|max-str| overhead.
-            Benchmarks with @|suffixtree-num-modules| or more modules generally have smoother slopes.
-            These do not hit the ``performance wall'' evident in the smaller benchmarks, but still the programmer faces high performance overhead.
+            @; For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present; all eight configurations with this boundary have over @|max-str| overhead.
+            Benchmarks with @|suffixtree-num-modules| or more modules generally have smoother slopes, but five such benchmarks still have low slopes.
+            These low slopes carry the same underlying message as the flat lines; for many values of @math{D} between 1 and @|max-str|, few configurations are @deliverable{}.
 
-            Third, moving from @math{k=0} to @math{k=1} in a fixed version of Racket does little to improve the number of @deliverable{} configurations.
-            One type conversion step can eliminate a pathological boundary, such as those in @bm[fsm] and @bm[zombie], but the larger benchmarks have more intricate communication patterns.
-            Unless most modules in the program are typed, adding types to one additional module is not likely to improve performance.
+            For example, consider @math{D=2}.
+            In @integer->word[(- num-bm num-mostly-2-deliverable)] of the @|num-bm-str| benchmark programs, @emph{at most} half the configurations are @deliverable{2}.
 
-            Finally, only four benchmarks run faster when fully typed.
-            The rest have typed/untyped ratios of at least 1, despite type specialization in the Typed Racket compiler@~cite[stf-optimization-coaching].
-            In the case of @bm[mbta] and @bm[zordoz], these ratios are due to interactions with an untyped library.
-            Object-oriented benchmarks such as @bm[take5] and @bm[acquire] suffer overhead from type casts@~cite[tfdffthf-ecoop-2015].
-            And as mentioned above, @bm[quadMB] incurs overhead from type-generated predicates.
+            The curves' endpoints describe the extremes of gradual typing.
+            The left endpoint gives the percentage of configurations that run at least as quickly as the untyped program.
+            For all but @bm[sieve] and @bm[lnm], such configurations are a low proportion of the total.
+            The right endpoint shows how many configurations suffer over 20x performance overhead.
+            In total, @|num-max-deliverable-str| benchmarks have configurations with such extreme slowdowns.
 
-            On the other hand, the plots offer some good news.
-            First, Typed Racket has improved significantly between versions.
-            In particular @bm[kcfa], @bm[snake], and @bm[gregor] have many more @deliverable{} configurations on version @|v-max| than on version @|v-min|.
+            Moving from @math{k=0} to @math{k=1} in a fixed version of Racket does little to improve the number of @deliverable{} configurations.
+            Given the slopes of the @math{k=0} graphs, this result is not surprising.
+            One type conversion step can eliminate a pathological boundary, such as those in @bm[fsm] and @bm[zombie], but the overhead in larger benchmarks comes from a variety of type boundaries.
+            Except in configurations with many typed modules, adding types to one additional module is not likely to improve performance.
 
-            Second, every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
-            These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
+            On the other hand, subsequent versions of Typed Racket demonstrate less overhead.
+            The three slopes for each benchmark are similar, but later versions typically have more @deliverable{} configurations for any fixed @math{D}.
+            In particular @bm[kcfa], @bm[snake], and @bm[tetris] doubled the number of @deliverable{8} configurations between versions 6.2 and 6.4.
+            If this trend continues, Typed Racket may soon offer sound and performant gradual typing.
 
-            Third, the @bm[lnm] benchmark demonstrates that clients of a typed library have a positive incentive to convert their modules to Typed Racket.
-            Doing so can improve the application's performance.
-            Racket's contracts are similarly @emph{infectious}@~cite[f-icfp-2014] because they properly attribute blame; new types track blame and remove some dynamic checks.
+         @; ; in fact, the typed/untyped ratios demonstrate that only four benchmarks run faster when fully typed on Racket version 6.4.
+         @;   Finally, only four benchmarks run faster when fully typed.
+         @;   The rest have typed/untyped ratios of at least 1, despite type specialization in the Typed Racket compiler@~cite[stf-optimization-coaching].
+         @;   In the case of @bm[mbta] and @bm[zordoz], these ratios are due to interactions with an untyped library.
+         @;   Object-oriented benchmarks such as @bm[take5] and @bm[acquire] suffer overhead from type casts@~cite[tfdffthf-ecoop-2015].
+         @;   And as mentioned above, @bm[quadMB] incurs overhead from type-generated predicates.
+
+         @;   Second, every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
+         @;   These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
+
+         @;   Third, the @bm[lnm] benchmark demonstrates that clients of a typed library have a positive incentive to convert their modules to Typed Racket.
+         @;   Doing so can improve the application's performance.
+         @;   Racket's contracts are similarly @emph{infectious}@~cite[f-icfp-2014] because they properly attribute blame; new types track blame and remove some dynamic checks.
           })
 
-
+        @; OTHER NOTES
         @; - canweget dungeon running???
-
-        @; - something about t/u ratio
-
-        @; -- between versions
-        @; - generally improving
         @; - class/c bug (explains forth after 6.2?)
         @; - zombie k=1
-
-
       }
       (for/list ([p (in-list pict*)]
                  [name (in-list name*)]
