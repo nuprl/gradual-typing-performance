@@ -5,6 +5,7 @@
   "common.rkt"
   "typed-racket.rkt"
   "util.rkt"
+  (only-in racket/list first last)
   (only-in gtp-summarize/path-util add-commas)
   (only-in racket/string string-join)
   (except-in gtp-summarize/lnm-parameters defparam)
@@ -213,16 +214,18 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 @Figure-ref{fig:bm} lists static characteristics of the benchmark programs as a coarse measure of their size and complexity.
 The lines of code (LOC) and number of modules (# Mod.) approximate program size.
     @; Note that the number modules determines the number of gradually typed configurations.
-Adaptor modules (# Adt.) roughly correspond
- to the number of user-defined datatypes in each benchmark
-See @secref{sec:todo} for a precise definition.
+Adaptor modules (# Adp.) roughly correspond
+ to the number of user-defined datatypes in each benchmark.
 The ``Annotation'' column is the number of type annotations in the fully typed
- version of the benchmark.@note{The benchmarks use more annotations than Typed Racket requires in practice, as they provide full type signatures for each import. Only untyped modules require such signatures.}
+ version of the benchmark.@note{The benchmarks use more annotations than Typed Racket requires in practice, as they provide full type signatures for each import, even imports from other typed modules.}
 Lastly, the boundaries (# Bnd.) and exports (# Exp.) describe the graph structure of each benchmark.
 Boundaries are import statements from one module in the benchmark to another (omits external boundaries).
 Exports are identifiers that cross such boundaries statically.
 For example, there is one module boundary in @tt{sieve} and nine identifiers cross this boundary.
 @; At runtime, these nine identifiers are repeatedly invoked as functions; however, the number of invocations is not part of @figure-ref{fig:bm}.
+
+See the appendix for a precise definition of adaptor modules and figures representing each benchmark as a graph.
+Edges in the graphs correspond to module boundaries (# Bnd.).
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
   @render-benchmarks-table{}
@@ -238,25 +241,25 @@ For example, there is one module boundary in @tt{sieve} and nine identifiers cro
 @(define FREQ-STR "1.40 GHz")
 
 We measured configurations' running times on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
-The machine used at most two of its 32 cores to collect data; each core ran at minimum frequency (@|FREQ-STR|) via the @tt{powersave} CPU governor.
+The machine collected data with at most two of its 32 cores.
+Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
 For each benchmark, we chose a random permutation of its configurations and ran each configuration through one warmup and one collecting iteration.
-Depending on the time needed to collect this data, we repeated the process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR|.
-We manually confirmed that the data for each configuration were unimodal.
-In total, across @integer->word[(*NUM-BENCHMARKS*)] benchmarks and @integer->word[(length (*RKT-VERSIONS*))] versions of Racket,
- we measured @add-commas[(* (length (*RKT-VERSIONS*)) (apply + (map benchmark->num-configurations ALL-BENCHMARKS)))] such configurations.
+Depending on the time needed to collect data for one benchmark's configurations, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
+
+This protocol consistently produced unimodal data for individual configurations.
+Furthermore, we have recorded similar performance overhead on three other machines@~cite[tfgnvf-popl-2016].
+We are therefore confident that the performance overhead we observed is reproducible across machines and computing environments.
+Nevertheless, @secref{sec:threats} reports threats to validity regarding our experimental protocol.
 
 All scripts we used to run our experiments and the data we collected
  are available in the online supplement to this paper and in the @tt{jfp}
  branch of this paper's public repository.@note{@url{https://github.com/nuprl/gradual-typing-performance}}
 
-@;For threats to validity regarding our experimental protocol,
-@; see @Secref{sec:threats}.
-
 
 @; -----------------------------------------------------------------------------
 @profile-point{sec:tr:plots}
-@section[#:tag "sec:plots"]{Results}
+@section[#:tag "sec:plots"]{Evaluating Performance}
 
 @(render-lnm-plot
   (lambda (pict*)
@@ -270,107 +273,78 @@ All scripts we used to run our experiments and the data we collected
     (define NUMV (integer->word (length (*RKT-VERSIONS*))))
     (cons
       @elem{
-        @; -- Quickly, just the basics
-        @(apply Figure-ref name*) present our experimental results in
-         a series of overhead graphs.
-        Each graph is a cumulative distribution function showing the number
-         of @deliverable{D} configurations for real-valued @math{D}
-         between 1x and @id[(*MAX-OVERHEAD*)]x.
-        Specifically, the x-axes represent overhead factors
-         relative to the untyped configuration of each benchmark.
-        The y-axes count the percentage of each benchmark's configurations
-         that run within the overhead shown on the x-axes.
-        The @id[NUMV] lines on each plot correspond to versions of Racket;
-         newer versions have thicker lines.
-        Plots in the left column of each figure show @step["0" "D"]
-         configurations.
-        Plots in the right column show @step["1" "D"] configurations.
+        @(apply Figure-ref name*) present our experimental results in a series of overhead graphs.
+        As in @figure-ref{fig:suffixtree-plot}, the left column of figures counts @deliverable[] configurations and the right column counts @step["1" "D"] configurations.
+        These plots additionally give data for three versions of Racket released between June 2015 and February 2016.
+        Data for version 6.2 are thin red curves with short dashes.
+        Data for version 6.3 are mid-sized green curves with long dashes.
+        Data for version 6.4 are thick, solid, blue curves.
+        The typed/untyped ratio for each version appears above each pair of plots.
 
-        @; -- choice of x-axis, log scale, bode diagrams, picking D/U
-        The range of values on the x-axes are plausible bounds on the
-         overhead users of gradual type systems will accept.
-        Granted, there may be software teams that require overhead
-         under 1x---that is, a speedup relative to the untyped program---or
-         can work with slowdowns exceeding @id[(*MAX-OVERHEAD*)]x,
-         but we expect most users will tolerate only a small performance overhead.
-        To emphasize the practical value of low overheads
-         we use a log scale on the x-axis with minor tick lines at
-         1.2x, 1.4x, etc. and again at 4x, 6x, etc.
-        For example, the y-value at the first minor tick gives the number
-         of @deliverable{1.2} configurations.
-        To derive the number of @usable["1.2" "1.6"] configurations,
-         subtract the number of @deliverable{1.2} configurations from
-         the number of configurations deliverable at the third minor tick.
+        @; -- overall, bleak picture
+        @(let* ([num-bm (length ALL-BENCHMARKS)]
+                [num-bm-str (integer->word num-bm)]
+                [max-str (format "~ax" (*MAX-OVERHEAD*))]
+                [suffixtree-num-modules (integer->word 6)]
+                [num-max-deliverable 9] ; TODO, use *MAX-OVERHEAD*
+                [num-max-deliverable-str (integer->word num-max-deliverable)]
+                [num-mostly-2-deliverable 6]
+                [num-mostly-2-deliverable-str (integer->word num-mostly-2-deliverable)]
+                [num-good-slope 8]
+                [num-good-slope-str (integer->word num-good-slope)]
+                [v-min (first (*RKT-VERSIONS*))]
+                [v-max (last (*RKT-VERSIONS*))]
+                [absolute-min-overhead "1.2"]
+                [absolute-min-overhead-bm "synth"]
+               )
+          @elem{
+            These plots are mostly bad news for Typed Racket.
+            First, many benchmarks demonstrate significant performance overhead.
+            Out of @|num-bm-str| benchmark programs, @|num-max-deliverable-str| have configurations with over @|max-str| overhead on every version of Racket.
+            These extreme configurations are unfortunately common, and many more configurations exhibit lesser performance overhead.
+            At least half the configurations in @integer->word[(- num-bm num-mostly-2-deliverable)] benchmarks are not even @deliverable{2}.
 
-        @; -- choice of y-axis
-        @; TODO
-        To ease comparisons across benchmarks, the y-axes show
-         the percentage of deliverable configurations rather than an absolute count.
-        Each figure lists the total number of configurations in each benchmark
-         along the right column.
+            Second, only @|num-good-slope-str| curves have steep slopes.
+            Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common slope is a flat line.
+            Such lines imply that the performance of a family of configurations is dominated by a single type boundary.
+            For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present;
+             all eight configurations with this boundary have over @|max-str| overhead.
+            Benchmarks with @|suffixtree-num-modules| or more modules generally have smoother slopes.
+            These do not hit the ``performance wall'' evident in the smaller benchmarks, but still the programmer faces high performance overhead.
 
-        @; -- data lines
-        A data point @math{(X,Y)} along any of the @id[NUMV] curves in a plot
-         along the left column
-         represents the percentage @math{Y} of configurations
-         that run at most @math{X} times slower than the benchmark's
-         untyped configuration.
-        For example, 50% of @bm[sieve] configurations run within
-         2x slower relative to the untyped configuration.
-        On all Racket versions, the same 50% of configurations
-         are the only ones that run within a @id[(*MAX-OVERHEAD*)]x overhead.
-        @;bg; NEW DATA
+            Third, moving from @math{k=0} to @math{k=1} in a fixed version of Racket does little to improve the number of @deliverable{} configurations.
+            One type conversion step can eliminate a pathological boundary, such as those in @bm[fsm] and @bm[zombie], but the larger benchmarks have more intricate communication patterns.
+            Unless most modules in the program are typed, adding types to one additional module is not likely to improve performance.
 
-        The right column of plots shows the effect of adding types
-         to at most @math{1} additional untyped modules.
-        A point @math{(X,Y)} on these curves represents the percentage @math{Y}
-         of configurations @exact{$c_1$} such that there exists a configuration
-         @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
-         runs at most @math{X} times slower than the untyped configuration.
-        Note that @exact{$c_1$} and @exact{$c_2$} may be the same;
-         they are definitely the same when @exact{$c_1$} is the fully-typed configuration.
-        Again using @bm[sieve] as an example, 100% of configurations can
-         reach a configuration with at most 1x overhead after at most one
-         type conversion step.
-        This is because the fully-typed configuration happens to be
-         @deliverable{1} and both of the gradually typed configurations
-         become fully-typed after one conversion step.
-        On the other hand, freedom to type one extra module has no effect on the number of
-         @deliverable{1.2} configurations in @bm[mbta].
-        In other words, even if the programmer at a @deliverable{1.2} configuration
-         happens to convert the untyped module best-suited to improve performance,
-         their next configuration will be no better than @deliverable{1.2}.
-        @; Theoretically, a developer might try every way of typing the next
-        @;  one module, but at that point they have all the annotations to go
-        @;  anywhere in the lattice.
+            Finally, only four benchmarks run faster when fully typed.
+            The rest have typed/untyped ratios of at least 1, despite type specialization in the Typed Racket compiler@~cite[stf-optimization-coaching].
+            In the case of @bm[mbta] and @bm[zordoz], these ratios are due to interactions with an untyped library.
+            Object-oriented benchmarks such as @bm[take5] and @bm[acquire] suffer overhead from type casts@~cite[tfdffthf-ecoop-2015].
+            And as mentioned above, @bm[quadMB] incurs overhead from type-generated predicates.
 
-        @; Matthias says NOOOO
-        @; -- all about data, ideal shape
-        The ideal gradual type system would introduce zero overhead, thus every
-         curve in the left column would be a flat line at the
-         top of the plot, meaning that all configurations on all tested versions
-         of Racket run no slower than each benchmark's untyped configuration.
-        If this were true, the right column would be identical to the left
-         because every @deliverable{1} configuration can reach a @deliverable{1}
-         configuration (itself) in at most one type conversion step.
-        Conversely, a worst-case gradual type system would exhibit flat lines
-         at the bottom of every plot, indicating that any configuration with at
-         least one typed module is more than @id[(*MAX-OVERHEAD*)]x slower than the untyped configuration.
-        Here too, freedom to type an additional module will not change performance
-         and so the @math{k=0} and @math{k=1} plots will be identical.
+            On the other hand, the plots offer some good news.
+            First, Typed Racket has improved significantly between versions.
+            In particular @bm[kcfa], @bm[snake], and @bm[gregor] have many more @deliverable{} configurations on version @|v-max| than on version @|v-min|.
 
-        The reality is that each benchmark determines a unique curve.
-        Using a different version of Racket or moving from @math{k=0} to @math{k=1}
-         typically shifts the curve horizontally but does not change the overall
-         shape i.e. the relative cost of type boundaries in a program.
-        Regarding shapes, a steep slope implies a good tradeoff between
-         accepting a larger overhead and increasing the number of
-         deliverable configurations.
-        A shallow slope or low, flat line is a poor tradeoff and implies
-         the majority of configurations suffer very large performance overhead.
-        Where large overheads are due to a pathological boundary between two
-         tightly-coupled modules, the associated @math{k=1} graph should
-         exhibit much better performance, as is the case for @bm[sieve].
+            Second, every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
+            These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
+
+            Third, the @bm[lnm] benchmark demonstrates that clients of a typed library have a positive incentive to convert their modules to Typed Racket.
+            Doing so can improve the application's performance.
+            Racket's contracts are similarly @emph{infectious}@~cite[f-icfp-2014] because they properly attribute blame; new types track blame and remove some dynamic checks.
+          })
+
+
+        @; - canweget dungeon running???
+
+        @; - something about t/u ratio
+
+        @; -- between versions
+        @; - generally improving
+        @; - class/c bug (explains forth after 6.2?)
+        @; - zombie k=1
+
+
       }
       (for/list ([p (in-list pict*)]
                  [name (in-list name*)]
@@ -379,82 +353,14 @@ All scripts we used to run our experiments and the data we collected
 
 
 @; -----------------------------------------------------------------------------
-@subsection[#:tag "subsec:compare"]{Discussion}
+@section[#:tag "sec:compare"]{Comparing Gradual Type Systems}
 
-@todo{prose, once we have reliable data}
+Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
+To precisely compare implementations of gradual typing, we must take uncertainty into account@~cite[kj-ismm-2013].
+We do so AS FOLLOWS.
 
-Lessons from graphs:
-@itemize[
-  @item{
-    Serious overheads, even on newest version.
-    For those interested, the 5 benchmarks with the WORST overheads are @todo{list}.
-    These pathologies are bad.
+@; -- typed/untyped ratio graph, with error bars
 
-    @(let ([num-bad (length '(sieve forth fsm fsmoo zombie suffixtree tetris synth quadMB))])
-      @elem{
-        Even worse, nearly half the configurations in @id[num-bad] benchmarks
-         (@id[(round (* 100 (/ num-bad (count-benchmarks))))]%) have over @id[(*MAX-OVERHEAD*)]x overhead.
-      })
-  }
-  @item{
-    At @math{k=1}, only @bm[synth] and @bm[quadMB] have any configurations that
-     cannot reach a @deliverable{20} configuration.
-    This suggests that many of the absolute worst overheads are due to one or
-     two problematic type boundaries.
-  }
-  @item{
-    That said, the @math{k=1} graphs are disturbingly similar to the @math{k=0}
-     graphs, especially at low overheads.
-    Even a 3x overhead will not be ``deliverable'' for most programmers.
-    Thus, incrementally converting a module or two to Typed Racket is apparently
-     a poor strategy for reducing overhead introduced by gradual typing.
-  }
-  @item{
-    All benchmarks, even @bm[snake] and @bm[synth], have a handful of configurations
-     with less than 2x overhead.
-    Can we guide developers to those configurations?
-  }
-  @item{
-    Generally, small improvements with newer versions of Racket.
-    Caveats:
-    @itemize[
-      @item{
-        Forth worse after 6.2 because @todo{why?}
-      }
-      @item{
-        zombie @math{k=1} is strange
-      }
-      @item{
-        tetris at 1.2x @math{k=1} is strange
-      }
-    ]
-  }
-]
-
-
-@; -----------------------------------------------------------------------------
-@section[#:tag "sec:compare"]{Comparing Typed Rackets}
-
-@; really, don't worry about writing well right now
-
-Overhead plots capture the high-level performance of a gradual type system
- and can make broad comparisons between different gradual type systems for
- the same language.
-Each version of Typed Racket is essentially a new gradual type system for Racket;
- these plots confirm that the general trend in subsequent versions is to improve
- performance.
-
-For more fine-grained comparisons, overhead plots are not very good,
- as they are tailored to users of gradual typing rather than implementors.
-Potential clients of gradual typing need to know the likelihood that a configuration
- they find useful will also be performant.
-Later, after clients have decided to really use gradual typing, they no longer
- need our plots to address their performance issues.
-Implementors, on the other hand, care about the absolute performance of all
- configurations.
-Overhead plots are two steps removed from this data: first they report overhead
- instead of absolute running time and second the "overhead" of a configuration
- is actually the mean of repeated runs.
 
 @; 
 @(let ([ex1 morsecode]

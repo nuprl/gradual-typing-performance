@@ -1349,6 +1349,13 @@
    #:location (proceedings-location pldi #:pages '(462 476))
    #:date 2016))
 
+(define f-icfp-2014
+  (make-bib
+   #:title "Behavioral Software Contracts"
+   #:author "Robert Bruce Findler"
+   #:location (list "KEYNOTE speech: " (proceedings-location icfp))
+   #:date 2014))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf

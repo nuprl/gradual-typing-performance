@@ -295,8 +295,8 @@
                           (hc-append HSHIM
                                      acc
                                      (hc-append 0
-                                       (colorize (title-text (format "v~a" v)) c)
-                                       (title-text (format ": ~ax" t/u))))))]
+                                       (title-text (format "v~a: " v))
+                                       (colorize (title-text (format ": ~ax" t/u)) c)))))]
            [mid-lbl   (blank 0 (pict-height first-lbl))]
            [last-lbl  (title-text (format "~a configurations" (add-commas (get-num-configurations S))))])
       (cons

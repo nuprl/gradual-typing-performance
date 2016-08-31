@@ -190,6 +190,7 @@ To account for these varying requirements, we use
      A configuration
       is @deliverable{} if its performance is no worse than a
       @math{D}x slowdown compared to the untyped configuration.
+     @;A program is @deliverable{} if all its configurations are @deliverable{}.
     }
 
     @; NOTE: really should be using %, but Sec 4 shows why we stick to x

@@ -23,6 +23,10 @@
          deliverable
          usable
 
+         red
+         green
+         blue
+
          id
          library
          PHIL
@@ -190,4 +194,17 @@
 
 (define (ctc . t)
   (exact (string-append "$\\ctc{\\RktMeta{" (string-join t) "}}$")))
+
+(define (make-colorizer c)
+  (lambda (txt)
+    (raise-user-error 'colorizer "not implemented")))
+
+(define red
+  (make-colorizer 1)) ;(->pen-color 1)))
+
+(define green
+  (make-colorizer 2)) ;(->pen-color 2)))
+
+(define blue
+  (make-colorizer 3)) ;(->pen-color 3)))
 

@@ -289,7 +289,7 @@
   "\\twoline{Untyped}{LOC}"
   "\\twoline{Annotation}{LOC}"
   "\\# Mod."
-  "\\# Adt."
+  "\\# Adp."
   "\\# Bnd."
   "\\# Exp."
 ))
