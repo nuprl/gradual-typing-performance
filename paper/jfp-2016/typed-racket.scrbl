@@ -356,30 +356,47 @@ All scripts we used to run our experiments and the data we collected
 
 Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
 To precisely compare implementations of gradual typing, we must take uncertainty into account@~cite[kj-ismm-2013].
-We do so AS FOLLOWS.
 
-@; -- typed/untyped ratio graph, with error bars
-
-
-@; 
 @(let ([ex1 morsecode]
        [ex2 suffixtree])
       ;; LNM is also interesting
 @list[@elem{
-  @Figure-ref{fig:exact-runtimes} shows the exact data we collected for two
-   benchmarks, 
+  @Figure-ref{fig:exact-runtimes} demonstrates the issue.
+  This figure plots exact running times for all 16 configurations of the @bm[morsecode] benchmark.
+  Each configuration is one bucket on the @math{x}-axis.@note{Configuration numbers have semantic meaning, see the appendix.}
+  The @math{y}-axis is time in milliseconds.
+  Data for each version of Racket is color-coded as before; furthermore,
+   points for version 6.2 are triangles,
+   points for version 6.3 are circles,
+   and points for version 6.4 are squares.
+  Within a bucket, points for each version are arranged in the order we collected them;
+   for example, the rightmost triangle for configuration 4 is the last running time we collected for configuration 4 on Racket version 6.3
 
+  The first lesson of this ``ground truth'' graph is that the points for a single configuration and version of Racket are clustered.
+  Focus on the red triangles for configuration 5.
+  Because these data are unimodal, they seem to come from a stable distribution.
+  Because these data show no obvious trend from left-to-right, they seem to be independent samples.
+  These characteristics support our choice to use the mean of these points to summarize the performance of configuration 5 on Racket v6.2 on our machine.
 
-  Wow, everything there in the middle for suffixtree is just hidden in the
-   graphs.
-  Missed the regression in 6.3 and major improvement in 6.4.
+  The second lesson is that the red triangles for a given configuration typically have the highest running times.
+  Similarly, dashed red curve on the @bm[morsecode] overhead plot (@figure-ref{fig:lnm:1}) has the fewest @deliverable{} configurations for low @math{D}.
+  Therefore @figure-ref{fig:exact-runtimes} seems to corroborate our overhead plot.
+
+  Nonetheless, the variations between data for each configurations' version of Racket give the third and most important lesson.
+  Our conclusions in @secref{sec:plots} have some uncertainty.
   }
 
-      @figure["fig:exact-runtimes" "Exact running times"
-         @render-exact-plot[ex1 ex2]
-      ]
+  @figure["fig:exact-runtimes" "Exact running times"
+     @render-exact-plot[ex1]
+  ]
 ])
-@; 
+
+@Figure-ref{fig:uncertainty} quantifies the uncertainty via one plot and one table.
+@todo{what is in the figures}
+
+    @figure["fig:uncertainty" "Uncertainty"
+      "TODO"
+    ]
 
 @; LESSONS
 @; - standard error of measurements, for all configs (histogram?)
@@ -404,16 +421,16 @@ We do so AS FOLLOWS.
 @;    but do 1-col first and see how it fits
 
 
-Need also scatterplots to really compare versions (with @emph{confidence}).
-@todo{add plots}
-
-Note: The small but statistically significant variations in the untyped running
- mean that overheads from one version of Racket are
- not directly comparable to another for those benchmarks,
- but such are the hazards of benchmarking a large system.
-At any rate, we hold that users' decision to invest in gradual typing will
- be influenced mostly by the overhead they witness---regardless of whether
- that overhead is due to enforcing type soundness or because untyped Racket
- is magically faster than all of Typed Racket.
-For completeness we list all untyped runtimes in Appendix @todo{ref}.
-
+@; Need also scatterplots to really compare versions (with @emph{confidence}).
+@; @todo{add plots}
+@; 
+@; Note: The small but statistically significant variations in the untyped running
+@;  mean that overheads from one version of Racket are
+@;  not directly comparable to another for those benchmarks,
+@;  but such are the hazards of benchmarking a large system.
+@; At any rate, we hold that users' decision to invest in gradual typing will
+@;  be influenced mostly by the overhead they witness---regardless of whether
+@;  that overhead is due to enforcing type soundness or because untyped Racket
+@;  is magically faster than all of Typed Racket.
+@; For completeness we list all untyped runtimes in Appendix @todo{ref}.
+@; 
