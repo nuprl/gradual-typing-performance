@@ -357,6 +357,7 @@ All scripts we used to run our experiments and the data we collected
 Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
 To precisely compare implementations of gradual typing, we must take uncertainty into account@~cite[kj-ismm-2013].
 
+@; uncertain runtimes, uncertain proportions
 @(let ([ex1 morsecode]
        [ex2 sieve])
       ;; LNM is also interesting
@@ -393,11 +394,14 @@ To precisely compare implementations of gradual typing, we must take uncertainty
   ]
 ])
 
-@Figure-ref{fig:uncertainty} quantifies the uncertainty via one plot and one table.
+@Figure-ref{fig:tu-ratios} quantifies the uncertainty via one plot and one table.
 @todo{what is in the figures}
 
-    @figure["fig:uncertainty" "Uncertainty"
-      "TODO"
+    @figure["fig:tu-ratios" "Comparing typed/untyped ratios"
+      @; TODO
+      @; - label/legend for benchmarks
+      @; - error bars? yo I rly dont know
+      @(apply render-typed/untyped-plot ALL-BENCHMARKS)
     ]
 
 @; LESSONS

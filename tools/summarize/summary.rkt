@@ -50,6 +50,9 @@
   ; (-> Summary Real))
   ;; Get the mean runtime of the Summary's untyped configuration
 
+  untyped-runtimes
+  typed-runtimes
+
   configuration->runtimes
   ; (-> Summary Bitstring (Listof Real)))
   ;; Get all runtimes for a configuration

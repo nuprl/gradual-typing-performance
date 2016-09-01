@@ -9,6 +9,7 @@
  render-exact*
  render-traces
  render-untyped-bars ;; hack
+ render-typed/untyped
  render-dots
  render-lnm
 
@@ -192,6 +193,24 @@
                  [i (in-naturals 1)])
         (let-values (((color-txt color-val) (int->color i)))
           (myline color-txt color-val v i))))))
+
+(: make-legend/points (-> (Listof (Vectorof String)) Pict))
+(define (make-legend/points vec*)
+  (define VSHIM (*TITLE-VSPACE*))
+  (define HSHIM (* 3 (*GRAPH-HSPACE*)))
+  (define version*
+    (parse-version* (for*/list : (Listof String)
+                               ([vec (in-list vec*)]
+                                [str (in-vector vec)]
+                                #:when (regexp-match? #rx"\\.rktd$" str))
+                      str)))
+  (for/fold : Pict
+            ([acc : Pict (blank 0 0)])
+            ([v (in-list version*)]
+             [i (in-naturals 1)])
+    (hc-append HSHIM
+      acc
+      (hc-append 0 (int->point-symbol i) (mytext (format " : ~a" v))))))
 
 (: vl-append*/2 (-> Real Real (Listof Pict) Pict))
 (define (vl-append*/2 h v p*)
@@ -768,24 +787,18 @@
               ([acc : (Listof Pict) '()])
               ([vec (in-list vec*)])
       (cons (render-exact vec) acc)))
-  (define legend
-    (let ([VSHIM (*TITLE-VSPACE*)]
-          [HSHIM (* 3 (*GRAPH-HSPACE*))]
-          [version* (parse-version* (for*/list : (Listof String)
-                                               ([vec (in-list vec*)]
-                                                [str (in-vector vec)]
-                                                #:when (regexp-match? #rx"\\.rktd$" str)) str))])
-      (for/fold : Pict
-                ([acc : Pict (blank 0 0)])
-                ([v (in-list version*)]
-                 [i (in-naturals 1)])
-        (hc-append HSHIM
-          acc
-          (hc-append 0 (int->point-symbol i) (mytext (format " : ~a" v)))))))
+  (define legend (make-legend/points vec*))
   (for/fold : Pict
             ([acc legend])
             ([p (in-list pict*)])
     (vc-append (*GRAPH-VSPACE*) p acc)))
+
+;; TODO command-line friendly API
+(: render-typed/untyped (-> (Listof (Vectorof String)) Pict))
+(define (render-typed/untyped vec*)
+  (define pict (plot-typed/untyped-ratio vec*))
+  (define legend (make-legend/points vec*))
+  (vc-append (*GRAPH-VSPACE*) pict legend))
 
 (: render-traces (-> (Vectorof String) Pict))
 (define render-traces (simple-commandline-plot plot-traces))

@@ -21,6 +21,7 @@
 
   plot-mean-bars
   plot-exact-configurations
+  plot-typed/untyped-ratio
 
   ;; ---
 
@@ -396,16 +397,12 @@
       (plot-pict
         (append
           (if small-enough?
-            (for/list : (Listof renderer2d)
-                      ([i (in-range (+ 1 num-configs))])
-              (vrule (- i 0.5)
-              #:width 0.6
-              #:color 0))
+            (make-vrule* num-configs)
             '())
           (for/list : (Listof renderer2d)
                     ([S (in-list S*)]
                      [i (in-naturals 1)])
-              (points
+              (lnm-points i  #:label (format "~a" (summary->version S))
                 (append*
                   (for/list : (Listof (Listof (List Real Real)))
                             ([cfg (all-configurations S)])
@@ -417,12 +414,7 @@
                     (for/list : (Listof (List Real Real))
                               ([x (in-list x*)]
                                [t (in-list t*)])
-                      (list x t))))
-                #:color i
-                #:alpha (*POINT-ALPHA*)
-                #:sym (integer->symbol i)
-                #:size (*POINT-SIZE*)
-                #:label (and (*LEGEND?*) (format "~a" (summary->version S))))))
+                      (list x t)))))))
         #:x-label "Configuration"
         #:y-label "Time (ms)"
         #:y-min 0
@@ -432,6 +424,60 @@
         #:width (*PLOT-WIDTH*)
         #:height (*PLOT-HEIGHT*)))
     (cast p pict)))
+
+(: plot-typed/untyped-ratio (-> (Listof (Vectorof String)) pict))
+(define (plot-typed/untyped-ratio vec*)
+  (define num-benchmarks (length vec*))
+  (define name*
+    (for/list : (Listof String)
+              ([vec (in-list vec*)])
+      (define str (path->project-name (vector-ref vec 0)))
+      (string (string-ref str 0) (string-ref str (- (string-length str) 1)))))
+  (parameterize ([plot-x-ticks (labels->ticks name*)]
+                 [plot-x-far-ticks no-ticks]
+                 ;; TODO Lets see how it looks
+                 [plot-y-ticks (linear-ticks #:number 3)])
+    (define p
+      (plot-pict
+        (append
+          (make-vrule* num-benchmarks)
+          ;; TODO error bars
+          (for/list : (Listof (Listof renderer2d))
+                    ([vec (in-list vec*)]
+                     [x-center (in-naturals)])
+            (for/list : (Listof renderer2d)
+                      ([rktd (in-vector vec)]
+                       [i (in-naturals 1)])
+              (define S (from-rktd rktd))
+              (define u* (untyped-runtimes S))
+              (define t* (typed-runtimes S))
+              (define x* (linear-seq (- x-center config-x-jitter)
+                                     (+ x-center config-x-jitter)
+                                     (length u*)))
+              (lnm-points i ;; no legend for now
+                (for/list : (Listof (List Real Real))
+                          ([x (in-list x*)]
+                           [u (in-list u*)]
+                           [t (in-list t*)])
+                  (list x (/ t u)))))))
+        #:x-label "Benchmark"
+        #:y-label "τ/λ ratio"
+        #:y-min 0
+        #:y-max (*Y-MAX*)
+        #:x-max (- num-benchmarks 0.5)
+        #:legend-anchor (*LEGEND-ANCHOR*)
+        #:width (*PLOT-WIDTH*)
+        #:height (*PLOT-HEIGHT*)))
+    (cast p pict)))
+
+(: lnm-points (->* [Integer (Listof (List Real Real))] [#:label (U #f String)] renderer2d))
+(define (lnm-points i data #:label [label #f])
+  (points data
+          #:color i
+          #:alpha (*POINT-ALPHA*)
+          #:sym (integer->symbol i)
+          #:size (*POINT-SIZE*)
+          #:label (and (*LEGEND?*) label)))
 
 (: lnm-bar (-> (Listof (Listof Real)) BarType pict))
 (define (lnm-bar r** btype)
@@ -867,6 +913,28 @@
              (if (= v ax-max)
                (string-append str "%")
                str)))))
+
+(: make-vrule* (-> Natural (Listof renderer2d)))
+(define (make-vrule* count)
+  (for/list : (Listof renderer2d)
+            ([i (in-range (+ 1 count))])
+    (vrule (- i 0.5)
+    #:width 0.6
+    #:color 0)))
+
+(: labels->ticks (-> (Listof String) ticks))
+(define (labels->ticks str*)
+  (ticks (lambda ([ax-min : Real] [ax-max : Real])
+           (for/list : (Listof pre-tick)
+                     ([_ (in-list str*)]
+                      [i (in-naturals)])
+             (pre-tick i #t)))
+         (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
+           (for/list : (Listof String) ([pt (in-list pre-ticks)])
+             (define v (pre-tick-value pt))
+             (unless (index? v)
+               (raise-user-error 'labels->ticks "bad pre-tick value '~a', expected an index" v))
+             (list-ref str* v)))))
 
 (: list->ticks (->* [(Listof Real)] [#:units (U #f String)] ticks))
 (define (list->ticks r* #:units [units-arg #f])

@@ -53,6 +53,7 @@
   ;; (-> Any)
 
   render-exact-plot
+  render-typed/untyped-plot
 
   render-exact-table
 
@@ -189,13 +190,19 @@
        render-proc))
     "\\end{tabular}\n\n"))
 
-(define (exact-cache-file bm-or-bm*)
+(define ((list-cache-file tag) bm-or-bm*)
   (ensure-dir COMPILED)
   (define bm* (if (list? bm-or-bm*) bm-or-bm* (list bm-or-bm*)))
   (string-append
-    COMPILED "/cache-exact-"
+    COMPILED "/" tag
     (string-join (map (compose1 symbol->string benchmark-name) bm*) "-")
     ".rktd"))
+
+(define exact-cache-file
+  (list-cache-file "cache-exact-"))
+
+(define typed/untyped-cache-file
+  (list-cache-file "cache-tu-"))
 
 (define (lattice-cache-file bm v)
   (ensure-dir COMPILED)
@@ -515,6 +522,21 @@
 (define (new-exact-table)
   (for/list ([b (in-list ALL-BENCHMARKS)])
     (tex-row "?")))
+
+(define (render-typed/untyped-plot . bm*)
+  (with-cache (typed/untyped-cache-file bm*)
+    #:read deserialize
+    #:write serialize
+    (lambda ()
+      (parameterize ([*LEGEND?* #f]
+                     [*PLOT-FONT-SCALE* 0.04]
+                     [*PLOT-HEIGHT* 160]
+                     [*PLOT-WIDTH* 430]
+                     [*POINT-SIZE* 4]
+                     [*POINT-ALPHA* 0.6])
+        (render-typed/untyped
+          (for*/list ([bm (in-list bm*)])
+            (list->vector (benchmark->rktd* bm))))))))
 
 (define (ext:max-overhead rktd)
   (max-overhead (from-rktd rktd)))
