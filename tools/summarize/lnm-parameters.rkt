@@ -137,6 +137,8 @@
 (defparam *ERROR-BAR-LINE-WIDTH* Nonnegative-Real (cast (* 0.7 (error-bar-line-width)) Nonnegative-Real))
 
 (defparam *DISCRETE?* Boolean #f)
+(defparam *POINT-SIZE* Positive-Index 6)
+(defparam *POINT-ALPHA* Nonnegative-Real 0.6)
 
 (defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
 

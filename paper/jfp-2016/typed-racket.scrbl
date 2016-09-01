@@ -358,7 +358,7 @@ Overhead plots summarize the high-level performance of gradual type systems, but
 To precisely compare implementations of gradual typing, we must take uncertainty into account@~cite[kj-ismm-2013].
 
 @(let ([ex1 morsecode]
-       [ex2 suffixtree])
+       [ex2 sieve])
       ;; LNM is also interesting
 @list[@elem{
   @Figure-ref{fig:exact-runtimes} demonstrates the issue.
@@ -382,13 +382,16 @@ To precisely compare implementations of gradual typing, we must take uncertainty
   Similarly, dashed red curve on the @bm[morsecode] overhead plot (@figure-ref{fig:lnm:1}) has the fewest @deliverable{} configurations for low @math{D}.
   Therefore @figure-ref{fig:exact-runtimes} seems to corroborate our overhead plot.
 
-  Nonetheless, the variations between data for each configurations' version of Racket give the third and most important lesson.
+  @; pls fix
+  Nonetheless, the variations between data for each configurations' version of Racket and the proximity of these series give the third and most important lesson.
   Our conclusions in @secref{sec:plots} have some uncertainty.
   @todo{what configs are within CI?}
   }
 
   @figure["fig:exact-runtimes" "Exact running times"
-     @render-exact-plot[ex1]
+     @(parameterize ([*POINT-SIZE* 6]
+                     [*POINT-ALPHA* 0.8])
+        (render-exact-plot ex1))
   ]
 ])
 

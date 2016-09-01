@@ -418,12 +418,13 @@
                                [t (in-list t*)])
                       (list x t))))
                 #:color i
-                #:alpha 0.6
-                #:sym 'fullcircle
-                #:size 6
+                #:alpha (*POINT-ALPHA*)
+                #:sym (integer->symbol i)
+                #:size (*POINT-SIZE*)
                 #:label (and (*LEGEND?*) (format "~a" (summary->version S))))))
         #:x-label "Configuration"
         #:y-label "Time (ms)"
+        #:y-min 0
         #:y-max (*Y-MAX*)
         #:x-max (- num-configs 0.5)
         #:legend-anchor (*LEGEND-ANCHOR*)
@@ -1048,6 +1049,13 @@
    [(1) 'dot]
    [(2) 'short-dash]
    [else 'solid]))
+
+(: integer->symbol (-> Integer (U 'fullcircle 'fulltriangledown 'fullsquare)))
+(define (integer->symbol i)
+  (case i
+   [(1) 'fulltriangledown]
+   [(2) 'fullcircle]
+   [else 'fullsquare]))
 
 (: integer->brush-style (-> Integer (U 'bdiagonal-hatch 'crossdiag-hatch 'solid)))
 (define (integer->brush-style i)
