@@ -4,10 +4,9 @@
   "common.rkt"
   "util.rkt"
   "benchmark.rkt"
-  benchmark-util/data-lattice
   "typed-racket.rkt"
-  (only-in pict blank hc-append scale)
-  (only-in with-cache *use-cache?*)
+  benchmark-util/data-lattice
+  (only-in racket/format ~r)
   (only-in gtp-summarize/summary
     from-rktd
     get-num-modules
@@ -104,6 +103,7 @@ We describe this space as a lattice.
 @(define suffixtree-sample-k        1)
 @(define suffixtree-num-k           ((count-configurations/mean S suffixtree-sample-k) suffixtree-sample-D))
 @(define suffixtree-num-k-str       (number->string suffixtree-num-k))
+@(define suffixtree-tu-ratio        (format "~ax" (~r (typed/untyped-ratio S) #:precision '(= 1))))
 
 A performance lattice collects one program's configurations.
 Equipped with a labeling @exact{$l$} such that @exact{$l(c)$} characterizes the
@@ -301,6 +301,7 @@ Practitioners with fixed performance requirements can therefore use the number
          of the @|suffixtree-num-configs-str| configurations
          (@(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))%)
          run within a @id[suffixtree-sample-D]x overhead.
+        Additionally, the typed/untyped ratio (@|suffixtree-tu-ratio|) is above the plot.
 
         Viewed as a cumulative distribution function, the plot demonstrates
          a tradeoff between performance overhead and

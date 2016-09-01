@@ -279,14 +279,15 @@
       (lnm-plot S*)]))
   (if (*SINGLE-PLOT?*)
     L-pict*
-    (let* ([V 2]
+    (let* ([VSHIM 2]
            [S (car S*)]
            [HSHIM (- (*GRAPH-HSPACE*) 2)]
-           [first-lbl (hc-append HSHIM
-                        (title-text (format "~a" (or title (get-project-name S))))
-                        (for/fold : Pict ([acc : Pict (blank 0 0)])
-                                ([S (in-list (sort-by-version S*))]
-                                 [i (in-naturals 1)])
+           [first-lbl (title-text (format "~a" (or title (get-project-name S))))]
+           [tu-ratio  (parameterize ([*TABLE-FONT-SIZE* (cast (- (*TABLE-FONT-SIZE*) 1) Positive-Index)])
+                        (for/fold : Pict
+                                  ([acc : Pict (blank 0 0)])
+                                  ([S (in-list (sort-by-version S*))]
+                                   [i (in-naturals 1)])
                           (define v (summary->version S))
                           (define t/u (~r (typed/untyped-ratio S) #:precision '(= 1)))
                           (define c
@@ -296,11 +297,13 @@
                                      acc
                                      (hc-append 0
                                        (title-text (format "v~a: " v))
-                                       (colorize (title-text (format ": ~ax" t/u)) c)))))]
+                                       (colorize (title-text (format "~ax" t/u)) c)))))]
            [mid-lbl   (blank 0 (pict-height first-lbl))]
            [last-lbl  (title-text (format "~a configurations" (add-commas (get-num-configurations S))))])
       (cons
-        (vl-append V first-lbl (car L-pict*))
+        (lt-superimpose
+          (vr-append VSHIM tu-ratio (car L-pict*))
+          first-lbl)
         (let loop : (Listof Pict)
                   ([p* (cdr L-pict*)])
           (cond
@@ -309,9 +312,9 @@
             '()]
            [(null? (cdr p*))
             ;; Last pict
-            (list (vr-append V last-lbl (car p*)))]
+            (list (vr-append VSHIM last-lbl (car p*)))]
            [else
-            (cons (vl-append V mid-lbl (car p*)) (loop (cdr p*)))]))))))
+            (cons (vl-append VSHIM mid-lbl (car p*)) (loop (cdr p*)))]))))))
 
 (: format-filepath (-> (U #f String) String))
 (define (format-filepath tag)

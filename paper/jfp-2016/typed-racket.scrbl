@@ -279,7 +279,7 @@ All scripts we used to run our experiments and the data we collected
         Data for version 6.2 are thin red curves with short dashes.
         Data for version 6.3 are mid-sized green curves with long dashes.
         Data for version 6.4 are thick, solid, blue curves.
-        The typed/untyped ratio for each version appears above each pair of plots.
+        The typed/untyped ratio for each version appears above each plot in the left column.
 
         @; -- overall, bleak picture
         @(let* ([num-bm (length ALL-BENCHMARKS)]
@@ -384,6 +384,7 @@ To precisely compare implementations of gradual typing, we must take uncertainty
 
   Nonetheless, the variations between data for each configurations' version of Racket give the third and most important lesson.
   Our conclusions in @secref{sec:plots} have some uncertainty.
+  @todo{what configs are within CI?}
   }
 
   @figure["fig:exact-runtimes" "Exact running times"
