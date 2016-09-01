@@ -389,9 +389,7 @@ To precisely compare implementations of gradual typing, we must take uncertainty
   }
 
   @figure["fig:exact-runtimes" "Exact running times"
-     @(parameterize ([*POINT-SIZE* 6]
-                     [*POINT-ALPHA* 0.8])
-        (render-exact-plot ex1))
+    @render-exact-plot[ex1]
   ]
 ])
 

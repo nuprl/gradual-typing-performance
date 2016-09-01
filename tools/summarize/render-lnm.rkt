@@ -52,6 +52,32 @@
   [serialize (-> Pict Any)]
   [deserialize (-> Any Pict)])
 
+;; -----------------------------------------------------------------------------
+
+(module dc-help racket
+  (require racket/draw pict)
+  (define (filled-triangle height #:color [pre-c '(0 0 0)])
+    (define height/2 (/ height 2))
+    (define c (apply make-object color% pre-c))
+    (dc (λ (dc dx dy)
+         (define old-brush (send dc get-brush))
+         (define old-pen (send dc get-pen))
+         (send dc set-brush
+          (new brush% [style 'solid] [color c]))
+         (send dc set-pen
+          (new pen% [width 0] [color c]))
+         (define path (new dc-path%))
+         (send path move-to 0 0)
+         (send path line-to height 0)
+         (send path line-to height/2 height)
+         (send path close)
+         (send dc draw-path path dx dy)
+         (send dc set-brush old-brush)
+         (send dc set-pen old-pen)) height height))
+  (provide filled-triangle))
+(require/typed (submod "." dc-help)
+  (filled-triangle (->* [Integer] [#:color (List Byte Byte Byte)] Pict)))
+
 ;; =============================================================================
 
 (defparam *GRAPH-HSPACE* Positive-Integer 10)
@@ -161,12 +187,11 @@
       (mytext "x-axis: Overhead (vs. untyped)")
       (mytext "y-axis: % Acceptable configs."))
     (vl-append*/2 HSHIM VSHIM
-      (list*
-        (for/list : (Listof Pict)
-                  ([v (in-list version*)]
-                   [i (in-naturals 1)])
-          (let-values (((color-txt color-val) (int->color i)))
-            (myline color-txt color-val v i)))))))
+      (for/list : (Listof Pict)
+                ([v (in-list version*)]
+                 [i (in-naturals 1)])
+        (let-values (((color-txt color-val) (int->color i)))
+          (myline color-txt color-val v i))))))
 
 (: vl-append*/2 (-> Real Real (Listof Pict) Pict))
 (define (vl-append*/2 h v p*)
@@ -206,6 +231,21 @@
               ([acc (car p*)])
               ([p (in-list (cdr p*))])
       (hc-append h acc p))))
+
+(: int->point-symbol (-> Integer Pict))
+(define (int->point-symbol i)
+  (define size (cast (- (*POINT-SIZE*) 1) Positive-Index))
+  (define c (cast (->pen-color i) (List Byte Byte Byte)))
+  (case i
+   [(1)
+    ;; red triangledown
+    (filled-triangle size #:color c)]
+   [(2)
+    ;; green circle
+    (colorize (filled-ellipse size size #:draw-border? #f) c)]
+   [else
+    ;; blue square
+    (colorize (filled-rectangle size size #:draw-border? #f) c)]))
 
 (: int->style (-> Integer String))
 (define (int->style i)
@@ -723,13 +763,29 @@
 (: render-exact* (-> (Listof (Vectorof String)) Pict))
 (define (render-exact* vec*)
   (define pict*
-    (for/list : (Listof Pict) ([vec (in-list vec*)])
-      (render-exact vec)))
+    ;; reverse-map
+    (for/fold : (Listof Pict)
+              ([acc : (Listof Pict) '()])
+              ([vec (in-list vec*)])
+      (cons (render-exact vec) acc)))
+  (define legend
+    (let ([VSHIM (*TITLE-VSPACE*)]
+          [HSHIM (* 3 (*GRAPH-HSPACE*))]
+          [version* (parse-version* (for*/list : (Listof String)
+                                               ([vec (in-list vec*)]
+                                                [str (in-vector vec)]
+                                                #:when (regexp-match? #rx"\\.rktd$" str)) str))])
+      (for/fold : Pict
+                ([acc : Pict (blank 0 0)])
+                ([v (in-list version*)]
+                 [i (in-naturals 1)])
+        (hc-append HSHIM
+          acc
+          (hc-append 0 (int->point-symbol i) (mytext (format " : ~a" v)))))))
   (for/fold : Pict
-            ([acc (car pict*)])
-            ([vec (in-list vec*)]
-             [p (in-list (cdr pict*))])
-    (vc-append (*GRAPH-VSPACE*) acc p)))
+            ([acc legend])
+            ([p (in-list pict*)])
+    (vc-append (*GRAPH-VSPACE*) p acc)))
 
 (: render-traces (-> (Vectorof String) Pict))
 (define render-traces (simple-commandline-plot plot-traces))

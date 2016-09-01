@@ -17,6 +17,7 @@
   integer->pen-style
   integer->brush-style
   integer->line-width
+  integer->symbol
 
   plot-mean-bars
   plot-exact-configurations

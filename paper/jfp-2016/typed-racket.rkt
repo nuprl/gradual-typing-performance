@@ -496,11 +496,12 @@
     #:read deserialize
     #:write serialize
     (lambda ()
-      ;; Sort & make figures of with 6 plots each or whatever
       (parameterize ([*LEGEND?* #f]
                      [*PLOT-FONT-SCALE* 0.04]
                      [*PLOT-HEIGHT* 160]
-                     [*PLOT-WIDTH* 430])
+                     [*PLOT-WIDTH* 430]
+                     [*POINT-SIZE* 6]
+                     [*POINT-ALPHA* 0.8])
         (render-exact*
           (for*/list ([bm (in-list bm*)])
             (list->vector (benchmark->rktd* bm))))))))
