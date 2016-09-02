@@ -140,6 +140,10 @@
 (defparam *POINT-SIZE* Positive-Index 6)
 (defparam *POINT-ALPHA* Nonnegative-Real 0.6)
 
+(defparam *RECTANGLE-BORDER-WIDTH* Nonnegative-Real 1)
+(defparam *RECTANGLE-WIDTH* Nonnegative-Real 2)
+(defparam *RECTANGLE-SKIP* Nonnegative-Real 12)
+
 (defparam *LEGEND-ANCHOR* (U 'top-right 'bottom-right) 'top-right)
 
 (defparam *TOO-MANY-BYTES* Natural (expt 10 9))

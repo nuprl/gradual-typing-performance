@@ -54,6 +54,8 @@
 
   render-exact-plot
   render-typed/untyped-plot
+  render-deliverable-plot
+  render-uncertainty
 
   render-exact-table
 
@@ -78,6 +80,7 @@
  gtp-summarize
  (only-in gtp-summarize/bitstring natural->bitstring log2 bit-high?)
  racket/match
+ (only-in pict blank hc-append vc-append)
  (only-in "common.rkt" etal cite exact parag)
  (only-in racket/file file->value)
  (only-in racket/format ~r)
@@ -203,6 +206,9 @@
 
 (define typed/untyped-cache-file
   (list-cache-file "cache-tu-"))
+
+(define (deliverable-cache-file N)
+  (list-cache-file (format "cache-~a-deliverable-" N)))
 
 (define (lattice-cache-file bm v)
   (ensure-dir COMPILED)
@@ -505,10 +511,10 @@
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*PLOT-FONT-SCALE* 0.04]
-                     [*PLOT-HEIGHT* 160]
+                     [*PLOT-HEIGHT* 140]
                      [*PLOT-WIDTH* 430]
                      [*POINT-SIZE* 6]
-                     [*POINT-ALPHA* 0.8])
+                     [*POINT-ALPHA* 0.6])
         (render-exact*
           (for*/list ([bm (in-list bm*)])
             (list->vector (benchmark->rktd* bm))))))))
@@ -529,14 +535,38 @@
     #:write serialize
     (lambda ()
       (parameterize ([*LEGEND?* #f]
+                     [*ERROR-BAR-WIDTH* 20]
+                     [*ERROR-BAR-LINE-WIDTH* 1]
                      [*PLOT-FONT-SCALE* 0.04]
-                     [*PLOT-HEIGHT* 160]
+                     [*PLOT-HEIGHT* 180]
                      [*PLOT-WIDTH* 430]
                      [*POINT-SIZE* 4]
                      [*POINT-ALPHA* 0.6])
         (render-typed/untyped
           (for*/list ([bm (in-list bm*)])
             (list->vector (benchmark->rktd* bm))))))))
+
+(define (render-deliverable-plot D . bm*)
+  (with-cache ((deliverable-cache-file D) bm*)
+    #:read deserialize
+    #:write serialize
+    (lambda ()
+      (parameterize ([*LEGEND?* #f]
+                     [*ERROR-BAR-WIDTH* (*RECTANGLE-WIDTH*)]
+                     [*ERROR-BAR-LINE-WIDTH* (*RECTANGLE-WIDTH*)]
+                     [*Y-NUM-TICKS* 3]
+                     [*PLOT-FONT-SCALE* 0.04]
+                     [*PLOT-HEIGHT* 180]
+                     [*PLOT-WIDTH* 440])
+        (render-deliverable D
+          (for*/list ([bm (in-list bm*)])
+            (list->vector (benchmark->rktd* bm))))))))
+
+(define (render-uncertainty D bm*)
+  (vc-append 20
+   (hc-append 0 (blank 10 0) (apply render-typed/untyped-plot bm*))
+   (apply render-deliverable-plot D bm*)
+   (render-bars-xlabels 33 (map (compose1 symbol->string benchmark-name) bm*))))
 
 (define (ext:max-overhead rktd)
   (max-overhead (from-rktd rktd)))

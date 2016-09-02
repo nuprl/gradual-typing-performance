@@ -395,14 +395,40 @@ To precisely compare implementations of gradual typing, we must take uncertainty
 ])
 
 @Figure-ref{fig:tu-ratios} quantifies the uncertainty via one plot and one table.
-@todo{what is in the figures}
+Bottom line:
+@itemlist[
+  @item{
+    for @math{N1} benchmarks we are 95% confident that v6.4 improves on v6.2 and v6.3.
+  }
+  @item{
+    for @math{N2} benchmarks, we are 95% confident v6.4 is a regression
+  }
+  @item{
+    for @math{N3} benchmarks, within the noise
+  }
+]
+@; more concise presentation makes normality assumption harder to see
 
-    @figure["fig:tu-ratios" "Comparing typed/untyped ratios"
+@(define sample-D 2)
+
+    @figure["fig:uncertainty" "Quantifying uncertainty"
       @; TODO
-      @; - label/legend for benchmarks
-      @; - error bars? yo I rly dont know
-      @(apply render-typed/untyped-plot ALL-BENCHMARKS)
+      @; - error bars? they would look bad
+      @render-uncertainty[sample-D ALL-BENCHMARKS]
     ]
+
+@Figure-ref{fig:@id[sample-D]-overheads} quantifies uncertainty in each benchmark's proportion of @deliverable[@id[sample-D]] configurations.
+Bottom line:
+@itemlist[
+  @item{
+    for @math{N1} benchmarks, we are 95% confident that 6.4 gives more @id[sample-D]-deliv configs
+  }
+]
+
+
+@; TODO HOW to t test
+@; - okay a plot for 2-deliverable confidence is just too much,
+@;   because need to show every configuration
 
 @; LESSONS
 @; - standard error of measurements, for all configs (histogram?)

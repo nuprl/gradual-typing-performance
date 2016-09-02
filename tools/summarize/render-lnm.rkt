@@ -12,6 +12,8 @@
  render-typed/untyped
  render-dots
  render-lnm
+ render-deliverable
+ render-bars-xlabels
 
  data->pict
  ;; Build a picture from a list of pairs:
@@ -662,15 +664,18 @@
     (render-bars-color-key)
     (render-bars-xlabels hspace name*)))
 
-(: render-bars-color-key (-> Pict))
-(define (render-bars-color-key)
-  (define HSHIM (*GRAPH-HSPACE*))
-  (vl-append* (*TITLE-VSPACE*)
+(: render-bars-color-key (->* [] [#:vertical? Boolean] Pict))
+(define (render-bars-color-key #:vertical? [vertical? #t])
+  (define HSHIM (* 3 (*GRAPH-HSPACE*)))
+  (define pict*
     (for/list : (Listof Pict)
               ([i (in-range 1 4)])
-      (hb-append HSHIM
+      (hb-append 0
         (integer->bar-swatch i)
-        (mytext (integer->rkt-version i))))))
+        (mytext (format " : ~a" (integer->rkt-version i))))))
+  (if vertical?
+    (vl-append* (*TITLE-VSPACE*) pict*)
+    (hc-append* HSHIM pict*)))
 
 (: integer->bar-swatch (-> Integer Pict))
 (define (integer->bar-swatch i)
@@ -713,7 +718,8 @@
     (for/list : (Listof Pict)
               ([name (in-list name*)]
                [i (in-naturals 1)])
-      (text (format "~a. ~a" (integer->letter i) name) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
+      (define name+ (if (regexp-match? #rx"^zordoz" name) "zordoz" name))
+      (text (format "~a. ~a" (integer->letter i) name+) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
   (ht-append* hspace
     (for/list : (Listof Pict)
               ([p* (in-list (split-list 4 pict*))])
@@ -798,6 +804,15 @@
 (define (render-typed/untyped vec*)
   (define pict (plot-typed/untyped-ratio vec*))
   (define legend (make-legend/points vec*))
+  (vc-append (*GRAPH-VSPACE*) pict legend))
+
+(: render-deliverable (-> Nonnegative-Real (Listof (Vectorof String)) Pict))
+(define (render-deliverable D vec*)
+  (define bm-name* (for/list : (Listof String)
+                             ([vec (in-list vec*)])
+                     (path->project-name (vector-ref vec 0))))
+  (define pict (plot-deliverable D vec*))
+  (define legend (render-bars-color-key #:vertical? #f))
   (vc-append (*GRAPH-VSPACE*) pict legend))
 
 (: render-traces (-> (Vectorof String) Pict))

@@ -20,6 +20,7 @@
   integer->symbol
 
   plot-mean-bars
+  plot-deliverable
   plot-exact-configurations
   plot-typed/untyped-ratio
 
@@ -71,7 +72,7 @@
   typed/pict
   (only-in racket/list append* range)
   (only-in racket/math exact-floor exact-ceiling exact-round)
-  (only-in math/statistics mean)
+  (only-in math/statistics mean stddev/mean)
   (only-in racket/format ~r)
   gtp-summarize/bitstring
   gtp-summarize/lnm-parameters
@@ -344,6 +345,94 @@
       #:height (*PLOT-HEIGHT*)))
   (cast p pict))
 
+;; D-deliverable is a count
+;; Each config included in the count is included with some error ratio
+;; Make a histogram with error bars, error determined by each config's runtime
+;; e.g. "95% certain this config is D-deliverable", for each config
+(: plot-deliverable (-> Nonnegative-Real (Listof (Vectorof String)) pict))
+(define (plot-deliverable D vec*)
+  (define num-bm (length vec*))
+  (define num-versions (vector-length (car vec*)))
+  (define RW (*RECTANGLE-WIDTH*))
+  (define x-offset (cast (+ (/ (*RECTANGLE-BORDER-WIDTH*) 2) RW) Nonnegative-Real))
+  (parameterize ([plot-x-ticks (alphabet-ticks num-bm #:offset (+ 1 x-offset) #:skip (*RECTANGLE-SKIP*))]
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-ticks (compute-yticks 100 (*Y-NUM-TICKS*) #:units "%")])
+    (define p
+      (plot-pict
+        (for/list : (Listof (Listof (List renderer2d renderer2d)))
+                  ([vec (in-list vec*)]
+                   [benchmark-index (in-naturals)])
+          ;; -- TODO could 1st get counts for 3 versions, the draw histogram + error bars
+          (for/list : (Listof (List renderer2d renderer2d))
+                    ([rktd (in-vector vec)]
+                     [i (in-naturals 1)])
+            (define c (->pen-color i))
+            (define S (from-rktd rktd))
+            (define num-configs (get-num-configurations S))
+            ;; -- get mean count + lo count + hi count for each config
+            ;; TODO does it matter if I use "baseline" or get a ratio for each?
+            ;;  (just experiment, then try researching)
+            (define u* (untyped-runtimes S))
+            (define-values (lo-count mean-count hi-count)
+              (for/fold : (Values Real Real Real)
+                        ([lo-count 0] [mean-count 0] [hi-count 0])
+                        ([cfg (all-configurations S)])
+                (define r* ;; List of overheads for `cfg`
+                  (for/list : (Listof Real)
+                            ([r (in-list (configuration->runtimes S cfg))]
+                             [u (in-list u*)])
+                    (/ r u)))
+                (define m (mean r*))
+                (define s (error-bound/mean m r*))
+                (values (add1-when (<= (- m s) D) mean-count)
+                        (add1-when (<= m D) mean-count)
+                        (add1-when (<= (+ m s) D) mean-count))))
+            (define y-max (* 100 (/ mean-count num-configs)))
+            (define series-x-min (* benchmark-index (*RECTANGLE-SKIP*)))
+            (define version-x-offset (* x-offset (- i 1)))
+            (define x-center (+ series-x-min version-x-offset))
+            (list
+              (let ([height (* 100 (/ (max (- lo-count mean-count)
+                                           (- mean-count hi-count))
+                                      num-configs))])
+                (lnm-error-bar (list x-center y-max height) #:color c))
+              (rectangles
+                (let ([RW/2 (/ RW 2)])
+                  (list (list (ivl (- x-center RW/2) (+ x-center RW/2))
+                              (ivl 0 y-max))))
+                #:color c
+                #:style (integer->brush-style i)
+                #:line-color c
+                #:line-width (*RECTANGLE-BORDER-WIDTH*)
+                #:alpha (*POINT-ALPHA*)
+                #:label #f))))
+        #:x-label "Benchmark"
+        #:y-label (format "% ~a-deliverable" D)
+        #:legend-anchor 'bottom-right
+        #:y-min 0
+        #:y-max 100
+        #:width (*PLOT-WIDTH*)
+        #:height (*PLOT-HEIGHT*)))
+    (cast p pict)))
+
+(: lnm-error-bar (->* [(List Real Real Real)] [#:color (List Real Real Real)] renderer2d))
+(define (lnm-error-bar data #:color [c (list 0 0 0)])
+  (error-bars (list data)
+    #:alpha 1
+    #:color c
+    #:line-width (*ERROR-BAR-LINE-WIDTH*) ;(*RECTANGLE-BORDER-WIDTH*)
+    #:width (*ERROR-BAR-WIDTH*)))
+
+;; Return upper & lower confidence interval, or upper and lower stddev
+(: error-bound/mean (-> Real (Listof Real) Real))
+(define (error-bound/mean m v*)
+  (define s (stddev/mean m v*))
+  s)
+
+(define-syntax-rule (add1-when p v)
+  (if p (+ v 1) v))
+
 ;; Make a line for each configuration in the dataset
 (: plot-traces (-> (Listof Summary) pict))
 (define (plot-traces S*)
@@ -428,41 +517,41 @@
 (: plot-typed/untyped-ratio (-> (Listof (Vectorof String)) pict))
 (define (plot-typed/untyped-ratio vec*)
   (define num-benchmarks (length vec*))
-  (define name*
-    (for/list : (Listof String)
-              ([vec (in-list vec*)])
-      (define str (path->project-name (vector-ref vec 0)))
-      (string (string-ref str 0) (string-ref str (- (string-length str) 1)))))
-  (parameterize ([plot-x-ticks (labels->ticks name*)]
+  (parameterize ([plot-x-ticks (alphabet-ticks num-benchmarks)]
                  [plot-x-far-ticks no-ticks]
-                 ;; TODO Lets see how it looks
-                 [plot-y-ticks (linear-ticks #:number 3)])
+                 [plot-y-transform log-transform]
+                 [plot-y-ticks (list->ticks '(0.5 1 2 5 10))])
     (define p
       (plot-pict
         (append
           (make-vrule* num-benchmarks)
-          ;; TODO error bars
-          (for/list : (Listof (Listof renderer2d))
+          (for/list : (Listof (Listof (Listof renderer2d)))
                     ([vec (in-list vec*)]
                      [x-center (in-naturals)])
-            (for/list : (Listof renderer2d)
+            (for/list : (Listof (Listof renderer2d))
                       ([rktd (in-vector vec)]
                        [i (in-naturals 1)])
               (define S (from-rktd rktd))
-              (define u* (untyped-runtimes S))
-              (define t* (typed-runtimes S))
+              (define t/u* ;; NOTE lists may not have same size
+                (for/list : (Listof Real)
+                          ([t (in-list (typed-runtimes S))]
+                           [u (in-list (untyped-runtimes S))])
+                  (/ t u)))
+              (define m (mean t/u*))
+              (define s (error-bound/mean m t/u*))
               (define x* (linear-seq (- x-center config-x-jitter)
                                      (+ x-center config-x-jitter)
-                                     (length u*)))
-              (lnm-points i ;; no legend for now
-                (for/list : (Listof (List Real Real))
-                          ([x (in-list x*)]
-                           [u (in-list u*)]
-                           [t (in-list t*)])
-                  (list x (/ t u)))))))
+                                     (length t/u*)))
+              (list
+                (lnm-error-bar (list x-center m s) #:color (->pen-color i))
+                (lnm-points i ;; no legend for now
+                  (for/list : (Listof (List Real Real))
+                            ([x (in-list x*)]
+                             [t/u (in-list t/u*)])
+                    (list x t/u)))))))
         #:x-label "Benchmark"
         #:y-label "τ/λ ratio"
-        #:y-min 0
+        #:y-min #f ;0.5
         #:y-max (*Y-MAX*)
         #:x-max (- num-benchmarks 0.5)
         #:legend-anchor (*LEGEND-ANCHOR*)
@@ -919,22 +1008,27 @@
   (for/list : (Listof renderer2d)
             ([i (in-range (+ 1 count))])
     (vrule (- i 0.5)
-    #:width 0.6
-    #:color 0)))
+           #:width 0.6
+           #:color 0)))
 
-(: labels->ticks (-> (Listof String) ticks))
-(define (labels->ticks str*)
+(: alphabet-ticks (->* [Natural] [#:offset Nonnegative-Real #:skip Nonnegative-Real] ticks))
+(define (alphabet-ticks n #:offset [offset 0] #:skip [skip 1])
+  (labels->ticks #:offset offset #:skip skip
+    (for/list : (Listof String)
+              ([i (in-range 1 (+ 1 n))])
+      (string (integer->letter i)))))
+
+(: labels->ticks (->* [(Listof String)] [#:offset Nonnegative-Real #:skip Nonnegative-Real] ticks))
+(define (labels->ticks str* #:offset [offset 0] #:skip [skip 1])
   (ticks (lambda ([ax-min : Real] [ax-max : Real])
            (for/list : (Listof pre-tick)
-                     ([_ (in-list str*)]
-                      [i (in-naturals)])
-             (pre-tick i #t)))
+                     ([i (in-range (length str*))])
+             (pre-tick (+ offset (* i skip)) #t)))
          (lambda ([ax-min : Real] [ax-max : Real] [pre-ticks : (Listof pre-tick)])
-           (for/list : (Listof String) ([pt (in-list pre-ticks)])
-             (define v (pre-tick-value pt))
-             (unless (index? v)
-               (raise-user-error 'labels->ticks "bad pre-tick value '~a', expected an index" v))
-             (list-ref str* v)))))
+           (for/list : (Listof String)
+                     ([pt (in-list pre-ticks)]
+                      [str (in-list str*)])
+             str))))
 
 (: list->ticks (->* [(Listof Real)] [#:units (U #f String)] ticks))
 (define (list->ticks r* #:units [units-arg #f])
