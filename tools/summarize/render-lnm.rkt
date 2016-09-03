@@ -804,7 +804,13 @@
 (define (render-typed/untyped vec*)
   (define pict (plot-typed/untyped-ratio vec*))
   (define legend (make-legend/points vec*))
-  (vc-append (*GRAPH-VSPACE*) pict legend))
+  (define title
+    (hb-append 2
+      (title-text "Speedup vs. Untyped")
+      (subtitle-text "(Inverse of typed/untyped ratio)")))
+  (vl-append 2
+    title
+    (vc-append (*GRAPH-VSPACE*) pict legend)))
 
 (: render-deliverable (-> Nonnegative-Real (Listof (Vectorof String)) Pict))
 (define (render-deliverable D vec*)
@@ -813,7 +819,10 @@
                      (path->project-name (vector-ref vec 0))))
   (define pict (plot-deliverable D vec*))
   (define legend (render-bars-color-key #:vertical? #f))
-  (vc-append (*GRAPH-VSPACE*) pict legend))
+  (define title (title-text (format "~a-deliverable configurations" D)))
+  (vl-append 2
+    title
+    (vc-append (*GRAPH-VSPACE*) pict legend)))
 
 (: render-traces (-> (Vectorof String) Pict))
 (define render-traces (simple-commandline-plot plot-traces))

@@ -29,7 +29,7 @@ These applications may undergo incremental transitions that add or remove some t
 After incrementally typing part of an application, programmers judge the performance of the modified program
  by comparing it to the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
-Otherwise, the programmer may seek ways to reduce the cost of type boundaries.
+Otherwise, the programmer may try to address the performance overhead.
 As the program evolves, this process repeats.
 
 We turn these observations into an evaluation method in three stages:
@@ -45,14 +45,15 @@ We turn these observations into an evaluation method in three stages:
 The promise of Typed Racket's macro-level gradual typing is that programmers may
  convert any subset of the modules in an untyped program to Typed Racket.
 A comprehensive performance evaluation must therefore consider the space of
- @emph{configurations} a programmer could possibly create by typing some modules.
-That is, all ways of choosing a single module to type, all ways of choosing two
- modules to type, and so on to include every combination of typed and untyped modules.
+ typed/untyped @emph{configurations} a programmer could possibly create.
+That is, all ways of converting a single module to Typed Racket,
+ all ways of converting two modules to Typed Racket,
+ and so on to include every combination.
 We describe this space as a lattice.
 @itemlist[
   @item{
     A (@emph{program}) @emph{configuration} is a sequence of
-     @math{N} modules. Each module is either typed or untyped.
+     @math{N} modules. Each module in a configuration is either typed or untyped.
   }
   @item{
     For a fixed sequence of @math{N} modules there are @exact{$2^N$} possible

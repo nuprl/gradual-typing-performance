@@ -408,7 +408,7 @@
                 #:alpha (*POINT-ALPHA*)
                 #:label #f))))
         #:x-label "Benchmark"
-        #:y-label (format "% ~a-deliverable" D)
+        #:y-label #f ;(format "% ~a-deliverable" D)
         #:legend-anchor 'bottom-right
         #:y-min 0
         #:y-max 100
@@ -519,8 +519,7 @@
   (define num-benchmarks (length vec*))
   (parameterize ([plot-x-ticks (alphabet-ticks num-benchmarks)]
                  [plot-x-far-ticks no-ticks]
-                 [plot-y-transform log-transform]
-                 [plot-y-ticks (list->ticks '(0.5 1 2 5 10))])
+                 [plot-y-ticks (compute-yticks 3 (*Y-NUM-TICKS*) #:units "x")])
     (define p
       (plot-pict
         (append
@@ -536,7 +535,7 @@
                 (for/list : (Listof Real)
                           ([t (in-list (typed-runtimes S))]
                            [u (in-list (untyped-runtimes S))])
-                  (/ t u)))
+                  (/ u t)))
               (define m (mean t/u*))
               (define s (error-bound/mean m t/u*))
               (define x* (linear-seq (- x-center config-x-jitter)
@@ -550,7 +549,7 @@
                              [t/u (in-list t/u*)])
                     (list x t/u)))))))
         #:x-label "Benchmark"
-        #:y-label "τ/λ ratio"
+        #:y-label #f ;"τ/λ ratio"
         #:y-min #f ;0.5
         #:y-max (*Y-MAX*)
         #:x-max (- num-benchmarks 0.5)
@@ -1000,7 +999,7 @@
              (define v (pre-tick-value pt))
              (define str (number->string v))
              (if (= v ax-max)
-               (string-append str "%")
+               (string-append str unit-str)
                str)))))
 
 (: make-vrule* (-> Natural (Listof renderer2d)))

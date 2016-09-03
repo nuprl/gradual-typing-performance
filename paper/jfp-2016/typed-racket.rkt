@@ -514,7 +514,7 @@
                      [*PLOT-HEIGHT* 140]
                      [*PLOT-WIDTH* 430]
                      [*POINT-SIZE* 6]
-                     [*POINT-ALPHA* 0.6])
+                     [*POINT-ALPHA* 0.7])
         (render-exact*
           (for*/list ([bm (in-list bm*)])
             (list->vector (benchmark->rktd* bm))))))))
@@ -540,8 +540,9 @@
                      [*PLOT-FONT-SCALE* 0.04]
                      [*PLOT-HEIGHT* 180]
                      [*PLOT-WIDTH* 430]
-                     [*POINT-SIZE* 4]
-                     [*POINT-ALPHA* 0.6])
+                     [*POINT-SIZE* 5]
+                     [*Y-NUM-TICKS* 4]
+                     [*POINT-ALPHA* 0.7])
         (render-typed/untyped
           (for*/list ([bm (in-list bm*)])
             (list->vector (benchmark->rktd* bm))))))))
@@ -555,6 +556,7 @@
                      [*ERROR-BAR-WIDTH* (*RECTANGLE-WIDTH*)]
                      [*ERROR-BAR-LINE-WIDTH* (*RECTANGLE-WIDTH*)]
                      [*Y-NUM-TICKS* 3]
+                     [*POINT-ALPHA* 0.7]
                      [*PLOT-FONT-SCALE* 0.04]
                      [*PLOT-HEIGHT* 180]
                      [*PLOT-WIDTH* 440])
