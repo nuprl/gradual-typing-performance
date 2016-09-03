@@ -76,7 +76,6 @@
   (only-in racket/format ~r)
   gtp-summarize/bitstring
   gtp-summarize/lnm-parameters
-  gtp-summarize/stats-helpers
   gtp-summarize/path-util
   gtp-summarize/summary
 )
@@ -384,7 +383,7 @@
                              [u (in-list u*)])
                     (/ r u)))
                 (define m (mean r*))
-                (define s (error-bound/mean m r*))
+                (define s (error-bound r*))
                 (values (add1-when (<= (- m s) D) mean-count)
                         (add1-when (<= m D) mean-count)
                         (add1-when (<= (+ m s) D) mean-count))))
@@ -425,10 +424,22 @@
     #:width (*ERROR-BAR-WIDTH*)))
 
 ;; Return upper & lower confidence interval, or upper and lower stddev
-(: error-bound/mean (-> Real (Listof Real) Real))
-(define (error-bound/mean m v*)
-  (define s (stddev/mean m v*))
-  s)
+;; - stddev usually gives smaller interval than CI
+(: error-bound (-> (Listof Real) Real))
+(define (error-bound v*)
+  ;(define s (stddev/mean m v*))
+  ;(* s 2)
+  (confidence-interval v* #:cv 2.326))
+
+(: confidence-interval (->* [(Listof Real)] [#:cv Nonnegative-Real] Nonnegative-Real))
+(define (confidence-interval x* #:cv [cv 1.96])
+  (define u (mean x*))
+  (define n (length x*))
+  (define s (stddev/mean u x*))
+  (define cv-offset (/ (* cv s) (sqrt n)))
+  (if (negative? cv-offset)
+    (raise-user-error 'confidence-interval "got negative cv offset ~a\n" cv-offset)
+    cv-offset))
 
 (define-syntax-rule (add1-when p v)
   (if p (+ v 1) v))
@@ -537,7 +548,7 @@
                            [u (in-list (untyped-runtimes S))])
                   (/ u t)))
               (define m (mean t/u*))
-              (define s (error-bound/mean m t/u*))
+              (define s (error-bound t/u*))
               (define x* (linear-seq (- x-center config-x-jitter)
                                      (+ x-center config-x-jitter)
                                      (length t/u*)))
