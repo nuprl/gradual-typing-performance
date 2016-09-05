@@ -387,7 +387,7 @@ We must take uncertainty into account to precisely compare implementations of gr
   Compare @figure-ref{fig:exact-runtimes} with the overhead graph for @bm[morsecode] in @figure-ref{fig:lnm:1}.
   Both graphs reach the same conclusion; namely, @bm[morsecode] has a few configurations that perform better on v6.3 and a few that perform worse on v6.2, but overall performance between versions is similar.
   The overhead graph, however, summarizes each configuration by its mean runtime without communicating the variance between iterations.
-  @Figure-ref{fig:exact-runtimes} shows that the variance is low and suggests that the differences between Racket versions are statistically significant.
+  @Figure-ref{fig:exact-runtimes} shows that the variance is low and suggests that the differences between Racket versions are in fact statistically significant.
 
   @; "exact" lessons
   @; - clustered points, unimodal, left-to-right independent
@@ -405,50 +405,57 @@ We must take uncertainty into account to precisely compare implementations of gr
 The challenge is to quantify variance and significance for datasets with exponentially many configurations.
 We do so by equipping our performance metrics with confidence intervals@~cite[n-ptrs-1937].
 In essence, a confidence interval is a probable@note{By probable, we mean that a high proportion of such confidence intervals would contain the true value.} bound for the true value of an unknown parameter.
-For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the true parameters are truly different.
+For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the parameters are truly different.
 
 @Figure-ref{fig:uncertainty} quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
 The @math{x}-axis of both plots represents the @integer->word[(*NUM-BENCHMARKS*)] programs, arranged left-to-right from smallest to largest performance lattice.
 As before, each benchmark has data for @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
 The @math{y}-axis of the top plot is the inverse of the typed/untyped ratio; that is, the performance of the untyped configuration divided by the performance of the typed configuration.
 Higher @math{y}-values indicate better performance.
-The @math{y}-axis of the bottom plot is the percent of @deliverable[@id[sample-D]] configurations; again, a larger percentage is better.
+The @math{y}-axis of the bottom plot is the percent of configurations that are @deliverable[@id[sample-D]]; again, a larger percentage is better.
 
 Every series of points in the top graph and every bar in the bottom graph is enclosed in an @tt{I}-shaped interval.
 On the top graph, these intervals quantify variation among repeated samples of the typed/untyped ratio.
 To be precise, each point in the top graph is the untyped runtime from one iteration of the benchmark divided by the typed runtime from the same iteration.
 Ratios for subsequent iterations are arranged left-to-right within a column.
 The confidence intervals are the @id[sample-confidence]% confidence intervals for each sequence of ratios;
- repeating this experiment and re-computing confidence intervals would, with 98% probability, produce intervals containing the true raio.@note{FRNAZ}
+ repeating this experiment and re-computing confidence intervals would, with high probability,
+ produce intervals containing the true ratio.@note{``High probability'' is a far better mental model for interpreting @figure-ref{fig:uncertainty} than ``@id[sample-confidence]% confidence''.
+  We say @id[sample-confidence]% because we use a critical value of 2.326, but these are not rigorous statistics.
+  First, the so-called index method@~cite[f-arxiv-2006] we use to compute confidence intervals for ratios is intuitive, but ad-hoc compared to methods such as Fieller's@~cite[f-rss-1957].
+  Second, an small overlap of (precise) @id[sample-confidence]% confidence intervals does not necessarily imply no significant difference at the @~r[(* 0.01 (- 100 sample-confidence)) #:precision '(= 2)] confidence level@~cite[bfwc-pm-2005].}
 
 On the bottom graph, the intervals quantify uncertainty in the number of @deliverable[@id[sample-D]] configurations.
 Recall that the overhead graphs in @secref{sec:plots} count the number of configurations with mean runtime at most @math{D} times slower than the mean runtime of the untyped configuration.
 The rectangles in @figure-ref{fig:uncertainty} give the same, mean-derived counts for @math{D=@id[sample-D]}.
-@; TODO confusing
-These counts are approximate; the true overhead of a configuration might lie above or below the overhead determined by its mean running time.
+These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{The slope of the overhead plots correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk. This section is really about bounding the uncertainty for a fixed @math{D} rather than holistic judgments.}
 Therefore, if a configuration's @emph{mean overhead} were less than @id[sample-D] but its @emph{true overhead} were greater than @id[sample-D], the mean-based count would over-approximate the number of @deliverable[@id[sample-D]] configurations.
 Conversely, under-approximations are possible if the mean overhead exceeds the true overhead.
-The error bars around these rectangles count probable deviation by using the lower and upper bounds of a @id[sample-confidence]% confidence interval (derived from our sample overheads) as the @emph{true overhead}.
-For example, an error bar above a rectangle would mean that a proportion of configurations have @deliverable[@id[sample-D]] lower bounds but non-@deliverable[@id[sample-D]] means.
+The error bars around these rectangles therefore count @deliverable[@id[sample-D]] configurations based on the upper and lower bounds of a @id[sample-confidence]% confidence interval derived from our sample overheads.
+If the lower confidence bound for one configuration's sequence of ratios were @deliverable[@id[sample-D]] but the same configuration's mean overhead was not @deliverable[@id[sample-D]], the upper error bar would be an additional 1% higher.
 
-  @; TODO asymmetric intervals
+As it turns out, there is only one configuration with mean overhead that wavers near the @id[sample-D]x mark.
+Every other configuration is stable; furthermore, all configurations are stable for overheads of 1.2x, 1.6x, 8x, and 10x.
+These results imply that our mean overheads have relatively small error bounds, such that no configuration's mean overhead is within the noise of the above-mentioned values of @math{D}.
 
-As it turns out, only @bm[mbta] 
+These graphs justify stronger statements about the relative performance of the three implementations of Typed Racket.
+For example,
+@itemlist[
+  @item{
+    Version 6.2 has significantly better typed/untyped ratios than version 6.3 on seven benchmarks.
+  }
+  @item{
+    Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks,
+     and significantly fewer on two benchmarks.
+  }
+]
+Similar graphs can assess the performance of a fixed configuration or for fixed @math{D} values.
 
-TODO bottomline judgments.
-
-@; @Figure-ref{fig:@id[sample-D]-overheads} quantifies uncertainty in each benchmark's proportion of @deliverable[@id[sample-D]] configurations.
-@; Bottom line:
-@; @itemlist[
-@;   @item{
-@;     for @math{N1} benchmarks, we are 95% confident that 6.4 gives more @id[sample-D]-deliv configs
-@;   }
-@; ]
-
+@; - will need better stats when things cut close
+@; - don't really care about means variation with overhead graphs, just look at slope
 
     @figure["fig:uncertainty" "Measuring Uncertainty"
       @(parameterize([*CONFIDENCE-LEVEL* sample-confidence])
          (render-uncertainty sample-D ALL-BENCHMARKS))
     ]
-
 

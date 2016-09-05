@@ -1396,6 +1396,16 @@
 ;                                #:pages '(1095 1117))
 ;   #:date 2009))
 
+(define bfwc-pm-2005
+  (make-bib
+   #:title "Researchers Misunderstand Confidence Intervals and Standard Error Bars"
+   #:author (authors "Sarah Belia" "Fiona Fidler" "Jennifer Williams" "Geoff Cumming")
+   #:location (journal-location "Psychological Methods"
+                                #:volume 10
+                                #:number 4
+                                #:pages '(389 396))
+   #:date 2005))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
