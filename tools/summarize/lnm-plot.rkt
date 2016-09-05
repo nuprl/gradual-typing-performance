@@ -392,10 +392,9 @@
             (define version-x-offset (* x-offset (- i 1)))
             (define x-center (+ series-x-min version-x-offset))
             (list
-              (let ([height (* 100 (/ (max (- lo-count mean-count)
-                                           (- mean-count hi-count))
-                                      num-configs))])
-                (lnm-error-bar (list x-center y-max height) #:color c))
+              (let ([y-hi (* 100 (/ hi-count num-configs))]
+                    [y-lo (* 100 (/ lo-count num-configs))])
+                (lnm-error-bar x-center y-max (ivl y-hi y-lo) #:color c))
               (rectangles
                 (let ([RW/2 (/ RW 2)])
                   (list (list (ivl (- x-center RW/2) (+ x-center RW/2))
@@ -415,13 +414,29 @@
         #:height (*PLOT-HEIGHT*)))
     (cast p pict)))
 
-(: lnm-error-bar (->* [(List Real Real Real)] [#:color (List Real Real Real)] renderer2d))
-(define (lnm-error-bar data #:color [c (list 0 0 0)])
-  (error-bars (list data)
-    #:alpha 1
-    #:color c
-    #:line-width (*ERROR-BAR-LINE-WIDTH*) ;(*RECTANGLE-BORDER-WIDTH*)
-    #:width (*ERROR-BAR-WIDTH*)))
+;; Possibly-asymmetric error bars
+(: lnm-error-bar (->* [Real Real (U ivl Real)] [#:color (List Real Real Real)] renderer2d))
+(define (lnm-error-bar x y v #:color [c (list 0 0 0)])
+  (if (ivl? v)
+    (let ([W/2 (/ (*ERROR-BAR-WIDTH*) 2)]
+          [y-min (or (ivl-min v) (error 'lnm-error-bar "Bad interval ~a" v))]
+          [y-max (or (ivl-max v) (error 'lnm-error-bar "Bad interval ~a" v))])
+      (lines
+        (list
+          (list (- x W/2) y-min)
+          (list (+ x W/2) y-min)
+          (list x         y-min)
+          (list x         y-max)
+          (list (- x W/2) y-max)
+          (list (+ x W/2) y-max))
+        #:alpha 1
+        #:color c
+        #:width (*ERROR-BAR-LINE-WIDTH*)))
+    (error-bars (list (list x y v))
+      #:alpha 1
+      #:color c
+      #:line-width (*ERROR-BAR-LINE-WIDTH*) ;(*RECTANGLE-BORDER-WIDTH*)
+      #:width (*ERROR-BAR-WIDTH*))))
 
 ;; Return upper & lower confidence interval, or upper and lower stddev
 ;; - stddev usually gives smaller interval than CI
@@ -558,7 +573,7 @@
                                      (+ x-center config-x-jitter)
                                      (length t/u*)))
               (list
-                (lnm-error-bar (list x-center m s) #:color (->pen-color i))
+                (lnm-error-bar x-center m s #:color (->pen-color i))
                 (lnm-points i ;; no legend for now
                   (for/list : (Listof (List Real Real))
                             ([x (in-list x*)]
