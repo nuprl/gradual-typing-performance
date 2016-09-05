@@ -37,6 +37,8 @@
 
          PFDS-BEFORE
          PFDS-AFTER
+
+         noindent
          )
 
 (require "bib.rkt"
@@ -151,7 +153,7 @@
         (bold str)
         (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
         (exact #:style #f "\\end{minipage}\\end{center}\n")
-        (mt-line)))))
+        ))))
 
 (define def
   (make-defthing "Definition"))
@@ -208,3 +210,5 @@
 (define blue
   (make-colorizer 3)) ;(->pen-color 3)))
 
+(define (noindent)
+  (exact "\\hspace{-0.8em}"))

@@ -109,7 +109,8 @@ If, at runtime, the expression does not produce a value satisfying @ctc{$\tau$},
      Such errors may indicate latent bugs in the untyped code @emph{or} mistakes in the new type annotations.
      Put differently, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] does not match the philosophy of gradual typing.
    }@;
-@exact{\hspace{-0.8em}} For example, the Typed Racket function in @Figure-ref{fig:complex-multiply} implements multiplication for polar-form complex numbers.@note{Racket and Typed Racket have native support for complex numbers.} @; This is just an example@~cite[r-ip-1983].}
+@;
+For example, the Typed Racket function in @Figure-ref{fig:complex-multiply} implements multiplication for polar-form complex numbers.@note{Racket and Typed Racket have native support for complex numbers.} @; This is just an example@~cite[r-ip-1983].}
 Suppose a gradually typed program uses this function.
 Gradual type soundness demands that at runtime, every value that flows from untyped code to @racket[reynolds-*] passes the predicate @ctc{JR}.
 @; If there are @math{n} calls to the function from untyped contexts, all @math{2n} values factor through the predicate.
