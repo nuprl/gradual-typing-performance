@@ -7,7 +7,10 @@
   "util.rkt"
   (only-in racket/list first last)
   (only-in gtp-summarize/path-util add-commas)
+  (prefix-in gtp: (only-in gtp-summarize/summary from-rktd configuration->overhead))
+  (only-in gtp-summarize/bitstring natural->bitstring)
   (only-in racket/string string-join)
+  (only-in racket/format ~r)
   (except-in gtp-summarize/lnm-parameters defparam)
 ]
 
@@ -246,6 +249,7 @@ Each core ran at minimum frequency as determined by the @tt{powersave} CPU gover
 
 For each benchmark, we chose a random permutation of its configurations and ran each configuration through one warmup and one collecting iteration.
 Depending on the time needed to collect data for one benchmark's configurations, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
+The overhead graphs in the next subsection use the mean of these iterations.
 
 This protocol consistently produced unimodal data for individual configurations.
 Furthermore, we have recorded similar performance overhead on three other machines@~cite[tfgnvf-popl-2016].
@@ -355,114 +359,96 @@ All scripts we used to run our experiments and the data we collected
 @section[#:tag "sec:compare"]{Comparing Gradual Type Systems}
 
 Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
-To precisely compare implementations of gradual typing, we must take uncertainty into account@~cite[kj-ismm-2013].
+We must take uncertainty into account to precisely compare implementations of gradual typing.
+@; @~cite[kj-ismm-2013].
 
 @; uncertain runtimes, uncertain proportions
-@(let ([ex1 morsecode]
-       [ex2 sieve])
-      ;; LNM is also interesting
+@(let* ([S-6.2 (gtp:from-rktd (benchmark-rktd morsecode "6.2"))]
+        [S-6.4 (gtp:from-rktd (benchmark-rktd morsecode "6.4"))]
+        [num-mod (benchmark->num-modules morsecode)]
+        [interesting-config (natural->bitstring 13 #:pad num-mod)]
+        [c6.2 (gtp:configuration->overhead S-6.2 interesting-config)]
+        [c6.4 (gtp:configuration->overhead S-6.4 interesting-config)]
+        [sample-D-str (let ([diff (abs (- c6.4 c6.2))])
+                        (~r (+ (min c6.2 c6.4) (/ diff 2)) #:precision '(= 1)))])
 @list[@elem{
-  @Figure-ref{fig:exact-runtimes} demonstrates the issue.
-  This figure plots exact running times for all 16 configurations of the @bm[morsecode] benchmark.
-  Each configuration is one bucket on the @math{x}-axis.@note{Configuration numbers have semantic meaning, see the appendix.}
-  The @math{y}-axis is time in milliseconds.
-  Data for each version of Racket is color-coded as before; furthermore,
-   points for version 6.2 are triangles,
-   points for version 6.3 are circles,
-   and points for version 6.4 are squares.
-  Within a bucket, points for each version are arranged in the order we collected them;
-   for example, the rightmost triangle for configuration 4 is the last running time we collected for configuration 4 on Racket version 6.3
+  To demonstrate the issue, @figure-ref{fig:exact-runtimes} plots our entire dataset for the @bm[morsecode] benchmark.
+  The @math{x}-axis has sixteen discrete intervals, one for each @bm[morsecode] configuration.@note{Configuration 0 is untyped and configuration 15 is fully typed. See the appendix for the full mapping from integers to configurations.}
+  The @math{y} axis measures running time in milliseconds.
+  Each data point is one running time for one configuration.
+  These runnings times are coded by the version of Racket that produced them;
+   times for v6.2 are red triangles,
+   times for v6.3 are green circles,
+   and times for v6.4 are blue squares.
+  The left-to-right order of points for each configuration and version of Racket
+   is the order we obtained the measurements.
+  For example, the rightmost triangle for configuration 4 is the final running time we collected for configuration 4 on Racket v6.2.
 
-  The first lesson of this ``ground truth'' graph is that the points for a single configuration and version of Racket are clustered.
-  Focus on the red triangles for configuration 5.
-  Because these data are unimodal, they seem to come from a stable distribution.
-  Because these data show no obvious trend from left-to-right, they seem to be independent samples.
-  These characteristics support our choice to use the mean of these points to summarize the performance of configuration 5 on Racket v6.2 on our machine.
+  Compare @figure-ref{fig:exact-runtimes} with the overhead graph for @bm[morsecode] in @figure-ref{fig:lnm:1}.
+  Both graphs reach the same conclusion; namely, @bm[morsecode] has a few configurations that perform better on v6.3 and a few that perform worse on v6.2, but overall performance between versions is similar.
+  The overhead graph, however, summarizes each configuration by its mean runtime without communicating the variance between iterations.
+  @Figure-ref{fig:exact-runtimes} shows that the variance is low and suggests that the differences between Racket versions are statistically significant.
 
-  The second lesson is that the red triangles for a given configuration typically have the highest running times.
-  Similarly, dashed red curve on the @bm[morsecode] overhead plot (@figure-ref{fig:lnm:1}) has the fewest @deliverable{} configurations for low @math{D}.
-  Therefore @figure-ref{fig:exact-runtimes} seems to corroborate our overhead plot.
-
-  @; pls fix
-  Nonetheless, the variations between data for each configurations' version of Racket and the proximity of these series give the third and most important lesson.
-  Our conclusions in @secref{sec:plots} have some uncertainty.
-  @todo{what configs are within CI?}
+  @; "exact" lessons
+  @; - clustered points, unimodal, left-to-right independent
+  @; - triangles highest
+  @; - have some uncertainty
   }
 
   @figure["fig:exact-runtimes" "Exact running times"
-    @render-exact-plot[ex1]
+    @render-exact-plot[morsecode]
   ]
 ])
+    @(define sample-D 2)
+    @(define sample-confidence 98)
 
-@Figure-ref{fig:tu-ratios} quantifies the uncertainty via one plot and one table.
-Bottom line:
-@itemlist[
-  @item{
-    for @math{N1} benchmarks we are 95% confident that v6.4 improves on v6.2 and v6.3.
-  }
-  @item{
-    for @math{N2} benchmarks, we are 95% confident v6.4 is a regression
-  }
-  @item{
-    for @math{N3} benchmarks, within the noise
-  }
-]
-@; more concise presentation makes normality assumption harder to see
+The challenge is to quantify variance and significance for datasets with exponentially many configurations.
+We do so by equipping our performance metrics with confidence intervals@~cite[n-ptrs-1937].
+In essence, a confidence interval is a probable@note{By probable, we mean that a high proportion of such confidence intervals would contain the true value.} bound for the true value of an unknown parameter.
+For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the true parameters are truly different.
 
-@(define sample-D 2)
+@Figure-ref{fig:uncertainty} quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
+The @math{x}-axis of both plots represents the @integer->word[(*NUM-BENCHMARKS*)] programs, arranged left-to-right from smallest to largest performance lattice.
+As before, each benchmark has data for @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
+The @math{y}-axis of the top plot is the inverse of the typed/untyped ratio; that is, the performance of the untyped configuration divided by the performance of the typed configuration.
+Higher @math{y}-values indicate better performance.
+The @math{y}-axis of the bottom plot is the percent of @deliverable[@id[sample-D]] configurations; again, a larger percentage is better.
 
-    @figure["fig:uncertainty" "Quantifying uncertainty"
-      @; TODO
-      @; - error bars? they would look bad
-      @render-uncertainty[sample-D ALL-BENCHMARKS]
+Every series of points in the top graph and every bar in the bottom graph is enclosed in an @tt{I}-shaped interval.
+On the top graph, these intervals quantify variation among repeated samples of the typed/untyped ratio.
+To be precise, each point in the top graph is the untyped runtime from one iteration of the benchmark divided by the typed runtime from the same iteration.
+Ratios for subsequent iterations are arranged left-to-right within a column.
+The confidence intervals are the @id[sample-confidence]% confidence intervals for each sequence of ratios;
+ repeating this experiment and re-computing confidence intervals would, with 98% probability, produce intervals containing the true raio.@note{FRNAZ}
+
+On the bottom graph, the intervals quantify uncertainty in the number of @deliverable[@id[sample-D]] configurations.
+Recall that the overhead graphs in @secref{sec:plots} count the number of configurations with mean runtime at most @math{D} times slower than the mean runtime of the untyped configuration.
+The rectangles in @figure-ref{fig:uncertainty} give the same, mean-derived counts for @math{D=@id[sample-D]}.
+@; TODO confusing
+These counts are approximate; the true overhead of a configuration might lie above or below the overhead determined by its mean running time.
+Therefore, if a configuration's @emph{mean overhead} were less than @id[sample-D] but its @emph{true overhead} were greater than @id[sample-D], the mean-based count would over-approximate the number of @deliverable[@id[sample-D]] configurations.
+Conversely, under-approximations are possible if the mean overhead exceeds the true overhead.
+The error bars around these rectangles count probable deviation by using the lower and upper bounds of a @id[sample-confidence]% confidence interval (derived from our sample overheads) as the @emph{true overhead}.
+For example, an error bar above a rectangle would mean that a proportion of configurations have @deliverable[@id[sample-D]] lower bounds but non-@deliverable[@id[sample-D]] means.
+
+  @; TODO asymmetric intervals
+
+As it turns out, only @bm[mbta] 
+
+TODO bottomline judgments.
+
+@; @Figure-ref{fig:@id[sample-D]-overheads} quantifies uncertainty in each benchmark's proportion of @deliverable[@id[sample-D]] configurations.
+@; Bottom line:
+@; @itemlist[
+@;   @item{
+@;     for @math{N1} benchmarks, we are 95% confident that 6.4 gives more @id[sample-D]-deliv configs
+@;   }
+@; ]
+
+
+    @figure["fig:uncertainty" "Measuring Uncertainty"
+      @(parameterize([*CONFIDENCE-LEVEL* sample-confidence])
+         (render-uncertainty sample-D ALL-BENCHMARKS))
     ]
 
-@Figure-ref{fig:@id[sample-D]-overheads} quantifies uncertainty in each benchmark's proportion of @deliverable[@id[sample-D]] configurations.
-Bottom line:
-@itemlist[
-  @item{
-    for @math{N1} benchmarks, we are 95% confident that 6.4 gives more @id[sample-D]-deliv configs
-  }
-]
 
-
-@; TODO HOW to t test
-@; - okay a plot for 2-deliverable confidence is just too much,
-@;   because need to show every configuration
-
-@; LESSONS
-@; - standard error of measurements, for all configs (histogram?)
-@; - careful of trends along dots
-@;   - zscore as function of time??? take R2 for that?
-@;     orjust R2(y, time) FOR EACH CONFIG ... maybe can plot on 1 diagram
-@; - confidence interval, #configs with stat. sig. diff 
-@; - something about magnitude of difference (just mean is maybe ok)
-
-@; Good "STE" might be DEFINED as Z ~ (68 95 100)
-@;
-@; (data integrity table)
-@; | BM | STE | Z < 1 | Z < 2 | Z < 3 |
-@;   ??? 3 versions OH just color-code the data in columns
-
-@; (comparing versions)
-@;   - possible to compare 3 versions simultaneously?
-@;     IF NOT, other tables can go in appendix
-@;   - "overall gain" as function of deltas?
-@; | BM | % better | % worse | % same (mean/median)
-@;   ??? could also be triple-columns,
-@;    but do 1-col first and see how it fits
-
-
-@; Need also scatterplots to really compare versions (with @emph{confidence}).
-@; @todo{add plots}
-@; 
-@; Note: The small but statistically significant variations in the untyped running
-@;  mean that overheads from one version of Racket are
-@;  not directly comparable to another for those benchmarks,
-@;  but such are the hazards of benchmarking a large system.
-@; At any rate, we hold that users' decision to invest in gradual typing will
-@;  be influenced mostly by the overhead they witness---regardless of whether
-@;  that overhead is due to enforcing type soundness or because untyped Racket
-@;  is magically faster than all of Typed Racket.
-@; For completeness we list all untyped runtimes in Appendix @todo{ref}.
-@; 

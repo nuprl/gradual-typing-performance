@@ -429,7 +429,12 @@
 (define (error-bound v*)
   ;(define s (stddev/mean m v*))
   ;(* s 2)
-  (confidence-interval v* #:cv 2.326))
+  (define cv
+    (case (*CONFIDENCE-LEVEL*)
+     [(95) 1.96]
+     [(98) 2.326]
+     [else (error 'error-bounds "Unknown confidence level '~a'" (*CONFIDENCE-LEVEL*))]))
+  (confidence-interval v* #:cv cv))
 
 (: confidence-interval (->* [(Listof Real)] [#:cv Nonnegative-Real] Nonnegative-Real))
 (define (confidence-interval x* #:cv [cv 1.96])

@@ -1356,6 +1356,46 @@
    #:location (list "KEYNOTE speech: " (proceedings-location icfp))
    #:date 2014))
 
+; http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2064100/
+
+(define f-arxiv-2006
+  ; https://arxiv.org/pdf/0710.2024v1.pdf
+  (make-bib
+   #:title "Ratios: A short guide to confidence limits and proper use"
+   #:author "Volker H. Franz"
+   #:location "Unpublished Manuscript"
+   #:date 2007))
+
+(define f-rss-1957
+  (make-bib
+   #:title "Some Problems in Interval Estimation"
+   #:author "E.C. Fieller"
+   #:location (journal-location "Journal of the Royal Statistical Society"
+                                #:volume 16
+                                #:number 2
+                                #:pages '(175 185))
+   #:date 1957))
+
+(define n-ptrs-1937
+  (make-bib
+   #:title "Outline of a Theory of Statistical Estimation Based on the Classical Theory of Probability"
+   #:author "J. Neyman"
+   #:location (journal-location "Philosophical Transactions of the Royal Society of London"
+                                #:volume 236
+                                #:number 767
+                                #:pages '(333 380))
+   #:date 1937))
+
+;(define lf-statistica-2009
+;  (make-bib
+;   #:title "A Geometric Approach to Confidence Sets for Ratios: Fieller's Theorem, Generalizations, and Bootstrap"
+;   #:author (authors "Ulrike von Luxburg" "Volker H. Franz")
+;   #:location (journal-location "Statistica Sinica"
+;                                #:volume 19
+;                                #:number 3
+;                                #:pages '(1095 1117))
+;   #:date 2009))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
