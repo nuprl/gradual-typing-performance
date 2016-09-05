@@ -188,7 +188,7 @@
   (hc-append (* HSHIM 3.5)
     (vl-append VSHIM
       (mytext "x-axis: Overhead (vs. untyped)")
-      (mytext "y-axis: % Acceptable configs."))
+      (mytext "y-axis: % Deliverable configs."))
     (vl-append*/2 HSHIM VSHIM
       (for/list : (Listof Pict)
                 ([v (in-list version*)]
