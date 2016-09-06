@@ -276,7 +276,7 @@ The scripts we used to run our experiments and the data we collected
     (cons
       @elem{
         @(apply Figure-ref name*) present our experimental results in a series of overhead graphs.
-        As in @figure-ref{fig:suffixtree-plot}, the left column of figures counts @deliverable[] configurations and the right column counts @step["1" "D"] configurations.
+        As in @figure-ref{fig:suffixtree-plot}, the left column of figures are cumulative distribution functions for @deliverable[] configurations and the right column are cumulative distribution functions for @step["1" "D"] configurations.
         These plots additionally give data for three versions of Racket released between June 2015 and February 2016.
         Data for version 6.2 are thin red curves with short dashes.
         Data for version 6.3 are mid-sized green curves with long dashes.
