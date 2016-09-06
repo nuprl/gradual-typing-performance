@@ -311,7 +311,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         A point @math{(X,Y)} on this plot represents the percentage @math{Y}
          of configurations @exact{$c_1$} such that there exists a configuration
          @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
-         runs at most @math{X} times slower than the untyped configuration.@note{Note that @exact{$c_1$} and @exact{$c_2$} may be the same. They are definitely the same when @exact{$c_1$} is the fully-typed configuration.}
+         runs at most @math{X} times slower than the untyped configuration.@note{Note that @exact{$c_1$} and @exact{$c_2$} may be the same, for instance when @exact{$c_1$} is the fully-typed configuration.}
         Intuitively, this plot has a similar shape to the (0-step) @deliverable[] plot
          because accounting for one type conversion step does not change the overall
          characteristics of the benchmark, but only makes

@@ -18,7 +18,7 @@
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
 To validate the evaluation method, we apply it to a suite of @integer->word[(count-benchmarks)] Typed Racket programs.
-This section briefly describes each benchmark, documents our protocol for collecting performance lattice data, and presents the overhead graphs we derived from the data.
+This section introduces the benchmarks, documents our protocol for collecting performance lattice data, and presents the overhead graphs we derived from the data.
 @; comparisons?
 
 
@@ -65,11 +65,11 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons morsecode
   @elem{
     Computes Levenshtein distances and morse code translations for a fixed sequence of pairs of words.
-    Every function that crosses a type boundary in @bm[morsecode] operates on strings and integers, thus overhead is relatively low.
+    Every function that crosses a type boundary in @bm[morsecode] operates on strings and integers, thus dynamically type-checking these functions is relatively cheap.
   })
 (cons zombie
   @elem{
-    Implements a game where players dodge computer-controlled ``zombies''.
+    Implements a game where players dodge computer-controlled ``zombie'' tokens.
     Curried functions over symbols (i.e. ``method names'') implement game entities and repeatedly cross type boundaries.
 
     @;@racket[
@@ -118,8 +118,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
     @emph{Note}:
      the Racket bytecode format changed between versions 6.2 and 6.3 with
      the release of the set-of-scopes macro expander@~cite[f-popl-2016].
-    This change makes a significant difference in the running time and overhead of @bm[zordoz].
-    @todo{doublecheck}
+    This change significantly improved the overhead of @bm[zordoz].
 
     @;As it turns out, the change from 6.2 to 6.3 improved the typed/untyped ratio
     @; from
@@ -132,8 +131,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons lnm
   @elem{
     Renders overhead graphs@~cite[tfgnvf-popl-2016].
-    Two modules are tightly-coupled to Typed Racket libraries.
-    Removing their type boundaries improves performance.
+    Two modules are tightly-coupled to Typed Racket libraries; typing these modules improves performance.
   })
 (cons suffixtree
   @elem{
@@ -150,7 +148,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
   @elem{
     Implements the Snake game;
      the benchmark replays a fixed sequence of moves.
-    Mostly first-order data crosses the module boundaries in @bm[snake], however the frequency of boundary-crossings is very high.
+    Modules in this benchmark frequently exchange first-order values, such as lists and integers.
   })
 (cons take5
   @elem{
@@ -159,8 +157,8 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
   })
 (cons acquire
   @elem{
-    Simulates a board game; implemented in a stateful, object-oriented style.
-    Few values cross module boundaries, therefore performance overhead is low.
+    Simulates a board game via message-passing objects.
+    The core game structures are encapsulated within these objects.
   })
 (cons tetris
   @elem{
@@ -187,7 +185,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
     This version has a high typed/untyped ratio
      because it explicitly compiles types to runtime predicates
      and uses these predicates to eagerly check data invariants.
-    In other words, the typed version is slower because it performs more work than the untyped program.
+    In other words, the typed program is slower than untyped because it does more work.
 
     The second version, @bm[quadBG], uses identical code but weakens types to match the untyped program.
     This version is therefore suitable for judging the implementation
@@ -220,14 +218,14 @@ The lines of code (LOC) and number of modules (# Mod.) approximate program size.
 Adaptor modules (# Adp.) roughly correspond
  to the number of user-defined datatypes in each benchmark.
 The ``Annotation'' column is the number of type annotations in the fully typed
- version of the benchmark.@note{The benchmarks use more annotations than Typed Racket requires in practice, as they provide full type signatures for each import, even imports from other typed modules.}
-Lastly, the boundaries (# Bnd.) and exports (# Exp.) describe the graph structure of each benchmark.
-Boundaries are import statements from one module in the benchmark to another (omits external boundaries).
+ version of the benchmark.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
+Lastly, the boundaries (# Bnd.) and exports (# Exp.) describe each benchmark's graph structure.
+Boundaries are import statements from one module in the benchmark to another; this count omits external boundaries.
 Exports are identifiers that cross such boundaries statically.
 For example, there is one module boundary in @tt{sieve} and nine identifiers cross this boundary.
 @; At runtime, these nine identifiers are repeatedly invoked as functions; however, the number of invocations is not part of @figure-ref{fig:bm}.
 
-See the appendix for a precise definition of adaptor modules and figures representing each benchmark as a graph.
+The appendix contains a precise definition of adaptor modules and figures representing each benchmark as a graph.
 Edges in the graphs correspond to module boundaries (# Bnd.).
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
@@ -252,11 +250,11 @@ Depending on the time needed to collect data for one benchmark's configurations,
 The overhead graphs in the next subsection use the mean of these iterations.
 
 This protocol consistently produced unimodal data for individual configurations.
-Furthermore, we have recorded similar performance overhead on three other machines@~cite[tfgnvf-popl-2016].
-We are therefore confident that the performance overhead we observed is reproducible across machines and computing environments.
+Furthermore, we have recorded similar performance overhead for Racket v6.2 on three other machines@~cite[tfgnvf-popl-2016].
+We are thereby encouraged that the performance overhead we observed is reproducible across machines and computing environments.
 Nevertheless, @secref{sec:threats} reports threats to validity regarding our experimental protocol.
 
-All scripts we used to run our experiments and the data we collected
+The scripts we used to run our experiments and the data we collected
  are available in the online supplement to this paper and in the @tt{jfp}
  branch of this paper's public repository.@note{@url{https://github.com/nuprl/gradual-typing-performance}}
 
@@ -303,7 +301,7 @@ All scripts we used to run our experiments and the data we collected
                )
           @elem{
             Many curves have low slopes.
-            These demonstrate that gradual typing introduces large and widespread performance overhead.
+            These slopes demonstrate that gradual typing introduces large and widespread performance overhead in our benchmark programs.
             Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common slope is a flat line near the 50% mark.
             Such lines imply that the performance of a family of configurations is dominated by a single type boundary.
             @; For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present; all eight configurations with this boundary have over @|max-str| overhead.
@@ -312,10 +310,12 @@ All scripts we used to run our experiments and the data we collected
 
             For example, consider @math{D=2}.
             In @integer->word[(- num-bm num-mostly-2-deliverable)] of the @|num-bm-str| benchmark programs, @emph{at most} half the configurations are @deliverable{2}.
+            The situation is worse for lower (more realistic) overheads, and does not improve much for higher overheads.
+            At @math{D=10}, ten benchmarks still have 50% or fewer configurations @deliverable{10}.
 
             The curves' endpoints describe the extremes of gradual typing.
             The left endpoint gives the percentage of configurations that run at least as quickly as the untyped program.
-            For all but @bm[sieve] and @bm[lnm], such configurations are a low proportion of the total.
+            Except for @bm[lnm], such configurations are a low proportion of the total.@note{@bm[sieve] is a degenerate case. Only its untyped and fully-typed configurations are @deliverable{1}.}
             The right endpoint shows how many configurations suffer over 20x performance overhead.
             In total, @|num-max-deliverable-str| benchmarks have configurations with such extreme slowdowns.
 
@@ -324,20 +324,15 @@ All scripts we used to run our experiments and the data we collected
             One type conversion step can eliminate a pathological boundary, such as those in @bm[fsm] and @bm[zombie], but the overhead in larger benchmarks comes from a variety of type boundaries.
             Except in configurations with many typed modules, adding types to one additional module is not likely to improve performance.
 
-            On the other hand, subsequent versions of Typed Racket demonstrate less overhead.
+            On the other hand, subsequent versions of Typed Racket do exhibit less overhead.
             The three slopes for each benchmark are similar, but later versions typically have more @deliverable{} configurations for any fixed @math{D}.
             In particular @bm[kcfa], @bm[snake], and @bm[tetris] doubled the number of @deliverable{8} configurations between versions 6.2 and 6.4.
-            If this trend continues, Typed Racket may soon offer sound and performant gradual typing.
 
-         @; ; in fact, the typed/untyped ratios demonstrate that only four benchmarks run faster when fully typed on Racket version 6.4.
-         @;   Finally, only four benchmarks run faster when fully typed.
-         @;   The rest have typed/untyped ratios of at least 1, despite type specialization in the Typed Racket compiler@~cite[stf-optimization-coaching].
-         @;   In the case of @bm[mbta] and @bm[zordoz], these ratios are due to interactions with an untyped library.
-         @;   Object-oriented benchmarks such as @bm[take5] and @bm[acquire] suffer overhead from type casts@~cite[tfdffthf-ecoop-2015].
-         @;   And as mentioned above, @bm[quadMB] incurs overhead from type-generated predicates.
+            The exceptions to this rule are @todo{check}.
+            @; If this trend continues, Typed Racket may soon offer sound and performant gradual typing.
 
-         @;   Second, every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
-         @;   These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
+            Finally, note that every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
+            These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
 
          @;   Third, the @bm[lnm] benchmark demonstrates that clients of a typed library have a positive incentive to convert their modules to Typed Racket.
          @;   Doing so can improve the application's performance.
@@ -359,7 +354,6 @@ All scripts we used to run our experiments and the data we collected
 @section[#:tag "sec:compare"]{Comparing Gradual Type Systems}
 
 Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
-We must take uncertainty into account to precisely compare implementations of gradual typing.
 @; @~cite[kj-ismm-2013].
 
 @; uncertain runtimes, uncertain proportions
@@ -373,7 +367,7 @@ We must take uncertainty into account to precisely compare implementations of gr
                         (~r (+ (min c6.2 c6.4) (/ diff 2)) #:precision '(= 1)))])
 @list[@elem{
   To demonstrate the issue, @figure-ref{fig:exact-runtimes} plots our entire dataset for the @bm[morsecode] benchmark.
-  The @math{x}-axis has sixteen discrete intervals, one for each @bm[morsecode] configuration.@note{Configuration 0 is untyped and configuration 15 is fully typed. See the appendix for the full mapping from integers to configurations.}
+  The @math{x}-axis has sixteen discrete intervals, one for each @bm[morsecode] configuration.@note{Configuration 0 is untyped and configuration 15 is fully typed. The mapping from @exact{$i \in [1,15]$} to configurations is in the appendix.}
   The @math{y} axis measures running time in milliseconds.
   Each data point is one running time for one configuration.
   These runnings times are coded by the version of Racket that produced them;
@@ -386,8 +380,8 @@ We must take uncertainty into account to precisely compare implementations of gr
 
   Compare @figure-ref{fig:exact-runtimes} with the overhead graph for @bm[morsecode] in @figure-ref{fig:lnm:1}.
   Both graphs reach the same conclusion; namely, @bm[morsecode] has a few configurations that perform better on v6.3 and a few that perform worse on v6.2, but overall performance between versions is similar.
-  The overhead graph, however, summarizes each configuration by its mean runtime without communicating the variance between iterations.
-  @Figure-ref{fig:exact-runtimes} shows that the variance is low and suggests that the differences between Racket versions are in fact statistically significant.
+  The overhead graph, however, summarizes each configuration by its mean runtime without communicating the variance between iterations evident in @figure-ref{fig:exact-runtimes}.
+  Nevertheless, this variance is low and suggests that the conclusion is in fact statistically significant.
 
   @; "exact" lessons
   @; - clustered points, unimodal, left-to-right independent
@@ -404,7 +398,7 @@ We must take uncertainty into account to precisely compare implementations of gr
 
 The challenge is to quantify variance and significance for datasets with exponentially many configurations.
 We do so by equipping our performance metrics with confidence intervals@~cite[n-ptrs-1937].
-In essence, a confidence interval is a probable@note{By probable, we mean that a high proportion of such confidence intervals would contain the true value.} bound for the true value of an unknown parameter.
+In essence, a confidence interval is a probable bound for the true value of an unknown parameter.
 For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the parameters are truly different.
 
 @Figure-ref{fig:uncertainty} quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
@@ -423,33 +417,41 @@ The confidence intervals are the @id[sample-confidence]% confidence intervals fo
  produce intervals containing the true ratio.@note{``High probability'' is a far better mental model for interpreting @figure-ref{fig:uncertainty} than ``@id[sample-confidence]% confidence''.
   We say @id[sample-confidence]% because we use a critical value of 2.326, but these are not rigorous statistics.
   First, the so-called index method@~cite[f-arxiv-2006] we use to compute confidence intervals for ratios is intuitive, but ad-hoc compared to methods such as Fieller's@~cite[f-rss-1957].
-  Second, an small overlap of (precise) @id[sample-confidence]% confidence intervals does not necessarily imply no significant difference at the @~r[(* 0.01 (- 100 sample-confidence)) #:precision '(= 2)] confidence level@~cite[bfwc-pm-2005].}
+  Second, a small overlap of (precise) @id[sample-confidence]% confidence intervals does not necessarily imply no significant difference at the @~r[(* 0.01 (- 100 sample-confidence)) #:precision '(= 2)] confidence level@~cite[bfwc-pm-2005].}
 
 On the bottom graph, the intervals quantify uncertainty in the number of @deliverable[@id[sample-D]] configurations.
 Recall that the overhead graphs in @secref{sec:plots} count the number of configurations with mean runtime at most @math{D} times slower than the mean runtime of the untyped configuration.
 The rectangles in @figure-ref{fig:uncertainty} give the same, mean-derived counts for @math{D=@id[sample-D]}.
-These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{The slope of the overhead plots correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk. This section is really about bounding the uncertainty for a fixed @math{D} rather than holistic judgments.}
+These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{Note: the slope of the overhead plots weakly correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk.}
 Therefore, if a configuration's @emph{mean overhead} were less than @id[sample-D] but its @emph{true overhead} were greater than @id[sample-D], the mean-based count would over-approximate the number of @deliverable[@id[sample-D]] configurations.
 Conversely, under-approximations are possible if the mean overhead exceeds the true overhead.
 The error bars around these rectangles therefore count @deliverable[@id[sample-D]] configurations based on the upper and lower bounds of a @id[sample-confidence]% confidence interval derived from our sample overheads.
-If the lower confidence bound for one configuration's sequence of ratios were @deliverable[@id[sample-D]] but the same configuration's mean overhead was not @deliverable[@id[sample-D]], the upper error bar would be an additional 1% higher.
+If the lower confidence bound for one configuration's sequence of ratios was @deliverable[@id[sample-D]] but the same configuration's mean overhead was not @deliverable[@id[sample-D]], the upper error bar would be an additional 1% higher.
 
 As it turns out, there is only one configuration with mean overhead that wavers near the @id[sample-D]x mark.
 Every other configuration is stable; furthermore, all configurations are stable for overheads of 1.2x, 1.6x, 8x, and 10x.
 These results imply that our mean overheads have relatively small error bounds, such that no configuration's mean overhead is within the noise of the above-mentioned values of @math{D}.
 
-These graphs justify stronger statements about the relative performance of the three implementations of Typed Racket.
+These graphs provide evidence for stronger statements about the relative performance of the three implementations of Typed Racket.
 For example,
 @itemlist[
   @item{
     Version 6.2 has significantly better typed/untyped ratios than version 6.3 on seven benchmarks.
+    These improved benchmarks include @bm[mbta], @bm[zombie], and @bm[zordoz], which were among the highest typed/untyped ratios on v6.2.
+
+         @; ; in fact, the typed/untyped ratios demonstrate that only four benchmarks run faster when fully typed on Racket version 6.4.
+         @;   Finally, only four benchmarks run faster when fully typed.
+         @;   The rest have typed/untyped ratios of at least 1, despite type specialization in the Typed Racket compiler@~cite[stf-optimization-coaching].
+         @;   In the case of @bm[mbta] and @bm[zordoz], these ratios are due to interactions with an untyped library.
+         @;   Object-oriented benchmarks such as @bm[take5] and @bm[acquire] suffer overhead from type casts@~cite[tfdffthf-ecoop-2015].
+         @;   And as mentioned above, @bm[quadMB] incurs overhead from type-generated predicates.
+
   }
   @item{
-    Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks,
-     and significantly fewer on two benchmarks.
+    Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks, and significantly fewer on two benchmarks.
   }
 ]
-Similar graphs can assess the performance of a fixed configuration or for fixed @math{D} values.
+Similar graphs can assess the performance of any fixed configuration or @math{D} values.
 
 @; - will need better stats when things cut close
 @; - don't really care about means variation with overhead graphs, just look at slope

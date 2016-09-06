@@ -80,7 +80,7 @@ Refactoring can always spawn bugs.
 The third cost is performance overhead, as mentioned in @secref{sec:intro}.
 For example, Typed Racket developers have experienced pathologies including
  a 50% overhead in a commercial web server
- and 25x-50x slowdowns when using the math library.@note{See the appendix for a list of user reports.}
+ and 25x-50x slowdowns when using the math library.@note{The appendix contains a list of user reports.}
 Another programmer found that converting a script from Racket to Typed Racket improved its performance from @|PFDS-BEFORE| to @|PFDS-AFTER|.
 
 Of these three costs, the performance overhead is the most troublesome.
