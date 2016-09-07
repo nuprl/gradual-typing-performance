@@ -43,6 +43,7 @@
 @include-section{typed-racket.scrbl}
 @include-section{threats.scrbl}
 @include-section{devils.scrbl}
+@include-section{scale.scrbl}
 @;@include-section{experience.scrbl}
 @include-section{flavors.scrbl}
 @include-section{conclusion.scrbl}
