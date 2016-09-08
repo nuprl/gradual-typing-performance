@@ -267,13 +267,6 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:graphs"]{Overhead Graphs}
 
-@; pre-reqs to plots
-@; - D parameter, varying requirements
-@; - 
-
-@; SECONDARY
-@; - location of good configs, relation to one another
-
 @(render-lnm-plot
   #:rktd*** (list (list (list (benchmark-rktd suffixtree suffixtree-lattice-version))))
   (lambda (pict*)

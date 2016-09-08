@@ -1,8 +1,5 @@
 #lang racket/base
 
-;; TODO
-;; - dungeon data
-
 ;; Supporting code for `typed-racket.scrbl`
 ;; - Render & organize benchmarks
 ;; - Make L-N/M figures
@@ -66,6 +63,8 @@
   ;; (-> (-> (Listof Pict) Elem) Any)
 
   percent-diff
+
+  deliverable*
 
   (rename-out
     [ext:typed/untyped-ratio typed/untyped-ratio]
@@ -374,7 +373,7 @@
                  [*M* #f]
                  [*MAX-OVERHEAD* 20]
                  [*N* #f]
-                 [*NUM-SAMPLES* 60] ;; 200
+                 [*NUM-SAMPLES* 60] ;; 200 ;; TODO
                  [*PLOT-FONT-SCALE* 0.04]
                  [*PLOT-HEIGHT* 100]
                  [*PLOT-WIDTH* 210]
@@ -584,6 +583,15 @@
 
 (define (ext:min-overhead rktd)
   (add-x (rnd (min-overhead (from-rktd rktd)))))
+
+(define (deliverable* D v bm*)
+  (parameterize ([*current-cache-keys* (list (lambda () bm*))])
+    (with-cache (cachefile (format "cache-~a-deliverable-count" D))
+      (lambda ()
+        (for/sum ((bm (in-list bm*)))
+          (define rktd (benchmark-rktd bm v))
+          ((D-deliverable D) (from-rktd rktd)))))))
+
 
 ;; -----------------------------------------------------------------------------
 ;

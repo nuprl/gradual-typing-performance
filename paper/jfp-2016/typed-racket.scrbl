@@ -19,7 +19,6 @@
 
 To validate the evaluation method, we apply it to a suite of @integer->word[(count-benchmarks)] Typed Racket programs.
 This section introduces the benchmarks, documents our protocol for collecting performance lattice data, and presents the overhead graphs we derived from the data.
-@; comparisons?
 
 
 @; -----------------------------------------------------------------------------
@@ -215,8 +214,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 @Figure-ref{fig:bm} lists static characteristics of the benchmark programs as a coarse measure of their size and complexity.
 The lines of code (LOC) and number of modules (# Mod.) approximate program size.
     @; Note that the number modules determines the number of gradually typed configurations.
-Adaptor modules (# Adp.) roughly correspond
- to the number of user-defined datatypes in each benchmark.
+Adaptor modules (# Adp.) roughly correspond to the number of user-defined datatypes in each benchmark.
 The ``Annotation'' column is the number of type annotations in the fully typed
  version of the benchmark.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
 Lastly, the boundaries (# Bnd.) and exports (# Exp.) describe each benchmark's graph structure.
@@ -245,7 +243,7 @@ We measured configurations' running times on a Linux machine with two physical A
 The machine collected data with at most two of its 32 cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
-For each benchmark, we chose a random permutation of its configurations and ran each configuration through one warmup and one collecting iteration.
+For each benchmark, we chose a random permutation of its configurations, compiled the configurations using the standard settings, and ran each configuration through one warmup and one collecting iteration.
 Depending on the time needed to collect data for one benchmark's configurations, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
 The overhead graphs in the next subsection use the mean of these iterations.
 

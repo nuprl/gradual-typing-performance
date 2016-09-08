@@ -1406,6 +1406,13 @@
                                 #:pages '(389 396))
    #:date 2005))
 
+(define mdhs-asplos-2009
+  (make-bib
+   #:title "Producing Wrong Data Without Doing Anything Obviously Wrong"
+   #:author (authors "Todd Mytkowicz" "Amer Diwan" "Matthais Hauswirth" "Peter F. Sweeney")
+   #:location (proceedings-location asplos #:pages '(265 276))
+   #:date 2009))
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
