@@ -129,7 +129,7 @@
 ;; The return value `minima` is a hash:
 ;; the keys are col-indices (integers)
 ;; the values are pairs of (value row-index).
-(: concave-minima ((Vectorof Index-Type) (Vectorof Index-Type) Matrix-Proc-Type Entry->Value-Type -> (HashTable Any Any)))
+(: concave-minima ((Vectorof Index-Type) (Vectorof Index-Type) Matrix-Proc-Type Entry->Value-Type -> HashTableTop))
 (define (concave-minima row-indices col-indices matrix-proc entry->value)
   ;((vector?) ((or/c #f vector?) procedure? procedure?) . ->* . hash?)
   (define reduce-proc reduce2)
@@ -138,7 +138,7 @@
       (make-hash)
       (let ([row-indices (reduce-proc row-indices col-indices matrix-proc entry->value)])
         (define odd-column-minima (concave-minima row-indices (cast (vector-odd-elements (cast col-indices (Vectorof Any))) (Vectorof Index-Type)) matrix-proc entry->value))
-        (interpolate-proc odd-column-minima row-indices col-indices matrix-proc entry->value))))
+        (interpolate-proc (cast odd-column-minima (HashTable Any Any)) row-indices col-indices matrix-proc entry->value))))
 
 
 (define no-value 'none)
