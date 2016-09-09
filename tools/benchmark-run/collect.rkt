@@ -54,6 +54,11 @@
   (require racket/cmdline)
   (command-line
    #:program "gtp-collect"
+   #:once-each
+   [("-v" "--version")
+    v
+    "Set Racket version"
+    (*RACKET-VERSION* v)]
    #:args rktd*
    (cond
     [(null? rktd*)
