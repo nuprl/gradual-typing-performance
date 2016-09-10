@@ -42,7 +42,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
   @elem{
     Demonstrates a scenario where user code is tightly coupled to higher-order library code.
     The library implements a stream data structure; the user creates a stream of prime numbers.
-    Introducing a type boundary between these modules introduces significant overhead.
+    Introducing a type boundary between these modules leads to significant overhead.
   })
 (cons forth
   @elem{
@@ -64,7 +64,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons morsecode
   @elem{
     Computes Levenshtein distances and morse code translations for a fixed sequence of pairs of words.
-    Every function that crosses a type boundary in @bm[morsecode] operates on strings and integers, thus dynamically type-checking these functions is relatively cheap.
+    Every function that crosses a type boundary in @bm[morsecode] operates on strings and integers, thus dynamically type-checking these functions' arguments is relatively cheap.
   })
 (cons zombie
   @elem{
@@ -157,7 +157,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons acquire
   @elem{
     Simulates a board game via message-passing objects.
-    The core game structures are encapsulated within these objects.
+    The core game structures are encapsulated within these objects; few higher-order values cross type boundaries.
   })
 (cons tetris
   @elem{
@@ -233,7 +233,7 @@ The appendix contains full module graphs.
 @profile-point{sec:tr:protocol}
 @section[#:tag "sec:protocol"]{Experimental Protocol}
 
-@(define MIN-ITERS-STR "2")
+@(define MIN-ITERS-STR "3")
 @(define MAX-ITERS-STR "30")
 @(define FREQ-STR "1.40 GHz")
 
@@ -243,12 +243,12 @@ There were four complications.
 First, the typed code occasionally required type casts or small refactorings.
 For example, if the variable @racket[N] has type @racket[Natural], the expression @racket[(- N 1)] has type @racket[Integer] until a runtime check proves otherwise.
 Untyped benchmarks frequently omitted these assertions, so we added them uniformly to typed and untyped configurations.
-As another example, @bm[quad] used a library function to divide a @racket[(Listof (U A B))]@note{The @racket[U] constructor builds an untagged union type.}
+As another example, @bm[quad] partitioned a @racket[(Listof (U A B))]@note{The @racket[U] constructor builds an untagged union type.}
  into a @racket[(Listof A)] and a @racket[(Listof B)] using a predicate for values of type @racket[A].
-Typed Racket could not ensure that values which failed the predicate had type @racket[B], so we refactored this code to use two filtering passes.
+Typed Racket could not ensure that values which failed the predicate had type @racket[B], so we added a second predicate.
 
 Second, we strove to re-use type annotations present in the @bm[fsm], @bm[synth], and @bm[quad] benchmarks; however, these annotations occasionally used types that Typed Racket could not dynamically enforce.
-For instance, Typed Racket could not impose parametric polymorphism on Racket struct definitions, so we changed the core datatypes in @bm[synth] to be monomorphic.
+For instance, Typed Racket could not impose parametric polymorphism on Racket struct definitions, so we made the core datatypes in @bm[synth] monomorphic.
 
 Third, we converted any contracts in untyped benchmarks to type annotations and in-line assertions.
 The @bm[acquire] benchmark in particular used contracts to ensure ordered lists with unique elements.
@@ -453,7 +453,7 @@ These graphs provide evidence for stronger statements about the relative perform
 For example,
 @itemlist[
   @item{
-    Version 6.2 has significantly better typed/untyped ratios than version 6.3 on seven benchmarks.
+    Version 6.3 has significantly better typed/untyped ratios than version 6.2 on seven benchmarks.
     These improved benchmarks include @bm[mbta], @bm[zombie], and @bm[zordoz], which were among the highest typed/untyped ratios on v6.2.
 
          @; ; in fact, the typed/untyped ratios demonstrate that only four benchmarks run faster when fully typed on Racket version 6.4.

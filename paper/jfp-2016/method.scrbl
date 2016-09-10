@@ -121,7 +121,7 @@ We describe this space as a lattice.
 
 @Figure-ref{fig:suffixtree-lattice} is a performance lattice for @bm[suffixtree], a mid-sized program from our benchmark suite.
 The program consists of @|suffixtree-num-modules| modules, thus the lattice has @|suffixtree-num-configs-str| configurations.
- ach configuration is rendered as a @|suffixtree-num-modules|-segment rectangle.
+Each configuration is rendered as a @|suffixtree-num-modules|-segment rectangle.
 The bottom element in the lattice represents the untyped configuration.
 The first level of the lattice represents all configurations with one typed module;
  these configurations' rectangles have one filled segment.
@@ -154,7 +154,7 @@ For instance, @|suffixtree-num-D-str|
 
 The most basic question about a gradually typed language is
  how fast fully-typed programs are in comparison to their fully untyped relative.
-In principle, static types enable optimizations and can serve in place of runtime tag checks.
+In principle and in Typed Racket, static types enable optimizations and can serve in place of runtime tag checks.
 The net effect of such improvements may, however, be offset by runtime type checks
  in programs that rely heavily on an untyped library.
 Hence we characterize the relative performance of fully-typed programs
@@ -274,7 +274,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
       @; less than half of all @bm[suffixtree] configurations run within a @id[(*MAX-OVERHEAD*)]x slowdown.
       @elem{
         The main lesson to extract from a performance lattice is the number of
-         @deliverable{} configurations.
+         @deliverable{} configurations for various @math{D}.
         The plot on the left half of @figure-ref{fig:suffixtree-plot} presents this
          information for the @bm[suffixtree] benchmark.
         On the x-axis, possible values for @math{D} range continuously from one to @integer->word[(*MAX-OVERHEAD*)].
@@ -311,7 +311,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
          more configurations @deliverable[].@note{To precisely compare the @math{k=0} and @math{k=1} curves we should plot them on the same axis; however, our primary goal is to compare multiple implementations of a gradual type system on a fixed @math{k}.}
 
         These @emph{overhead plots} concisely summarize the @bm[suffixtree] dataset.
-        The same technique scales to arbitrarily large benchmarks.
+        The same presentation scales to arbitrarily large benchmarks.
         Furthermore, one can make high-level comparisons between multiple implementations
          of a gradual type system by plotting their curves on the same axes.
       }

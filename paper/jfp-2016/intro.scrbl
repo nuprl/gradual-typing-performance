@@ -20,7 +20,7 @@ Regardless of why programmers choose dynamically typed languages,
  the maintainers of these applications inevitably find the lack of explicit type
  annotations an obstacle to their work.
 Explicit annotations communicate a programmer's intent to other human readers.
-Furthermore, the toolchain can check the annotations for inconsistencies
+Furthermore, the toolchain can check the annotations for logical inconsistencies
  and leverage types to improve the efficiency of compiled code.
 Researchers have tried to overcome the lack of type annotations with inference algorithms,
  but there is no substitute for programmer-supplied annotations.

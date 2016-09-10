@@ -45,7 +45,7 @@ Third, configurations running in parallel referenced the same Racket executable 
 This is a potential source of bias, though we did not detect any anomalies when running two configurations simultaneously.
 
 Fourth, we did not rigorously control for heuristics in the Racket compiler or JIT.
-We compiled once before collecting one iteration for a configuration using Racket's default options and repeated this simple compile/collect cycle.
+We compiled once before collecting one iteration for a configuration using Racket's default options and repeated this simple compile/collect cycle to build datasets.
 Nevertheless, the overheads we recorded are generally much larger than those attributed to heuristic biases in the literature@~cite[mdhs-asplos-2009 gvg-siu-2005 cb-asplos-2013].
 
 @; ===
