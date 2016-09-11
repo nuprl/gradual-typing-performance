@@ -1423,6 +1423,8 @@
                                 #:pages '(83 99))
    #:date 2005))
 
+;; http://www.franktip.org/pubs/ecoop2014.pdf
+
 ;; TODO
 ;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
 ;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
