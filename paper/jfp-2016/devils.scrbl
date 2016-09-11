@@ -5,206 +5,166 @@
   "common.rkt"
   "typed-racket.rkt"
   "util.rkt"
+  (only-in racket/format ~r)
   (only-in gtp-summarize/path-util add-commas)
   (except-in gtp-summarize/lnm-parameters defparam)
 ]
 
 
 @profile-point{sec:devils}
-@title[#:tag "sec:devils"]{The Devil's Contracts}
+@title[#:tag "sec:devils"]{Dissecting Performance Overhead}
 @; -- AKA "Four contracts of the apocalypse"
+@;        "Devils Contracts"
+@;        "Performance Overhead Spectrum"
 
-Many of the large performance overheads apparent in our benchmarks stem from similar causes.
-This section reviews the most common problematic cases, in the hope that
- language designers will address the issues in future gradual
- type systems.
-At the very least, these pathologies might serve as anti-patterns for
- developers to avoid.
+Our evaluation demonstrates that adding types to a random set of Racket modules can introduce large performance overhead.
+This section explains more precisely how such overheads arose in our benchmarks,
+ both as inspiration for maintainers of gradual type systems and as anti-patterns for developers.
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:frequency"]{Highway Contracts}
+@section[#:tag "sec:devils:frequency"]{High-Frequency Typechecking}
 @; -- AKA high-frequency
 
-Some module boundaries are crossed extremely often in a benchmark execution.
-If we view a program as a network of roads carrying values between modules,
- these boundaries are the highways.
-@(let ([highway* '((morsecode  821060 372100)
-                   (quadBG     5 28160 2878 17 8696 339674 323648)
-                   (sieve      200000000)
-                   (snake      13801200 4 0 6494400 5245801 17335000 18856600)
-                   (suffixtree 143989951 17428292 24336 145826484 42941058)
-                   (synth      110 18288 668 15 15 17 42 445637)
-                   (tetris     7 82338320 41605597 90270 2063 22534 23191))])
-  @; See `src/traces` folder for details on boundaries
+No matter the cost of a single runtime type check, if the check occurs frequently the program will suffer.
+@Figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
+Each call is type-correct, nevertheless Typed Racket validates the argument @racket[stk] against the specification @ctc{Listof A} one million times.
+These checks dominate the performance of this example program.
+
+    @figure["fig:devils:stack" "High-Frequency Type Boundary"
+      @(begin
+      #reader scribble/comment-reader
+      @codeblock|{
+      #lang typed/racket
+      (define-type (Stack A) (Listof A))
+      ;; represent stacks as homogenous lists
+      (: stack-empty? (All (A) ((Stack A) -> Boolean)))
+      (define (stack-empty? stk)
+        (null? stk))
+      (provide stack-empty?)
+      }|
+      @tt{--------------------------------------------------------------------------------}
+      @codeblock|{
+      #lang racket
+
+      (require 'stack)
+      ;; Create a stack of 20 elements
+      (define stk (range 20))
+      (for ([i (in-range (expt 10 6))])
+        (stack-empty? stk))
+      }|)
+    ]
+
+Many of our benchmark programs have similar pathological boundaries.
+@(let ([highway* '(
+        @; -- Source of Truth: `src/traces/`
+        (morsecode  821060 372100)
+        (quadBG     5 28160 2878 17 8696 339674 323648)
+        (sieve      200000000)
+        (snake      13801200 4 0 6494400 5245801 17335000 18856600)
+        (suffixtree 143989951 17428292 24336 145826484 42941058)
+        (synth      110 18288 668 15 15 17 42 445637)
+        (tetris     7 82338320 41605597 90270 2063 22534 23191))])
   @elem{
-    For example, @bm[snake] has five boundaries that are crossed over
-     5 million times each; @bm[suffixtree] has three boundaries
-     that are crossed over 100 million times.
+    In @bm[snake], five boundaries are crossed over 5 million times each.
+    @; In @bm[tetris], two boundaries are crossed over 40 million times.
+    In @bm[suffixtree], two boundaries are crossed over 100 million times.
   })
-When a highway is also a type boundary, any contracts guarding it
- will cause significant performance overhead.
+@; Increasing the size of these benchmarks' input increases the number of crossings.
+Each of these boundary-crossings can trigger multiple assertions.
+For example, validating the type @type{(Listof A)} from @figure-ref{fig:devils:stack} requires a check for each of the twenty elements in the list.@note{On a related note,
+  Racket v6.3 and earlier guarded struct type predicates with a trivial @ctc{Any -> Boolean} chaperone@~cite[tfgnvf-popl-2016].
+  Checking @ctc{Any} and @ctc{Boolean} is inexpensive, but removing this contract significantly improved performance in Racket v6.4.}
 
-One common scenario is demonstrated by the following stack data structure
- and its untyped client.
+In lieu of eliminating frequently-crossed type boundaries, we have two suggestions for reducing their cost.
+First is to memoize the outcome of successful runtime type checks.
+The Hummingbird project implements one such cache as a global table@~cite[rf-pldi-2016]; chaperones for mutable data structures could also store proofs of type-correctness.
+@; mutation => invalidate
 
-@(begin
-#reader scribble/comment-reader
-@codeblock|{
-#lang typed/racket
-(define-type (Stack A) (Listof A))
-;; represent stacks as homogenous lists
-(: stack-empty? (All (A) ((Stack A) -> Boolean)))
-(define (stack-empty? stk)
-  (null? stk))
-(provide stack-empty?)
-}|
-@tt{--------------------------------------------------------------------------------}
-@codeblock|{
-#lang racket
-
-(require 'stack)
-;; Create a stack of 20 elements
-(define stk (range 20))
-(for ([i (in-range (expt 10 6))])
-  (stack-empty? stk))
-}|)
-
-Each of the million boundary-crossings in this program triggers a contract
- check on the stack @tt{stk} to ensure it is a homogenous list.
-This check requires walking the list and validating each of its 20 elements.
-Although one such traversal takes a fraction of a second and thousands are
- hardly noticable, the contract checks in the above program dominate its
- running time.
-
-We suggest two potential solutions to this pathology.
-First is to memoize the outcome of contract assertions.
-After the untyped value @racket[stk] is validated by the
- @exact{$\ctc{\RktMeta{(Stack A)}}$} contract for the first time,
- the value could be marked with a certificate that obviates the need for future checks.
-Mutating @racket[stk] should be allowed and must invalidate the certificate.
-
-Our second suggestion is to check contracts @emph{by-need}; in other words,
- only when a typed function accesses part of the untyped value @racket[stk].
-If applied to this program, by-need contracts would eliminate all traversals
- because @racket[stack-empty?] never reads or writes to its argument.
-@;What remains to be seen is whether implementing this behavior would
-@; typically improve performance in realistic programs or if the bookkeeping
-@; overhead slows down common cases.
-
-@; any->bool
-A similar pathology regarding the contracts generated for user-defined
- structure types was fixed between Racket v6.3 and v6.4.
-When a programmer creates a struct, e.g.:
-
-
-@(begin
-#reader scribble/comment-reader
-@codeblock|{
-#lang typed/racket
-(struct Point ([x : Real] [y : Real]))
-}|)
-
-Racket generates a predicate and accessor functions.
-Naturally, the accessors @racket[Point-x] and @racket[Point-y] require
- their argument to be a @racket[Point] value and must be protected by a contract
- when used in untyped code.
-On the other hand, protecting the predicate @racket[Point?] with the higher-order contract
- @racket[(Any -> Boolean)] is unnecessary.
-Any value will pass the @racket[Any] contract and @racket[Point?] is guaranteed
- by construction to return a @racket[Boolean] value.
-The generated contract also executes fairly quickly; nevertheless, we
- found that checking these predicate contracts accounted for up to
- 30% of some configurations @emph{total} running time@~cite[tfgnvf-popl-2016].
-This overhead was due to extremely frequent checks.
-As @racket[Point?] is the only way to identify values of type @racket[Point?],
- calls to functions like @racket[Point-x] trigger calls to @racket[Point?] as
- part of their own contracts.
-Removing these predicate contracts therefore caused significant
- improvement between versions 6.3 and 6.4.
+Second is to delay runtime type checks.
+Instead of validating untyped arguments eagerly, typed functions could incrementally check values as typed code traverses them.
+Provided typed code accesses the entire value and any type errors report the original boundary, the delayed semantics would be indistinguishable from Typed Racket today.
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:types"]{Iceberg Contracts}
+@section[#:tag "sec:devils:types"]{High-Cost Types}
 @; -- AKA unexpectedly large
 
-When an apparently simple type @exact|{$\RktMeta{T}$}| generates a large or
- unexpectedly slow contract @exact|{$\ctc{\RktMeta{T}}$}|,
- we call @exact|{$\ctc{\RktMeta{T}}$}| an @emph{iceberg contract}.
-One example of iceberg contracts are the types used in @bm[quadMB], for instance:
+Certain types are computationally expensive to check dynamically.
+Immutable lists require a linear number of checks.
+Functions require proxies, whose total cost then depends on the number of subsequent calls.
+Mutable data structures (hash tables, objects) require a linear number of such proxies.
 
-@racketblock[
-  (define-type Quad (Pairof Symbol (Listof Quad)))
-]
+In general Typed Racket programmers are aware of these costs, but predicting the cost of enforcing a specific type in a specific program is difficult.
+One example comes from @bm[quadMB]; the core datatype is a tagged @math{n}-ary tree type.
 
- generates a recursive contract over @math{n}-ary trees.
-@(let* ([tu* (for/list ([v (*RKT-VERSIONS*)]) (typed/untyped-ratio (benchmark-rktd quadMB v)))]
-        [tu-lo (add-commas (rnd (apply min tu*)))]
-        [tu-hi (add-commas (rnd (apply max tu*)))])
+    @racketblock[
+      (define-type Quad (Pairof Symbol (Listof Quad)))
+    ]
+
+
+@(let* ([v "6.4"]
+        [tu (typed/untyped-ratio (benchmark-rktd quadMB v))]
+        [tu-str (format "~ax" (~r tu #:precision '(= 2)))])
    @elem{
-     These tree types caused typed/untyped ratios ranging from
-      @id[tu-lo]x to @id[tu-hi]x across versions of @bm[quadMB].
+     Heavy use of the predicate for this type led to the @|tu-str| typed/untyped ratio in Racket v6.4.
    })
-Incidentally, the developer who created these types was hoping Typed Racket would
- improve the performance of a typesetting system.
-The overhead of using a runtime predicate compiled from this type
- came as a surprise.
+Incidentally, the programmer who designed the @racket[Quad] type was hoping Typed Racket would improve the program's performance.
+The high overhead was a complete surprise.
 
-Another Racket user recently posted the following untyped script to
- the Racket mailing list.
-Changing the @exact{$\RktMeta{\#lang}$} line to @racket[typed/racket]
- improves performance from approximately @|PFDS-BEFORE| to less than @|PFDS-AFTER|.
+Similarly, a programmer recently shared the code in @figure-ref{fig:devils:pfds} on the Racket mailing list.
+Changing the first line to @code{#lang typed/racket} improves this script's performance
+ from @|PFDS-BEFORE| to less than @|PFDS-AFTER| because the @racket[trie] datatype
+ happens to be implemented as a hashtable.
+Typing the script removes the need to proxy @racket[trie] values.
 
-@(begin
-#reader scribble/comment-reader
-@codeblock|{
-#lang racket
-(require pfds/trie) ;; a Typed Racket library
+    @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
+      @(begin
+      #reader scribble/comment-reader
+      @codeblock|{
+      #lang racket
+      (require pfds/trie) ;; a Typed Racket library
 
-(define t (trie (list (range 128))))
-(time (bind (range 128) 0 t))
-}|)
+      (define t (trie (list (range 128))))
+      (time (bind (range 128) 0 t))
+      }|)
+    ]
 
-The underlying issue is subtle: it happens that the @racket[trie] library
- uses an immutable hashtable as its core datatype but Typed Racket can
- only generate contracts for @emph{mutable} hashtables.
-Therefore trie values are wrapped in a contract that is both expensive to install
- and adds an indirection layer to every subsequent operation---all this to
- duplicate the guarantee that an immutable value is never mutated.
+    @; Our @bm[kcfa] benchmark also uses immutable hashtables and pays the
+    @;  runtime cost of contracts for mutable data.
+    @; We estimate that removing just those hashtable contracts would improve the
+    @;  worst-case performance of @bm[kcfa] from 8x to 5x on Racket v6.4.
 
-@; Source of truth ???
-Our @bm[kcfa] benchmark also uses immutable hashtables and pays the
- runtime cost of contracts for mutable data.
-We estimate that removing just those hashtable contracts would improve the
- worst-case performance of @bm[kcfa] from 8x to 5x on Racket v6.4.
+@; -- future work: cost model for contracts?
+@; - profiler
+@; - static pmodels
 
-@; future work: cost model for contracts?
-These bottlenecks due to type-generated contracts spell out a need
- for a user-facing cost model of enforcing type soundness.
-Even if language designers can remove most of the overhead, users of
- gradual type systems would benefit from tools to statically approximate the runtime
- cost of enforcing each type and profilers to dynamically attribute
- runtime overhead to specific types or values.
-Racket's feature-specific profiler@~cite[saf-cc-2015] provides a method for
- achieving this goal.
-
-   @; but still hard to count up "cost of (Vector Int) is cost of Vector plus
-   @;  cost of all the associated Ints"
+Even if Typed Racket implementors reduce the cost of type checks and proxies,
+ programmers would still benefit from a formal measure of runtime type checking.
+Such a measure must include at least a model for predicting costs
+ and a profiler for determining the actual cost of proxies spread thoughout a program.
+Racket's feature-specific profiler can serve as a starting point@~cite[saf-cc-2015].
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:boundary"]{Tunnelling Contracts}
+@section[#:tag "sec:devils:boundary"]{Dynamic Type Boundaries}
 @; -- AKA surprise boundaries
 
-@; TODO also each chaperone is a "new" boundary... functions classes vectors hashes
+@; wait, how does this support the thesis "how high overheads arise" ?
 
-Typed Racket's math library is known to cause performance overhead when used
- in untyped programs.
-Part of this library is included in our @bm[synth] benchmark, whose main
- functionality is to build a short musical piece.
-As expected, the @bm[synth] configuration where all math library modules
- are typed and all music-generating modules are untyped exhibits large performance
- overhead (@configuration->overhead[@benchmark-rktd[synth "6.4"] "1111000000"] on v6.4).
+Suppose a programmer is eager to avoid frequently-crossed type boundaries and type boundaries for ``expensive'' types.
+Identifying all the type boundaries in a program is still a significant challenge.
+In a higher-order language, static module boundaries are only a subset of type boundaries.
+Every chaperoned value is a dynamically-allocated type boundary.
+Listing all the type boundaries in a program amounts to building a call graph.
+
+Other language features can futher complicate the task of finding type boundaries.
+For example, a Racket macro can encapsulate calls to any function in scope where the macro was defined.
+If these functions are typed and the macro expands into untyped code, the expansion introduces type boundaries.
+
+This scenario arose in the @bm[synth] benchmark.
+One macro in @bm[synth] provided a ``fast'' array iterator that used unsafe operations in an inner loop.
+Therefore half of all configurations suffered from a type boundary in this loop.
 
 @; Source of truth: `src/synth-profile*.txt`
 @(let* ([total-runtime      5144]
@@ -251,8 +211,11 @@ Going forward, we propose a @emph{boundary profiler} that identifies
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:wrapping"]{Duplicate Contracts}
+@section[#:tag "sec:devils:wrapping"]{Accumulated Proxies}
 @; -- AKA repeated wrapping
+
+@; TODO note issue with space-efficiency,
+@;      translating suffixtree to use list/vector gave 'outta memory'
 
 A @exact{na\"ive} implementation of higher-order contracts will wrap
  function and mutable values with a contract each time the values cross a
@@ -384,7 +347,7 @@ This is the source of overhead in @bm[zombie].
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:library"]{Ecosystem Contracts}
+@section[#:tag "sec:devils:library"]{Software Ecosystem Constraints}
 @; -- AKA library. The problem = gradualizing an entire language
 @;                             = core language
 @;                             = packages, maintaining untyped compat.
