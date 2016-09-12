@@ -217,12 +217,11 @@ The lines of code (Untyped LOC) and number of modules (# Mod.) approximate progr
 The type annotations (Annotation LOC) are the new lines we added to make the untyped configuration type check.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
 Adaptor modules (# Adp.) roughly correspond to the number of user-defined datatypes in each benchmark;
  the next section provides a precise explanation.
-Lastly, the boundaries (# Bnd.) and exports (# Exp.) describe each benchmark's graph structure.
-Boundaries are import statements from one module to another; this count omits boundaries to runtime or third-party libraries.
-Exports are identifiers that cross such boundaries statically.
-For example, nine identifiers cross the one module boundary in @bm[sieve].
-The appendix contains full module graphs.
-@; At runtime, these nine identifiers are repeatedly invoked as functions; however, the number of invocations is not part of @figure-ref{fig:bm}.
+Lastly, the boundaries (# Bnd.) and exports (# Exp.) distill each benchmark's graph structure.
+Boundaries are import statements from one module to another, excluding imports to runtime or third-party libraries.
+An identifier named in such an import statement counts as an export.
+For example, one import statement in @bm[sieve] names nine identifiers.
+The appendix presents full module graphs for all benchmarks.
 
 @figure*["fig:bm" "Static characteristics of the benchmarks"
   @render-benchmarks-table{}
@@ -237,27 +236,29 @@ The appendix contains full module graphs.
 @(define MAX-ITERS-STR "30")
 @(define FREQ-STR "1.40 GHz")
 
-To generate all configurations in a benchmark, we essentially started with untyped code, manually created the typed configuration, and then interleaved modules from these typed and untyped versions to generate all other configurations.
+To generate all configurations in a benchmark, we usually started with untyped code, manually created the typed configuration, and then automatically generated all mixed configurations from these versions.
 There were four complications.
 
-First, the typed code occasionally required type casts or small refactorings.
-For example, if the variable @racket[N] has type @racket[Natural], the expression @racket[(- N 1)] has type @racket[Integer] until a runtime check proves otherwise.
-Untyped benchmarks frequently omitted these assertions, so we added them uniformly to typed and untyped configurations.
-As another example, @bm[quad] partitioned a @racket[(Listof (U A B))]@note{The @racket[U] constructor builds an untagged union type.}
+First, the addition of types occasionally required type casts or small refactorings.
+For example, the expression @racket[(string->number s)] had type @racket[(U Complex #f)] even when the programmer informally knew the expression would never produce a complex number.
+To avoid similar losses of precision, we added runtime checks to the contrary.
+As another example, the @bm[quad] benchmark called a library function to partition a @racket[(Listof (U A B))]
  into a @racket[(Listof A)] and a @racket[(Listof B)] using a predicate for values of type @racket[A].
-Typed Racket could not ensure that values which failed the predicate had type @racket[B], so we added a second predicate.
+Typed Racket could not ensure that values which failed the predicate had type @racket[B].
+We rewrote that call site to satisfy the type checker.
 
-Second, we strove to re-use type annotations present in the @bm[fsm], @bm[synth], and @bm[quad] benchmarks; however, these annotations occasionally used types that Typed Racket could not dynamically enforce.
+Second, the @bm[fsm], @bm[synth], and @bm[quad] benchmarks came with type annotations.
+We had to revise some of these annotations because Typed Racket could not enforce the original types on a type boundary.
 For instance, Typed Racket could not impose parametric polymorphism on Racket struct definitions, so we made the core datatypes in @bm[synth] monomorphic.
 
-Third, we converted any contracts in untyped benchmarks to type annotations and in-line assertions.
+Third, we converted any contracts in untyped benchmarks to type annotations and in-line assertions.@note{At the time, Typed Racket could not express contracts.}
 The @bm[acquire] benchmark in particular used contracts to ensure ordered lists with unique elements.
-Typed Racket could not express such properties as types, so we added the relevant checks as pre and post-conditions.
+We added such checks as explicit pre and post-conditions inside the relevant functions.
 
 Fourth, we inserted @emph{adaptor modules} between modules exporting a struct and their typed clients.
-Adaptor modules contained only type annotations, ensuring a canonical set of types in configurations where the underlying server module was untyped.
-Canonical types were necessary because in Typed Racket each import of an untyped struct generates a unique datatype.
-Two typed modules could not share instances of an untyped struct unless they referenced a common import annotation.
+Adaptor modules contained only type annotations, ensured a canonical set of types in configurations where the underlying server module was untyped.
+The assignment of canonical types was necessary because in Typed Racket each import of an untyped struct generates a unique datatype.
+Two typed modules could not share instances of such an untyped struct definition unless they referenced a common import annotation.
 It was possible to implement this sharing without the layer of indirection, but adaptor modules provided a uniform solution and did not introduce noticeable overhead.
 
 As for collecting data, we measured the running times of configurations on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
@@ -268,12 +269,11 @@ For each benchmark, we chose a random permutation of its configurations, compile
 Depending on the time needed to collect data for one benchmark's configurations, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
 The overhead graphs in the next section use the mean of these iterations.
 
-This protocol consistently produced unimodal, low-variance data for individual configurations.
-Additional support for the stability of our reported overheads lies in the similar numbers we previously recorded for Racket v6.2 using three different machines@~cite[tfgnvf-popl-2016].
-We are thereby encouraged that the performance overhead we observed is reproducible across machines and computing environments.
+Our results are consistent with the data we previously collected for Racket v6.2 using three different machines@~cite[tfgnvf-popl-2016].
+We are thereby encouraged that the observed performance overhead is reproducible across machines and computing environments.
 @Secref{sec:threats} reports threats to validity regarding our experimental protocol.
 
-The scripts we used to run our experiments and the data we collected are available in the online supplement to this paper.
+Both our experimental scripts and the collected data are available in the online supplement to this paper.
 
 
 @; -----------------------------------------------------------------------------
