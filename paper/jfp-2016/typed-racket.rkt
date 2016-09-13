@@ -53,6 +53,7 @@
   render-typed/untyped-plot
   render-deliverable-plot
   render-uncertainty
+  render-karst
 
   render-exact-table
 
@@ -568,6 +569,24 @@
    (hc-append 0 (blank 10 0) (apply render-typed/untyped-plot bm*))
    (apply render-deliverable-plot D bm*)
    (render-bars-xlabels 33 (map (compose1 symbol->string benchmark-name) bm*))))
+
+(define (render-karst csv)
+  (parameterize ([*current-cache-keys* (list (lambda () csv))])
+                 [*LEGEND?* #f]
+                 [*ERROR-BAR-WIDTH* 0.2]
+                 [*ERROR-BAR-LINE-WIDTH* 1]
+                 [*PLOT-FONT-SCALE* 0.04]
+                 [*PLOT-HEIGHT* 140]
+                 [*PLOT-WIDTH* 430]
+                 [*POINT-SIZE* 5]
+                 [*COLOR-OFFSET* 4]
+                 [*Y-NUM-TICKS* 4]
+                 [*POINT-ALPHA* 0.7])
+    (with-cache (cachefile "cache-karst.rktd")
+      #:read deserialize
+      #:write serialize
+        (lambda ()
+          (render-karst-pict csv))))
 
 (define (ext:max-overhead rktd)
   (max-overhead (from-rktd rktd)))

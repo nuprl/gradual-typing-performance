@@ -14,6 +14,7 @@
  render-lnm
  render-deliverable
  render-bars-xlabels
+ render-karst-pict
 
  data->pict
  ;; Build a picture from a list of pairs:
@@ -724,6 +725,16 @@
     (for/list : (Listof Pict)
               ([p* (in-list (split-list 4 pict*))])
       (vl-append* VSHIM p*))))
+
+(: render-karst-pict (-> Path-String Pict))
+(define (render-karst-pict csv)
+  (define title
+    (title-text "Cluster Runtimes"))
+  (define pict
+    (plot-karst csv))
+  (vl-append (*GRAPH-VSPACE*)
+    title
+    pict))
 
 ;; -----------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 PAPER=paper
-RACO=raco
-SCRIBBLE=scribble
+RACO=raco6.5
+SCRIBBLE=scribble6.5
 
 all: paper.pdf
 
@@ -8,7 +8,7 @@ compiled/paper_scrbl.zo: *.rkt *.scrbl
 	${RACO} make -v $(PAPER).scrbl
 
 paper.pdf: pkg compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex
-	${SCRIBBLE} ++extra fig-adaptor.tex ++extra fig-fsm-example.tex ++extra fig-tr-example.tex ++extra fig-ts-example.tex ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
+	${SCRIBBLE} ++extra src/karst-cputime.csv ++extra src/morsecode-6.4-25core.rktd ++extra fig-adaptor.tex ++extra fig-fsm-example.tex ++extra fig-tr-example.tex ++extra fig-ts-example.tex ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
 
 paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 	${SCRIBBLE} ++style texstyle.tex --latex $(PAPER).scrbl
@@ -16,6 +16,7 @@ paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 pkg:
 	${RACO} pkg install --auto --skip-installed glob syntax-sloc with-cache
 	${RACO} pkg install --auto --skip-installed ../../tools/benchmark-util
+	${RACO} make ../../tools/benchmark-util/data-lattice.rkt
 	${RACO} pkg install --auto --skip-installed ../../tools/summarize
 
 one: compiled/paper_scrbl.zo texstyle.tex

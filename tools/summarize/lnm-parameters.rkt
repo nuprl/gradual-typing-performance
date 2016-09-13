@@ -154,3 +154,5 @@
 (defparam *TRACE-NUM-COLORS* Index 3)
 
 (defparam *CONFIDENCE-LEVEL* Index 95)
+
+(defparam *COLOR-OFFSET* Index 1)

@@ -23,6 +23,7 @@
   plot-deliverable
   plot-exact-configurations
   plot-typed/untyped-ratio
+  plot-karst
 
   ;; ---
 
@@ -65,12 +66,14 @@
 
 (require
   racket/match
+  racket/set
+  racket/string
   racket/sequence
   (for-syntax racket/base syntax/parse)
   plot/typed/no-gui
   plot/typed/utils
   typed/pict
-  (only-in racket/list append* range)
+  racket/list
   (only-in racket/math exact-floor exact-ceiling exact-round)
   (only-in math/statistics mean stddev/mean)
   (only-in racket/format ~r)
@@ -82,6 +85,8 @@
 ;(define-type Pict pict)
 
 (define ERRLOC 'lnm-plot)
+
+(define-type rTree (Rec t (U renderer2d (Listof rTree))))
 
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
@@ -521,7 +526,7 @@
             '())
           (for/list : (Listof renderer2d)
                     ([S (in-list S*)]
-                     [i (in-naturals 1)])
+                     [i (in-naturals (*COLOR-OFFSET*))])
               (lnm-points i  #:label (format "~a" (summary->version S))
                 (append*
                   (for/list : (Listof (Listof (List Real Real)))
@@ -560,7 +565,7 @@
                      [x-center (in-naturals)])
             (for/list : (Listof (Listof renderer2d))
                       ([rktd (in-vector vec)]
-                       [i (in-naturals 1)])
+                       [i (in-naturals (*COLOR-OFFSET*))])
               (define S (from-rktd rktd))
               (define t/u* ;; NOTE lists may not have same size
                 (for/list : (Listof Real)
@@ -589,10 +594,144 @@
         #:height (*PLOT-HEIGHT*)))
     (cast p pict)))
 
+(: plot-karst (-> Path-String pict))
+(define (plot-karst csv)
+  (define bm** (split-by-group csv))
+  (define all-jobid* (parse-jobid* bm**))
+  (define JOBS/COL 3)
+  (define num-benchmarks (length (car bm**)))
+  ;; TODO get configuration number (hm, will be more work to explain)
+  (parameterize ([plot-x-ticks (alphabet-ticks num-benchmarks)]
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-ticks (compute-yticks 5 (*Y-NUM-TICKS*) #:units "x")])
+    (define bm* (car bm**))
+    (define n0 0)
+    (define my-jobid*
+      (let ([tl (drop all-jobid* n0)])
+        (drop-right tl (max 0 (- (length tl) JOBS/COL)))))
+    (define p
+      (plot-pict
+        (list
+          (make-vrule* num-benchmarks)
+          (for/list : (Listof (Listof (Listof renderer2d)))
+                    ([bm (in-list bm*)]
+                     [x-center (in-range (length bm*))])
+            (for/list : (Listof (Listof renderer2d))
+                      ([i (in-range (length my-jobid*))]
+                       [x-pos (linear-seq (- x-center config-x-jitter) (+ x-center config-x-jitter) JOBS/COL)])
+              (define color-idx 3)
+              (define color (->pen-color color-idx))
+              (define v* (jobid->row bm (list-ref my-jobid* i)))
+              (define m (mean v*))
+              (list
+                ;; -- line to mark 1st point
+                ;(let ([v-first (/ (car v*) m)])
+                ;  (lines
+                ;    (list (list (- x-pos 0.2) v-first)
+                ;          (list (+ x-pos 0.2) v-first))
+                ;    #:color color
+                ;    #:width 0.6))
+                ;(let* ([m (mean v*)]
+                ;       [s (error-bound v*)])
+                ;  (lnm-error-bar x-pos 1 (/ s m) #:color color))
+                (lnm-points color-idx
+                  (for/list : (Listof (List Real Real))
+                            ([v (in-list v*)])
+                    (list x-pos (/ v m))))))))
+        #:x-label "Benchmark"
+        #:y-label "Normalized Runtime"
+        #:y-min 0
+        #:y-max #f
+        #:x-max (- num-benchmarks 0.5)
+        #:legend-anchor (*LEGEND-ANCHOR*)
+        #:width (*PLOT-WIDTH*)
+        #:height (*PLOT-HEIGHT*)))
+      (cast p pict)))
+
+(struct karst (
+  [config : String]
+  [jobid : String]
+  [data : (Listof Real)]
+) #:transparent )
+(define-type Karst-Row karst)
+(define-type KarstBM (Pairof String (Listof Karst-Row)))
+
+(: parse-line (-> String (List String Karst-Row)))
+(define (parse-line str)
+  (match-define (list-rest benchmark job samples mean stddev color dat*) (string-split str ","))
+  (match-define (list name config) (string-split benchmark "+"))
+  (list name (karst config job (string*->real* dat*))))
+
+(: string*->real* (-> (Listof String) (Listof Real)))
+(define (string*->real* str*)
+  (for/list : (Listof Real)
+            ([str (in-list str*)])
+    (assert (string->number str) real?)))
+
+(: parse-jobid* (-> (Listof (Listof KarstBM)) (Listof String)))
+(define (parse-jobid* bm**)
+  (define jobid*
+    (for*/list : (Listof String)
+               ([k (in-list (cdr (ann (caar bm**) KarstBM)))])
+      (karst-jobid k)))
+  (define jobid-set (list->set jobid*))
+  (unless (= (length jobid*) (set-count jobid-set))
+    (raise-user-error 'karst "duplicate job ID in ~a" jobid*))
+  (for* ([bm* (in-list bm**)]
+         [bm : KarstBM (in-list bm*)])
+    (unless (set=? jobid-set
+                   (list->set (for/list : (Listof String)
+                            ([k (in-list (cdr bm))])
+                     (karst-jobid k))))
+      (raise-user-error 'karst "inconsisten jobids across benchmarks problem in '~a'" bm)))
+  jobid*)
+
+;; Read a csv file
+;; Parse each line of the csv to a `karst` struct
+;; Group rows by benchmark, and again my configuration
+;;  (the config thing makes this more confusing, should probably be separate function)
+(: split-by-group (-> Path-String (Listof (Listof KarstBM))))
+(define (split-by-group csv)
+  (define H : (HashTable String (HashTable String (Listof Karst-Row)))
+    (with-input-from-file csv
+      (lambda ()
+        (void (read-line))
+        (for/fold : (HashTable String (HashTable String (Listof Karst-Row)))
+                  ([acc : (HashTable String (HashTable String (Listof Karst-Row))) (hash)])
+                  ([ln (in-lines)])
+          (match-define (list nm k) (parse-line ln))
+          (define cfg (karst-config k))
+          (define cfg-hash (or (hash-ref acc nm #f)
+                               (ann (hash) (HashTable String (Listof Karst-Row)))))
+          (define row : (Listof Karst-Row)
+                      (or (hash-ref cfg-hash cfg #f)
+                          '()))
+          (hash-set acc nm (hash-set cfg-hash cfg (cons k row)))))))
+  (define (extractor (h : (HashTable String (HashTable String (Listof Karst-Row)))) (i : Integer)) : (Listof KarstBM)
+    (for/list : (Listof KarstBM)
+               ([(nm h2) (in-hash h)])
+      (ann (cons nm
+            (car (for/list : (Listof (Listof Karst-Row))
+                           ([(_c k*) (in-hash h2)]
+                            [j (in-naturals)]
+                           #:when (= i j))
+                   k*))) KarstBM)))
+  (list
+    (extractor H 0)
+    (extractor H 1)))
+
+(: jobid->row (-> KarstBM String (Listof Real)))
+(define (jobid->row bm s)
+  (or
+    (for/or : (U #f (Listof Real))
+            ([k (in-list (cdr bm))])
+      (and (string=? s (karst-jobid k)) (karst-data k)))
+    (error 'jobid->row "jobid ~a not found in ~a" s bm)))
+
 (: lnm-points (->* [Integer (Listof (List Real Real))] [#:label (U #f String)] renderer2d))
 (define (lnm-points i data #:label [label #f])
   (points data
-          #:color i
+          #:color (->pen-color i)
           #:alpha (*POINT-ALPHA*)
           #:sym (integer->symbol i)
           #:size (*POINT-SIZE*)
@@ -1243,12 +1382,17 @@
    [(2) 'short-dash]
    [else 'solid]))
 
-(: integer->symbol (-> Integer (U 'fullcircle 'fulltriangledown 'fullsquare)))
+(: integer->symbol (-> Integer Point-Sym))
 (define (integer->symbol i)
   (case i
    [(1) 'fulltriangledown]
    [(2) 'fullcircle]
-   [else 'fullsquare]))
+   [(3) 'fullsquare]
+   [(4) 'plus]
+   [(5) 'plus]
+   [(6) 'plus]
+   [else '5star]
+ ))
 
 (: integer->brush-style (-> Integer (U 'bdiagonal-hatch 'crossdiag-hatch 'solid)))
 (define (integer->brush-style i)
@@ -1263,9 +1407,28 @@
 
 ;; =============================================================================
 
-;(module+ test
-;  (require typed/rackunit)
-;
+(module+ test
+  (require typed/rackunit)
+
+  (let* ([csv "./test/sample-karst.csv"]
+         [bm** (split-by-group csv)]
+         [jobid* (parse-jobid* bm**)]
+         [r (jobid->row (caar bm**) "1704881.m2")])
+    ;; -- 2 groups, 2 benchmarks
+    (check-equal? (length bm**) 2)
+    (check-equal? (length (car bm**)) (length (cadr bm**)))
+    (check-equal? (length (car bm**)) 2)
+    ;; --
+    (check-equal? (sort jobid* string<?) '("1704875.m2" "1704881.m2"))
+    (check-equal? r '(145 147 146 146 146 145 146 146 146 146 147 146 147 147 145 146 145 145 145 145))
+    (void))
+
+  (check-exn exn:fail?
+    (lambda () (parse-line "foobar")))
+
+  (let ([k (parse-line "dungeon+11101,1704881.m2,20,8.85,0.36,0,9,9,9,9,9,9,9,9,9,9,8,9,9,8,9,9,9,8,9,9")])
+    (check-equal? k (list "dungeon" (karst "11101" "1704881.m2" '(9 9 9 9 9 9 9 9 9 9 8 9 9 8 9 9 9 8 9 9)))))
+
 ;  ;; Create the graph for a 'large' file
 ;  (define DATA "../data/")
 ;  (define synth (string-append DATA "synth-2015-07-02T01:47:43.rktd"))
@@ -1280,4 +1443,4 @@
 ;
 ;  ;(time (make-graph synth)) ;;3,000ms
 ;  (time (make-graph gregor)) ;;
-;)
+)
