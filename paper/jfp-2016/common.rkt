@@ -36,13 +36,16 @@
          ctc ;; aka, 'contract'
 
          PFDS-BEFORE
+         PFDS-BEFORE-str
          PFDS-AFTER
+         PFDS-AFTER-str
 
          noindent
          )
 
 (require "bib.rkt"
          "gradual-bib.rkt" ; copied from the github repo
+         "util.rkt"
          glob
          racket/class
          racket/require
@@ -185,11 +188,17 @@
 (define (todo x)
   (make-element 'bold @string-append["TODO: " x]))
 
-(define PFDS-BEFORE
-  "12 seconds")
+(define-values (PFDS-BEFORE PFDS-BEFORE-str)
+  (let ([v 12]
+        [u "seconds"])
+    (values (format "~a ~a" v u)
+            (format "~a ~a" (integer->word v) u))))
 
-(define PFDS-AFTER
-  "1 millisecond")
+(define-values (PFDS-AFTER PFDS-AFTER-str)
+  (let ([v 1]
+        [u "millisecond"])
+    (values (format "~a ~a" v u)
+            (format "~a ~a" (integer->word v) u))))
 
 (define (type t)
   (exact (string-append "\\RktMeta{" t "}")))

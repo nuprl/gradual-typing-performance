@@ -17,7 +17,7 @@
 @;        "Devils Contracts"
 @;        "Performance Overhead Spectrum"
 
-Our evaluation demonstrates that adding types to a whimsically chosen subset of Racket modules in a program can introduce large performance overhead.
+Our evaluation demonstrates that adding types to an arbitrarily chosen subset of Racket modules in a program can introduce large performance overhead.
 Here we explain with a few examples how such overheads may arise, both as inspiration for maintainers of gradual type systems and as anti-patterns for developers.
 
 
@@ -25,7 +25,7 @@ Here we explain with a few examples how such overheads may arise, both as inspir
 @section[#:tag "sec:devils:frequency"]{High-Frequency Typechecking}
 @; -- AKA high-frequency
 
-No matter the cost of a single runtime type check, if the check occurs frequently the program will suffer.
+No matter the cost of a single runtime type check, if the check occurs frequently then the program will suffer.
 @Figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
 Each call is type-correct; nevertheless, Typed Racket validates the argument @racket[stk] against the specification @ctc{Listof A} one million times.
 These checks dominate the performance of this example program, simply because many values flow across the module boundary.
@@ -38,10 +38,10 @@ These checks dominate the performance of this example program, simply because ma
         #lang typed/racket
         (provide stack-empty?)
 
-        (define-type (Stack A) (Listof A))
+        (define-type Stack (Listof Integer))
         ;; represent stacks as homogenous lists
 
-        (: stack-empty? (All (A) ((Stack A) -> Boolean)))
+        (: stack-empty? (Stack -> Boolean))
         (define (stack-empty? stk)
           (null? stk))
         }|
@@ -68,15 +68,18 @@ High-frequency module boundaries are common in our benchmarks.
         (synth      110 18288 668 15 15 17 42 445637)
         (tetris     7 82338320 41605597 90270 2063 22534 23191))])
   @elem{
-    To give an extreme example, over 5 million values flow across five separate boundaries in @bm[snake].
-    In @bm[suffixtree], over 100 million values flow across two boundaries.
+    To give an extreme example, over six million values flow across four separate boundaries in @bm[snake].
+    In @bm[suffixtree], over one hundred million values flow across two boundaries.
     @; In @bm[tetris], two boundaries are crossed over 40 million times.
   })
 @; Increasing the size of these benchmarks' input increases the number of crossings.
-When these module boundaries are type boundaries, each boundary-crossing can trigger additional checks.
-For example, validating the type @type{(Listof A)} from @figure-ref{fig:devils:stack} requires one check for each of the twenty elements in the list.@note{On a related note,
-  Racket v6.3 and earlier guard struct type predicates with a trivial @ctc{Any -> Boolean} chaperone@~cite[tfgnvf-popl-2016].
-  Checking @ctc{Any} and @ctc{Boolean} is inexpensive, but removing this contract significantly improves performance in Racket v6.4.}
+When these module boundaries are type boundaries, the benchmarks suffer considerable overhead; their respective worst cases are 32x and 28x on Racket v6.4.
+  @; V    snake suffixtree
+  @; 6.3     70        174
+  @; 6.4     32         28
+  @; @note{Racket v6.3 guards struct type predicates with a trivial @ctc{Any -> Boolean} chaperone@~cite[tfgnvf-popl-2016].
+  @;   Checking @ctc{Any} and @ctc{Boolean} by themselves is inexpensive, but removing this contract significantly improves the performance of our benchmarks in Racket v6.4.}
+
 
 
 @; -----------------------------------------------------------------------------
@@ -99,14 +102,16 @@ One example comes from @bm[quadMB], in which the core datatype is a tagged @math
         [tu (typed/untyped-ratio (benchmark-rktd quadMB v))]
         [tu-str (format "~ax" (~r tu #:precision '(= 1)))])
    @elem{
-     Heavy use of the predicate for this type causes the @|tu-str| typed/untyped ratio in Racket v6.4.@note{Incidentally,
-       the programmer who designed this datatype was hoping Typed Racket would improve the application's performance.
-       The high overhead was a complete surprise.}
+     Heavy use of the predicate for this type causes the @|tu-str| typed/untyped ratio in Racket v6.4.
+    @; @note{Incidentally,
+    @;   the programmer who designed this datatype was hoping Typed Racket would improve the application's performance.
+    @;   The high overhead was a complete surprise.}
    })
+Another example is the @bm[kcfa] benchmark, in which hashtable types account for a 3x slowdown in the worst configurations.
 
-Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE|; however, changing its language to @code{#lang typed/racket} improves performance to under @|PFDS-AFTER|.@note{A programmer recently shared this code on the Racket mailing list.}
-The improvement is because @library{pfds/trie} is a typed library.
-It so happens that the library implements tries as hashtables; this fact is not part of the library documentation, nevertheless it is the (high-cost) type on the boundary.
+Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
+Changing its language to @code{#lang typed/racket} improves its performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.@note{A programmer recently shared this code on the Racket mailing list, see the appendix.}
+The drastic improvement is just because the @emph{undocumented} type representing @tt{trie} structures generates expensive runtime checks.
 
     @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
       @(begin
@@ -127,20 +132,24 @@ It so happens that the library implements tries as hashtables; this fact is not 
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:boundary"]{Dynamic Type Boundaries}
+@section[#:tag "sec:devils:boundary"]{Complex Type Boundaries}
 @; -- AKA surprise boundaries
 
-Understanding the type boundary structure of a higher-order program is a challenge in itself.
-Every higher-order value that crosses a static type boundary at runtime encapsulates a new, dynamic type boundary.
-Finding all type boundaries in a program amounts to building a call graph.
+    @; needs work of course
 
-Other language features can futher complicate the task of identifying type boundaries.
-For example, a Racket macro can reference any function in scope where the macro was defined.
-If these functions are typed and the macro expands in an untyped context, the expansion introduces type boundaries.
+Programs using higher-order values and metaprogramming often have intricate module dependence graphs.
+In our experience, such programs present three main challenges.
 
+First, there are many static module dependencies.
+
+Second, Racket macros can reference any function that was in scope where the macro is defined.
+If these definition sites use type boundaries, e.g., an untyped macro references typed identifiers, the macro's client must pay a runtime cost whenever values flow across the boundaries.
 This scenario is the source of a problem in the @bm[synth] benchmark.
 One macro in @bm[synth] provides a ``fast'' array iterator that uses unsafe operations in an inner loop.
 In half of all configurations, runtime type checks protect these unsafe operations.
+
+Third, every proxy on a higher-order value is a dynamically-generated type boundary with an independent cost.
+Identifying and attributing runtime cost to every first-class function or object amounts to building a call graph.
 
 
 @; -----------------------------------------------------------------------------
@@ -150,12 +159,11 @@ In half of all configurations, runtime type checks protect these unsafe operatio
 @; TODO note issue with space-efficiency,
 @;      translating suffixtree to use list/vector gave 'outta memory'
 
-  @figure["fig:devils:fsm+forth" @elem{Accumulating proxies in @bm[fsm] and @bm[forth].}
+  @figure["fig:devils:fsm" @elem{Accumulating proxies in @bm[fsm].}
     @(begin
     #reader scribble/comment-reader
-    @list[
       @codeblock|{
-      #lang typed/racket ;; From the 'fsm' benchmark
+      #lang typed/racket
       (require (prefix-in P. "population.rkt"))
 
       (: evolve (P.Population Natural -> Real))
@@ -165,10 +173,14 @@ In half of all configurations, runtime type checks protect these unsafe operatio
           [else (define p2 (P.match-up* p r))
                 (define p3 (P.death-birth p2 s))
                 (evolve p3 (- iters 1))]))
-      }|
-      @tt{================================================================}
+      }|)
+  ]
+
+  @figure["fig:devils:forth" @elem{Accumulating proxies in @bm[forth].}
+    @(begin
+    #reader scribble/comment-reader
       @codeblock|{
-      #lang typed/racket ;; From the 'forth' benchmark
+      #lang typed/racket
 
       (require (prefix-in C. "command.rkt"))
 
@@ -180,7 +192,7 @@ In half of all configurations, runtime type checks protect these unsafe operatio
           ;;  a non-#f results from `eval-line`
           (for/first ([c : (Instance C.Cmd%) (in-list env)])
             (send c eval-line env line))))
-      }|])
+      }|)
   ]
 
 Higher-order values that repeatedly flow across type boundaries may accumulate layers of type-checking proxies.
@@ -191,14 +203,15 @@ Racket's chaperones implement a predicate that tells whether the current chapero
 In many cases, these predicates remove unnecessary proxies, but a few of our benchmarks still suffer from redundant proxies.
 
 For example, the @bm[fsm], @bm[fsmoo], and @bm[forth] benchmarks update mutable data structures in a loop.
-@Figure-ref{fig:devils:fsm+forth} demonstrates the problematic functions in each benchmark.
-In @bm[fsm] (on top), the value @racket[p] accumulates one proxy every time it crosses a type boundary; that is, four proxies for each iteration of @racket[evolve].
-In @bm[forth] (on bottom), the loop functionally updates an environment @racket[env] of calculator command objects.
-Modifying both functions to use an imperative style with global state removes the performance overhead, but we consider such refactorings a last resort.
+@Figure-ref{fig:devils:fsm fig:devils:forth} demonstrate the problematic functions in each benchmark.
+In @bm[fsm], the value @racket[p] accumulates one proxy every time it crosses a type boundary; that is, four proxies for each iteration of @racket[evolve].
+The worst case overhead for this benchmark is 235x on Racket v6.4.
+In @bm[forth], the loop functionally updates an environment @racket[env] of calculator command objects;
+ its worst-case overhead is 27x on Racket v6.4.@note{Modifying both functions to use an imperative message-passing style removes the performance overhead, though we consider such refactorings a last resort.}
 
 The @bm[zombie] benchmark exhibits similar overhead due to higher-order functions.
 For example, the @racket[Posn] datatype in @figure-ref{fig:devils:zombie} is a higher-order function that responds to symbols @code{'x}, @code{'y}, and @code{'move} with a tagged method.
-Helper functions like @racket[posn-move] implement a tag-free interface, but calling such functions across a type boundary leads to an exponential performance overhead.
+Helper functions like @racket[posn-move] implement a tag-free interface, but calling such functions across a type boundary leads to layered proxies.
 Our benchmark replays @bm[zombie] on a sequence of 100 commands and reports a worst-case overhead of 300x on Racket v6.4.
 @; zombie input: 100 commands
 @; worst case: 21 seconds = 300x overhead
@@ -232,22 +245,23 @@ Our benchmark replays @bm[zombie] on a sequence of 100 commands and reports a wo
 @;                             = packages, maintaining untyped compat.
 @;                             = docs, examples, faqs
 
-Racket libraries are either typed or untyped; there is no middle ground, therefore one class of library clients are forced to communicate over a type boundary.
+Racket libraries are either typed or untyped; there is no middle ground, therefore one class of library clients are forced to communicate across a type boundary.
 For instance, our @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries and consequently have relatively high typed/untyped ratios on Racket v6.2
  (@rnd[@typed/untyped-ratio[@benchmark-rktd[mbta "6.2"]]]x and
   @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x, respectively).
-On the other hand, the @bm[lnm] benchmark relies on two typed libraries and runs significantly faster when fully typed.
+In contrast, the @bm[lnm] benchmark relies on two typed libraries and runs significantly faster when fully typed.
 
-Ideally, clients should be able to choose between typed and untyped versions of any library, but it is unclear how to provide this choice.
-Devoted library authors could maintain two separate versions of their code.
-Two other solutions are to put @emph{trusted} type signatures on an untyped API or to @emph{unsoundly erase} types from a typed API.
-Neither of these are ideal, and the latter solution of erasing types may lead to security vulnerabilities as demonstrated in @figure-ref{fig:devils:vote}.
-If the type signature for @racket[add-votes] is not enforced, clients can supply negative numbers to the function.
-A correct untyped version of @racket[add-votes] must assert that its argument is non-negative.
-
-The Racket community is aware of these issues and is actively exploring the design space.
-Trusted type annotations are currently the preferred solution, though Typed Racket recently added support for unsafe imports and exports.
-In the end, the best solution may be to give more control to library clients.
+@; @; DIE ... it's all analysis
+@; Ideally, clients should be able to choose between typed and untyped versions of any library, but it is unclear how to provide this choice.
+@; Devoted library authors could maintain two separate versions of their code.
+@; Two other solutions are to put @emph{trusted} type signatures on an untyped API or to @emph{unsoundly erase} types from a typed API.
+@; Neither of these are ideal, and the latter solution of erasing types may lead to security vulnerabilities as demonstrated in @figure-ref{fig:devils:vote}.
+@; If the type signature for @racket[add-votes] is not enforced, clients can supply negative numbers to the function.
+@; A correct untyped version of @racket[add-votes] must assert that its argument is non-negative.
+@;
+@; The Racket community is aware of these issues and is actively exploring the design space.
+@; Trusted type annotations are currently the preferred solution, though Typed Racket recently added support for unsafe imports and exports.
+@; In the end, the best solution may be to give more control to library clients.
 
     @figure["fig:devils:vote" @elem{Erasing types would compromise the invariant of @racket[total-votes].}
       @(begin

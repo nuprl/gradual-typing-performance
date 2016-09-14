@@ -141,6 +141,8 @@ Therefore, we need a performance evaluation method to quantify their cost.
       @codeblock|{
         #lang typed/racket
 
+        (provide reynolds-*)
+
         (define-type JR (List Nonnegative-Real Real))
         ;; JR = (Distance from origin, Radians)
 
@@ -148,8 +150,6 @@ Therefore, we need a performance evaluation method to quantify their cost.
         (define (reynolds-* jr1 jr2)
           (list (* (first  jr1) (first  jr2))
                 (+ (second jr1) (second jr2))))
-
-        (provide reynolds-*)
       }|)
     ]
 
