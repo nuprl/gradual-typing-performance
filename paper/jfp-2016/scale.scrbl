@@ -34,20 +34,20 @@ We invite other researchers in the field, especially those working with micro-le
 @; - memory contention locally
 @; - outliers on karst
 
-A benchmark's configurations are independent from one another, so the simplest way to measure larger benchmarks is to parallelize the experiment.
+A benchmark's configurations are independent from one another, thus the simplest way to measure larger benchmarks is to parallelize the experiment.
 Additional processors will not make our method scalable, but will enable benchmarks of approximately twenty modules.
 
 We explored parallel measurements for this paper, but opted for a simple two-processor experimental protocol.
 In support of our decision, we offer two cautionary datasets.
 First is @figure-ref{fig:scale:morsecode}, exact running times for the @bm[morsecode] benchmark measured with sixteen cores running in parallel.
-Each core measured ten runs of one configuration.
+Each core measured one column of data; that is, ten runs of a fixed configuration.
     @; TODO recompute data with the powersave governor
     @;      also use the "barrier" protocol 
-Compared to the data in @figure-ref{fig:exact-runtimes}, there is significantly more variation between configurations.
+Compared to the data in @figure-ref{fig:exact-runtimes}, there is significantly more variation within columns.
 Furthermore, consecutive iterations yield faster runtimes in many configurations.
 
-These unstable measurements are due to memory contention.
-It turns out, the Racket runtime does not fit in the non-shared space available to our machine's cores.
+These unstable measurements were due to memory contention.
+The Racket runtime did not fit in the non-shared space on our machine's cores.
 As faster configurations finished, the remaining configurations demonstrated a ``speedup'' because there was less chance of a cache conflict.
 
     @figure["fig:scale:morsecode" @elem{@bm[morsecode] dataset, collected by 16 parallel cores.}
@@ -66,23 +66,18 @@ As faster configurations finished, the remaining configurations demonstrated a `
 
 @; TODO recollect for v6.4
 Second, @figure-ref{fig:scale:karst} presents data collected on Indiana University's high-throughput computing cluster.@note{@url{https://kb.iu.edu/d/bezu}}
-Each column shows exact running times for one arbitrary configuration in a benchmark, normalized to each series' mean runtime.
-Within a column, the three lines of vertically-arranged points are data from separate jobs on the cluster.
+Each column contains exact running times for one arbitrary configuration in a benchmark.
+Within a column, the three lines of vertically-arranged points are data from separate jobs on the cluster (normalized to the points' mean runtime).
+Each job executed on a reserved node.
 These jobs
  created a new folder on the cluster's filesystem;
  copied a Racket v6.6 executable to the new folder;
  copied and compiled code for each configuration to the new folder;
  and ran each configuration through twenty consecutive iterations.
-Furthermore, each job executed on a reserved node in the cluster.
 
-@Figure-ref{fig:scale:karst} demonstrates that collecting the same data with different cluster nodes may yield different results.
-Moreover, data from a single cluster node contains more outliers than the @figure-ref{fig:uncertainty} data we collected with a desktop machine.
-Neither observation invalidates the data, but together they convinced us to prefer running experiments on a reserved desktop.
-
-@; more colors, more symbols, unique from v6.2--v6.4
-@; Do same graph as "exact" plots, but colors for each node
-@;  colors really don't matter, just use horizontal position
-@; - wait wtf about exact runtimes? y-axis gonna be tall
+The lesson of @Figure-ref{fig:scale:karst} is that collecting the same data with different cluster nodes yielded different results.
+Moreover, data from a single cluster node contained more outliers than the data in @figure-ref{fig:uncertainty}, collected on a desktop machine.
+Because of this instability, we preferred taking measurements from our reserved desktop.
 
   @figure["fig:scale:karst" @elem{Cluster data, Racket v6.4. See @figure-ref{fig:uncertainty} for @math{x}-axis legend.}
     @render-karst["./src/karst-cputime.csv"]
@@ -93,6 +88,26 @@ Neither observation invalidates the data, but together they convinced us to pref
 @section[#:tag "sec:scale:rnd"]{Sampling the Lattice}
 @; - optimistic, pessimistic, 5 randoms
 @; - sample size 1/8 1/16
+@; - hypothesis: need O(n) samples, maybe 10n or 8n
+@;   n=8, cfgs=256, 10n=80
+
+@(define srs-size-str "???")
+@(define srs-samples 5)
+@(define srs-samples-str (integer->word srs-samples))
+
+Simple random sampling is an effective technique for approximating the number of @deliverable{} configurations in our larger benchmarks.
+The plots in @figure-ref{fig:scale:srs}, for example, bound the possible overhead plots after sampling @|srs-size-str| configurations from the four largest benchmarks.
+The solid blue line in each plot is the true proportion of @deliverable{} configurations, as shown in @secref{sec:plots}.
+The dotted orange line above each blue line presents the proportion of @deliverable{} configurations considering only the untyped configuration and the @|srs-size-str| fastest configurations.
+Likewise, the dotted black line below each blue line considers only the untyped configuration and the @|srs-size-str| slowest configurations.
+Any random sample lies between these bounds; the faint blue lines on each plot are five such examples.
+
+@todo{exp or linear?}
+Whereas measuring a full performance lattice requires exponentially many measurements,
+ the random samples in @figure-ref{fig:scale:srs} use only a linear number.
+
+@todo{edge behavior}
+sample only the first and last two levels.
 
 
 @; -----------------------------------------------------------------------------
@@ -104,8 +119,22 @@ Neither observation invalidates the data, but together they convinced us to pref
 
 
 @; @; -----------------------------------------------------------------------------
-@; @section[#:tag "sec:scale:dev"]{Ask Developers for Help}
+@; @section[#:tag "sec:scale:dev"]{Finding Practical Subspaces}
 @; - ask developers how they would add types
 @;   - perhaps to their own project
 @; - check the git history of a Typed Racket project, see how conversion happened,
 @;   - was each step along the way performant?
+
+In many programs, there are subspaces in the performance lattice that serve as independently useful benchmarks.
+When it is possible to do so, dividing large programs into relevant subspaces can drastically lower the size of the experiment.
+
+The @bm[mbta] benchmark is technically a subspace, as the @emph{whole} program includes the 30-module @library{graph} library.
+Future benchmarks might be partitioned into Java-style packages.
+Perhaps each folder in a large benchmark is a reasonable, and reasonably-sized, benchmark.
+
+If an application is already gradually typed, our method can apply to possible @emph{evolutions} of the code.
+That is, instead of building a lattice from the untyped configuration, begin from current configuration and proceed to the typed configuration.
+This strategy tests the hypothesis that the gradual type system supports incremental changes.
+If there are too many untyped modules to exhaustively explore this subspace, the application's maintainers can possibly suggest modules they would never type.
+
+

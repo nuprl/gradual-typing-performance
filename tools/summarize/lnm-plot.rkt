@@ -667,7 +667,7 @@
                      [x-center (in-range (length bm*))])
             (for/list : (Listof (Listof renderer2d))
                       ([i (in-range (length my-jobid*))]
-                       [x-pos (linear-seq (- x-center config-x-jitter) (+ x-center config-x-jitter) JOBS/COL)])
+                       [x-pos (linear-seq (- x-center (- config-x-jitter 0.1)) (+ x-center (- config-x-jitter 0.1)) JOBS/COL)])
               (define color-idx 3)
               (define color (->pen-color color-idx))
               (define v* (jobid->row bm (list-ref my-jobid* i)))
@@ -691,6 +691,7 @@
         #:y-label "Normalized Runtime"
         #:y-min 0
         #:y-max #f
+        #:x-min -0.5
         #:x-max (- num-benchmarks 0.5)
         #:legend-anchor (*LEGEND-ANCHOR*)
         #:width (*PLOT-WIDTH*)
