@@ -23,6 +23,7 @@
   plot-deliverable
   plot-exact-configurations
   plot-typed/untyped-ratio
+  plot-indirection-cost
   plot-karst
 
   ;; ---
@@ -69,7 +70,7 @@
   racket/set
   racket/string
   racket/sequence
-  (for-syntax racket/base syntax/parse)
+  (only-in racket/file file->value)
   plot/typed/no-gui
   plot/typed/utils
   typed/pict
@@ -593,6 +594,54 @@
         #:width (*PLOT-WIDTH*)
         #:height (*PLOT-HEIGHT*)))
     (cast p pict)))
+
+(: plot-indirection-cost (-> Path-String pict))
+(define (plot-indirection-cost rktd)
+  (define s** (cast (file->value rktd)
+                    (Listof (List Symbol (Pairof 'typed (Listof Real))
+                                         (Pairof 'no-adapt (Listof Real))))))
+  (define num-benchmarks (length s**))
+  (define labels
+    (for/list : (Listof String)
+              ([x (in-list s**)])
+      (symbol->string (car x))))
+  (parameterize ([plot-x-ticks (labels->ticks labels)]
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-ticks (compute-yticks 5 (*Y-NUM-TICKS*) #:units "ms")])
+    (define p
+      (plot-pict
+        (list
+          (make-vrule* num-benchmarks)
+          (for/list : (Listof (Listof (Listof renderer2d)))
+                    ([bm (in-list s**)]
+                     [x-center (in-naturals)])
+            (define benchmark-name (car bm))
+            (define baseline (car (cdr (car (cdr bm))))) ;; -- random data point
+            (for/list : (Listof (Listof renderer2d))
+                      ([tag+data : (Pairof (U 'typed 'no-adapt) (Listof Real)) (in-list (cdr bm))]
+                       [x-pos (linear-seq (- x-center config-x-jitter) (+ x-center config-x-jitter) 2)])
+              (define color-idx 4)
+              (define color (->pen-color color-idx))
+              (define v* (cdr tag+data))
+              (list
+                ;; -- error bar
+                (let* ([m (mean v*)]
+                       [s (error-bound v*)])
+                  (lnm-error-bar x-pos m s #:color color))
+                (lnm-points color-idx
+                  (for/list : (Listof (List Real Real))
+                            ([v (in-list v*)])
+                    (list x-pos v)))))))
+        #:x-label "Benchmark"
+        #:y-label "Absolute Runtime"
+        #:y-min 0
+        #:y-max #f
+        #:x-min -0.5
+        #:x-max (- num-benchmarks 0.5)
+        #:legend-anchor (*LEGEND-ANCHOR*)
+        #:width (*PLOT-WIDTH*)
+        #:height (*PLOT-HEIGHT*)))
+      (cast p pict)))
 
 (: plot-karst (-> Path-String pict))
 (define (plot-karst csv)
