@@ -135,21 +135,15 @@ The drastic improvement is just because the @emph{undocumented} type representin
 @section[#:tag "sec:devils:boundary"]{Complex Type Boundaries}
 @; -- AKA surprise boundaries
 
-    @; needs work of course
+Higher-order values and metaprogramming features introduce fine-grained and dynamic type boundaries.
+For example, every proxy that enforces a type specification is a dynamically-generated type boundary.
+Such boundaries lead to greater overhead than one would predict based on static module dependencies.
 
-Programs using higher-order values and metaprogramming often have intricate module dependence graphs.
-In our experience, such programs present three main challenges.
-
-First, there are many static module dependencies.
-
-Second, Racket macros can reference any function that was in scope where the macro is defined.
-If these definition sites use type boundaries, e.g., an untyped macro references typed identifiers, the macro's client must pay a runtime cost whenever values flow across the boundaries.
-This scenario is the source of a problem in the @bm[synth] benchmark.
-One macro in @bm[synth] provides a ``fast'' array iterator that uses unsafe operations in an inner loop.
-In half of all configurations, runtime type checks protect these unsafe operations.
-
-Third, every proxy on a higher-order value is a dynamically-generated type boundary with an independent cost.
-Identifying and attributing runtime cost to every first-class function or object amounts to building a call graph.
+The @bm[synth] benchmark illustrates one problematic use of metaprogramming.
+One module in @bm[synth] exports a macro that expands to a low-level iteration construct.
+The expanded code introduces a reference to a server module, whether or not the macro client statically imports the server.
+Thus, when the server and client are separated by a type boundary, the macro @emph{implicitly} puts a type boundary in the expanded looping code.
+In order to predict such costs, a programmer must track the namespaces available to every macro.
 
 
 @; -----------------------------------------------------------------------------
