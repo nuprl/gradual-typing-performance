@@ -22,7 +22,7 @@ This section introduces the benchmarks, documents our protocol for collecting pe
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:bm"]{The Benchmark Programs}
+@section[#:tag "sec:bm"]{The @|GTP| Benchmark Programs}
 
 The benchmarks are representative of actual user code yet
  small enough to make exhaustive performance evaluation tractable.
@@ -223,7 +223,7 @@ An identifier named in such an import statement counts as an export.
 For example, one import statement in @bm[sieve] names nine identifiers.
 The appendix presents full module graphs for all benchmarks.
 
-@figure*["fig:bm" "Static characteristics of the benchmarks"
+@figure*["fig:bm" @elem{Static characteristics of the @|GTP| benchmarks}
   @render-benchmarks-table{}
 ]
 
@@ -288,7 +288,7 @@ Both our experimental scripts and the collected data are available in the online
         (format "fig:lnm:~a" i)))
     (define get-caption
       (let ([N (length name*)])
-        (lambda (i) (format "Overhead Graphs (~a/~a)" i N))))
+        (lambda (i) @elem{@|GTP| overhead graphs (@id[i]/@id[N])})))
     (define NUMV (integer->word (length (*RKT-VERSIONS*))))
     (cons
       @elem{

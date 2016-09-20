@@ -102,7 +102,7 @@ To validate the method, we evaluate the performance of @integer->word[(length (*
 Building on the evaluation method introduced in the conference version of this paper@~cite[tfgnvf-popl-2016],
  this paper contributes
  the first comparitive evaluation of different implementations of the same gradual type system;
- @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs;
+ @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs for our @|GTP| benchmark suite;
  an in-depth analysis of the performance bottlenecks in these benchmarks;
  and general lessons for implementors of gradually typed languages.
 

@@ -111,7 +111,7 @@ Another example is the @bm[kcfa] benchmark, in which hashtable types account for
 
 Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
 Changing its language to @code{#lang typed/racket} improves its performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.@note{A programmer recently shared this code on the Racket mailing list, see the appendix.}
-The drastic improvement is just because the @emph{undocumented} type representing @tt{trie} structures generates expensive runtime checks.
+The drastic improvement is just because the @emph{undocumented} type representing @tt{trie} structures is expensive to enforce dynamically.
 
     @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
       @(begin

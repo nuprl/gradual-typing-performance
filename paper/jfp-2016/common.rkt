@@ -27,6 +27,8 @@
          green
          blue
 
+         GTP
+
          id
          library
          PHIL
@@ -180,6 +182,9 @@
 
 (define (library x)
   (tt x))
+
+(define GTP
+  (exact "\\textsc{gtp}"))
 
 (define PHIL
   ;; Dammit Phil
