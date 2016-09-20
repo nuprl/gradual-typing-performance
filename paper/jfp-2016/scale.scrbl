@@ -102,6 +102,11 @@ The dotted orange line above each blue line presents the proportion of @delivera
 Likewise, the dotted black line below each blue line considers only the untyped configuration and the @|srs-size-str| slowest configurations.
 Any random sample lies between these bounds; the faint blue lines on each plot are five such examples.
 
+    @figure["fig:scale:srs" "Random Sampling"
+      (render-linear-samples (list tetris synth gregor quadBG)
+                             '(1 3))
+    ]
+
 @todo{exp or linear?}
 Whereas measuring a full performance lattice requires exponentially many measurements,
  the random samples in @figure-ref{fig:scale:srs} use only a linear number.

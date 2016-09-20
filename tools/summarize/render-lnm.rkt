@@ -15,6 +15,7 @@
  render-deliverable
  render-bars-xlabels
  render-karst-pict
+ render-srs-pict
 
  data->pict
  ;; Build a picture from a list of pairs:
@@ -33,7 +34,7 @@
  (for-syntax racket/base syntax/parse)
  (only-in racket/file file->value)
  (only-in racket/format ~r)
- (only-in racket/math exact-round pi)
+ (only-in racket/math exact-floor exact-round pi)
  (only-in racket/port with-input-from-string open-output-nowhere)
  typed/racket/draw
  racket/flonum
@@ -735,6 +736,40 @@
   (vl-append (*GRAPH-VSPACE*)
     title
     pict))
+
+(: render-srs-pict (-> (Listof Path-String) (Listof Natural) Pict))
+(define (render-srs-pict rktd* sampling-factor*)
+  (when (< 2 (length sampling-factor*))
+    (raise-user-error 'render-srs "cannot render more than 2 sample sizes, sorry"))
+  (define TSHIM (*TITLE-VSPACE*))
+  (define VSHIM (*GRAPH-VSPACE*))
+  (define HSHIM (* 3 (*GRAPH-HSPACE*)))
+  (define row*
+    (for/list : (Listof pict)
+              ([rktd (in-list rktd*)])
+      (define S (from-rktd rktd))
+      (define num-configs (get-num-configurations S))
+      (define num-modules (get-num-modules S))
+      (define pn (get-project-name S))
+      (define pre-row
+        (for/list : (Listof pict)
+                  ([sampling-factor (in-list sampling-factor*)]
+                   [i (in-naturals)])
+          (define num-samples (* num-modules sampling-factor))
+          (define p
+            (plot-srs S num-samples))
+          (define left-lbl
+            (if (zero? i)
+              (title-text pn)
+              (blank 0 0)))
+          (define right-lbl
+            ;; 2016-09-19 : Everything is "0 samples"
+            (subtitle-text (format "~a samples" num-samples #;(* 100 (exact-floor (/ num-samples num-configs))))))
+          (lt-superimpose
+            (vr-append TSHIM right-lbl p)
+            left-lbl)))
+      (hc-append* HSHIM pre-row)))
+  (vl-append* VSHIM row*))
 
 ;; -----------------------------------------------------------------------------
 

@@ -54,6 +54,7 @@
   render-deliverable-plot
   render-uncertainty
   render-karst
+  render-linear-samples
 
   render-exact-table
 
@@ -587,6 +588,42 @@
       #:write serialize
         (lambda ()
           (render-karst-pict csv))))
+
+(define (render-linear-samples bm* factor* [version "6.4"])
+  (define rktd*
+    (for/list ([bm (in-list bm*)])
+      (benchmark-rktd bm version)))
+  (parameterize ([*current-cache-keys* (list (lambda () factor*) (lambda () rktd*) (lambda () version))]
+                 [*AXIS-LABELS?* #f]
+                 [*COLOR-OFFSET* 3]
+                 [*L* '(0)]
+                 [*L-LABELS?* #t]
+                 [*LEGEND?* #f]
+                 [*LINE-LABELS?* #f]
+                 [*LOG-TRANSFORM?* #t]
+                 [*M* #f]
+                 [*MAX-OVERHEAD* 20]
+                 [*N* #f]
+                 [*NUM-SIMPLE-RANDOM-SAMPLES* 3]
+                 [*NUM-SAMPLES* 60] ;; 200 ;; TODO
+                 [*PLOT-FONT-SCALE* 0.04]
+                 [*PLOT-HEIGHT* 100]
+                 [*PLOT-WIDTH* 210]
+                 [*SINGLE-PLOT?* #f]
+                 [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
+                                          (for/list ([i (in-range 4 20 2)]) i))]
+                 [*X-TICK-LINES?* #t]
+                 [*X-TICKS* '(1 2 20)]
+                 ;[*Y-MINOR-TICKS* '(25 75)]
+                 [*Y-NUM-TICKS* 3]
+                 [*Y-TICK-LINES?* #t]
+                 [*Y-STYLE* '%])
+    (with-cache (cachefile "cache-srs")
+      #:read deserialize
+      #:write serialize
+      (lambda ()
+        (render-srs-pict rktd* factor*)))))
+
 
 (define (ext:max-overhead rktd)
   (max-overhead (from-rktd rktd)))

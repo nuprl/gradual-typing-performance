@@ -156,3 +156,5 @@
 (defparam *CONFIDENCE-LEVEL* Index 95)
 
 (defparam *COLOR-OFFSET* Index 1)
+
+(defparam *NUM-SIMPLE-RANDOM-SAMPLES* Index 2)

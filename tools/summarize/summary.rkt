@@ -86,6 +86,9 @@
   ; (-> Summary (Sequenceof Bitstring)))
   ;; Return a stream of all configurations in the Summary
 
+  all-mean-runtimes
+  ; (-> Summary (Listof Real))
+
   all-paths
   ; (-> Summary (Sequenceof LatticePath)))
   ;; Return a stream of all paths through the lattice
@@ -446,6 +449,15 @@
   (sequence-map
     (lambda ([n : Index]) (natural->bitstring n #:pad M))
     (in-range (get-num-configurations sm))))
+
+(: all-mean-runtimes (-> Summary (Listof Real)))
+(define (all-mean-runtimes S)
+  (define D (summary-dataset S))
+  (if (dataset-empty? D)
+    (error 'all-mean-runtimes "Not implemented for file-backed summary objects")
+    (for/list : (Listof Real)
+              ([t* (in-vector D)])
+      (mean (unixtime*->real* t*)))))
 
 (: all-paths (-> Summary (Sequenceof LatticePath)))
 (define (all-paths S)
