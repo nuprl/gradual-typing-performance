@@ -5,7 +5,7 @@
   "util.rkt"
   "benchmark.rkt"
   "typed-racket.rkt"
-  (only-in gtp-summarize/lnm-parameters *COLOR-OFFSET*)
+  (only-in gtp-summarize/lnm-parameters *COLOR-OFFSET* *NUM-SIMPLE-RANDOM-SAMPLES*)
 ]
 
 @profile-point{sec:scale}
@@ -86,33 +86,40 @@ Because of this instability, we preferred taking measurements from our reserved 
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:scale:rnd"]{Sampling the Lattice}
-@; - optimistic, pessimistic, 5 randoms
-@; - sample size 1/8 1/16
-@; - hypothesis: need O(n) samples, maybe 10n or 8n
-@;   n=8, cfgs=256, 10n=80
 
 @(define srs-size-str "???")
-@(define srs-samples 5)
+@(define srs-samples 4)
+@(define factors '(1 3))
 @(define srs-samples-str (integer->word srs-samples))
 
-Simple random sampling is an effective technique for approximating the number of @deliverable{} configurations in our larger benchmarks.
-The plots in @figure-ref{fig:scale:srs}, for example, bound the possible overhead plots after sampling @|srs-size-str| configurations from the four largest benchmarks.
-The solid blue line in each plot is the true proportion of @deliverable{} configurations, as shown in @secref{sec:plots}.
-The dotted orange line above each blue line presents the proportion of @deliverable{} configurations considering only the untyped configuration and the @|srs-size-str| fastest configurations.
-Likewise, the dotted black line below each blue line considers only the untyped configuration and the @|srs-size-str| slowest configurations.
-Any random sample lies between these bounds; the faint blue lines on each plot are five such examples.
+@; - srs pretty effective
+@; - great for streaming results, at least getting warning signs
+@; - not great for definitive measurements, but like, you can get "definitive" envo prettyfast, mabe
 
-    @figure["fig:scale:srs" "Random Sampling"
-      (render-linear-samples (list tetris synth gregor quadBG)
-                             '(1 3))
+Simple random sampling is a surprisingly effective technique for approximating the number of @deliverable{} configurations in our larger benchmarks.
+@Figure-ref{fig:scale:srs}, for example, approximates the number of @deliverable{} configurations with @math{N} (left column) and @math{3N} (right column) samples, where @math{N} is the number of modules in the benchmark.
+
+Specifically, each plot has @integer->word[(+ 1 2 srs-samples)] lines.
+The solid blue line is from @secref{sec:plots}; that is, the blue line plots the number of @deliverable{} configurations on Racket v6.4.@note{The blue line in the left column is identical to the blue line in the right column. The right column does @emph{not} plot @step[] configurations.}
+The other lines plot the overhead in uniformly-sized samples.
+For these lines, the @math{y}-axis is the proportion @emph{of the sample} that is @deliverable{} relative to the untyped configuration.
+The dashed orange and black lines are not random samples; these lines are the best possible (orange) and worst possible (black) samples one could take.
+The @|srs-samples-str| faint red lines are random samples taken without replacement.@note{Sampling with replacement yields similar results, but makes less sense if the experimenter's goal is to eventually measure all configurations.}
+
+Despite the wide theoretical bounds (dashed lines) on the space of random samples, in practice random sampling yields data close to our measured overhead.
+The samples in the left column generally follow the blue lines.
+The samples in the right column are very close to the blue lines, so close that we would reach the same conclusions about the performance of gradual typing in Typed Racket if our measurements produced a red line instead of the blue ones.
+
+Na@exact{\"i}ve random sampling is no substitute for actually measuring performance.
+We absolutely @emph{do not} recommend language evaluators use such data to make claims about the fate of gradual typing.
+Rather, we belive random sampling will help language evaluators quickly identify problematic type boundaries in a benchmark.
+Our recommendation is to seek out pathologies by first measuring the the very top and bottom of a large performance lattice, then randomly sampling the middle.
+
+    @figure["fig:scale:srs" "Random samples and worst-case bounds"
+      (parameterize ([*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples])
+        (render-linear-samples (list tetris synth gregor quadBG)
+                               factors))
     ]
-
-@todo{exp or linear?}
-Whereas measuring a full performance lattice requires exponentially many measurements,
- the random samples in @figure-ref{fig:scale:srs} use only a linear number.
-
-@todo{edge behavior}
-sample only the first and last two levels.
 
 
 @; -----------------------------------------------------------------------------
