@@ -604,7 +604,6 @@
                  [*M* #f]
                  [*MAX-OVERHEAD* 20]
                  [*N* #f]
-                 [*NUM-SIMPLE-RANDOM-SAMPLES* 3]
                  [*NUM-SAMPLES* 60] ;; 200 ;; TODO
                  [*PLOT-FONT-SCALE* 0.04]
                  [*PLOT-HEIGHT* 100]
@@ -618,7 +617,7 @@
                  [*Y-NUM-TICKS* 3]
                  [*Y-TICK-LINES?* #t]
                  [*Y-STYLE* '%])
-    (with-cache (cachefile "cache-srs")
+    (with-cache (cachefile "cache-srs.rktd")
       #:read deserialize
       #:write serialize
       (lambda ()

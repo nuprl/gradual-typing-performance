@@ -788,7 +788,7 @@
   (define worst-sample (take-right sorted-t* sample-size))
   (define srs**
     (for/list : (Listof (Listof (Listof Real)))
-              ([r? (in-list (list #f #t))])
+              ([r? (in-list (list #f #;#t))])
       (for/list : (Listof (Listof Real))
                 ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
         ((inst random-sample Real) sorted-t* sample-size #:replacement? r?))))
