@@ -82,6 +82,9 @@
   ; (-> Summary (-> Bitstring Boolean) (Sequenceof Bitstring)))
   ;; Return a stream of configurations satisfying the predicate
 
+  summary-random-sample
+  ; (-> Summary Natural #:replacement? (Listof Real))
+
   all-configurations
   ; (-> Summary (Sequenceof Bitstring)))
   ;; Return a stream of all configurations in the Summary
@@ -158,6 +161,7 @@
 ;; -----------------------------------------------------------------------------
 
 (require
+  (only-in typed/racket/random random-sample)
   (only-in math/number-theory factorial)
   (only-in racket/file file->value)
   (only-in racket/port with-input-from-string)
@@ -547,6 +551,26 @@
 (define (predicate->configurations sm p)
   ;; TODO optimize?
   (sequence-filter p (all-configurations sm)))
+
+(: summary-random-sample (-> Summary Natural #:replacement? Boolean (Listof Real)))
+(define (summary-random-sample S sample-size #:replacement? r)
+  (define D (summary-dataset S))
+  (if (dataset-empty? D)
+    (summary-random-sample/path (summary-source S) sample-size r)
+    (summary-random-sample/vector D sample-size r)))
+
+(: summary-random-sample/path (-> Path-String Natural Boolean (Listof Real)))
+(define (summary-random-sample/path p sample-size replacement?)
+  (raise-user-error 'ohno))
+
+(: summary-random-sample/vector (-> Dataset Natural Boolean (Listof Real)))
+(define (summary-random-sample/vector D sample-size r)
+  ;; Get a bunch of random means
+  (define t**
+    ((inst random-sample (Listof UnixTime)) D sample-size #:replacement? r))
+  (for/list : (Listof Real)
+            ([t* (in-list t**)])
+    (mean (unixtime*->real* t*))))
 
 ;; Return all data for the untyped configuration
 (: untyped-runtimes (-> Summary (Listof Real)))

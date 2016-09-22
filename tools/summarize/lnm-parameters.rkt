@@ -158,3 +158,5 @@
 (defparam *COLOR-OFFSET* Index 1)
 
 (defparam *NUM-SIMPLE-RANDOM-SAMPLES* Index 2)
+
+(defparam *INTERVAL-ALPHA* Nonnegative-Real 0.3)

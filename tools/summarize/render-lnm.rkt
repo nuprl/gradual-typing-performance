@@ -15,7 +15,8 @@
  render-deliverable
  render-bars-xlabels
  render-karst-pict
- render-srs-pict
+ render-srs-sound-pict
+ render-srs-precise-pict
 
  data->pict
  ;; Build a picture from a list of pairs:
@@ -85,7 +86,7 @@
 
 ;; =============================================================================
 
-(defparam *GRAPH-HSPACE* Positive-Integer 10)
+(defparam *GRAPH-HSPACE* Positive-Integer 12)
 (defparam *GRAPH-VSPACE* Positive-Integer 10)
 (defparam *TITLE-VSPACE* Positive-Integer (assert (exact-round (/ (*GRAPH-VSPACE*) 2)) positive?))
 
@@ -737,8 +738,8 @@
     title
     pict))
 
-(: render-srs-pict (-> (Listof Path-String) (Listof Natural) Pict))
-(define (render-srs-pict rktd* sampling-factor*)
+(: render-srs-sound-pict (-> (Listof (Listof Path-String)) (Listof Natural) Pict))
+(define (render-srs-sound-pict rktd** sampling-factor*)
   (when (< 2 (length sampling-factor*))
     (raise-user-error 'render-srs "cannot render more than 2 sample sizes, sorry"))
   (define TSHIM (*TITLE-VSPACE*))
@@ -746,30 +747,88 @@
   (define HSHIM (* 3 (*GRAPH-HSPACE*)))
   (define row*
     (for/list : (Listof pict)
-              ([rktd (in-list rktd*)])
-      (define S (from-rktd rktd))
-      (define num-configs (get-num-configurations S))
-      (define num-modules (get-num-modules S))
-      (define pn (get-project-name S))
+              ([rktd* (in-list rktd**)])
+      (define S* (for/list : (Listof Summary) ([rktd (in-list rktd*)]) (from-rktd rktd)))
+      (define num-configs (get-num-configurations (car S*)))
+      (define num-modules (get-num-modules (car S*)))
+      (define pn (get-project-name (car S*)))
       (define pre-row
         (for/list : (Listof pict)
                   ([sampling-factor (in-list sampling-factor*)]
                    [i (in-naturals)])
           (define num-samples (* num-modules sampling-factor))
           (define p
-            (plot-srs S num-samples))
+            (plot-srs-sound S* num-samples))
           (define left-lbl
             (if (zero? i)
               (title-text pn)
               (blank 0 0)))
           (define right-lbl
-            ;; 2016-09-19 : Everything is "0 samples"
-            (subtitle-text (format "~a samples" num-samples #;(* 100 (exact-floor (/ num-samples num-configs))))))
+            ;; 2016-09-19 : Everything is 0% of allconfigs
+            (subtitle-text (format "sample size: ~a" num-samples )))
           (lt-superimpose
             (vr-append TSHIM right-lbl p)
             left-lbl)))
       (hc-append* HSHIM pre-row)))
-  (vl-append* VSHIM row*))
+  (define srs-legend
+    (let ([make-line (lambda ([i : Integer]
+                              [descr : String]
+                              [smpl? : Boolean])
+                       (hc-append 0
+                         (cellophane
+                           (colorize
+                             (linewidth (if smpl? 2 (*LNM-WIDTH*))
+                               (linestyle (integer->pen-style i)
+                                 (hline HSHIM 1)))
+                             (cast (->pen-color i) (List Byte Byte Byte)))
+                           (if smpl? 0.6 1))
+                         (mytext (string-append " : " descr (if smpl? " samples" "")))))])
+      (vl-append*/2 (* 2 HSHIM) TSHIM
+           (list (make-line 1 "v6.2" #f)
+                 (make-line 1 "v6.2" #t)
+                 (make-line 3 "v6.4" #f)
+                 (make-line 3 "v6.4" #t)))))
+  (vl-append (*GRAPH-VSPACE*)
+             (vl-append* VSHIM row*)
+             (hc-append 0 (blank 90 0) srs-legend)))
+
+(: render-srs-precise-pict (-> (Listof (Listof Path-String)) (Listof Natural) Pict))
+(define (render-srs-precise-pict rktd** sampling-factor*)
+  (define VSHIM (*GRAPH-VSPACE*))
+  (define HSHIM (* 3 (*GRAPH-HSPACE*)))
+  (define TSHIM (*TITLE-VSPACE*))
+  (define row*
+    (for*/list : (Listof Pict)
+              ([rktd* (in-list rktd**)])
+      (define S* (for/list : (Listof Summary) ([rktd (in-list rktd*)]) (from-rktd rktd)))
+      (define num-modules (get-num-modules (car S*)))
+      (define row
+        (hc-append* HSHIM
+          (for/list : (Listof Pict)
+                    ([size (in-list sampling-factor*)])
+            (define num-samples (* size num-modules))
+            (vr-append TSHIM (subtitle-text (format "sample size: ~a" num-samples)) (plot-srs-precise S* num-samples)))))
+      (define title (title-text (get-project-name (car S*))))
+      (lt-superimpose row title)))
+  (define srs-legend
+    (let ([make-line (lambda ([c : String]
+                              [descr : String]
+                              [smpl? : Boolean])
+                       (hc-append 0
+                           (colorize
+                             (linewidth (*LNM-WIDTH*)
+                               (linestyle (if smpl? 'long-dash 'solid)
+                                 (hline HSHIM 1)))
+                             (cast (->pen-color c) (List Byte Byte Byte)))
+                           (mytext (string-append " : " descr))))])
+      (hc-append (* 2 HSHIM)
+                 (make-line "DarkViolet" "true delta (v6.4 - v6.2)" #f)
+                 (make-line "chocolate" "avg. sample delta" #t) )))
+  (vl-append VSHIM
+    (if (< (*PLOT-WIDTH*) 400)
+      (vl-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
+      (vl-append* VSHIM row*))
+    (hc-append 0 (blank 90 0) srs-legend)))
 
 ;; -----------------------------------------------------------------------------
 
