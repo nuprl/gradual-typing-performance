@@ -217,6 +217,18 @@
       acc
       (hc-append 0 (int->point-symbol i) (mytext (format " : ~a" v))))))
 
+(: hb-append*/2 (-> Real Real (Listof Pict) Pict))
+(define (hb-append*/2 h v p*)
+  (cond
+   [(null? p*)
+    (blank h 0)]
+   [(null? (cdr p*))
+    (car p*)]
+   [else
+    (vl-append h
+      (hb-append v (car p*) (cadr p*))
+      (hb-append*/2 h v (cddr p*)))]))
+
 (: vl-append*/2 (-> Real Real (Listof Pict) Pict))
 (define (vl-append*/2 h v p*)
   (cond
@@ -822,10 +834,10 @@
                            (mytext (string-append " : " descr))))])
       (hc-append (* 2 HSHIM)
                  (make-line "DarkViolet" "true delta (v6.4 - v6.2)" #f)
-                 (make-line "chocolate" "avg. sample delta" #t) )))
+                 (make-line "brown" "avg. sample delta" #t) )))
   (vc-append VSHIM
     (if (< (*PLOT-WIDTH*) 400)
-      (vl-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
+      (hb-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
       (vl-append* VSHIM row*))
     srs-legend))
 

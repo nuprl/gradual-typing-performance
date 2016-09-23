@@ -32,9 +32,8 @@ In particular, both our @emph{experimental protocol} and the @emph{conclusions} 
 @; -- small bm, some aggressively modularized
 We have identified four threats to our protocol.
 First, the benchmark programs are relatively small.
-Gradual typing offers the most promise for maintainers of large projects,@note{For example, the Typed Racket @library{plot} library has over 80 modules.} but benchmarking even a 20-module application with our method is prohibitively time-consuming.
-@; just compiling the 16-module quad sequentially took over a week
-@Secref{sec:scale} offers suggestions for scaling the method.
+Larger programs might avoid the pathological overheads in our benchmarks,
+ though our results for @bm[quadMB] and @bm[synth] are evidence to the contrary.
 
 Second, a few benchmarks have little data (less than 6 samples per configuration) due to time limitations.
 It is therefore possible that some samples are not truly representative.

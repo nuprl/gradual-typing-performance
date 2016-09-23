@@ -13,45 +13,58 @@
 
 @(define srs-samples 4)
 @(define sample-size-factor 10)
-@(define srs-samples-str (integer->word srs-samples))
 
+  @; plot library ~ 80 modules
+  @; math library ~ 197 modules
+The evaluation method proposed in @secref{sec:method} does not scale to benchmarks with a large number of typeable components.
+Benchmarking a full performance lattice for a program with @math{N} such components requires an exponential number of measurements.
+Even with access to a server farm, exhaustively measuring programs with as few as 60 components is impractical.
+We clearly need to simplify the method to feasibly determine the overhead of gradual typing in such programs.
+There is no other way to help language designers improve the performance of gradual type systems.
 
-The fundamental limitation of our evaluation method is that it requires an exponential number of measurements.
-Given one fixed type assignment for a program of @math{N} modules, there are @exact{$2^{N}$} configurations.
-In general, if there are @math{M} ways to type each module, then there are @exact{$M^N$} configurations.
+This section shows how simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
+Specifically, it shows that a linear number of samples generates, in practice, a good approximation to the presented overhead plots.
+Overhead plots are intuitively a statement about expected values.
+If 10% of the benchmarks are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
+The same holds for any value of @math{D}, so an overhead plot generated from one sample population should approximate the true overhead plot.
 
-To date, we have explored three alternatives for scaling the method.
-@; Our success with these alternatives has been mixed.
-We invite other researchers in the field, especially those working with micro-level gradual type systems, to further pursue these alternatives or propose other ways to scale.
+@(define tetris-sample-size (* sample-size-factor (benchmark->num-modules tetris)))
 
-@; - srs pretty effective
-@; - great for streaming results, at least getting warning signs
-@; - not great for definitive measurements, but like, you can get "definitive" envo prettyfast, mabe
+To demonstrate, @figure-ref{fig:scale:srs-overhead} plots the true overhead for the @id[(benchmark->num-configurations tetris)] @bm[tetris] configurations against overhead in samples of @id[tetris-sample-size] configurations.@note{The sample size is @id[sample-size-factor] times the number of modules in the @bm[tetris] benchmark. All plots in this section use analogous sampling rates.}
+The dark red line is from @secref{sec:plots}; it plots the true overhead in @bm[tetris] on Racket v6.2.
+The @integer->word[srs-samples] faint red lines plot the overhead in @integer->word[srs-samples] distinct samples of @id[tetris-sample-size] configurations each.
+In particular, a single faint red line plots the proportion of @deliverable{} configurations in one group of @id[tetris-sample-size] configurations, selected without replacement.@note{By @emph{without replacement}, we mean that each sample has @id[tetris-sample-size] unique configurations; however, there may be duplicates between samples. At any rate, choosing truly random samples (without replacement) yields similar results.}
+Similarly, the dark and faint blue lines plot true and sample overheads in Racket v6.4.
 
-Simple random sampling is an effective technique for approximating the number of @deliverable{} configurations in our larger benchmarks.
-@Figure-ref{fig:scale:srs}, for example, approximates the number of @deliverable{} configurations with @math{N} (left column) and @math{3N} (right column) samples, where @math{N} is the number of modules in the benchmark.
+@Figure-ref{fig:scale:srs-overhead} thus shows that small, random populations can approximate the true overhead in a large performance lattice.
+There is noticeable difference between the sample overhead and true overhead, but overall the samples @emph{tend towards} the true overhead.
+To make this notion of a @emph{trend} in samples precise, we can plot the average number of @deliverable{} configurations across the samples along with a confidence interval showing the variation between samples.
+As stated in @secref{sec:compare}, such a confidence interval estimates the @emph{likely} true overhead based on the sample measurements.
+The bounds in @bm[tetris] are tight, and we have recorded similar bounds in all our benchmarks with at least eight modules (see @figure-ref{fig:scale:srs-precise-all}).
 
-Specifically, each plot has @integer->word[(+ 1 2 srs-samples)] lines.
-The solid blue line is from @secref{sec:plots}; that is, the blue line plots the number of @deliverable{} configurations on Racket v6.4.@note{The blue line in the left column is identical to the blue line in the right column. The right column does @emph{not} plot @step[] configurations.}
-The other lines plot the overhead in uniformly-sized samples.
-For these lines, the @math{y}-axis is the proportion @emph{of the sample} that is @deliverable{} relative to the untyped configuration.
-The dashed orange and black lines are not random samples; these lines are the best possible (orange) and worst possible (black) samples one could take.
-The @|srs-samples-str| faint red lines are random samples taken without replacement.@note{Sampling with replacement yields similar results, but makes less sense if the experimenter's goal is to eventually measure all configurations.}
+In fact, the bounds are tight enough to reflect the @emph{difference} in performance between two versions of Racket.
+@Figure-ref{fig:scale:srs-precise} presents such data for the @bm[tetris] benchmark.
+The dark purple line is the delta between the true overhead on v6.4 and the true overhead on v6.2.
+The dashed brown line plots a sample delta; in particular, the brown line shows the average difference between v6.4 and v6.2 across @integer->word[srs-samples] sample populations.
+The interval around the brown line shows the best and worst differences we can expect based on a 98% confidence interval.
+Specifically, the upper end of the shaded interval is the difference between the upper confidence limit on our samples for v6.4 and the lower confidence limit on our samples for v6.2.
+The lower end of the interval is the smallest probable difference between the versions, based on our lower limit for v6.4 and upper limit for v6.2.
 
-Despite the wide theoretical bounds (dashed lines) on the space of random samples, in practice random sampling yields data close to our measured overhead.
-The samples in the left column generally follow the blue lines.
-The samples in the right column are very close to the blue lines, so close that we would reach the same conclusions about the performance of gradual typing in Typed Racket if our measurements produced a red line instead of the blue ones.
+@Figure-ref{fig:scale:srs-precise-all} plots similar data for benchmarks in the @|GTP| suite with at least eight modules.
+In all cases, the mean difference among the @integer->word[srs-samples] sample populations is close to the true difference between the performance of the two Racket versions.
+Furthermore, the confidence bounds around these means are tight, even for the largest benchmarks, and increasing the number of samples produces even tighter bounds.
 
-Na@exact{\"i}ve random sampling is no substitute for actually measuring performance.
-We absolutely @emph{do not} recommend language evaluators use such data to make claims about the fate of gradual typing.
-Rather, we belive random sampling will help language evaluators quickly identify problematic type boundaries in a benchmark.
-Our recommendation is to seek out pathologies by first measuring the the very top and bottom of a large performance lattice, then randomly sampling the middle.
+@; == Caveats / Ideas
+@; - at least measure top/bottom of lattice
+@; - only tested 20x overhead, estimates for larger (rarer) overheads may be worse
+@; - haven't tried guessing worst-case overhead
 
   @(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
                   [*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples]
                   [*PLOT-HEIGHT* 140]
                   [*PLOT-WIDTH* 430]
                   [*PLOT-FONT-SCALE* 0.02]
+                  [*X-TICK-LINES?* #t]
                   [*LNM-WIDTH* (+ 3 (*LNM-WIDTH*))])
    (list
     @figure["fig:scale:srs-overhead" @elem{Approximating true overhead}
@@ -63,8 +76,9 @@ Our recommendation is to seek out pathologies by first measuring the the very to
     (parameterize ([*PLOT-HEIGHT* 100]
                    [*PLOT-WIDTH* 210]
                    [*PLOT-FONT-SCALE* 0.04]
+                   [*X-TICK-LINES?* #f]
                    [*LNM-WIDTH* (- (*LNM-WIDTH*) 3)])
-      @figure["fig:scale:srs-precise-all"  @elem{Approximating improvement (@id[(*NUM-SIMPLE-RANDOM-SAMPLES*)] samples)}
+      @figure["fig:scale:srs-precise-all"  @elem{Approximating improvement in the largest benchmarks (@id[(*NUM-SIMPLE-RANDOM-SAMPLES*)] samples)}
         (render-srs-precise (list snake acquire synth gregor) (list sample-size-factor))
       ]
     )))

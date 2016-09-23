@@ -798,34 +798,36 @@
                  [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
     (define p
       (plot-pict
-        (for/list : (Listof (List renderer2d (Listof (Listof renderer2d))))
-                  ([S (in-list S*)]
-                   [i (in-list '(1 3))]) ;; 2016-09-22 hardcoded for 6.2/6.4
-          (define baseline (untyped-mean S))
-          (define srs**
-            ;; -- 2016-09-21 : only doing "without replacement", but there's code for adding "with?"
-            (for/list : (Listof (Listof (Listof Real)))
-                      ([r? (in-list (list #f #;#t))])
-              (for/list : (Listof (Listof Real))
-                        ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
-              (summary-random-sample S sample-size #:replacement? r?))))
-          (list
-            (function (count-configurations/mean S 0 #:cache-up-to (assert (*MAX-OVERHEAD*) index?) #:percent? #t)
-              0 (*MAX-OVERHEAD*)
-              #:color i
-              #:label #f
-              #:samples (*NUM-SAMPLES*)
-              #:style (integer->pen-style i)
-              #:width (*LNM-WIDTH*))
-            (parameterize ([line-alpha 0.6])
-              (for/list : (Listof (Listof renderer2d))
-                        ([srs* (in-list srs**)])
-                (for/list : (Listof renderer2d)
-                          ([srs (in-list srs*)])
-                  (lnm-overhead srs
-                                #:base baseline
-                                #:width 2
-                                #:color (assert i index?)))))))
+        (append
+          (if (*X-TICK-LINES?*) (list (x-tick-lines)) '())
+          (for/list : (Listof (List renderer2d (Listof (Listof renderer2d))))
+                    ([S (in-list S*)]
+                     [i (in-list '(1 3))]) ;; 2016-09-22 hardcoded for 6.2/6.4
+            (define baseline (untyped-mean S))
+            (define srs**
+              ;; -- 2016-09-21 : only doing "without replacement", but there's code for adding "with?"
+              (for/list : (Listof (Listof (Listof Real)))
+                        ([r? (in-list (list #f #;#t))])
+                (for/list : (Listof (Listof Real))
+                          ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
+                (summary-random-sample S sample-size #:replacement? r?))))
+            (list
+              (function (count-configurations/mean S 0 #:cache-up-to (assert (*MAX-OVERHEAD*) index?) #:percent? #t)
+                0 (*MAX-OVERHEAD*)
+                #:color i
+                #:label #f
+                #:samples (*NUM-SAMPLES*)
+                #:style (integer->pen-style i)
+                #:width (*LNM-WIDTH*))
+              (parameterize ([line-alpha 0.6])
+                (for/list : (Listof (Listof renderer2d))
+                          ([srs* (in-list srs**)])
+                  (for/list : (Listof renderer2d)
+                            ([srs (in-list srs*)])
+                    (lnm-overhead srs
+                                  #:base baseline
+                                  #:width 2
+                                  #:color (assert i index?))))))))
         #:x-min 1
         #:x-max (*MAX-OVERHEAD*)
         #:y-min 0

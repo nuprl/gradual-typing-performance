@@ -104,7 +104,8 @@ Building on the evaluation method introduced in the conference version of this p
  the first comparitive evaluation of different implementations of the same gradual type system;
  @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs for our @|GTP| benchmark suite;
  an in-depth analysis of the performance bottlenecks in these benchmarks;
- and general lessons for implementors of gradually typed languages.
+ @; general lessons for implementors of gradually typed languages;
+ and a statistical prototol that scales to arbitrarily large benchmarks.
 
 @parag{Disclaimer:} 3x overhead is not "deliverable" performance.
 We never claimed so in the conference version and our opinion certainly has not changed.
