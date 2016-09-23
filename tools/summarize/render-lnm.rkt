@@ -764,8 +764,7 @@
               (title-text pn)
               (blank 0 0)))
           (define right-lbl
-            ;; 2016-09-19 : Everything is 0% of allconfigs
-            (subtitle-text (format "sample size: ~a" num-samples )))
+            (subtitle-text (format "sample size: ~a" num-samples)))
           (lt-superimpose
             (vr-append TSHIM right-lbl p)
             left-lbl)))
@@ -824,11 +823,11 @@
       (hc-append (* 2 HSHIM)
                  (make-line "DarkViolet" "true delta (v6.4 - v6.2)" #f)
                  (make-line "chocolate" "avg. sample delta" #t) )))
-  (vl-append VSHIM
+  (vc-append VSHIM
     (if (< (*PLOT-WIDTH*) 400)
       (vl-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
       (vl-append* VSHIM row*))
-    (hc-append 0 (blank 90 0) srs-legend)))
+    srs-legend))
 
 ;; -----------------------------------------------------------------------------
 

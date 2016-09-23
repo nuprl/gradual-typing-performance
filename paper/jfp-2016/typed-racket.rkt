@@ -606,7 +606,6 @@
                  [*MAX-OVERHEAD* 20]
                  [*N* #f]
                  [*NUM-SAMPLES* 60] ;; 200 ;; TODO
-                 [*PLOT-FONT-SCALE* 0.04]
                  [*SINGLE-PLOT?* #f]
                  [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
                                           (for/list ([i (in-range 4 20 2)]) i))]
@@ -636,7 +635,6 @@
                  [*MAX-OVERHEAD* 20]
                  [*N* #f]
                  [*NUM-SAMPLES* 20] ;; 200 ;; TODO
-                 [*PLOT-FONT-SCALE* 0.04]
                  [*SINGLE-PLOT?* #f]
                  [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
                                           (for/list ([i (in-range 4 20 2)]) i))]
@@ -644,8 +642,7 @@
                  [*X-TICKS* '(1 2 20)]
                  ;[*Y-MINOR-TICKS* '(25 75)]
                  [*Y-NUM-TICKS* 3]
-                 [*Y-TICK-LINES?* #t]
-                 )
+                 [*Y-TICK-LINES?* #t])
     (with-cache (cachefile "cache-srs-precise.rktd")
       #:read deserialize
       #:write serialize

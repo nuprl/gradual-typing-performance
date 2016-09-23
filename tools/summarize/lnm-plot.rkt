@@ -855,7 +855,6 @@
                  ;[plot-y-ticks (linear-ticks #:number (assert (*Y-NUM-TICKS*) positive?))]
                  [plot-x-far-ticks no-ticks]
                  [plot-y-far-ticks no-ticks]
-                 ;[plot-y-transform log-transform]
                  [plot-tick-size (*TICK-SIZE*)]
                  [plot-font-face (*PLOT-FONT-FACE*)]
                  [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
