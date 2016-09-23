@@ -97,12 +97,12 @@ We demonstrate that the method characterizes
  performance of two implementations of the same gradual type system.
 To validate the method, we evaluate the performance of @integer->word[(length (*RKT-VERSIONS*))]
  Typed Racket versions on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional
- and object-oriented benchmark programs ranging in size and complexity.
+ and object-oriented benchmark programs ranging in size and complexity (the @|GTP| benchmarks suite).
 
 Building on the evaluation method introduced in the conference version of this paper@~cite[tfgnvf-popl-2016],
  this paper contributes
  the first comparitive evaluation of different implementations of the same gradual type system;
- @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs for our @|GTP| benchmark suite;
+ @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs;
  an in-depth analysis of the performance bottlenecks in these benchmarks;
  @; general lessons for implementors of gradually typed languages;
  and a statistical prototol that scales to arbitrarily large benchmarks.

@@ -111,7 +111,7 @@ Another example is the @bm[kcfa] benchmark, in which hashtable types account for
 
 Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
 Changing its language to @code{#lang typed/racket} improves its performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.@note{A programmer recently shared this code on the Racket mailing list, see the appendix.}
-The drastic improvement is just because the @emph{undocumented} type representing @tt{trie} structures is expensive to enforce dynamically.
+The drastic improvement is just because the @emph{undocumented} type representing @tt{trie} structures is enforced with expensive dynamic checks.
 
     @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
       @(begin
@@ -137,7 +137,7 @@ The drastic improvement is just because the @emph{undocumented} type representin
 
 Higher-order values and metaprogramming features introduce fine-grained and dynamic type boundaries.
 For example, every proxy that enforces a type specification is a dynamically-generated type boundary.
-Such boundaries lead to greater overhead than one would predict based on static module dependencies.
+These boundaries make it difficult to predict the overhead of gradual typing statically.
 
 The @bm[synth] benchmark illustrates one problematic use of metaprogramming.
 One module in @bm[synth] exports a macro that expands to a low-level iteration construct.
@@ -197,7 +197,7 @@ Racket's chaperones implement a predicate that tells whether the current chapero
 In many cases, these predicates remove unnecessary proxies, but a few of our benchmarks still suffer from redundant proxies.
 
 For example, the @bm[fsm], @bm[fsmoo], and @bm[forth] benchmarks update mutable data structures in a loop.
-@Figure-ref{fig:devils:fsm fig:devils:forth} demonstrate the problematic functions in each benchmark.
+@Figure-ref["fig:devils:fsm" "fig:devils:forth"] demonstrate the problematic functions in each benchmark.
 In @bm[fsm], the value @racket[p] accumulates one proxy every time it crosses a type boundary; that is, four proxies for each iteration of @racket[evolve].
 The worst case overhead for this benchmark is 235x on Racket v6.4.
 In @bm[forth], the loop functionally updates an environment @racket[env] of calculator command objects;
@@ -205,7 +205,7 @@ In @bm[forth], the loop functionally updates an environment @racket[env] of calc
 
 The @bm[zombie] benchmark exhibits similar overhead due to higher-order functions.
 For example, the @racket[Posn] datatype in @figure-ref{fig:devils:zombie} is a higher-order function that responds to symbols @code{'x}, @code{'y}, and @code{'move} with a tagged method.
-Helper functions like @racket[posn-move] implement a tag-free interface, but calling such functions across a type boundary leads to layered proxies.
+Helper functions such as @racket[posn-move] manage tags on behalf of clients, but calling such functions across a type boundary leads to layered proxies.
 Our benchmark replays @bm[zombie] on a sequence of 100 commands and reports a worst-case overhead of 300x on Racket v6.4.
 @; zombie input: 100 commands
 @; worst case: 21 seconds = 300x overhead
