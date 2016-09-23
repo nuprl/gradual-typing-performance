@@ -595,7 +595,7 @@
     (for/list ([bm (in-list bm*)])
       (for/list ([v (in-list (*RKT-VERSIONS*))])
         (benchmark-rktd bm v))))
-  (parameterize ([*current-cache-keys* (list (lambda () factor*) (lambda () version))]
+  (parameterize ([*current-cache-keys* (list (lambda () factor*))]
                  [*AXIS-LABELS?* #f]
                  [*L* '(0)]
                  [*L-LABELS?* #t]
@@ -626,7 +626,7 @@
     (for/list ([bm (in-list bm*)])
       (for/list ([v (in-list (*RKT-VERSIONS*))])
         (benchmark-rktd bm v))))
-  (parameterize ([*current-cache-keys* (list (lambda () factor*) (lambda () rktd**) (lambda () version))]
+  (parameterize ([*current-cache-keys* (list (lambda () factor*) (lambda () rktd**))]
                  [*AXIS-LABELS?* #f]
                  [*LEGEND?* #f]
                  [*LINE-LABELS?* #f]
