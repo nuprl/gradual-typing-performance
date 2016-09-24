@@ -277,7 +277,7 @@ Both our experimental scripts and the collected data are available in the online
 
 
 @; -----------------------------------------------------------------------------
-@profile-point{sec:tr:plots}
+@profile-point{sec:plots}
 @section[#:tag "sec:plots"]{Evaluating Performance}
 
 @(render-lnm-plot
