@@ -853,7 +853,7 @@
       #:exact (list 100)))
   (parameterize ([plot-x-ticks (ticks-add? x-major-ticks (*X-MINOR-TICKS*))]
                  [plot-x-transform (if (*LOG-TRANSFORM?*) log-transform id-transform)]
-                 [plot-y-ticks (ticks-add? y-major-ticks (*Y-MINOR-TICKS*))]
+                 [plot-y-ticks (list->ticks '(-10 50 100) #:units "%")]
                  ;[plot-y-ticks (linear-ticks #:number (assert (*Y-NUM-TICKS*) positive?))]
                  [plot-x-far-ticks no-ticks]
                  [plot-y-far-ticks no-ticks]

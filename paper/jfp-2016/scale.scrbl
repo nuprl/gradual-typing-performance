@@ -74,7 +74,7 @@ Furthermore, the confidence bounds around these means are tight, even for the la
       (render-srs-precise (list tetris) (list sample-size-factor))
     ]
     (parameterize ([*PLOT-HEIGHT* 100]
-                   [*PLOT-WIDTH* 210]
+                   [*PLOT-WIDTH* 220]
                    [*PLOT-FONT-SCALE* 0.04]
                    [*X-TICK-LINES?* #f]
                    [*LNM-WIDTH* (- (*LNM-WIDTH*) 3)])

@@ -638,10 +638,7 @@
                  [*SINGLE-PLOT?* #f]
                  [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
                                           (for/list ([i (in-range 4 20 2)]) i))]
-                 [*X-TICKS* '(1 2 20)]
-                 ;[*Y-MINOR-TICKS* '(25 75)]
-                 [*Y-NUM-TICKS* 3]
-                 [*Y-TICK-LINES?* #t])
+                 [*X-TICKS* '(1 2 20)])
     (with-cache ((list-cache-file "cache-srs-precise-") bm*)
       #:read deserialize
       #:write serialize
