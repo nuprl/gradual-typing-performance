@@ -1423,6 +1423,13 @@
                                 #:pages '(83 99))
    #:date 2005))
 
+(define stw-pldi-2015
+  (make-bib
+   #:title "Blame and Coercion: Together again for the first time"
+   #:author (authors "Jeremy Siek" "Peter Thiemann" "Philip Wadler")
+   #:location (proceedings-location pldi #:pages '(425 435))
+   #:date 2015))
+
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 
 ;; TODO
