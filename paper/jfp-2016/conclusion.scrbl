@@ -7,53 +7,61 @@
 
 @; - our goal
 Gradual typing emerged as a new research area ten years ago.
-Researchers began by asking whether one could design a programming language with a sound type system that integrated untyped components@~cite[mf-toplas-2007 gktff-sfp-2006 thf-dls-2006 st-sfp-2006].
-The first papers on gradual typing provided theoretical models that served as proof of concept.
+Researchers began by asking whether one could design a programming language with a sound type system that integrated untyped components@~cite[gktff-sfp-2006 thf-dls-2006 st-sfp-2006].
+The initial series of papers on gradual typing provided theoretical models that served as proof of concept.
 Eight years ago, @citet[thf-popl-2008] introduced Typed Racket, the first implementation of gradual typing designed to accomodate existing, dynamically-typed programs.
-At this point, the important research question changed; researchers now asked whether the models of gradual typing could scale to express the eclectic idioms found in pragmatic, dynamically typed languages.
-Recent gradual type systems have explored this question in languages ranging from Smalltalk to JavaScript@~cite[acftd-scp-2013 rsfbv-popl-2015 vksb-dls-2014 thf-popl-2008].
+At this point, the important research question changed to whether the models of gradual typing could scale to express the @emph{grown} idioms found in pragmatic, dynamically typed languages.
+Others have since explored this question in languages ranging from Smalltalk to JavaScript@~cite[acftd-scp-2013 rsfbv-popl-2015 vksb-dls-2014 rnv-ecoop-2015 thf-popl-2008].
 
-Researchers speculated that the runtime cost of enforcing type soundness would be high in realistic applications.
-Nevertheless, a number of industry labs found the idea of migrating dynamically typed code to a static type discipline compelling, and implemented @emph{optionally typed} variants of dynamically typed languages.
-Microsoft developed TypeScript@note{@url{https://www.typescriptlang.org/}} for JavaScript, Facebook developed Hack@note{@url{http://hacklang.org/}} for PHP and Flow@note{@url{https://flowtype.org/}} for JavaScript, and Dropbox is now funding the @tt{mypy}@note{@url{http://mypy-lang.org/}} project for Python.
-These languages provide the static benefits of type annotations and impose @emph{zero} runtime overhead, but do not deliver runtime guarantees.
-Programs written in these optionally typed languages are therefore suceptible to the errors and inefficiencies described in @secref{sec:overhead}.
+From the beginning, researchers speculated that the cost of enforcing type soundness at runtime would be high.
+@citet[thf-dls-2006] attempted to avoid this cost by permitting only module-level type boundaries.
+@citet[htf-tfp-2007] and @citet[sw-popl-2010] developed calculi to remove the space-inefficiency apparent in models of gradual typing.
+Industry labs went so far as to build @emph{optionally typed} languages that provide static checks but annihilate all trace of types before runtime.
+Programs written in such languages run with zero overhead, but are suceptible to the hard-to-trace bugs and silent failures explained in @secref{sec:overhead}.@;
+@note{@url{http://www.typescriptlang.org/}}
+@note{@url{http://hacklang.org/}}
+@note{@url{http://flowtype.org/}}
+@note{@url{http://mypy-lang.org/}}
 
-The burning question for the gradual typing research program is whether gradual type systems impose unacceptable performance overhead.
-If so, the followup question is whether this overhead is fundamental.
-This paper addresses the first question by proposing an evaluation method for gradual type systems:
+As implementations of gradual typing matured, programmers using these implementations had mixed experiences about the performance overhead of gradual typing.
+Some programmers did not notice any significant overhead.
+    @; note: able to avoid by typing more modules?
+Others experienced order-of-magnitude slowdowns.
+Clearly performance was an issue, but the burning question was @emph{how to measure} the performance overhead of a gradual type system.
+This paper provides an answer:
  @itemlist[#:style 'ordered
    @item{
-     To @emph{measure} the performance of a gradual type system, first fix a granularity for adding or removing type annotations.
-     Then annotate a suite of representative benchmark programs
-     Finally measure the running time of all possible typed/untyped @emph{configurations} subject to the granularity.
+     To @emph{measure} the performance of a gradual type system, first fix a granularity for adding type annotations.
+     Next, fully annotate a suite of representative benchmark programs.
+     Finally, measure the running time of all typed/untyped configurations.
    }
    @item{
      To express the @emph{absolute performance} of the gradual type system, report the proportion of configurations in each benchmark that are @step{} using @emph{overhead graphs}.
-     In the ideal world, all but a few configurations should be @step["0" "1.1"].
+     Ideally, many configurations should be @step["0" "1.1"].
    }
    @item{
      To express the @emph{relative performance} of two gradual type systems, plot their overhead graphs on the same axis and test whether the difference is statistically significant.
-     Ideally, the newer system should demonstrate a significant ``left shift''.
+     Ideally, the curve for the improved system should demonstrate a complete and significant ``left shift''.
    }
  ]
 Applying the evaluation method to Typed Racket has confirmed that the method works well to uncover performance issues and to quantify improvements between implementations of a gradual type system.
-We therefore recommend the method to maintainers of other gradual type systems, and to any researcher investigating the performance of a multi-language system.
-An overhead graph could show the performance tradeoff as one converts parts of a program into a different language.
-For example, the SoftDev group at King's College has a JIT compiler that integrates PHP and Python@~cite[bbdt-ecoop-2016].
+We therefore recommend the method to maintainers of other gradual type systems and to any researcher investigating the performance of a multi-language system.
+For example, @citet[gff-oopsla-2005] implemented a system for safe interoperability between Java and Scheme.
+The SoftDev group at King's College also has a JIT compiler that integrates PHP and Python@~cite[bbdt-ecoop-2016].
 
-The results of the paper's particular evaluation suggest three vectors of future research for gradual typing.
+The results of the evaluation in @secref{sec:tr} suggest three vectors of future research for gradual typing.
 First, the maintainers of other gradual type systems must evaluate their systems' performance.
-Second, the empirical accuracy of simple random sampling reported in @secref{sec:scale} must be confirmed on larger programs and in the context of micro-level gradual typing.
-Third, the research community must explore tools to help navigate a performance lattice.
-If developers can quickly find performant configurations in a lattice, then it will not matter if large portions of the lattice are not @deliverable[].
-@; Such tools would include editor support for managing type annotations, a static model of the price for enforcing a type annotation dynamically, and a @emph{boundary profiler} that attributes runtime overhead to particular type boundaries@~cite[saf-cc-2015].
+Second, the sampling technique we report in @secref{sec:scale} must be validated on larger programs and in the context of micro-level gradual typing.
+Third, the research community must explore tools to help developers navigate a performance lattice@~cite[saf-cc-2015].
 
-Finally, Typed Racket must address the pathologies identified in @secref{sec:devils}.
+Typed Racket in particular must address the pathologies identified in @secref{sec:devils}.
 Here are a few suggestions.
 To reduce the cost of high-frequency checks, the runtime system could cache the results of successful checks@~cite[rf-pldi-2016] or implement a tracing JIT compiler tailored to identify dynamic type assertions@~cite[bauman-et-al-icfp-2015].
 High-cost types may be a symptom of inefficiencies in the translation from types to dynamic checks.
-Lastly, Racket's chaperones need an effective way to identify and eliminate redundant contracts on a value@~cite[stw-pldi-2015 g-popl-2015].
+Recent calculi for space-efficient contracts@~cite[stw-pldi-2015 g-popl-2015] may provide insight for eliminating redundant chaperones.
+
+Finally, researchers must ask whether the overhead this evaluation reports for @integer->word[(*NUM-BENCHMARKS*)] benchmark programs indicates a fundamental limitation of gradual typing.
+The only way to know is through further evaluation.
 
 
 @section[#:style 'unnumbered]{Data and Code}
