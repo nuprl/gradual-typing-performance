@@ -1430,6 +1430,13 @@
    #:location (proceedings-location pldi #:pages '(425 435))
    #:date 2015))
 
+(define gff-oopsla-2005
+  (make-bib
+   #:title "Fine-Grained Interoperability Through Mirrors and Contracts"
+   #:author (authors "Kathryn E. Gray" "Robert Bruce Findler" "Matthew Flatt")
+   #:location (proceedings-location oopsla #:pages '(231 245))
+   #:date 2005))
+
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 
 ;; TODO
