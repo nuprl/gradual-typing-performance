@@ -661,7 +661,8 @@
   (add-x (rnd (min-overhead (from-rktd rktd)))))
 
 (define (deliverable* D v bm*)
-  (parameterize ([*current-cache-keys* (list (lambda () bm*))])
+  (parameterize ([*current-cache-keys* (list (lambda () bm*))]
+                 [*use-cache?* #f])
     (with-cache (cachefile (format "cache-~a-deliverable-count" D))
       (lambda ()
         (for/sum ((bm (in-list bm*)))
