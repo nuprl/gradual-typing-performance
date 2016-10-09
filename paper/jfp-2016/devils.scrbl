@@ -150,8 +150,7 @@ In order to predict such costs, a programmer must track the namespaces available
 @section[#:tag "sec:devils:wrapping"]{Layered Proxies}
 @; -- AKA repeated wrapping
 
-@; TODO note issue with space-efficiency,
-@;      translating suffixtree to use list/vector gave 'outta memory'
+@; TODO note issue with space-efficiency, translating suffixtree to use list/vector gave 'out of memory'
 
   @figure["fig:devils:fsm" @elem{Accumulating proxies in @bm[fsm].}
     @(begin

@@ -1208,7 +1208,7 @@
 ; Zorn's diss : http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-25.pdf
 ; Hertz/Berger, GC vs. Explicit : https://people.cs.umass.edu/~emery/pubs/gcvsmalloc.pdf
 ; Blackburn, Cheng, McKinley : http://www.cs.utexas.edu/users/mckinley/papers/mmtk-icse-2004.pdf
-; TODO Jones, GC handbook
+; Jones, GC handbook
 
 (define u-sde-1984
   (make-bib
@@ -1445,12 +1445,3 @@
 ;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
 ;https://www.quora.com/What-language-is-Facebook-written-in
 ;http://www.zdnet.com/article/why-facebook-hasnt-ditched-php
-;; TR users
-;https://groups.google.com/forum/#!searchin/racket-users/carmack/racket-users/RFlh0o6l3Ls/gMbszBQjijsJ
-;https://twitter.com/ID_AA_Carmack/status/695702976745381889
-;https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ
-;https://con.racket-lang.org/2015/burns.pdf
-; server https://groups.google.com/forum/#!searchin/racket-users/typed$20racket%7Csort:date/racket-users/rfM6koVbOS8/JHaHG03cCQAJ
-; quad @note{Personal communication from the author of the @tt{quad} benchmark}
-; tr-pfds https://groups.google.com/forum/#!searchin/racket-users/warning$20on$20using$20trie$20functions/racket-users/WBPCsdae5fs/XDgOdIZlAAAJ
-; @note{http://docs.racket-lang.org/math/array.html}

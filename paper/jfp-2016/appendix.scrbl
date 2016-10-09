@@ -1,5 +1,100 @@
 #lang scribble/base
-@require["common.rkt"]
+@require["common.rkt" (only-in racket/list add-between)]
+@;@exact{\newpage}
+
+@; TODO
+@; - [ ] full module graphs for all benchmarks
+@;       with colors + static + dynamic annotations
+@; - [ ] mapping from 0-15 to configurations
+
+@title[#:tag "appendix"]{Appendix}
+@section{Bibliography of Performance Costs}
+
+@(define month*
+   '( "January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
+
+@(struct abib [title author url date desc])
+
+@(define (abib<? ab1 ab2)
+   (string<? (abib-date ab1)
+             (abib-date ab2)))
+
+@(define (abib->elem ab)
+   @list[@elem{@noindent[]@emph[(abib-title ab)].@exact{~~}@abib-author[ab].@exact{~~}@abib-date[ab].
+
+               @noindent[1.2]@smaller[@url[(abib-url ab)]]}
+         @exact|{\vspace{-1ex}}|
+         @inset[@abib-desc[ab]]])
+
+@(define (render-annotated-bib ab*)
+   (cons (parag)
+         (add-between (map abib->elem (sort ab* abib<?))
+                      (parag))))
+
+@(define (annotated-bib #:title t #:author a #:url u #:date d . descr)
+   (abib t a u d descr))
+
+@; ---
+
+The following resources describe performance costs due to typed/untyped interaction.
+
+@render-annotated-bib[@list[
+  @annotated-bib[#:title "warning on use trie functions in #lang racket?"
+                 #:author "John B. Clements"
+                 #:url "https://groups.google.com/d/msg/racket-users/WBPCsdae5fs/J7CIOeV-CQAJ"
+                 #:date "2016-01-05"]{
+    Provides a script that runs twelve seconds slower when untyped.
+    This script interacts with a typed trie library.
+  }
+  @annotated-bib[#:title "Generative Art in Racket"
+                 #:author "Rodrigo Setti"
+                 #:url "http://con.racket-lang.org/2016/setti.pdf"
+                 #:date "2016-09-18"]{
+    States that the cost of interaction between untyped code and the @library{math/array} library needs improvement.
+  }
+  @annotated-bib[#:title "Typed/Untyped cost reduction and experience"
+                 #:author "JCG"
+                 #:url "https://groups.google.com/d/msg/racket-users/rfM6koVbOS8/klVzjKJ9BgAJ"
+                 #:date "2015-12-26"]{
+    Reports a 50% performance overhead in an application using a 1,900-line Typed Racket server process.
+  }
+  @annotated-bib[#:title "Rocking with Racket"
+                 #:author "Marc Burns"
+                 #:url "http://con.racket-lang.org/2015/burns.pdf"
+                 #:date "2015-09-27"]{
+    Reports one startup's experience converting a database API to Typed Racket.
+    After converting, the new code is less prone to bugs and more maintainable, but runs @exact{``}about twice as slow on common queries."
+  }
+  @annotated-bib[#:title "re: Unsafe version of require/typed?"
+                 #:author "Neil Toronto"
+                 #:url "https://groups.google.com/d/msg/racket-users/oo_FQqGVdcI/p4-bqol5hV4J"
+                 #:date "2015-05-01"]{
+    Reports performance issues that arose in the development of the typed @library{math}, @library{plot}, and @library{pict3d} libraries.
+    Sending picture objects across a type boundary made some programs unresponsive and led to large memory overhead (7-14MB) in others.
+    An FFI type boundary to OpenGL decreased the number of calls per 60Hz frame from 60,000 to 5,000.
+    Polymorphic matrix operations ran over 50x slower when called from untyped code.
+  }
+  @annotated-bib[#:title "re: Unsafe version of require/typed?"
+                 #:author "Michael Ballantyne"
+                 #:url "https://groups.google.com/d/msg/racket-users/oo_FQqGVdcI/leUnIAn7yqwJ"
+                 #:date "2015-05-01"]{
+    Provides a script that runs 14 seconds slower when untyped.
+    The script interacts with a typed queue library.
+  }
+]]
+
+
+@section{Module Descriptions}
+
+List modules,
+briefly describe,
+module graph with statics and dynamics
+
+
+@; -----------------------------------------------------------------------------
+@; modulegraphs
+
+yo ho ho
 
 @;
 @; @(require
@@ -24,28 +119,4 @@
 @; Finally, we color and thicken each edge in proportion to the runtime cost
 @;  associated with the edge.
 @; @todo{what are colors/what mean?}
-@; 
-@; ---
-@; 
-@; TODO make barchart, or just dot+whisker chart
-@; 
-@; confidence intervals for untyped runtimes:
-@; - *sieve  ((15785.96 . 16101.07) (16142.17 . 16424.09) (16216.82 . 16432.17))
-@; - forth  ((1.79 . 2.13) (1.77 . 2.09) (2.21 . 2.56))
-@; - *fsm  ((221.96 . 229.43) (185.98 . 191.61) (192.34 . 200.45))
-@; - *fsmoo  ((480.87 . 493.52) (500.89 . 511.10) (465.86 . 481.93))
-@; - *mbta  ((2066.16 . 2113.83) (2083.31 . 2110.81) (1790.20 . 1832.99))
-@; - *morsecode  ((648.87 . 669.32) (608.15 . 622.18) (629.18 . 652.018))
-@; - *zombie  ((8.04 . 8.53) (10.13 . 10.76) (8.06 . 8.51))
-@; - dungeon  (0 0 0)
-@; - **zordoz  ((829.28 . 836.71) (4114.01 . 4165.31) (2552.88 . 2573.31))
-@; - **lnm  ((584.84 . 599.95) (1175.97 . 1191.62) (833.98 . 989.37))
-@; - suffixtree  ((7918.23 . 8176.36) (7872.79 . 7996.47) (7961.95 . 8209.24))
-@; - *kcfa  ((64633.42 . 66909.37) (130275.73 . 132329.99) (103122.77 . 105423.82))
-@; - *snake  ((887.20 . 921.19) (949.59 . 961.34) (951.91 . 976.28))
-@; - *take5  ((54.66 . 56.43) (182.77 . 185.62) (138.49 . 140.70))
-@; - acquire  ((21122.03 . 21123.06) (21146.83 . 21147.74) (21134.67 . 21135.58))
-@; - tetris  ((1243.37 . 1257.82) (1258.80 . 1271.59) (1236.43 . 1261.36))
-@; - *synth  ((481.94 . 498.45) (458.78 . 469.61) (466.93 . 494.26))
-@; - gregor  ((842.58 . 894.21) (815.64 . 845.75) (803.83 . 829.56))
 @; 

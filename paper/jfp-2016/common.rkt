@@ -20,6 +20,7 @@
          step
          def
          remark
+         inset
          deliverable
          usable
 
@@ -166,6 +167,9 @@
 (define remark
   (make-defthing "Remark "))
 
+(define inset
+  (make-defthing ""))
+
 (define (deliverable [d "D"])
   (make-element plain @list{@(math d)-deliverable}))
 
@@ -224,5 +228,6 @@
 (define blue
   (make-colorizer 3)) ;(->pen-color 3)))
 
-(define (noindent)
-  (exact "\\hspace{-0.8em}"))
+(define (noindent [x 0.8])
+  (exact (format "\\hspace{-~aem}" x)))
+
