@@ -44,8 +44,8 @@
 @include-section{threats.scrbl}
 @include-section{devils.scrbl}
 @include-section{scale.scrbl}
-@;@include-section{experience.scrbl}
-@;@include-section{flavors.scrbl}
 @include-section{conclusion.scrbl}
 
 @generate-bibliography[]
+
+@include-section{appendix.scrbl}

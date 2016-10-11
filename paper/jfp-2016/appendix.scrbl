@@ -84,18 +84,27 @@ The following resources describe performance costs due to typed/untyped interact
 ]]
 
 
-@section{Module Descriptions}
+@section{The @|GTP| Benchmark Programs, by Module}
 
-List modules,
-briefly describe,
-module graph with statics and dynamics
+The following summaries describe the module-level structure of programs in the @|GTP| benchmark suite.
+In particular, the summaries include:
+@itemlist[
+  @item{
+    the name and purpose of each module;
+  }
+  @item{
+    a table of each modules' static characteristics (lines of code, number of exports);
+  }
+  @item{
+    a graph of inter-module dependencies, annotated with the number of times
+    values crossed each module boundary during our experiment.
+  }
+]
 
+@; The module names for each program are listed alphabetically.
+@; suffixtree lattice, morsecode configs
 
 @; -----------------------------------------------------------------------------
-@; modulegraphs
-
-yo ho ho
-
 @;
 @; @(require
 @;   (except-in gtp-summarize/lnm-parameters defparam)
