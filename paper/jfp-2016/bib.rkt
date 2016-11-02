@@ -56,6 +56,7 @@
 (define/short aplwa "APLWA" "Analysis and Programming Languages for Web Applications and Cloud Applications")
 (define/short dls "DLS" "Dynamic Languages Symposium")
 (define/short flops "FLOPS" (string-append Symposium "Functional and Logic Programming"))
+(define/short snapl "SNAPL" "Summit on Advances in Programming Languages")
 (define/short esop "ESOP" (string-append "European " Symposium "on Programming"))
 (define/short cc "CC" (string-append International Conference "on Compiler Construction"))
 (define/short iclp "ICLP" (string-append  International Conference "on Logic Programming"))
@@ -1436,6 +1437,20 @@
    #:author (authors "Kathryn E. Gray" "Robert Bruce Findler" "Matthew Flatt")
    #:location (proceedings-location oopsla #:pages '(231 245))
    #:date 2005))
+
+(define agd-ecoop-2005
+  (make-bib
+   #:title "Toward Type Inference for JavaScript"
+   #:author (authors "Christopher Anderson" "Paul Giannini" "Sophia Drossopoulou")
+   #:location (proceedings-location ecoop #:pages '(428 452))
+   #:date 2005))
+
+(define svcb-snapl-2015
+  (make-bib
+   #:title "Refined Criteria for Gradual Typing"
+   #:author (authors "Jeremy G. Siek" "Michael M. Vitousek" "Matteo Cimini" "John Tang Boyland")
+   #:location (proceedings-location snapl #:pages '(274 293))
+   #:date 2015))
 
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 

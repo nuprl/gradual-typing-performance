@@ -17,8 +17,8 @@
 @profile-point{sec:tr}
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-To validate the evaluation method, we apply it to a suite of @integer->word[(count-benchmarks)] Typed Racket programs.
-This section introduces the benchmarks, documents our protocol for collecting performance lattice data, and presents the overhead graphs we derived from the data.
+As validation of the evaluation method, this section presents the results of applying it to a suite of @integer->word[(count-benchmarks)] Typed Racket programs.
+This section introduces the benchmarks, documents our protocol for collecting performance lattice data, and presents the derived overhead graphs.
 
 
 @; -----------------------------------------------------------------------------
@@ -27,10 +27,7 @@ This section introduces the benchmarks, documents our protocol for collecting pe
 The benchmarks are representative of actual user code yet
  small enough to make exhaustive performance evaluation tractable.
 The following descriptions, arranged from smallest performance lattice to largest,
- briefly explain the purpose of each benchmark.
-
-@emph{Note on terminology:} Racket's @emph{chaperones} are proxies that may perform only side effects but preserve object equality@~cite[chaperones-impersonators].
-Typed Racket compiles each higher-order type annotating a type boundary to a chaperone and applies this proxy to all runtime values that cross the boundary.
+ briefly summarize each benchmark.
 
 
 @; -----------------------------------------------------------------------------
@@ -40,26 +37,25 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 @render-benchmark-descriptions[
 @(cons sieve
   @elem{
-    Demonstrates a scenario where user code is tightly coupled to higher-order library code.
-    The library implements a stream data structure; the user creates a stream of prime numbers.
+    Demonstrates a scenario where client code is tightly coupled to higher-order library code.
+    The library implements a stream data structure; the client module builds a stream of prime numbers.
     Introducing a type boundary between these modules leads to significant overhead.
   })
 (cons forth
   @elem{
     Interprets Forth programs.
     The interpreter represents calculator commands as a list of first-class objects.
-    These objects accumulate chaperones as they cross type boundaries.
+    These objects accumulate proxies as they cross type boundaries.
   })
 (cons (list fsm fsmoo)
   @elem{
-    Simulates the interactions of economic agents, modeled as finite-state automata@~cite[n-mthesis-2014].
-    This benchmark has functional (@bm[fsm]) and object-oriented (@bm[fsmoo]) implementations.
-    The object-oriented version frequently sends first-class objects across type boundaries; the functional version does the same with mutable vectors.
+    Simulates the interactions of economic agents via communicating, finite-state automata@~cite[n-mthesis-2014].
+    This benchmark comes in two flavors: @bm[fsm] stores the agents in a mutable vector and whereas @bm[fsmoo] uses a first-class object.
   })
 (cons mbta
   @elem{
     Builds a map of Boston's subway system and answers reachability queries.
-    The map encapsulates a boundary to Racket's untyped @library{graph} library; when the map is typed, the boundary to @library{graph} becomes a significant type boundary.
+    The map encapsulates a boundary to Racket's untyped @library{graph} library; when the map is typed, the (type) boundary to @library{graph} is a performance bottleneck.
   })
 (cons morsecode
   @elem{
@@ -69,7 +65,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons zombie
   @elem{
     Implements a game where players dodge computer-controlled ``zombie'' tokens.
-    Curried functions over symbols (i.e. ``method names'') implement game entities and repeatedly cross type boundaries.
+    Curried functions over symbols implement game entities and repeatedly cross type boundaries.
 
     @;@racket[
     @;  (define-type Point
@@ -98,7 +94,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons dungeon
   @elem{
     Builds a grid of wall and floor objects by choosing first-class classes from a list of ``template'' pieces.
-    This list accumulates chaperones when it crosses a type boundary.
+    This list accumulates proxies when it crosses a type boundary.
 
     @;Originally, the program imported the Racket @library{math} library
     @; for array operations and @library{racket/dict} for a generic dictionary interface.
@@ -117,7 +113,7 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
     @emph{Note}:
      the Racket bytecode format changed between versions 6.2 and 6.3 with
      the release of the set-of-scopes macro expander@~cite[f-popl-2016].
-    This change significantly improved the overhead of @bm[zordoz].
+    This change significantly reduced the overhead of @bm[zordoz].
 
     @;As it turns out, the change from 6.2 to 6.3 improved the typed/untyped ratio
     @; from
@@ -130,18 +126,18 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons lnm
   @elem{
     Renders overhead graphs@~cite[tfgnvf-popl-2016].
-    Two modules are tightly-coupled to Typed Racket libraries; typing these modules improves performance.
+    Two modules are tightly-coupled to Typed Racket libraries; typing both modules improves performance.
   })
 (cons suffixtree
   @elem{
     Computes longest common subsequences between strings.
-    The largest performance overheads come from a boundary between data definitions and functions manipulating the data.
+    The largest performance overheads come from a boundary between structure definitions and functions manipulating the data.
   })
 (cons kcfa
   @elem{
     Performs 1-CFA on a lambda calculus term that computes @exact|{~$\RktMeta{2*(1+3) = 2*1 + 2*3}$}| via Church numerals.
     The (mutable) binding environment flows throughout the program.
-    When this environment crosses a type boundary, it acquires a new chaperone.
+    When this environment crosses a type boundary, it acquires a new proxy.
   })
 (cons snake
   @elem{
@@ -152,12 +148,12 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons take5
   @elem{
     Runs a card game between AI players.
-    These AI communicate infrequently, so gradual typing adds relatively little overhead.
+    These players communicate infrequently, so gradual typing adds relatively little overhead.
   })
 (cons acquire
   @elem{
     Simulates a board game via message-passing objects.
-    The core game structures are encapsulated within these objects; few higher-order values cross type boundaries.
+    These objects encapsulate the core data structures; few higher-order values cross type boundaries.
   })
 (cons tetris
   @elem{
@@ -178,9 +174,9 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 (cons (list quadBG quadMB)
   @elem{
     Converts S-expression source code to @tt{PDF} format.
-    We have two versions of @bm[quad], each with very different performance characteristics.
+    The two versions of this benchmark differ in their type annotations, but have nearly identical source code.
 
-    The first version, @bm[quadMB], uses type annotations by the original author.
+    The original version, @bm[quadMB], uses type annotations by the original author.
     This version has a high typed/untyped ratio
      because it explicitly compiles types to runtime predicates
      and uses these predicates to eagerly check data invariants.
@@ -189,17 +185,12 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
     The second version, @bm[quadBG], uses identical code but weakens types to match the untyped program.
     This version is therefore suitable for judging the implementation
      of Typed Racket rather than the user experience of Typed Racket.
-
-    The conference version of this paper gave data only for
-     @bm[quadMB]@~cite[tfgnvf-popl-2016].
+    The conference version of this paper included data only for @bm[quadMB].
 
     @; To give a concrete example of different types, here are the definitions
     @;  for the core @tt{Quad} datatype from both @bm[quadMB] and @bm[quadBG].
-
     @; @racket[(define-type QuadMB (Pairof Symbol (Listof QuadMB)))]
-
     @; @racket[(define-type QuadBG (Pairof Symbol (Listof Any)))]
-
     @; The former is a homogenous, recursive type.
     @; As such, the predicate asserting that a value has type @racket[QuadMB] is a linear-time tree traversal.
     @; The predicate for @racket[QuadBG] runs significantly faster.
@@ -211,17 +202,16 @@ Typed Racket compiles each higher-order type annotating a type boundary to a cha
 @profile-point{sec:tr:characteristics}
 @subsection{Static Benchmark Characteristics}
 
-@Figure-ref{fig:bm} tabulates the size and complexity of our benchmark programs.
+@Figure-ref{fig:bm} tabulates the size and complexity of our benchmark programs.@note{The appendix presents the information in @figure-ref{fig:bm} graphically.}
 The lines of code (Untyped LOC) and number of modules (# Mod.) approximate program size.
     @; Note that the number modules determines the number of gradually typed configurations.
 The type annotations (Annotation LOC) are the new lines we added to make the untyped configuration type check.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
 Adaptor modules (# Adp.) roughly correspond to the number of user-defined datatypes in each benchmark;
  the next section provides a precise explanation.
 Lastly, the boundaries (# Bnd.) and exports (# Exp.) distill each benchmark's graph structure.
-Boundaries are import statements from one module to another, excluding imports to runtime or third-party libraries.
+Boundaries are import statements from one module to another, excluding imports for runtime or third-party libraries.
 An identifier named in such an import statement counts as an export.
-For example, one import statement in @bm[sieve] names nine identifiers.
-The appendix presents full module graphs for all benchmarks.
+For example, the one import statement in @bm[sieve] names nine identifiers.
 
 @figure*["fig:bm" @elem{Static characteristics of the @|GTP| benchmarks}
   @render-benchmarks-table{}
@@ -241,15 +231,15 @@ There were four complications.
 
 First, the addition of types occasionally required type casts or small refactorings.
 For example, the expression @racket[(string->number s)] had type @racket[(U Complex #f)] even when the programmer informally knew the expression would never produce a complex number.
-To avoid similar losses of precision, we added runtime checks to the contrary.
+To avoid similar losses of precision, we added appropriate runtime checks.
 As another example, the @bm[quad] benchmark called a library function to partition a @racket[(Listof (U A B))]
  into a @racket[(Listof A)] and a @racket[(Listof B)] using a predicate for values of type @racket[A].
-Typed Racket could not ensure that values which failed the predicate had type @racket[B].
+Typed Racket could not prove that values which failed the predicate had type @racket[B].
 We rewrote that call site to satisfy the type checker.
 
 Second, the @bm[fsm], @bm[synth], and @bm[quad] benchmarks came with type annotations.
 We had to revise some of these annotations because Typed Racket could not enforce the original types on a type boundary.
-For instance, Typed Racket could not impose parametric polymorphism on Racket struct definitions, so we made the core datatypes in @bm[synth] monomorphic.
+For instance, Typed Racket could not enforce parametric polymorphism on structure definitions, so we made the core datatypes in @bm[synth] monomorphic.
 
 Third, we converted any contracts in untyped benchmarks to type annotations and in-line assertions.@note{At the time, Typed Racket could not express contracts.}
 The @bm[acquire] benchmark in particular used contracts to ensure ordered lists with unique elements.
@@ -273,7 +263,7 @@ Our results are consistent with the data we previously collected for Racket v6.2
 We are thereby encouraged that the observed performance overhead is reproducible across machines and computing environments.
 @Secref{sec:threats} reports threats to validity regarding our experimental protocol.
 
-Both our experimental scripts and the collected data are available in the online supplement to this paper.
+Both our experiment scripts and the collected data are available in the online supplement to this paper.
 
 
 @; -----------------------------------------------------------------------------
@@ -292,7 +282,7 @@ Both our experimental scripts and the collected data are available in the online
     (define NUMV (integer->word (length (*RKT-VERSIONS*))))
     (cons
       @elem{
-        @(apply Figure-ref name*) present our experimental results in a series of overhead graphs.
+        @(apply Figure-ref name*) present our results in a series of overhead graphs.
         As in @figure-ref{fig:suffixtree-plot}, the left column of figures are cumulative distribution functions for @deliverable[] configurations and the right column are cumulative distribution functions for @step["1" "D"] configurations.
         These plots additionally give data for three versions of Racket released between June 2015 and February 2016.
         Data for version 6.2 are thin red curves with short dashes.
@@ -317,49 +307,43 @@ Both our experimental scripts and the collected data are available in the online
                 [absolute-min-overhead-bm "synth"]
                )
           @elem{
-            Many curves have low slopes.
-            These slopes demonstrate that gradual typing introduces large and widespread performance overhead in our benchmark programs.
-            Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common slope is a flat line near the 50% mark.
+            Many curves are quite flat; they demonstrate that gradual typing introduces large and widespread performance overhead in the corresponding programs.
+            Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common shape is a flat line near the 50% mark.
             Such lines imply that the performance of a family of configurations is dominated by a single type boundary.
             @; For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present; all eight configurations with this boundary have over @|max-str| overhead.
-            Benchmarks with @|suffixtree-num-modules| or more modules generally have smoother slopes, but five such benchmarks still have low slopes.
-            These low slopes carry the same underlying message as the flat lines; for many values of @math{D} between 1 and @|max-str|, few configurations are @deliverable{}.
+            Benchmarks with @|suffixtree-num-modules| or more modules generally have smoother slopes, but five such benchmarks have essentially flat curves.
+            The underlying message is that for many values of @math{D} between 1 and @|max-str|, few configurations are @deliverable{}.
 
-            For example, consider @math{D=2}.
-            In @integer->word[(- num-bm num-mostly-2-deliverable)] of the @|num-bm-str| benchmark programs, @emph{at most} half the configurations are @deliverable{2}.
+            For example, in @integer->word[(- num-bm num-mostly-2-deliverable)] of the @|num-bm-str| benchmark programs, @emph{at most} half the configurations are @deliverable{2}.
             The situation is worse for lower (more realistic) overheads, and does not improve much for higher overheads.
-            At @math{D=10}, ten benchmarks still have 50% or fewer configurations @deliverable{10}.
+            Similarly, there are ten benchmarks in which at most half the configurations are @deliverable{10}.
 
             The curves' endpoints describe the extremes of gradual typing.
             The left endpoint gives the percentage of configurations that run at least as quickly as the untyped program.
             Except for @bm[lnm], such configurations are a low proportion of the total.@note{@bm[sieve] is a degenerate case. Only its untyped and fully-typed configurations are @deliverable{1}.}
             The right endpoint shows how many configurations suffer over 20x performance overhead.
-            In total, @|num-max-deliverable-str| benchmarks have configurations with such extreme slowdowns.
+            @string-titlecase[num-max-deliverable-str] benchmarks have at least one such configuration.
 
             Moving from @math{k=0} to @math{k=1} in a fixed version of Racket does little to improve the number of @deliverable{} configurations.
             Given the slopes of the @math{k=0} graphs, this result is not surprising.
             One type conversion step can eliminate a pathological boundary, such as those in @bm[fsm] and @bm[zombie], but the overhead in larger benchmarks comes from a variety of type boundaries.
             Except in configurations with many typed modules, adding types to one additional module is not likely to improve performance.
 
-            On the other hand, subsequent versions of Typed Racket do exhibit less overhead.
+            On the other hand, the newer versions of Typed Racket do exhibit less overhead.
             The three slopes for each benchmark are similar, but later versions typically have more @deliverable{} configurations for any fixed @math{D}.
             In particular @bm[kcfa], @bm[snake], and @bm[tetris] doubled the number of @deliverable{8} configurations between versions 6.2 and 6.4.
 
-            The exceptions to this rule are @todo{check}.
-            @; If this trend continues, Typed Racket may soon offer sound and performant gradual typing.
+            The exception to this rule is @bm[forth], which suffers a performance regression between version 6.2 and 6.3.
+            @; TODO verify cause
+            The regression is due to a change in the implementation of class contracts.
 
-            Finally, note that every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
-            These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
+         @;   Finally, note that every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
+         @;   These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
 
          @;   Third, the @bm[lnm] benchmark demonstrates that clients of a typed library have a positive incentive to convert their modules to Typed Racket.
          @;   Doing so can improve the application's performance.
          @;   Racket's contracts are similarly @emph{infectious}@~cite[f-icfp-2014] because they properly attribute blame; new types track blame and remove some dynamic checks.
           })
-
-        @; OTHER NOTES
-        @; - canweget dungeon running???
-        @; - class/c bug (explains forth after 6.2?)
-        @; - zombie k=1
       }
       (for/list ([p (in-list pict*)]
                  [name (in-list name*)]
@@ -383,7 +367,8 @@ Overhead plots summarize the high-level performance of gradual type systems, but
         [sample-D-str (let ([diff (abs (- c6.4 c6.2))])
                         (~r (+ (min c6.2 c6.4) (/ diff 2)) #:precision '(= 1)))])
 @list[@elem{
-  To demonstrate the issue, @figure-ref{fig:exact-runtimes} plots our entire dataset for the @bm[morsecode] benchmark.
+  @Figure-ref{fig:exact-runtimes} demonstrates the issue.
+  It plots our entire dataset for the @bm[morsecode] benchmark.
   The @math{x}-axis has sixteen discrete intervals, one for each @bm[morsecode] configuration.@note{Configuration 0 is untyped and configuration 15 is fully typed. The mapping from @exact{$i \in [1,15]$} to configurations is in the appendix.}
   The @math{y} axis measures running time in milliseconds.
   Each data point is one running time for one configuration.
@@ -391,14 +376,14 @@ Overhead plots summarize the high-level performance of gradual type systems, but
    times for v6.2 are red triangles,
    times for v6.3 are green circles,
    and times for v6.4 are blue squares.
-  The left-to-right order of points for each configuration and version of Racket
-   is the order we obtained the measurements.
+  The left-to-right order of points for each configuration and version of Racket is the order in which we obtained the measurements.
   For example, the rightmost triangle for configuration 4 is the final running time we collected for configuration 4 on Racket v6.2.
 
   Compare @figure-ref{fig:exact-runtimes} with the overhead graph for @bm[morsecode] in @figure-ref{fig:lnm:1}.
-  Both graphs reach the same conclusion; namely, @bm[morsecode] has a few configurations that perform better on v6.3 and a few that perform worse on v6.2, but overall performance between versions is similar.
+  Both graphs reach the same conclusion; namely, runtimes for version 6.2 are typically the slowest, but overall performance between all three versions is similar.
   The overhead graph, however, summarizes each configuration by its mean runtime without communicating the variance between iterations evident in @figure-ref{fig:exact-runtimes}.
-  Nevertheless, this variance is low and suggests that the conclusion is in fact statistically significant.
+  Fortunately, this variance is low.
+  Therefore conclusions drawn from the overhead plot are likely to hold in practice.
 
   @; "exact" lessons
   @; - clustered points, unimodal, left-to-right independent
@@ -413,8 +398,8 @@ Overhead plots summarize the high-level performance of gradual type systems, but
     @(define sample-D 2)
     @(define sample-confidence 98)
 
-The challenge is to quantify variance and significance for datasets with exponentially many configurations.
-We do so by equipping our performance metrics with confidence intervals@~cite[n-ptrs-1937].
+The challenge for performance evaluation is to quantify variance and significance in datasets with exponentially many configurations.
+Equipping the performance metrics with confidence intervals provides a solution@~cite[n-ptrs-1937].
 In essence, a confidence interval is a probable bound for the true value of an unknown parameter.
 For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the parameters are truly different.
 
@@ -434,12 +419,12 @@ The confidence intervals are the @id[sample-confidence]% confidence intervals fo
  produce intervals containing the true ratio.@note{``High probability'' is a far better mental model for interpreting @figure-ref{fig:uncertainty} than ``@id[sample-confidence]% confidence''.
   We say @id[sample-confidence]% because we use a critical value of 2.326, but these are not rigorous statistics.
   First, the so-called index method@~cite[f-arxiv-2006] we use to compute confidence intervals for ratios is intuitive, but ad-hoc compared to methods such as Fieller's@~cite[f-rss-1957].
-  Second, a small overlap of (precise) @id[sample-confidence]% confidence intervals does not necessarily imply no significant difference at the @~r[(* 0.01 (- 100 sample-confidence)) #:precision '(= 2)] confidence level@~cite[bfwc-pm-2005].}
+  Second, a small overlap of (precise) @id[sample-confidence]% confidence intervals does not necessarily imply a lack of significant difference at the @~r[(* 0.01 (- 100 sample-confidence)) #:precision '(= 2)] confidence level@~cite[bfwc-pm-2005].}
 
 On the bottom graph, the intervals quantify uncertainty in the number of @deliverable[@id[sample-D]] configurations.
 Recall that the overhead graphs in @secref{sec:plots} count the number of configurations with mean runtime at most @math{D} times slower than the mean runtime of the untyped configuration.
 The rectangles in @figure-ref{fig:uncertainty} give the same, mean-derived counts for @math{D=@id[sample-D]}.
-These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{Note: the slope of the overhead plots weakly correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk.}
+These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{The slope of the overhead plots weakly correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk.}
 Therefore, if a configuration's @emph{mean overhead} were less than @id[sample-D] but its @emph{true overhead} were greater than @id[sample-D], the mean-based count would over-approximate the number of @deliverable[@id[sample-D]] configurations.
 Conversely, under-approximations are possible if the mean overhead exceeds the true overhead.
 The error bars around these rectangles therefore count @deliverable[@id[sample-D]] configurations based on the upper and lower bounds of a @id[sample-confidence]% confidence interval derived from our sample overheads.

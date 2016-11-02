@@ -1,6 +1,30 @@
 @; LOOKING FOR A HOME
 
 @; =============================================================================
+@; 
+@; TODO make barchart, or just dot+whisker chart
+@; 
+@; confidence intervals for untyped runtimes:
+@; - *sieve  ((15785.96 . 16101.07) (16142.17 . 16424.09) (16216.82 . 16432.17))
+@; - forth  ((1.79 . 2.13) (1.77 . 2.09) (2.21 . 2.56))
+@; - *fsm  ((221.96 . 229.43) (185.98 . 191.61) (192.34 . 200.45))
+@; - *fsmoo  ((480.87 . 493.52) (500.89 . 511.10) (465.86 . 481.93))
+@; - *mbta  ((2066.16 . 2113.83) (2083.31 . 2110.81) (1790.20 . 1832.99))
+@; - *morsecode  ((648.87 . 669.32) (608.15 . 622.18) (629.18 . 652.018))
+@; - *zombie  ((8.04 . 8.53) (10.13 . 10.76) (8.06 . 8.51))
+@; - dungeon  (0 0 0)
+@; - **zordoz  ((829.28 . 836.71) (4114.01 . 4165.31) (2552.88 . 2573.31))
+@; - **lnm  ((584.84 . 599.95) (1175.97 . 1191.62) (833.98 . 989.37))
+@; - suffixtree  ((7918.23 . 8176.36) (7872.79 . 7996.47) (7961.95 . 8209.24))
+@; - *kcfa  ((64633.42 . 66909.37) (130275.73 . 132329.99) (103122.77 . 105423.82))
+@; - *snake  ((887.20 . 921.19) (949.59 . 961.34) (951.91 . 976.28))
+@; - *take5  ((54.66 . 56.43) (182.77 . 185.62) (138.49 . 140.70))
+@; - acquire  ((21122.03 . 21123.06) (21146.83 . 21147.74) (21134.67 . 21135.58))
+@; - tetris  ((1243.37 . 1257.82) (1258.80 . 1271.59) (1236.43 . 1261.36))
+@; - *synth  ((481.94 . 498.45) (458.78 . 469.61) (466.93 . 494.26))
+@; - gregor  ((842.58 . 894.21) (815.64 . 845.75) (803.83 . 829.56))
+
+@; -----------------------------------------------------------------------------
 
 all configurations are equally probable.
 but some mixes of types and untyped actually dont make sense
@@ -10,32 +34,6 @@ ALSO, when a programmer incrementally adds types we assume the
 This assumption is clearly false, but without a model for how programs typically
  evolve it is our best unbiased guess.
 
-@; =============================================================================
-@; Even in the scenario outlined above, where the programmer likely spent hours
-@;  recovering type information, converting an untyped module to Typed Racket is
-@;  orthogonal to programmers' main goal of delivering a working software product.
-@; If the programmer does attempt to formalize types, there are other tradeoffs to bear in mind.
-
-
-@; =============================================================================
-These users frequently report steep performance penalties when they mix Racket and Typed Racket modules in a single application.
-Nonetheless, programmers continue to use Typed Racket because it accomodates the idioms of Racket and helps catch ``subtle reasoning errors.''@note{Matthew Butterick, personal email, 2015-05-20.}
-For example, the widely-used math, statistics, and plotting libraries are all typed.
-
-Typed Racket programs, as opposed to scripts, frequently incorporate untyped components and use untyped libraries.
-Conversely, untyped programs often depend on typed libraries.
-In other words, gradual typing is widespread.
-
-The prevalence of gradual typing is largely due to the low syntactic burden
- of mixing typed and untyped code.
-Racket programmers may import most typed values as if they were untyped.
-The only restriction is that typed compiler extensions cannot run in untyped contexts.
-Typed Racket programmers can import untyped values by giving each import an
- explicit type annotation.
-
-Given the close integration of Racket and Typed Racket, programmers tend to
- incrementally type untyped modules.
-Below are a few common use cases, but in general we cannot predict why or how programmers choose to add types.
 @; =============================================================================
 @subsection{Auxilliary Notions}
 
@@ -68,12 +66,12 @@ These might be configurations where running the unit tests takes hours
     }
 
 @; =============================================================================
-In practice, sound gradual type systems for Racket, Python, and JavaScript
- have demonstrated overheads of
- 3.4x@~cite[tfdffthf-ecoop-2015],
- 10x@~cite[vksb-dls-2014],
- and
- 72x@~cite[rsfbv-popl-2015].
+@;In practice, sound gradual type systems for Racket, Python, and JavaScript
+@; have demonstrated overheads of
+@; 3.4x@~cite[tfdffthf-ecoop-2015],
+@; 10x@~cite[vksb-dls-2014],
+@; and
+@; 72x@~cite[rsfbv-popl-2015].
 @; Allende (DLS'13) dont seem to report a slowdown. Just,
 @;  "as type annotations are added to a library, performance tends to degrade"
 @; Richards @~cite[rnv-ecoop-2015] only reports

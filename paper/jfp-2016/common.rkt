@@ -33,7 +33,6 @@
          id
          library
          PHIL
-         todo ;; Remove this export before submission
 
          type
          ctc ;; aka, 'contract'
@@ -193,9 +192,6 @@
 (define PHIL
   ;; Dammit Phil
   "Nguy{\\~{\\^{e}}}n")
-
-(define (todo x)
-  (make-element 'bold @string-append["TODO: " x]))
 
 (define-values (PFDS-BEFORE PFDS-BEFORE-str)
   (let ([v 12]

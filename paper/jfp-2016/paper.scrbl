@@ -4,7 +4,7 @@
 
 @title{How to Evaluate the Performance of Gradual Type Systems}
 
-@((author/short "Greenman, Takikawa, New, Feltey, Findler, Vitek, Felleisen")
+@(@author/short{Greenman, Takikawa, New, Feltey, Findler, Vitek, Felleisen}
   "BEN GREENMAN" (affiliation-mark "1")
   " ASUMU TAKIKAWA" (affiliation-mark "1")
   " MAX S. NEW" (affiliation-mark "1")
@@ -13,12 +13,13 @@
   " JAN VITEK" (affiliation-mark "1")
   "and MATTHIAS FELLEISEN" (affiliation-mark "1")
   @(affiliation
-    "Northeastern University" (affiliation-mark "1")
+    "Northeastern University, Boston, Mass." (affiliation-mark "1")
     (affiliation-sep)
-    "Northwestern University" (affiliation-mark "2")))
+    "Northwestern University, Chicago, Ill." (affiliation-mark "2")
+   ))
 
 @abstract{
-  Every sound gradual type system ensures that untyped components of a program can never break static type guarantees.
+  A sound gradual type system ensures that untyped components of a program can never break static type guarantees.
   This assurance requires dynamic type enforcement, which imposes runtime overhead.
   Surprisingly, the archival literature on gradual typing is silent about the @emph{performance} of programs that mix typed and untyped components.
   In particular, it lacks descriptions of rigorous methods for measuring the overall performance of a gradual type system

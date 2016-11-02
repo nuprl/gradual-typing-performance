@@ -175,7 +175,7 @@
 (define-benchmark zordoz
   #:author "Ben Greenman"
   #:num-adaptor 0
-  #:origin (hyperlink "http://github.com/bennn/zordoz" "Library")
+  #:origin (hyperlink "http://github.com/bennn/zordoz" "Tool")
   #:purpose "Explore Racket bytecode"
   #:external-libraries (list (hyperlink "http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29" (library "compiler-lib")))
 )
@@ -219,9 +219,9 @@
   #:purpose "Game"
 )
 (define-benchmark synth
-  #:author "Vincent St. Amour and Neil Toronto"
+  #:author "Vincent St. Amour \\& Neil Toronto"
   #:num-adaptor 1
-  #:origin (hyperlink "http://github.com/stamourv/synth" "Library")
+  #:origin (hyperlink "http://github.com/stamourv/synth" "Application")
   #:purpose "Music synthesis DSL"
 )
 (define-benchmark gregor
@@ -237,7 +237,7 @@
 (define-oo-benchmark dungeon
   #:author "Vincent St. Amour"
   #:num-adaptor 0
-  #:origin "Library"
+  #:origin "Application"
   #:purpose "Maze generator"
 )
 (define-oo-benchmark take5
@@ -506,4 +506,6 @@
       (check-equal?
         (map benchmark-name b+*)
         '(forth fsm zombie take5))))
+
+(benchmark-rktd* sieve)
 )

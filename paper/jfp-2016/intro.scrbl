@@ -19,10 +19,11 @@ New companies frequently use languages such as Python, PHP, and Ruby in server-s
 Regardless of why programmers choose dynamically typed languages,
  the maintainers of these applications inevitably find the lack of explicit type
  annotations an obstacle to their work.
-Explicit annotations communicate a programmer's intent to other human readers.
+Such explicit annotations communicate a programmer's intent to other human readers.
 Furthermore, the toolchain can check the annotations for logical inconsistencies
  and leverage types to improve the efficiency of compiled code.
-Researchers have tried to overcome the lack of type annotations with inference algorithms,
+Researchers have tried to overcome the lack of type annotations with inference
+ algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 rch-popl-2012],
  but there is no substitute for programmer-supplied annotations.
      @; Confirming problem, and responses:
      @; - PEP type hints
@@ -36,7 +37,7 @@ For example, Twitter was able to port their server-side code from Ruby to Scala 
 In other cases, the codebase becomes too large for this approach.
 
 @; Enter GT
-Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006],@note{We prefer the more descriptive term @emph{migratory typing}, but defer to the established slogan.}
+Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006],@note{We prefer the more descriptive term @emph{migratory typing}, but defer to the established slogan.} @; TODO we
  a linguistic approach.
  @; What problem? Is it really clear enough?
     @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
@@ -92,20 +93,22 @@ This paper presents a method for the performance evaluation of gradual type syst
      relative to the baseline performance of the fully untyped program.
    }
  ]
-We demonstrate that the method characterizes
+The method characterizes
  both the @emph{absolute} performance of a gradual type system and the @emph{relative}
  performance of two implementations of the same gradual type system.
-To validate the method, we evaluate the performance of @integer->word[(length (*RKT-VERSIONS*))]
+As validation, @secref{sec:tr} presents a comprehensive performance evaluation
+ of @integer->word[(length (*RKT-VERSIONS*))]
  Typed Racket versions on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional
  and object-oriented benchmark programs ranging in size and complexity (the @|GTP| benchmarks suite).
 
-Building on the evaluation method introduced in the conference version of this paper@~cite[tfgnvf-popl-2016],
- this paper contributes
+This paper extends @citet[tfgnvf-popl-2016].
+The novel contributions in this work are:
  the first comparitive evaluation of different implementations of the same gradual type system;
  @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs;
- an in-depth analysis of the performance bottlenecks in these benchmarks;
+ an analysis of the performance bottlenecks in these benchmarks;
  @; general lessons for implementors of gradually typed languages;
- and a statistical prototol that scales to arbitrarily large benchmarks.
+ and a statistical protocol that suggests how to approximate the peformance
+ of gradually-typed programs for which exhaustive testing is not feasible.
 
-@parag{Disclaimer:} 3x overhead is not "deliverable" performance.
-We never claimed so in the conference version and our opinion certainly has not changed.
+@;@parag{Disclaimer:} 3x overhead is not "deliverable" performance.
+@;We never claimed so in the conference version and our opinion certainly has not changed.

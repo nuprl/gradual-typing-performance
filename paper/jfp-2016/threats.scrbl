@@ -25,8 +25,9 @@
 
 The application of our evaluation method projects a negative image of Typed Racket's sound gradual typing.
 Only a small number of configurations in our benchmark suite run with low overhead; @|lo-prop| of all configurations are @deliverable[lo] on Racket v@|version|.
-Many demonstrate extreme overhead; @|hi-prop| of all configurations are not even @deliverable[hi] on v@|version|.
-While we are confident that the method addresses the goals of gradual typing, our particular application has some threats to validity.
+Many demonstrate extreme overhead; @|hi-prop| of all configurations are not even @deliverable[hi] on version @|version|.
+
+While we are confident that the evaluation method addresses the goals of gradual typing, our particular application has some threats to validity.
 In particular, both our @emph{experimental protocol} and the @emph{conclusions} we draw have limitations.
 
 @; -- small bm, some aggressively modularized
@@ -35,9 +36,8 @@ First, the benchmark programs are relatively small.
 Larger programs might avoid the pathological overheads in our benchmarks,
  though our results for @bm[quadMB] and @bm[synth] are evidence to the contrary.
 
-Second, a few benchmarks have little data (less than 6 samples per configuration) due to time limitations.
+Second, a few benchmarks have little data (less than 6 samples per configuration) due to time limitations.@note{Parallelizing the experiment would yield more samples, but would also add confounding variables to the measurements. See @url{http://prl.ccs.neu.edu/blog/2016/08/03/a-few-cores-too-many/} for one relevant anecdote.}
 It is therefore possible that some samples are not truly representative.
-Running more configurations in parallel could have yielded more samples, but would have introduced additional confounding variables in the measurements.
 
 Third, our configurations running in parallel reference the same Racket executable and external libraries.
 This cross-reference is a potential source of bias.
@@ -50,13 +50,13 @@ Nevertheless, we report overheads much larger than those attributed to systemati
 @; ===
 
 Our conclusions suffer from three limitations.
-First, we use one fixed type assignment for each benchmark.
-Typed Racket accepts a range of type annotations for any expression.
-These type annotations determine the runtime constraints on untyped code, therefore the choice of types can drastically affect performance.
-Except for the @bm[quadBG] and @bm[quadMB] benchmarks, which differ only in type annotations, we have no other paired benchmark of this kind.
-Then again, it is still a failure of gradual typing if a programmer must divine the best possible choice of type annotations to obtain reasonable performance.
+First, the evaluation does not systematically measure the effects of annotating the same code with different types.
+This is an issue because type annotations determine the runtime constraints on untyped code.
+Therefore if two programmers give the same code different type annotations, they may experience different performance.
+For example, @bm[quadBG] and @bm[quadMB] describe the same code with different types and have drastically different overhead graphs.
+Whereas all configurations of the former are @deliverable{6}, only a fraction of @bm[quadMB] configurations are even @deliverable{20}.
 
-Second, our conclusions rely on Typed Racket's implementation technology.
+Second, our conclusions rely on Typed Racket's implementation technology and do not necessarily generalize to other implementations of gradual typing.
 Typed Racket re-uses Racket's runtime, a conventional JIT technology.
 In particular, the JIT makes no attempt to reduce the overhead of contracts.
 Contract-aware implementation techniques such @emph{soft contracts} (@exact{@|PHIL|} @|etal| 2014) @; TODO HACK @elem{@~cite[nthvh-icfp-2014]}

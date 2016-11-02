@@ -20,10 +20,9 @@ The evaluation method proposed in @secref{sec:method} does not scale to benchmar
 Benchmarking a full performance lattice for a program with @math{N} such components requires an exponential number of measurements.
 Even with access to a server farm, exhaustively measuring programs with as few as 60 components is impractical.
 We clearly need to simplify the method to feasibly determine the overhead of gradual typing in such programs.
-There is no other way to help language designers improve the performance of gradual type systems.
 
-This section shows how simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
-Specifically, it shows that a linear number of samples generates, in practice, a good approximation to the presented overhead plots.
+This section shows that simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
+Specifically, it demonstrates that a linear number of samples generates, in practice, a good approximation to the presented overhead plots.
 Overhead plots are intuitively a statement about expected values.
 If 10% of the benchmarks are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
 The same holds for any value of @math{D}, so an overhead plot generated from one sample population should approximate the true overhead plot.
@@ -33,7 +32,7 @@ The same holds for any value of @math{D}, so an overhead plot generated from one
 To demonstrate, @figure-ref{fig:scale:srs-overhead} plots the true overhead for the @id[(benchmark->num-configurations tetris)] @bm[tetris] configurations against overhead in samples of @id[tetris-sample-size] configurations.@note{The sample size is @id[sample-size-factor] times the number of modules in the @bm[tetris] benchmark. All plots in this section use analogous sampling rates.}
 The dark red line is from @secref{sec:plots}; it plots the true overhead in @bm[tetris] on Racket v6.2.
 The @integer->word[srs-samples] faint red lines plot the overhead in @integer->word[srs-samples] distinct samples of @id[tetris-sample-size] configurations each.
-In particular, a single faint red line plots the proportion of @deliverable{} configurations in one group of @id[tetris-sample-size] configurations, selected without replacement.@note{By @emph{without replacement}, we mean that each sample has @id[tetris-sample-size] unique configurations; however, there may be duplicates between samples. At any rate, choosing truly random samples (without replacement) yields similar results.}
+In particular, a single faint red line plots the proportion of @deliverable{} configurations in one group of @id[tetris-sample-size] configurations, selected without replacement.@note{By @emph{without replacement}, we mean that each sample has @id[tetris-sample-size] unique configurations; however, there may be duplicates between samples. At any rate, choosing truly random samples (with replacement) yields similar results.}
 Similarly, the dark and faint blue lines plot true and sample overheads in Racket v6.4.
 
 @Figure-ref{fig:scale:srs-overhead} thus shows that small, random populations can approximate the true overhead in a large performance lattice.

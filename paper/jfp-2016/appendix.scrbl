@@ -1,5 +1,5 @@
 #lang scribble/base
-@require["common.rkt" (only-in racket/list add-between)]
+@require["common.rkt" (only-in racket/list add-between) "benchmark.rkt" "typed-racket.rkt"]
 @;@exact{\newpage}
 
 @; TODO
@@ -8,6 +8,7 @@
 @; - [ ] mapping from 0-15 to configurations
 
 @title[#:tag "appendix"]{Appendix}
+@; =============================================================================
 @section{Bibliography of Performance Costs}
 
 @(define month*
@@ -84,6 +85,7 @@ The following resources describe performance costs due to typed/untyped interact
 ]]
 
 
+@; =============================================================================
 @section{The @|GTP| Benchmark Programs, by Module}
 
 The following summaries describe the module-level structure of programs in the @|GTP| benchmark suite.
@@ -129,3 +131,11 @@ In particular, the summaries include:
 @;  associated with the edge.
 @; @todo{what are colors/what mean?}
 @; 
+
+
+@; @; =============================================================================
+@; @section{Iterations}
+@; Very low, becuase of 6.2
+@; @(for/list ([bm (in-list ALL-BENCHMARKS)])
+@;    (define iter* (for/list ([v (in-list (*RKT-VERSIONS*))]) (benchmark->num-iterations bm v)))
+@;    (format "~a ~a~n" (benchmark-name bm) (apply min iter*)))

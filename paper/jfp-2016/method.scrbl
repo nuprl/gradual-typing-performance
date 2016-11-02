@@ -31,15 +31,15 @@ If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may try to address the performance overhead.
 As they continue to develop the program, programmers repeat this process.
 
-We turn these observations into an evaluation method in three stages.
-First we describe the @emph{space} over which a performance evaluation must take place.
-Second we propose @emph{metrics} relevant to the performance of a gradually typed program.
-Third we introduce a @emph{visualization} that concisely presents the metrics on exponentially large spaces.
+The following subsections build an evaluation method from these observations in three steps.
+First, @secref{sec:method:lattice} describes the @emph{space} over which a performance evaluation must take place.
+Second, @secref{sec:measurements} defines @emph{metrics} relevant to the performance of a gradually typed program.
+Third, @secref{sec:graphs} introduces a @emph{visualization} that concisely presents the metrics on exponentially large spaces.
 
 
 @; -----------------------------------------------------------------------------
 
-@section{Performance Lattice}
+@section[#:tag "sec:method:lattice"]{Performance Lattice}
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may
  convert any subset of the modules in an untyped program to Typed Racket.
@@ -146,7 +146,7 @@ For instance, @|suffixtree-num-D-str|
      @Figure-ref{fig:suffixtree-lattice} also demonstrates that a graphical presentation of a performance lattice is a poor visual aid.
      It fails to answer routine questions and does not scale;
       @|num-bm-with-too-many| of our benchmarks have lattices with over @id[(expt 2 too-many-modules)] nodes.
-     In short, we need ways to summarize the information in a performance lattice in an useful manner.
+     In short, we need ways to summarize the information in a performance lattice in a useful manner.
    })
 
 @; -----------------------------------------------------------------------------
@@ -157,8 +157,8 @@ The most basic question about a gradually typed language is
 In principle and in Typed Racket, static types enable optimizations and can serve in place of runtime tag checks.
 The net effect of such improvements may, however, be offset by runtime type checks
  in programs that rely heavily on an untyped library.
-Hence we characterize the relative performance of fully-typed programs
- using a ratio to capture the possibility of speedups and slowdowns.
+Relative performance is therefore best described as a ratio, to capture the
+possibility of speedups and slowdowns.
 
     @def[#:term "typed/untyped ratio"]{
      The typed/untyped ratio of a performance
@@ -167,7 +167,7 @@ Hence we characterize the relative performance of fully-typed programs
     }@;
 @;
 For users of a gradual type system, the important performance
- question is how much overhead their current configuration suffers.
+ question is how much overhead their @emph{current} configuration suffers.
  @; RELATIVE TO previous version (which we standardize as "untyped program")
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
@@ -189,13 +189,16 @@ To account for these varying requirements, we use
 If an application is currently in a non-@deliverable[] configuration,
  the next question is how much work a team must invest to reach a
  @deliverable[] configuration.
-We propose as a coarse measure of ``work'' the number of modules that must be
- annotated with types before the program's performance improves.
-@;
-@; One potential solution is to convert additional modules to Typed Racket.
-@; Indeed, one user reported a speedup from @|PFDS-BEFORE| to @|PFDS-AFTER| after converting a script to Typed Racket.
-@; But annotating one additional module is not guaranteed to improve performance and may introduce new type boundaries.
-@;
+One coarse measure of ``work'' is the number of modules that must be annotated with types before performance improves.
+
+    @def[#:term @list{@step{}}]{
+     A configuration @exact{$c_1$} is @step[] if @exact{$c_1 \rightarrow_k c_2$}
+      and @exact{$c_2$} is @deliverable{}.
+    }@;
+@; @profile-point{sec:method:example}
+The number of @step[] configurations therefore captures the experience of an
+@emph{prescient} programmer that divines the @exact{$k$} modules
+best-suited to improve performance.
 
 @(define sample-data
   (let* ([mean+std* '#((20 . 0) (15 . 0) (35 . 0) (10 . 0))]
@@ -211,12 +214,6 @@ We propose as a coarse measure of ``work'' the number of modules that must be
 @(define (sample-overhead cfg)
   (ceiling (/ (sample-data cfg) (sample-data 'c00))))
 
-    @def[#:term @list{@step{}}]{
-     A configuration is @step[] if it is at most @math{k}
-      type conversion steps from a @deliverable{} configuration.
-    }@;
-@; @profile-point{sec:method:example}
-@;
 Let us illustrate these terms with an example.
 Suppose we have a project with
  two modules where the untyped configuration runs in @id[(sample-data 'c00)]
@@ -256,7 +253,7 @@ The label below each configuration is its overhead relative to the untyped confi
 
 The ratio of @deliverable{D} configurations in such a lattice is a measure of
  the overall feasibility of gradual typing.
-When this ratio is high, then no matter how the application evolves performance
+When this ratio is high, then no matter how the application evolves, performance
  is likely to remain acceptable.
 Conversely, a low ratio implies that a team may struggle to recover performance after
  incrementally typing a few modules.
@@ -288,11 +285,8 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
          run within a @id[suffixtree-sample-D]x overhead.
         Additionally, the typed/untyped ratio (@|suffixtree-tu-ratio|) is above the plot.
 
-        Viewed as a cumulative distribution function, the plot demonstrates
-         a tradeoff between performance overhead and
-         the number of deliverable configurations.
-        In this case, the shallow slope implies that the tradeoff is poor;
-         few configurations become deliverable as the programmer accepts a larger performance overhead.
+        Viewed as a cumulative distribution function, the plot demonstrates how increasing @math{D} increases the number of @deliverable[] configurations.
+        In this case, the shallow slope implies that few configurations become deliverable as the programmer accepts a larger performance overhead.
         The ideal slope would have a steep incline and a large y-intercept,
          meaning that few configurations suffer large overhead, and many run faster than the untyped baseline.
 
@@ -305,7 +299,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
          of configurations @exact{$c_1$} such that there exists a configuration
          @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
          runs at most @math{X} times slower than the untyped configuration.@note{Note that @exact{$c_1$} and @exact{$c_2$} may be the same, for instance when @exact{$c_1$} is the fully-typed configuration.}
-        Intuitively, this plot has a similar shape to the (0-step) @deliverable[] plot
+        Intuitively, this plot resembles the (0-step) @deliverable[] plot
          because accounting for one type conversion step does not change the overall
          characteristics of the benchmark, but only makes
          more configurations @deliverable[].@note{To precisely compare the @math{k=0} and @math{k=1} curves we should plot them on the same axis; however, our primary goal is to compare multiple implementations of a gradual type system on a fixed @math{k}.}
@@ -322,8 +316,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 
 @subsection{Assumptions and Limitations}
 
-Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions
- and evince two significant limitations, which readers must keep in mind when interpreting our results.
+Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions and have two significant limitations, which readers must keep in mind when interpreting our results.
 
 @; - assn: log scale
 The @emph{first assumption} is that configurations with less than 2x overhead are significantly
@@ -345,8 +338,7 @@ Pathologies like the 100x slowdowns in @figure-ref{fig:suffixtree-lattice}
 @; meh whocares
 
 @; - limit: no identity, no relation between configs (where is typed?)
-The @emph{first limitation} of the overhead plots is that they hide
- configurations' identity.
+The @emph{first limitation} of the overhead plots is that they hide a configuration's identity.
 One cannot distinguish the fully-typed configuration; moreover,
  the @exact{$\leq$} and @exact{$\rightarrow_k$} relations are lost.
 To compensate for the former we give the typed/untyped ratio above the left plot.
