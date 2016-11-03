@@ -24,7 +24,7 @@
    (format-% (- num-configs (deliverable* (*HI*) version ALL-BENCHMARKS))))
 
 The application of our evaluation method projects a negative image of Typed Racket's sound gradual typing.
-Only a small number of configurations in our benchmark suite run with low overhead; @|lo-prop| of all configurations are @deliverable[lo] on Racket v@|version|.
+Only a small number of configurations in our benchmark suite run with low overhead; a mere @|lo-prop| of all configurations are @deliverable[lo] on Racket v@|version|.
 Many demonstrate extreme overhead; @|hi-prop| of all configurations are not even @deliverable[hi] on version @|version|.
 
 Although the evaluation method addresses the goals of gradual typing, our particular application has some threats to validity.
@@ -40,7 +40,7 @@ Second, a few benchmarks have little data (less than 6 samples per configuration
 It is therefore possible that some samples are not truly representative.
 
 Third, our configurations running in parallel reference the same Racket executable and external libraries.
-This cross-reference is a potential source of bias; however, running at most two configurations simultaneously produced stable and reproducible data.
+This cross-reference is a potential source of bias. @; however, running at most two configurations simultaneously produced stable and reproducible data.
 
 Fourth, the Racket compiler and JIT include heuristic optimizations.
 Our protocol of compiling @emph{once} before collecting one sample does not control for these heuristics.
@@ -48,18 +48,18 @@ Nevertheless, the overheads evident in our results are much larger than those at
 
 @; ===
 
-Our conclusions suffer from three limitations.
+Our conclusions have three limitations.
 First, the evaluation does not systematically measure the effects of annotating the same code with different types.
 This is an issue because type annotations determine the runtime constraints on untyped code.
 Therefore if two programmers give the same code different type annotations, they may experience different performance.
 For example, @bm[quadBG] and @bm[quadMB] describe the same code with different types and have quite different performance characteristics.
-Whereas all configurations of the former are @deliverable{6}, only a fraction of @bm[quadMB] configurations are even @deliverable{20}.
+Whereas all configurations of the former are @deliverable{6}, only a small fraction of @bm[quadMB] configurations are @deliverable{20}.
 
 Second, our conclusions rely on Typed Racket's implementation technology and do not necessarily generalize to other implementations of gradual typing.
 Typed Racket re-uses Racket's runtime, a conventional JIT technology.
 In particular, the JIT makes no attempt to reduce the overhead of contracts.
-Contract-aware implementation techniques such @emph{soft contracts} (@exact{@|PHIL|} @|etal| 2014) @; HACK @elem{@~cite[nthvh-icfp-2014]}
- or the @emph{Pycket} tracing JIT compiler@~cite[bauman-et-al-icfp-2015]
+Contract-aware implementation techniques such soft contracts (@exact{@|PHIL|} @|etal| 2014) @; HACK @elem{@~cite[nthvh-icfp-2014]}
+ or the Pycket tracing JIT compiler@~cite[bauman-et-al-icfp-2015]
  may significantly reduce the overhead of gradual typing.
 
 Finally, when the Racket contract system discovers a type boundary error, type soundness guarantees that programmers receive the exact type boundary, type annotation, and incompatible value in the error message.

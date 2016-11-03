@@ -52,9 +52,9 @@ From a syntactic perspective the interaction is seamless, but dynamic checks int
 During execution, if an untyped function flows into a variable @racket[f] with
  type @type{(Real\,->\,Real)}, then a dynamic check must
  follow every subsequent call to @racket[f]
-@;These checks are necessary 
- because typed code cannot trust
- that the untyped function produces values that have the syntactic type @racket[Real].
+@;These checks are necessary
+ because typed code cannot assume
+ that values produced by the untyped function have the syntactic type @racket[Real].
 Conversely, typed functions invoked by untyped code must dynamically check their argument values.
 If functions or large data structures frequently cross these
  @emph{type boundaries},
@@ -96,10 +96,11 @@ This paper presents a method for the performance evaluation of gradual type syst
 The method characterizes
  both the @emph{absolute} performance of a gradual type system and the @emph{relative}
  performance of two implementations of the same gradual type system.
-As validation, @secref{sec:tr} presents a comprehensive performance evaluation
- of @integer->word[(length (*RKT-VERSIONS*))]
- versions of Typed Racket on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional
- and object-oriented benchmark programs ranging in size and complexity (the @|GTP| benchmarks suite).
+As validation of the method, @secref{sec:tr} presents a comprehensive
+performance evaluation of @integer->word[(length (*RKT-VERSIONS*))] versions of
+Typed Racket on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional and
+object-oriented benchmark programs ranging in size and complexity (the @|GTP|
+benchmarks suite).
 
 This paper extends @citet[tfgnvf-popl-2016].
 The novel contributions in this work are:

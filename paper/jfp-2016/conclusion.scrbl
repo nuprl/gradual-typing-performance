@@ -65,9 +65,7 @@ The only way to know is through further systematic evaluation of gradual type sy
 
 @section[#:style 'unnumbered]{Data and Code}
 
-Our benchmarks and measurements are available in
-our artifact:
-@; @todo{url}
+Our benchmarks and measurements are available in our online supplement.
 
 
 @section[#:style 'unnumbered]{Acknowledgments}

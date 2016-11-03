@@ -39,7 +39,7 @@ The following descriptions, arranged from smallest performance lattice to larges
 @(cons sieve
   @elem{
     Demonstrates a scenario where client code is tightly coupled to higher-order library code.
-    The library implements a stream data structure; the client module builds a stream of prime numbers.
+    The library implements a stream data structure; the client builds a stream of prime numbers.
     Introducing a type boundary between these modules leads to significant overhead.
   })
 (cons forth
@@ -118,7 +118,7 @@ The following descriptions, arranged from smallest performance lattice to larges
 (cons suffixtree
   @elem{
     Computes longest common subsequences between strings.
-    The largest performance overheads come from a boundary between structure definitions and functions manipulating the data.
+    The largest performance overheads are due to a boundary between struct definitions and functions on the structures.
   })
 (cons kcfa
   @elem{
@@ -166,7 +166,7 @@ The following descriptions, arranged from smallest performance lattice to larges
     This version has a high typed/untyped ratio
      because it explicitly compiles types to runtime predicates
      and uses these predicates to eagerly check data invariants.
-    In other words, the typed configuration is slower than untyped because it does more work.
+    In other words, the typed configuration is slower than the untyped configuration because it does more work.
 
     The second version, @bm[quadBG], uses identical code but weakens types to match the untyped configuration.
     This version is therefore suitable for judging the implementation
@@ -213,13 +213,13 @@ For example, the one import statement in @bm[sieve] names nine identifiers.
 @(define MAX-ITERS-STR "30")
 @(define FREQ-STR "1.40 GHz")
 
-To generate all configurations in a benchmark, we usually started with untyped code, manually created the typed configuration, and then automatically generated all mixed configurations from these versions.
+To generate all configurations in a benchmark, we usually began with untyped code, manually created the typed configuration, and then automatically generated all mixed configurations from these versions.
 There were four complications.
 
 First, the addition of types occasionally required type casts or small refactorings.
 For example, the expression @racket[(string->number s)] had type @racket[(U Complex #f)] even when the programmer informally knew the expression would never produce a complex number.
 To avoid similar losses of precision, we added appropriate runtime checks.
-As another example, the @bm[quad] benchmark called a library function to partition a @racket[(Listof (U A B))]
+As another example, the @bm[quad] program called a library function to partition a @racket[(Listof (U A B))]
  into a @racket[(Listof A)] and a @racket[(Listof B)] using a predicate for values of type @racket[A].
 Typed Racket could not prove that values which failed the predicate had type @racket[B], thus we refactored the call site.
 
@@ -238,18 +238,17 @@ Two typed modules could not share instances of such an untyped struct definition
 It was possible to implement this sharing without the layer of indirection, but adaptor modules provided a uniform solution and did not introduce noticeable overhead.
 
 All our measurements were taken on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
-The machine collected data with at most two of its 32 cores.
+With the exception of @bm[quadBG] and @bm[quadMB],@note{The six datasets for @bm[quad] were collected using 30 cores.} the machine collected data with at most two of its 32 cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
-For each benchmark, we chose a random permutation of its configurations, compiled the configurations using the standard settings, and ran each configuration through one warmup and one collecting iteration.
+For every benchmark, we chose a random permutation of its configurations, compiled the configurations using the standard settings, and ran each configuration through one warmup and one collecting iteration.
 Depending on the time needed to collect data for one benchmark's configurations, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
 The overhead graphs in the next section use the mean of these iterations.
 
 Our results are consistent with the data reported for Racket v6.2 using three different machines@~cite[tfgnvf-popl-2016].
 We are thereby encouraged that the observed performance overhead is reproducible across machines and computing environments.
 @Secref{sec:threats} reports threats to validity regarding our experimental protocol.
-
-Both our experiment scripts and the collected data are available in the online supplement to this paper.
+The online supplement to this paper contains both our experimental scripts and the full datasets.
 
 
 @; -----------------------------------------------------------------------------
@@ -320,7 +319,7 @@ Both our experiment scripts and the collected data are available in the online s
             In particular @bm[kcfa], @bm[snake], and @bm[tetris] doubled the number of @deliverable{8} configurations between versions 6.2 and 6.4.
 
             The exception to this rule is @bm[forth], which suffers a performance regression between versions 6.2 and 6.3.
-            This regression is due to an inaccurate optimization for class contracts present in version 6.2.
+            This regression is due to an inaccurate optimization for class contracts that was fixed for version 6.3.
 
          @;   Finally, note that every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
          @;   These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
@@ -335,9 +334,6 @@ Both our experiment scripts and the collected data are available in the online s
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:compare"]{Comparing Gradual Type Systems}
 
-Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
-@; @~cite[kj-ismm-2013].
-
 @; uncertain runtimes, uncertain proportions
 @(let* ([S-6.2 (gtp:from-rktd (benchmark-rktd morsecode "6.2"))]
         [S-6.4 (gtp:from-rktd (benchmark-rktd morsecode "6.4"))]
@@ -348,7 +344,9 @@ Overhead plots summarize the high-level performance of gradual type systems, but
         [sample-D-str (let ([diff (abs (- c6.4 c6.2))])
                         (~r (+ (min c6.2 c6.4) (/ diff 2)) #:precision '(= 1)))])
 @list[@elem{
-  @Figure-ref{fig:exact-runtimes} demonstrates the issue.
+  Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
+  @; @~cite[kj-ismm-2013].
+  @Figure-ref{fig:exact-runtimes} demonstrates why uncertainty might be an issue.
   It plots our entire dataset for the @bm[morsecode] benchmark.
   The @math{x}-axis has sixteen discrete intervals, one for each @bm[morsecode] configuration.@note{Configuration 0 is untyped and configuration 15 is fully typed. The mapping from @exact{$i \in [1,15]$} to configurations is in the appendix.}
   The @math{y} axis measures running time in milliseconds.
@@ -384,7 +382,7 @@ Equipping the performance metrics with confidence intervals provides a solution@
 In essence, a confidence interval is a probable bound for the true value of an unknown parameter.
 For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the parameters are truly different.
 
-@Figure-ref{fig:uncertainty} quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
+@Figure-ref{fig:uncertainty} thus quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
 The @math{x}-axis of both plots represents the @integer->word[(*NUM-BENCHMARKS*)] benchmarks, arranged left-to-right from smallest to largest performance lattice.
 As before, each benchmark has data for @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
 The @math{y}-axis of the top plot is the inverse of the typed/untyped ratio; that is, the performance of the untyped configuration divided by the performance of the typed configuration.
@@ -405,7 +403,7 @@ The confidence intervals are the @id[sample-confidence]% confidence intervals fo
 On the bottom graph, the intervals quantify uncertainty in the number of @deliverable[@id[sample-D]] configurations.
 Recall that the overhead graphs in @secref{sec:plots} count the number of configurations with mean runtime at most @math{D} times slower than the mean runtime of the untyped configuration.
 The rectangles in @figure-ref{fig:uncertainty} give the same, mean-derived counts for @math{D=@id[sample-D]}.
-These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{The slope of the overhead plots weakly correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk.}
+These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{The slope of the overhead plots correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk.}
 Therefore, if a configuration's @emph{mean overhead} were less than @id[sample-D] but its @emph{true overhead} were greater than @id[sample-D], the mean-based count would over-approximate the number of @deliverable[@id[sample-D]] configurations.
 Conversely, under-approximations are possible if the mean overhead exceeds the true overhead.
 The error bars around these rectangles therefore count @deliverable[@id[sample-D]] configurations based on the upper and lower bounds of a @id[sample-confidence]% confidence interval derived from our sample overheads.
@@ -419,7 +417,7 @@ These graphs provide evidence for stronger statements about the relative perform
 For example,
 @itemlist[
   @item{
-    Version 6.4 has significantly lower typed/untyped ratios than the earlier versions on four benchmarks: @bm[mbta], @bm[zombie], @bm[zordoz], and @bm[acquire].
+    Version 6.4 has significantly lower (improved) typed/untyped ratios than the earlier versions on four benchmarks: @bm[mbta], @bm[zombie], @bm[zordoz], and @bm[acquire].
   }
   @item{
     Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks, and significantly fewer on two benchmarks.

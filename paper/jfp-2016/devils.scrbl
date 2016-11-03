@@ -235,7 +235,7 @@ This benchmark replays a sequence of a mere 100 commands yet reports a worst-cas
 @;                             = packages, maintaining untyped compat.
 @;                             = docs, examples, faqs
 
-Racket libraries are either typed or untyped; there is no middle ground, therefore one class of library clients are forced to communicate across a type boundary.
+Racket libraries are either typed or untyped; there is no middle ground, therefore one class of library clients must communicate across a type boundary.
 For instance, our @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries and consequently have relatively high typed/untyped ratios on Racket v6.2
  (@rnd[@typed/untyped-ratio[@benchmark-rktd[mbta "6.2"]]]x and
   @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x, respectively).

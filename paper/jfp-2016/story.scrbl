@@ -8,7 +8,7 @@
 
 Typed Racket@~cite[TypedRacket] is the oldest and most developed implementation of sound gradual typing.
 It supports clients in both academia and industry.
-Typed Racket attracts these clients because it supports the idioms of Racket.
+Typed Racket attracts these clients because it accomodates the idioms of (untyped) Racket.
 In fact, a major design goal of Typed Racket is that equipping a Racket program
  with types is only a matter of annotating identifiers and declaring recursive types.
 Much of the underlying Racket program can remain the same, including code using
@@ -77,7 +77,7 @@ Typed Racket mitigates this risk by accomodating many Racket idioms,
  but occasionally programmers must refactor code to satisfy the type checker.
 Refactoring can always spawn bugs.
 
-The third cost is performance overhead, as mentioned in @secref{sec:intro}.
+The third cost is performance overhead due to typed/untyped interaction.
 For example, Typed Racket developers have experienced pathologies including
  a 50% overhead in a commercial web server
  and 25x-50x slowdowns when using the (typed) math library.
@@ -115,7 +115,6 @@ For example, the Typed Racket function in @figure-ref{fig:complex-multiply} impl
 Suppose a gradually typed program uses this function.
 Gradual type soundness demands that at runtime, every value that flows from untyped code to @racket[reynolds-*] passes the predicate @ctc{JR}.
 @; If there are @math{n} calls to the function from untyped contexts, all @math{2n} values factor through the predicate.
-
 These checks are indispensible because Typed Racket's static types operate at a higher level of abstraction than Racket's dynamic typing.
 In particular, the tag checks performed by @racket[first] and @racket[*] do not enforce the @type{JR} type.
 Without the @ctc{JR} check, the call
@@ -131,7 +130,7 @@ Unfortunately, this means the root cause of a runtime exception is usually far r
 
 In contrast, sound gradual typing guarantees that typed code never executes a single instruction using ill-typed values.
 Programmers can trust that every type annotation is a true statement because the gradual type system inserts runtime checks to remove any doubt.
-These interposed predicates furthermore detect type boundary errors as soon as possible.
+These interposed checks furthermore detect type boundary errors as soon as possible.
 If such an error occurs, the runtime enforcement system points the programmer to the relevant type annotation and supplies the incompatible value as a witness to the logical mistake.
 
 @; These guarantees and improvements in developer productivity

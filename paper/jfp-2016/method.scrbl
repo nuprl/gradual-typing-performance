@@ -29,7 +29,7 @@ These applications may undergo incremental transitions that add or remove some t
 After incrementally typing part of an application, programmers compare the performance of the modified program with the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may try to address the performance overhead.
-As they continue to develop the program, programmers repeat this process.
+As they continue to develop the application, programmers repeat this process.
 
 The following subsections build an evaluation method from these observations in three steps.
 First, @secref{sec:method:lattice} describes the @emph{space} over which a performance evaluation must take place.
@@ -138,7 +138,7 @@ For instance, @|suffixtree-num-D-str|
 @(let* ([too-many-modules 8]
         [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
    @elem{
-     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice is a poor visual aid for answering such questions.
+     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice is a poor visual aid for answering such questions, and will not scale to programs with more than seven modules.
    })
 
 @; -----------------------------------------------------------------------------
@@ -149,8 +149,7 @@ The most basic question about a gradually typed language is
 In principle and in Typed Racket, static types enable optimizations and can serve in place of runtime tag checks.
 The net effect of such improvements may, however, be offset by runtime type checks
  in programs that rely heavily on an untyped library.
-Relative performance is therefore best described as a ratio, to capture the
-possibility of speedups and slowdowns.@;
+Relative performance is therefore best described as a ratio, to capture the possibility of speedups and slowdowns.@;
 @;
     @def[#:term "typed/untyped ratio"]{
      The typed/untyped ratio of a performance
@@ -235,10 +234,9 @@ The label below each configuration is its overhead relative to the untyped confi
     Both mixed configurations are
       @deliverable[@id[g-overhead]]
       because they run within @id[(* g-overhead (sample-data 'c00))] seconds,
-      but only one is @deliverable[@id[g-overhead2]].
+      but only one is, e.g., @deliverable[@id[g-overhead2]].
     Lastly, these configurations are @step[t-str t-str]
-     because each is one conversion step
-     from the typed configuration.
+     because they can reach the typed configuration in one type conversion step.
   })
 
 The ratio of @deliverable{D} configurations in such a lattice is a measure of
@@ -273,14 +271,11 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
          of the @|suffixtree-num-configs-str| configurations
          (@(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))%)
          run within a @id[suffixtree-sample-D]x overhead.
-        Additionally, the typed/untyped ratio (@|suffixtree-tu-ratio|) is above the plot.
+        Additionally, the typed/untyped ratio above the plot reports a 30% performance improvement when all @bm[suffixtree] modules are typed.
 
-        Viewed as a cumulative distribution function, the plot demonstrates how increasing @math{D} increases the number of @deliverable[] configurations.
+        Viewed as a cumulative distribution function, this left plot demonstrates how increasing @math{D} increases the number of @deliverable[] configurations.
         In this case, the shallow slope implies that few configurations become deliverable as the programmer accepts a larger performance overhead.
-        The ideal slope would have a steep incline and a large y-intercept, meaning that few configurations suffer large overhead and many run faster than the untyped baseline.
-
-        @;Nonetheless, the plot effectively summarizes this large dataset.
-        @;Similar plots will handle arbitrarily large programs.
+        The ideal slope would have a steep incline and a large y-intercept, meaning that few configurations have large overhead and many configurations run more efficiently due to the type annotations.
 
         The plot on the right half of @figure-ref{fig:suffixtree-plot} gives
          the number of @step{1} configurations.

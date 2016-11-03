@@ -40,12 +40,11 @@ There is noticeable difference between the sample overhead and true overhead, bu
 More precisely, the curve for the mean falls within a confidence interval drawn around the samples (not pictured).
 As stated in @secref{sec:compare}, such a confidence interval estimates the @emph{likely} true overhead based on the sample measurements.
 Since the confidence interval contains the mean derived from an exhaustive evaluation, the samples do approximate the full dataset.
-Sampling all our benchmarks with at least eight modules produces similar bounds (see @figure-ref{fig:scale:srs-precise-all}).
 
-In fact, the bounds are tight enough to reflect the @emph{difference} in performance between two versions of Racket.
+In fact, the bounds are tight enough to capture the @emph{difference} in performance between two versions of Racket.
 @Figure-ref{fig:scale:srs-precise} presents such data for the @bm[tetris] benchmark.
 The dark purple line is the delta between the true overhead on v6.4 and the true overhead on v6.2.
-The dashed brown line plots a sample delta; in particular, the brown line shows the average difference between v6.4 and v6.2 across @integer->word[srs-samples] sample populations.
+The dashed brown line plots a sample delta; in particular, this brown line shows the average difference between v6.4 and v6.2 across @integer->word[srs-samples] sample populations.
 The interval around the brown line shows the best and worst differences one can expect based on a 98% confidence interval.
 Specifically, the upper end of the shaded interval is the difference between the upper confidence limit on our samples for v6.4 and the lower confidence limit on our samples for v6.2.
 The lower end of the interval is the smallest probable difference between the versions, based on our lower limit for v6.4 and upper limit for v6.2.
@@ -79,7 +78,7 @@ Furthermore, the confidence bounds around these means are tight, even for the la
                    [*X-TICK-LINES?* #f]
                    [*LNM-WIDTH* (- (*LNM-WIDTH*) 3)])
       @figure["fig:scale:srs-precise-all"  @elem{Approximating improvement in the largest benchmarks (@id[(*NUM-SIMPLE-RANDOM-SAMPLES*)] samples)}
-        (render-srs-precise (list snake acquire synth gregor) (list sample-size-factor))
+        (render-srs-precise (list snake acquire synth gregor quadBG quadMB) (list sample-size-factor))
       ]
     )))
 
