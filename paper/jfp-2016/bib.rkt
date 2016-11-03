@@ -92,14 +92,6 @@
    #:location (proceedings-location popl #:pages '(705 717))
    #:date 2016))
 
-(define TypedRacket
-  (make-bib
-   #:author (authors "Sam Tobin-Hochstadt" "Matthias Felleisen")
-   #:title "The Design and Implementation of Typed Scheme"
-   #:location (proceedings-location popl
-                                    #:pages '(395 406))
-   #:date "2008"))
-
 (define Contracts
   (make-bib
    #:author (authors "Robert Bruce Findler" "Matthias Felleisen")
@@ -341,13 +333,6 @@
 		 #:number 2
 		 #:pages '("237" "268"))))
 
-(define |Space Efficient Gradual Typing|
-  (make-bib
-   #:title "Space Efficient Gradual Typing"
-   #:author (authors "David Herman" "Aaron Tomb" "Cormac Flanagan")
-   #:location (proceedings-location tfp)
-   #:date "2007"))
-
 (define |Nested and Dynamic Contract Boundaries|
   (make-bib
    #:title "Nested and Dynamic Contract Boundaries"
@@ -412,7 +397,7 @@
 (define no-more-scapegoating
   (make-bib
    #:title "Correct Blame for Contracts: No More Scapegoating"
-   #:author (authors "Christos Dimoulas" "Robert Bruce Findler" "Cormc Flanagan" "Matthias Felleisen")
+   #:author (authors "Christos Dimoulas" "Robert Bruce Findler" "Cormac Flanagan" "Matthias Felleisen")
    #:location (proceedings-location popl)
    #:date 2011))
 

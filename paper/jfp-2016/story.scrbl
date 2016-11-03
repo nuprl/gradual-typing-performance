@@ -6,7 +6,7 @@
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
-Typed Racket@~cite[TypedRacket] is the oldest and most developed implementation of sound gradual typing.
+Typed Racket@~cite[thf-popl-2008] is the oldest and most developed implementation of sound gradual typing.
 It supports clients in both academia and industry.
 Typed Racket attracts these clients because it accomodates the idioms of (untyped) Racket.
 In fact, a major design goal of Typed Racket is that equipping a Racket program

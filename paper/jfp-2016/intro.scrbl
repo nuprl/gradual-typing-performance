@@ -61,9 +61,9 @@ If functions or large data structures frequently cross these
  enforcing type soundness might impose a huge runtime cost.
 
 Optimistically, researchers have continued to explore the theory and practice of sound
- gradual typing@~cite[htf-tfp-2007
+ gradual typing@~cite[ktgff-tech-2007
                       sgt-esop-2009
-                      TypedRacket
+                      thf-popl-2008
                       wgta-ecoop-2011
                       acftd-scp-2013
                       rnv-ecoop-2015

@@ -362,7 +362,7 @@
     (parag (symbol->string (lnm-name l)))
     (elem (lnm-description l))))
 
-(define (render-lnm-plot pict*->elem #:rktd*** [rktd*** #f])
+(define (render-lnm-plot pict*->elem #:rktd*** [rktd*** #f] #:index [cache-offset 1])
   ;; Sort & make figures of with 6 plots each or whatever
   (parameterize ([*AXIS-LABELS?* #f]
                  [*L* '(0 1)]
@@ -392,7 +392,7 @@
     (define cache? (*CACHE?*))
     (pict*->elem
       (for/list ([rktd** (in-list (or rktd*** (split-list 5 (get-lnm-rktd**))))]
-                 [i (in-naturals 1)])
+                 [i (in-naturals cache-offset)])
         (parameterize ([*CACHE-TAG* (if cache? (number->string i) #f)])
           (collect-garbage 'major)
           (render-lnm (list->vector (append* rktd**))))))))

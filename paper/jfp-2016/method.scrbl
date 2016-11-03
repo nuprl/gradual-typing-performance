@@ -253,6 +253,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 @section[#:tag "sec:graphs"]{Overhead Graphs}
 
 @(render-lnm-plot
+  #:index 0
   #:rktd*** (list (list (list (benchmark-rktd suffixtree suffixtree-lattice-version))))
   (lambda (pict*)
     (list

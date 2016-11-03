@@ -15,7 +15,7 @@ Others have since explored this and similar questions in languages ranging from 
 
 From the beginning, researchers speculated that the cost of enforcing type soundness at runtime would be high.
 @citet[thf-dls-2006] anticipated this cost and attempted to reduce it by permitting only module-level type boundaries.
-@citet[htf-tfp-2007] and @citet[sw-popl-2010] developed calculi to remove the space-inefficiency apparent in models of gradual typing.
+@citet[htf-hosc-2010] and @citet[sw-popl-2010] developed calculi to remove the space-inefficiency apparent in models of gradual typing.
 Industry labs went so far as to build @emph{optionally typed} languages@;
 @note{@url{http://www.typescriptlang.org/}}
 @note{@url{http://hacklang.org/}}
@@ -63,9 +63,9 @@ Finally, researchers must ask whether the specific problems reported in this pap
 The only way to know is through further systematic evaluation of gradual type systems.
 
 
-@section[#:style 'unnumbered]{Data and Code}
-
-Our benchmarks and measurements are available in our online supplement.
+@;@section[#:style 'unnumbered]{Data and Code}
+@;
+@;Our benchmarks and measurements are available in our online supplement.
 
 
 @section[#:style 'unnumbered]{Acknowledgments}
