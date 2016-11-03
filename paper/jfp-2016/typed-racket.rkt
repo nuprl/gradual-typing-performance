@@ -513,7 +513,7 @@
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*PLOT-FONT-SCALE* 0.04]
-                     [*PLOT-HEIGHT* 140]
+                     [*PLOT-HEIGHT* 170]
                      [*PLOT-WIDTH* 430]
                      [*POINT-SIZE* 6]
                      [*POINT-ALPHA* 0.7])

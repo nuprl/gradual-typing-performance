@@ -424,25 +424,15 @@ These graphs provide evidence for stronger statements about the relative perform
 For example,
 @itemlist[
   @item{
-    Version 6.3 has significantly better typed/untyped ratios than version 6.2 on seven benchmarks.
-    These improved benchmarks include @bm[mbta], @bm[zombie], and @bm[zordoz], which were among the highest typed/untyped ratios on v6.2.
-
-         @; ; in fact, the typed/untyped ratios demonstrate that only four benchmarks run faster when fully typed on Racket version 6.4.
-         @;   Finally, only four benchmarks run faster when fully typed.
-         @;   The rest have typed/untyped ratios of at least 1, despite type specialization in the Typed Racket compiler@~cite[stf-optimization-coaching].
-         @;   In the case of @bm[mbta] and @bm[zordoz], these ratios are due to interactions with an untyped library.
-         @;   Object-oriented benchmarks such as @bm[take5] and @bm[acquire] suffer overhead from type casts@~cite[tfdffthf-ecoop-2015].
-         @;   And as mentioned above, @bm[quadMB] incurs overhead from type-generated predicates.
-
+    Version 6.4 has significantly lower typed/untyped ratios than the earlier versions on four benchmarks: @bm[mbta], @bm[zombie], @bm[zordoz], and @bm[acquire].
   }
   @item{
     Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks, and significantly fewer on two benchmarks.
+    The drastic improvements in the @bm[mbta] and @bm[gregor] benchmarks are due to recent enhancements to Racket's contracts.
+    In fact, all benchmarks are improved by these enhancements, but many configurions still suffer more than 20x overhead.
   }
 ]
-Similar graphs can assess the performance of any fixed configuration or @math{D} values.
-
-@; - will need better stats when things cut close
-@; - don't really care about means variation with overhead graphs, just look at slope
+Similar graphs can assess the performance of any fixed configuration or value for @math{D}.
 
     @figure["fig:uncertainty" "Measuring Uncertainty"
       @(parameterize([*CONFIDENCE-LEVEL* sample-confidence])

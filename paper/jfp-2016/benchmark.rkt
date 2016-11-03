@@ -10,7 +10,7 @@
   ;; (Listof Benchmark)
 
   benchmark-rktd
-  ;; (-> Benchmark Version String Path-String)
+  ;; (-> Benchmark Version Path-String)
 
   benchmark-modulegraph
   ;; (-> Benchmark ModuleGraph)
