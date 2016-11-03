@@ -319,16 +319,11 @@ Both our experiment scripts and the collected data are available in the online s
             The three slopes for each benchmark are similar, but later versions typically have more @deliverable{} configurations for any fixed @math{D}.
             In particular @bm[kcfa], @bm[snake], and @bm[tetris] doubled the number of @deliverable{8} configurations between versions 6.2 and 6.4.
 
-            The exception to this rule is @bm[forth], which suffers a performance regression between version 6.2 and 6.3.
-            @; TODO verify cause
-            The regression is due to a change in the implementation of class contracts.
+            The exception to this rule is @bm[forth], which suffers a performance regression between versions 6.2 and 6.3.
+            This regression is due to an inaccurate optimization for class contracts present in version 6.2.
 
          @;   Finally, note that every benchmark has at least a handful of @deliverable{1.8} configurations.@note{The largest x-intercept is @|absolute-min-overhead|, in @|absolute-min-overhead-bm|.}
          @;   These configurations are a small percentage of the total, but perhaps developers or an automated tool can locate them and avoid the many high-overhead configurations.
-
-         @;   Third, the @bm[lnm] benchmark demonstrates that clients of a typed library have a positive incentive to convert their modules to Typed Racket.
-         @;   Doing so can improve the application's performance.
-         @;   Racket's contracts are similarly @emph{infectious}@~cite[f-icfp-2014] because they properly attribute blame; new types track blame and remove some dynamic checks.
           })
       }
       (for/list ([p (in-list pict*)]
