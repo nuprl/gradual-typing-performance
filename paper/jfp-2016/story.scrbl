@@ -1,6 +1,7 @@
 #lang scribble/base
 
-@require["common.rkt" "benchmark.rkt" "util.rkt" racket/file]
+@require["common.rkt" "benchmark.rkt" "util.rkt" racket/file
+         (only-in pict/code codeblock-pict) (only-in racket/string string-join)]
 
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
@@ -140,20 +141,18 @@ If such an error occurs, the runtime enforcement system points the programmer to
 @; lets developers quantify the tradeoff
 
     @figure["fig:complex-multiply" "Multiplication for polar form complex numbers"
-      @(begin
-      #reader scribble/comment-reader
-      @codeblock|{
-        #lang typed/racket
-
-        (provide reynolds-*)
-
-        (define-type JR (List Nonnegative-Real Real))
-        ;; JR = (Distance from origin, Radians)
-
-        (: reynolds-* (JR JR -> JR))
-        (define (reynolds-* jr1 jr2)
-          (list (* (first  jr1) (first  jr2))
-                (+ (second jr1) (second jr2))))
-      }|)
+      @codeblock-pict[@string-join['(
+        "#lang typed/racket"
+        ""
+        "(provide reynolds-*)"
+        ""
+        "(define-type JR (List Nonnegative-Real Real))"
+        ";; JR = (Distance from origin, Radians)"
+        ""
+        "(: reynolds-* (JR JR -> JR))"
+        "(define (reynolds-* jr1 jr2)"
+        "  (list (* (first  jr1) (first  jr2))"
+        "        (+ (second jr1) (second jr2))))"
+      ) "\n"]]
     ]
 

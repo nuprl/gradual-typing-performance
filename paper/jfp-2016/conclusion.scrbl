@@ -50,7 +50,7 @@ We therefore recommend the method to maintainers of other gradual type systems a
 
 The results of the evaluation in @secref{sec:tr} suggest three vectors of future research for gradual typing.
 First, the maintainers of other gradual type systems must attempt similar performance evaluations.
-Second, the sampling technique we report in @secref{sec:scale} must be validated on larger programs and in the context of micro-level gradual typing.
+Second, the sampling technique of @secref{sec:scale} must be validated on larger programs and in the context of micro-level gradual typing.
 Third, the research community must explore tools to help developers navigate a performance lattice, such as the feature-specific profiler of @citet[saf-cc-2015].
 
 Typed Racket in particular must address the pathologies identified in @secref{sec:devils}.

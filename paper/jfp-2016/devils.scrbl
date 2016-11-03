@@ -7,7 +7,8 @@
   "util.rkt"
   (only-in racket/string string-join)
   (only-in pict pict-height ht-append vline)
-  (only-in pict/code codeblock-pict)
+  (only-in pict/code
+    codeblock-pict)
   (only-in racket/format ~r)
   (only-in gtp-summarize/path-util add-commas)
   (except-in gtp-summarize/lnm-parameters defparam)
@@ -21,7 +22,7 @@
 @;        "Performance Overhead Spectrum"
 
 Our evaluation demonstrates that adding types to an arbitrarily chosen subset of Racket modules in a program can introduce large performance overhead.
-Here we explain with a few examples how such overheads may arise, both as inspiration for maintainers of gradual type systems and as anti-patterns for developers.
+This section explains with a few examples how such overheads may arise, both as inspiration for maintainers of gradual type systems and as anti-patterns for developers.
 
 
 @; -----------------------------------------------------------------------------
@@ -129,7 +130,7 @@ The drastic improvement is just because the @emph{undocumented} type representin
 
     @; Our @bm[kcfa] benchmark also uses immutable hashtables and pays the
     @;  runtime cost of contracts for mutable data.
-    @; We estimate that removing just those hashtable contracts would improve the
+    @; Probably, removing just those hashtable contracts would improve the
     @;  worst-case performance of @bm[kcfa] from 8x to 5x on Racket v6.4.
 
 
@@ -179,8 +180,8 @@ In order to predict such costs, a programmer must recognize macros and understan
       "(define (eval input)"
       "  (for/fold ([env  : C.Env  (base-env)])"
       "            ([line : String (in-lines input)])"
-      "    ;; Cycle through commands in `env` until we get"
-      "    ;;  a non-#f results from `eval-line`"
+      "    ;; Cycle through commands in `env` until"
+      "    ;;  `eval-line` gives a non-#f result"
       "    (for/first ([c : (Instance C.Cmd%) (in-list env)])"
       "      (send c eval-line env line))))"
       ) "\n"]]
@@ -198,7 +199,7 @@ For example, the @bm[fsm], @bm[fsmoo], and @bm[forth] benchmarks update mutable 
 In @bm[fsm], the value @racket[p] accumulates one proxy every time it crosses a type boundary; that is, four proxies for each iteration of @racket[evolve].
 The worst case overhead for this benchmark is 235x on Racket v6.4.
 In @bm[forth], the loop functionally updates an environment @racket[env] of calculator command objects;
- its worst-case overhead is 27x on Racket v6.4.@note{Modifying both functions to use an imperative message-passing style removes the performance overhead, though we consider such refactorings a last resort.}
+ its worst-case overhead is 27x on Racket v6.4.@note{Modifying both functions to use an imperative message-passing style removes the performance overhead, though it is a failure of gradual typing if programmers must resort to such refactorings.}
 
 The @bm[zombie] benchmark exhibits similar overhead due to higher-order functions.
 For example, the @racket[Posn] datatype in @figure-ref{fig:devils:zombie} is a higher-order function that responds to symbols @code{'x}, @code{'y}, and @code{'move} with a tagged method.
@@ -208,24 +209,22 @@ Our benchmark replays @bm[zombie] on a sequence of a mere 100 commands yet repor
 @; worst case: 21 seconds = 300x overhead
 
   @figure["fig:devils:zombie" @elem{Adapted from the @bm[zombie] benchmark.}
-    @(begin
-    #reader scribble/comment-reader
-    @codeblock|{
-    #lang typed/racket
-
-    (define-type Posn ((U 'x 'y 'move) ->
-                       (U (List 'x (-> Natural))
-                          (List 'y (-> Natural))
-                          (List 'move (-> Natural Natural Posn)))))
-
-    (: posn-move (Posn Natural Natural -> Posn))
-    (define (posn-move p x y)
-      (define key 'move)
-      (define r (p key))
-      (if (eq? (first r) key)
-        ((second r) x y)
-        (error 'key-error)))
-    }|)
+    @codeblock-pict[@string-join['(
+    "#lang typed/racket"
+    ""
+    "(define-type Posn ((U 'x 'y 'move) ->"
+    "                   (U (List 'x (-> Natural))"
+    "                      (List 'y (-> Natural))"
+    "                      (List 'move (-> Natural Natural Posn)))))"
+    ""
+    "(: posn-move (Posn Natural Natural -> Posn))"
+    "(define (posn-move p x y)"
+    "  (define key 'move)"
+    "  (define r (p key))"
+    "  (if (eq? (first r) key)"
+    "    ((second r) x y)"
+    "    (error 'key-error)))"
+    ) "\n"]]
   ]
 
 
@@ -255,27 +254,16 @@ In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs 
 @; In the end, the best solution may be to give more control to library clients.
 
     @figure["fig:devils:vote" @elem{Erasing types would compromise the invariant of @racket[total-votes].}
-      @(begin
-      #reader scribble/comment-reader
-
-      @;   (define total-votes 0) ;; Invariant: `0 <= total-votes`
-      @;
-      @;   ;; Add `n` votes to the global variable `total-votes`
-      @;   (define (add-votes n)
-      @;     (unless (exact-nonnegative-integer? n)
-      @;       (error "Number of votes must be a Natural number"))
-      @;     (set! total-votes (+ total-votes n)))
-
-      @codeblock|{
-        #lang typed/racket
-
-        (define total-votes : Natural 0)
-
-        (: add-votes (Natural -> Void))
-        (define (add-votes n)
-          (set! total-votes (+ total-votes n)))
-
-        (provide add-votes)
-      }|)
+      @codeblock-pict[@string-join['(
+        "#lang typed/racket"
+        ""
+        "(define total-votes : Natural 0)"
+        ""
+        "(: add-votes (Natural -> Void))"
+        "(define (add-votes n)"
+        "  (set! total-votes (+ total-votes n)))"
+        ""
+        "(provide add-votes)"
+      ) "\n"]]
     ]
 

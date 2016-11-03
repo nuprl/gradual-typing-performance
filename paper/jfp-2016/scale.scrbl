@@ -19,7 +19,7 @@
 The evaluation method proposed in @secref{sec:method} does not scale to benchmarks with a large number of typeable components.
 Benchmarking a full performance lattice for a program with @math{N} such components requires an exponential number of measurements.
 Even with access to a server farm, exhaustively measuring programs with as few as 60 components is impractical.
-We clearly need to simplify the method to feasibly determine the overhead of gradual typing in such programs.
+Clearly, the method must scale to measure the overhead in such programs.
 
 This section shows that simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
 Specifically, it demonstrates that a linear number of samples generates, in practice, a good approximation to the presented overhead plots.
@@ -32,20 +32,21 @@ The same holds for any value of @math{D}, so an overhead plot generated from one
 To demonstrate, @figure-ref{fig:scale:srs-overhead} plots the true overhead for the @id[(benchmark->num-configurations tetris)] @bm[tetris] configurations against overhead in samples of @id[tetris-sample-size] configurations.@note{The sample size is @id[sample-size-factor] times the number of modules in the @bm[tetris] benchmark. All plots in this section use analogous sampling rates.}
 The dark red line is from @secref{sec:plots}; it plots the true overhead in @bm[tetris] on Racket v6.2.
 The @integer->word[srs-samples] faint red lines plot the overhead in @integer->word[srs-samples] distinct samples of @id[tetris-sample-size] configurations each.
-In particular, a single faint red line plots the proportion of @deliverable{} configurations in one group of @id[tetris-sample-size] configurations, selected without replacement.@note{By @emph{without replacement}, we mean that each sample has @id[tetris-sample-size] unique configurations; however, there may be duplicates between samples. At any rate, choosing truly random samples (with replacement) yields similar results.}
+In particular, a single faint red line plots the proportion of @deliverable{} configurations in one group of @id[tetris-sample-size] configurations, selected without replacement.@note{Sampling @emph{without replacement}, implies that each sample has @id[tetris-sample-size] unique configurations; however, there may be duplicates between samples. At any rate, choosing truly random samples (with replacement) yields similar results.}
 Similarly, the dark and faint blue lines plot true and sample overheads in Racket v6.4.
 
 @Figure-ref{fig:scale:srs-overhead} thus shows that small, random populations can approximate the true overhead in a large performance lattice.
 There is noticeable difference between the sample overhead and true overhead, but overall the samples @emph{tend towards} the true overhead.
-To make this notion of a @emph{trend} in samples precise, we can plot the average number of @deliverable{} configurations across the samples along with a confidence interval showing the variation between samples.
+More precisely, the curve for the mean falls within a confidence interval drawn around the samples (not pictured).
 As stated in @secref{sec:compare}, such a confidence interval estimates the @emph{likely} true overhead based on the sample measurements.
-The bounds in @bm[tetris] are tight, and we have recorded similar bounds in all our benchmarks with at least eight modules (see @figure-ref{fig:scale:srs-precise-all}).
+Since the confidence interval contains the mean derived from an exhaustive evaluation, the samples do approximate the full dataset.
+Sampling all our benchmarks with at least eight modules produces similar bounds (see @figure-ref{fig:scale:srs-precise-all}).
 
 In fact, the bounds are tight enough to reflect the @emph{difference} in performance between two versions of Racket.
 @Figure-ref{fig:scale:srs-precise} presents such data for the @bm[tetris] benchmark.
 The dark purple line is the delta between the true overhead on v6.4 and the true overhead on v6.2.
 The dashed brown line plots a sample delta; in particular, the brown line shows the average difference between v6.4 and v6.2 across @integer->word[srs-samples] sample populations.
-The interval around the brown line shows the best and worst differences we can expect based on a 98% confidence interval.
+The interval around the brown line shows the best and worst differences one can expect based on a 98% confidence interval.
 Specifically, the upper end of the shaded interval is the difference between the upper confidence limit on our samples for v6.4 and the lower confidence limit on our samples for v6.2.
 The lower end of the interval is the smallest probable difference between the versions, based on our lower limit for v6.4 and upper limit for v6.2.
 

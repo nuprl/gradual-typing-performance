@@ -45,7 +45,7 @@ The promise of Typed Racket's macro-level gradual typing is that programmers may
  convert any subset of the modules in an untyped program to Typed Racket.
 A comprehensive performance evaluation must therefore consider the space of
  typed/untyped @emph{configurations} a programmer could possibly create.
-We describe this space as a lattice.
+These configurations form a lattice.
 @itemlist[
   @item{
     A (@emph{program}) @emph{configuration} is a sequence of
@@ -60,7 +60,7 @@ We describe this space as a lattice.
     For @exact|{$c \in S$}| and @exact|{$i \in [0, N)$}|,
      let @exact|{$c(i) = 1 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is typed
      and
-     let @exact|{$c(i) = 0 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is untyped.@note{Representing configurations as @math{N}-bit binary numbers induces a total ordering on configurations. We re-use this ordering in, e.g., @figure-ref{fig:exact-runtimes}.}
+     let @exact|{$c(i) = 0 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is untyped.@note{Representing configurations as @math{N}-bit binary numbers induces a total ordering on configurations. @Figure-ref{fig:exact-runtimes} re-uses this ordering.}
   }
 
   @item{
@@ -80,8 +80,8 @@ We describe this space as a lattice.
     Define an indexed @emph{type conversion} relation @exact{$\rightarrow_k$} (a subset of @exact{$\leq$}) as:
      @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
      and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
-    If @exact|{$c_1 \rightarrow_k c_2$}| we say that @exact{$c_2$} is reachable from
-     @exact{$c_1$} in at most @exact{$k$} type conversion steps.
+    If @exact|{$c_1 \rightarrow_k c_2$}|, then @exact{$c_2$} is reachable from
+     @exact{$c_1$} in @exact{$k$} or fewer @emph{type conversion steps}.
   }
   @item{
     A @emph{performance lattice} is a configuration lattice @exact|{$(S, \leq)$}|
@@ -127,26 +127,19 @@ The first level of the lattice represents all configurations with one typed modu
  these configurations' rectangles have one filled segment.
 In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all configurations
  with @math{i} typed modules as rectangles with @math{i} filled segments.
+The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.} relative to the untyped configuration.
 
-The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.}
- relative to the untyped configuration.
-@;For instance, the fully typed configuration runs 40% faster than the untyped configuration
-@; and the slowest configuration is @id[@round[@max-overhead[@[benchmark-rktd suffixtree "6.2"]]]]x slower than untyped.
 With this data, a language implementor can answer nearly any question about this benchmark's
  performance overhead due to gradual typing.
 For instance, @|suffixtree-num-D-str|
  configurations run within a @id[suffixtree-sample-D]x overhead
  and @|suffixtree-num-k-str|
-  configurations are at most @id[suffixtree-sample-k] type conversion step
-  from a configuration that runs within @id[suffixtree-sample-D]x overhead.
-
+ configurations are at most @id[suffixtree-sample-k] type conversion step
+ from a configuration that runs within @id[suffixtree-sample-D]x overhead.
 @(let* ([too-many-modules 8]
         [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
    @elem{
-     @Figure-ref{fig:suffixtree-lattice} also demonstrates that a graphical presentation of a performance lattice is a poor visual aid.
-     It fails to answer routine questions and does not scale;
-      @|num-bm-with-too-many| of our benchmarks have lattices with over @id[(expt 2 too-many-modules)] nodes.
-     In short, we need ways to summarize the information in a performance lattice in a useful manner.
+     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice is a poor visual aid for answering such questions.
    })
 
 @; -----------------------------------------------------------------------------
@@ -168,14 +161,13 @@ possibility of speedups and slowdowns.
 @;
 For users of a gradual type system, the important performance
  question is how much overhead their @emph{current} configuration suffers.
- @; RELATIVE TO previous version (which we standardize as "untyped program")
+ @; RELATIVE TO previous version (standardized as "untyped program")
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
 Depending on the nature of the application,
  an appropriate substitute for ``low enough'' might take any value between zero overhead
  and an order-of-magnitude slowdown.
-To account for these varying requirements, we use
- the following parameterized definition of a deliverable configuration.
+The following parameterized definition of a deliverable configuration accounts for these varying requirements.
 
     @def[#:term @list{@deliverable{}}]{
      A configuration
@@ -184,7 +176,7 @@ To account for these varying requirements, we use
      @;A program is @deliverable{} if all its configurations are @deliverable{}.
     }@;
 @;
-@; NOTE: really should be using %, but Sec 4 shows why we stick to x
+@; NOTE: really should be using %, but Sec 4 shows why stick to x
 @;
 If an application is currently in a non-@deliverable[] configuration,
  the next question is how much work a team must invest to reach a
@@ -215,7 +207,7 @@ best-suited to improve performance.
   (ceiling (/ (sample-data cfg) (sample-data 'c00))))
 
 Let us illustrate these terms with an example.
-Suppose we have a project with
+Suppose there is a project with
  two modules where the untyped configuration runs in @id[(sample-data 'c00)]
  seconds and the typed configuration runs in @id[(sample-data 'c11)] seconds.
 Furthermore, suppose the mixed configurations run in
@@ -287,8 +279,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 
         Viewed as a cumulative distribution function, the plot demonstrates how increasing @math{D} increases the number of @deliverable[] configurations.
         In this case, the shallow slope implies that few configurations become deliverable as the programmer accepts a larger performance overhead.
-        The ideal slope would have a steep incline and a large y-intercept,
-         meaning that few configurations suffer large overhead, and many run faster than the untyped baseline.
+        The ideal slope would have a steep incline and a large y-intercept, meaning that few configurations suffer large overhead and many run faster than the untyped baseline.
 
         @;Nonetheless, the plot effectively summarizes this large dataset.
         @;Similar plots will handle arbitrarily large programs.
@@ -302,7 +293,8 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         Intuitively, this plot resembles the (0-step) @deliverable[] plot
          because accounting for one type conversion step does not change the overall
          characteristics of the benchmark, but only makes
-         more configurations @deliverable[].@note{To precisely compare the @math{k=0} and @math{k=1} curves we should plot them on the same axis; however, our primary goal is to compare multiple implementations of a gradual type system on a fixed @math{k}.}
+         more configurations @deliverable[].
+         @;@note{Plotting the @math{k=0} and @math{k=1} curves on the same axis would facilitate comparisons; however, the primary goal is to compare multiple implementations of a gradual type system on a fixed @math{k}.}
 
         These @emph{overhead plots} concisely summarize the @bm[suffixtree] dataset.
         The same presentation scales to arbitrarily large benchmarks.
@@ -341,7 +333,7 @@ Pathologies like the 100x slowdowns in @figure-ref{fig:suffixtree-lattice}
 The @emph{first limitation} of the overhead plots is that they hide a configuration's identity.
 One cannot distinguish the fully-typed configuration; moreover,
  the @exact{$\leq$} and @exact{$\rightarrow_k$} relations are lost.
-To compensate for the former we give the typed/untyped ratio above the left plot.
+The typed/untyped ratio above the left plot partially compensates for the former.
 Unfortunately, the other configurations remain anonymous.
 
 @; - limit: angelic choice

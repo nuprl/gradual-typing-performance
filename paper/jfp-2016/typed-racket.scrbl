@@ -76,20 +76,6 @@ The following descriptions, arranged from smallest performance lattice to larges
     @;        (Pairof 'move (Real Real -> Point)))))
     @;]
 
-    @;The program was originally object-oriented but the authors converted it
-    @; to a functional encoding as a test case for soft contract verification@~cite[nthvh-icfp-2014].
-    @;We benchmark a typed version of the functional game on a small input (100 lines).
-    @;Repeatedly sending encoded objects across a type boundary leads to exponential slowdowns.
-
-    @; --- 2016-04-22 : this type is a little too awkward to talk about
-    @;As an example of the encoding, the following type signature implements a
-    @; point object.
-    @;By supplying a symbol, clients get access to a (tagged) method.
-
-    @;Intersection
-    @; types would be more straightforward than the tagged codomains used here,
-    @; but Typed Racket does not yet support intersections.
-
   })
 (cons dungeon
   @elem{
@@ -205,7 +191,8 @@ The following descriptions, arranged from smallest performance lattice to larges
 @Figure-ref{fig:bm} tabulates the size and complexity of our benchmark programs.@note{The appendix presents the information in @figure-ref{fig:bm} graphically.}
 The lines of code (Untyped LOC) and number of modules (# Mod.) approximate program size.
     @; Note that the number modules determines the number of gradually typed configurations.
-The type annotations (Annotation LOC) are the new lines we added to make the untyped configuration type check.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
+The type annotations (Annotation LOC) count additional lines in the typed configuration.
+These lines are primarily type annotations, but also include type casts and assertions.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
 Adaptor modules (# Adp.) roughly correspond to the number of user-defined datatypes in each benchmark;
  the next section provides a precise explanation.
 Lastly, the boundaries (# Bnd.) and exports (# Exp.) distill each benchmark's graph structure.
@@ -234,24 +221,23 @@ For example, the expression @racket[(string->number s)] had type @racket[(U Comp
 To avoid similar losses of precision, we added appropriate runtime checks.
 As another example, the @bm[quad] benchmark called a library function to partition a @racket[(Listof (U A B))]
  into a @racket[(Listof A)] and a @racket[(Listof B)] using a predicate for values of type @racket[A].
-Typed Racket could not prove that values which failed the predicate had type @racket[B].
-We rewrote that call site to satisfy the type checker.
+Typed Racket could not prove that values which failed the predicate had type @racket[B], thus we refactored the call site.
 
-Second, the @bm[fsm], @bm[synth], and @bm[quad] benchmarks came with type annotations.
-We had to revise some of these annotations because Typed Racket could not enforce the original types on a type boundary.
-For instance, Typed Racket could not enforce parametric polymorphism on structure definitions, so we made the core datatypes in @bm[synth] monomorphic.
+Second, the @bm[fsm], @bm[synth], and @bm[quad] benchmarks were originally typed programs.
+The benchmarks re-use many of the original type annotations, but Typed Racket could not enforce some of these annotations across a type boundary.
+For example, the core datatypes in the @bm[synth] benchmark are monomorphic because Typed Racket could not dynamically enforce parametric polymorphism on instances of an untyped structure.
 
-Third, we converted any contracts in untyped benchmarks to type annotations and in-line assertions.@note{At the time, Typed Racket could not express contracts.}
-The @bm[acquire] benchmark in particular used contracts to ensure ordered lists with unique elements.
-We added such checks as explicit pre and post-conditions inside the relevant functions.
+Third, any contracts in untyped programs are represented as type annotations and in-line assertions in the derived benchmarks.@note{At the time, Typed Racket could not express contracts.}
+The @bm[acquire] program in particular used contracts to ensure ordered lists with unique elements.
+Such checks are explicit pre and post-conditions on functions in the benchmark.
 
 Fourth, we inserted @emph{adaptor modules} between modules exporting a struct and their typed clients.
-Adaptor modules contained only type annotations, ensured a canonical set of types in configurations where the underlying server module was untyped.
+Adaptor modules contained only type annotations and ensured a canonical set of types in configurations where the underlying server module was untyped.
 The assignment of canonical types was necessary because in Typed Racket each import of an untyped struct generates a unique datatype.
 Two typed modules could not share instances of such an untyped struct definition unless they referenced a common import annotation.
 It was possible to implement this sharing without the layer of indirection, but adaptor modules provided a uniform solution and did not introduce noticeable overhead.
 
-As for collecting data, we measured the running times of configurations on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
+All our measurements were taken on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
 The machine collected data with at most two of its 32 cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
@@ -259,7 +245,7 @@ For each benchmark, we chose a random permutation of its configurations, compile
 Depending on the time needed to collect data for one benchmark's configurations, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
 The overhead graphs in the next section use the mean of these iterations.
 
-Our results are consistent with the data we previously collected for Racket v6.2 using three different machines@~cite[tfgnvf-popl-2016].
+Our results are consistent with the data reported for Racket v6.2 using three different machines@~cite[tfgnvf-popl-2016].
 We are thereby encouraged that the observed performance overhead is reproducible across machines and computing environments.
 @Secref{sec:threats} reports threats to validity regarding our experimental protocol.
 
@@ -377,7 +363,7 @@ Overhead plots summarize the high-level performance of gradual type systems, but
    times for v6.3 are green circles,
    and times for v6.4 are blue squares.
   The left-to-right order of points for each configuration and version of Racket is the order in which we obtained the measurements.
-  For example, the rightmost triangle for configuration 4 is the final running time we collected for configuration 4 on Racket v6.2.
+  Any trend in these points would imply that the measurements are @emph{not} independent.
 
   Compare @figure-ref{fig:exact-runtimes} with the overhead graph for @bm[morsecode] in @figure-ref{fig:lnm:1}.
   Both graphs reach the same conclusion; namely, runtimes for version 6.2 are typically the slowest, but overall performance between all three versions is similar.

@@ -37,7 +37,7 @@ For example, Twitter was able to port their server-side code from Ruby to Scala 
 In other cases, the codebase becomes too large for this approach.
 
 @; Enter GT
-Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006],@note{We prefer the more descriptive term @emph{migratory typing}, but defer to the established slogan.} @; TODO we
+Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006],@note{The term @emph{migratory typing} more accurately describes this particular mode of gradual typing.}
  a linguistic approach.
  @; What problem? Is it really clear enough?
     @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
@@ -98,7 +98,7 @@ The method characterizes
  performance of two implementations of the same gradual type system.
 As validation, @secref{sec:tr} presents a comprehensive performance evaluation
  of @integer->word[(length (*RKT-VERSIONS*))]
- Typed Racket versions on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional
+ versions of Typed Racket on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional
  and object-oriented benchmark programs ranging in size and complexity (the @|GTP| benchmarks suite).
 
 This paper extends @citet[tfgnvf-popl-2016].
