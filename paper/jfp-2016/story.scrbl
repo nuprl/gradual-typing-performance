@@ -107,8 +107,7 @@ If, at runtime, the expression does not produce a value satisfying @ctc{$\tau$},
 @;   @remark[]{
 @bold{Remark:}
      Type boundary errors arise when type annotations impose new constraints that untyped code does not satisfy.
-     Such errors may indicate latent bugs in the untyped code,
-     but it equally likely that the new type annotations are inaccurate.
+     Such errors may indicate latent bugs in the untyped code, but it is equally likely that the new type annotations are inaccurate.
      Put differently, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] does not match the philosophy of gradual typing. @exact{\hfill$\blacksquare$}
 @;   }@;
 

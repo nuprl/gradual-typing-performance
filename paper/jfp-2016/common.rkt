@@ -158,7 +158,7 @@
     (make-paragraph plain
       (list
         (mt-line)
-        (exact #:style #f "\\vspace{-4ex}\\begin{center}\\begin{minipage}{0.88\\textwidth}\n")
+        (exact #:style #f "\\vspace{-5ex}\\begin{center}\\begin{minipage}{0.88\\textwidth}\n")
         (bold str)
         (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
         (exact #:style #f "\\end{minipage}\\end{center}\n")

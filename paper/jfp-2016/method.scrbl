@@ -150,8 +150,8 @@ In principle and in Typed Racket, static types enable optimizations and can serv
 The net effect of such improvements may, however, be offset by runtime type checks
  in programs that rely heavily on an untyped library.
 Relative performance is therefore best described as a ratio, to capture the
-possibility of speedups and slowdowns.
-
+possibility of speedups and slowdowns.@;
+@;
     @def[#:term "typed/untyped ratio"]{
      The typed/untyped ratio of a performance
       lattice is the time needed to run the top configuration divided by the
@@ -166,8 +166,8 @@ If the performance overhead is low enough, programmers can release the
 Depending on the nature of the application,
  an appropriate substitute for ``low enough'' might take any value between zero overhead
  and an order-of-magnitude slowdown.
-The following parameterized definition of a deliverable configuration accounts for these varying requirements.
-
+The following parameterized definition of a deliverable configuration accounts for these varying requirements.@;
+@;
     @def[#:term @list{@deliverable{}}]{
      A configuration
       is @deliverable{} if its performance is no worse than a
@@ -180,8 +180,8 @@ The following parameterized definition of a deliverable configuration accounts f
 If an application is currently in a non-@deliverable[] configuration,
  the next question is how much work a team must invest to reach a
  @deliverable[] configuration.
-One coarse measure of ``work'' is the number of modules that must be annotated with types before performance improves.
-
+One coarse measure of ``work'' is the number of modules that must be annotated with types before performance improves.@;
+@;
     @def[#:term @list{@step{}}]{
      A configuration @exact{$c_1$} is @step[] if @exact{$c_1 \rightarrow_k c_2$}
       and @exact{$c_2$} is @deliverable{}.

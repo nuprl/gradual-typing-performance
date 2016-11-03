@@ -31,9 +31,10 @@ The following descriptions, arranged from smallest performance lattice to larges
 
 
 @; -----------------------------------------------------------------------------
-@subsection{Benchmark Descriptions}
+@; @subsection{Benchmark Descriptions}
 
 @profile-point{sec:tr:descriptions}
+@parag[]
 @render-benchmark-descriptions[
 @(cons sieve
   @elem{
@@ -185,7 +186,7 @@ The following descriptions, arranged from smallest performance lattice to larges
 
 @; -----------------------------------------------------------------------------
 @profile-point{sec:tr:characteristics}
-@subsection{Static Benchmark Characteristics}
+@; @subsection{Static Benchmark Characteristics}
 
 @Figure-ref{fig:bm} tabulates the size and complexity of the benchmark programs.@note{The appendix presents the information in @figure-ref{fig:bm} graphically.}
 The lines of code (Untyped LOC) and number of modules (# Mod.) approximate program size.
