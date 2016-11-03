@@ -119,8 +119,8 @@ These configurations form a lattice.
         (render-data-lattice suffixtree suffixtree-lattice-version))
     ]
 
-@Figure-ref{fig:suffixtree-lattice} is a performance lattice for @bm[suffixtree], a mid-sized program from our benchmark suite.
-The program consists of @|suffixtree-num-modules| modules, thus the lattice has @|suffixtree-num-configs-str| configurations.
+@Figure-ref{fig:suffixtree-lattice} is a performance lattice for @bm[suffixtree], a mid-sized benchmark in the @|GTP| suite.
+The benchmark consists of @|suffixtree-num-modules| modules, thus the lattice has @|suffixtree-num-configs-str| configurations.
 Each configuration is rendered as a @|suffixtree-num-modules|-segment rectangle.
 The bottom element in the lattice represents the untyped configuration.
 The first level of the lattice represents all configurations with one typed module;
@@ -129,8 +129,7 @@ In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all con
  with @math{i} typed modules as rectangles with @math{i} filled segments.
 The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.} relative to the untyped configuration.
 
-With this data, a language implementor can answer nearly any question about this benchmark's
- performance overhead due to gradual typing.
+With this data, a language implementor can answer nearly any question about the performance overhead in this benchmark program due to gradual typing.
 For instance, @|suffixtree-num-D-str|
  configurations run within a @id[suffixtree-sample-D]x overhead
  and @|suffixtree-num-k-str|
@@ -188,8 +187,7 @@ One coarse measure of ``work'' is the number of modules that must be annotated w
       and @exact{$c_2$} is @deliverable{}.
     }@;
 @; @profile-point{sec:method:example}
-The number of @step[] configurations therefore captures the experience of an
-@emph{prescient} programmer that divines the @exact{$k$} modules
+The number of @step[] configurations therefore captures the experience of a @emph{prescient} programmer that divines the @exact{$k$} modules
 best-suited to improve performance.
 
 @(define sample-data
@@ -297,7 +295,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
          @;@note{Plotting the @math{k=0} and @math{k=1} curves on the same axis would facilitate comparisons; however, the primary goal is to compare multiple implementations of a gradual type system on a fixed @math{k}.}
 
         These @emph{overhead plots} concisely summarize the @bm[suffixtree] dataset.
-        The same presentation scales to arbitrarily large benchmarks.
+        The same presentation scales to arbitrarily large programs.
         Furthermore, one can make high-level comparisons between multiple implementations
          of a gradual type system by plotting their curves on the same axes.
       }

@@ -86,9 +86,9 @@ The following resources describe performance costs due to typed/untyped interact
 
 
 @; =============================================================================
-@section{The @|GTP| Benchmark Programs, by Module}
+@section{The @|GTP| Benchmarks, by Module}
 
-The following summaries describe the module-level structure of programs in the @|GTP| benchmark suite.
+The following summaries describe the module-level structure of benchmarks in the @|GTP| suite.
 In particular, the summaries include:
 @itemlist[
   @item{

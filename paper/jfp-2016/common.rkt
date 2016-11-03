@@ -60,7 +60,11 @@
          scriblib/footnote
          setup/main-collects
          scribble/html-properties
-         scribble/latex-properties)
+         scribble/latex-properties
+         (only-in pict/code
+           current-code-font
+           current-id-color
+           current-keyword-color))
 
 (define autobib-style-extras
   (let ([abs (lambda (s)
@@ -227,3 +231,6 @@
 (define (noindent [x 0.8])
   (exact (format "\\hspace{-~aem}" x)))
 
+(current-code-font 'modern)
+;(current-keyword-color "black")
+;(current-id-color "black")

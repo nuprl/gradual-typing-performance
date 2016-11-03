@@ -17,8 +17,8 @@
 @profile-point{sec:tr}
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-As validation of the evaluation method, this section presents the results of applying it to a suite of @integer->word[(count-benchmarks)] Typed Racket programs.
-This section introduces the benchmarks, documents our protocol for collecting performance lattice data, and presents the derived overhead graphs.
+As validation of the evaluation method, this section presents the results of applying it to a suite of @integer->word[(count-benchmarks)] benchmark programs.
+This section introduces the @|GTP| benchmarks, documents our protocol for collecting performance lattice data, and presents the derived overhead graphs.
 
 
 @; -----------------------------------------------------------------------------
@@ -122,13 +122,12 @@ The following descriptions, arranged from smallest performance lattice to larges
 (cons kcfa
   @elem{
     Performs 1-CFA on a lambda calculus term that computes @exact|{~$\RktMeta{2*(1+3) = 2*1 + 2*3}$}| via Church numerals.
-    The (mutable) binding environment flows throughout the program.
+    The (mutable) binding environment flows throughout functions in the benchmark.
     When this environment crosses a type boundary, it acquires a new proxy.
   })
 (cons snake
   @elem{
-    Implements the Snake game;
-     the benchmark replays a fixed sequence of moves.
+    Implements the Snake game; the benchmark replays a fixed sequence of moves.
     Modules in this benchmark frequently exchange first-order values, such as lists and integers.
   })
 (cons take5
@@ -166,9 +165,9 @@ The following descriptions, arranged from smallest performance lattice to larges
     This version has a high typed/untyped ratio
      because it explicitly compiles types to runtime predicates
      and uses these predicates to eagerly check data invariants.
-    In other words, the typed program is slower than untyped because it does more work.
+    In other words, the typed configuration is slower than untyped because it does more work.
 
-    The second version, @bm[quadBG], uses identical code but weakens types to match the untyped program.
+    The second version, @bm[quadBG], uses identical code but weakens types to match the untyped configuration.
     This version is therefore suitable for judging the implementation
      of Typed Racket rather than the user experience of Typed Racket.
     The conference version of this paper included data only for @bm[quadMB].
@@ -188,7 +187,7 @@ The following descriptions, arranged from smallest performance lattice to larges
 @profile-point{sec:tr:characteristics}
 @subsection{Static Benchmark Characteristics}
 
-@Figure-ref{fig:bm} tabulates the size and complexity of our benchmark programs.@note{The appendix presents the information in @figure-ref{fig:bm} graphically.}
+@Figure-ref{fig:bm} tabulates the size and complexity of the benchmark programs.@note{The appendix presents the information in @figure-ref{fig:bm} graphically.}
 The lines of code (Untyped LOC) and number of modules (# Mod.) approximate program size.
     @; Note that the number modules determines the number of gradually typed configurations.
 The type annotations (Annotation LOC) count additional lines in the typed configuration.
@@ -229,7 +228,7 @@ For example, the core datatypes in the @bm[synth] benchmark are monomorphic beca
 
 Third, any contracts in untyped programs are represented as type annotations and in-line assertions in the derived benchmarks.@note{At the time, Typed Racket could not express contracts.}
 The @bm[acquire] program in particular used contracts to ensure ordered lists with unique elements.
-Such checks are explicit pre and post-conditions on functions in the benchmark.
+Such checks are explicit pre and post-conditions on functions in the @bm[acquire] benchmark.
 
 Fourth, we inserted @emph{adaptor modules} between modules exporting a struct and their typed clients.
 Adaptor modules contained only type annotations and ensured a canonical set of types in configurations where the underlying server module was untyped.
@@ -293,7 +292,7 @@ Both our experiment scripts and the collected data are available in the online s
                 [absolute-min-overhead-bm "synth"]
                )
           @elem{
-            Many curves are quite flat; they demonstrate that gradual typing introduces large and widespread performance overhead in the corresponding programs.
+            Many curves are quite flat; they demonstrate that gradual typing introduces large and widespread performance overhead in the corresponding benchmarks.
             Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common shape is a flat line near the 50% mark.
             Such lines imply that the performance of a family of configurations is dominated by a single type boundary.
             @; For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present; all eight configurations with this boundary have over @|max-str| overhead.
@@ -305,7 +304,7 @@ Both our experiment scripts and the collected data are available in the online s
             Similarly, there are ten benchmarks in which at most half the configurations are @deliverable{10}.
 
             The curves' endpoints describe the extremes of gradual typing.
-            The left endpoint gives the percentage of configurations that run at least as quickly as the untyped program.
+            The left endpoint gives the percentage of configurations that run at least as quickly as the untyped configuration.
             Except for @bm[lnm], such configurations are a low proportion of the total.@note{@bm[sieve] is a degenerate case. Only its untyped and fully-typed configurations are @deliverable{1}.}
             The right endpoint shows how many configurations suffer over 20x performance overhead.
             @string-titlecase[num-max-deliverable-str] benchmarks have at least one such configuration.
@@ -390,7 +389,7 @@ In essence, a confidence interval is a probable bound for the true value of an u
 For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the parameters are truly different.
 
 @Figure-ref{fig:uncertainty} quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
-The @math{x}-axis of both plots represents the @integer->word[(*NUM-BENCHMARKS*)] programs, arranged left-to-right from smallest to largest performance lattice.
+The @math{x}-axis of both plots represents the @integer->word[(*NUM-BENCHMARKS*)] benchmarks, arranged left-to-right from smallest to largest performance lattice.
 As before, each benchmark has data for @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
 The @math{y}-axis of the top plot is the inverse of the typed/untyped ratio; that is, the performance of the untyped configuration divided by the performance of the typed configuration.
 Higher @math{y}-values indicate better performance.

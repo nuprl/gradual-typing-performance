@@ -24,7 +24,7 @@ Clearly, the method must scale to measure the overhead in such programs.
 This section shows that simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
 Specifically, it demonstrates that a linear number of samples generates, in practice, a good approximation to the presented overhead plots.
 Overhead plots are intuitively a statement about expected values.
-If 10% of the benchmarks are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
+If 10% of the configurations are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
 The same holds for any value of @math{D}, so an overhead plot generated from one sample population should approximate the true overhead plot.
 
 @(define tetris-sample-size (* sample-size-factor (benchmark->num-modules tetris)))

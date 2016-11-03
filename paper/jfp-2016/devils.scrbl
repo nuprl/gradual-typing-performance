@@ -155,7 +155,7 @@ In order to predict such costs, a programmer must recognize macros and understan
 
 @; TODO note issue with space-efficiency, translating suffixtree to use list/vector gave 'out of memory'
 
-  @figure["fig:devils:fsm" @elem{Accumulating proxies in @bm[fsm].} #:style left-figure-style
+  @figure["fig:devils:fsm" @elem{Accumulating proxies in @bm[fsm].}
       @codeblock-pict[@string-join['(
       "#lang typed/racket"
       "(require (prefix-in P. \"population.rkt\"))"
@@ -170,7 +170,7 @@ In order to predict such costs, a programmer must recognize macros and understan
       ) "\n"]]
   ]
 
-  @figure["fig:devils:forth" @elem{Accumulating proxies in @bm[forth].} #:style left-figure-style
+  @figure["fig:devils:forth" @elem{Accumulating proxies in @bm[forth].}
       @codeblock-pict[@string-join['(
       "#lang typed/racket"
       ""
@@ -204,7 +204,7 @@ In @bm[forth], the loop functionally updates an environment @racket[env] of calc
 The @bm[zombie] benchmark exhibits similar overhead due to higher-order functions.
 For example, the @racket[Posn] datatype in @figure-ref{fig:devils:zombie} is a higher-order function that responds to symbols @code{'x}, @code{'y}, and @code{'move} with a tagged method.
 Helper functions such as @racket[posn-move] manage tags on behalf of clients, but calling such functions across a type boundary leads to layered proxies.
-Our benchmark replays @bm[zombie] on a sequence of a mere 100 commands yet reports a worst-case overhead of 300x on Racket v6.4.
+This benchmark replays a sequence of a mere 100 commands yet reports a worst-case overhead of 300x on Racket v6.4.
 @; zombie input: 100 commands
 @; worst case: 21 seconds = 300x overhead
 
@@ -256,6 +256,7 @@ In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs 
     @figure["fig:devils:vote" @elem{Erasing types would compromise the invariant of @racket[total-votes].}
       @codeblock-pict[@string-join['(
         "#lang typed/racket"
+        "(provide add-votes)"
         ""
         "(define total-votes : Natural 0)"
         ""
@@ -263,7 +264,6 @@ In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs 
         "(define (add-votes n)"
         "  (set! total-votes (+ total-votes n)))"
         ""
-        "(provide add-votes)"
       ) "\n"]]
     ]
 
