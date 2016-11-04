@@ -20,6 +20,9 @@
   benchmark->num-iterations
   ;; (-> Benchmark Natural)
 
+  benchmark->module-names
+  ;; (-> Benchmark (Listof String))
+
   benchmark<?
   ;; (-> Benchmark Benchmark Boolean)
 
@@ -347,6 +350,9 @@
                (benchmark-adjlist bm)
                (build-path (get-git-root) "benchmarks" pn)))
 
+(define (benchmark->module-names bm)
+  (map car (benchmark-adjlist bm)))
+
 (define (format:bm benchmark)
   (if (eq? benchmark quad)
     (tt "quad")
@@ -507,5 +513,12 @@
         (map benchmark-name b+*)
         '(forth fsm zombie take5))))
 
-(benchmark-rktd* sieve)
+  (test-case "benchmark->module-names"
+    (check-equal?
+      (benchmark->module-names sieve)
+      '("main" "streams"))
+    (check-equal?
+      (benchmark->module-names kcfa)
+      '("ai" "benv" "denotable" "main" "structs" "time" "ui")))
+
 )
