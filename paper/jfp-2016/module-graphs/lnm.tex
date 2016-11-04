@@ -1,9 +1,9 @@
 \begin{tikzpicture}
 
   \node (00)  {\rkt{0}{bitstring}};
-  \node (01) [below of=00,yshift=-1cm] {\rkt{3}{modulegraph}};
+  \node (01) [below of=00,yshift=-0.4cm] {\rkt{3}{modulegraph}};
   \node (10) [left of=00,xshift=-2cm] {\rkt{4}{spreadsheet}};
-  \node (11) [below of=10,yshift=-1cm] {\rkt{5}{summary}};
+  \node (11) [below of=10,yshift=-0.4cm] {\rkt{5}{summary}};
   \node (20) [left of=10,xshift=-2cm] {\rkt{1}{lnm-plot}};
   \node (30) [left of=20,xshift=-2cm] {\rkt{2}{main}};
 
@@ -11,9 +11,9 @@
   \draw[->] (11) -- (00);
   \draw[->] (11) -- (01);
   \draw[->] (20) -- (11);
-  \draw[->] (20) -- (00);
+  \draw[->] (20) edge[bend left] (00);
   \draw[->] (30) -- (20);
   \draw[->] (30) -- (11);
-  \draw[->] (30) -- (10);
+  \draw[->] (30) edge[bend left] (10);
 
 \end{tikzpicture}
