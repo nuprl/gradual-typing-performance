@@ -241,18 +241,6 @@ For instance, our @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries
   @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x, respectively).
 In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs significantly faster when fully typed.
 
-@; @; DIE ... it's all analysis
-@; Ideally, clients should be able to choose between typed and untyped versions of any library, but it is unclear how to provide this choice.
-@; Devoted library authors could maintain two separate versions of their code.
-@; Two other solutions are to put @emph{trusted} type signatures on an untyped API or to @emph{unsoundly erase} types from a typed API.
-@; Neither of these are ideal, and the latter solution of erasing types may lead to security vulnerabilities as demonstrated in @figure-ref{fig:devils:vote}.
-@; If the type signature for @racket[add-votes] is not enforced, clients can supply negative numbers to the function.
-@; A correct untyped version of @racket[add-votes] must assert that its argument is non-negative.
-@;
-@; The Racket community is aware of these issues and is actively exploring the design space.
-@; Trusted type annotations are currently the preferred solution, though Typed Racket recently added support for unsafe imports and exports.
-@; In the end, the best solution may be to give more control to library clients.
-
     @figure["fig:devils:vote" @elem{Erasing types would compromise the invariant of @racket[total-votes].}
       @codeblock-pict[@string-join['(
         "#lang typed/racket"
@@ -263,7 +251,6 @@ In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs 
         "(: add-votes (Natural -> Void))"
         "(define (add-votes n)"
         "  (set! total-votes (+ total-votes n)))"
-        ""
       ) "\n"]]
     ]
 

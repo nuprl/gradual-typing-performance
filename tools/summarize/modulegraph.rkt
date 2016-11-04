@@ -133,6 +133,7 @@
   (only-in racket/string string-split string-contains? string-trim string-join)
 )
 (require/typed syntax-sloc
+  (lang-file-sloc (-> Path-String Natural))
   (directory-sloc (-> Path-String Natural)))
 (require/typed syntax/modresolve
   (resolve-module-path (-> Path (U #f Path) Path)))
@@ -275,9 +276,15 @@
 
 ;; TODO should to/from by symbols?
 (define-type Boundary (List String String (Listof Provided)))
-(define boundary-to car)
-(define boundary-from cadr)
-(define boundary-provided* caddr)
+(: boundary-to (-> Boundary String))
+(define (boundary-to b)
+  (car b))
+(: boundary-from (-> Boundary String))
+(define (boundary-from b)
+  (cadr b))
+(: boundary-provided* (-> Boundary (Listof Provided)))
+(define (boundary-provided* b)
+  (caddr b))
 ;; For now, I guess we don't need a struct
 
 ;; Return a list of:
@@ -800,13 +807,19 @@
   (or (modulegraph-src M)
       (raise-user-error 'assert-src "Source folder missing for '~a'" (modulegraph-project-name M))))
 
-(: modulegraph->untyped-loc (-> ModuleGraph Natural))
-(define (modulegraph->untyped-loc M)
-  (directory-sloc (build-path (assert-src M) "untyped")))
+(: modulegraph->untyped-loc (->* [ModuleGraph] [(U #f String)] Natural))
+(define (modulegraph->untyped-loc M [module-name #f])
+  (get-loc (build-path (assert-src M) "untyped") module-name))
 
-(: modulegraph->typed-loc (-> ModuleGraph Natural))
-(define (modulegraph->typed-loc M)
-  (directory-sloc (build-path (assert-src M) "typed")))
+(: modulegraph->typed-loc (->* [ModuleGraph] [(U #f String)] Natural))
+(define (modulegraph->typed-loc M [module-name #f])
+  (get-loc (build-path (assert-src M) "typed") module-name))
+
+(: get-loc (-> Path (U String #f) Natural))
+(define (get-loc prefix module-name)
+  (if module-name
+    (lang-file-sloc (build-path prefix (format "~a.rkt" module-name)))
+    (directory-sloc prefix)))
 
 (: modulegraph->other-loc (-> ModuleGraph Natural))
 (define (modulegraph->other-loc M)

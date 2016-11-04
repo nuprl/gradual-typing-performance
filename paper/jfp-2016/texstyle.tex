@@ -11,9 +11,17 @@
 %% Import and print the pictures for a project
 %% Arguments:
 %% - Name of the project
-\newcommand{\modulegraph}[1]{\resizebox{0.4\textwidth}{!}{\input{#1}}}
+%\newcommand{\modulegraph}[2]{\resizebox{#2\textwidth}{!}{\input{#1}}}
+\newcommand{\modulegraph}[2]{\input{#1}}
 
-\newcommand{\rkt}[2]{$\bullet$}
+% http://tex.stackexchange.com/questions/7032/good-way-to-make-textcircled-numbers
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=2pt] (char) {{\small #1}};}}
+%\newcommand{\circled}[1]{\textcircled{\raisebox{-0.9pt}{{\small #1}}}}
+\newcommand{\rkt}[2]{{\circled{#1}}}
+%\newcommand{\rkt}[2]{$\bullet$}
+
+% http://tex.stackexchange.com/questions/132783/how-to-write-checkmark-in-latex
+%\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
 
 %% To show overfull, turn off for production!!!
 %\overfullrule=1mm

@@ -8,6 +8,7 @@
   new-untyped-bars
 )
 (provide
+  benchmark->tex-file
   count-benchmarks
   count-new-oo-benchmarks
 
@@ -29,6 +30,10 @@
   ;; (-> Natural)
 
   get-lnm-table-data
+
+  render-table
+  tex-row
+  ;; Low-level TeX table builder
 
   render-benchmark-descriptions
   ;; (-> Benchmark * Any)
@@ -183,9 +188,9 @@
   (and (equal? (car fname+d) (get-lnm-rktd**))
        (cdr fname+d)))
 
-(define (render-table render-proc #:title title* #:cache cache-file)
+(define (render-table render-proc #:title title* #:cache cache-file #:sep [sep 0.2])
   (exact
-    "\\setlength{\\tabcolsep}{0.2em}"
+    (format "\\setlength{\\tabcolsep}{~aem}" sep)
     (format "\\begin{tabular}{l~a}" (make-string (sub1 (length title*)) #\r))
     (list " \\toprule \n" (apply tex-row title*) " \\midrule \n")
     (apply elem
@@ -274,7 +279,7 @@
     (or (benchmark-lib* b) "N/A")
     "}\n\n"))
 
-(define (benchmark->tex-file b)
+(define (benchmark->tex-file b [scale 1])
   (define M (benchmark-modulegraph b))
   (define pn (modulegraph-project-name M))
   (define mgd MODULE-GRAPH)
@@ -284,7 +289,7 @@
     (WARNING "could not find modulegraph for project '~a', creating graph now." pn)
     (call-with-output-file mgf
       (lambda (p) (modulegraph->tex M p))))
-  (elem "\\modulegraph{" mgf "}"))
+  (exact (format "\\modulegraph{~a}{~a}" mgf scale)))
 
 ;; (-> Benchmark * Any)
 (define (render-benchmark-descriptions . b+d*)

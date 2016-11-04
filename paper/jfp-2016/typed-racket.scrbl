@@ -200,6 +200,9 @@ Boundaries are import statements from one module to another, excluding imports f
 An identifier named in such an import statement counts as an export.
 For example, the one import statement in @bm[sieve] names nine identifiers.
 
+The @bm[quadBG] benchmark has two fewer modules than @bm[quadMB] because it inlines two (large) data structure that @bm[quadMB] keeps in separate files.
+Inlining does not affect overhead due to gradual typing, but greatly reduces the number of configurations.
+
 @figure*["fig:bm" @elem{Static characteristics of the @|GTP| benchmarks}
   @render-benchmarks-table{}
 ]
@@ -214,7 +217,7 @@ For example, the one import statement in @bm[sieve] names nine identifiers.
 @(define FREQ-STR "1.40 GHz")
 
 To generate all configurations in a benchmark, we usually began with untyped code, manually created the typed configuration, and then automatically generated all mixed configurations from these versions.
-There were four complications.
+There were five complications.
 
 First, the addition of types occasionally required type casts or small refactorings.
 For example, the expression @racket[(string->number s)] had type @racket[(U Complex #f)] even when the programmer informally knew the expression would never produce a complex number.
@@ -237,8 +240,11 @@ The assignment of canonical types was necessary because in Typed Racket each imp
 Two typed modules could not share instances of such an untyped struct definition unless they referenced a common import annotation.
 It was possible to implement this sharing without the layer of indirection, but adaptor modules provided a uniform solution and did not introduce noticeable overhead.
 
+Fifth, half the configurations in @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes.
+For the purpose of our experiment, these configurations have ``infinite'' performance overhead.
+
 All our measurements were taken on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
-With the exception of @bm[quadBG] and @bm[quadMB],@note{The six datasets for @bm[quad] were collected using 30 cores.} the machine collected data with at most two of its 32 cores.
+With the exception of @bm[quadBG] and @bm[quadMB],@note{The six datasets for @bm[quad] were collected using 30 cores, but consequently exhibit greater variation between trials. See @secref{sec:compare}.} the machine collected data with at most two of its 32 cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
 For every benchmark, we chose a random permutation of its configurations, compiled the configurations using the standard settings, and ran each configuration through one warmup and one collecting iteration.
@@ -382,7 +388,7 @@ Equipping the performance metrics with confidence intervals provides a solution@
 In essence, a confidence interval is a probable bound for the true value of an unknown parameter.
 For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the parameters are truly different.
 
-@Figure-ref{fig:uncertainty} thus quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
+@Figure-ref{fig:uncertainty} quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
 The @math{x}-axis of both plots represents the @integer->word[(*NUM-BENCHMARKS*)] benchmarks, arranged left-to-right from smallest to largest performance lattice.
 As before, each benchmark has data for @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
 The @math{y}-axis of the top plot is the inverse of the typed/untyped ratio; that is, the performance of the untyped configuration divided by the performance of the typed configuration.
@@ -414,13 +420,13 @@ Every other configuration is stable; furthermore, all configurations are stable 
 These results imply that our mean overheads have relatively small error bounds, such that no configuration's mean overhead is within the noise of the above-mentioned values of @math{D}.
 
 These graphs provide evidence for stronger statements about the relative performance of the three implementations of Typed Racket.
-For example,
+For example:
 @itemlist[
   @item{
-    Version 6.4 has significantly lower (improved) typed/untyped ratios than the earlier versions on four benchmarks: @bm[mbta], @bm[zombie], @bm[zordoz], and @bm[acquire].
+    Version 6.4 has significantly lower (improved) typed/untyped ratios than the earlier versions on five benchmarks: @bm[mbta], @bm[zombie], @bm[dungeon], @bm[zordoz], and @bm[acquire].
   }
   @item{
-    Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks, and significantly fewer on two benchmarks.
+    Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks, and significantly fewer on @bm[quadBG] benchmarks.
     The drastic improvements in the @bm[mbta] and @bm[gregor] benchmarks are due to recent enhancements to Racket's contracts.
     In fact, all benchmarks are improved by these enhancements, but many configurions still suffer more than 20x overhead.
   }

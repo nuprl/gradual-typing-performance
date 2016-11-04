@@ -257,7 +257,7 @@
 )
 (define-oo-benchmark acquire
   #:author "Matthias Felleisen"
-  #:num-adaptor 2
+  #:num-adaptor 3
   #:origin (hyperlink "https://github.com/mfelleisen/Acquire" "Educational")
   #:purpose "Game"
 )
