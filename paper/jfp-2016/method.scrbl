@@ -44,7 +44,8 @@ Third, @secref{sec:graphs} introduces a @emph{visualization} that concisely pres
 The promise of Typed Racket's macro-level gradual typing is that programmers may
  convert any subset of the modules in an untyped program to Typed Racket.
 A comprehensive performance evaluation must therefore consider the space of
- typed/untyped @emph{configurations} a programmer could possibly create.
+ typed/untyped @emph{configurations} a programmer could possibly create
+ given a full set of type annotations for each module.
 These configurations form a lattice.
 @itemlist[
   @item{
@@ -129,7 +130,7 @@ In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all con
  with @math{i} typed modules as rectangles with @math{i} filled segments.
 The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.} relative to the untyped configuration.
 
-With this data, a language implementor can answer nearly any question about the performance overhead in this benchmark program due to gradual typing.
+With this data, a language implementor can answer many questions about the performance overhead in this benchmark program due to gradual typing.
 For instance, @|suffixtree-num-D-str|
  configurations run within a @id[suffixtree-sample-D]x overhead
  and @|suffixtree-num-k-str|
@@ -162,15 +163,14 @@ For users of a gradual type system, the important performance
  @; RELATIVE TO previous version (standardized as "untyped program")
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
-Depending on the nature of the application,
- an appropriate substitute for ``low enough'' might take any value between zero overhead
- and an order-of-magnitude slowdown.
+Depending on the nature of the application, some developers might not accept any performance overhead.
+Others may be willing to tolerate an order-of-magnitude slowdown.
 The following parameterized definition of a deliverable configuration accounts for these varying requirements.@;
 @;
     @def[#:term @list{@deliverable{}}]{
      A configuration
       is @deliverable{} if its performance is no worse than a
-      @math{D}x slowdown compared to the untyped configuration.
+      factor of @math{D} slowdown compared to the untyped configuration.
      @;A program is @deliverable{} if all its configurations are @deliverable{}.
     }@;
 @;
@@ -290,7 +290,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
          more configurations @deliverable[].
          @;@note{Plotting the @math{k=0} and @math{k=1} curves on the same axis would facilitate comparisons; however, the primary goal is to compare multiple implementations of a gradual type system on a fixed @math{k}.}
 
-        These @emph{overhead plots} concisely summarize the @bm[suffixtree] dataset.
+        These @emph{overhead plots} concisely summarize the data in @figure-ref{fig:suffixtree-lattice}.
         The same presentation scales to arbitrarily large programs.
         Furthermore, one can make high-level comparisons between multiple implementations
          of a gradual type system by plotting their curves on the same axes.

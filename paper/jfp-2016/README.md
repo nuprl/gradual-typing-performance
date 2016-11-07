@@ -1,6 +1,9 @@
 jfp
 ===
 
+- a type system does not have performance
+-
+
 - - -
 
 - GCTIME

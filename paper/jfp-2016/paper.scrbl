@@ -29,7 +29,7 @@
   Developers cannot assess whether a gradual type system will meet their performance requirements.
   Implementors cannot assess the effect of changes to a gradually typed language.
 
-  This journal paper presents the first method for evaluating the performance of gradual type systems.
+  This paper presents the first method for systematically evaluating the performance of gradual type systems.
   The method quantifies both the
    @emph{absolute performance} of a gradual type system on representative programs
    and the @emph{relative performance} of two implementations of the same gradual type system.
@@ -41,6 +41,7 @@
 @include-section{intro.scrbl}
 @include-section{story.scrbl}
 @include-section{method.scrbl}
+@include-section{benchmark.scrbl}
 @include-section{typed-racket.scrbl}
 @include-section{threats.scrbl}
 @include-section{devils.scrbl}

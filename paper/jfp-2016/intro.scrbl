@@ -11,10 +11,11 @@
 
 Programmers use dynamically typed languages to build all kinds of applications.
 Telecom companies have been running Erlang programs for years@~cite[armstrong-2007];
- Sweden's pension system is a Perl program@~cite[v-aplwa-2010];
+ Sweden's pension system is a Perl program@~cite[l-freenix-2006],
  and the @emph{lingua franca} of the Internet is JavaScript.
 New companies frequently use languages such as Python, PHP, and Ruby in server-side applications;
  see for example, Dropbox, Facebook, and Twitter.
+ @; TODO need citation for the companies
 
 Regardless of why programmers choose dynamically typed languages,
  the maintainers of these applications inevitably find the lack of explicit type
@@ -69,9 +70,9 @@ Optimistically, researchers have continued to explore the theory and practice of
                       rnv-ecoop-2015
                       vksb-dls-2014
                       rsfbv-popl-2015
-                      gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a bibliography with over 75 entries on gradual typing as of August 2016.}
+                      gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a bibliography.}
 Some research groups have invested significant resources implementing sound gradual type systems.
-Suprisingly few groups have rigourously evaluated the performance of gradual typing.
+Suprisingly few groups have evaluated the performance of gradual typing.
 Most acknowledge an issue with performance in passing.
 Worse, others report only the performance ratio of fully typed programs relative to
  fully untyped programs, ironically ignoring the entire space of programs
@@ -93,10 +94,10 @@ This paper presents a method for the performance evaluation of gradual type syst
      relative to the baseline performance of the fully untyped program.
    }
  ]
-The method characterizes
- both the @emph{absolute} performance of a gradual type system and the @emph{relative}
+The method is useful for evaluating both
+ the @emph{absolute} performance of a gradual type system and the @emph{relative}
  performance of two implementations of the same gradual type system.
-As validation of the method, @secref{sec:tr} presents a comprehensive
+As validation, @secref{sec:tr} presents a comprehensive
 performance evaluation of @integer->word[(length (*RKT-VERSIONS*))] versions of
 Typed Racket on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional and
 object-oriented benchmark programs ranging in size and complexity (the @|GTP|

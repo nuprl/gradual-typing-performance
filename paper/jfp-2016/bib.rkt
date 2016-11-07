@@ -1437,6 +1437,15 @@
    #:location (proceedings-location snapl #:pages '(274 293))
    #:date 2015))
 
+(define l-freenix-2006
+  ; http://erwan.lemonnier.se/talks/pluto.html
+  (make-bib
+   #:title "Pluto: or how to make Perl juggle with billions"
+   #:author "Erwan Lemonnier"
+   #:location "Forum on Free and Open Source Software (FREENIX)"
+   #:url "http://erwan.lemonnier.se/talks/pluto.html"
+   #:date 2006))
+
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 
 ;; TODO
