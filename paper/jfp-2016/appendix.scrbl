@@ -107,6 +107,8 @@ Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the co
     }
   ]
 
+  @|VFILL|
+
   @module-description[forth #:scale 0.5 #:cache? #t
     @module["command" #f]{
       Class and instances for calculator commands.
@@ -121,6 +123,273 @@ Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the co
       Functional stack, represents calculator state.
     }
   ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
+
+  @module-description[fsm #:scale 0.3 #:cache? #t
+    @module["automata" #t]{
+      Represents actors in the economy.
+    }
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["population" #f]{
+      A population of automata.
+    }
+    @module["utilities" #f]{
+      Helper functions.
+    }
+  ]
+
+  @module-description[fsmoo #:scale 0.3 #:cache? #t
+    @module["automata" #t]{
+      Class and instances for economy members.
+    }
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["population" #f]{
+      Class representing an economy.
+    }
+    @module["utilities" #f]{
+      Helper functions.
+    }
+  ]
+
+  @module-description[mbta #:scale 0.3 #:cache? #t
+    @module["main" #f]{
+      Queries a subway map.
+    }
+    @module["run-t" #f]{
+      Query-processing server.
+    }
+    @module["t-graph" #f]{
+      Represents a subway map.
+    }
+    @module["t-view" #f]{
+      Manages a subway map.
+    }
+  ]
+
+  @|NEWPAGE|
+
+  @module-description[morsecode #:scale 0.3 #:cache? #t
+    @module["levenshtein" #f]{
+      Distance metric for strings.
+    }
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["morse-code-strings" #f]{
+      Converts a string to morse code.
+    }
+    @module["morse-code-table" #f]{
+      Map from characters to dots and dashes.
+    }
+  ]
+
+  @|VFILL|
+
+  @module-description[zombie #:scale 0.3 #:cache? #t
+    @module["image" #t]{
+      Defines placeholder image.
+    }
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["math" #f]{
+      Helper functions.
+    }
+    @module["zombie" #f]{
+      Implements game entities as higher-order functions.
+    }
+  ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
+
+  @module-description[dungeon #:scale 0.4 #:cache? #t
+    @module["cell" #f]{
+      Class for maze cells.
+    }
+    @module["grid" #f]{
+      An array of cells.
+    }
+    @module["main" #f]{
+      Generates a maze.
+    }
+    @module["message-queue" #f]{
+      Buffer for log messages.
+    }
+    @module["utils" #f]{
+      Helpers for formatting and random sampling.
+    }
+  ]
+
+  @|VFILL|
+
+  @module-description[zordoz #:scale 0.4 #:cache? #t
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["zo-find" #f]{
+      Searches bytecode structures.
+    }
+    @module["zo-shell" #f]{
+      API to explore bytecode.
+    }
+    @module["zo-string" #f]{
+      Prints a bytecode structure.
+    }
+    @module["zo-transition" #f]{
+      Traverses bytecode structures.
+    }
+  ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
+
+  @module-description[lnm #:scale 0.4 #:cache? #t
+    @module["bitstring" #f]{
+      Implements binary numbers.
+    }
+    @module["lnm-plot" #f]{
+      Builds overhead plots.
+    }
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["modulegraph" #t]{
+      Represents benchmark programs.
+    }
+    @module["spreadsheet" #f]{
+      Exports a dataset to CSV format.
+    }
+    @module["summary" #t]{
+      Collected data for a benchmark program.
+    }
+  ]
+
+  @|VFILL|
+
+  @module-description[suffixtree #:scale 0.7 #:cache? #t
+    @module["data" #t]{
+      Structure definitions.
+    }
+    @module["label" #f]{
+      Sharable, sliceable strings.
+    }
+    @module["lcs" #f]{
+      Longest common subsequence.
+    }
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["structs" #f]{
+      Suffix tree functions.
+    }
+    @module["ukkonen" #f]{
+      Ukkonen's suffix tree algorithm.
+    }
+  ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
+
+  @module-description[kcfa #:scale 0.7 #:cache? #t
+    @module["ai" #f]{
+      Abstract interpreter for CPS programs.
+    }
+    @module["benv" #t]{
+      Implements a binding environment.
+    }
+    @module["denotable" #t]{
+      Denotation of closures, in the abstract interpreter.
+    }
+    @module["main" #f]{
+      Creates and program and invokes 1-CFA.
+    }
+    @module["structs" #t]{
+      Core struct definitions.
+    }
+    @module["time" #t]{
+      Represents time during abstract interpretation.
+    }
+    @module["ui" #f]{
+      API to the abstract interpreter.
+    }
+  ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
+
+  @module-description[snake #:scale 0.7 #:cache? #t
+    @module["collide" #f]{
+      Collision detection.
+    }
+    @module["const" #f]{
+      Constant definitions.
+    }
+    @module["cut-tail" #f]{
+      Shorten the game's snake.
+    }
+    @module["data" #t]{
+      Structure definitions.
+    }
+    @module["handlers" #f]{
+      Handle key events, detect game over.
+    }
+    @module["main" #f]{
+      Driver module.
+    }
+    @module["motion-help" #f]{
+      Move segments of a snake, spawn food.
+    }
+    @module["motion" #f]{
+      Advance the game state.
+    }
+  ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
+
+  @module-description[take5 #:scale 0.7 #:cache? #t
+    @module["basics" #f]{
+      Constant definitions.
+    }
+    @module["card-pool" #f]{
+      Players' shared cards.
+    }
+    @module["card" #t]{
+      Struct for game cards.
+    }
+    @module["dealer" #f]{
+      Class for managing players.
+    }
+    @module["deck" #f]{
+      The dealer's deck of cards.
+    }
+    @module["main" #f]{
+      Starts a game.
+    }
+    @module["player" #f]{
+      Class for game players.
+    }
+    @module["stack" #f]{
+      Internal representation of the card deck.
+    }
+  ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
 
   @module-description[acquire #:scale 0.9 #:cache? #t
     @module["admin" #f]{
@@ -152,53 +421,80 @@ Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the co
     }
   ]
 
-  @module-description[dungeon #:scale 0.4 #:cache? #t
-    @module["cell" #f]{
-      Class for maze cells.
-    }
-    @module["grid" #f]{
-      An array of cells.
-    }
-    @module["main" #f]{
-      Generates a maze.
-    }
-    @module["message-queue" #f]{
-      Buffer for log messages.
-    }
-    @module["utils" #f]{
-      Helpers for formatting and random sampling.
-    }
-  ]
+  @|VFILL|
 
-  @module-description[fsm #:scale 0.3 #:cache? #t
-    @module["automata" #t]{
-      Represents actors in the economy.
+  @|NEWPAGE|
+
+  @module-description[tetris #:scale 0.9 #:cache? #t
+    @module["aux" #f]{
+      Helper functions.
+    }
+    @module["block" #f]{
+      One square on a tetris board.
+    }
+    @module["bset" #f]{
+      A set of blocks.
+    }
+    @module["consts" #f]{
+      Constant definitions.
+    }
+    @module["data" #t]{
+      Structure definitions.
+    }
+    @module["elim" #f]{
+      Delets a row of blocks.
     }
     @module["main" #f]{
       Driver module.
     }
-    @module["population" #f]{
-      A population of automata.
+    @module["tetras" #f]{
+      A connected group of blocks.
     }
-    @module["utilities" #f]{
-      Helper functions.
+    @module["world" #f]{
+      Tetris game state.
     }
   ]
 
-  @module-description[fsmoo #:scale 0.3 #:cache? #t
-    @module["automata" #t]{
-      Class and instances for economy members.
+  @|VFILL|
+
+  @|NEWPAGE|
+
+  @module-description[synth #:scale 0.9 #:cache? #t
+    @module["array-broadcast" #f]{
+      Re-shapes an array.
+    }
+    @module["array-struct" #f]{
+      Low-level array operations.
+    }
+    @module["array-transform" #f]{
+      Combines arrays.
+    }
+    @module["array-utils" #f]{
+      Utility functions.
+    }
+    @module["data" #t]{
+      Common data structures.
+    }
+    @module["drum" #f]{
+      Creates a drum beat.
     }
     @module["main" #f]{
       Driver module.
     }
-    @module["population" #f]{
-      Class representing an economy.
+    @module["mixer" #f]{
+      Converts floating-point signals into music.
     }
-    @module["utilities" #f]{
-      Helper functions.
+    @module["sequencer" #f]{
+      Creates a WAV file.
+    }
+    @module["synth" #f]{
+      Implements a synthesizer.
     }
   ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
 
   @module-description[gregor #:scale 0.9 #:cache? #t
     @module["clock" #f]{
@@ -242,80 +538,9 @@ Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the co
     }
   ]
 
-  @module-description[kcfa #:scale 0.7 #:cache? #t
-    @module["ai" #f]{
-      Abstract interpreter for CPS programs.
-    }
-    @module["benv" #t]{
-      Implements a binding environment.
-    }
-    @module["denotable" #t]{
-      Denotation of closures, in the abstract interpreter.
-    }
-    @module["main" #f]{
-      Creates and program and invokes 1-CFA.
-    }
-    @module["structs" #t]{
-      Core struct definitions.
-    }
-    @module["time" #t]{
-      Represents time during abstract interpretation.
-    }
-    @module["ui" #f]{
-      API to the abstract interpreter.
-    }
-  ]
+  @|VFILL|
 
-  @module-description[lnm #:scale 0.4 #:cache? #t
-    @module["bitstring" #f]{
-      Implements binary numbers.
-    }
-    @module["lnm-plot" #f]{
-      Builds overhead plots.
-    }
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["modulegraph" #t]{
-      Represents benchmark programs.
-    }
-    @module["spreadsheet" #f]{
-      Exports a dataset to CSV format.
-    }
-    @module["summary" #t]{
-      Collected data for a benchmark program.
-    }
-  ]
-
-  @module-description[mbta #:scale 0.3 #:cache? #t
-    @module["main" #f]{
-      Queries a subway map.
-    }
-    @module["run-t" #f]{
-      Query-processing server.
-    }
-    @module["t-graph" #f]{
-      Represents a subway map.
-    }
-    @module["t-view" #f]{
-      Manages a subway map.
-    }
-  ]
-
-  @module-description[morsecode #:scale 0.3 #:cache? #t
-    @module["levenshtein" #f]{
-      Distance metric for strings.
-    }
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["morse-code-strings" #f]{
-      Converts a string to morse code.
-    }
-    @module["morse-code-table" #f]{
-      Map from characters to dots and dashes.
-    }
-  ]
+  @|NEWPAGE|
 
   @module-description[quadBG #:scale 0.9 #:cache? #t
     @module["hyphenate" #f]{
@@ -361,6 +586,10 @@ Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the co
       Adds horizontal padding to a line of text.
     }
   ]
+
+  @|VFILL|
+
+  @|NEWPAGE|
 
   @module-description[quadMB #:scale 0.9 #:cache? #t
     @module["exceptions" #f]{
@@ -410,177 +639,6 @@ Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the co
     }
     @module["wrap" #f]{
       Adds horizontal padding to a line of text.
-    }
-  ]
-
-  @module-description[snake #:scale 0.7 #:cache? #t
-    @module["collide" #f]{
-      Collision detection.
-    }
-    @module["const" #f]{
-      Constant definitions.
-    }
-    @module["cut-tail" #f]{
-      Shorten the game's snake.
-    }
-    @module["data" #t]{
-      Structure definitions.
-    }
-    @module["handlers" #f]{
-      Handle key events, detect game over.
-    }
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["motion-help" #f]{
-      Move segments of a snake, spawn food.
-    }
-    @module["motion" #f]{
-      Advance the game state.
-    }
-  ]
-
-  @module-description[suffixtree #:scale 0.7 #:cache? #t
-    @module["data" #t]{
-      Structure definitions.
-    }
-    @module["label" #f]{
-      Sharable, sliceable strings.
-    }
-    @module["lcs" #f]{
-      Longest common subsequence.
-    }
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["structs" #f]{
-      Suffix tree functions.
-    }
-    @module["ukkonen" #f]{
-      Ukkonen's suffix tree algorithm.
-    }
-  ]
-
-  @module-description[synth #:scale 0.9 #:cache? #t
-    @module["array-broadcast" #f]{
-      Re-shapes an array.
-    }
-    @module["array-struct" #f]{
-      Low-level array operations.
-    }
-    @module["array-transform" #f]{
-      Combines arrays.
-    }
-    @module["array-utils" #f]{
-      Utility functions.
-    }
-    @module["data" #t]{
-      Common data structures.
-    }
-    @module["drum" #f]{
-      Creates a drum beat.
-    }
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["mixer" #f]{
-      Converts floating-point signals into music.
-    }
-    @module["sequencer" #f]{
-      Creates a WAV file.
-    }
-    @module["synth" #f]{
-      Implements a synthesizer.
-    }
-  ]
-
-  @module-description[take5 #:scale 0.7 #:cache? #t
-    @module["basics" #f]{
-      Constant definitions.
-    }
-    @module["card-pool" #f]{
-      Players' shared cards.
-    }
-    @module["card" #t]{
-      Struct for game cards.
-    }
-    @module["dealer" #f]{
-      Class for managing players.
-    }
-    @module["deck" #f]{
-      The dealer's deck of cards.
-    }
-    @module["main" #f]{
-      Starts a game.
-    }
-    @module["player" #f]{
-      Class for game players.
-    }
-    @module["stack" #f]{
-      Internal representation of the card deck.
-    }
-  ]
-
-  @module-description[tetris #:scale 0.9 #:cache? #t
-    @module["aux" #f]{
-      Helper functions.
-    }
-    @module["block" #f]{
-      One square on a tetris board.
-    }
-    @module["bset" #f]{
-      A set of blocks.
-    }
-    @module["consts" #f]{
-      Constant definitions.
-    }
-    @module["data" #t]{
-      Structure definitions.
-    }
-    @module["elim" #f]{
-      Delets a row of blocks.
-    }
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["tetras" #f]{
-      A connected group of blocks.
-    }
-    @module["world" #f]{
-      Tetris game state.
-    }
-  ]
-
-  @module-description[zombie #:scale 0.3 #:cache? #t
-    @module["image" #t]{
-      Defines placeholder image.
-    }
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["math" #f]{
-      Helper functions.
-    }
-    @module["zombie" #f]{
-      Implements game entities as higher-order functions.
-    }
-  ]
-
-  @module-description[zordoz #:scale 0.4 #:cache? #t
-    @module["main" #f]{
-      Driver module.
-    }
-    @module["zo-find" #f]{
-      Searches bytecode structures.
-    }
-    @module["zo-shell" #f]{
-      API to explore bytecode.
-    }
-    @module["zo-string" #f]{
-      Prints a bytecode structure.
-    }
-    @module["zo-transition" #f]{
-      Traverses bytecode structures.
     }
   ]
 

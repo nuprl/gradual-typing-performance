@@ -43,6 +43,8 @@
          PFDS-AFTER-str
 
          noindent
+         NEWPAGE
+         VFILL
          )
 
 (require "bib.rkt"
@@ -230,6 +232,12 @@
 
 (define (noindent [x 0.8])
   (exact (format "\\hspace{-~aem}" x)))
+
+(define NEWPAGE
+  (exact "\n\\newpage\n"))
+
+(define VFILL
+  (exact "\n\\vfill\n"))
 
 (current-code-font 'modern)
 ;(current-keyword-color "black")

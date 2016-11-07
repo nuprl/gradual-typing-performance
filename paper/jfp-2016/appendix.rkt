@@ -1,10 +1,5 @@
 #lang racket/base
 
-;; TODO
-;; - make table skinnier
-;; - better-sized graph nodes
-;; - label graph edges
-
 (provide
   annotated-bib
   render-annotated-bib
@@ -23,6 +18,7 @@
     boundary-to
     boundary-from
     boundary-provided*)
+  racket/serialize
   with-cache
   "benchmark.rkt"
   "common.rkt"
@@ -100,7 +96,7 @@
                  (format "\\item {\\tt ~a}~n" (car m+a+d) #;(string-join (cddr m+a+d))))
                "\\end{enumerate}\\end{multicols}")
         (exact "\n\\vspace{-1ex}\n")
-        (parameterize ([*use-cache?* cache?])
+        (parameterize ([*use-cache?* #f])
           (render-table
             #:sep 0.5
             #:title MODULES-TABLE-TITLE*
@@ -134,10 +130,26 @@
         (centered tikz)
         (exact "\n\\vspace{2ex}\n")))
 
+(define (module-description? m)
+  (and (pair? m)
+       (benchmark? (car m))))
+
 (define (render-module-descriptions . m*)
-  (define m*+ (sort m* module-description<?))
-  (cons (noindent)
-        (map render-module-description m*+)))
+  (define key
+    (for/list ([m (in-list m*)])
+      (if (module-description? m)
+        (benchmark-name (car m))
+        0)))
+  (parameterize ([*current-cache-keys* (list (lambda () key))])
+    (with-cache (cachefile "cache-modulegraph-appendix.rktd")
+      #:read deserialize
+      #:write serialize
+      (lambda ()
+        (cons (noindent)
+              (for/list ([m (in-list m*)])
+                (if (module-description? m)
+                  (render-module-description m)
+                  m)))))))
 
 ;; =============================================================================
 
