@@ -50,12 +50,11 @@ At the lexical boundaries between annotated code and dynamically
  of the type annotations.
 
 From a syntactic perspective the interaction is seamless, but dynamic checks introduce runtime overhead.
-During execution, if an untyped function flows into a variable @racket[f] with
- type @type{(Real\,->\,Real)}, then a dynamic check must
- follow every subsequent call to @racket[f]
-@;These checks are necessary
+During execution, if an untyped function flows into a variable @type{$f$} with
+ type @type{$\tau_1 \rightarrow \tau_2$}, then a dynamic check must
+ follow every subsequent call to @type{$f$}
  because typed code cannot assume
- that values produced by the untyped function have the syntactic type @racket[Real].
+ that values produced by the untyped function have the syntactic type @type{$\tau_2$}.
 Conversely, typed functions invoked by untyped code must dynamically check their argument values.
 If functions or large data structures frequently cross these
  @emph{type boundaries},
