@@ -1,9 +1,6 @@
 jfp
 ===
 
-- [ ] appendix 2, module graphs
-- [ ] explanation / table of what's measured
-
 - - -
 
 - GCTIME

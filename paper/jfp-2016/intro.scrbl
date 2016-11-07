@@ -80,7 +80,7 @@ Worse, others report only the performance ratio of fully typed programs relative
 This paper presents a method for the performance evaluation of gradual type systems:
  @itemlist[#:style 'ordered
    @item{
-     fix a granularity for adding or removing type annotations;
+     choose a granularity for adding or removing type annotations;
    }
    @item{
      annotate a suite of representative benchmark programs as fully as possible;
@@ -89,7 +89,7 @@ This paper presents a method for the performance evaluation of gradual type syst
      consider all possible ways of removing a subset of type annotations in each program, subject to the granularity fixed in (1);
    }
    @item{
-     report the overhead of these gradually typed @emph{configurations}
+     report the performance overhead of these gradually typed @emph{configurations}
      relative to the baseline performance of the fully untyped program.
    }
  ]
@@ -102,14 +102,14 @@ Typed Racket on a suite of @integer->word[(*NUM-BENCHMARKS*)] functional and
 object-oriented benchmark programs ranging in size and complexity (the @|GTP|
 benchmarks suite).
 
-This paper extends @citet[tfgnvf-popl-2016].
+This paper builds on the method of @citet[tfgnvf-popl-2016].
 The novel contributions in this work are:
- the first comparitive evaluation of different implementations of the same gradual type system;
+ the first comparative evaluation of different implementations of the same gradual type system;
  @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs;
  an analysis of the performance bottlenecks in these benchmarks;
  @; general lessons for implementors of gradually typed languages;
- and a statistical protocol that suggests how to approximate the peformance
- of gradually-typed programs for which exhaustive testing is not feasible.
+ and a statistical protocol that suggests how to approximate the performance
+ of programs for which exhaustive evaluation is not feasible.
 
 @;@parag{Disclaimer:} 3x overhead is not "deliverable" performance.
 @;We never claimed so in the conference version and our opinion certainly has not changed.
