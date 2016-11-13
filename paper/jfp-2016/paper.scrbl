@@ -20,14 +20,13 @@
 
 @abstract{
   A sound gradual type system ensures that untyped components of a program can never break static type guarantees.
-  This assurance requires dynamic type enforcement, which imposes runtime overhead.
-  Surprisingly, the archival literature on gradual typing is silent about the @emph{performance} of programs that mix typed and untyped components.
-  In particular, it lacks descriptions of rigorous methods for measuring the overall performance of a gradual type system
-   and for comparing the performance of two gradual type systems.
+  This assurance requires dynamic type enforcement, which imposes runtime overhead in proportion to the frequency and nature of interaction between typed and untyped components.
+  A @emph{performant} gradual type system minimizes the runtime overhead.
 
+  The literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
   This gap has consequences for developers using gradual type systems and the implementors of such systems.
-  Developers cannot assess whether a gradual type system will meet their performance requirements.
-  Implementors cannot assess the effect of changes to a gradually typed language.
+  Developers cannot predict whether adding types to part of a program will significantly degrade its performance.
+  Implementors cannot precisely determine how improvements to a gradual type system affect such programs.
 
   This paper presents the first method for systematically evaluating the performance of gradual type systems.
   The method quantifies both the
