@@ -86,7 +86,7 @@ This paper presents a method for the performance evaluation of gradual type syst
      annotate a suite of representative benchmark programs as fully as possible;
    }
    @item{
-     consider all possible ways of removing a subset of type annotations in each program, subject to the granularity fixed in (1);
+     consider all possible ways of removing a subset of type annotations in each program, subject to the chosen granularity;
    }
    @item{
      report the performance overhead of these gradually typed @emph{configurations}
