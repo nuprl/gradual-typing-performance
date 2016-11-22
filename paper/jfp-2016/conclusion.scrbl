@@ -57,7 +57,7 @@ Typed Racket in particular must address the pathologies identified in @secref{se
 Here are a few suggestions.
 To reduce the cost of high-frequency checks, the runtime system could cache the results of successful checks@~cite[rf-pldi-2016] or implement a tracing JIT compiler tailored to identify dynamic type assertions@~cite[bauman-et-al-icfp-2015].
 High-cost types may be a symptom of inefficiencies in the translation from types to dynamic checks.
-Recent calculi for space-efficient contracts@~cite[stw-pldi-2015 g-popl-2015] may provide insight for eliminating redundant chaperones.
+Recent calculi for space-efficient contracts@~cite[stw-pldi-2015 g-popl-2015] may provide insight for eliminating redundant dynamic checks.
 
 Finally, researchers must ask whether the specific problems reported in this paper indicate a fundamental limitation of gradual typing.
 The only way to know is through further systematic evaluation of gradual type systems.
