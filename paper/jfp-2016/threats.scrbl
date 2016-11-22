@@ -23,10 +23,6 @@
 @(define hi-prop
    (format-% (- num-configs (deliverable* (*HI*) version ALL-BENCHMARKS))))
 
-The application of our evaluation method projects a negative image of Typed Racket's sound gradual typing.
-Only a small number of configurations in our benchmark suite run with low overhead; a mere @|lo-prop| of all configurations are @deliverable[lo] on Racket v@|version|.
-Many demonstrate extreme overhead; @|hi-prop| of all configurations are not even @deliverable[hi] on version @|version|.
-
 Although the evaluation method addresses the goals of gradual typing, our particular application has some threats to validity.
 In particular, both our @emph{experimental protocol} and our @emph{conclusions} have limitations.
 

@@ -245,7 +245,7 @@
 ;; --- Lattice
 
 (define (render-data-lattice bm v)
-  (parameterize ([*current-cache-keys* (list *LATTICE-BORDER-WIDTH* *LATTICE-BOX-BOT-MARGIN* *LATTICE-BOX-HEIGHT* *LATTICE-BOX-SEP* *LATTICE-BOX-TOP-MARGIN* *LATTICE-BOX-WIDTH* *LATTICE-CONFIG-MARGIN* *LATTICE-LEVEL-MARGIN* *LATTICE-FONT-SIZE* *LATTICE-TRUNCATE-DECIMALS?*)])
+  (parameterize ([*use-cache?* #f] [*current-cache-keys* (list *LATTICE-BORDER-WIDTH* *LATTICE-BOX-BOT-MARGIN* *LATTICE-BOX-HEIGHT* *LATTICE-BOX-SEP* *LATTICE-BOX-TOP-MARGIN* *LATTICE-BOX-WIDTH* *LATTICE-CONFIG-MARGIN* *LATTICE-LEVEL-MARGIN* *LATTICE-FONT-SIZE* *LATTICE-TRUNCATE-DECIMALS?*)])
     (with-cache (lattice-cache-file (benchmark-name bm) v)
       #:read deserialize
       #:write serialize
@@ -545,7 +545,7 @@
                      [*ERROR-BAR-WIDTH* 20]
                      [*ERROR-BAR-LINE-WIDTH* 1]
                      [*PLOT-FONT-SCALE* 0.04]
-                     [*PLOT-HEIGHT* 180]
+                     [*PLOT-HEIGHT* 360]
                      [*PLOT-WIDTH* 430]
                      [*POINT-SIZE* 5]
                      [*Y-NUM-TICKS* 4]
@@ -573,8 +573,9 @@
 
 (define (render-uncertainty D bm*)
   (vc-append 20
-   (hc-append 0 (blank 10 0) (apply render-typed/untyped-plot bm*))
-   (apply render-deliverable-plot D bm*)
+   (apply render-typed/untyped-plot bm*)
+   #;(hc-append 0 (blank 10 0) (apply render-typed/untyped-plot bm*))
+   #;(apply render-deliverable-plot D bm*)
    (render-bars-xlabels 33 (map (compose1 symbol->string benchmark-name) bm*))))
 
 (define (render-karst csv)

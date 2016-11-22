@@ -12,6 +12,7 @@
 @title[#:tag "sec:scale"]{Scaling the Method}
 
 @(define srs-samples 4)
+@(define small-srs-samples 2)
 @(define sample-size-factor 10)
 
   @; plot library ~ 80 modules
@@ -29,9 +30,9 @@ The same holds for any value of @math{D}, so an overhead plot generated from one
 
 @(define tetris-sample-size (* sample-size-factor (benchmark->num-modules tetris)))
 
-To demonstrate, @figure-ref{fig:scale:srs-overhead} plots the true overhead for the @id[(benchmark->num-configurations tetris)] @bm[tetris] configurations against overhead in samples of @id[tetris-sample-size] configurations.@note{The sample size is @id[sample-size-factor] times the number of modules in the @bm[tetris] benchmark. All plots in this section use analogous sampling rates.}
+To demonstrate, @figure-ref{fig:scale:srs-overhead} plots the true overhead for the @id[(benchmark->num-configurations tetris)] configurations in @bm[tetris] against the overhead in samples of @id[tetris-sample-size] configurations.@note{The sample size is @id[sample-size-factor] times the number of modules in the @bm[tetris] benchmark. All plots in this section use analogous sampling rates.}
 The dark red line is from @secref{sec:plots}; it plots the true overhead in @bm[tetris] on Racket v6.2.
-The @integer->word[srs-samples] faint red lines plot the overhead in @integer->word[srs-samples] distinct samples of @id[tetris-sample-size] configurations each.
+The @integer->word[small-srs-samples] faint red lines plot the overhead in @integer->word[small-srs-samples] distinct samples of @id[tetris-sample-size] configurations each.
 In particular, a single faint red line plots the proportion of @deliverable{} configurations in one group of @id[tetris-sample-size] configurations, selected without replacement.@note{Sampling @emph{without replacement}, implies that each sample has @id[tetris-sample-size] unique configurations; however, there may be duplicates between samples. At any rate, choosing truly random samples (with replacement) yields similar results.}
 Similarly, the dark and faint blue lines plot true and sample overheads in Racket v6.4.
 
@@ -64,10 +65,11 @@ Furthermore, the confidence bounds around these means are tight, even for the la
                   [*PLOT-WIDTH* 430]
                   [*PLOT-FONT-SCALE* 0.02]
                   [*X-TICK-LINES?* #t]
-                  [*LNM-WIDTH* (+ 3 (*LNM-WIDTH*))])
+                  [*LNM-WIDTH* 1.8])
    (list
     @figure["fig:scale:srs-overhead" @elem{Approximating true overhead}
-        (render-srs-sound (list tetris) (list sample-size-factor))]
+      (parameterize ([*NUM-SIMPLE-RANDOM-SAMPLES* small-srs-samples])
+        (render-srs-sound (list tetris) (list sample-size-factor)))]
 
     @figure["fig:scale:srs-precise" @elem{Approximating improvement of v6.4 over v6.2 (@id[(*NUM-SIMPLE-RANDOM-SAMPLES*)] samples)}
       (render-srs-precise (list tetris) (list sample-size-factor))
@@ -75,8 +77,7 @@ Furthermore, the confidence bounds around these means are tight, even for the la
     (parameterize ([*PLOT-HEIGHT* 100]
                    [*PLOT-WIDTH* 220]
                    [*PLOT-FONT-SCALE* 0.04]
-                   [*X-TICK-LINES?* #f]
-                   [*LNM-WIDTH* (- (*LNM-WIDTH*) 3)])
+                   [*X-TICK-LINES?* #f])
       @figure["fig:scale:srs-precise-all"  @elem{Approximating improvement in the largest benchmarks (@id[(*NUM-SIMPLE-RANDOM-SAMPLES*)] samples)}
         (render-srs-precise (list snake acquire synth gregor quadBG quadMB) (list sample-size-factor))
       ]

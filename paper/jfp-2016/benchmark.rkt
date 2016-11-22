@@ -246,8 +246,8 @@
 (define-oo-benchmark take5
   #:author "Matthias Felleisen"
   #:num-adaptor 1
-  #:origin "Game"
-  #:purpose "Card game"
+  #:origin "Educational"
+  #:purpose "Game"
 )
 (define-oo-benchmark forth
   #:author "Ben Greenman"

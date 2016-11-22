@@ -74,10 +74,10 @@ Some research groups have invested significant resources implementing sound grad
 Suprisingly few groups have evaluated the performance of gradual typing.
 Most acknowledge an issue with performance in passing.
 Worse, others report only the performance ratio of fully typed programs relative to
- fully untyped programs, ironically ignoring the entire space of programs
+ fully untyped programs, ignoring the entire space of programs
  that mix typed and untyped components.
 
-This paper presents a method for the performance evaluation of gradual type systems:
+This paper presents a systematic method for evaluating the performance of a gradual type system on a suite of benchmark programs:
  @itemlist[#:style 'ordered
    @item{
      choose a granularity for adding or removing type annotations;

@@ -25,6 +25,9 @@ This section documents our protocol for collecting performance lattice data and 
 @profile-point{sec:tr:protocol}
 @section[#:tag "sec:protocol"]{Experimental Protocol}
 
+@; TODO table of changes
+@;      (or put in APPENDIX)
+
 @(define MIN-ITERS-STR "3")
 @(define MAX-ITERS-STR "30")
 @(define FREQ-STR "1.40 GHz")
@@ -56,12 +59,14 @@ It was possible to implement this sharing without the layer of indirection, but 
 Fifth, half the configurations in @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes.
 For the purpose of our experiment, these configurations have ``infinite'' performance overhead.
 
-All our measurements were taken on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.
+All our measurements were taken on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.@note{The Opteron is a NUMA architecture.}
 With the exception of @bm[quadBG] and @bm[quadMB],@note{The six datasets for @bm[quad] were collected using 30 cores, but consequently exhibit greater variation between trials. See @secref{sec:compare}.} the machine collected data with at most two of its 32 cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
-For every benchmark, we chose a random permutation of its configurations, compiled the configurations using the standard settings, and ran each configuration through one warmup and one collecting iteration.
-Depending on the time needed to collect data for one benchmark's configurations, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
+For every benchmark, our driver script spawned one green thread for each available core.
+These green threads worked together to collect one running time for each of the benchmark's configurations.
+To collect a single running time, a green thread selected a configuration at random, spawned a new subprocess to compile the configuration once and run it twice,@note{Threads used the Linux @tt{taskset} command to pin subprocesses to a dedicated core. The subprocesses invoked the Racket compiler and runtime using the standard settings.} and recorded the time for the second run.
+Depending on the overall time needed to collect data for a benchmark, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
 The overhead graphs in the next section use the mean of these iterations.
 
 Our results are consistent with the data reported for Racket v6.2 using three different machines@~cite[tfgnvf-popl-2016].

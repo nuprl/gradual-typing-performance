@@ -26,9 +26,9 @@
   The literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
   This gap has consequences for developers using gradual type systems and the implementors of such systems.
   Developers cannot predict whether adding types to part of a program will significantly degrade its performance.
-  Implementors cannot precisely determine how improvements to a gradual type system affect such programs.
+  Implementors cannot precisely determine how improvements to a gradual type system affect the performance of such programs.
 
-  This paper presents the first method for systematically evaluating the performance of gradual type systems.
+  This paper presents the first systematic method for evaluating the performance of gradual type systems.
   The method quantifies both the
    @emph{absolute performance} of a gradual type system on representative programs
    and the @emph{relative performance} of two implementations of the same gradual type system.

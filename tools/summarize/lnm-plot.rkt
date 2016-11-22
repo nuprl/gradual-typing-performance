@@ -826,7 +826,7 @@
                             ([srs (in-list srs*)])
                     (lnm-overhead srs
                                   #:base baseline
-                                  #:width 2
+                                  #:width (assert (- (*LNM-WIDTH*) 0.2) positive?)
                                   #:color (assert i index?))))))))
         #:x-min 1
         #:x-max (*MAX-OVERHEAD*)
@@ -1622,7 +1622,7 @@
 
 (: integer->line-width (-> Integer Nonnegative-Real))
 (define (integer->line-width i)
-  (cast (+ i (*LNM-WIDTH*)) Nonnegative-Real))
+  (cast (+ (* 1/2 i) (*LNM-WIDTH*)) Nonnegative-Real))
 
 ;; =============================================================================
 

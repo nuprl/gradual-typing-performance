@@ -115,7 +115,7 @@ These configurations form a lattice.
                       [*LATTICE-BOX-SEP* 0]
                       [*LATTICE-BOX-TOP-MARGIN* 0]
                       [*LATTICE-TRUNCATE-DECIMALS?* #t]
-                      [*LATTICE-BORDER-WIDTH* 0.5]
+                      [*LATTICE-BORDER-WIDTH* 0]
                       [*LATTICE-BOX-BOT-MARGIN* 1])
         (render-data-lattice suffixtree suffixtree-lattice-version))
     ]
@@ -139,7 +139,8 @@ For instance, @|suffixtree-num-D-str|
 @(let* ([too-many-modules 8]
         [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
    @elem{
-     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice is a poor visual aid for answering such questions, and will not scale to programs with more than seven modules.
+     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice will not scale to programs with eight or more modules (at least @number->string[(expt 2 8)] configurations).
+     Furthermore, it is difficult to compare two lattices side-by-side.
    })
 
 @; -----------------------------------------------------------------------------
