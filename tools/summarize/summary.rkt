@@ -83,7 +83,7 @@
   ;; Return a stream of configurations satisfying the predicate
 
   summary-random-sample
-  ; (-> Summary Natural #:replacement? (Listof Real))
+  ; (-> Summary Natural #:replacement? Boolean (Listof Real))
 
   all-configurations
   ; (-> Summary (Sequenceof Bitstring)))

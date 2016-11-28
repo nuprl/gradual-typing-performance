@@ -160,3 +160,5 @@
 (defparam *NUM-SIMPLE-RANDOM-SAMPLES* Index 2)
 
 (defparam *INTERVAL-ALPHA* Nonnegative-Real 0.3)
+
+(defparam *TICKS-START-FROM* Natural 0)

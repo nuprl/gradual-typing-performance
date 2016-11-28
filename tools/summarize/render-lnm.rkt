@@ -15,6 +15,7 @@
  render-deliverable
  render-bars-xlabels
  render-karst-pict
+ render-srs-overhead-pict
  render-srs-sound-pict
  render-srs-precise-pict
  render-delta-pict
@@ -36,7 +37,7 @@
  (for-syntax racket/base syntax/parse)
  (only-in racket/file file->value)
  (only-in racket/format ~r)
- (only-in racket/math exact-floor exact-round pi)
+ (only-in racket/math exact-ceiling exact-floor exact-round pi)
  (only-in racket/port with-input-from-string open-output-nowhere)
  typed/racket/draw
  racket/flonum
@@ -737,12 +738,12 @@
   (define pict*
     (for/list : (Listof Pict)
               ([name (in-list name*)]
-               [i (in-naturals 1)])
+               [i (in-naturals (+ 1 (*TICKS-START-FROM*)))])
       (define name+ (if (regexp-match? #rx"^zordoz" name) "zordoz" name))
       (text (format "~a. ~a" (get-label i) name+) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
   (ht-append* hspace
     (for/list : (Listof Pict)
-              ([p* (in-list (split-list 4 pict*))])
+              ([p* (in-list (split-list (exact-ceiling (/ (length pict*) 5)) pict*))])
       (vl-append* VSHIM p*))))
 
 (: render-karst-pict (-> Path-String Pict))
@@ -754,6 +755,37 @@
   (vl-append (*GRAPH-VSPACE*)
     title
     pict))
+
+(: render-srs-overhead-pict (-> String Path-String Natural Pict))
+(define (render-srs-overhead-pict name rktd sampling-factor)
+  (define S (from-rktd rktd))
+  (define overhead-pict
+    (add-title name #:caption (format "~a configurations" (get-num-configurations S))
+      (car (lnm-plot S))))
+  (define um (untyped-mean S))
+  (define num-modules (get-num-modules S))
+  (define sample-size (* num-modules sampling-factor))
+  (define sample*
+    (for/list : (Listof (Listof Real))
+              ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
+      (summary-random-sample S sample-size #:replacement? #f)))
+  (define samples-pict
+    (add-title name
+      (plot-samples um sample* #:style 'exact)))
+  (define interval-pict
+    (add-title "" #:caption (format "sample size: ~a" sample-size)
+      (plot-samples um sample* #:style 'interval)))
+  (vc-append (*GRAPH-VSPACE*)
+    overhead-pict
+    (hc-append (*GRAPH-HSPACE*)
+      samples-pict interval-pict)))
+
+(: add-title (->* [String Pict] [#:caption (U #f String)] Pict))
+(define (add-title title-str p #:caption [pre-caption #f])
+  (define caption (or pre-caption " "))
+  (lt-superimpose
+    (vr-append (*TITLE-VSPACE*) (subtitle-text caption) p)
+    (title-text title-str)))
 
 (: render-srs-sound-pict (-> (Listof (Listof Path-String)) (Listof Natural) Pict))
 (define (render-srs-sound-pict rktd** sampling-factor*)
@@ -846,8 +878,8 @@
       (vl-append* VSHIM row*))
     srs-legend))
 
-(: render-delta-pict (-> (Listof String) (Listof (Listof Path-String)) Pict))
-(define (render-delta-pict name* rktd**)
+(: render-delta-pict (->* [(Listof String) (Listof (Listof Path-String))] [#:sample-factor (U #f Natural) #:sample-style (U #f 'interval)] Pict))
+(define (render-delta-pict name* rktd** #:sample-factor [sample-factor #f] #:sample-style [sample-style #f])
   (define S** (for/list : (Listof (Listof Summary))
                         ([rktd* (in-list rktd**)])
                 (for/list : (Listof Summary)
@@ -857,7 +889,7 @@
   (define LEGEND-HSHIM (* 3 (*GRAPH-HSPACE*)))
   (define legend
     (render-bars-xlabels LEGEND-HSHIM name*))
-  (define body (plot-delta S**))
+  (define body (plot-delta S** #:sample-factor sample-factor #:sample-style sample-style))
   (vc-append VSHIM body legend))
 
 ;; -----------------------------------------------------------------------------

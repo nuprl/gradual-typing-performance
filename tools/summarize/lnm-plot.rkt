@@ -25,6 +25,7 @@
   plot-typed/untyped-ratio
   plot-indirection-cost
   plot-karst
+  plot-samples
   plot-srs-sound
   plot-srs-precise
   plot-delta
@@ -92,6 +93,7 @@
 (define ERRLOC 'lnm-plot)
 
 (define-type rTree (Rec t (U renderer2d (Listof rTree))))
+(define-type Sample-Style (U 'exact 'interval))
 
 ;; -----------------------------------------------------------------------------
 ;; --- plotting
@@ -226,8 +228,7 @@
     [plot-font-face (*PLOT-FONT-FACE*)]
     [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
     (define F-config**
-      (let ([next-color (make-palette (length S*))]
-            [next-shape (make-shapegen)])
+      (let ([next-shape (make-shapegen)])
         (for/list : (Listof (Listof renderer2d))
                   ([L+style (in-list L*)])
           (define L (car L+style))
@@ -235,7 +236,7 @@
           (for/fold : (Listof renderer2d)
                   ([acc : (Listof renderer2d) '()])
                   ([S (in-list ((inst sort Summary String) S* string<? #:key summary->version))]
-                   [i (in-naturals 1)])
+                   [i (in-naturals (*COLOR-OFFSET*))])
             (define lbl (and (*LINE-LABELS?*)
                              (format "~a~a"
                                (if (*GROUP-BY-TITLE?*)
@@ -244,7 +245,6 @@
                                (if (< 1 (length L*))
                                  (format " (L=~a)" L)
                                  ""))))
-            (define c (next-color))
             (define shape (next-shape))
             (define sty (integer->pen-style i))
             (define w (integer->line-width i))
@@ -263,7 +263,7 @@
                   #:samples num-samples
                   #:label (and (*LINE-LABELS?*) lbl)
                   #:line-style st
-                  #:line-color c
+                  #:line-color i
                   #:line-width w) acc)]
              [(*ERROR-BAR?*)
               (append
@@ -275,7 +275,7 @@
                     #:percent? (eq? (*Y-STYLE*) '%)
                     #:pdf? pdf?)
                   0 xmax
-                  #:color c
+                  #:color (cast i Natural)
                   #:label (and (*LINE-LABELS?*) lbl)
                   #:samples num-samples
                   #:style sty
@@ -290,7 +290,7 @@
                     #:percent? (eq? (*Y-STYLE*) '%)
                     #:pdf? pdf?)
                   0 xmax
-                  #:color c
+                  #:color i
                   #:label (and (*LINE-LABELS?*) lbl)
                   #:samples num-samples
                   #:style sty
@@ -782,6 +782,73 @@
       (and (string=? s (karst-jobid k)) (karst-data k)))
     (error 'jobid->row "jobid ~a not found in ~a" s bm)))
 
+(: plot-samples (-> Real (Listof (Listof Real)) #:style Sample-Style pict))
+(define (plot-samples baseline srs** #:style style)
+  (define x-major-ticks (compute-xticks (*X-TICKS*) (*X-NUM-TICKS*)))
+  (define y-major-ticks
+    (compute-yticks 100 (*Y-NUM-TICKS*)
+      #:units "%"
+      #:exact (list 100)))
+  (parameterize ([plot-x-ticks (ticks-add? x-major-ticks (*X-MINOR-TICKS*))]
+                 [plot-x-transform (if (*LOG-TRANSFORM?*) log-transform id-transform)]
+                 [plot-y-ticks (ticks-add? y-major-ticks (*Y-MINOR-TICKS*))]
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-far-ticks no-ticks]
+                 [plot-tick-size (*TICK-SIZE*)]
+                 [plot-font-face (*PLOT-FONT-FACE*)]
+                 [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
+    (define p
+      (plot-pict
+        (append
+          (if (*X-TICK-LINES?*) (list (x-tick-lines)) '())
+          (case style
+           [(exact)
+            (parameterize ([line-alpha 0.6])
+              (for/list : (Listof renderer2d)
+                        ([srs (in-list srs**)])
+                (lnm-overhead srs
+                              #:base baseline
+                              #:width (assert (- (*LNM-WIDTH*) 0.2) positive?)
+                              #:color (*COLOR-OFFSET*))))]
+           [(interval)
+            (let* ([get-props (lambda ([r : Real])
+                                (for/list : (Listof Real)
+                                           ([srs* (in-list srs**)])
+                                   (* 100
+                                      (/ (for/sum : Integer
+                                                  ([s (in-list srs*)])
+                                           (if (<= (/ s baseline) r) 1 0))
+                                         (length srs*)))))]
+                   [samples-color "navy"]
+                   [lo-ci (lambda ([r* : (Listof Real)]) (- (mean r*) (error-bound r*)))]
+                   [hi-ci (lambda ([r* : (Listof Real)]) (+ (mean r*) (error-bound r*)))])
+              (list (function-interval
+                (lambda ([r : Real])
+                  (lo-ci (get-props r)))
+                (lambda ([r : Real])
+                  (hi-ci (get-props r)))
+                #:color samples-color
+                #:samples (*NUM-SAMPLES*)
+                #:style 'solid
+                #:line1-color 0
+                #:line2-color 0
+                #:line1-width 1
+                #:line2-width 1
+                #:alpha (*INTERVAL-ALPHA*)
+                #:label #f)))]
+           [else (raise-user-error 'plot-samples "unknown sampling style '~a'" style)]))
+        #:x-min 1
+        #:x-max (*MAX-OVERHEAD*)
+        #:y-min 0
+        #:y-max 100
+        #:x-label #f
+        #:y-label #f
+        #:title #f ;(format "~a samples" sample-size)
+        #:legend-anchor (*LEGEND-ANCHOR*)
+        #:width (*PLOT-WIDTH*)
+        #:height (*PLOT-HEIGHT*)))
+  (cast p pict)))
+
 (: plot-srs-sound (-> (Listof Summary) Natural pict))
 (define (plot-srs-sound S* sample-size)
   (define x-major-ticks (compute-xticks (*X-TICKS*) (*X-NUM-TICKS*)))
@@ -932,8 +999,9 @@
         #:height (*PLOT-HEIGHT*)))
     (cast p pict)))
 
-(: plot-delta (-> (Listof (Listof Summary)) pict))
-(define (plot-delta S**)
+(: plot-delta (->* [(Listof (Listof Summary))] [#:sample-factor (U #f Natural)
+                                                #:sample-style (U #f 'interval)] pict))
+(define (plot-delta S** #:sample-factor [sample-factor #f] #:sample-style [sample-style #f])
   (for ([S* (in-list S**)])
     (unless (= 2 (length S*))
       (raise-user-error 'srs:precise "expected 2 versions to compare")))
@@ -946,10 +1014,15 @@
                  [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
     (define (real->percent (S : Summary)) : (-> Real Real)
       (count-configurations/mean S 0 #:cache-up-to (assert (*MAX-OVERHEAD*) index?) #:percent? #t))
+    (define (get-srs (S : Summary) (sample-size : Natural)) : (Listof (Listof Real))
+      (for/list : (Listof (Listof Real))
+                ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
+        (summary-random-sample S sample-size #:replacement? #f)))
     (define p
       (plot-pict
         (cons
-          (hrule 0 #:color 0 #:width (line-width) #:style 'short-dash)
+          (parameterize ([line-alpha 0.5])
+            (hrule 0 #:color 0 #:width (line-width) #:style 'short-dash))
           (for/list : (Listof (Listof renderer2d))
                     ([S* (in-list S**)]
                      [i (in-naturals)])
@@ -959,8 +1032,9 @@
             (define f-6.4 (real->percent (cadr S*)))
             (define log-diff
               (- (log (*MAX-OVERHEAD*)) (log 1)))
-            (list
-              (vrule x-min #:color 0 #:width (* 0.5 (line-width)))
+            (list*
+              (parameterize ([line-alpha 0.5])
+                (vrule x-min #:color 0 #:width (* 0.3 (line-width))))
               (function (lambda ([pre-r : Real])
                           (define pct (/ (- pre-r x-min) 10))
                           (define r (exp (* log-diff pct)))
@@ -970,7 +1044,45 @@
                 #:label #f
                 #:samples (*NUM-SAMPLES*)
                 #:style 'solid
-                #:width (*LNM-WIDTH*)))))
+                #:width (*LNM-WIDTH*))
+              (if (or (not sample-factor) (not sample-style))
+                '()
+                (let* ([sample-size (* (get-num-modules (car S*)) sample-factor)]
+                       [srs-6.2* (get-srs (car S*) sample-size)]
+                       [srs-6.4* (get-srs (cadr S*) sample-size)]
+                       [base-6.2 (untyped-mean (car S*))]
+                       [base-6.4 (untyped-mean (cadr S*))]
+                       [get-props (lambda ([pre-r : Real] [baseline : Real] [srs** : (Listof (Listof Real))])
+                                    (define pct (/ (- pre-r x-min) 10))
+                                    (define r (exp (* log-diff pct)))
+                                    (for/list : (Listof Real)
+                                               ([srs* (in-list srs**)])
+                                       (* 100
+                                          (/ (for/sum : Integer
+                                                      ([s (in-list srs*)])
+                                               (if (<= (/ s baseline) r) 1 0))
+                                             (length srs*)))))]
+                       [samples-color "DarkViolet"]
+                       [lo-ci (lambda ([r* : (Listof Real)]) (- (mean r*) (error-bound r*)))]
+                       [hi-ci (lambda ([r* : (Listof Real)]) (+ (mean r*) (error-bound r*)))]
+                     )
+              (list (function-interval
+                (lambda ([r : Real])
+                  (- (lo-ci (get-props r base-6.4 srs-6.4*))
+                     (hi-ci (get-props r base-6.2 srs-6.2*))))
+                (lambda ([r : Real])
+                  (- (hi-ci (get-props r base-6.4 srs-6.4*))
+                     (lo-ci (get-props r base-6.2 srs-6.2*))))
+                x-min x-max
+                #:color samples-color
+                #:samples (*NUM-SAMPLES*)
+                #:style 'solid
+                #:line1-color 0
+                #:line2-color 0
+                #:line1-width 1
+                #:line2-width 1
+                #:alpha (*INTERVAL-ALPHA*)
+                #:label #f)))))))
         #:x-min 0
         #:x-label #f
         #:y-label #f
@@ -1452,9 +1564,10 @@
 
 (: alphabet-ticks (->* [Natural] [#:offset Nonnegative-Real #:skip Nonnegative-Real] ticks))
 (define (alphabet-ticks n #:offset [offset 0] #:skip [skip 1])
+  (define init (+ (*TICKS-START-FROM*) 1))
   (labels->ticks #:offset offset #:skip skip
     (for/list : (Listof String)
-              ([i (in-range 1 (+ 1 n))])
+              ([i (in-range init (+ init n))])
       (string (integer->letter i)))))
 
 (: labels->ticks (->* [(Listof String)] [#:offset Nonnegative-Real #:skip Nonnegative-Real] ticks))
@@ -1620,7 +1733,7 @@
 
 (: make-palette (->* [] [Natural] (-> Index)))
 (define (make-palette [num-colors #f])
-  (let ([c : (Boxof Natural) (box 0)]
+  (let ([c : (Boxof Natural) (box (cast (- (*COLOR-OFFSET*) 1) Natural))]
         [incr : (-> Natural Natural) (if num-colors
                                        (lambda ([n : Natural])
                                          (add1 (modulo n num-colors)))
@@ -1673,7 +1786,7 @@
 
 (: integer->line-width (-> Integer Nonnegative-Real))
 (define (integer->line-width i)
-  (cast (+ (* 1/2 i) (*LNM-WIDTH*)) Nonnegative-Real))
+  (cast (+ (* 1/3 i) (*LNM-WIDTH*)) Nonnegative-Real))
 
 ;; =============================================================================
 

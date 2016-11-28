@@ -59,6 +59,7 @@
   render-deliverable-plot
   render-uncertainty
   render-karst
+  render-srs-overhead
   render-srs-sound
   render-srs-precise
   render-delta
@@ -371,6 +372,7 @@
 (define (render-lnm-plot pict*->elem #:rktd*** [rktd*** #f] #:index [cache-offset 1])
   ;; Sort & make figures of with 6 plots each or whatever
   (parameterize ([*AXIS-LABELS?* #f]
+                 [*COLOR-OFFSET* 1]
                  [*L* '(0 1)]
                  [*L-LABELS?* #t]
                  [*LEGEND?* (or (not rktd***)
@@ -597,6 +599,37 @@
         (lambda ()
           (render-karst-pict csv))))
 
+(define (render-srs-overhead bm v sample-size-factor)
+  (define name (symbol->string (benchmark-name bm)))
+  (define rktd (benchmark-rktd bm v))
+  (parameterize ([*AXIS-LABELS?* #f]
+                 [*L* '(0)]
+                 [*L-LABELS?* #t]
+                 [*LEGEND?* #f]
+                 [*LINE-LABELS?* #f]
+                 [*LOG-TRANSFORM?* #t]
+                 [*LNM-WIDTH* 1.6] ;; TODO fix width
+                 [*M* #f]
+                 [*MAX-OVERHEAD* 20]
+                 [*N* #f]
+                 [*NUM-SAMPLES* 60]
+                 [*PLOT-HEIGHT* 100]
+                 [*PLOT-WIDTH* 210]
+                 [*PLOT-FONT-SCALE* 0.04]
+                 [*SINGLE-PLOT?* #f]
+                 [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
+                                          (for/list ([i (in-range 4 20 2)]) i))]
+                 [*X-TICK-LINES?* #t]
+                 [*X-TICKS* '(1 2 20)]
+                 [*Y-NUM-TICKS* 3]
+                 [*Y-TICK-LINES?* #t]
+                 [*Y-STYLE* '%])
+    (with-cache ((list-cache-file "cache-srs-overhead-") bm)
+      #:read deserialize
+      #:write serialize
+      (lambda ()
+        (render-srs-overhead-pict name rktd sample-size-factor)))))
+
 (define (render-srs-sound bm* factor*)
   (define rktd**
     (for/list ([bm (in-list bm*)])
@@ -652,7 +685,7 @@
       (lambda ()
         (render-srs-precise-pict rktd** factor*)))))
 
-(define (render-delta bm*)
+(define (render-delta bm* #:sample-factor [sample-factor #f] #:sample-style [sample-style #f])
   (define versions (*RKT-VERSIONS*))
   (parameterize ([*AXIS-LABELS?* #f]
                  [*LEGEND?* #f]
@@ -671,7 +704,7 @@
         #:read deserialize
         #:write serialize
         (lambda ()
-          (render-delta-pict name* rktd**))))))
+          (render-delta-pict name* rktd** #:sample-factor sample-factor #:sample-style sample-style))))))
 
 (define (ext:max-overhead rktd)
   (max-overhead (from-rktd rktd)))
