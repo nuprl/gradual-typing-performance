@@ -256,3 +256,14 @@ Similar graphs can assess the performance of any fixed configuration or value fo
          (render-uncertainty sample-D ALL-BENCHMARKS))
     ]
 
+@; @(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
+@;                 [*PLOT-HEIGHT* 140]
+@;                 [*PLOT-WIDTH* 430]
+@;                 [*PLOT-FONT-SCALE* 0.02]
+@;                 [*X-TICK-LINES?* #t]
+@;                 [*LNM-WIDTH* (+ 0.5 (*LNM-WIDTH*))])
+@;  (list
+@;   @figure["fig:scale:delta" @elem{6.4 vs. 6.2}
+@;       (render-delta ALL-BENCHMARKS)
+@;   ]
+@;  ))

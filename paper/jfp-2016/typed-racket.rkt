@@ -61,6 +61,7 @@
   render-karst
   render-srs-sound
   render-srs-precise
+  render-delta
 
   render-exact-table
 
@@ -650,6 +651,27 @@
       #:write serialize
       (lambda ()
         (render-srs-precise-pict rktd** factor*)))))
+
+(define (render-delta bm*)
+  (define versions (*RKT-VERSIONS*))
+  (parameterize ([*AXIS-LABELS?* #f]
+                 [*LEGEND?* #f]
+                 [*LINE-LABELS?* #f]
+                 [*NUM-SAMPLES* 200]
+                 [*MAX-OVERHEAD* 20])
+    (define name*
+      (for/list ([bm (in-list bm*)])
+        (symbol->string (benchmark-name bm))))
+    (define rktd**
+      (for/list ([bm (in-list bm*)])
+            (for/list ([v (in-list versions)])
+              (benchmark-rktd bm v))))
+    (parameterize ([*current-cache-keys* (list (lambda () rktd**))])
+      (with-cache ((list-cache-file "cache-delta-") bm*)
+        #:read deserialize
+        #:write serialize
+        (lambda ()
+          (render-delta-pict name* rktd**))))))
 
 (define (ext:max-overhead rktd)
   (max-overhead (from-rktd rktd)))

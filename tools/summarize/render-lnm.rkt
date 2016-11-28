@@ -17,6 +17,7 @@
  render-karst-pict
  render-srs-sound-pict
  render-srs-precise-pict
+ render-delta-pict
 
  data->pict
  ;; Build a picture from a list of pairs:
@@ -726,15 +727,19 @@
    [(3) "v6.4"]
    [else (raise-user-error "Unrecognized version ~a" i)]))
 
-(: render-bars-xlabels (-> Real (Listof String) Pict))
-(define (render-bars-xlabels hspace name*)
+(: render-bars-xlabels (->* [Real (Listof String)] [#:style (U 'letter 'number)] Pict))
+(define (render-bars-xlabels hspace name* #:style [item-style 'letter])
   (define VSHIM (exact-round (/ (*GRAPH-VSPACE*) 2)))
+  (define get-label : (-> Integer Any)
+    (case item-style
+     [(letter) integer->letter]
+     [(number) number->string]))
   (define pict*
     (for/list : (Listof Pict)
               ([name (in-list name*)]
                [i (in-naturals 1)])
       (define name+ (if (regexp-match? #rx"^zordoz" name) "zordoz" name))
-      (text (format "~a. ~a" (integer->letter i) name+) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
+      (text (format "~a. ~a" (get-label i) name+) (*TABLE-FONT-FACE*) (*TABLE-FONT-SIZE*))))
   (ht-append* hspace
     (for/list : (Listof Pict)
               ([p* (in-list (split-list 4 pict*))])
@@ -840,6 +845,20 @@
       (hb-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
       (vl-append* VSHIM row*))
     srs-legend))
+
+(: render-delta-pict (-> (Listof String) (Listof (Listof Path-String)) Pict))
+(define (render-delta-pict name* rktd**)
+  (define S** (for/list : (Listof (Listof Summary))
+                        ([rktd* (in-list rktd**)])
+                (for/list : (Listof Summary)
+                          ([rktd (in-list rktd*)])
+                  (from-rktd rktd))))
+  (define VSHIM (*GRAPH-VSPACE*))
+  (define LEGEND-HSHIM (* 3 (*GRAPH-HSPACE*)))
+  (define legend
+    (render-bars-xlabels LEGEND-HSHIM name*))
+  (define body (plot-delta S**))
+  (vc-append VSHIM body legend))
 
 ;; -----------------------------------------------------------------------------
 

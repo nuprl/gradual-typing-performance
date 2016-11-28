@@ -27,6 +27,7 @@
   plot-karst
   plot-srs-sound
   plot-srs-precise
+  plot-delta
 
   ;; ---
 
@@ -924,6 +925,56 @@
         #:x-label #f
         #:y-label #f
         #:y-min -10
+        #:y-max 100
+        #:title #f ;(format "~a samples" sample-size)
+        #:legend-anchor (*LEGEND-ANCHOR*)
+        #:width (*PLOT-WIDTH*)
+        #:height (*PLOT-HEIGHT*)))
+    (cast p pict)))
+
+(: plot-delta (-> (Listof (Listof Summary)) pict))
+(define (plot-delta S**)
+  (for ([S* (in-list S**)])
+    (unless (= 2 (length S*))
+      (raise-user-error 'srs:precise "expected 2 versions to compare")))
+  ;; -- plot difference between versions
+  (parameterize ([plot-y-ticks (list->ticks '(-50 0 50 100) #:units "%")]
+                 [plot-x-ticks (alphabet-ticks (length S**) #:offset 5 #:skip 10)]
+                 [plot-x-far-ticks no-ticks]
+                 [plot-y-far-ticks no-ticks]
+                 [plot-font-face (*PLOT-FONT-FACE*)]
+                 [plot-font-size (* (*PLOT-FONT-SCALE*) (*PLOT-WIDTH*))])
+    (define (real->percent (S : Summary)) : (-> Real Real)
+      (count-configurations/mean S 0 #:cache-up-to (assert (*MAX-OVERHEAD*) index?) #:percent? #t))
+    (define p
+      (plot-pict
+        (cons
+          (hrule 0 #:color 0 #:width (line-width) #:style 'short-dash)
+          (for/list : (Listof (Listof renderer2d))
+                    ([S* (in-list S**)]
+                     [i (in-naturals)])
+            (define x-min (* i 10))
+            (define x-max (+ x-min 10))
+            (define f-6.2 (real->percent (car S*)))
+            (define f-6.4 (real->percent (cadr S*)))
+            (define log-diff
+              (- (log (*MAX-OVERHEAD*)) (log 1)))
+            (list
+              (vrule x-min #:color 0 #:width (* 0.5 (line-width)))
+              (function (lambda ([pre-r : Real])
+                          (define pct (/ (- pre-r x-min) 10))
+                          (define r (exp (* log-diff pct)))
+                          (- (f-6.4 r) (f-6.2 r)))
+                x-min x-max
+                #:color "DarkViolet"
+                #:label #f
+                #:samples (*NUM-SAMPLES*)
+                #:style 'solid
+                #:width (*LNM-WIDTH*)))))
+        #:x-min 0
+        #:x-label #f
+        #:y-label #f
+        #:y-min -50
         #:y-max 100
         #:title #f ;(format "~a samples" sample-size)
         #:legend-anchor (*LEGEND-ANCHOR*)
