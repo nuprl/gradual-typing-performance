@@ -10,12 +10,15 @@
   " MAX S. NEW" (affiliation-mark "1")
   " DANIEL FELTEY" (affiliation-mark "2")
   " ROBERT BRUCE FINDLER" (affiliation-mark "2")
+  " SAM TOBIN-HOCHSTADT" (affiliation-mark "3")
   " JAN VITEK" (affiliation-mark "1")
   "and MATTHIAS FELLEISEN" (affiliation-mark "1")
   @(affiliation
     "Northeastern University, Boston, Mass." (affiliation-mark "1")
     (affiliation-sep)
     "Northwestern University, Chicago, Ill." (affiliation-mark "2")
+    (linebreak)
+    "Indiana University, Bloomington, Ind." (affiliation-mark "3")
    ))
 
 @abstract{
