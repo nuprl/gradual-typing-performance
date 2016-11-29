@@ -11,18 +11,6 @@
 
 @title[#:tag "sec:threats"]{Threats to Validity}
 
-@(define version
-   (last (*RKT-VERSIONS*)))
-@(define num-configs (*TOTAL-NUM-CONFIGURATIONS*))
-@(define (format-% n)
-   (format "~a%" (round (* 100 (/ n num-configs)))))
-@(define lo (number->string (*LO*)))
-@(define hi (number->string (*HI*)))
-@(define lo-prop
-   (format-% (deliverable* (*LO*) version ALL-BENCHMARKS)))
-@(define hi-prop
-   (format-% (- num-configs (deliverable* (*HI*) version ALL-BENCHMARKS))))
-
 Although the evaluation method addresses the goals of gradual typing, our particular application has some threats to validity.
 In particular, both our @emph{experimental protocol} and our @emph{conclusions} have limitations.
 
@@ -48,7 +36,7 @@ Our conclusions have three limitations.
 First, the evaluation does not systematically measure the effects of annotating the same code with different types.
 This is an issue because type annotations determine the runtime constraints on untyped code.
 Therefore if two programmers give the same code different type annotations, they may experience different performance.
-For example, @bm[quadBG] and @bm[quadMB] describe the same code with different types and have quite different performance characteristics.
+For example, @bm[quadBG] and @bm[quadMB] describe the same code with different types and have very different performance characteristics.
 Whereas all configurations of the former are @deliverable{6}, only a small fraction of @bm[quadMB] configurations are @deliverable{20}.
 
 Second, our conclusions rely on Typed Racket's implementation technology and do not necessarily generalize to other implementations of gradual typing.

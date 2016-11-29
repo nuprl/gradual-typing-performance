@@ -329,7 +329,7 @@ The @emph{first limitation} of the overhead plots is that they hide a configurat
 One cannot distinguish the fully-typed configuration; moreover,
  the @exact{$\leq$} and @exact{$\rightarrow_k$} relations are lost.
 The typed/untyped ratio above the left plot partially compensates for the former.
-Unfortunately, the other configurations remain anonymous.
+The other configurations remain anonymous.
 
 @; - limit: angelic choice
 The @emph{second limitation} is that the @step{1} plot optimistically chooses the
