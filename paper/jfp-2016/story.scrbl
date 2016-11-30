@@ -1,7 +1,7 @@
 #lang scribble/base
 
 @require["common.rkt" "benchmark.rkt" "util.rkt" racket/file
-         (only-in pict ht-append pict-height vline)
+         (only-in pict vc-append rt-superimpose hline ht-append pict-width pict-height frame text vline)
          (only-in pict/code codeblock-pict) (only-in racket/string string-join)]
 
 @profile-point{sec:story}
@@ -10,6 +10,9 @@
 Typed Racket@~cite[thf-popl-2008] is the oldest and most developed implementation of sound gradual typing.
 It supports clients in both academia and industry.
 Typed Racket attracts these clients because it accomodates the idioms of (untyped) Racket.
+@; Its type system can express concepts including .....
+@; A programmer seeking to convert ...
+@; The only difference between Racket and Typed Racket ...
 In fact, a major design goal of Typed Racket is that equipping a Racket program
  with types is only a matter of annotating identifiers and declaring recursive types.
 Much of the underlying Racket program can remain the same, including code using
@@ -21,43 +24,65 @@ Finally, a typed module may incorporate definitions from a Racket module with a 
  conversely, a Racket module may use definitions from a Typed Racket module without knowledge that the providing module is typed.
 
 @figure["fig:story:tr" "Gradual typing in Racket"
-  @(let ([c1
-            @codeblock-pict[@string-join['(
-            "#lang racket"
-            ""
-            "(provide play)"
-            ""
-            "(define (play)"
-            "  (define n (random 10))"
-            "  (λ (guess)"
-            "    (= guess n)))"
-            ) "\n"]]]
-         [c2
-            @codeblock-pict[@string-join['(
-            "#lang typed/racket"
-            ""
-            "(require/typed \"guess-game.rkt\""
-            "  [play"
-            "   (-> (-> Natural Boolean))])"
-            ""
-            "(: stubborn (-> Natural Natural))"
-            "(define (stubborn n)"
-            "  (define check-guess (play))"
-            "  (if (check-guess n)"
-            "    0"
-            "    (+ 1 (stubborn n))))"
-            ) "\n"]]])
-  @ht-append[8 c1 @vline[2 (max (pict-height c1) (pict-height c2))] c2])
+  @(let* ([add-name (lambda (pict name) (rt-superimpose pict (frame (text (string-append " " name " ") "black" 10))))]
+          [c1
+             @codeblock-pict[@string-join['(
+             "#lang racket"
+             ""
+             "(provide play)"
+             ""
+             "(define (play)"
+             "  (define n (random 10))"
+             "  (λ (guess)"
+             "    (= guess n)))"
+             ) "\n"]]]
+          [c1-name "guess-game.rkt"]
+          [c1/name (add-name c1 c1-name)]
+          [c2
+             @codeblock-pict[@string-join['(
+             "#lang racket"
+             ""
+             "(provide stubborn-player)"
+             ""
+             "(define (stubborn-player i)"
+             "  4)"
+             ) "\n"]]]
+          [c2-name "player.rkt"]
+          [c2/name (add-name c2 c2-name)]
+          [c3
+             @codeblock-pict[@string-join[(list
+             "#lang typed/racket"
+             ""
+             (format "(require/typed ~s" c1-name)
+             "  [play (-> (-> Natural Boolean))])"
+             (format "(require/typed ~s" c2-name)
+             "  [stubborn-player (-> Natural Natural)])"
+             ""
+             "(define check-guess (play))"
+             "(for/sum ([i : Natural (in-range 10)])"
+             "  (if (check-guess (stubborn-player i)) 1 0))"
+             ) "\n"]]]
+          [c3-name "driver.rkt"]
+          [c3/name (add-name c3 c3-name)]
+          [c1+c2
+           @ht-append[8 c1/name @vline[2 (+ 2 (max (pict-height c1) (pict-height c2)))] c2/name]]
+             )
+  @vc-append[4
+    c1+c2
+    @hline[(pict-width c1+c2) 2]
+    c3/name]
+  )
 ]
 
-@Figure-ref{fig:story:tr} demonstrates Racket and Typed Racket with two small modules.
-The Racket module on the left implements a simple guessing game with the function @racket[play].
+@Figure-ref{fig:story:tr} demonstrates with a small, gradually typed application.
+The untyped module on the top left implements a guessing game with the function @racket[play].
 Each call to @racket[play] generates a random number and returns a function that checks a given number against this random number.
-The Typed Racket module on the right imports the function @racket[play] and defines a simple AI to interact with the guessing game.
-The AI takes a natural number as input and calls @racket[play] until it wins with the given number.
-Note that the typed module includes type annotations for both @racket[play] and the AI @racket[stubborn].
-The type checker uses these annotations to search the right module for static type errors.
-Typed Racket cannot guarantee that calls to @racket[play] return well-typed functions, but it assumes the static type is correct and inserts dynamic checks to monitor each function that @racket[play] returns.
+The untyped module on the top right implements a @exact|{{na\"ive}}| player for the guessing game.
+The driver module at the bottom combines the game and player.
+It generates a game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
+Additionally, the driver module leverages Typed Racket to ensure that the game and player follow the type specifications in its @racket[require/typed] clauses.
+Typed Racket statically checks that @racket{driver.rkt} sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play] and @racket[stubborn-player].
+@; need to say more? feels like it
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
 Furthermore, programmers often migrate Racket modules to Typed Racket as their application evolves.
@@ -91,7 +116,7 @@ In general one cannot predict why or how such incremental migrations happen, but
 Regarding the final point, there are two sources of so-called friction between typed and untyped code.
 First is the above-mentioned requirement that typed clients must supply type annotations to use imports from an untyped library.
 Maintainers of such libraries can instead provide a bridge module with the necessary annotations.
-Second is the performance overhead of typed/untyped interaction, such as the overhead of dynamically enforcing the type annotation for @racket[play] in @figure-ref{fig:story:tr}.
+Second is the performance overhead of typed/untyped interaction, such as the overhead of dynamically enforcing the return types of @racket[play] and @racket[stubborn-player] in @figure-ref{fig:story:tr}.
 
 
 @; -----------------------------------------------------------------------------
@@ -137,24 +162,24 @@ Typed Racket insists on gradual type soundness, therefore types need runtime enf
 Recall that types are checkable statements about program expressions.
 Soundness means that every checked statement holds as the program is executed.
 Statically typed languages provide this guarantee by type checking every expression.
-In a gradually typed language, the type system cannot check every expression because some are intentionally untyped.
+In a gradually typed language, the type system cannot check every expression because some are intentionally untyped. @; by definition of being GT
 Therefore a sound gradual type system monitors the interaction of typed and untyped program components at runtime.
 Where typed code claims @type{$\tau$} about the value of an untyped expression, the gradual type system inserts a runtime check @ctc{$\tau$} capable of deciding whether an arbitrary value belongs to the denotation of the syntactic type @type{$\tau$}.
 If, at runtime, the expression does not produce a value satisfying @ctc{$\tau$}, the program halts with a so-called @emph{type boundary error}.
 
 @; @note{In fact, Ren and Foster recently applied just-in-time type checking to six Ruby programs and found @emph{zero} latent type errors.}
 @;   @remark[]{
-@bold{Remark:}
+@bold{Remark}
      Type boundary errors arise when type annotations impose new constraints that untyped code does not satisfy.
-     Such errors may indicate latent bugs in the untyped code, but it is equally likely that the new type annotations are inaccurate.
-     In other words, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] misses half the point of gradual typing.
-@;   }@;
+     Such errors may indicate latent bugs in the untyped code, but it is equally likely that the new type annotations are incorrect specifications.
+     In other words, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] misses the point of gradual typing. @;
+@exact{\hfill$\blacksquare$}
 
 Typed Racket implements the runtime check @ctc{$\tau$} for a first-order type @type{$\tau$} with a first-order predicate.
-Every untyped value that flows into typed code at type @type{$\tau$} must satisfy the predicate.
-To enforce a higher-order type, Typed Racket dynamically allocates a proxy to ensure that a value's future interactions conform with its static type@~cite[ff-icfp-2002 sthff-oopsla-2012].
+To enforce a higher-order type, Typed Racket dynamically allocates a proxy to ensure that a value's future interactions with untyped contexts conform with its static type@~cite[ff-icfp-2002 sthff-oopsla-2012].
 
-For example, the Typed Racket function in @figure-ref{fig:complex-multiply} implements multiplication for polar-form complex numbers.@note{The example is adapted from Reynolds classic paper on types soundness@~cite[r-ip-1983]. In practice, Racket and Typed Racket have native support for complex numbers.}
+Consider the Typed Racket function in @figure-ref{fig:complex-multiply}.
+It implements multiplication for polar-form complex numbers.@note{The example is adapted from Reynolds classic paper on types soundness@~cite[r-ip-1983]. In practice, Racket and Typed Racket have native support for complex numbers.}
 If an untyped module imports this function, Typed Racket allocates a new proxy.
 The proxy checks that every value which flows from the untyped module to @racket[polar-*] passes the predicate @ctc{C}.
 @; If there are @math{n} calls to the function from untyped contexts, all @math{2n} values factor through the predicate.
