@@ -21,7 +21,7 @@ Industry labs went so far as to build @emph{optionally typed} languages@;
 @note{@url{http://hacklang.org/}}
 @note{@url{http://flowtype.org/}}
 @note{@url{http://mypy-lang.org/}}
-that provide static checks but annihilate all traces of type soundness.
+that provide static checks but sacrifice type soundness.
 Programs written in such languages run with zero overhead, but are suceptible to the hard-to-trace bugs and silent failures explained in @secref{sec:overhead}.
 
 As implementations of gradual typing matured, programmers using them had mixed experiences about the performance overhead of gradual typing.
@@ -34,14 +34,14 @@ This paper provides an answer:
    @item{
      To @emph{measure} the performance of a gradual type system, fully annotate a suite of representative benchmark programs and measure the running time of all typed/untyped configurations according to a fixed @emph{granularity}.
      In Typed Racket, the granularity is by-module.
-     In a micro-level gradual type system such as Reticulated Python, experimenters have more choices (by module, by variable)
+     In a micro-level gradual type system such as Reticulated Python, experimenters have more choices (e.g., by module or by variable).
    }
    @item{
      To express the @emph{absolute performance} of the gradual type system, report the proportion of configurations in each benchmark that are @step{} using @emph{overhead graphs}.
      Ideally, many configurations should be @step["0" "1.1"].
    }
    @item{
-     To express the @emph{relative performance} of two gradual type systems, plot their overhead graphs on the same axis and test whether the distance is statistically significant.
+     To express the @emph{relative performance} of two implementations of a gradual type system, plot two overhead graphs on the same axis and test whether the distance is statistically significant.
      Ideally, the curve for the improved system should demonstrate a complete and significant ``left shift.''
    }
  ]
