@@ -6,6 +6,10 @@
   (rename-out [make-module-description module-description])
   render-module-descriptions
   module
+
+  ;; -- from typed-racket.rkt
+  render-exact-plot
+  render-uncertainty
 )
 
 (require

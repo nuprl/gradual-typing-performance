@@ -560,11 +560,15 @@
   (define num-benchmarks (length vec*))
   (parameterize ([plot-x-ticks (alphabet-ticks num-benchmarks)]
                  [plot-x-far-ticks no-ticks]
+                 [plot-y-transform log-transform]
                  [plot-y-ticks (compute-yticks 3 (*Y-NUM-TICKS*) #:units "x")])
     (define p
       (plot-pict
         (append
           (make-vrule* num-benchmarks)
+          (list
+            (parameterize ([line-alpha 0.5])
+              (hrule 0 #:color 0 #:width (line-width) #:style 'short-dash)))
           (for/list : (Listof (Listof (Listof renderer2d)))
                     ([vec (in-list vec*)]
                      [x-center (in-naturals)])
@@ -576,7 +580,7 @@
                 (for/list : (Listof Real)
                           ([t (in-list (typed-runtimes S))]
                            [u (in-list (untyped-runtimes S))])
-                  (/ u t)))
+                  (/ t u)))
               (define m (mean t/u*))
               (define s (error-bound t/u*))
               (define x* (linear-seq (- x-center config-x-jitter)
@@ -868,17 +872,15 @@
       (plot-pict
         (append
           (if (*X-TICK-LINES?*) (list (x-tick-lines)) '())
-          (for/list : (Listof (List renderer2d (Listof (Listof renderer2d))))
+          (for/list : (Listof (Listof renderer2d))
                     ([S (in-list S*)]
                      [i (in-list '(1 3))]) ;; 2016-09-22 hardcoded for 6.2/6.4
             (define baseline (untyped-mean S))
             (define srs**
               ;; -- 2016-09-21 : only doing "without replacement", but there's code for adding "with?"
-              (for/list : (Listof (Listof (Listof Real)))
-                        ([r? (in-list (list #f #;#t))])
-                (for/list : (Listof (Listof Real))
-                          ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
-                (summary-random-sample S sample-size #:replacement? r?))))
+              (for/list : (Listof (Listof Real))
+                        ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
+                (summary-random-sample S sample-size #:replacement? #f)))
             (list
               (function (count-configurations/mean S 0 #:cache-up-to (assert (*MAX-OVERHEAD*) index?) #:percent? #t)
                 0 (*MAX-OVERHEAD*)
@@ -887,15 +889,30 @@
                 #:samples (*NUM-SAMPLES*)
                 #:style (integer->pen-style i)
                 #:width (*LNM-WIDTH*))
-              (parameterize ([line-alpha 0.6])
-                (for/list : (Listof (Listof renderer2d))
-                          ([srs* (in-list srs**)])
-                  (for/list : (Listof renderer2d)
-                            ([srs (in-list srs*)])
-                    (lnm-overhead srs
-                                  #:base baseline
-                                  #:width (assert (- (*LNM-WIDTH*) 0.2) positive?)
-                                  #:color (assert i index?))))))))
+              (let* ([get-props (lambda ([r : Real])
+                                  (for/list : (Listof Real)
+                                             ([srs* (in-list srs**)])
+                                     (* 100
+                                        (/ (for/sum : Integer
+                                                    ([s (in-list srs*)])
+                                             (if (<= (/ s baseline) r) 1 0))
+                                           (length srs*)))))]
+                     [lo-ci (lambda ([r* : (Listof Real)]) (- (mean r*) (error-bound r*)))]
+                     [hi-ci (lambda ([r* : (Listof Real)]) (+ (mean r*) (error-bound r*)))])
+                (function-interval
+                  (lambda ([r : Real])
+                    (lo-ci (get-props r)))
+                  (lambda ([r : Real])
+                    (hi-ci (get-props r)))
+                  #:color i
+                  #:samples (*NUM-SAMPLES*)
+                  #:style 'solid
+                  #:line1-color 0
+                  #:line2-color 0
+                  #:line1-width 1
+                  #:line2-width 1
+                  #:alpha (*INTERVAL-ALPHA*)
+                  #:label #f)))))
         #:x-min 1
         #:x-max (*MAX-OVERHEAD*)
         #:y-min 0
@@ -967,7 +984,7 @@
                   #:line2-width 1
                   #:alpha (*INTERVAL-ALPHA*)
                   #:label #f))
-              (function (lambda ([r : Real])
+              #;(function (lambda ([r : Real])
                           (- (mean (f-6.4 r)) (mean (f-6.2 r))))
                 #:color samples-color
                 #:label #f

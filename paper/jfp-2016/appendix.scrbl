@@ -1,7 +1,11 @@
 #lang scribble/base
 @require["common.rkt" "benchmark.rkt" "appendix.rkt" "util.rkt"]
 
-@exact{\newpage}
+@; TODO
+@; - 6.3 vs 6.4 delta picture (cyan)
+@; - mean, max improvement
+@; - (online only) benchmark sources
+
 
 @title[#:tag "appendix"]{Appendix}
 @; =============================================================================
@@ -80,8 +84,8 @@ In particular, the summaries include:
 Modules are ordered alphabetically.
 @Figure-ref{fig:suffixtree-lattice} uses this ordering to represent configurations as black and white rectangles.
 For example, the node in @figure-ref{fig:suffixtree-lattice} in which only the left-most segment is white represents the configuration where module @tt{data.rkt} is untyped and all other modules are typed.
-Similarly, @figure-ref{fig:exact-runtimes} derives a natural number for each configuration using the alphabetical order of module names.
-Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the configuration where only @tt{main.rkt} is typed.
+Similarly, @figure-ref{fig:appendix:morsecode} derives a natural number for each configuration using the alphabetical order of module names.
+Configuration 4 in @figure-ref{fig:appendix:morsecode} (binary: @tt{0100}) is the configuration where only @tt{main.rkt} is typed.
 
 @; MODULEGRAPHS
 @; and use a graph structure to represent the interactions
@@ -643,5 +647,45 @@ Configuration 4 in @figure-ref{fig:exact-runtimes} (binary: @tt{0100}) is the co
   ]
 
 ]
+
+@; =============================================================================
+
+@profile-point{appendix:uncertainty}
+@section{The Stability of Measurements}
+
+  @figure["fig:appendix:morsecode" @elem{Exact running times in @bm[morsecode].}
+    @render-exact-plot[morsecode]
+  ]
+
+The experimental protocol in @secref{sec:protocol} states that we measured each benchmark's running time multiple times.
+The overhead plots in @secref{sec:plots}, however, use the mean of these running times.
+The implicit assumption is that the mean of a configuration's running times is an accurate representation of its performance.
+@Figure-ref["fig:appendix:morsecode" "fig:appendix:ratio"] qualify this assumption.
+
+@Figure-ref{fig:appendix:morsecode} plots exact running times for the @integer->word[(benchmark->num-configurations morsecode)] @bm[morsecode] configurations.
+The data for one configuration consists of three sequences of color-coded points; the data for version 6.2 are red triangles, the data for version 6.3 are green circles, and the data for version 6.4 are blue squares.
+Each sequence is arranged left-to-right in the order we collected the running times.
+
+For all configurations, the data in each sequence is similar and there is no apparent pattern between the left-to-right order of points and the running time they represent.
+This suggests that the absolute running times for a given configuration in @bm[morsecode] are independent samples from a population with a stable mean.
+
+Other benchmarks are too large to plot in this manner, but @figure-ref{fig:appendix:ratio} plots their exact typed/untyped ratios on a logarithmic scale.
+Similar to @figure-ref{fig:appendix:morsecode}, the @math{x}-axis is segmented;
+these segments represent the @integer->word[(*NUM-BENCHMARKS*)] benchmark programs.
+Within a segment, the color-coded points give the exact typed/untyped ratio from one iteration of the experiment.
+Finally, each series of points is surrounded by its 95% confidence interval.
+@; If the three intervals for a given benchmark do not overlap, it is highly probable that the three typed/untyped ratios are truly different.
+
+Most sequences of points in @figure-ref{fig:appendix:ratio} have similar @math{y}-values, and none of the sequences evince a strong correlation between their left-to-right (chronological) order and @math{y}-value.
+The notable exception is @bm[quad].
+Both @bm[quadBG] and @bm[quadMB] show larger variation between measurements because these measurements were collected on 30 cores running in parallel on our benchmarking machine.
+We attribute the bias to contention over shared memory.
+Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the average of a given sequence of typed/untyped ratios is an accurate representation of the true typed/untyped ratio.
+
+
+  @figure["fig:appendix:ratio" @elem{typed/untyped ratios, on a logarithmic scale.}
+    @render-uncertainty[ALL-BENCHMARKS]
+  ]
+
 
 @profile-point{appendix:end}

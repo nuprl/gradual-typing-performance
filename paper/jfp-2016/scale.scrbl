@@ -62,11 +62,11 @@ The details for @figure-ref{fig:scale:delta-interval} are analogous.
 
 @itemlist[
 @item{
-  To generate one random sample, we selected @id[snake-sample-size] configurations without replacement.
+  To generate one random sample, we selected @id[snake-sample-size] configurations without replacement and associated each configuration with its overhead from the exhaustive performance evaluation reported in @secref{sec:tr}.
   Sampling with replacement yielded similar results.
 }
 @item{
-  To generate a confidence interval for the number of @deliverable{D} configurations based on @integer->word[srs-samples] such samples, we calculated the proportion of @deliverable{D} configurations in each sample@note{Re-using the running times from the exhaustive performance evaluation reported in @secref{sec:tr}.} and generated a 95% confidence interval from the proportions.
+  To generate a confidence interval for the number of @deliverable{D} configurations based on @integer->word[srs-samples] such samples, we calculated the proportion of @deliverable{D} configurations in each sample and generated a 95% confidence interval from the proportions.
   This is the so-called @emph{index method}@~cite[f-arxiv-2006] for computing a confidence interval from a sequence of ratios.
   This method is intuitive, but admittedly less precise than a method such as Fieller's@~cite[f-rss-1957].
   The two intervals in the left half of @figure-ref{fig:scale:srs-snake} are a sequence of such confidence intervals.

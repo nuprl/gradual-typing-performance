@@ -81,7 +81,7 @@ The untyped module on the top right implements a @exact|{{na\"ive}}| player for 
 The driver module at the bottom combines the game and player.
 It generates a game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
 Additionally, the driver module leverages Typed Racket to ensure that the game and player follow the type specifications in its @racket[require/typed] clauses.
-Typed Racket statically checks that @racket{driver.rkt} sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play] and @racket[stubborn-player].
+Typed Racket statically checks that @racket{driver.rkt} sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play], @racket[stubborn-player], and @racket[check-guess].
 @; need to say more? feels like it
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.

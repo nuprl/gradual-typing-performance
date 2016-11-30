@@ -66,7 +66,7 @@ Sixth, half the configurations in @bm[dungeon] do not run on versions 6.2 and 6.
 For the purpose of our experiment, these configurations have ``infinite'' performance overhead.
 
 All our measurements were taken on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.@note{The Opteron is a NUMA architecture.}
-With the exception of @bm[quadBG] and @bm[quadMB],@note{The six datasets for @bm[quad] were collected using 30 cores, but consequently exhibit greater variation between trials. See @secref{sec:compare}.} the machine collected data with at most two of its 32 cores.
+With the exception of @bm[quadBG] and @bm[quadMB],@note{The six datasets for @bm[quad] were collected using 30 cores, but consequently exhibit greater variation between trials. See the appendix.} the machine collected data with at most two of its 32 cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
 For every benchmark, our driver script spawned one green thread for each available core.
@@ -176,7 +176,7 @@ These lines plot the difference between the curve for v6.4 and the curve for v6.
 As expected, the line for @bm[gregor] (labeled @math{r}) has a large positive spike in its left half.
 
 Out of the @integer->word[(*NUM-BENCHMARKS*)] benchmarks, fifteen show large improvements in @figure-ref{fig:scale:delta}.
-These improvements are due to work by Findler and Tobin-Hochstadt on Racket's contract system and Typed Racket's use of contracts to enforce static types.
+These improvements are due to work by Findler and Sam Tobin-Hochstadt on Racket's contract system and Typed Racket's use of contracts to enforce static types.
 In many cases Findler and Tobin-Hochstadt were able to derive a microbenchmark from one of the benchmark programs, implement changes that improved the performance of the microbenchmark, and consequently improve the performance of multiple programs in the benchmark suite.
 
 @; TODO double-check that regression is true. Re-running typed config doesn't match my data file.

@@ -759,9 +759,6 @@
 (: render-srs-overhead-pict (-> String Path-String Natural Pict))
 (define (render-srs-overhead-pict name rktd sampling-factor)
   (define S (from-rktd rktd))
-  (define overhead-pict
-    (add-title name #:caption (format "~a configurations" (get-num-configurations S))
-      (car (lnm-plot S))))
   (define um (untyped-mean S))
   (define num-modules (get-num-modules S))
   (define sample-size (* num-modules sampling-factor))
@@ -775,10 +772,8 @@
   (define interval-pict
     (add-title "" #:caption (format "sample size: ~a" sample-size)
       (plot-samples um sample* #:style 'interval)))
-  (vc-append (*GRAPH-VSPACE*)
-    overhead-pict
-    (hc-append (*GRAPH-HSPACE*)
-      samples-pict interval-pict)))
+  (hc-append (*GRAPH-HSPACE*)
+    samples-pict interval-pict))
 
 (: add-title (->* [String Pict] [#:caption (U #f String)] Pict))
 (define (add-title title-str p #:caption [pre-caption #f])
@@ -836,9 +831,8 @@
                  (make-line 1 "v6.2" #t)
                  (make-line 3 "v6.4" #f)
                  (make-line 3 "v6.4" #t)))))
-  (vl-append (*GRAPH-VSPACE*)
-             (vl-append* VSHIM row*)
-             (hc-append 0 (blank 90 0) srs-legend)))
+  ;; TODO re-add legend?
+  (vl-append* VSHIM row*))
 
 (: render-srs-precise-pict (-> (Listof (Listof Path-String)) (Listof Natural) Pict))
 (define (render-srs-precise-pict rktd** sampling-factor*)
@@ -855,9 +849,10 @@
           (for/list : (Listof Pict)
                     ([size (in-list sampling-factor*)])
             (define num-samples (* size num-modules))
-            (vr-append TSHIM (subtitle-text (format "sample size: ~a" num-samples)) (plot-srs-precise S* num-samples)))))
-      (define title (title-text (get-project-name (car S*))))
-      (lt-superimpose row title)))
+            (plot-srs-precise S* num-samples))))
+      (add-title "v6.4 - v6.2"
+        #:caption (format "sample size: ~a" (* (car sampling-factor*) num-modules))
+        row)))
   (define srs-legend
     (let ([make-line (lambda ([c : String]
                               [descr : String]
@@ -872,11 +867,10 @@
       (hc-append (* 2 HSHIM)
                  (make-line "DarkViolet" "true delta (v6.4 - v6.2)" #f)
                  (make-line "brown" "avg. sample delta" #t) )))
-  (vc-append VSHIM
-    (if (< (*PLOT-WIDTH*) 400)
-      (hb-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
-      (vl-append* VSHIM row*))
-    srs-legend))
+  ;; TODO srs-legend?
+  (if (< (*PLOT-WIDTH*) 400)
+    (hb-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
+    (vl-append* VSHIM row*)))
 
 (: render-delta-pict (->* [(Listof String) (Listof (Listof Path-String))] [#:sample-factor (U #f Natural) #:sample-style (U #f 'interval)] Pict))
 (define (render-delta-pict name* rktd** #:sample-factor [sample-factor #f] #:sample-style [sample-style #f])
@@ -890,7 +884,8 @@
   (define legend
     (render-bars-xlabels LEGEND-HSHIM name*))
   (define body (plot-delta S** #:sample-factor sample-factor #:sample-style sample-style))
-  (vc-append VSHIM body legend))
+  (add-title "v6.4 - v6.2"
+    (vc-append VSHIM body legend)))
 
 ;; -----------------------------------------------------------------------------
 
@@ -973,8 +968,8 @@
   (define legend (make-legend/points vec*))
   (define title
     (hb-append 2
-      (title-text "Speedup vs. Untyped")
-      (subtitle-text "(Inverse of typed/untyped ratio)")))
+      (title-text "Typed/Untyped Ratio")
+      #;(subtitle-text "(Inverse of typed/untyped ratio)")))
   (vl-append 2
     title
     (vc-append (*GRAPH-VSPACE*) pict legend)))

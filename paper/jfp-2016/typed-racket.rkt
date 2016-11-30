@@ -521,7 +521,7 @@
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*PLOT-FONT-SCALE* 0.04]
-                     [*PLOT-HEIGHT* 170]
+                     [*PLOT-HEIGHT* 200]
                      [*PLOT-WIDTH* 430]
                      [*POINT-SIZE* 6]
                      [*POINT-ALPHA* 0.7])
@@ -574,7 +574,7 @@
           (for*/list ([bm (in-list bm*)])
             (list->vector (benchmark->rktd* bm))))))))
 
-(define (render-uncertainty D bm*)
+(define (render-uncertainty bm*)
   (vc-append 20
    (apply render-typed/untyped-plot bm*)
    #;(hc-append 0 (blank 10 0) (apply render-typed/untyped-plot bm*))
