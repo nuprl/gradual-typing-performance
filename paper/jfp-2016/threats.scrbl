@@ -24,7 +24,7 @@ Second, a few benchmarks have little data (less than 6 samples per configuration
 It is therefore possible that some samples are not truly representative.
 
 Third, our configurations running in parallel reference the same Racket executable and external libraries.
-This cross-reference is a potential source of bias. @; however, running at most two configurations simultaneously produced stable and reproducible data.
+This cross-reference is a potential source of bias; however, running at most two configurations simultaneously produced stable running times.@note{Details in the appendix.}
 
 Fourth, the Racket compiler and JIT include heuristic optimizations.
 Our protocol of compiling @emph{once} before collecting one sample does not control for these heuristics.
