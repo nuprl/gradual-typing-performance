@@ -1,86 +1,102 @@
 #lang scribble/base
 
+@; == Caveats / Ideas
+@; - at least measure top/bottom of lattice
+@; - only tested 20x overhead, estimates for larger (rarer) overheads may be worse
+@; - haven't tried guessing worst-case overhead
+
 @require[
   "common.rkt"
   "util.rkt"
   "benchmark.rkt"
   "typed-racket.rkt"
   (except-in gtp-summarize/lnm-parameters defparam)
+  (only-in gtp-summarize/path-util add-commas)
 ]
 
 @profile-point{sec:scale}
 @title[#:tag "sec:scale"]{Scaling the Method}
 
-@(define srs-samples 4)
-@(define small-srs-samples 2)
+@(define srs-samples 5)
 @(define sample-size-factor 10)
+@(define snake-sample-size (* sample-size-factor (benchmark->num-modules snake)))
+@(define large-bm* (for/list ([bm (in-list ALL-BENCHMARKS)]
+                              #:when (< 5 (benchmark->num-modules bm)))
+                     bm))
 
   @; plot library ~ 80 modules
   @; math library ~ 197 modules
 The evaluation method proposed in @secref{sec:method} does not scale to benchmarks with a large number of typeable components.
-Benchmarking a full performance lattice for a program with @math{N} such components requires an exponential number of measurements.
+Benchmarking a full performance lattice for a program with @math{N} such components requires @exact{$2^N$} measurements.
 Even with access to a server farm, exhaustively measuring programs with as few as 60 components is impractical.
-Clearly, the method must scale to measure the overhead in such programs.
 
 This section shows that simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
-Specifically, it demonstrates that a linear number of samples generates, in practice, a good approximation to the presented overhead plots.
-Overhead plots are intuitively a statement about expected values.
-If 10% of the configurations are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
-The same holds for any value of @math{D}, so an overhead plot generated from one sample population should approximate the true overhead plot.
+Instead of measuring every configuration in a benchmark, it suffices to randomly sample a @emph{linear} number of configurations and plot the overhead apparent in the sample.
 
-@(define tetris-sample-size (* sample-size-factor (benchmark->num-modules tetris)))
+@bold{Remark}
+    Overhead plots are intuitively a statement about expected values.
+    If 10% of the configurations are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
+    The same holds for any value of @math{D}, so an overhead plot generated from one sample population will, in expectation, approximate the true overhead plot.@;
+@exact{\hfill$\blacksquare$}
 
-To demonstrate, @figure-ref{fig:scale:srs-overhead} plots the true overhead for the @id[(benchmark->num-configurations tetris)] configurations in @bm[tetris] against the overhead in samples of @id[tetris-sample-size] configurations.@note{The sample size is @id[sample-size-factor] times the number of modules in the @bm[tetris] benchmark. All plots in this section use analogous sampling rates.}
-The dark red line is from @secref{sec:plots}; it plots the true overhead in @bm[tetris] on Racket v6.2.
-The @integer->word[small-srs-samples] faint red lines plot the overhead in @integer->word[small-srs-samples] distinct samples of @id[tetris-sample-size] configurations each.
-In particular, a single faint red line plots the proportion of @deliverable{} configurations in one group of @id[tetris-sample-size] configurations, selected without replacement.@note{Sampling @emph{without replacement}, implies that each sample has @id[tetris-sample-size] unique configurations; however, there may be duplicates between samples. At any rate, choosing truly random samples (with replacement) yields similar results.}
-Similarly, the dark and faint blue lines plot true and sample overheads in Racket v6.4.
+@Figure-ref{fig:scale:srs-snake} plots the true performance of the @bm[snake] benchmark against confidence intervals@~cite[n-ptrs-1937] generated from random samples.
+The plot on the left shows the absolute performance of @bm[snake] on version 6.2 (dashed red line) and version 6.4 (solid blue line).
+The plot on the right shows the improvement of version 6.4  relative to version 6.2 (solid purple line).
+Each line is surrounded by a thin interval generated from @integer->word[srs-samples] samples of @id[snake-sample-size] configurations each.
 
-@Figure-ref{fig:scale:srs-overhead} thus shows that small, random populations can approximate the true overhead in a large performance lattice.
-There is noticeable difference between the sample overhead and true overhead, but overall the samples @emph{tend towards} the true overhead.
-More precisely, the curve for the mean falls within a confidence interval drawn around the samples (not pictured).
-As stated in @secref{sec:compare}, such a confidence interval estimates the @emph{likely} true overhead based on the sample measurements.
-Since the confidence interval contains the mean derived from an exhaustive evaluation, the samples do approximate the full dataset.
+The lesson of @figure-ref{fig:scale:srs-snake} is that the intervals provide a reasonable approximation of the performance of the @bm[snake] benchmark.
+These intervals capture both the absolute performance (left plot) and relative performance (right plot) of @bm[snake].
 
-In fact, the bounds are tight enough to capture the @emph{difference} in performance between two versions of Racket.
-@Figure-ref{fig:scale:srs-precise} presents such data for the @bm[tetris] benchmark.
-The dark purple line is the delta between the true overhead on v6.4 and the true overhead on v6.2.
-The dashed brown line plots a sample delta; in particular, this brown line shows the average difference between v6.4 and v6.2 across @integer->word[srs-samples] sample populations.
-The interval around the brown line shows the best and worst differences one can expect based on a 98% confidence interval.
-Specifically, the upper end of the shaded interval is the difference between the upper confidence limit on our samples for v6.4 and the lower confidence limit on our samples for v6.2.
-The lower end of the interval is the smallest probable difference between the versions, based on our lower limit for v6.4 and upper limit for v6.2.
+@Figure-ref{fig:scale:delta-interval} provides further validation of random sampling using the @integer->word[(length large-bm*)] largest benchmarks in the @|GTP| suite.
+This figure plots the solid purple lines from @figure-ref{fig:scale:delta} alongside confidence intervals generated from a small number of samples.
+Specifically, the interval for a benchmark with @math{N} modules is generated from @integer->word[srs-samples] samples of @exact{$@id[sample-size-factor]N$} configurations.
+Hence the samples for @bm[lnm] use @id[(* 10 (benchmark->num-modules lnm))] configurations and the samples for @bm[quadMB] use @id[(* 10 (benchmark->num-modules quadMB))] configurations.
+For every benchmark, the true relative performance (solid purple line) lies within the corresponding interval.
+Again, the lesson is that a language designer can quickly approximate performance by computing a similar interval.
 
-@Figure-ref{fig:scale:srs-precise-all} plots similar data for benchmarks in the @|GTP| suite with at least eight modules.
-In all cases, the mean difference among the @integer->word[srs-samples] sample populations is close to the true difference between the performance of the two Racket versions.
-Furthermore, the confidence bounds around these means are tight, even for the largest benchmarks, and increasing the number of samples produces even tighter bounds.
 
-@; == Caveats / Ideas
-@; - at least measure top/bottom of lattice
-@; - only tested 20x overhead, estimates for larger (rarer) overheads may be worse
-@; - haven't tried guessing worst-case overhead
+@section{Statistical Protocol}
 
-  @(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
-                  [*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples]
-                  [*PLOT-HEIGHT* 140]
-                  [*PLOT-WIDTH* 430]
-                  [*PLOT-FONT-SCALE* 0.02]
-                  [*X-TICK-LINES?* #t]
-                  [*LNM-WIDTH* 1.8])
-   (list
-    @figure["fig:scale:srs-overhead" @elem{Approximating true overhead}
-      (parameterize ([*NUM-SIMPLE-RANDOM-SAMPLES* small-srs-samples])
-        (render-srs-sound (list tetris) (list sample-size-factor)))]
+For readers interested in reproducing our results, this section describes the protocol that generated @figure-ref{fig:scale:srs-snake}.
+The details for @figure-ref{fig:scale:delta-interval} are analogous.
 
-    @figure["fig:scale:srs-precise" @elem{Approximating improvement of v6.4 over v6.2 (@id[(*NUM-SIMPLE-RANDOM-SAMPLES*)] samples)}
-      (render-srs-precise (list tetris) (list sample-size-factor))
-    ]
-    (parameterize ([*PLOT-HEIGHT* 100]
-                   [*PLOT-WIDTH* 220]
-                   [*PLOT-FONT-SCALE* 0.04]
-                   [*X-TICK-LINES?* #f])
-      @figure["fig:scale:srs-precise-all"  @elem{Approximating improvement in the largest benchmarks (@id[(*NUM-SIMPLE-RANDOM-SAMPLES*)] samples)}
-        (render-srs-precise (list snake acquire synth gregor quadBG quadMB) (list sample-size-factor))
-      ]
-    )))
+@itemlist[
+@item{
+  To generate one random sample, we selected @id[snake-sample-size] configurations without replacement.
+  Sampling with replacement yielded similar results.
+}
+@item{
+  To generate a confidence interval for the number of @deliverable{D} configurations based on @integer->word[srs-samples] such samples, we calculated the proportion of @deliverable{D} configurations in each sample@note{Re-using the running times from the exhaustive performance evaluation reported in @secref{sec:tr}.} and generated a 95% confidence interval from the proportions.
+  This is the so-called @emph{index method}@~cite[f-arxiv-2006] for computing a confidence interval from a sequence of ratios.
+  This method is intuitive, but admittedly less precise than a method such as Fieller's@~cite[f-rss-1957].
+  The two intervals in the left half of @figure-ref{fig:scale:srs-snake} are a sequence of such confidence intervals.
+}
+@item{
+  To generate an interval for the difference between the number of @deliverable{D} configurations on version 6.4 and the number of @deliverable{D} configurations on version 6.2, we computed two confidence intervals as described in the previous step and plotted the largest and smallest difference between these intervals.
+  Specifically, the upper bound for the number of @deliverable{D} configurations on the right half of @figure-ref{fig:scale:srs-snake} is the difference between the upper confidence limit on the number of @deliverable{D} configurations in version 6.4 minus the lower confidence limit on the number of @deliverable{D} configurations in version 6.2.
+  The corresponding lower bound is the difference between the lower confidence limit on version 6.4 and the upper confidence limit on version 6.2.
+}
+]
 
+@(parameterize ([*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples]
+                [*COLOR-OFFSET* 3]
+                [*RKT-VERSIONS* '("6.2" "6.4")])
+  @figure["fig:scale:srs-snake" @elem{Approximating absolute performance}
+    (render-srs-single snake sample-size-factor)
+  ]
+)
+
+@(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
+                [*PLOT-HEIGHT* 140]
+                [*PLOT-WIDTH* 430]
+                [*PLOT-FONT-SCALE* 0.02]
+                [*NUM-SAMPLES* 60]
+                [*TICKS-START-FROM* (- (length ALL-BENCHMARKS) (length large-bm*))]
+                [*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples]
+                [*LNM-WIDTH* (+ 0.5 (*LNM-WIDTH*))])
+ (list
+  @figure["fig:scale:delta-interval" @elem{Approximating relative performance}
+      (render-delta large-bm* #:sample-factor sample-size-factor #:sample-style 'interval)
+  ]
+ ))
 
