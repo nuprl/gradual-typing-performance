@@ -36,7 +36,7 @@ This section concludes with a table summarizing the static characteristics of ea
   })
 (cons (list fsm fsmoo)
   @elem{
-    Simulates the interactions of economic agents via communicating, finite-state automata@~cite[n-mthesis-2014].
+    Simulates the interactions of economic agents via finite-state automata@~cite[n-mthesis-2014].
     This benchmark comes in two flavors: @bm[fsm] stores the agents in a mutable vector and whereas @bm[fsmoo] uses a first-class object.
   })
 (cons mbta

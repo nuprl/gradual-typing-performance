@@ -17,8 +17,8 @@
 @profile-point{sec:tr}
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-As validation of the evaluation method, this section presents the results of applying it to the benchmark programs.
-This section documents our protocol for collecting performance lattice data and presents the derived overhead graphs.
+@;As validation of the evaluation method, this section presents the results of applying it to the benchmark programs.
+@;This section documents our protocol for collecting performance lattice data and presents the derived overhead graphs.
 
 
 @; -----------------------------------------------------------------------------
@@ -164,7 +164,7 @@ The online supplement to this paper contains both our experimental scripts and t
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:compare"]{Evaluating Relative Performance}
 
-Although the absolute performance of Racket v6.4 is underwhelming, it is a significant improvement over versions 6.2 and 6.3.
+Although the absolute performance of Racket version 6.4 is underwhelming, it is a significant improvement over versions 6.2 and 6.3.
 This improvement is manifest in the difference between curves on the overhead plots.
 For example in @bm[gregor] (third plot in @figure-ref{fig:lnm:3}), version 6.4 has at least as many deliverable configurations as version 6.2 for any overhead on the @math{x}-axis.
 The difference is greatest near @math{x=2}; in terms of configurations, over 60% of @bm[gregor] configurations are not @deliverable{2} on v6.2 but are @deliverable{2} on v6.4.
@@ -181,7 +181,7 @@ In many cases Findler and Tobin-Hochstadt were able to derive a microbenchmark f
 
 @; TODO double-check that regression is true. Re-running typed config doesn't match my data file.
 The @bm[forth] benchmark, however, shows a significant performance regression.
-This regression is due to a bug in the implementation of class contracts in version 6.2.
+This is due to a bug in the implementation of class contracts in version 6.2.
 In short, the bug would suppress the allocation of certain necessary class contracts.
 With the bug fixed, @bm[forth] generates the necessary contracts but suffers additional performance overhead.
 

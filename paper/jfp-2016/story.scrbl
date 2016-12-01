@@ -9,21 +9,15 @@
 
 Typed Racket@~cite[thf-popl-2008] is the oldest and most developed implementation of sound gradual typing.
 It supports clients in both academia and industry.
-Typed Racket attracts these clients because it accomodates the idioms of (untyped) Racket.
-@; Its type system can express concepts including .....
-@; A programmer seeking to convert ...
-@; The only difference between Racket and Typed Racket ...
-In fact, a major design goal of Typed Racket is that equipping a Racket program
- with types is only a matter of annotating identifiers and declaring recursive types.
-Much of the underlying Racket program can remain the same, including code using
+Typed Racket attracts these clients because it accomodates the idioms of (untyped) Racket;
+ its type system can express concepts such as
  variable-arity polymorphism@~cite[stf-esop-2009],
  first-class classes@~cite[tsdthf-oopsla-2012],
- delimited continuations@~cite[tsth-esop-2013],
- or contracts@~cite[l-mthesis-2016].
+ and delimited continuations@~cite[tsth-esop-2013].
 Finally, a typed module may incorporate definitions from a Racket module with a type-annotated import statement;
  conversely, a Racket module may use definitions from a Typed Racket module without knowledge that the providing module is typed.
 
-@figure["fig:story:tr" "Gradual typing in Racket"
+@figure["fig:story:tr" "A gradually typed application"
   @(let* ([add-name (lambda (pict name) (rt-superimpose pict (frame (text (string-append " " name " ") "black" 10))))]
           [c1
              @codeblock-pict[@string-join['(
@@ -113,7 +107,7 @@ In general one cannot predict why or how such incremental migrations happen, but
   @;  Programmers convert modules that are @emph{simple} to type.
   @;  These modules could be the smallest, or have the fewest dependencies.
   @;}
-Regarding the final point, there are two sources of so-called friction between typed and untyped code.
+Regarding the final point, there are two sources of so-called friction@~cite[bbdt-ecoop-2016] between typed and untyped code.
 First is the above-mentioned requirement that typed clients must supply type annotations to use imports from an untyped library.
 Maintainers of such libraries can instead provide a bridge module with the necessary annotations.
 Second is the performance overhead of typed/untyped interaction, such as the overhead of dynamically enforcing the return types of @racket[play] and @racket[stubborn-player] in @figure-ref{fig:story:tr}.
@@ -122,13 +116,13 @@ Second is the performance overhead of typed/untyped interaction, such as the ove
 @; -----------------------------------------------------------------------------
 @section{The Costs of Incremental Typing}
 
-Adding types to untyped code seems like an unequivocal benefit to software engineers.
+Adding types to untyped code seems to be an unequivocal benefit to software engineers.
 For example, imagine a large application in which an error is traced to an untyped module that was written years ago.
 In all likelihood, the programmer tasked with fixing the bug must recover the type specifications that the original developer had in mind---but did not write down.
 Doing so involves studying the code and analyzing its unit tests.
 This is a significant burden, but if the developer converts the module to Typed Racket, future maintainers will benefit from these explicit specifications.
 
-Adding types to an untyped module is, however, a tradeoff.
+Nevertheless, incremental typing is a tradeoff.
 Performing the type conversion may yield long-term benefits, but incurs immediate engineering costs.
 
 The first cost is the burden of writing and maintaining type annotations.
@@ -137,7 +131,7 @@ Every expression within a Typed Racket module must pass the type checker.
 Consequently, every recursive type in a module needs a declaration and every function parameter, class field, and induction variable needs a type annotation.
 
 The second cost is the risk of introducing bugs during the conversion.
-Typed Racket mitigates this risk by accomodating many Racket idioms,
+Typed Racket mitigates this risk by accomodating Racket idioms,
  but occasionally programmers must refactor code to satisfy the type checker.
 Refactoring can always spawn bugs.
 
@@ -148,7 +142,7 @@ For example, Typed Racket developers have experienced pathologies including
 Another programmer found that converting a script from Racket to Typed Racket improved its performance from @|PFDS-BEFORE| to @|PFDS-AFTER|.@note{The appendix contains a list of user reports.}
 
 Of these three costs, the performance overhead is the most troublesome.
-Part of the issue is that the cost is implicit.
+Part of the issue is that the magnitude of the cost is difficult to predict.
 Unlike the tangible cost of
  writing type annotations or the perennial risk of introducing bugs, the
  performance overhead of enforcing type soundness is not apparent until runtime.

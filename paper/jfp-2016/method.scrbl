@@ -87,12 +87,12 @@ On one hand, this overhead can be high.
 The right-most configuration in the first row from the bottom runs 71 times slower than the untyped configuration.
 On the other hand, the fully typed configuration runs 30% faster than the untyped configuration because Typed Racket uses the type annotations to remove some dynamic checks would be necessary in Racket code.
 
-With these labels, a language implementor can answer many questions about the performance overhead in this benchmark program due to gradual typing.
+With these labels, a language implementor can answer many questions about the performance overhead in this program due to gradual typing.
 For instance, @|suffixtree-num-D-str|
  configurations run within a @id[suffixtree-sample-D]x overhead
  and @|suffixtree-num-k-str|
  configurations are at most @id[suffixtree-sample-k] type conversion step
- from a configuration that runs within @id[suffixtree-sample-D]x overhead.
+ from a configuration that runs within a @id[suffixtree-sample-D]x overhead.
 
 @(let* ([too-many-modules 8]
         [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
@@ -145,8 +145,7 @@ One coarse measure of ``work'' is the number of modules that must be annotated w
       and @exact{$c_2$} is @deliverable{}.
     }@;
 @; @profile-point{sec:method:example}
-The number of @step[] configurations therefore captures the experience of a @emph{prescient} programmer that divines the @exact{$k$} modules
-best-suited to improve performance.
+The number of @step[] configurations therefore captures the experience of a @emph{prescient} programmer that converts the @exact{$k$} modules best-suited to improve performance.
 
 @(define sample-data
   (let* ([mean+std* '#((20 . 0) (15 . 0) (35 . 0) (10 . 0))]
@@ -221,7 +220,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         The main lesson to extract from a performance lattice is the number of
          @deliverable{} configurations for various @math{D}.
         The plot on the left half of @figure-ref{fig:suffixtree-plot} presents this
-         information for the @bm[suffixtree] benchmark.
+         information for the performance lattice in @figure-ref{fig:suffixtree-lattice}.
         On the x-axis, possible values for @math{D} range continuously from one to @integer->word[(*MAX-OVERHEAD*)].
         Dashed lines to the left of the 2x tick pinpoint overheads of 1.2x, 1.4x, 1.6x, and 1.8x.
         To the right of the 2x tick, similar dashed lines pinpoint 4x, 6x, 8x, etc.
@@ -231,9 +230,9 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
          of the @|suffixtree-num-configs-str| configurations
          (@(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))%)
          run within a @id[suffixtree-sample-D]x overhead.
-        Additionally, the typed/untyped ratio above the plot reports a 30% performance improvement when all @bm[suffixtree] modules are typed.
+        Additionally, the typed/untyped ratio above the plot reports the 30% performance improvement for the fully typed configuration.
 
-        Viewed as a cumulative distribution function, this left plot demonstrates how increasing @math{D} increases the number of @deliverable[] configurations.
+        Viewed as a cumulative distribution function, the left plot demonstrates how increasing @math{D} increases the number of @deliverable[] configurations.
         In this case, the shallow slope implies that few configurations become deliverable as the programmer accepts a larger performance overhead.
         The ideal slope would have a steep incline and a large y-intercept, meaning that few configurations have large overhead and many configurations run more efficiently due to the type annotations.
 
@@ -287,12 +286,10 @@ The @emph{first limitation} of the overhead plots is that they hide a configurat
 One cannot distinguish the fully-typed configuration; moreover,
  the @exact{$\leq$} and @exact{$\rightarrow_k$} relations are lost.
 The typed/untyped ratio above the left plot partially compensates for the former.
-The other configurations remain anonymous.
 
 @; - limit: angelic choice
 The @emph{second limitation} is that the @step{1} plot optimistically chooses the
  best type conversion step.
 In a program with @math{N} modules, a programmer has up to @math{N} type conversion steps to choose from,
  some of which may not lead to a @deliverable[] configuration.
-For example, there are six configurations with exactly one typed module in @bm[suffixtree]
- but only one of these is @deliverable{2}.
+For example, there are six configurations with exactly one typed module in @figure-ref{fig:suffixtree-lattice} but only one of these is @deliverable{2}.

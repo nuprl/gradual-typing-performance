@@ -78,10 +78,10 @@ Worse, others report only the performance ratio of fully typed programs relative
  that mix typed and untyped components.
 
 This paper presents a systematic method for evaluating the performance of a gradual type system on a suite of benchmark programs.
-The method is useful for comprehensively evaluating both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.
+The method is useful for evaluating both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.
 As validation, the paper applies the method to a suite of @integer->word[(*NUM-BENCHMARKS*)] Typed Racket programs (the @|GTP| benchmarks suite) and compares their performance across @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
-This paper furthermore demonstrates that simple random sampling can approximate the results of the comprehensive evaluation with asymptotically fewer measurements.
-@; (from exponential to linear).
+This paper furthermore demonstrates that simple random sampling can approximate the results of the comprehensive evaluation with asymptotically fewer measurements (from exponential to linear).
+@; 
 @; The success of the sampling protocol is evidence that the evaluation method is practical for large software applications.
 
 A conference version of this paper introduced and validated the fundamental aspects of the method@~cite[tfgnvf-popl-2016].
@@ -91,8 +91,8 @@ This work extends the method to relative performance, introduces the sampling me
   @Secref{sec:story} is an extended introduction to gradual typing in Typed Racket.
   @Secref{sec:method} derives the evaluation method from the lessons of @secref{sec:story}.
   The following three sections present the benchmark programs (@secref{sec:bm}), the results of the performance evaluation @secref{sec:tr}, and the sampling method (@secref{sec:scale}).
-  @Secref{sec:threats} discusses threats to the validity of our experiment; @secref{sec:devils} describes the performance overheads in the benchmarks.
-  Lastly, @secref{sec:fut} surveys the research landscape and suggests future directions. @;
+  @Secref{sec:threats} discusses threats to the validity of our conclusions; @secref{sec:devils} describes the performance overheads in the benchmarks.
+  Lastly, @secref{sec:fut} summarizes the evaluation method and comments on the past and future of gradual typing.
 @exact{\hfill$\blacksquare$}
 
 @; TODO roadmap, big sections
