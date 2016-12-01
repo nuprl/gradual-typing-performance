@@ -1,5 +1,7 @@
 #lang scribble/base
 
+@; We therefore recommend the method to maintainers of other gradual type systems and to any researcher investigating the performance of a multi-language system@~cite[gff-oopsla-2005 bbdt-ecoop-2016].
+
 @require["common.rkt" "benchmark.rkt" "typed-racket.rkt" "util.rkt"]
 
 @profile-point{sec:conclusion}
@@ -42,16 +44,15 @@ This paper provides an answer:
    }
    @item{
      To express the @emph{relative performance} of two implementations of a gradual type system, plot two overhead graphs on the same axis and test whether the distance is statistically significant.
-     Ideally, the curve for the improved system should demonstrate a complete and significant ``left shift.''
+     Ideally, the curve for the improved system should demonstrate a significant ``left shift.''
    }
  ]
-Applying the evaluation method to Typed Racket has confirmed that the method works well to uncover performance issues and to quantify improvements between distinct implementations of the same gradual type system.
-We therefore recommend the method to maintainers of other gradual type systems and to any researcher investigating the performance of a multi-language system@~cite[gff-oopsla-2005 bbdt-ecoop-2016].
+Applying the evaluation method to Typed Racket has confirmed that the method works well to uncover performance issues in a gradual type system and to quantify improvements between distinct implementations of the same gradual type system.
 
 The results of the evaluation in @secref{sec:tr} suggest three vectors of future research for gradual typing.
-First, the maintainers of other gradual type systems must attempt similar performance evaluations.
-Second, the sampling technique of @secref{sec:scale} must be validated on larger programs and in the context of micro-level gradual typing.
-Third, the research community must explore tools to help developers navigate a performance lattice, such as the feature-specific profiler of @citet[saf-cc-2015].
+The first is to evaluate other gradual type systems.
+The second is to apply the sampling technique to large applications and to micro-level gradual typing.
+The third is to build tools that help developers navigate a performance lattice, such as the feature-specific profiler of @citet[saf-cc-2015].
 
 Typed Racket in particular must address the pathologies identified in @secref{sec:devils}.
 Here are a few suggestions.
@@ -59,8 +60,11 @@ To reduce the cost of high-frequency checks, the runtime system could cache the 
 High-cost types may be a symptom of inefficiencies in the translation from types to dynamic checks.
 Recent calculi for space-efficient contracts@~cite[stw-pldi-2015 g-popl-2015] may provide insight for eliminating redundant dynamic checks.
 
-Finally, researchers must ask whether the specific problems reported in this paper indicate a fundamental limitation of gradual typing.
-The only way to know is through further systematic evaluation of gradual type systems.
+@; Finally, researchers must ask whether the specific problems reported in this paper indicate a fundamental limitation of gradual typing.
+@; The only way to know is through further systematic evaluation of gradual type systems.
+Finally, prior work on mitigating the cost of dynamic checks in ``untyped'' languages should inspire strategies for gradual typing.
+Something something.
+For example, Serrano.
 
 
 @;@section[#:style 'unnumbered]{Data and Code}
@@ -70,12 +74,10 @@ The only way to know is through further systematic evaluation of gradual type sy
 
 @section[#:style 'unnumbered]{Acknowledgments}
 
-The authors gratefully acknowledge support from the National Science
-Foundation (SHF 1518844). They also thank Matthew Butterick, John Clements,
-Matt Might, Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon
-Zeppieri for providing benchmark code bases. Brian LaChance and Sam
-Tobin-Hochstadt provided feedback on earlier drafts.
+The authors gratefully acknowledge support from the National Science Foundation (SHF 1518844).
+They also thank Matthew Butterick, John Clements, Matt Might, Linh Chi Nguyen,Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon Zeppieri for providing benchmark code bases.
+Brian LaChance provided feedback on earlier drafts.
+Sam Tobin-Hochstadt made significant contributions to the performance of Racket version 6.4.
 
 @; - Stephen Chang, Ryan Culpepper for helping Max with the predictions impl.
-@; - Milo + Zeina for comments
 
