@@ -190,8 +190,7 @@ With the bug fixed, @bm[forth] generates the necessary contracts but suffers add
                 [*PLOT-HEIGHT* 140]
                 [*PLOT-WIDTH* 430]
                 [*PLOT-FONT-SCALE* 0.02]
-                [*X-TICK-LINES?* #t]
-                [*LNM-WIDTH* (+ 0.5 (*LNM-WIDTH*))])
+                [*X-TICK-LINES?* #t])
  (list
   @figure["fig:scale:delta" @elem{Relative performance of v6.4 versus v6.2}
     (render-delta ALL-BENCHMARKS)

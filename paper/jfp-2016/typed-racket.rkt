@@ -658,8 +658,9 @@
   (parameterize ([*AXIS-LABELS?* #f]
                  [*LEGEND?* #f]
                  [*LINE-LABELS?* #f]
-                 [*NUM-SAMPLES* 200]
-                 [*MAX-OVERHEAD* 20])
+                 [*LNM-WIDTH* (+ 0.5 (*LNM-WIDTH*))]
+                 [*MAX-OVERHEAD* 20]
+                 [*NUM-SAMPLES* 200])
     (define name*
       (for/list ([bm (in-list bm*)])
         (symbol->string (benchmark-name bm))))

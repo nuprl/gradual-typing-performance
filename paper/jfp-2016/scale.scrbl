@@ -91,9 +91,8 @@ The details for @figure-ref{fig:scale:delta-interval} are analogous.
                 [*PLOT-WIDTH* 430]
                 [*PLOT-FONT-SCALE* 0.02]
                 [*NUM-SAMPLES* 60]
-                [*TICKS-START-FROM* (- (length ALL-BENCHMARKS) (length large-bm*))]
                 [*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples]
-                [*LNM-WIDTH* (+ 0.5 (*LNM-WIDTH*))])
+                [*TICKS-START-FROM* (- (length ALL-BENCHMARKS) (length large-bm*))])
  (list
   @figure["fig:scale:delta-interval" @elem{Approximating relative performance}
       (render-delta large-bm* #:sample-factor sample-size-factor #:sample-style 'interval)
