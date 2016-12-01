@@ -154,6 +154,9 @@
 (provide
   (rename-out
     [configuration->stddev configuration->standard-error])
+
+  path->version
+
   ;; -- re-provides from modulegraph.rkt
   path->project-name
 )
@@ -297,6 +300,10 @@
              ([x (in-list (string-split s "/"))]
               #:when (valid-version? x))
     x))
+
+(: path->version (-> Path-String (U #f String)))
+(define (path->version ps)
+  (string->version (if (path? ps) (path->string ps) ps)))
 
 ;; -----------------------------------------------------------------------------
 ;; -- constants
