@@ -1,14 +1,14 @@
 #lang scribble/base
-@require["common.rkt" "benchmark.rkt" "appendix.rkt" "util.rkt"]
+@require["common.rkt" "benchmark.rkt" "appendix.rkt" "typed-racket.rkt" "util.rkt"]
 
 @; TODO
-@; - 6.3 vs 6.4 delta picture (cyan)
 @; - mean, max improvement
 @; - (online only) benchmark sources
 
 
 @title[#:tag "appendix"]{Appendix}
 @; =============================================================================
+@exact{\newpage}
 @profile-point{appendix:bib}
 @section{Bibliography of Performance Costs}
 
@@ -688,4 +688,39 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
   ]
 
 
-@profile-point{appendix:end}
+@; =============================================================================
+@exact{\newpage}
+@profile-point{appendix:worst-case}
+@section{Miscellaneous Figures}
+
+@Figure-ref["fig:appendix:worst-case"] does not belong in our discussion of pragmaticl gradual typing, but tells an interesting story about the evolution of Typed Racket.
+
+@figure["fig:appendix:worst-case" "Average and worst-case overhead"
+  @render-lnm-table[]
+]
+
+
+@; @; =============================================================================
+@; @exact{\newpage}
+@; @profile-point{appendix:delta2}
+@; @section{Comparing version 6.4 to 6.3}
+@;
+@; @; 1. who cares about 6.4 vs 6.3 ???
+@; @; 1. if you care, why not plot 6.3 vs 6.2 also ???
+@; 
+@; @Secref{sec:compare} plotted the delta between Racket v6.4 and Racket v6.2.
+@; @Figure-ref{fig:appendix:delta} plots the delta between v6.4 and v6.3.
+@; 
+@; @(parameterize ([*RKT-VERSIONS* '("6.3" "6.4")]
+@;                 [*PLOT-HEIGHT* 140]
+@;                 [*PLOT-WIDTH* 430]
+@;                 [*PLOT-FONT-SCALE* 0.02]
+@;                 [*X-TICK-LINES?* #t]
+@;                 [*LNM-WIDTH* (+ 0.5 (*LNM-WIDTH*))])
+@;  (list
+@;   @figure["fig:appendix:delta2" @elem{Relative performance of v6.4 versus v6.3}
+@;     (render-delta ALL-BENCHMARKS)
+@;   ]
+@;  ))
+@; 
+@; @profile-point{appendix:end}

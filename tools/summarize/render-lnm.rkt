@@ -631,10 +631,12 @@
 (: render-bars (-> (Listof String) Real** Real** Real** Pict))
 (define (render-bars name* ratio** mean** max**)
   (parameterize ([*GRAPH-VSPACE* (assert (/ (*GRAPH-VSPACE*) 2) index?)])
-    (vr-append (* (*GRAPH-VSPACE*) 6)
-      (render-typed/untyped-ratio-bars ratio**)
-      (render-mean-overhead-bars mean**)
-      (render-max-overhead-bars max**)
+    (define VSHIM (* (*GRAPH-VSPACE*) 6))
+    (vc-append VSHIM
+      (vr-append VSHIM
+        #;(render-typed/untyped-ratio-bars ratio**)
+        (render-mean-overhead-bars mean**)
+        (render-max-overhead-bars max**))
       (render-bars-legend (* 3 (*GRAPH-HSPACE*)) name*))))
 
 (: render-typed/untyped-ratio-bars (-> Real** Pict))
@@ -872,8 +874,8 @@
     (hb-append*/2 (*GRAPH-HSPACE*) VSHIM row*)
     (vl-append* VSHIM row*)))
 
-(: render-delta-pict (->* [(Listof String) (Listof (Listof Path-String))] [#:sample-factor (U #f Natural) #:sample-style (U #f 'interval)] Pict))
-(define (render-delta-pict name* rktd** #:sample-factor [sample-factor #f] #:sample-style [sample-style #f])
+(: render-delta-pict (->* [(Listof String) (Listof (Listof Path-String))] [#:title String #:sample-factor (U #f Natural) #:sample-style (U #f 'interval)] Pict))
+(define (render-delta-pict name* rktd** #:sample-factor [sample-factor #f] #:title [title ""] #:sample-style [sample-style #f])
   (define S** (for/list : (Listof (Listof Summary))
                         ([rktd* (in-list rktd**)])
                 (for/list : (Listof Summary)
@@ -884,7 +886,7 @@
   (define legend
     (render-bars-xlabels LEGEND-HSHIM name*))
   (define body (plot-delta S** #:sample-factor sample-factor #:sample-style sample-style))
-  (add-title "v6.4 - v6.2"
+  (add-title title
     (vc-append VSHIM body legend)))
 
 ;; -----------------------------------------------------------------------------

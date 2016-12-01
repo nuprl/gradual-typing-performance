@@ -1662,7 +1662,8 @@
         (/ (list-ref r* i) (car r*)))]
      [else
       (unknown-y-style)])]
-   [(eq? bt 'runtime)
+   [(or (eq? bt 'runtime)
+        (eq? bt 'overhead))
     list-ref]
    [else
     (unknown-bar-type bt)]))

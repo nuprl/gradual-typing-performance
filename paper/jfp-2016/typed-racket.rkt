@@ -653,6 +653,8 @@
 
 (define (render-delta bm* #:sample-factor [sample-factor #f] #:sample-style [sample-style #f])
   (define versions (*RKT-VERSIONS*))
+  (unless (= 2 (length versions))
+    (raise-user-error 'render-delta "Cannot compare more than 2 versions of Racket, got ~a~n" versions))
   (parameterize ([*AXIS-LABELS?* #f]
                  [*LEGEND?* #f]
                  [*LINE-LABELS?* #f]
@@ -670,7 +672,7 @@
         #:read deserialize
         #:write serialize
         (lambda ()
-          (render-delta-pict name* rktd** #:sample-factor sample-factor #:sample-style sample-style))))))
+          (render-delta-pict name* rktd** #:title (format "v~a - v~a" (cadr versions) (car versions)) #:sample-factor sample-factor #:sample-style sample-style))))))
 
 (define (ext:max-overhead rktd)
   (max-overhead (from-rktd rktd)))
