@@ -82,7 +82,7 @@ In particular, the summaries include:
 @; + miscellaneous stats, like number of wraps?
 
 Modules are ordered alphabetically.
-@Figure-ref{fig:suffixtree-lattice} uses this ordering to represent configurations as black and white rectangles.
+@Figure-ref{fig:suffixtree-lattice} uses this ordering on modules to represent configurations as black and white rectangles.
 For example, the node in @figure-ref{fig:suffixtree-lattice} in which only the left-most segment is white represents the configuration where module @tt{data.rkt} is untyped and all other modules are typed.
 Similarly, @figure-ref{fig:appendix:morsecode} derives a natural number for each configuration using the alphabetical order of module names.
 Configuration 4 in @figure-ref{fig:appendix:morsecode} (binary: @tt{0100}) is the configuration where only @tt{main.rkt} is typed.

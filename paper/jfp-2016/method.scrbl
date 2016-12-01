@@ -25,72 +25,20 @@ Performance evaluation for gradual type systems must reflect how programmers use
 Experience with Typed Racket shows that programmers frequently combine typed and untyped code within an application.
 These applications may undergo incremental transitions that add or remove some type annotations;
  however, it is rare that a programmer adds explicit annotations to every module in the program.
-
-After incrementally typing part of an application, programmers compare the performance of the modified program with the previous version.
+In a typical evolution, programmers compare the performance of the incrementally modified program with the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may try to address the performance overhead.
 As they continue to develop the application, programmers repeat this process.
 
 The following subsections build an evaluation method from these observations in three steps.
-First, @secref{sec:method:lattice} describes the @emph{space} over which a performance evaluation must take place.
-Second, @secref{sec:measurements} defines @emph{metrics} relevant to the performance of a gradually typed program.
-Third, @secref{sec:graphs} introduces a @emph{visualization} that concisely presents the metrics on exponentially large spaces.
+First, @secref{sec:method:lattice} describes the space over which a performance evaluation must take place.
+Second, @secref{sec:measurements} defines metrics relevant to the performance of a gradually typed program.
+Third, @secref{sec:graphs} introduces a visualization that concisely presents the metrics on exponentially large spaces.
 
 
 @; -----------------------------------------------------------------------------
 
 @section[#:tag "sec:method:lattice"]{Performance Lattice}
-
-The promise of Typed Racket's macro-level gradual typing is that programmers may
- convert any subset of the modules in an untyped program to Typed Racket.
-A comprehensive performance evaluation must therefore consider the space of
- typed/untyped @emph{configurations} a programmer could possibly create
- given a full set of type annotations for each module.
-These configurations form a lattice.
-@itemlist[
-  @item{
-    A (@emph{program}) @emph{configuration} is a sequence of
-     @math{N} modules. Each module in a configuration is either typed or untyped.
-  }
-  @item{
-    For a fixed sequence of @math{N} modules there are @exact{$2^N$} possible
-     configurations.
-  }
-  @item{
-    Let @math{S} be the set of all configurations for @math{N} modules.
-    For @exact|{$c \in S$}| and @exact|{$i \in [0, N)$}|,
-     let @exact|{$c(i) = 1 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is typed
-     and
-     let @exact|{$c(i) = 0 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is untyped.@note{Representing configurations as @math{N}-bit binary numbers induces a total ordering on configurations. @Figure-ref{fig:exact-runtimes} re-uses this ordering.}
-  }
-
-  @item{
-    Define @exact|{$\leq$}| (a subset of @exact|{$S \times S$}|) as:
-     @exact|{$c_1 \leq c_2$}|
-     if and only if
-     @exact|{$c_1(i) \leq c_2(i)$}|
-     for all @exact|{$i \in [0, N)$}|.
-  }
-
-  @item{
-    @exact|{$(S, \leq)$}| is a complete lattice; henceforth, a @emph{configuration lattice}.
-    The untyped configuration is the bottom element and the fully-typed configuration is the top element.
-  }
-
-  @item{
-    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_k$} (a subset of @exact{$\leq$}) as:
-     @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
-     and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
-    If @exact|{$c_1 \rightarrow_k c_2$}|, then @exact{$c_2$} is reachable from
-     @exact{$c_1$} in @exact{$k$} or fewer @emph{type conversion steps}.
-  }
-  @item{
-    A @emph{performance lattice} is a configuration lattice @exact|{$(S, \leq)$}|
-     equipped with a labeling @exact{$l$} such that
-     @exact{$l(c)$} characterizes the performance of configuration @exact{$c$}
-     for all @exact{$c \in S$}.
-  }
-]
 
 @(define suffixtree-lattice-version "6.2")
 @(define S (from-rktd (benchmark-rktd suffixtree suffixtree-lattice-version)))
@@ -109,7 +57,7 @@ These configurations form a lattice.
     @figure*["fig:suffixtree-lattice" @elem{Performance overhead in @bm[suffixtree], on Racket v@|suffixtree-lattice-version|.}
       @(parameterize ([*LATTICE-CONFIG-MARGIN* 3]
                       [*LATTICE-LEVEL-MARGIN* 8]
-                      [*LATTICE-FONT-SIZE* 9]
+                      [*LATTICE-FONT-SIZE* 10]
                       [*LATTICE-BOX-HEIGHT* 6]
                       [*LATTICE-BOX-WIDTH* 3]
                       [*LATTICE-BOX-SEP* 0]
@@ -120,27 +68,37 @@ These configurations form a lattice.
         (render-data-lattice suffixtree suffixtree-lattice-version))
     ]
 
-@Figure-ref{fig:suffixtree-lattice} is a performance lattice for @bm[suffixtree], a mid-sized benchmark in the @|GTP| suite.
-The benchmark consists of @|suffixtree-num-modules| modules, thus the lattice has @|suffixtree-num-configs-str| configurations.
-Each configuration is rendered as a @|suffixtree-num-modules|-segment rectangle.
-The bottom element in the lattice represents the untyped configuration.
-The first level of the lattice represents all configurations with one typed module;
- these configurations' rectangles have one filled segment.
-In general the @exact|{$i^{\emph{th}}$}| level of the lattice represents all configurations
- with @math{i} typed modules as rectangles with @math{i} filled segments.
-The label below each rectangle is that configuration's overhead@note{Ratio of two means; each mean is over @|suffixtree-num-iters| samples.} relative to the untyped configuration.
+The promise of Typed Racket's macro-level gradual typing is that programmers may convert any subset of the modules in an untyped program to Typed Racket.
+A comprehensive performance evaluation must therefore consider the space of typed/untyped @emph{configurations} a programmer could possibly create given a full set of type annotations for each module. 
+These configurations form a lattice.
 
-With this data, a language implementor can answer many questions about the performance overhead in this benchmark program due to gradual typing.
+@Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a @|suffixtree-num-modules|-module program.
+The black rectangle at the top of the lattice represents the configuration in which all @|suffixtree-num-modules| modules are typed.
+The other @id[(sub1 suffixtree-num-configs)] rectangles represent configurations in which some (or all) modules are untyped.
+
+A given row in the lattice groups configurations with the same number of typed modules (black squares).
+For instance, configurations in the second row from the bottom contain two typed modules.
+These represent all possible ways of converting two modules in the untyped configuration to Typed Racket.
+Similarly, configurations in the third row represent all possible configurations a programmer might encounter after applying three @emph{type conversion steps} to the untyped configuration.
+In general, let the notation @exact{$c_1 \rightarrow_k c_2$} express the idea that a programmer starting from configuration @exact{$c_1$} (in row @exact{$i$}) could reach configuration @exact{$c_2$} (in row @exact{$j$}) after taking at most @exact{$k$} type conversion steps (@exact{$j - i \le k$}).
+
+Configurations in @figure-ref{fig:suffixtree-lattice} are furthermore labeled with their performance overhead relative to the untyped configuration on Racket version 6.2.@note{Terminology: a labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}. The same lattice without labels is a @emph{configuration lattice}. The practical distinction is that users of a gradual type system will explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.}
+On one hand, this overhead can be high.
+The right-most configuration in the first row from the bottom runs 71 times slower than the untyped configuration.
+On the other hand, the fully typed configuration runs 30% faster than the untyped configuration because Typed Racket uses the type annotations to remove some dynamic checks would be necessary in Racket code.
+
+With these labels, a language implementor can answer many questions about the performance overhead in this benchmark program due to gradual typing.
 For instance, @|suffixtree-num-D-str|
  configurations run within a @id[suffixtree-sample-D]x overhead
  and @|suffixtree-num-k-str|
  configurations are at most @id[suffixtree-sample-k] type conversion step
  from a configuration that runs within @id[suffixtree-sample-D]x overhead.
+
 @(let* ([too-many-modules 8]
         [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
    @elem{
-     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice will not scale to programs with eight or more modules (at least @number->string[(expt 2 8)] configurations).
-     Furthermore, it is difficult to compare two lattices side-by-side.
+     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice will not scale to programs with eight or more modules, as the corresponding lattices will have at least 256 nodes.
+     Furthermore, comparing the relative performance across two or more lattices is difficult even for small programs.
    })
 
 @; -----------------------------------------------------------------------------
