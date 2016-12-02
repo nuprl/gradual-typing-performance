@@ -30,7 +30,7 @@ Finally, a typed module may incorporate definitions from a Racket module with a 
              "  (λ (guess)"
              "    (= guess n)))"
              ) "\n"]]]
-          [c1-name "guess-game.rkt"]
+          [c1-name "guess-game"]
           [c1/name (add-name c1 c1-name)]
           [c2
              @codeblock-pict[@string-join['(
@@ -41,22 +41,23 @@ Finally, a typed module may incorporate definitions from a Racket module with a 
              "(define (stubborn-player i)"
              "  4)"
              ) "\n"]]]
-          [c2-name "player.rkt"]
+          [c2-name "player"]
           [c2/name (add-name c2 c2-name)]
+          [add-rkt (lambda (s) (string-append s ".rkt"))]
           [c3
              @codeblock-pict[@string-join[(list
              "#lang typed/racket"
              ""
-             (format "(require/typed ~s" c1-name)
+             (format "(require/typed ~s" (add-rkt c1-name))
              "  [play (-> (-> Natural Boolean))])"
-             (format "(require/typed ~s" c2-name)
+             (format "(require/typed ~s" (add-rkt c2-name))
              "  [stubborn-player (-> Natural Natural)])"
              ""
              "(define check-guess (play))"
              "(for/sum ([i : Natural (in-range 10)])"
              "  (if (check-guess (stubborn-player i)) 1 0))"
              ) "\n"]]]
-          [c3-name "driver.rkt"]
+          [c3-name "driver"]
           [c3/name (add-name c3 c3-name)]
           [c1+c2
            @ht-append[8 c1/name @vline[2 (+ 2 (max (pict-height c1) (pict-height c2)))] c2/name]]
@@ -68,15 +69,15 @@ Finally, a typed module may incorporate definitions from a Racket module with a 
   )
 ]
 
-@Figure-ref{fig:story:tr} demonstrates with a small, gradually typed application.
+@Figure-ref{fig:story:tr} demonstrates the idea with a small, gradually typed application.
 The untyped module on the top left implements a guessing game with the function @racket[play].
-Each call to @racket[play] generates a random number and returns a function that checks a given number against this random number.
-The untyped module on the top right implements a @exact|{{na\"ive}}| player for the guessing game.
+Each call to @racket[play] generates a random number and returns a function that checks a given number against this chosen number.
+The untyped module on the top right implements a @exact|{{na\"ive}}| player.
 The driver module at the bottom combines the game and player.
 It generates a game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
-Additionally, the driver module leverages Typed Racket to ensure that the game and player follow the type specifications in its @racket[require/typed] clauses.
-Typed Racket statically checks that @racket{driver.rkt} sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play], @racket[stubborn-player], and @racket[check-guess].
-@; need to say more? feels like it
+Unlike the other two, the driver module is implemented in Typed Racket.
+Typed Racket ensures that the game and player follow the type specifications in the driver's @racket[require/typed] clauses.
+In particular, Typed Racket statically checks that the driver module sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play], @racket[stubborn-player], and @racket[check-guess].
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
 Furthermore, programmers often migrate Racket modules to Typed Racket as their application evolves.
