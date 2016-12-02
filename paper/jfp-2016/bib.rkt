@@ -32,6 +32,7 @@
 (define/short fpca "FPCA" (string-append ACM International Conference "Functional Programming Languages and Computer Architecture"))
 (define/short sde "SDE" (string-append ACM Symposium "on Practical software development environments"))
 (define/short lfp "LFP" (string-append ACM Symposium "on LISP and functional programming"))
+(define/short sas "SAS" (string-append International "Static Analysis Symposium"))
 (define/short icfp "ICFP" (string-append ACM International Conference "on Functional Programming"))
 (define/short pldi "PLDI" (string-append ACM Conference "on Programming Language Design and Implementation"))
 (define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
@@ -1445,6 +1446,34 @@
    #:location "Forum on Free and Open Source Software (FREENIX)"
    #:url "http://erwan.lemonnier.se/talks/pluto.html"
    #:date 2006))
+
+(define h-lfp-1992
+  (make-bib
+   #:title "Global Tagging Optimization by Type Inference"
+   #:author "Fritz Henglein"
+   #:location (proceedings-location lfp #:pages '(205 215))
+   #:date 1992))
+
+(define jw-sas-1995
+  (make-bib
+   #:title "Effective Flow Analysis for Avoiding Run-Time Checks"
+   #:author (authors "Suresh Jagannathan" "Andrew K. Wright")
+   #:location (proceedings-location sas #:pages '(207 224))
+   #:date 1995))
+
+(define sw-sas-1995
+  (make-bib
+   #:title "Bigloo: A Portable and Optimizing Compiler for Strict Functional Languages"
+   #:author (authors "Erick Gallesio" "Manuel Serrano")
+   #:location (proceedings-location sas #:pages '(366 381))
+   #:date 1995))
+
+(define c-esop-1988
+  (make-bib
+   #:title "New Insights into Partial Evaluation: the SCHISM Experiment"
+   #:author "Charles Consel"
+   #:location (proceedings-location esop #:pages '(236 246))
+   #:date 1988))
 
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 

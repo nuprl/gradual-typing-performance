@@ -58,13 +58,11 @@ Typed Racket in particular must address the pathologies identified in @secref{se
 Here are a few suggestions.
 To reduce the cost of high-frequency checks, the runtime system could cache the results of successful checks@~cite[rf-pldi-2016] or implement a tracing JIT compiler tailored to identify dynamic type assertions@~cite[bauman-et-al-icfp-2015].
 High-cost types may be a symptom of inefficiencies in the translation from types to dynamic checks.
-Recent calculi for space-efficient contracts@~cite[stw-pldi-2015 g-popl-2015] may provide insight for eliminating redundant dynamic checks.
+Recent calculi for space-efficient contracts@~cite[stw-pldi-2015 g-popl-2015] may provide insight for eliminating proxies.
+Lastly, there is a long history of related work on improving the performance of dynamically typed languages@~cite[h-lfp-1992 jw-sas-1995 sw-sas-1995 c-esop-1988].
 
-@; Finally, researchers must ask whether the specific problems reported in this paper indicate a fundamental limitation of gradual typing.
-@; The only way to know is through further systematic evaluation of gradual type systems.
-Finally, prior work on mitigating the cost of dynamic checks in ``untyped'' languages should inspire strategies for gradual typing.
-Something something.
-For example, Serrano.
+Finally, researchers must ask whether the specific problems reported in this paper indicate a fundamental limitation of gradual typing.
+The only way to know is through further systematic evaluation of gradual type systems.
 
 
 @;@section[#:style 'unnumbered]{Data and Code}
@@ -76,8 +74,7 @@ For example, Serrano.
 
 The authors gratefully acknowledge support from the National Science Foundation (SHF 1518844).
 They also thank Matthew Butterick, John Clements, Matt Might, Linh Chi Nguyen,Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon Zeppieri for providing benchmark code bases.
-Brian LaChance provided feedback on earlier drafts.
-Sam Tobin-Hochstadt made significant contributions to the performance of Racket version 6.4.
+Sam Tobin-Hochstadt Brian LaChance provided feedback on earlier drafts.
 
 @; - Stephen Chang, Ryan Culpepper for helping Max with the predictions impl.
 
