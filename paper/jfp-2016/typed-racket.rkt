@@ -113,6 +113,9 @@
 
 ;; =============================================================================
 
+(define ALOT ;; of samples for the overhead plots
+  250)
+
 (define (count-benchmarks)
   (*NUM-BENCHMARKS*))
 
@@ -425,7 +428,7 @@
                  [*M* #f]
                  [*MAX-OVERHEAD* 20]
                  [*N* #f]
-                 [*NUM-SAMPLES* 60] ;; 200 ;; TODO
+                 [*NUM-SAMPLES* ALOT]
                  [*PLOT-FONT-SCALE* 0.04]
                  [*PLOT-HEIGHT* 100]
                  [*PLOT-WIDTH* 210]
@@ -668,7 +671,7 @@
                  [*L* '(0)]
                  [*L-LABELS?* #t]
                  [*LNM-WIDTH* 1.6] ;; TODO fix width
-                 [*NUM-SAMPLES* 60]
+                 [*NUM-SAMPLES* ALOT]
                  [*PLOT-HEIGHT* 100]
                  [*PLOT-WIDTH* 210]
                  [*PLOT-FONT-SCALE* 0.04]
@@ -701,7 +704,7 @@
                  [*LINE-LABELS?* #f]
                  [*LNM-WIDTH* (+ 0.5 (*LNM-WIDTH*))]
                  [*MAX-OVERHEAD* 20]
-                 [*NUM-SAMPLES* 200])
+                 [*NUM-SAMPLES* ALOT])
     (define name*
       (for/list ([bm (in-list bm*)])
         (symbol->string (benchmark-name bm))))

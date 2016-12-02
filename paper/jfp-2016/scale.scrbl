@@ -90,7 +90,6 @@ The details for @figure-ref{fig:scale:delta-interval} are analogous.
                 [*PLOT-HEIGHT* 140]
                 [*PLOT-WIDTH* 430]
                 [*PLOT-FONT-SCALE* 0.02]
-                [*NUM-SAMPLES* 60]
                 [*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples]
                 [*TICKS-START-FROM* (- (length ALL-BENCHMARKS) (length large-bm*))])
  (list
