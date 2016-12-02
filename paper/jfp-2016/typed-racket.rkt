@@ -40,6 +40,7 @@
   ;; Render a list of Benchmark structures.
   ;; Use the `benchmark` constructor to make a `Benchmark`
 
+  render-path-table
   render-benchmarks-table
   ;; (-> Any)
   ;; Build a table describing static properties of the benchmarks
@@ -157,10 +158,10 @@
       (and (list? r) r))))
 
 ;; Add '&' for TeX
-(define (tex-row . x*)
+(define (tex-row #:sep [sep #f] . x*)
   (let loop ([x* x*])
     (if (null? (cdr x*))
-      (list (car x*) " \\\\\n")
+      (list (car x*) (format " \\\\~a~n" (if sep (format "[~a]" sep) "")))
       (list* (car x*) " & " (loop (cdr x*))))))
 
 (define (percent-diff meas exp)
@@ -222,6 +223,10 @@
 (define (lattice-cache-file bm v)
   (ensure-dir COMPILED)
   (string-append COMPILED "/cache-lattice-" (symbol->string bm) "-" v ".rktd"))
+
+(define (path-table-cache-file)
+  (ensure-dir COMPILED)
+  (build-path COMPILED "cache-path-table.rktd"))
 
 (define (benchmarks-table-cache-file)
   (ensure-dir COMPILED)
@@ -306,6 +311,16 @@
         (define b+d*+ (sort b+d* benchmark<? #:key (lambda (x) (if (list? (car x)) (caar x) (car x)))))
         (apply exact (map render-benchmark b+d*+))))))
 
+(define PATH-TABLE-TITLE* '(
+  "Benchmark"
+  "\\# Mod."
+  "D = 1"
+  "D = 3"
+  "D = 5"
+  "D = 10"
+  "D = 20"
+))
+
 (define BENCHMARKS-TABLE-TITLE* '(
   "Benchmark"
   "\\twoline{Untyped}{LOC}"
@@ -320,6 +335,11 @@
   "TBA"
 ))
 
+(define (render-path-table)
+  (render-table new-path-table
+   #:title PATH-TABLE-TITLE*
+   #:cache (path-table-cache-file)))
+
 (define (render-benchmarks-table)
   (render-table new-benchmarks-table
    #:title BENCHMARKS-TABLE-TITLE*
@@ -331,7 +351,7 @@
     (define num-adaptor (benchmark-num-adaptor b))
     (define uloc (modulegraph->untyped-loc M))
     (define tloc (modulegraph->typed-loc M))
-    (tex-row
+    (tex-row #:sep "0.3ex" ;; TODO don't pad last row
      (format "{\\tt ~a}" (benchmark-name b))
      (number->string uloc)
      (if (zero? uloc) "0" (format-percent-diff tloc uloc))
@@ -339,6 +359,27 @@
      (number->string num-adaptor)
      (number->string (modulegraph->num-edges M))
      (number->string (modulegraph->num-identifiers M)))))
+
+(define (new-path-table)
+  (list
+    ;;                 BM    M    1     3     5    10    20
+    (tex-row      "sieve"  "2"  "0"   "0"   "0"   "0"  "50")
+    (tex-row      "forth"  "4"  "0"   "0"   "0"   "0"   "0")
+    (tex-row        "fsm"  "4"  "0"   "0"   "0"   "0"   "0")
+    (tex-row      "fsmoo"  "4"  "0"   "0"   "0"   "0"   "0")
+    (tex-row       "mbta"  "4"  "0" "100" "100" "100" "100")
+    (tex-row  "morsecode"  "4"  "0" "100" "100" "100" "100")
+    (tex-row    "dungeon"  "5"  "0"   "0"   "0"  "50" "100")
+    (tex-row     "zombie"  "5"  "0"   "0"   "0"   "0"   "0")
+    (tex-row     "zordoz"  "5"  "0" "100" "100" "100" "100")
+    (tex-row        "lnm"  "6" "17" "100" "100" "100" "100")
+    (tex-row "suffixtree"  "6"  "0"   "0"   "0"   "0"  "17")
+    (tex-row       "kcfa"  "7"  "0"  "20"  "97" "100" "100")
+    (tex-row      "snake"  "8"  "0"   "0"   "0"   "8"  "50")
+    (tex-row      "take5"  "8"  "0" "100" "100" "100" "100")
+    (tex-row    "acquire"  "9"  "0"   "2"  "83" "100" "100")
+    (tex-row     "tetris"  "9"  "0"   "0"   "0"  "17"  "17")
+    (tex-row      "synth" "10"  "0"   "0"   "0"   "0"   "0")))
 
 (define (format-percent-diff meas exp)
   (define diff (- meas exp))

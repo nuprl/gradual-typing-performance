@@ -186,7 +186,7 @@ Boundaries are import statements from one module to another, excluding imports f
 An identifier named in such an import statement counts as an export.
 For example, the one import statement in @bm[sieve] names nine identifiers.
 
-The @bm[quadBG] benchmark has two fewer modules than @bm[quadMB] because it inlines two (large) data structure that @bm[quadMB] keeps in separate files.
+The @bm[quadBG] benchmark has two fewer modules than @bm[quadMB] because it inlines the definitions of two (large) data structures that @bm[quadMB] keeps in separate files.
 Inlining does not affect overhead due to gradual typing, but greatly reduces the number of configurations.
 
 @figure*["fig:bm" @elem{Static characteristics of the @|GTP| benchmarks}

@@ -208,13 +208,16 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:graphs"]{Overhead Graphs}
 
 @(render-lnm-plot
   #:index 0
   #:rktd*** (list (list (list (benchmark-rktd suffixtree suffixtree-lattice-version))))
   (lambda (pict*)
     (list
+      @figure*["fig:suffixtree-plot" @elem{Overhead graphs for @bm[suffixtree], on Racket v@|suffixtree-lattice-version|.}
+        (car pict*)
+      ]
+@section[#:tag "sec:graphs"]{Overhead Graphs}
       @; less than half of all @bm[suffixtree] configurations run within a @id[(*MAX-OVERHEAD*)]x slowdown.
       @elem{
         The main lesson to extract from a performance lattice is the number of
@@ -253,9 +256,6 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         Furthermore, one can make high-level comparisons between multiple implementations
          of a gradual type system by plotting their curves on the same axes.
       }
-      @figure*["fig:suffixtree-plot" @elem{Overhead graphs for @bm[suffixtree], on Racket v@|suffixtree-lattice-version|.}
-        (car pict*)
-      ]
 )))
 
 @subsection{Assumptions and Limitations}

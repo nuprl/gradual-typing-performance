@@ -62,7 +62,7 @@ Finally, a typed module may incorporate definitions from a Racket module with a 
           [c1+c2
            @ht-append[8 c1/name @vline[2 (+ 2 (max (pict-height c1) (pict-height c2)))] c2/name]]
              )
-  @vc-append[4
+  @vc-append[8
     c1+c2
     @hline[(pict-width c1+c2) 2]
     c3/name]
@@ -77,7 +77,7 @@ The driver module at the bottom combines the game and player.
 It generates a game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
 Unlike the other two, the driver module is implemented in Typed Racket.
 Typed Racket ensures that the game and player follow the type specifications in the driver's @racket[require/typed] clauses.
-In particular, Typed Racket statically checks that the driver module sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play], @racket[stubborn-player], and @racket[check-guess].
+More precisely, Typed Racket statically checks that the driver module sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play], @racket[stubborn-player], and @racket[check-guess].
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
 Furthermore, programmers often migrate Racket modules to Typed Racket as their application evolves.

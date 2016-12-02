@@ -693,10 +693,18 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
 @profile-point{appendix:worst-case}
 @section{Miscellaneous Figures}
 
-@Figure-ref["fig:appendix:worst-case"] does not belong in our discussion of pragmaticl gradual typing, but tells an interesting story about the evolution of Typed Racket.
+@Figure-ref{fig:appendix:worst-case} does not belong in our discussion of pragmatic gradual typing, but tells an interesting story about the evolution of Typed Racket.
+
+Likewise, the table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any @emph{performant conversion paths} through a performance lattice.
+More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1, \ldots, c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D} and @exact{$c_i \rightarrow_1 c_{i+1}$}.
+The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save space.
 
 @figure["fig:appendix:worst-case" "Average and worst-case overhead"
   @render-lnm-table[]
+]
+
+@figure["fig:appendix:paths" @elem{Proportion of @deliverable{D} conversion paths.}
+  @render-path-table[]
 ]
 
 

@@ -187,7 +187,7 @@ With the bug fixed, @bm[forth] generates the necessary contracts but suffers add
 
 
 @(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
-                [*PLOT-HEIGHT* 140]
+                [*PLOT-HEIGHT* 180]
                 [*PLOT-WIDTH* 430]
                 [*PLOT-FONT-SCALE* 0.02]
                 [*X-TICK-LINES?* #t])
