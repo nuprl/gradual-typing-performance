@@ -73,7 +73,7 @@ The details for @figure-ref{fig:scale:delta-interval} are analogous.
 }
 @item{
   To generate an interval for the difference between the number of @deliverable{D} configurations on version 6.4 and the number of @deliverable{D} configurations on version 6.2, we computed two confidence intervals as described in the previous step and plotted the largest and smallest difference between these intervals.
-  Specifically, the upper bound for the number of @deliverable{D} configurations on the right half of @figure-ref{fig:scale:srs-snake} is the difference between the upper confidence limit on the number of @deliverable{D} configurations in version 6.4 minus the lower confidence limit on the number of @deliverable{D} configurations in version 6.2.
+  Specifically, the upper bound for the number of @deliverable{D} configurations on the right half of @figure-ref{fig:scale:srs-snake} is the difference between the upper confidence limit on the number of @deliverable{D} configurations in version 6.4 and the lower confidence limit on the number of @deliverable{D} configurations in version 6.2.
   The corresponding lower bound is the difference between the lower confidence limit on version 6.4 and the upper confidence limit on version 6.2.
 }
 ]
