@@ -12,8 +12,7 @@
 Programmers use dynamically typed languages to build all kinds of applications.
 Telecom companies have been running Erlang programs for years@~cite[armstrong-2007];
  Sweden's pension system is a Perl program@~cite[l-freenix-2006],
- and the @emph{lingua franca} of the Internet is JavaScript.
-The server-side applications of some modern companies (Dropbox, Facebook, Twitter) are written in dynamic languages (respectively Python, PHP and Ruby).
+ and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) are written in dynamic languages (Python, PHP, and Ruby, respectively).
 
 Regardless of why programmers choose dynamically typed languages,
  the maintainers of these applications inevitably find the lack of explicit type
