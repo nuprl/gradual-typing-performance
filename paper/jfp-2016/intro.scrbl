@@ -73,33 +73,30 @@ Optimistically, researchers have continued to explore the theory and practice of
 Some research groups have invested significant resources implementing sound gradual type systems.
 Suprisingly few groups have evaluated the performance of gradual typing.
 Most acknowledge an issue with performance in passing.
-Worse, others report only the performance ratio of fully typed programs relative to
- fully untyped programs, ironically ignoring the entire space of programs
- that mix typed and untyped components.
+Worse, others report only the performance ratio of fully typed programs relative to fully untyped programs, ironically ignoring the entire space of programs that mix typed and untyped components.
 
-This paper presents a systematic method for evaluating the performance of a gradual type system on a suite of benchmark programs.
-The method is useful for evaluating both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.
-As validation, the paper applies the method to a suite of @integer->word[(*NUM-BENCHMARKS*)] Typed Racket programs (the @|GTP| benchmarks suite) and compares their performance across @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
-This paper furthermore demonstrates that simple random sampling can approximate the results of the comprehensive evaluation with asymptotically fewer measurements (from exponential to linear).
-@; 
-@; The success of the sampling protocol is evidence that the evaluation method is practical for large software applications.
+This archival paper presents a systematic method for evaluating the performance of a gradual type system (@secref{sec:method}).
+The fundamental aspects of the method were presented in an earlier conference paper@~cite[tfgnvf-popl-2016]; this paper contributes:
+@itemlist[
+@item{
+  @integer->word[(- (length ALL-BENCHMARKS) NUM-POPL)] additional benchmark programs (@secref{sec:bm});
+}
+@item{
+  validation that the method can express the relative performance between @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket (@secref{sec:compare});
+}
+@item{
+  evidence that simple random sampling can accurately approximate the results of a comprehensive evaluation with asymptotically fewer measurements (@secref{sec:scale});
+}
+@item{
+  and an in-depth discussion of the pathological performance overheads in the benchmark programs (@secref{sec:devils}).
+}
+]
+The discussion is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).
 
-A conference version of this paper introduced and validated the fundamental aspects of the method@~cite[tfgnvf-popl-2016].
-This work extends the method to relative performance, introduces the sampling method, and evaluates @integer->word[(- (*NUM-BENCHMARKS*) NUM-POPL)] additional benchmark programs.
+This paper begins with an extended introduction to our philosophy towards gradual typing and the pragmatics of Typed Racket.
+@Secref{sec:overhead} in particular argues that type soundness is an imperative, despite the performance cost of enforcing it.
 
-@bold{Outline}
-  @Secref{sec:story} is an extended introduction to gradual typing in Typed Racket.
-  @Secref{sec:method} derives the evaluation method from the lessons of @secref{sec:story}.
-  The following three sections present the benchmark programs (@secref{sec:bm}), the results of the performance evaluation @secref{sec:tr}, and the sampling method (@secref{sec:scale}).
-  @Secref{sec:threats} discusses threats to the validity of our conclusions; @secref{sec:devils} describes the performance overheads in the benchmarks.
-  Lastly, @secref{sec:fut} summarizes the evaluation method and comments on the past and future of gradual typing.
-@exact{\hfill$\blacksquare$}
-
-@; TODO roadmap, big sections
-@; - extended introduction/motivation, gradual typing in typed racket, philosophy
-@; - landscape, metrics, visualization (scrape sec 3)
-@; - benchmarks (sec 4) exhaustive results, exponential (sec 5) srs can approximate (sec 6)
-@; - threats to validity, pathologies, conclusion = past and present of research landscape
+@;Experience with Typed Racket provides the broader context for this work and motivates the design of the evaluation method.
 
 
 @;@parag{Disclaimer:} 3x overhead is not "deliverable" performance.
