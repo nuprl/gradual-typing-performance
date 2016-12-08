@@ -42,12 +42,14 @@ The data is the result of applying the following protocol for each benchmark and
   Summarize each configuration with the mean of the corresponding running times.
 }
 ]
-@; on a dedicated Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.@note{The Opteron is a NUMA architecture.}
+@; two AMD Opteron 6376 2.3GHz processors and 128GB RAM
 
 Specifically, a Racket script implementing the above protocol collected the data in this paper.
-The script ran on a dedicated Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.@note{The Opteron is a NUMA architecture.}
+The script ran on a dedicated Linux machine; this machine has two physical AMD Opteron 6376 processors (with 16 cores each) and 128GB RAM.@note{The Opteron is a NUMA architecture.}
 For the @bm[quadBG] and @bm[quadMB] benchmarks, the script utilized 30 of the machine's physical cores to collect data in parallel.@note{The script invoked 30 green threads; these green threads invoked and monitored system processes to compile and run each configuration. The green threads pinned subprocesses to a fixed CPU core using the Linux @tt{taskset} command.}
+@; begin TODO
 For all other benchmarks, the script utilized only two physical cores; the latter protocol yielded more stable measurements, but was impractical to measure @bm[quad].
+@; end TODO
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
 The online supplement to this paper contains both our experimental scripts and the full datasets.
@@ -115,7 +117,7 @@ The online supplement to this paper contains both our experimental scripts and t
             The curves' endpoints describe the extremes of gradual typing.
             The left endpoint gives the percentage of configurations that run at least as quickly as the untyped configuration.
             Except for @bm[lnm], such configurations are a low proportion of the total.@note{@bm[sieve] is a degenerate case. Only its untyped and fully-typed configurations are @deliverable{1}.}
-            The right endpoint shows how many configurations suffer over 20x performance overhead.
+            The right endpoint shows how many configurations suffer over 20x performance overhead.@note{Half the configurations for @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes. The overhead graphs report an ``over 20x'' performance overhead for these configurations.}
             @string-titlecase[num-max-deliverable-str] benchmarks have at least one such configuration.
 
             Moving from @math{k=0} to @math{k=1} in a fixed version of Racket does little to improve the number of @deliverable{} configurations.
