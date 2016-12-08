@@ -17,68 +17,41 @@
 @profile-point{sec:tr}
 @title[#:tag "sec:tr"]{Evaluating Typed Racket}
 
-@;As validation of the evaluation method, this section presents the results of applying it to the benchmark programs.
-@;This section documents our protocol for collecting performance lattice data and presents the derived overhead graphs.
-
-
 @; -----------------------------------------------------------------------------
 @profile-point{sec:tr:protocol}
 @section[#:tag "sec:protocol"]{Experimental Protocol}
-
-@; TODO table of changes
-@;      (or put in APPENDIX)
 
 @(define MIN-ITERS-STR "3")
 @(define MAX-ITERS-STR "30")
 @(define FREQ-STR "1.40 GHz")
 
-To generate all configurations in a benchmark, we usually began with untyped code, manually created the typed configuration, and then automatically generated all mixed configurations from these versions.
-There were six complications.
+@Secref{sec:plots} and @secref{sec:compare} present the results of a comprehensive performance evaluation of the @integer->word[(*NUM-BENCHMARKS*)] benchmark programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
+The data is the result of applying the following protocol for each benchmark and each version of Typed Racket:
+@itemlist[
+@item{
+  Select a random permutation of the configurations in the benchmark.
+}
+@item{
+  For each configuration: recompile, run twice, and collect the results of the second run.
+  Use the standard Racket compiler and runtime settings.
+}
+@item{
+  Repeat the above steps @math{N} times to produce a sequence of @math{N} running times for each configuration.
+}
+@item{
+  Summarize each configuration with the mean of the corresponding running times.
+}
+]
+@; on a dedicated Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.@note{The Opteron is a NUMA architecture.}
 
-First, the addition of types occasionally required type casts or small refactorings.
-For example, the expression @racket[(string->number s)] had type @racket[(U Complex #f)] even when the programmer informally knew the expression would never produce a complex number.
-To avoid similar losses of precision, we added appropriate runtime checks.
-As another example, the @bm[quad] program called a library function to partition a @racket[(Listof (U A B))]
- into a @racket[(Listof A)] and a @racket[(Listof B)] using a predicate for values of type @racket[A].
-Typed Racket could not prove that values which failed the predicate had type @racket[B], thus we refactored the call site.
-
-Second, the @bm[fsm], @bm[synth], and @bm[quad] benchmarks were originally typed programs.
-The benchmarks re-use many of the original type annotations, but Typed Racket could not enforce some of these annotations across a type boundary.
-For example, the core datatypes in the @bm[synth] benchmark are monomorphic because Typed Racket could not dynamically enforce parametric polymorphism on instances of an untyped structure.
-
-Third, any contracts in untyped programs are represented as type annotations and in-line assertions in the derived benchmarks.@note{At the time, Typed Racket could not express contracts.}
-The @bm[acquire] program in particular used contracts to ensure ordered lists with unique elements.
-Such checks are explicit pre and post-conditions on functions in the @bm[acquire] benchmark.
-
-Fourth, we inserted @emph{adaptor modules} between modules exporting a struct and their typed clients.
-Adaptor modules contained only type annotations and ensured a canonical set of types in configurations where the underlying server module was untyped.
-The assignment of canonical types was necessary because in Typed Racket each import of an untyped struct generates a unique datatype.
-Two typed modules could not share instances of such an untyped struct definition unless they referenced a common import annotation.
-It was possible to implement this sharing without the layer of indirection, but adaptor modules provided a uniform solution and did not introduce noticeable overhead.
-
-Fifth, some benchmarks do not have the same module boundaries as the original programs.
-The @bm[zombie], @bm[snake], and @bm[tetris] benchmarks use the module boundaries from @exact{@|PHIL|~@|etal|~(2014)} rather than the boundaries from the original programs.
-The @bm[kcfa] benchmark is modularized according to comments in the original, single-module program.
-The @bm[suffixtree], @bm[synth], and @bm[gregor] benchmarks each have a single file containing all their data structure definitions; the original programs defined these structures in the same module as the functions on the structures.
-Lastly, the @bm[quadBG] benchmark inlines two data structure definitions as noted in @secref{sec:bm}.
-
-Sixth, half the configurations in @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes.
-For the purpose of our experiment, these configurations have ``infinite'' performance overhead.
-
-All our measurements were taken on a Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.@note{The Opteron is a NUMA architecture.}
-With the exception of @bm[quadBG] and @bm[quadMB],@note{The six datasets for @bm[quad] were collected using 30 cores, but consequently exhibit greater variation between trials. See the appendix.} the machine collected data with at most two of its 32 cores.
+Specifically, a Racket script implementing the above protocol collected the data in this paper.
+The script ran on a dedicated Linux machine with two physical AMD Opteron 6376 2.3GHz processors and 128GB RAM.@note{The Opteron is a NUMA architecture.}
+For the @bm[quadBG] and @bm[quadMB] benchmarks, the script utilized 30 of the machine's physical cores to collect data in parallel.@note{The script invoked 30 green threads; these green threads invoked and monitored system processes to compile and run each configuration. The green threads pinned subprocesses to a fixed CPU core using the Linux @tt{taskset} command.}
+For all other benchmarks, the script utilized only two physical cores; the latter protocol yielded more stable measurements, but was impractical to measure @bm[quad].
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
-For every benchmark, our driver script spawned one green thread for each available core.
-These green threads worked together to collect one running time for each of the benchmark's configurations.
-To collect a single running time, a green thread selected a configuration at random, spawned a new subprocess to compile the configuration once and run it twice,@note{Threads used the Linux @tt{taskset} command to pin subprocesses to a dedicated core. The subprocesses invoked the Racket compiler and runtime using the standard settings.} and recorded the time for the second run.
-Depending on the overall time needed to collect data for a benchmark, we repeated this process between @|MIN-ITERS-STR| and @|MAX-ITERS-STR| times per benchmark.
-The overhead graphs in the next section use the mean of these iterations.
-
-Our results are consistent with the data reported for Racket v6.2 using three different machines@~cite[tfgnvf-popl-2016].
-We are thereby encouraged that the observed performance overhead is reproducible across machines and computing environments.
-@Secref{sec:threats} reports threats to validity regarding our experimental protocol.
 The online supplement to this paper contains both our experimental scripts and the full datasets.
+@Secref{sec:threats} reports threats to validity regarding the experimental protocol and the appendix discusses the stability of individual measurements.
 
 
 @; -----------------------------------------------------------------------------

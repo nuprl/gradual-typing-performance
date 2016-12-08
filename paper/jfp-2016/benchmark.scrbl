@@ -193,3 +193,45 @@ Inlining does not affect overhead due to gradual typing, but greatly reduces the
   @render-benchmarks-table{}
 ]
 
+
+@; -----------------------------------------------------------------------------
+@section[#:tag "sec:conversion"]{Conversion Protocol}
+
+@(define MIN-ITERS-STR "3")
+@(define MAX-ITERS-STR "30")
+@(define FREQ-STR "1.40 GHz")
+@(define TYPED-BM* (list fsm synth quad))
+
+@string-titlecase[@integer->word[(- (*NUM-BENCHMARKS*) (length TYPED-BM*))]] benchmarks are adaptations of untyped programs; the benchmarks are fully annotated with types, but are otherwise similar to the original program.
+The other three benchmarks (@bm[fsm], @bm[synth], and @bm[quad]) re-use most of the type annotations and code from the original programs.
+Any differences between the original programs and the benchmarks are due to the following six complications.
+@; TODO note that later versions can/will fix these issues?
+
+First, the addition of types to untyped code occasionally requires type casts or small refactorings.
+For example, the expression @racket[(string->number "42")] has the Typed Racket type @racket[(U Complex #f)].
+If this expression appears in an untyped context expecting an @racket[Integer], a typed version of the same code must incorporate an explicit type cast.
+As another example, the @bm[quad] programs call a library function to partition a @racket[(Listof (U A B))] into a @racket[(Listof A)] and a @racket[(Listof B)] using a predicate for values of type @racket[A].
+Typed Racket cannot currently prove that values which fail the predicate have type @racket[B], so the @bm[quad] benchmarks replace the call with two filtering passes.
+
+Second, Typed Racket cannot enforce certain types across a type boundary.
+This led us to refactor type annotations in @bm[fsm], @bm[synth], and @bm[quad].
+For example, the core datatypes in the @bm[synth] benchmark are monomorphic because Typed Racket cannot dynamically enforce parametric polymorphism on instances of an untyped structure.
+
+Third, any contracts present in the untyped programs are represented as type annotations and in-line assertions in the derived benchmarks.
+The @bm[acquire] program in particular uses contracts to ensure ordered lists with unique elements.
+The benchmark enforces these conditions with explicit pre and post-conditions on the relevant functions.
+
+Fourth, each @emph{static import} of an untyped struct type into typed code generates a unique datatype.
+Typed modules that share instances of an untyped struct must therefore reference a common static import site.
+The benchmarks include @emph{adaptor modules} to provide canonical imports; for each module @math{M} in the original program that exports a struct, the benchmark includes an adaptor module that provides type annotations for every identifier exported by @math{M}.
+Adaptor modules add a layer of indirection,@note{This indirection did not add measurable performance overhead.} but do not change the size of a configuration lattice.
+
+Fifth, some benchmarks use a different modularization than the original program.
+The @bm[zombie], @bm[snake], and @bm[tetris] benchmarks use the module boundaries from @exact{@|PHIL|~@|etal|~(2014)} rather than the boundaries from the original programs.
+The @bm[kcfa] benchmark is modularized according to comments in the original, single-module program.
+The @bm[suffixtree], @bm[synth], and @bm[gregor] benchmarks each have a single file containing all their data structure definitions; the original programs defined these structures in the same module as the functions on the structures.
+Lastly, the @bm[quadBG] benchmark inlines two data structure definitions as noted in @secref{sec:bm}.
+
+Sixth, half the configurations in @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes.
+For the purpose of performance evaluation, these configurations have ``infinite'' overhead due to gradual typing.
+

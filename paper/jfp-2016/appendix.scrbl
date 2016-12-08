@@ -2,8 +2,8 @@
 @require["common.rkt" "benchmark.rkt" "appendix.rkt" "typed-racket.rkt" "util.rkt"]
 
 @; TODO
-@; - mean, max improvement
 @; - (online only) benchmark sources
+@; - (online only) copy of emails
 
 
 @title[#:tag "appendix"]{Appendix}

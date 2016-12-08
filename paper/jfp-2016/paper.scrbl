@@ -19,6 +19,9 @@
    ))
 
 @abstract{
+  @; Matthias: a type system clearly has performance e.g. union types impose a cost that nobody knows how to manage
+  @;           GT system has additional cost because of the runtime component, it's just unconventional
+
   A sound gradual type system ensures that untyped components of a program can never break static type guarantees.
   This assurance requires dynamic type enforcement, which imposes runtime overhead in proportion to the frequency and nature of interaction between typed and untyped components.
   A performant gradual type system minimizes the runtime overhead.
