@@ -10,10 +10,3 @@
           (+ (cdr c1) (cdr c2))))
 
   (provide complex-*))
-
-(module u racket/base
-  (require (submod ".." t))
-
-  'TODO
-)
-(require 'u)

@@ -467,7 +467,7 @@
   (make-bib #:title "Fast and precise type inference for JavaScript"
             #:author (authors (author-name "Brian" "Hackett")
                               (author-name "Shu-Yu" "Guo"))
-            #:location (proceedings-location pldi) ; TODO pages
+            #:location (proceedings-location pldi #:pages '(239 250))
             #:date "2012"))
 
 (define min-cover-salient-curves
@@ -1477,9 +1477,3 @@
 
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 
-;; TODO
-;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
-;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
-;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
-;https://www.quora.com/What-language-is-Facebook-written-in
-;http://www.zdnet.com/article/why-facebook-hasnt-ditched-php

@@ -202,7 +202,6 @@ For example, the one import statement in @bm[sieve] names nine identifiers.
 @string-titlecase[@integer->word[(- (*NUM-BENCHMARKS*) (length TYPED-BM*))]] of the benchmark programs are adaptations of untyped programs
 The other three benchmarks (@bm[fsm], @bm[synth], and @bm[quad]) use most of the type annotations and code from originally-typed programs.
 Any differences between the original programs and the benchmarks are due to the following five complications.
-@; TODO note that later versions can/will fix these issues?
 
 First, the addition of types to untyped code occasionally requires type casts or small refactorings.
 For example, the expression @racket[(string->number "42")] has the Typed Racket type @racket[(U Complex #f)].

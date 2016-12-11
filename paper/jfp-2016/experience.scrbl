@@ -153,7 +153,7 @@ Our solution was to remove all polymorphism from struct definitions
  almost certainly improved performance, but we cannot make comparisons
  against an alternative that does not compile.}
 
-@; TODO: why can't we compile this?
+@; WARNING: can't compile this?
 @; A. general issue with typed racket & impersonators
 @; B. the seal changes how previously-defined functions would work
 

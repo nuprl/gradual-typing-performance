@@ -4,6 +4,13 @@
 @;  order in a finite, but very large, discrete universe that is intricately
 @;  intertwined."  -- Dijkstra, 1979 (from Emina's thesis)
 
+@;; More anecdotes
+@;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
+@;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
+@;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
+@;https://www.quora.com/What-language-is-Facebook-written-in
+@;http://www.zdnet.com/article/why-facebook-hasnt-ditched-php
+
 @require["common.rkt" "util.rkt" "benchmark.rkt"]
 
 @profile-point{sec:intro}

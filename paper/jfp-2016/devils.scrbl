@@ -117,7 +117,7 @@ Another example is the @bm[kcfa] benchmark, in which hashtable types account for
 Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
 Changing its language to @code{#lang typed/racket} improves its performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.
 The drastic improvement is due to the elimination of the rather expensive dynamic check for the @tt{trie} type.@note{There is no way for a programmer to predict that the dynamic check for the @tt{trie} type is expensive, short of reading the implementation of Typed Racket and the @tt{pfds/trie} library.}
-@; TODO okay footnote
+@; TODO check w/matthias
 
     @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
       @codeblock-pict[@string-join['(

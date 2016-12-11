@@ -665,8 +665,7 @@ The implicit assumption is that the mean of a configuration's running times is a
 
 @Figure-ref{fig:appendix:morsecode} plots exact running times for all @integer->word[(benchmark->num-configurations morsecode)] @bm[morsecode] configurations.
 The data for one configuration consists of three sequences of color-coded points; the data for version 6.2 are red triangles, the data for version 6.3 are green circles, and the data for version 6.4 are blue squares.
-Each sequence is arranged left-to-right in chronological order.
-@; TODO clarify
+Each sequence of running times is arranged left-to-right in the order the experiment recorded them.
 
 For all configurations, the data in each sequence is similar and there is no apparent pattern between the left-to-right order of points and the running time they represent.
 This suggests that the absolute running times for a given configuration in @bm[morsecode] are independent samples from a population with a stable mean.

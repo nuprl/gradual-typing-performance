@@ -142,5 +142,32 @@
 
 (module+ test
   (require rackunit rackunit-abbrevs)
-  ;; TODO
+
+  (check-apply* integer->word*
+   [2
+    => '("two")]
+   [21
+    => '("twenty" "one")])
+
+  (check-apply* integer->word
+   [2
+    => "two"]
+   [20
+    =>
+    "twenty"])
+
+  (check-exn #rx"multiple words"
+    (lambda () (integer->word 21)))
+
+  (check-apply* rnd
+   [3
+    => "3"]
+   [1.23
+    => "1.23"]
+   [1.234
+    => "1.23"]
+   [2/3
+    => "0.67"]
+  )
+
 )

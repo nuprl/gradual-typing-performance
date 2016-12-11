@@ -86,27 +86,26 @@ On one hand, this overhead can be high.
 The right-most configuration in the first row from the bottom runs 71 times slower than the untyped configuration.
 On the other hand, the fully typed configuration runs 30% faster than the untyped configuration because Typed Racket uses the type annotations to compile more efficient code.
 
+@; @; TODO awkward, conversely to what? need to say something in a line-or-two
+@; With these labels, a language implementor can answer many questions about the performance overhead in this program due to gradual typing.
+@; For instance, @|suffixtree-num-D-str|
+@;  configurations run within a @id[suffixtree-sample-D]x overhead
+@;  and @|suffixtree-num-k-str|
+@;  configurations are at most @id[suffixtree-sample-k] type conversion step
+@;  from a configuration that runs within a @id[suffixtree-sample-D]x overhead.
+@;
+@; @(let* ([too-many-modules 8]
+@;         [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
+@;    @elem{
+@;      Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice will not scale to programs with eight or more modules, as the corresponding lattices will have at least 256 nodes.
+@;      Furthermore, comparing the relative performance across two or more lattices is difficult even for small programs.
+@;    })
+
 @bold{Terminology}
   A labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}.
   The same lattice without labels is a @emph{configuration lattice}.
   The practical distinction is that users of a gradual type system will explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.}@;
 @|QED|
-
-@; TODO awkward
-With these labels, a language implementor can answer many questions about the performance overhead in this program due to gradual typing.
-For instance, @|suffixtree-num-D-str|
- configurations run within a @id[suffixtree-sample-D]x overhead
- and @|suffixtree-num-k-str|
- configurations are at most @id[suffixtree-sample-k] type conversion step
- from a configuration that runs within a @id[suffixtree-sample-D]x overhead.
-
-@; TODO conversely to what?
-@(let* ([too-many-modules 8]
-        [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
-   @elem{
-     Conversely, @figure-ref{fig:suffixtree-lattice} demonstrates that a graphical presentation of a performance lattice will not scale to programs with eight or more modules, as the corresponding lattices will have at least 256 nodes.
-     Furthermore, comparing the relative performance across two or more lattices is difficult even for small programs.
-   })
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:measurements"]{Performance Metrics}

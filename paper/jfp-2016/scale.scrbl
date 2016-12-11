@@ -48,7 +48,6 @@ The implicit suggestion of @figure-ref{fig:scale:srs-snake} is that the interval
 These intervals capture both the absolute performance (left plot) and relative performance (right plot) of @bm[snake].
 
 @Figure-ref{fig:scale:delta-interval} provides evidence for the linear sampling suggestion of @figure-ref{fig:scale:srs-snake}.
-@; TODO double-check
 It describes the @integer->word[(length large-bm*)] largest benchmarks in the @|GTP| suite.
 The solid purple lines from @figure-ref{fig:scale:delta} alongside confidence intervals generated from a small number of samples.
 Specifically, the interval for a benchmark with @math{N} modules is generated from @integer->word[srs-samples] samples of @exact{$@id[sample-size-factor]N$} configurations.
