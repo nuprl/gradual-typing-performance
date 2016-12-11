@@ -8,7 +8,6 @@
 
 @title[#:tag "appendix"]{Appendix}
 @; =============================================================================
-@exact{\newpage}
 @profile-point{appendix:bib}
 @section{Anecdotal Evidence of Performance Costs}
 
@@ -695,7 +694,6 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
 
 
 @; =============================================================================
-@exact{\newpage}
 @profile-point{appendix:worst-case}
 @section{Miscellaneous Figures}
 

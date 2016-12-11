@@ -95,7 +95,8 @@
  (only-in "common.rkt" etal cite exact parag)
  (only-in racket/file file->value)
  (only-in racket/format ~r)
- (only-in racket/list split-at last append*)
+ (only-in racket/list drop-right split-at last append*)
+ (only-in math/number-theory factorial)
  (only-in racket/port with-input-from-string)
  (only-in racket/string string-prefix? string-join)
  scribble/core
@@ -315,15 +316,13 @@
         (define b+d*+ (sort b+d* benchmark<? #:key (lambda (x) (if (list? (car x)) (caar x) (car x)))))
         (apply exact (map render-benchmark b+d*+))))))
 
-(define PATH-TABLE-TITLE* '(
-  "Benchmark"
-  "\\# Mod."
-  "D = 1"
-  "D = 3"
-  "D = 5"
-  "D = 10"
-  "D = 20"
-))
+(define PATH-D* '(1 3 5 10 20))
+
+(define PATH-TABLE-TITLE*
+  (list* "Benchmark"
+         "\\# Mod."
+         (for/list ([d (in-list PATH-D*)])
+           (format "D = ~a" d))))
 
 (define ITERATIONS-TABLE-TITLE*
   (let ([row '("Benchmark" "v6.2" "v6.3" "v6.4")])
@@ -388,26 +387,42 @@
              [b (in-list second-half)])
     (apply tex-row (append a (list "~~~~~~") b))))
 
+(define (deliverable-paths% S D)
+  (define num-deliv
+    (for*/sum ([c* (all-paths S)]
+               #:when (andmap (lambda (cfg) (<= (configuration->overhead S cfg) D))
+                              (cdr (drop-right c* 1))))
+        1))
+  (define total-paths (factorial (get-num-modules S)))
+  (/ num-deliv total-paths))
+
 (define (new-path-table)
-  (list
-    ;;                        BM    M      1     3       5    10    20
-    (tex-row      "{\\tt sieve}"  "2"    "0"   "0"     "0"    "0" "0.50")
-    (tex-row      "{\\tt forth}"  "4"    "0"   "0"     "0"    "0"    "0")
-    (tex-row        "{\\tt fsm}"  "4"    "0"   "0"     "0"    "0"    "0")
-    (tex-row      "{\\tt fsmoo}"  "4"    "0"   "0"     "0"    "0"    "0")
-    (tex-row       "{\\tt mbta}"  "4"    "0"   "1"     "1"    "1"    "1")
-    (tex-row  "{\\tt morsecode}"  "4"    "0"   "1"     "1"    "1"    "1")
-    (tex-row    "{\\tt dungeon}"  "5"    "0"   "0"     "0" "0.50"    "1")
-    (tex-row     "{\\tt zombie}"  "5"    "0"   "0"     "0"    "0"    "0")
-    (tex-row     "{\\tt zordoz}"  "5"    "0"   "1"     "1"    "1"    "1")
-    (tex-row        "{\\tt lnm}"  "6" "0.17"   "1"     "1"    "1"    "1")
-    (tex-row "{\\tt suffixtree}"  "6"    "0"   "0"     "0"    "0" "0.17")
-    (tex-row       "{\\tt kcfa}"  "7"    "0" "0.20" "0.97"    "1"    "1")
-    (tex-row      "{\\tt snake}"  "8"    "0"   "0"     "0"  "0.8" "0.50")
-    (tex-row      "{\\tt take5}"  "8"    "0"   "1"     "1"    "1"    "1")
-    (tex-row    "{\\tt acquire}"  "9"    "0" "0.2"  "0.83"    "1"    "1")
-    (tex-row     "{\\tt tetris}"  "9"    "0"   "0"     "0" "0.17" "0.17")
-    (tex-row      "{\\tt synth}" "10"    "0"   "0"     "0"    "0"    "0")))
+  (for/list ([bm (in-list ALL-BENCHMARKS)]
+             #:when (<= (benchmark->num-modules bm) 11))
+    (define S (from-rktd (benchmark-rktd bm "6.4")))
+    (apply tex-row
+           (format "{\\tt ~a}" (benchmark-name bm))
+           (format "~a" (benchmark->num-modules bm))
+           (for/list ([D (in-list PATH-D*)])
+             (~r (deliverable-paths% S D) #:precision 2)))))
+
+    ;(tex-row      "{\\tt sieve}"  "2"    "0"   "0"     "0"    "0" "0.50")
+    ;(tex-row      "{\\tt forth}"  "4"    "0"   "0"     "0"    "0"    "0")
+    ;(tex-row        "{\\tt fsm}"  "4"    "0"   "0"     "0"    "0"    "0")
+    ;(tex-row      "{\\tt fsmoo}"  "4"    "0"   "0"     "0"    "0"    "0")
+    ;(tex-row       "{\\tt mbta}"  "4"    "0"   "1"     "1"    "1"    "1")
+    ;(tex-row  "{\\tt morsecode}"  "4"    "0"   "1"     "1"    "1"    "1")
+    ;(tex-row    "{\\tt dungeon}"  "5"    "0"   "0"     "0" "0.50"    "1")
+    ;(tex-row     "{\\tt zombie}"  "5"    "0"   "0"     "0"    "0"    "0")
+    ;(tex-row     "{\\tt zordoz}"  "5"    "0"   "1"     "1"    "1"    "1")
+    ;(tex-row        "{\\tt lnm}"  "6" "0.17"   "1"     "1"    "1"    "1")
+    ;(tex-row "{\\tt suffixtree}"  "6"    "0"   "0"     "0"    "0" "0.17")
+    ;(tex-row       "{\\tt kcfa}"  "7"    "0" "0.20" "0.97"    "1"    "1")
+    ;(tex-row      "{\\tt snake}"  "8"    "0"   "0"     "0"  "0.8" "0.50")
+    ;(tex-row      "{\\tt take5}"  "8"    "0"   "1"     "1"    "1"    "1")
+    ;(tex-row    "{\\tt acquire}"  "9"    "0" "0.2"  "0.83"    "1"    "1")
+    ;(tex-row     "{\\tt tetris}"  "9"    "0"   "0"     "0" "0.17" "0.17")
+    ;(tex-row      "{\\tt synth}" "10"    "0"   "0"     "0"    "0"    "0")
 
 (define (format-percent-diff meas exp)
   (define diff (- meas exp))
