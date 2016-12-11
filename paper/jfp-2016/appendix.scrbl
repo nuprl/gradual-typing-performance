@@ -10,7 +10,10 @@
 @; =============================================================================
 @exact{\newpage}
 @profile-point{appendix:bib}
-@section{Bibliography of Performance Costs}
+@section{Anecdotal Evidence of Performance Costs}
+
+The following enumeration contains links to some of the anecdotes that triggered this investigation into the performance of gradual typing.
+The online supplement to this paper includes copies of the email threads and documents cited below.
 
 @render-annotated-bib[@list[
   @annotated-bib[#:title "warning on use trie functions in #lang racket?"
@@ -37,7 +40,7 @@
                  #:url "http://con.racket-lang.org/2015/burns.pdf"
                  #:date "2015-09-27"]{
     Reports one startup's experience converting a database API to Typed Racket.
-    After converting, the new code is less prone to bugs and more maintainable, but runs @exact{``}about twice as slow on common queries."
+    After converting, the new code is less prone to bugs and more maintainable, but runs @exact{``}about twice as slow on common queries.@exact{''}
   }
   @annotated-bib[#:title "re: Unsafe version of require/typed?"
                  #:author "Neil Toronto"
@@ -90,7 +93,7 @@ Configuration 4 in @figure-ref{fig:appendix:morsecode} (binary: @tt{0100}) is th
 @; MODULEGRAPHS
 @; and use a graph structure to represent the interactions
 @;  of its modules.
-@; Nodes in the graphs represent modules in the program that our experiment
+@; Nodes in the graphs represent modules in the program that the experiment
 @;  varies as typed or untyped.
 @; Edges represent static import statements.
 @; For example, the leftmost node in each graph represents the program's main module,
@@ -657,14 +660,14 @@ Configuration 4 in @figure-ref{fig:appendix:morsecode} (binary: @tt{0100}) is th
     @render-exact-plot[morsecode]
   ]
 
-The experimental protocol in @secref{sec:protocol} states that we measured each benchmark's running time multiple times.
-The overhead plots in @secref{sec:plots}, however, use the mean of these running times.
+While the experimental setup runs each benchmark multiple times (@secref{sec:protocol}), the overhead plots in @secref{sec:plots}  use the mean of these running times.
 The implicit assumption is that the mean of a configuration's running times is an accurate representation of its performance.
 @Figure-ref["fig:appendix:morsecode" "fig:appendix:ratio"] qualify this assumption.
 
-@Figure-ref{fig:appendix:morsecode} plots exact running times for the @integer->word[(benchmark->num-configurations morsecode)] @bm[morsecode] configurations.
+@Figure-ref{fig:appendix:morsecode} plots exact running times for all @integer->word[(benchmark->num-configurations morsecode)] @bm[morsecode] configurations.
 The data for one configuration consists of three sequences of color-coded points; the data for version 6.2 are red triangles, the data for version 6.3 are green circles, and the data for version 6.4 are blue squares.
-Each sequence is arranged left-to-right in the order we collected the running times.
+Each sequence is arranged left-to-right in chronological order.
+@; TODO clarify
 
 For all configurations, the data in each sequence is similar and there is no apparent pattern between the left-to-right order of points and the running time they represent.
 This suggests that the absolute running times for a given configuration in @bm[morsecode] are independent samples from a population with a stable mean.
@@ -678,14 +681,17 @@ Finally, each series of points is surrounded by its 95% confidence interval.
 
 Most sequences of points in @figure-ref{fig:appendix:ratio} have similar @math{y}-values, and none of the sequences evince a strong correlation between their left-to-right (chronological) order and @math{y}-value.
 The notable exception is @bm[quad].
-Both @bm[quadBG] and @bm[quadMB] show larger variation between measurements because these measurements were collected on 30 cores running in parallel on our benchmarking machine.
-We attribute the bias to contention over shared memory.
+Both @bm[quadBG] and @bm[quadMB] show larger variation between measurements because these measurements were collected on 30 cores running in parallel on the benchmarking machine.
+The bias is most likely due to contention over shared memory.
 Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the average of a given sequence of typed/untyped ratios is an accurate representation of the true typed/untyped ratio.
 
+@figure["fig:appendix:ratio" @elem{typed/untyped ratios, on a logarithmic scale.}
+  @render-uncertainty[ALL-BENCHMARKS]
+]
 
-  @figure["fig:appendix:ratio" @elem{typed/untyped ratios, on a logarithmic scale.}
-    @render-uncertainty[ALL-BENCHMARKS]
-  ]
+@figure["fig:appendix:iterations" @elem{Samples per benchmark}
+  @render-iterations-table[]
+]
 
 
 @; =============================================================================
@@ -697,8 +703,11 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
   @render-path-table[]
 ]
 
+The table in @figure-ref{fig:appendix:iterations} lists the number of samples per configuration aggregated in @secref{sec:plots}.
+For a fixed benchmark and fixed version of Racket, all configurations have an equal number of samples.
+
 The table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any @emph{performant conversion paths} through a performance lattice.
-More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1, \ldots, c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D} and @exact{$c_i \rightarrow_1 c_{i+1}$}.
+More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1 \rightarrow_1 \ldots \rightarrow_1 c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D}.
 The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save space.
 
 @Figure-ref{fig:appendix:worst-case} plots the average-case and worst-case overheads in the benchmark programs.

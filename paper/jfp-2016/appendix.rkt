@@ -40,8 +40,8 @@
   (list (elem (noindent) (emph (abib-title ab)) (exact ".~~") (abib-author ab) (exact ".~~") (abib-date ab)
               (exact "\n\n")
               (noindent 1.2) (smaller (url (abib-url ab))))
-        (exact "\\vspace{-1ex}")
-        (inset (abib-desc ab))))
+        #;(exact "\\vspace{-1ex}")
+        #;(inset (abib-desc ab))))
 
 (define (render-annotated-bib ab*)
   (cons (parag)

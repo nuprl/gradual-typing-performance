@@ -18,7 +18,7 @@ Others have since explored this and similar questions in languages ranging from 
 From the beginning, researchers speculated that the cost of enforcing type soundness at runtime would be high.
 @citet[thf-dls-2006] anticipated this cost and attempted to reduce it by permitting only module-level type boundaries.
 @citet[htf-hosc-2010] and @citet[sw-popl-2010] developed calculi to remove the space-inefficiency apparent in models of gradual typing.
-Industry labs went so far as to build @emph{optionally typed} languages@;
+Industry labs instead built @emph{optionally typed} languages@;
 @note{@url{http://www.typescriptlang.org/}}
 @note{@url{http://hacklang.org/}}
 @note{@url{http://flowtype.org/}}
@@ -36,7 +36,7 @@ This paper provides an answer:
    @item{
      To @emph{measure} the performance of a gradual type system, fully annotate a suite of representative benchmark programs and measure the running time of all typed/untyped configurations according to a fixed @emph{granularity}.
      In Typed Racket, the granularity is by-module.
-     In a micro-level gradual type system such as Reticulated Python, experimenters have more choices (e.g., by module or by variable).
+     In a micro-level gradual type system such as Reticulated Python, experimenters have more choices (from by-module to by-variable).
    }
    @item{
      To express the @emph{absolute performance} of the gradual type system, report the proportion of configurations in each benchmark that are @step{} using @emph{overhead graphs}.
@@ -73,8 +73,9 @@ The only way to know is through further systematic evaluation of gradual type sy
 @section[#:style 'unnumbered]{Acknowledgments}
 
 The authors gratefully acknowledge support from the National Science Foundation (SHF 1518844).
+They owe the implementors of Typed Racket a large debt, especially Sam Tobin-Hochstadt.
 They also thank Matthew Butterick, John Clements, Matt Might, Linh Chi Nguyen,Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon Zeppieri for providing benchmark code bases.
-Sam Tobin-Hochstadt Brian LaChance provided feedback on earlier drafts.
+Sam Tobin-Hochstadt Brian LaChance provided feedback on early drafts.
 
 @; - Stephen Chang, Ryan Culpepper for helping Max with the predictions impl.
 
