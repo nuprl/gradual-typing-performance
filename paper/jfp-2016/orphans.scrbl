@@ -329,3 +329,151 @@ For the purpose of the experiment, the final input size we used was a compromise
  between having an untyped runtime long enough to be stable against
  operating system effects but short enough that the slowest
  configurations finished reasonably quickly.
+
+@; =============================================================================
+
+@; uncertain runtimes, uncertain proportions
+@(let* ([S-6.2 (gtp:from-rktd (benchmark-rktd morsecode "6.2"))]
+        [S-6.4 (gtp:from-rktd (benchmark-rktd morsecode "6.4"))]
+        [num-mod (benchmark->num-modules morsecode)]
+        [interesting-config (natural->bitstring 13 #:pad num-mod)]
+        [c6.2 (gtp:configuration->overhead S-6.2 interesting-config)]
+        [c6.4 (gtp:configuration->overhead S-6.4 interesting-config)]
+        [sample-D-str (let ([diff (abs (- c6.4 c6.2))])
+                        (~r (+ (min c6.2 c6.4) (/ diff 2)) #:precision '(= 1)))])
+@list[@elem{
+  Overhead plots summarize the high-level performance of gradual type systems, but do not quantify the uncertainty in measurements.
+  @; @~cite[kj-ismm-2013].
+  @Figure-ref{fig:exact-runtimes} demonstrates why uncertainty might be an issue.
+  It plots our entire dataset for the @bm[morsecode] benchmark.
+  The @math{x}-axis has sixteen discrete intervals, one for each @bm[morsecode] configuration.@note{Configuration 0 is untyped and configuration 15 is fully typed. The mapping from @exact{$i \in [1,15]$} to configurations is in the appendix.}
+  The @math{y} axis measures running time in milliseconds.
+  Each data point is one running time for one configuration.
+  These runnings times are coded by the version of Racket that produced them;
+   times for v6.2 are red triangles,
+   times for v6.3 are green circles,
+   and times for v6.4 are blue squares.
+  The left-to-right order of points for each configuration and version of Racket is the order in which we obtained the measurements.
+  Any trend in these points would imply that the measurements are @emph{not} independent.
+
+  Compare @figure-ref{fig:exact-runtimes} with the overhead graph for @bm[morsecode] in @figure-ref{fig:lnm:1}.
+  Both graphs reach the same conclusion; namely, runtimes for version 6.2 are typically the slowest, but overall performance between all three versions is similar.
+  The overhead graph, however, summarizes each configuration by its mean runtime without communicating the variance between iterations evident in @figure-ref{fig:exact-runtimes}.
+  Fortunately, this variance is low.
+  Therefore conclusions drawn from the overhead plot are likely to hold in practice.
+
+  @; "exact" lessons
+  @; - clustered points, unimodal, left-to-right independent
+  @; - triangles highest
+  @; - have some uncertainty
+  }
+
+  @figure["fig:exact-runtimes" "Exact running times"
+    @render-exact-plot[morsecode]
+  ]
+])
+    @(define sample-D 2)
+    @(define sample-confidence 98)
+
+The challenge for performance evaluation is to quantify variance and significance in datasets with exponentially many configurations.
+Equipping the performance metrics with confidence intervals provides a solution@~cite[n-ptrs-1937].
+In essence, a confidence interval is a probable bound for the true value of an unknown parameter.
+For our purposes, non-overlapping confidence intervals for two unknown parameters serve as evidence that the parameters are truly different.
+
+@Figure-ref{fig:uncertainty} quantifies the uncertainty in the typed/untyped ratio (top plot) and the number of @deliverable[@id[sample-D]] configurations (bottom plot) for each of our benchmark programs.
+The @math{x}-axis of both plots represents the @integer->word[(*NUM-BENCHMARKS*)] benchmarks, arranged left-to-right from smallest to largest performance lattice.
+As before, each benchmark has data for @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
+The @math{y}-axis of the top plot is the inverse of the typed/untyped ratio; that is, the performance of the untyped configuration divided by the performance of the typed configuration.
+Higher @math{y}-values indicate better performance.
+The @math{y}-axis of the bottom plot is the percent of configurations that are @deliverable[@id[sample-D]]; again, a larger percentage is better.
+
+Every series of points in the top graph and every bar in the bottom graph is enclosed in an @tt{I}-shaped interval.
+On the top graph, these intervals quantify variation among repeated samples of the typed/untyped ratio.
+To be precise, each point in the top graph is the untyped runtime from one iteration of the benchmark divided by the typed runtime from the same iteration.
+Ratios for subsequent iterations are arranged left-to-right within a column.
+The confidence intervals are the @id[sample-confidence]% confidence intervals for each sequence of ratios;
+ repeating this experiment and re-computing confidence intervals would, with high probability,
+ produce intervals containing the true ratio.@note{``High probability'' is a far better mental model for interpreting @figure-ref{fig:uncertainty} than ``@id[sample-confidence]% confidence''.
+  We say @id[sample-confidence]% because we use a critical value of 2.326, but these are not rigorous statistics.
+  First, the so-called index method@~cite[f-arxiv-2006] we use to compute confidence intervals for ratios is intuitive, but ad-hoc compared to methods such as Fieller's@~cite[f-rss-1957].
+  Second, a small overlap of (precise) @id[sample-confidence]% confidence intervals does not necessarily imply a lack of significant difference at the @~r[(* 0.01 (- 100 sample-confidence)) #:precision '(= 2)] confidence level@~cite[bfwc-pm-2005].}
+
+On the bottom graph, the intervals quantify uncertainty in the number of @deliverable[@id[sample-D]] configurations.
+Recall that the overhead graphs in @secref{sec:plots} count the number of configurations with mean runtime at most @math{D} times slower than the mean runtime of the untyped configuration.
+The rectangles in @figure-ref{fig:uncertainty} give the same, mean-derived counts for @math{D=@id[sample-D]}.
+These counts have some uncertainty because the true overhead of a configuration might lie above or below the overhead determined by its mean running time.@note{The slope of the overhead plots correlates to the risk of confusing true and mean overheads; a steep slope is a higher risk.}
+Therefore, if a configuration's @emph{mean overhead} were less than @id[sample-D] but its @emph{true overhead} were greater than @id[sample-D], the mean-based count would over-approximate the number of @deliverable[@id[sample-D]] configurations.
+Conversely, under-approximations are possible if the mean overhead exceeds the true overhead.
+The error bars around these rectangles therefore count @deliverable[@id[sample-D]] configurations based on the upper and lower bounds of a @id[sample-confidence]% confidence interval derived from our sample overheads.
+If the lower confidence bound for one configuration's sequence of ratios was @deliverable[@id[sample-D]] but the same configuration's mean overhead was not @deliverable[@id[sample-D]], the upper error bar would be an additional 1% higher.
+
+As it turns out, there is only one configuration with mean overhead that wavers near the @id[sample-D]x mark.
+Every other configuration is stable; furthermore, all configurations are stable for overheads of 1.2x, 1.6x, 8x, and 10x.
+These results imply that our mean overheads have relatively small error bounds, such that no configuration's mean overhead is within the noise of the above-mentioned values of @math{D}.
+
+These graphs provide evidence for stronger statements about the relative performance of the three implementations of Typed Racket.
+For example:
+@itemlist[
+  @item{
+    Version 6.4 has significantly lower (improved) typed/untyped ratios than the earlier versions on five benchmarks: @bm[mbta], @bm[zombie], @bm[dungeon], @bm[zordoz], and @bm[acquire].
+  }
+  @item{
+    Version 6.4 has significantly more @deliverable[@id[sample-D]] configurations than version 6.2 on ten benchmarks, and significantly fewer on @bm[quadBG] benchmarks.
+    The drastic improvements in the @bm[mbta] and @bm[gregor] benchmarks are due to recent enhancements to Racket's contracts.
+    In fact, all benchmarks are improved by these enhancements, but many configurions still suffer more than 20x overhead.
+  }
+]
+Similar graphs can assess the performance of any fixed configuration or value for @math{D}.
+
+    @figure["fig:uncertainty" "Measuring Uncertainty"
+      @(parameterize([*CONFIDENCE-LEVEL* sample-confidence])
+         (render-uncertainty sample-D ALL-BENCHMARKS))
+    ]
+
+@; =============================================================================
+
+@itemlist[
+  @item{
+    A (@emph{program}) @emph{configuration} is a sequence of
+     @math{N} modules. Each module in a configuration is either typed or untyped.
+  }
+  @item{
+    For a fixed sequence of @math{N} modules there are @exact{$2^N$} possible
+     configurations.
+  }
+  @item{
+    Let @math{S} be the set of all configurations for @math{N} modules.
+    For @exact|{$c \in S$}| and @exact|{$i \in [0, N)$}|,
+     let @exact|{$c(i) = 1 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is typed
+     and
+     let @exact|{$c(i) = 0 \mbox{ iff the } i^{\emph{th}}$}| module in the sequence is untyped.@note{Representing configurations as @math{N}-bit binary numbers induces a total ordering on configurations. @Figure-ref{fig:exact-runtimes} re-uses this ordering.}
+  }
+
+  @item{
+    Define @exact|{$\leq$}| (a subset of @exact|{$S \times S$}|) as:
+     @exact|{$c_1 \leq c_2$}|
+     if and only if
+     @exact|{$c_1(i) \leq c_2(i)$}|
+     for all @exact|{$i \in [0, N)$}|.
+  }
+
+  @item{
+    @exact|{$(S, \leq)$}| is a complete lattice; henceforth, a @emph{configuration lattice}.
+    The untyped configuration is the bottom element and the fully-typed configuration is the top element.
+  }
+
+  @item{
+    Define an indexed @emph{type conversion} relation @exact{$\rightarrow_k$} (a subset of @exact{$\leq$}) as:
+     @exact{$c_1 \rightarrow_k c_2$} if and only if @exact{$c_1 \leq c_2$}
+     and the sum @exact{$\,\Sigma_i\,\big[c_2(i) - c_1(i)\big]$} is less than or equal to @exact{$k$}.
+    If @exact|{$c_1 \rightarrow_k c_2$}|, then @exact{$c_2$} is reachable from
+     @exact{$c_1$} in @exact{$k$} or fewer @emph{type conversion steps}.
+  }
+  @item{
+    A @emph{performance lattice} is a configuration lattice @exact|{$(S, \leq)$}|
+     equipped with a labeling @exact{$l$} such that
+     @exact{$l(c)$} characterizes the performance of configuration @exact{$c$}
+     for all @exact{$c \in S$}.
+  }
+]
+

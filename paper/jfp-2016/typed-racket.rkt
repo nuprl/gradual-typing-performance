@@ -63,6 +63,7 @@
   render-srs-sound
   render-srs-precise
   render-delta
+  render-iterations-table
   render-srs-single
 
   render-exact-table
@@ -94,7 +95,7 @@
  (only-in "common.rkt" etal cite exact parag)
  (only-in racket/file file->value)
  (only-in racket/format ~r)
- (only-in racket/list last append*)
+ (only-in racket/list split-at last append*)
  (only-in racket/port with-input-from-string)
  (only-in racket/string string-prefix? string-join)
  scribble/core
@@ -324,6 +325,10 @@
   "D = 20"
 ))
 
+(define ITERATIONS-TABLE-TITLE*
+  (let ([row '("Benchmark" "v6.2" "v6.3" "v6.4")])
+    (append row '("") row)))
+
 (define BENCHMARKS-TABLE-TITLE* '(
   "Benchmark"
   "\\twoline{Untyped}{LOC}"
@@ -337,6 +342,11 @@
 (define EXACT-TABLE-TITLE* '(
   "TBA"
 ))
+
+(define (render-iterations-table)
+  (render-table new-iterations-table
+    #:title ITERATIONS-TABLE-TITLE*
+    #:cache (build-path COMPILED "cache-iterations-table.rktd")))
 
 (define (render-path-table)
   (render-table new-path-table
@@ -363,26 +373,41 @@
      (number->string (modulegraph->num-edges M))
      (number->string (modulegraph->num-identifiers M)))))
 
+(define (new-iterations-table)
+  (define version* (*RKT-VERSIONS*))
+  (two-column
+    (for/list ([bm (in-list ALL-BENCHMARKS)])
+      (cons
+        (format "{\\tt ~a}" (benchmark-name bm))
+        (for/list ([v (in-list version*)])
+          (number->string (benchmark->num-iterations bm v)))))))
+
+(define (two-column x*)
+  (define-values (first-half second-half) (split-at x* (quotient (length x*) 2)))
+  (for/list ([a (in-list first-half)]
+             [b (in-list second-half)])
+    (apply tex-row (append a (list "~~~~~~") b))))
+
 (define (new-path-table)
   (list
-    ;;                 BM    M      1     3       5    10    20
-    (tex-row      "sieve"  "2"    "0"   "0"     "0"    "0" "0.50")
-    (tex-row      "forth"  "4"    "0"   "0"     "0"    "0"    "0")
-    (tex-row        "fsm"  "4"    "0"   "0"     "0"    "0"    "0")
-    (tex-row      "fsmoo"  "4"    "0"   "0"     "0"    "0"    "0")
-    (tex-row       "mbta"  "4"    "0"   "1"     "1"    "1"    "1")
-    (tex-row  "morsecode"  "4"    "0"   "1"     "1"    "1"    "1")
-    (tex-row    "dungeon"  "5"    "0"   "0"     "0" "0.50"    "1")
-    (tex-row     "zombie"  "5"    "0"   "0"     "0"    "0"    "0")
-    (tex-row     "zordoz"  "5"    "0"   "1"     "1"    "1"    "1")
-    (tex-row        "lnm"  "6" "0.17"   "1"     "1"    "1"    "1")
-    (tex-row "suffixtree"  "6"    "0"   "0"     "0"    "0" "0.17")
-    (tex-row       "kcfa"  "7"    "0" "0.20" "0.97"    "1"    "1")
-    (tex-row      "snake"  "8"    "0"   "0"     "0"  "0.8" "0.50")
-    (tex-row      "take5"  "8"    "0"   "1"     "1"    "1"    "1")
-    (tex-row    "acquire"  "9"    "0" "0.2"  "0.83"    "1"    "1")
-    (tex-row     "tetris"  "9"    "0"   "0"     "0" "0.17" "0.17")
-    (tex-row      "synth" "10"    "0"   "0"     "0"    "0"    "0")))
+    ;;                        BM    M      1     3       5    10    20
+    (tex-row      "{\\tt sieve}"  "2"    "0"   "0"     "0"    "0" "0.50")
+    (tex-row      "{\\tt forth}"  "4"    "0"   "0"     "0"    "0"    "0")
+    (tex-row        "{\\tt fsm}"  "4"    "0"   "0"     "0"    "0"    "0")
+    (tex-row      "{\\tt fsmoo}"  "4"    "0"   "0"     "0"    "0"    "0")
+    (tex-row       "{\\tt mbta}"  "4"    "0"   "1"     "1"    "1"    "1")
+    (tex-row  "{\\tt morsecode}"  "4"    "0"   "1"     "1"    "1"    "1")
+    (tex-row    "{\\tt dungeon}"  "5"    "0"   "0"     "0" "0.50"    "1")
+    (tex-row     "{\\tt zombie}"  "5"    "0"   "0"     "0"    "0"    "0")
+    (tex-row     "{\\tt zordoz}"  "5"    "0"   "1"     "1"    "1"    "1")
+    (tex-row        "{\\tt lnm}"  "6" "0.17"   "1"     "1"    "1"    "1")
+    (tex-row "{\\tt suffixtree}"  "6"    "0"   "0"     "0"    "0" "0.17")
+    (tex-row       "{\\tt kcfa}"  "7"    "0" "0.20" "0.97"    "1"    "1")
+    (tex-row      "{\\tt snake}"  "8"    "0"   "0"     "0"  "0.8" "0.50")
+    (tex-row      "{\\tt take5}"  "8"    "0"   "1"     "1"    "1"    "1")
+    (tex-row    "{\\tt acquire}"  "9"    "0" "0.2"  "0.83"    "1"    "1")
+    (tex-row     "{\\tt tetris}"  "9"    "0"   "0"     "0" "0.17" "0.17")
+    (tex-row      "{\\tt synth}" "10"    "0"   "0"     "0"    "0"    "0")))
 
 (define (format-percent-diff meas exp)
   (define diff (- meas exp))
@@ -592,7 +617,7 @@
                      [*ERROR-BAR-WIDTH* 20]
                      [*ERROR-BAR-LINE-WIDTH* 1]
                      [*PLOT-FONT-SCALE* 0.04]
-                     [*PLOT-HEIGHT* 360]
+                     [*PLOT-HEIGHT* 320]
                      [*PLOT-WIDTH* 430]
                      [*POINT-SIZE* 5]
                      [*Y-NUM-TICKS* 4]

@@ -69,7 +69,7 @@ Finally, a typed module may incorporate definitions from a Racket module with a 
   )
 ]
 
-@Figure-ref{fig:story:tr} demonstrates the idea with a small, gradually typed application.
+@Figure-ref{fig:story:tr} demonstrates gradual typing in Typed Racket with a small application.
 The untyped module on the top left implements a guessing game with the function @racket[play].
 Each call to @racket[play] generates a random number and returns a function that checks a given number against this chosen number.
 The untyped module on the top right implements a @exact|{{na\"ive}}| player.
@@ -109,13 +109,13 @@ In general one cannot predict why or how such incremental migrations happen, but
   @;  These modules could be the smallest, or have the fewest dependencies.
   @;}
 Regarding the final point, there are two sources of so-called friction@~cite[bbdt-ecoop-2016] between typed and untyped code.
-First is the above-mentioned requirement that typed clients must supply type annotations to use imports from an untyped library.
+The first is the above-mentioned requirement that typed clients must supply type annotations to use imports from an untyped library.
 Maintainers of such libraries can instead provide a bridge module with the necessary annotations.
-Second is the performance overhead of typed/untyped interaction, such as the overhead of dynamically enforcing the return types of @racket[play] and @racket[stubborn-player] in @figure-ref{fig:story:tr}.
+The second is the performance overhead of typed/untyped interaction, such as the overhead of dynamically enforcing the return type of @racket[play] in @figure-ref{fig:story:tr}.
 
 
 @; -----------------------------------------------------------------------------
-@section{The Costs of Incremental Typing}
+@section{The Benefits and Costs of Incremental Typing}
 
 Adding types to untyped code seems to be an unequivocal benefit to software engineers.
 For example, imagine a large application in which an error is traced to an untyped module that was written years ago.
@@ -168,7 +168,7 @@ If, at runtime, the expression does not produce a value satisfying @ctc{$\tau$},
      Type boundary errors arise when type annotations impose new constraints that untyped code does not satisfy.
      Such errors may indicate latent bugs in the untyped code, but it is equally likely that the new type annotations are incorrect specifications.
      In other words, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] misses the point of gradual typing. @;
-@exact{\hfill$\blacksquare$}
+@|QED|
 
 Typed Racket implements the runtime check @ctc{$\tau$} for a first-order type @type{$\tau$} with a first-order predicate.
 To enforce a higher-order type, Typed Racket dynamically allocates a proxy to ensure that a value's future interactions with untyped contexts conform with its static type@~cite[ff-icfp-2002 sthff-oopsla-2012].
@@ -183,7 +183,7 @@ In particular, the tag checks performed by @racket[first] and @racket[*] do not 
 Without the dynamic checks, the call
     @racket[(polar-* '(-1 0) '(-3 0))]
  would produce a well-typed complex number from two ill-typed inputs.
-Racket's runtime would not detect this erroneous behavior, therefore the program would silently go wrong.
+Racket's runtime system would not detect this erroneous behavior, therefore the program would silently go wrong.
 Such are the dangers of committing ``moral turpitude''@~cite[r-ip-1983].
 
 Furthermore, even if a dynamic tag check uncovers a logical type error, debugging such errors in a higher-order functional language is often difficult.
@@ -194,7 +194,7 @@ Unfortunately, this means the root cause of a runtime exception is usually far r
 In contrast, sound gradual typing guarantees that typed code never executes a single instruction using ill-typed values.
 Programmers can trust that every type annotation is a true statement because the gradual type system inserts runtime checks to remove any doubt.
 These interposed checks furthermore detect type boundary errors as soon as possible.
-If such an error occurs, the runtime enforcement system points the programmer to the relevant type annotation and supplies the incompatible value as a witness to the logical mistake.
+If such an error occurs, the runtime system points the programmer to the relevant type annotation and supplies the incompatible value as a witness to the logical mistake.
 
 @; These guarantees and improvements in developer productivity
 @; do come at the price of runtime checks.

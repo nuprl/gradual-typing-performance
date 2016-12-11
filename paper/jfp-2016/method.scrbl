@@ -23,11 +23,10 @@
 
 Performance evaluation for gradual type systems must reflect how programmers use such systems.
 Experience with Typed Racket shows that programmers frequently combine typed and untyped code within an application.
-These applications may undergo incremental transitions that add or remove some type annotations;
- however, it is rare that a programmer adds explicit annotations to every module in the program.
+These applications may undergo incremental transitions that add or remove some type annotations; however, it is rare that a programmer adds explicit annotations to every module in the program all at once.
 In a typical evolution, programmers compare the performance of the incrementally modified program with the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
-Otherwise, the programmer may try to address the performance overhead.
+Otherwise, the programmer may need to address the performance overhead.
 As they continue to develop the application, programmers repeat this process.
 
 The following subsections build an evaluation method from these observations in three steps.
@@ -82,11 +81,18 @@ These represent all possible ways of converting two modules in the untyped confi
 Similarly, configurations in the third row represent all possible configurations a programmer might encounter after applying three @emph{type conversion steps} to the untyped configuration.
 In general, let the notation @exact{$c_1 \rightarrow_k c_2$} express the idea that a programmer starting from configuration @exact{$c_1$} (in row @exact{$i$}) could reach configuration @exact{$c_2$} (in row @exact{$j$}) after taking at most @exact{$k$} type conversion steps (@exact{$j - i \le k$}).
 
-Configurations in @figure-ref{fig:suffixtree-lattice} are furthermore labeled with their performance overhead relative to the untyped configuration on Racket version 6.2.@note{Terminology: a labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}. The same lattice without labels is a @emph{configuration lattice}. The practical distinction is that users of a gradual type system will explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.}
+Configurations in @figure-ref{fig:suffixtree-lattice} are furthermore labeled with their performance overhead relative to the untyped configuration on Racket version 6.2.
 On one hand, this overhead can be high.
 The right-most configuration in the first row from the bottom runs 71 times slower than the untyped configuration.
-On the other hand, the fully typed configuration runs 30% faster than the untyped configuration because Typed Racket uses the type annotations to remove some dynamic checks would be necessary in Racket code.
+On the other hand, the fully typed configuration runs 30% faster than the untyped configuration because Typed Racket uses the type annotations to compile more efficient code.
 
+@bold{Terminology}
+  A labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}.
+  The same lattice without labels is a @emph{configuration lattice}.
+  The practical distinction is that users of a gradual type system will explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.}@;
+@|QED|
+
+@; TODO awkward
 With these labels, a language implementor can answer many questions about the performance overhead in this program due to gradual typing.
 For instance, @|suffixtree-num-D-str|
  configurations run within a @id[suffixtree-sample-D]x overhead
@@ -94,6 +100,7 @@ For instance, @|suffixtree-num-D-str|
  configurations are at most @id[suffixtree-sample-k] type conversion step
  from a configuration that runs within a @id[suffixtree-sample-D]x overhead.
 
+@; TODO conversely to what?
 @(let* ([too-many-modules 8]
         [num-bm-with-too-many (integer->word (length (filter (lambda (b) (< too-many-modules (benchmark->num-modules b))) ALL-BENCHMARKS)))])
    @elem{
@@ -138,7 +145,7 @@ The following parameterized definition of a deliverable configuration accounts f
 If an application is currently in a non-@deliverable[] configuration,
  the next question is how much work a team must invest to reach a
  @deliverable[] configuration.
-One coarse measure of ``work'' is the number of modules that must be annotated with types before performance improves.@;
+One coarse measure of ``work'' is the number of additional modules that must be annotated with types before performance improves.@;
 @;
     @def[#:term @list{@step{}}]{
      A configuration @exact{$c_1$} is @step[] if @exact{$c_1 \rightarrow_k c_2$}
@@ -229,7 +236,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         To the right of the 2x tick, similar dashed lines pinpoint 4x, 6x, 8x, etc.
         The y-axis gives the proportion of configurations in the lattice that
          suffer at most @math{D}x performance overhead.
-        Using this plot, one can confirm our earlier observation that @|suffixtree-num-D-str|
+        Using this plot, one can confirm the earlier observation that @|suffixtree-num-D-str|
          of the @|suffixtree-num-configs-str| configurations
          (@(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))%)
          run within a @id[suffixtree-sample-D]x overhead.
@@ -260,7 +267,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 
 @subsection{Assumptions and Limitations}
 
-Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions and have two significant limitations, which readers must keep in mind when interpreting our results.
+Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions and have two significant limitations, which readers must keep in mind as they interpret the results.
 
 @; - assn: log scale
 The @emph{first assumption} is that configurations with less than 2x overhead are significantly
@@ -282,6 +289,7 @@ Pathologies like the 100x slowdowns in @figure-ref{fig:suffixtree-lattice}
 @; meh whocares
 
 @; - limit: no identity, no relation between configs (where is typed?)
+@; TODO real problem is hiding types, \leq doesn't exist
 The @emph{first limitation} of the overhead plots is that they hide a configuration's identity.
 One cannot distinguish the fully-typed configuration; moreover,
  the @exact{$\leq$} and @exact{$\rightarrow_k$} relations are lost.

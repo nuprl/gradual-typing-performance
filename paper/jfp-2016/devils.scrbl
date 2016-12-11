@@ -21,7 +21,7 @@
 @;        "Devils Contracts"
 @;        "Performance Overhead Spectrum"
 
-Our evaluation demonstrates that adding types to an arbitrarily chosen subset of Racket modules in a program can introduce large performance overhead.
+Our evaluation demonstrates that adding types to an arbitrarily chosen subset of Racket modules in a program can impose large performance overhead.
 This section explains with a few examples how such overheads may arise, both as inspiration for maintainers of gradual type systems and as anti-patterns for developers.
 
 
@@ -29,8 +29,8 @@ This section explains with a few examples how such overheads may arise, both as 
 @section[#:tag "sec:devils:frequency"]{High-Frequency Typechecking}
 @; -- AKA high-frequency
 
-No matter the cost of a single runtime type check, if the check occurs frequently then the program will suffer.
-@Figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
+No matter the cost of a single runtime type check, if the check occurs frequently then the program suffers.
+The program in @figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
 Each call is type-correct; nevertheless, Typed Racket validates the argument @racket[stk] against the specification @ctc{Listof A} one million times.
 These checks dominate the performance of this example program, simply because many values flow across the module boundary.
 
@@ -62,7 +62,7 @@ These checks dominate the performance of this example program, simply because ma
         @ht-append[8 c1 @vline[2 (max (pict-height c1) (pict-height c2))] c2])
     ]
 
-High-frequency module boundaries are common in our benchmarks.
+High-frequency module boundaries are common in the @|GTP| benchmarks.
 @(let ([highway* '(
         @; -- Source of Truth: `src/traces/`
         (morsecode  821060 372100)
@@ -83,7 +83,7 @@ When these module boundaries are type boundaries, the benchmarks suffer consider
   @; 6.3     70        174
   @; 6.4     32         28
   @; @note{Racket v6.3 guards struct type predicates with a trivial @ctc{Any -> Boolean} proxy@~cite[tfgnvf-popl-2016].
-  @;   Checking @ctc{Any} and @ctc{Boolean} by themselves is inexpensive, but removing this contract significantly improves the performance of our benchmarks in Racket v6.4.}
+  @;   Checking @ctc{Any} and @ctc{Boolean} by themselves is inexpensive, but removing this contract significantly improves the performance of the benchmarks in Racket v6.4.}
 
 
 
@@ -116,7 +116,8 @@ Another example is the @bm[kcfa] benchmark, in which hashtable types account for
 
 Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
 Changing its language to @code{#lang typed/racket} improves its performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.
-The drastic improvement is just because the type representing @tt{trie} structures is enforced with expensive dynamic checks.
+The drastic improvement is due to the elimination of the rather expensive dynamic check for the @tt{trie} type.@note{There is no way for a programmer to predict that the dynamic check for the @tt{trie} type is expensive, short of reading the implementation of Typed Racket and the @tt{pfds/trie} library.}
+@; TODO okay footnote
 
     @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
       @codeblock-pict[@string-join['(
@@ -145,7 +146,7 @@ These boundaries make it difficult to predict the overhead of gradual typing sta
 The @bm[synth] benchmark illustrates one problematic use of metaprogramming.
 One module in @bm[synth] exports a macro that expands to a low-level iteration construct.
 The expanded code introduces a reference to a server module, whether or not the macro client statically imports the server.
-Thus, when the server and client are separated by a type boundary, the macro @emph{implicitly} puts a type boundary in the expanded looping code.
+Thus, when the server and client are separated by a type boundary, the macro inserts a type boundary in the expanded looping code.
 In order to predict such costs, a programmer must recognize macros and understand each macro's namespace.
 
 
@@ -191,8 +192,8 @@ Higher-order values that repeatedly flow across type boundaries may accumulate l
 These proxies add indirection and space overhead.
 Collapsing layers of proxies and pruning redundant proxies is an area of active research@~cite[htf-hosc-2010 sw-popl-2010 g-popl-2015].
 
-Racket's proxies implement a predicate that tells whether the current proxy subsumes another, arbitrary proxy.
-These predicates often remove unnecessary indirections, but a few of our benchmarks still suffer from redundant layers of proxies.
+Racket's proxies implement a predicate that tells whether the current proxy subsumes another proxy.
+These predicates often remove unnecessary indirections, but a few of the benchmarks still suffer from redundant layers of proxies.
 
 For example, the @bm[fsm], @bm[fsmoo], and @bm[forth] benchmarks update mutable data structures in a loop.
 @Figure-ref["fig:devils:fsm" "fig:devils:forth"] demonstrate the problematic functions in each benchmark.
@@ -236,7 +237,7 @@ This benchmark replays a sequence of a mere 100 commands yet reports a worst-cas
 @;                             = docs, examples, faqs
 
 Racket libraries are either typed or untyped; there is no middle ground, therefore one class of library clients must communicate across a type boundary.
-For instance, our @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries and consequently have relatively high typed/untyped ratios on Racket v6.2
+For instance, the @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries and consequently have relatively high typed/untyped ratios on Racket v6.2
  (@rnd[@typed/untyped-ratio[@benchmark-rktd[mbta "6.2"]]]x and
   @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x, respectively).
 In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs significantly faster when fully typed.

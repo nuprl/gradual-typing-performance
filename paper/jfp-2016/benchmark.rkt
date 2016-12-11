@@ -17,8 +17,10 @@
 
   benchmark->num-configurations
   benchmark->num-modules
-  benchmark->num-iterations
   ;; (-> Benchmark Natural)
+
+  benchmark->num-iterations
+  ;; (-> Benchmark Version Natural)
 
   benchmark->module-names
   ;; (-> Benchmark (Listof String))

@@ -45,6 +45,7 @@
          noindent
          NEWPAGE
          VFILL
+         QED
          )
 
 (require "bib.rkt"
@@ -238,6 +239,9 @@
 
 (define VFILL
   (exact "\n\\vfill\n"))
+
+(define QED
+  (exact "\\hfill$\\blacksquare$"))
 
 (current-code-font 'modern)
 ;(current-keyword-color "black")

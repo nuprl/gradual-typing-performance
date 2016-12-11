@@ -22,22 +22,17 @@
   @; Matthias: a type system clearly has performance e.g. union types impose a cost that nobody knows how to manage
   @;           GT system has additional cost because of the runtime component, it's just unconventional
 
-  A sound gradual type system ensures that untyped components of a program can never break static type guarantees.
-  This assurance requires dynamic type enforcement, which imposes runtime overhead in proportion to the frequency and nature of interaction between typed and untyped components.
-  A performant gradual type system minimizes the runtime overhead.
+  A sound gradual type system ensures that untyped components of a program can never break the guarantees of statically typed components.
+  Currently, this assurance requires run-time checks, which in turn impose performance overhead in proportion to the frequency and nature of interaction between typed and untyped components.
 
-  The literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
-  This gap has consequences for developers using gradual type systems and the implementors of such systems.
+  The existing archival literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
+  This gap has consequences for developers who use gradual type systems and the implementors of such systems.
   Developers cannot predict whether adding types to part of a program will significantly degrade its performance.
   Implementors cannot precisely determine how improvements to a gradual type system affect the performance of such programs.
 
   This paper presents the first systematic method for evaluating the performance of gradual type systems.
-  The method quantifies both the
-   absolute performance of a gradual type system on representative programs
-   and the relative performance of two implementations of the same gradual type system.
-  Our validation includes a comprehensive evaluation of
-   @integer->word[(*NUM-BENCHMARKS*)] functional and object-oriented benchmark
-   programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
+  The method quantifies both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.
+  In order to validate the method, the paper reports on its application to @integer->word[(*NUM-BENCHMARKS*)] benchmark programs and @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
 }
 
 @include-section{intro.scrbl}

@@ -47,12 +47,10 @@ The data is the result of applying the following protocol for each benchmark and
 Specifically, a Racket script implementing the above protocol collected the data in this paper.
 The script ran on a dedicated Linux machine; this machine has two physical AMD Opteron 6376 processors (with 16 cores each) and 128GB RAM.@note{The Opteron is a NUMA architecture.}
 For the @bm[quadBG] and @bm[quadMB] benchmarks, the script utilized 30 of the machine's physical cores to collect data in parallel.@note{The script invoked 30 green threads; these green threads invoked and monitored system processes to compile and run each configuration. The green threads pinned subprocesses to a fixed CPU core using the Linux @tt{taskset} command.}
-@; begin TODO
-For all other benchmarks, the script utilized only two physical cores; the latter protocol yielded more stable measurements, but was impractical to measure @bm[quad].
-@; end TODO
+For all other benchmarks, the script utilized only two physical cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
-The online supplement to this paper contains both our experimental scripts and the full datasets.
+The online supplement to this paper contains both the experimental scripts and the full datasets.
 @Secref{sec:threats} reports threats to validity regarding the experimental protocol and the appendix discusses the stability of individual measurements.
 
 
@@ -72,9 +70,9 @@ The online supplement to this paper contains both our experimental scripts and t
     (define NUMV (integer->word (length (*RKT-VERSIONS*))))
     (cons
       @elem{
-        @(apply Figure-ref name*) present our results in a series of overhead graphs.
+        @(apply Figure-ref name*) present the results of measuring the benchmark programs in a series of overhead graphs.
         As in @figure-ref{fig:suffixtree-plot}, the left column of figures are cumulative distribution functions for @deliverable[] configurations and the right column are cumulative distribution functions for @step["1" "D"] configurations.
-        These plots additionally give data for three versions of Racket released between June 2015 and February 2016.
+        These plots additionally include data for three versions of Racket released between June 2015 and February 2016.
         Data for version 6.2 are thin red curves with short dashes.
         Data for version 6.3 are mid-sized green curves with long dashes.
         Data for version 6.4 are thick, solid, blue curves.
@@ -125,8 +123,8 @@ The online supplement to this paper contains both our experimental scripts and t
             One type conversion step can eliminate a pathological boundary, such as those in @bm[fsm] and @bm[zombie], but the overhead in larger benchmarks comes from a variety of type boundaries.
             Except in configurations with many typed modules, adding types to one additional module is not likely to improve performance.
 
-            In summary, the application of our evaluation method projects a negative image of Typed Racket's sound gradual typing.
-            Only a small number of configurations in our benchmark suite run with low overhead; a mere @|lo-prop| of all configurations are @deliverable[lo] on Racket v@|v-max|.
+            In summary, the application of the evaluation method projects a negative image of Typed Racket's sound gradual typing.
+            Only a small number of configurations in the benchmark suite run with low overhead; a mere @|lo-prop| of all configurations are @deliverable[lo] on Racket v@|v-max|.
             Many demonstrate extreme overhead; @|hi-prop| of all configurations are not even @deliverable[hi] on version @|v-max|.
           })
       }
@@ -151,11 +149,11 @@ These lines plot the difference between the curve for v6.4 and the curve for v6.
 As expected, the line for @bm[gregor] (labeled @math{r}) has a large positive spike in its left half.
 
 Out of the @integer->word[(*NUM-BENCHMARKS*)] benchmarks, fifteen show large improvements in @figure-ref{fig:scale:delta}.
-These improvements are due to work by Findler and Sam Tobin-Hochstadt on Racket's contract system and Typed Racket's use of contracts to enforce static types.
-In many cases Findler and Tobin-Hochstadt were able to derive a microbenchmark from one of the benchmark programs, implement changes that improved the performance of the microbenchmark, and consequently improve the performance of multiple programs in the benchmark suite.
+These improvements are due to revisions of Racket's contract system and Typed Racket's use of contracts to enforce static types.
+@; TODO for example
 
 @; TODO double-check that regression is true. Re-running typed config doesn't match my data file.
-The @bm[forth] benchmark, however, shows a significant performance regression.
+In contrast, the @bm[forth] benchmark shows a significant performance regression.
 This is due to a bug in the implementation of class contracts in version 6.2.
 In short, the bug would suppress the allocation of certain necessary class contracts.
 With the bug fixed, @bm[forth] generates the necessary contracts but suffers additional performance overhead.
