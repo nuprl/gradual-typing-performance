@@ -71,8 +71,9 @@
    (lambda ()
      (let ([v (make-vector 12 #f)])
        (vector-set-performance-stats! v)
-       (displayln v)
-       (newline))
+       (displayln ";; vector-set-performance-stats!")
+       (displayln v))
+     (displayln ";; chaps: proc_makes proc_apps proc_wraps proc_maxdepth [depth] struct_makes struct_apps struct_wraps struct_maxdepth [depth] vec_makes vec_apps vec_wraps vec_maxdepth [depth]")
      (writeln
       (chaps
         ;; -- fun
@@ -102,6 +103,7 @@
                    [i (in-naturals)]
                    #:when (not (zero? c)))
           (cons i c))))
+     (newline)
      (void))))
 
 (define (read-num-chaperones)
