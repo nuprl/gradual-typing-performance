@@ -15,7 +15,7 @@
 ]
 
 @profile-point{sec:scale}
-@title[#:tag "sec:scale"]{Scaling the Method}
+@title[#:tag "sec:scale"]{Evaluation Method, Part II}
 
 @(define srs-samples 5)
 @(define sample-size-factor 10)
@@ -28,16 +28,17 @@
   @; math library ~ 197 modules
 The evaluation method of @secref{sec:method} does not scale to benchmarks with a large number of typeable components.
 Benchmarking a full performance lattice for a program with @math{N} such components requires @exact{$2^N$} measurements.
-@; TODO explain a little more
+In practice, this limits an exhaustive evaluation of Typed Racket to programs with approximately 20 modules.
+An evaluation of micro-level gradual typing would be severly limited; depending on the definition of a typeable component, such an evaluation might be limited to programs with 20 functions.
 
-This section shows that simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
+Simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
 Instead of measuring every configuration in a benchmark, it suffices to randomly sample a @emph{linear} number of configurations and plot the overhead apparent in the sample.
 
-@bold{Remark}
-    Overhead plots are intuitively a statement about expected values.
-    If 10% of the configurations are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
-    The same holds for any value of @math{D}, so an overhead plot generated from one sample population will, in expectation, approximate the true overhead plot.@;
-@|QED|
+@; @bold{Remark}
+@;     Overhead plots are intuitively a statement about expected values.
+@;     If 10% of the configurations are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
+@;     The same holds for any value of @math{D}, so an overhead plot generated from one sample population will, in expectation, approximate the true overhead plot.@;
+@; @|QED|
 
 @Figure-ref{fig:scale:srs-snake} plots the true performance of the @bm[snake] benchmark against confidence intervals@~cite[n-ptrs-1937] generated from random samples.
 The plot on the left shows the absolute performance of @bm[snake] on version 6.2 (dashed red line) and version 6.4 (solid blue line).

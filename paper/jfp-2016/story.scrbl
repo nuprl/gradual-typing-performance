@@ -115,16 +115,10 @@ The second is the performance overhead of typed/untyped interaction, such as the
 
 
 @; -----------------------------------------------------------------------------
-@section{The Benefits and Costs of Incremental Typing}
+@section{The Costs of Incremental Typing}
 
-Adding types to untyped code seems to be an unequivocal benefit to software engineers.
-For example, imagine a large application in which an error is traced to an untyped module that was written years ago.
-In all likelihood, the programmer tasked with fixing the bug must recover the type specifications that the original developer had in mind---but did not write down.
-Doing so involves studying the code and analyzing its unit tests.
-This is a significant burden, but if the developer converts the module to Typed Racket, future maintainers will benefit from these explicit specifications.
-
-Nevertheless, incremental typing is a tradeoff.
-Performing the type conversion may yield long-term benefits, but incurs immediate engineering costs.
+Adding types to untyped code is a tradeoff.
+Performing the type conversion may yield long-term benefits, but incurs three immediate engineering costs.
 
 The first cost is the burden of writing and maintaining type annotations.
 In particular, Typed Racket is a @emph{macro-level}@exact{\,}@note{As opposed to @emph{micro-level} gradual typing@~cite[svcb-snapl-2015].} gradual type system.

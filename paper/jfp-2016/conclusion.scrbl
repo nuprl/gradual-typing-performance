@@ -36,7 +36,7 @@ This paper provides an answer:
    @item{
      To @emph{measure} the performance of a gradual type system, fully annotate a suite of representative benchmark programs and measure the running time of all typed/untyped configurations according to a fixed @emph{granularity}.
      In Typed Racket, the granularity is by-module.
-     In a micro-level gradual type system such as Reticulated Python, experimenters have more choices (from by-module to by-variable).
+     In a micro-level gradual type system such as Reticulated Python, experimenters may choose by-module, by-variable, or any granularity in between.
    }
    @item{
      To express the @emph{absolute performance} of the gradual type system, report the proportion of configurations in each benchmark that are @step{} using @emph{overhead graphs}.
@@ -44,13 +44,13 @@ This paper provides an answer:
    }
    @item{
      To express the @emph{relative performance} of two implementations of a gradual type system, plot two overhead graphs on the same axis and test whether the distance is statistically significant.
-     Ideally, the curve for the improved system should demonstrate a significant ``left shift.''
+     Ideally, the curve for the improved system should demonstrate a complete and significant ``left shift.''
    }
  ]
 Applying the evaluation method to Typed Racket has confirmed that the method works well to uncover performance issues in a gradual type system and to quantify improvements between distinct implementations of the same gradual type system.
 
 The results of the evaluation in @secref{sec:tr} suggest three vectors of future research for gradual typing.
-The first is to evaluate other gradual type systems.
+The first vector is to evaluate other gradual type systems.
 The second is to apply the sampling technique to large applications and to micro-level gradual typing.
 The third is to build tools that help developers navigate a performance lattice, such as the feature-specific profiler of @citet[saf-cc-2015].
 
@@ -74,8 +74,8 @@ The only way to know is through further systematic evaluation of gradual type sy
 
 The authors gratefully acknowledge support from the National Science Foundation (SHF 1518844).
 They owe the implementors of Typed Racket a large debt, especially Sam Tobin-Hochstadt.
-They also thank Matthew Butterick, John Clements, Matt Might, Linh Chi Nguyen,Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon Zeppieri for providing benchmark code bases.
-Sam Tobin-Hochstadt Brian LaChance provided feedback on early drafts.
+They also thank Matthew Butterick, John Clements, Matt Might, Linh Chi Nguyen,Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon Zeppieri for providing programs that inspired the benchmarks.
+Sam Tobin-Hochstadt and Brian LaChance provided feedback on early drafts.
 
 @; - Stephen Chang, Ryan Culpepper for helping Max with the predictions impl.
 

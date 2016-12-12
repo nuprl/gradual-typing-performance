@@ -74,12 +74,9 @@ But surprisingly few groups have evaluated the performance of gradual typing.
 Most acknowledge an issue with performance in passing.
 Worse, others report only the performance ratio of fully typed programs relative to fully untyped programs, ironically ignoring the entire space of programs that mix typed and untyped components.
 
-This archival paper presents the first systematic method for evaluating the performance of a gradual type system (@secref{sec:method}).
-The fundamental aspects of the method were presented in an earlier conference paper@~cite[tfgnvf-popl-2016]; this paper contributes:
+This archival paper presents the first method for evaluating the performance of a gradual type system (@secref{sec:method}), integrating new result with the results of a conference version@~cite[tfgnvf-popl-2016].
+Specifically, this paper contributes:
 @itemlist[
-@item{
-  @integer->word[(- (length ALL-BENCHMARKS) NUM-POPL)] additional benchmark programs (@secref{sec:bm});
-}
 @item{
   validation that the method can express the relative performance between @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket (@secref{sec:compare});
 }
@@ -87,7 +84,10 @@ The fundamental aspects of the method were presented in an earlier conference pa
   evidence that simple random sampling can accurately approximate the results of a comprehensive evaluation with asymptotically fewer measurements (@secref{sec:scale});
 }
 @item{
-  and an in-depth discussion of the pathological performance overheads in the benchmark programs (@secref{sec:devils}).
+  @integer->word[(- (length ALL-BENCHMARKS) NUM-POPL)] additional benchmark programs (@secref{sec:bm}); and
+}
+@item{
+  a discussion of the pathological overheads in the benchmark programs (@secref{sec:devils}).
 }
 ]
 The discussion is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).

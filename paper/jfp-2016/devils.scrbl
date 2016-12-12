@@ -112,7 +112,7 @@ One example comes from @bm[quadMB], in which the core datatype is a tagged @math
     @;   the programmer who designed this datatype was hoping Typed Racket would improve the application's performance.
     @;   The high overhead was a complete surprise.}
    })
-Another example is the @bm[kcfa] benchmark, in which hashtable types account for a 3x slowdown in the worst configurations.
+Another example is the @bm[kcfa] benchmark, in which hashtable types account for up to a 3x slowdown.
 
 Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
 Changing its language to @code{#lang typed/racket} improves its performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.

@@ -140,24 +140,21 @@ The online supplement to this paper contains both the experimental scripts and t
 Although the absolute performance of Racket version 6.4 is underwhelming, it is a significant improvement over versions 6.2 and 6.3.
 This improvement is manifest in the difference between curves on the overhead plots.
 For example in @bm[gregor] (third plot in @figure-ref{fig:lnm:3}), version 6.4 has at least as many deliverable configurations as version 6.2 for any overhead on the @math{x}-axis.
-The difference is greatest near @math{x=2}; in terms of configurations, over 60% of @bm[gregor] configurations are not @deliverable{2} on v6.2 but are @deliverable{2} on v6.4.
+The difference is greatest near @math{x=2}; in terms of configurations, over 80% of @bm[gregor] configurations are not @deliverable{2} on v6.2 but are @deliverable{2} on v6.4.
 The overhead plots for many other benchmarks demonstrate a positive difference between the number of @deliverable{D} configurations on version 6.4 relative to version 6.2.
 
-@Figure-ref{fig:scale:delta} makes the improvement of version 6.4 relative to version 6.2 explicit.
-The plot consists of @integer->word[(*NUM-BENCHMARKS*)] purple lines, one for each benchmark.
+The plot of @figure-ref{fig:scale:delta} makes explicit how much version 6.4 is improved over version 6.2.
+It consists of @integer->word[(*NUM-BENCHMARKS*)] purple lines, one for each benchmark.
 These lines plot the difference between the curve for v6.4 and the curve for v6.2 on the corresponding overhead plot.
-As expected, the line for @bm[gregor] (labeled @math{r}) has a large positive spike in its left half.
+For example, the line for @bm[gregor] (labeled @math{r}) demonstrates a large improvement in the number of @deliverable{2} configurations.
+The plot also shows that fifteen of the @integer->word[(*NUM-BENCHMARKS*)] benchmarks significantly benefit from running on version 6.4.
+Only the line for the @bm[forth] benchmark demonstrates a significant regression.
 
-Out of the @integer->word[(*NUM-BENCHMARKS*)] benchmarks, fifteen show large improvements in @figure-ref{fig:scale:delta}.
-These improvements are due to revisions of Racket's contract system and Typed Racket's use of contracts to enforce static types.
-@; TODO for example
-
-@; TODO double-check that regression is true. Re-running typed config doesn't match my data file.
-In contrast, the @bm[forth] benchmark shows a significant performance regression.
-This is due to a bug in the implementation of class contracts in version 6.2.
-In short, the bug would suppress the allocation of certain necessary class contracts.
-With the bug fixed, @bm[forth] generates the necessary contracts but suffers additional performance overhead.
-
+The improved performance in Racket version 6.4 is due to revisions of the contract system and Typed Racket's use of contracts to enforce static types.
+In particular, the contract system allocates fewer closures to track the labels that Typed Racket uses to report type boundary errors.
+The regression in the @bm[forth] benchmark is due to a bug in the implementation of class contracts in version 6.2.
+This bug would suppress the allocation of certain necessary class contracts.
+With the bug fixed, @bm[forth] generates the contracts but suffers additional performance overhead.
 
 @(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
                 [*PLOT-HEIGHT* 180]
