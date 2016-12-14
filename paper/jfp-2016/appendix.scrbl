@@ -700,12 +700,37 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
   @render-path-table[]
 ]
 
+@figure["fig:appendix:devils" "Dissecting Performance Overhead"
+  @render-pathologies[]
+]
+
 The table in @figure-ref{fig:appendix:iterations} lists the number of samples per configuration aggregated in @secref{sec:plots}.
 For a fixed benchmark and fixed version of Racket, all configurations have an equal number of samples.
 
 The table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any @emph{performant conversion paths} through a performance lattice.
 More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1 \rightarrow_1 \ldots \rightarrow_1 c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D}.
 The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save space.
+
+The table in @figure-ref{fig:appendix:devils} provides a few worst-case statistics relevant to @secref{sec:devils}.
+The second column (``Max Boundary'') reports the number of times that a dynamic value flows across the most-frequently-crossed static module boundary in each benchmark.
+When this boundary is a type boundary, each of these crossings triggers a run-time check.
+The remaining columns report properties of the configuration in each benchmark with the highest performance overhead.
+These properties are:
+@itemlist[
+@item{
+  The maximum number of proxies layered on any single value (``Max Wraps''), recorded using the patch described in @citet[sthff-oopsla-2012].
+}
+@item{
+  The percentage of overall runtime spent checking contracts (``Contract %''), as reported by Racket's contract profiler@~cite[saf-cc-2015].
+}
+@item{
+  The percentage of contract-checking time (``Contract %'') that was spent checking contracts across a library boundary (``Library %'').
+  Benchmarks that do not interact with third-party libraries have a dash (-) in this column.
+}
+@item{
+  The number of garbage collections recorded during one run (``# GC'').
+}
+]
 
 @Figure-ref{fig:appendix:worst-case} plots the average-case and worst-case overheads in the benchmark programs.
 

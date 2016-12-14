@@ -6,6 +6,7 @@
   (rename-out [make-module-description module-description])
   render-module-descriptions
   module
+  render-pathologies
 )
 
 (require
@@ -150,6 +151,35 @@
                 (if (module-description? m)
                   (render-module-description m)
                   m)))))))
+
+(define (render-pathologies)
+  (render-table new-pathologies
+    #:title '("Benchmark" "Max Boundary" "Max Wraps" "Contract \\%" "Library \\%" "\\#GC")
+    #:cache (build-path "compiled" "cache-devils.rktd")))
+
+(define (new-pathologies)
+  (list
+    ;;                        BM    Most.Freq.B  #|Most.Cost|# Most.Layr    C%  Lib.Time    nGC 
+    (tex-row      "{\\tt sieve}"  "201,692,321"  #|      "X"|#       "0"  "59"       "-" "4,705")
+    (tex-row      "{\\tt forth}"           "16"  #|      "X"|#       "3"  "50"       "-"    "15")
+    (tex-row        "{\\tt fsm}"      "361,100"  #|      "X"|#    "4000"  "25"       "-" "2,329")
+    (tex-row      "{\\tt fsmoo}"        "1,100"  #|      "X"|#       "2"  "93"       "-"   "856")
+    (tex-row       "{\\tt mbta}"          "801"  #|      "X"|#       "2"  "27"      "23"    "38")
+    (tex-row  "{\\tt morsecode}"      "821,060"  #|      "X"|#       "2"  "18"       "-"    "21")
+    (tex-row     "{\\tt zombie}"       "13,502"  #|      "X"|#      "67"  "78"       "-"    "73")
+    (tex-row    "{\\tt dungeon}"        "7,392"  #|      "X"|#       "2"  "84"       "-"    "28")
+    (tex-row     "{\\tt zordoz}"      "116,167"  #|      "X"|#       "2"  "32"       "6"    "33")
+    (tex-row        "{\\tt lnm}"       "13,064"  #|      "X"|#       "2"  "21"      "96"    "27")
+    (tex-row "{\\tt suffixtree}"  "145,826,484"  #|      "X"|#       "2"  "95"       "-"   "572")
+    (tex-row       "{\\tt kcfa}"       "70,670"  #|      "X"|#       "2"  "79"       "-" "8,485")
+    (tex-row      "{\\tt snake}"   "18,856,600"  #|      "X"|#       "2"  "95"       "-"   "123")
+    (tex-row      "{\\tt take5}"       "39,780"  #|      "X"|#       "3"  "66"       "-"    "42")
+    (tex-row    "{\\tt acquire}"       "13,240"  #|      "X"|#       "3"  "40"       "-"    "20")
+    (tex-row     "{\\tt tetris}"   "82,338,320"  #|      "X"|#       "2"  "89"       "-"   "212")
+    (tex-row      "{\\tt synth}"      "445,637"  #|      "X"|#      "13"  "67"       "-"   "203")
+    (tex-row     "{\\tt gregor}"      "925,521"  #|      "X"|#       "2"  "49"       "5"    "20")
+    (tex-row     "{\\tt quadBG}"      "339,674"  #|      "X"|#     "390"  "60"       "0"    "69")
+    (tex-row     "{\\tt quadMB}"      "281,030"  #|      "X"|#     "543"  "81"       "0"   "191")))
 
 ;; =============================================================================
 
