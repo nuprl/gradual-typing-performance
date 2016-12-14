@@ -1,0 +1,5 @@
+;; vector-set-performance-stats!
+#(36723 1481577740019 6853 856 0 0 1 1105 44698872 247610 2323632 119479368)
+;; chaps: proc_makes proc_apps proc_wraps proc_maxdepth [depth] struct_makes struct_apps struct_wraps struct_maxdepth [depth] vec_makes vec_apps vec_wraps vec_maxdepth [depth]
+#s(chaps 3121376 723002 2221200 2 #((1 . 363002) (2 . 360000)) 370242 7789638 260121 2 #((1 . 1363000) (2 . 5063634)) 2100000 0 0 0 #())
+

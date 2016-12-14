@@ -1,0 +1,162 @@
+cpu time: 15340 real time: 15334 gc time: 1135
+Running time is 81.42% contracts
+12887/15827 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac3539 ms
+utils.rkt:49:3                                                   
+    quad-attrs                                                   3539 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac1403 ms
+utils.rkt:51:3                                                   
+    quad-list                                                    1403 ms
+
+(-> (cons/c any/c (cons/c (recursive-contract (listof (recursive-1202.5 ms
+wrap.rkt:46:3                                                    
+    group-quad-list                                              1202.5 ms
+
+(->* ((or/c (recursive-contract (listof (recursive-contract g135 896 ms
+wrap.rkt:36:3                                                    
+    quad-attr-ref                                                896 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac811.5 ms
+utils.rkt:48:3                                                   
+    quad-name                                                    811.5 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac758 ms
+wrap.rkt:51:3                                                    
+    quad-has-attr?                                               758 ms
+
+(->* ((or/c (recursive-contract (listof (recursive-contract g135 737 ms
+wrap.rkt:41:3                                                    
+    piece                                                        737 ms
+
+(->* ((or/c (recursive-contract (listof (recursive-contract g135 489 ms
+wrap.rkt:42:3                                                    
+    line                                                         489 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac498 ms
+wrap.rkt:45:3                                                    
+    word-string                                                  286.5 ms
+    quad->string                                                 211.5 ms
+
+(->* ((or/c (recursive-contract (listof (recursive-contract g159 373 ms
+utils.rkt:57:3                                                   
+    quad-attr-ref                                                373 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac278.5 ms
+wrap.rkt:34:3                                                    
+    quad-attrs                                                   278.5 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac278.5 ms
+utils.rkt:16:2                                                   
+    split-quad                                                   128.5 ms
+    flatten-quad                                                 150 ms
+
+(-> $ocm? (vectorof Any) any)                                    210.5 ms
+ocm-struct.rkt:14:8                                              
+    set-$ocm-min-entrys!                                         210.5 ms
+
+(-> $ocm? (vectorof Any))                                        210.5 ms
+ocm-struct.rkt:14:8                                              
+    $ocm-min-entrys                                              210.5 ms
+
+(->* ((listof (recursive-contract (cons/c Symbol (cons/c (recursi183 ms
+wrap.rkt:6:2                                                     
+    wrap-best                                                    183 ms
+
+(-> (listof (recursive-contract (cons/c Symbol (cons/c (recursive168.5 ms
+wrap.rkt:111:2                                                   
+    shifts                                                       168.5 ms
+
+(-> (cons/c Symbol (cons/c (recursive-contract (listof (recursive111.5 ms
+wrap.rkt:4:2                                                     
+    add-horiz-positions                                          111.5 ms
+
+(->* ((cons/c line (cons/c (recursive-contract (listof (recursive93 ms
+wrap.rkt:9:2                                                     
+    insert-spacers-in-line                                       93 ms
+
+(-> (listof (recursive-contract (cons/c Symbol (cons/c (recursive88.5 ms
+wrap.rkt:33:3                                                    
+    quads->line                                                  88.5 ms
+
+(-> (listof (recursive-contract (cons/c Symbol (cons/c (recursive93 ms
+utils.rkt:21:2                                                   
+    join-quads                                                   93 ms
+
+(->* ((cons/c line (cons/c (recursive-contract (listof (recursive50 ms
+wrap.rkt:5:2                                                     
+    fill                                                         50 ms
+
+(->* ((or/c (recursive-contract (listof (recursive-contract g135 51.5 ms
+wrap.rkt:40:3                                                    
+    word-break                                                   51.5 ms
+
+(-> (listof Any) (recursive-contract (listof (recursive-contract 38 ms
+utils.rkt:50:3                                                   
+    make-quadattrs                                               38 ms
+
+(-> (cons/c any/c (cons/c (recursive-contract (listof (recursive-31.5 ms
+utils.rkt:53:3                                                   
+    group-quad-list                                              31.5 ms
+
+(-> (cons/c Symbol (cons/c (recursive-contract (listof (recursive31.5 ms
+utils.rkt:7:2                                                    
+    add-vert-positions                                           31.5 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac31.5 ms
+utils.rkt:8:2                                                    
+    compute-line-height                                          31.5 ms
+
+(-> $ocm? (-> Natural Natural Any))                              30 ms
+ocm-struct.rkt:14:8                                              
+    $ocm-matrix-proc                                             30 ms
+
+g147                                                             20 ms
+main.rkt:22:3                                                    
+    pdf-renderer%                                                20 ms
+
+(->* ((-> Natural Natural Any) (-> any/c any)) (Any) $ocm?)      20 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    make-ocm                                                     20 ms
+
+(->* ((or/c (recursive-contract (listof (recursive-contract g159 20 ms
+utils.rkt:47:3                                                   
+    word                                                         20 ms
+
+(or/c struct-predicate-procedure?/c (-> Any (or/c #f #t)))       20 ms
+utils.rkt:56:3                                                   
+    whitespace/nbsp?                                             20 ms
+
+(-> (vectorof Any) (vectorof (or/c Natural Symbol)) Natural (-> a25 ms
+ocm-struct.rkt:14:8                                              
+    $ocm                                                         25 ms
+
+(-> Any Float)                                                   20 ms
+wrap.rkt:588:46                                                  
+    #<procedure:$penalty->value>                                 20 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac23.5 ms
+wrap.rkt:48:3                                                    
+    quad-list                                                    23.5 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac10 ms
+main.rkt:18:3                                                    
+    typeset                                                      10 ms
+
+(-> (recursive-contract (cons/c Symbol (cons/c (recursive-contrac10 ms
+utils.rkt:11:2                                                   
+    quad-attr-set*                                               10 ms
+
+(-> (recursive-contract (listof (recursive-contract g331 #:flat))10 ms
+utils.rkt:18:2                                                   
+    attr-change                                                  10 ms
+
+(-> any/c any/c any/c any/c any/c Float)                         11.5 ms
+wrap.rkt:30:3                                                    
+    measure-text                                                 11.5 ms
+
+(-> any/c any/c (or/c Natural Symbol))                           10 ms
+wrap.rkt:108:3                                                   
+    ocm-min-index                                                10 ms
+

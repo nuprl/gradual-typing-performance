@@ -1,0 +1,16 @@
+cpu time: 1176 real time: 1178 gc time: 103
+Running time is 65.62% contracts
+849/1293 ms
+
+g682                                                             505.5 ms
+player.rkt:12:1                                                  
+    player%                                                      505.5 ms
+
+(-> (listof anonymous-contract) (object/c (any-player-done? (-> a330 ms
+main.rkt:19:3                                                    
+    create-dealer                                                330 ms
+
+(-> (object/c (draw-card (-> any/c card?)) (draw-hand (-> any/c (13 ms
+deck.rkt:7:1                                                     
+    create-deck                                                  13 ms
+

@@ -1,0 +1,76 @@
+cpu time: 5870 real time: 5867 gc time: 252
+Running time is 59.58% contracts
+3772/6330 ms
+
+(-> (cons/c any/c (cons/c (listof (cons/c any/c Any)) (listof Any1248.5 ms
+10001110110111/utils.rkt:45:3                                    
+    quad-attrs                                                   1248.5 ms
+
+(->* ((or/c (listof (cons/c any/c Any)) (cons/c any/c (cons/c (li762 ms
+10001110110111/render.rkt:41:3                                   
+    quad-attr-ref                                                762 ms
+
+(-> (cons/c any/c (cons/c (listof (cons/c any/c Any)) (listof Any454 ms
+10001110110111/utils.rkt:47:3                                    
+    quad-list                                                    454 ms
+
+(-> (cons/c any/c (cons/c (listof (cons/c any/c Any)) (listof Any315 ms
+10001110110111/quad-main.rkt:23:3                                
+    quad-has-attr?                                               315 ms
+
+(-> (cons/c any/c (cons/c (listof (cons/c any/c Any)) (listof Any226.5 ms
+10001110110111/render.rkt:43:3                                   
+    quad-name                                                    226.5 ms
+
+(-> Symbol (listof (cons/c Symbol any/c)) (listof any/c) (cons/c 219 ms
+base/quad-types.rkt:4:2                                          
+    quad                                                         219 ms
+
+(-> any/c (vectorof Any))                                        118 ms
+10001110110111/ocm-struct-adapted.rkt::-1                        
+    $ocm-min-entrys                                              118 ms
+
+(or/c struct-predicate-procedure?/c (-> Any (or/c #f #t)))       132.5 ms
+10001110110111/render.rkt:45:3                                   
+    whitespace/nbsp?                                             102.5 ms
+    optical-kern?                                                30 ms
+
+(-> any/c (vectorof Any) Void)                                   91.5 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    set-$ocm-min-entrys!                                         91.5 ms
+
+(-> (listof (cons/c any/c (cons/c (listof (cons/c any/c Any)) (li53 ms
+10001110110111/quad-main.rkt:28:3                                
+    quads->line                                                  18 ms
+    quads->doc                                                   10 ms
+    quads->page                                                  10 ms
+    quads->column                                                15 ms
+
+(-> any/c (-> Any Float))                                        58 ms
+10001110110111/ocm-struct-adapted.rkt::-1                        
+    $ocm-entry->value                                            58 ms
+
+(-> (listof Any) (listof (cons/c Symbol any/c)))                 30 ms
+10001110110111/utils.rkt:46:3                                    
+    make-quadattrs                                               30 ms
+
+(-> (vectorof Any) (vectorof (or/c Natural Symbol)) any/c (-> Nat20 ms
+#f                                                               
+    $ocm8                                                        20 ms
+
+(-> (cons/c Symbol (cons/c (listof (cons/c Symbol any/c)) (listof13.5 ms
+10001110110111/quad-main.rkt:4:2                                 
+    typeset                                                      13.5 ms
+
+(-> any/c (vectorof (or/c Natural Symbol)) Void)                 10 ms
+10001110110111/ocm-struct-adapted.rkt:30:3                       
+    set-$ocm-min-row-indices!                                    10 ms
+
+(-> any/c Float)                                                 10 ms
+10001110110111/wrap.rkt:32:3                                     
+    round-float                                                  10 ms
+
+(-> (listof (cons/c any/c (cons/c (listof (cons/c any/c Any)) (li10 ms
+10001110110111/wrap.rkt:114:2                                    
+    shifts                                                       10 ms
+

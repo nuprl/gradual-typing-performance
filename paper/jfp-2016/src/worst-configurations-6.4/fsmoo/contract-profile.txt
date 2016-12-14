@@ -1,0 +1,12 @@
+cpu time: 38636 real time: 38629 gc time: 7752
+Running time is 93.53% contracts
+36208/38713 ms
+
+(-> Natural (recursive-contract (recursive-contract g139 #:impers36163 ms
+automata.rkt:30:64                                               
+    make-random-automaton                                        36163 ms
+
+(-> any/c (object/c (death-birth (->* (any/c Natural) (#:random (45 ms
+population-adapted.rkt:12:2                                      
+    build-random-population                                      45 ms
+

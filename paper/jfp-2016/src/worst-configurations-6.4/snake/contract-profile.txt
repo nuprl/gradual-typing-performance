@@ -1,0 +1,54 @@
+cpu time: 9957 real time: 9958 gc time: 26
+Running time is 94.84% contracts
+9512/10030 ms
+
+(-> any/c (cons/c posn? (listof posn?)))                         2648 ms
+data-adaptor.rkt::-1                                             
+    snake-segs                                                   2648 ms
+
+(-> any/c Real)                                                  1852.5 ms
+data-adaptor.rkt::-1                                             
+    posn-x                                                       1306 ms
+    posn-y                                                       546.5 ms
+
+(-> any/c snake?)                                                1281.5 ms
+data-adaptor.rkt::-1                                             
+    world-snake                                                  1281.5 ms
+
+(-> any/c posn?)                                                 714.5 ms
+data-adaptor.rkt::-1                                             
+    world-food                                                   714.5 ms
+
+(-> any/c any/c (or/c #f #t))                                    603.5 ms
+motion.rkt:10:22                                                 
+    posn=?                                                       603.5 ms
+
+(-> any/c any/c snake?)                                          551.5 ms
+#<blame>::-1                                                     
+    snake10                                                      551.5 ms
+
+(-> any/c any/c posn?)                                           530 ms
+#<blame>::-1                                                     
+    posn3                                                        530 ms
+
+(-> any/c any/c world?)                                          460 ms
+#<blame>::-1                                                     
+    world17                                                      460 ms
+
+(-> any/c (or/c up down left right))                             447 ms
+data-adaptor.rkt::-1                                             
+    snake-dir                                                    447 ms
+
+(-> any/c (listof posn?))                                        336.5 ms
+motion-help.rkt:6:22                                             
+    cut-tail                                                     336.5 ms
+
+(-> world? any)                                                  77 ms
+handlers.rkt:27:1                                                
+    game-over?                                                   68.5 ms
+    world->world                                                 8.5 ms
+
+(-> world? String any)                                           10 ms
+handlers.rkt:26:1                                                
+    handle-key                                                   10 ms
+

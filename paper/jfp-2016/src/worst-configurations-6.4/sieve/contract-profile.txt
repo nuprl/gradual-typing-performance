@@ -1,0 +1,13 @@
+The 10000-th prime number is: 104729
+cpu time: 666633 real time: 666161 gc time: 145954
+Running time is 59.09% contracts
+393942/666673 ms
+
+(-> Natural (-> stream?) any)                                    388813.5 ms
+streams.rkt:7:9                                                  
+    make-stream                                                  388813.5 ms
+
+(-> stream? any)                                                 5128 ms
+streams.rkt:8:9                                                  
+    stream-unfold                                                5128 ms
+

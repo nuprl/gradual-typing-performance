@@ -1,0 +1,16 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 16903 lines of output.
+ModuleGraph for zombie:
+=======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'main.rkt'
+  - zombie.rkt : 3400
+Total: 3400
+
+Requires for 'zombie.rkt'
+  - math.rkt : 13500
+  - image.rkt : 2
+Total: 13502
+

@@ -1,0 +1,11 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 201692323 lines of output.
+ModuleGraph for sieve:
+======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'main.rkt'
+  - streams.rkt : 201692321
+Total: 201692321
+

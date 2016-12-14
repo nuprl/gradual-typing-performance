@@ -1,0 +1,19 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 804 lines of output.
+ModuleGraph for mbta:
+=====================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'main.rkt'
+  - run-t.rkt : 801
+Total: 801
+
+Requires for 'run-t.rkt'
+  - t-view.rkt : 1
+Total: 1
+
+Requires for 't-view.rkt'
+  - t-graph.rkt : 1
+Total: 1
+

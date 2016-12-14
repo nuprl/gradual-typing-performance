@@ -1,0 +1,16 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 1193161 lines of output.
+ModuleGraph for morsecode:
+==========================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'main.rkt'
+  - morse-code-strings.rkt : 186050
+  - levenshtein.rkt : 186050
+Total: 372100
+
+Requires for 'morse-code-strings.rkt'
+  - morse-code-table.rkt : 821060
+Total: 821060
+

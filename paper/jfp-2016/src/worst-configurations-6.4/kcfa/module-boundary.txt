@@ -1,0 +1,42 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 105461 lines of output.
+ModuleGraph for kcfa:
+=====================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'ai.rkt'
+  - denotable.rkt : 16941
+  - time.rkt : 9769
+  - structs.rkt : 27679
+  - benv.rkt : 16281
+Total: 70670
+
+Requires for 'benv.rkt'
+  - structs.rkt : 0
+Total: 0
+
+Requires for 'denotable.rkt'
+  - time.rkt : 0
+  - benv.rkt : 0
+  - structs.rkt : 0
+Total: 0
+
+Requires for 'main.rkt'
+  - structs.rkt : 653
+  - ui.rkt : 1
+Total: 654
+
+Requires for 'time.rkt'
+  - structs.rkt : 4885
+  - benv.rkt : 6512
+Total: 11397
+
+Requires for 'ui.rkt'
+  - benv.rkt : 12964
+  - denotable.rkt : 9773
+  - structs.rkt : 0
+  - ai.rkt : 1
+  - time.rkt : 1
+Total: 22739
+

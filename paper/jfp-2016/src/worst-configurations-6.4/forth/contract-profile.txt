@@ -1,0 +1,8 @@
+cpu time: 97 real time: 97 gc time: 26
+Running time is 50.83% contracts
+92/180 ms
+
+(listof (recursive-contract anonymous-contract #:impersonator))  91.5 ms
+command.rkt:5:2                                                  
+    CMD*                                                         91.5 ms
+

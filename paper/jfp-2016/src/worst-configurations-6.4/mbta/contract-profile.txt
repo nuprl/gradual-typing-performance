@@ -1,0 +1,20 @@
+cpu time: 1177 real time: 1178 gc time: 86
+Running time is 26.73% contracts
+372/1390 ms
+
+(->* (any/c) (#:for-each Any #:init any/c) (values (-> any/c any/108.5 ms
+1110/t-graph.rkt:12:16                                           
+    attach-edge-property                                         108.5 ms
+
+(-> any/c any/c (sequence/c String))                             146.5 ms
+1110/t-graph.rkt:11:16                                           
+    in-neighbors                                                 146.5 ms
+
+(-> anonymous-contract)                                          106.5 ms
+1110/t-graph.rkt:5:9                                             
+    read-t-graph                                                 106.5 ms
+
+(or/c struct-predicate-procedure?/c (-> Any (or/c #f #t)))       10 ms
+base/t-graph-types.rkt:16:56                                     
+    graph?                                                       10 ms
+

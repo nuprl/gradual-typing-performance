@@ -1,0 +1,12 @@
+cpu time: 420 real time: 420 gc time: 16
+Running time is 18.4% contracts
+92/500 ms
+
+(-> any/c String)                                                60 ms
+main.rkt:14:3                                                    
+    string->morse                                                60 ms
+
+(-> any/c any/c Integer)                                         32 ms
+main.rkt:17:16                                                   
+    string-levenshtein                                           32 ms
+
