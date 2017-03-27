@@ -33,7 +33,7 @@
   (define str (if (string? n) n (number->string n)))
   (define str* (string-split str "."))
   (string-append (add-commas/integer (car str*))
-                 (if (or (null? (cdr str*)) (> (string-length str) 4))
+                 (if (or (null? (cdr str*)) (< (string-length str) 4))
                    ""
                    (string-append "." (cadr str*)))))
 
