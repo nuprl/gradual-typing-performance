@@ -17,6 +17,9 @@
 (define version "0.3")
 (define pkg-authors '(ben))
 (define raco-commands '(
+  ("gtp-copy"
+    (submod gtp-summarize/copy main)
+    "Copy files using a bitstring" #f)
   ("gtp-lnm"
     (submod gtp-summarize/render-lnm main)
     "Build L-N/M plots" #f)
