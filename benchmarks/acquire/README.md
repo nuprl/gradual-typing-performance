@@ -3,6 +3,8 @@ acquire
 
 Revision of Acquire benchmark.
 
+Original code: <https://github.com/mfelleisen/acquire>
+
 - Contracts are encoded as preconditions (see the `ext:...` functions)
 - No unit tests
 - Made `player-external` field be an `(Instance Player%)` object, instead of `Any`
