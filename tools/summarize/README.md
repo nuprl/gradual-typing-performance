@@ -1,6 +1,26 @@
 summarize
 ===
 
+TODO make a viewer
+---
+[ ] gtp package, to collect & view data
+[ ] hierarchy of pictures
+    - all benchmarks, bargraph style
+    - onclick, go to overhead plot
+    - MORE
+[ ] website, to showcase
+
+- interactive program to explore datasets,
+  maybe, take form of a scribble document
+- start with a "death score"
+- click to see each benchmark (overhead plot)
+- change x-axis range
+- toggle error bars
+- generate random samples
+- MORE MORE MORE
+
+---
+
 Scripts for parsing and querying a gradual typing dataset.
 Install via `raco pkg install ../summarize`
 

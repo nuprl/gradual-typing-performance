@@ -53,7 +53,7 @@
       (unless (= L (length t*))
         (raise-user-error 'gtp-copy "refusing to copy files in ~a, typed and untyped directories have a different contents" bm-dir))
       (unless (= L B)
-        (raise-user-error 'gtp-copy "refusing to copy files in ~a, have ~a source files and ~a-bit configuration (~a)" bm-dir L B))
+        (raise-user-error 'gtp-copy "refusing to copy files in ~a, have ~a source files and ~a-bit configuration (~a)" bm-dir L B bits))
       (map file-name-from-path t*)))
   (for ([b (in-string bits)]
         [fn (in-list filename*)])
