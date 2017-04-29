@@ -20,10 +20,18 @@
 (define *RACKET-VERSIONS* (make-parameter (list "6.5")))
 
 (define (racket-bin)
-  (define try-path (build-path (find-system-path 'home-dir) "code" "racket" (*RACKET-VERSION*) "bin"))
-  (if (has-racket-binaries? try-path)
-    (string-append (path->string try-path) "/")
-    (raise-user-error 'racket-bin "Could not locate Racket v~a binaries at '~a'" (*RACKET-VERSION*) try-path)))
+  (define RKTV (*RACKET-VERSION*))
+  (define prefix
+    (if (absolute-path? RKTV)
+      RKTV
+      (build-path (find-system-path 'home-dir) "code" "racket" RKTV)))
+  (let ([try-path-1 (build-path prefix "bin")])
+    (if (has-racket-binaries? try-path-1)
+      (string-append (path->string try-path-1) "/")
+      (let ([try-path-2 (build-path prefix "racket" "bin")])
+        (if (has-racket-binaries? try-path-2)
+          (string-append (path->string try-path-2) "/")
+          (raise-user-error 'racket-bin "Could not locate Racket v~a binaries in '~a'" (*RACKET-VERSION*) prefix))))))
 
 ;; Call `run.rkt` with the right parameters
 (define (run fname benchmark)
@@ -54,8 +62,12 @@
   (require racket/cmdline)
   (command-line
    #:program "gtp-run"
-   #:once-each
+   #:once-any
    [("-j" "--jobs") j "Number of parallel jobs" (*NUM-JOBS* (string->number j))]
+   [("-n" "--no-affinity")
+    "Do NOT set task affinity (runs all jobs on current core)"
+    (*AFFINITY?* #f)]
+   #:once-each
    [("-i" "--iters") i "Number of iterations to run." (*NUM-ITERATIONS* (string->number i))]
    [("-v" "--version") v* "Racket versions to run e.g. '6.3' or '(6.3 6.5)'"
      (if (valid-version? v*)
