@@ -3,7 +3,7 @@
 ;; Print a .rktd data file in a .csv format for import to R
 ;;
 ;; Usage:
-;;   racket FILE.rktd
+;;   racket dataframe.rkt FILE.rktd
 ;; Prints result to FILE.csv
 
 ;; TODO integrate with summarize script

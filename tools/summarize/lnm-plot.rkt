@@ -257,7 +257,7 @@
                     #:cache-up-to (assert xmax index?)
                     #:percent? (eq? (*Y-STYLE*) '%)
                     #:pdf? pdf?)
-                  (linear-seq 0 xmax num-samples)
+                  (linear-seq 0 (assert xmax index?) num-samples)
                   #:x-min 0
                   #:x-max xmax
                   #:samples num-samples

@@ -223,15 +223,15 @@
 
 (: name->index (-> ModuleGraph String Natural))
 (define (name->index mg name)
-  (: maybe-i (U #f Natural))
-  (define maybe-i
-    ;; Simulated for/first
-    (let loop ([i : Natural 0] [n+n (modulegraph-adjlist mg)])
-      (if (string=? name (caar n+n))
-        i
-        (loop (add1 i) (cdr n+n)))))
-  (or maybe-i
-     (error 'name->index (format "Invalid module name ~a" name))))
+  ;; Simulated for/first
+  (let loop ([i : Natural 0] [n+n (modulegraph-adjlist mg)])
+    (cond
+     [(null? n+n)
+      (error 'name->index (format "Invalid module name '~a'" name))]
+     [(string=? name (caar n+n))
+      i]
+     [else
+      (loop (add1 i) (cdr n+n))])))
 
 (: index->name (-> ModuleGraph Natural String))
 (define (index->name mg i)
@@ -879,7 +879,7 @@
     typed/rackunit)
 
   (define SAMPLE-MG-FILE "test/sample-modulegraph.tex")
-  (define SAMPLE-MG-PROJECT-NAME "echo")
+  (define SAMPLE-MG-PROJECT-NAME "stack")
 
   ;; -- Test parsing
 
@@ -896,7 +896,7 @@
   ;; -- module-names
   (check-equal? (sort (module-names MGf) string<?)
                '("collide" "const" "cut-tail" "data" "handlers" "main" "motion" "motion-help"))
-  (check-equal? (module-names MGd) '("client" "constants" "main" "server"))
+  (check-equal? (module-names MGd) '("main" "stack"))
 
   ;; -- modulegraph->num-modules
   (check-equal?
@@ -905,7 +905,7 @@
 
   (check-equal?
     (modulegraph->num-modules MGd)
-    4)
+    2)
 
   ;; -- modulegraph->lines-of-code
   (let ([uloc (modulegraph->untyped-loc MGd)]
@@ -922,7 +922,7 @@
   (check-equal? (name->index MGf "collide") 0)
   (check-equal? (name->index MGf "handlers") 4)
 
-  (check-equal? (name->index MGd "main") 2)
+  (check-equal? (name->index MGd "main") 0)
 
   ;; -- index->name
   (check-equal? (index->name MGf 4) "handlers")
@@ -947,7 +947,7 @@
 
   ;; -- adjlist
   (check-equal? (modulegraph-adjlist MGd)
-    '(("client" "constants") ("constants") ("main" "server" "client") ("server" "constants")))
+    '(("main" "stack") ("stack")))
 
   (: lex-pair<? (-> (Pairof String String) (Pairof String String) Boolean))
   (define (lex-pair<? a b)
@@ -961,23 +961,17 @@
 
   (check-equal?
     (sort (sequence->list (in-edges MGd)) lex-pair<?)
-    '(("client" . "constants") ("main" . "client") ("main" . "server") ("server" . "constants")))
+    '(("main" . "stack")))
 
   (let ([bd (boundaries MGd)])
     (check-equal? (length bd) (length (sequence->list (in-edges MGd))))
     (let ([b1 (car bd)])
-      (check-equal? (car b1) "client")
-      (check-equal? (cadr b1) "constants")
+      (check-equal? (car b1) "main")
+      (check-equal? (cadr b1) "stack")
       (let ([p* (caddr b1)])
         (check-equal? (length p*) 2)
-        (check-equal? (provided->symbol (car p*)) 'DATA)
-        (check-equal? (provided->symbol (cadr p*)) 'PORT)))
-    (let ([b3 (caddr bd)])
-      (check-equal? (car b3) "main")
-      (check-equal? (cadr b3) "client")
-      (let ([p* (caddr b3)])
-        (check-equal? (length p*) 1)
-        (check-equal? (provided->symbol (car p*)) 'client))))
+        (check-equal? (provided->symbol (car p*)) 'init)
+        (check-equal? (provided->symbol (cadr p*)) 'push))))
 
   ;; -- directory->modulegraph
   ;; -- tex->modulegraph
@@ -1107,7 +1101,7 @@
                  (boundary-from b)
                  (map provided->symbol (boundary-provided* b))))
          (boundaries MGd))
-    '(("client" "constants" (DATA PORT)) ("main" "server" (server)) ("main" "client" (client)) ("server" "constants" (DATA PORT))))
+    '(("main" "stack" (init push))))
 
   ;; -- adjlist=? modulegraph=?
   (check-true (adjlist=? (modulegraph-adjlist MGd) (modulegraph-adjlist MGd)))
@@ -1123,12 +1117,12 @@
   ;; -- modulegraph->num-edges
   (check-equal?
     (modulegraph->num-edges MGd)
-    4)
+    1)
 
   ;; -- modulegraph->num-identifiers
   (check-equal?
     (modulegraph->num-identifiers MGd)
-    4)
+    2)
 
   ;; -- string->texedge TODO
   ;; -- texnode->modulegraph TODO

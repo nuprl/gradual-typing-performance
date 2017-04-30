@@ -1158,12 +1158,12 @@
   (parameterize ([current-output-port (open-output-nowhere)])
     (check-equal? (filter-valid-filenames '(a b c)) '())
     (check-equal? (filter-valid-filenames '("foo.rktd" "bar.rkt")) '())
-    (check-equal? (filter-valid-filenames '("test/echo-data.rktd")) '("test/echo-data.rktd"))
+    (check-equal? (filter-valid-filenames '("test/morsecode-data.rktd")) '("test/morsecode-data.rktd"))
   )
 
   ;; -- valid-filename?
   (parameterize ([current-output-port (open-output-nowhere)])
-    (check-true (valid-filename? "test/echo-data.rktd"))
+    (check-true (valid-filename? "test/morsecode-data.rktd"))
 
     (check-false (valid-filename? ""))
     (check-false (valid-filename? "no.r"))
