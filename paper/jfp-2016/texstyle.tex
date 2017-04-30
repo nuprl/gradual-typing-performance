@@ -57,5 +57,14 @@
 
 }}
 \newcommand{\twoline}[2]{\parbox[s]{1.8cm}{\flushright\hfill #1\newline#2}}
+
+%% -- undo racket/scribble commit 0ca977aecd6
+%%    https://github.com/racket/scribble/commit/0ca977aecd6995690bd7744829abe24dd9d12b5d
+%% -- core issue: this JFP paper is using `smaller` from `scribble/base`
+%%    to render annotated bibs in the appendix
+\renewcommand{\packageRelsize}{\usepackage{relsize}}
+\packageRelsize
+
 %% --- end texstyle.tex
 %% -----------------------------------------------------------------------------
+

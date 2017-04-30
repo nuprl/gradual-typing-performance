@@ -1,14 +1,14 @@
 PAPER=paper
-RACO=raco6.5
-SCRIBBLE=scribble6.5
+RACO=raco
+SCRIBBLE=scribble
 
 all: paper.pdf
 
 compiled/paper_scrbl.zo: *.rkt *.scrbl
 	${RACO} make -v $(PAPER).scrbl
 
-paper.pdf: pkg compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex
-	${SCRIBBLE} ++extra src/karst-cputime.csv ++extra src/morsecode-6.4-25core.rktd ++extra fig-adaptor.tex ++extra fig-fsm-example.tex ++extra fig-tr-example.tex ++extra fig-ts-example.tex ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
+paper.pdf: paper.tex
+	pdflatex paper.tex
 
 paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
 	${SCRIBBLE} ++style texstyle.tex --latex $(PAPER).scrbl
