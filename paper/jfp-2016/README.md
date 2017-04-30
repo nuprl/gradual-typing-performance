@@ -10,3 +10,6 @@ $ make
 ```
 
 Tested on Racket v6.9
+
+> 2017-04-30: building from a clean copy of the `gradual-typing-performance`
+>  repo took 496533ms to build `paper.tex`
