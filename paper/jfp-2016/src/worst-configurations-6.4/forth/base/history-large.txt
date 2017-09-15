@@ -1,0 +1,6000 @@
+push 2795
+push 7606
+push 4553
+push 3884
+define swapdupdrop46 swap dup drop
+-
+define dropswapoverswapswap47 drop swap over swap swap
+*
+push 8894
+push 118
+push 3671
+swapdupdrop46
+swapdupdrop46
+define swapdupdropdropoverswapdropdropover48 swap dup drop drop over swap drop drop over
+push 8045
+define overswapdropdupoveroveroverdupdupover49 over swap drop dup over over over dup dup over
+push 6678
+push 593
+-
++
+define dropdropdropoverswapoverswapoverswapover50 drop drop drop over swap over swap over swap over
+define over51 over
+push 811
+dropswapoverswapswap47
+push 2261
+push 4688
+push 1715
+define swapdupswapoverdupswapdupdupswapdrop52 swap dup swap over dup swap dup dup swap drop
+define swap53 swap
+define swapoverdupswapoverdupdup54 swap over dup swap over dup dup
+push 7013
+swapdupdropdropoverswapdropdropover48
+push 3732
+swapdupdropdropoverswapdropdropover48
+over51
+overswapdropdupoveroveroverdupdupover49
+swapdupdrop46
+swapoverdupswapoverdupdup54
+define swapdupswapswapdropdrop55 swap dup swap swap drop drop
+push 423
++
+define dropdropswap56 drop drop swap
++
+push 3682
+swap53
+define dupoverdropdrop57 dup over drop drop
+define swapoverswapoveroverdupswap58 swap over swap over over dup swap
+-
+-
+swapoverdupswapoverdupdup54
+swapdupswapoverdupswapdupdupswapdrop52
+define dupoverdropdupdupswapoverswap59 dup over drop dup dup swap over swap
+*
+dropdropswap56
++
+swapdupdropdropoverswapdropdropover48
+push 2382
+define dropswapdupdropswapdup60 drop swap dup drop swap dup
+-
+push 4299
+push 1119
+push 7633
++
+push 2154
+push 2816
+push 6102
+push 998
+dropdropswap56
+define overdropdupoverswapover61 over drop dup over swap over
+*
+swapoverswapoveroverdupswap58
+define dropdupdropdupswapdupdropdupover62 drop dup drop dup swap dup drop dup over
+dropswapoverswapswap47
+push 2167
+-
++
+push 2834
+define dupoverswapdupdropdropdupdupdup63 dup over swap dup drop drop dup dup dup
+swap53
+swap53
+swapdupswapoverdupswapdupdupswapdrop52
+push 2551
+push 362
+push 7939
+push 3981
+push 8935
+dropdropdropoverswapoverswapoverswapover50
+push 1776
+dropdropdropoverswapoverswapoverswapover50
+*
+swap53
+define dropoverdupoverdropdupover64 drop over dup over drop dup over
+push 4074
+push 3832
+*
+dupoverdropdrop57
+define dropdupswapover65 drop dup swap over
+*
+define overoveroverdropdropdupover66 over over over drop drop dup over
+overoveroverdropdropdupover66
+define dupdropdupdupdupdupdropoverswap67 dup drop dup dup dup dup drop over swap
+dupoverdropdrop57
+push 5132
+-
+push 4368
+define dupover68 dup over
+dupdropdupdupdupdupdropoverswap67
+dropdropdropoverswapoverswapoverswapover50
+dropdropswap56
+-
+push 8170
++
+push 1824
+define dup69 dup
+push 7025
+push 439
+define dupswapdupdupdupdrop70 dup swap dup dup dup drop
+push 6917
++
+define dup71 dup
+push 2868
+define overoverswapswapswapdupdup72 over over swap swap swap dup dup
+push 3741
+-
+dropswapdupdropswapdup60
+push 6113
+-
+overdropdupoverswapover61
+dropdupswapover65
+push 3042
+define dupswap73 dup swap
+define dropdropdropswapswapswapdropswap74 drop drop drop swap swap swap drop swap
+*
+push 7923
+*
+-
+define dupswapoverdupoverswapdropover75 dup swap over dup over swap drop over
+push 6566
+push 3736
+push 6676
+dupoverdropdupdupswapoverswap59
+*
+-
+swap53
++
+push 4846
+push 5032
+swapdupswapoverdupswapdupdupswapdrop52
+dropswapdupdropswapdup60
+*
+push 2141
+*
+define over76 over
+swap53
+push 8566
+push 3035
++
+define dup77 dup
+over51
+push 3406
+push 5784
+push 3738
+push 5400
+define swapover78 swap over
+push 1005
+-
+define drop79 drop
+*
+swapdupdrop46
+swapoverswapoveroverdupswap58
+dropdropdropoverswapoverswapoverswapover50
+push 3479
+swap53
++
+push 2494
+define swapdupdropswap80 swap dup drop swap
+push 4887
+push 1995
+dup69
+define swapdropdupoveroverswapdupoveroverswap81 swap drop dup over over swap dup over over swap
+define dropswapswapswapdropdup82 drop swap swap swap drop dup
++
+define overswapdropoverswap83 over swap drop over swap
+swap53
+drop79
+-
+-
+dropdropdropoverswapoverswapoverswapover50
+push 4417
++
+dupswap73
+push 6001
+push 214
+define dropswapdrop84 drop swap drop
+push 8422
+push 7465
+dupdropdupdupdupdupdropoverswap67
+*
+push 7183
+define overswap85 over swap
+push 7039
+define drop86 drop
+define dropdropdropswapdupdropswap87 drop drop drop swap dup drop swap
+*
++
+define swapdupdupswapswapdupoverdropoverdup88 swap dup dup swap swap dup over drop over dup
+push 5171
+push 5281
+push 4610
+swapdropdupoveroverswapdupoveroverswap81
+push 810
+define overoverdropswapover89 over over drop swap over
+*
+overswap85
+push 1576
+dropoverdupoverdropdupover64
+dupoverswapdupdropdropdupdupdup63
+push 2969
++
+dropdropswap56
+define dropdup90 drop dup
+overswapdropdupoveroveroverdupdupover49
++
+push 2879
+push 5392
+dupoverdropdupdupswapoverswap59
+push 3464
+*
+-
+push 2347
+define dupdup91 dup dup
+dropdupswapover65
+overoverdropswapover89
+dup77
+dupswap73
+*
++
+define swapdupswapdropswapdupdupdropover92 swap dup swap drop swap dup dup drop over
+-
+swapdupdrop46
+push 521
+push 7955
+dropoverdupoverdropdupover64
+push 5980
+define dropdupdupdropdrop93 drop dup dup drop drop
+push 6490
+push 7623
+define overdup94 over dup
+define drop95 drop
+push 6484
+define overswapdropswapoveroverover96 over swap drop swap over over over
+define dropdropdropdrop97 drop drop drop drop
+push 6507
+define dupdrop98 dup drop
+-
+dropdropswap56
+push 3510
+-
+define swap99 swap
+swapoverswapoveroverdupswap58
+push 5105
+push 1322
+dupdup91
+push 352
+push 1946
+push 7370
+swapdupdrop46
+dupswapoverdupoverswapdropover75
+-
+define swapdupdropdupswapdropswap100 swap dup drop dup swap drop swap
+define swap101 swap
+dup71
+push 32
+*
+define dropoverdupdupdropdropoverdupdupdrop102 drop over dup dup drop drop over dup dup drop
+push 5369
+push 234
+*
+swap53
+define dupdupdropdupdupdropover103 dup dup drop dup dup drop over
+define dup104 dup
+push 7804
+*
+push 2559
++
+swapdupswapswapdropdrop55
+dupoverswapdupdropdropdupdupdup63
+push 8937
+define dropoverdropover105 drop over drop over
+push 8157
++
+dup104
+dup104
++
+define drop106 drop
+push 4637
+push 2333
+push 4412
+swapoverswapoveroverdupswap58
+-
+dropdropdropdrop97
+push 7634
+push 1339
+swapdupdrop46
+-
+overswapdropoverswap83
+over76
+*
+define dupoveroverdropdupoveroverdrop107 dup over over drop dup over over drop
+push 970
+push 4774
+push 6529
+-
+push 3892
+dupdrop98
+define over108 over
+define dupdropdup109 dup drop dup
+define overdropoverdupdup110 over drop over dup dup
+*
+push 7489
+push 8727
+overswap85
+*
+dupdrop98
+define dupswapover111 dup swap over
+push 5535
+push 5315
+overswapdropswapoveroverover96
+overswapdropswapoveroverover96
+push 6960
+push 1023
+push 5770
+define dupdupoverdupoverswapdupdropdup112 dup dup over dup over swap dup drop dup
+push 1460
+push 7025
+dropdupswapover65
+push 181
+push 3904
+push 5705
+push 1757
+push 5781
+define drop113 drop
+dropdup90
+define dupoveroverswapswapdup114 dup over over swap swap dup
+push 3169
+push 344
+push 3432
+overswapdropswapoveroverover96
++
+dropdupdropdupswapdupdropdupover62
+dropswapoverswapswap47
+push 328
+push 4267
+push 5141
+push 7601
+define drop115 drop
+define swapdropoverdropoverdupswapdupdrop116 swap drop over drop over dup swap dup drop
+define swapdupdropover117 swap dup drop over
+define dropswap118 drop swap
++
+define dupover119 dup over
+define dupdropdupoverover120 dup drop dup over over
+dupoveroverswapswapdup114
+over108
++
+*
+define swapdrop121 swap drop
+-
++
+define dupdropswapdropdropswapdrop122 dup drop swap drop drop swap drop
+define dupoverdupswapswapswapswapdupdropswap123 dup over dup swap swap swap swap dup drop swap
+push 4149
+push 1288
+define swapswapswapdupswapdup124 swap swap swap dup swap dup
+swapdupswapdropswapdupdupdropover92
+over51
+-
+push 388
+dupoveroverdropdupoveroverdrop107
+overdropdupoverswapover61
+define dupoverswapswapoveroverdropdropdrop125 dup over swap swap over over drop drop drop
+define dupoverswapdupswapdropdropoverover126 dup over swap dup swap drop drop over over
+push 2615
+push 3082
+push 5166
+drop95
+push 7478
++
+push 5153
+push 3599
+define dupswapdup127 dup swap dup
+dupoverswapdupdropdropdupdupdup63
+*
+swapdropdupoveroverswapdupoveroverswap81
+push 2905
+*
+*
+-
+dupdropdupoverover120
+push 8549
+define dupswapswapoverswapdup128 dup swap swap over swap dup
+*
+push 1007
+push 7579
+define dup129 dup
+push 7759
+push 3454
+push 4234
+push 3632
+-
+dupoverdropdupdupswapoverswap59
+define swapswap130 swap swap
+-
+swapdupswapdropswapdupdupdropover92
+-
+define dupoverswapdropdup131 dup over swap drop dup
+push 2737
+push 5055
++
+push 8182
+swapdrop121
+push 6093
+-
+push 5679
+push 8055
+*
+push 4360
+push 5060
+push 4566
+swapdupdropdropoverswapdropdropover48
+define dropoverdupdropdup132 drop over dup drop dup
+dupdropdupoverover120
+push 2428
++
+push 3099
+push 8571
+push 5304
+push 8690
+dupoverswapdupdropdropdupdupdup63
+-
+*
+define overswap133 over swap
+push 6175
+define dropdupdropoverdupswapswapswap134 drop dup drop over dup swap swap swap
+*
+dropoverdupoverdropdupover64
+*
+define dropdropdropdupdropdrop135 drop drop drop dup drop drop
+define dupdropdropswap136 dup drop drop swap
+define swapswapdropswapdrop137 swap swap drop swap drop
+push 5046
+dropdropdropdupdropdrop135
+push 6528
+swap99
+push 2979
+define dupswapswap138 dup swap swap
+define dupover139 dup over
+drop113
+push 784
+-
+define dupdupdropdrop140 dup dup drop drop
+define dropdupoverdrop141 drop dup over drop
+push 737
+push 8564
+push 7425
+push 7857
+define swapdropoveroverdropoveroverdropover142 swap drop over over drop over over drop over
+push 4608
+define swapoveroverswapswapdrop143 swap over over swap swap drop
+dupoverdropdrop57
+push 911
+overdup94
+dupswapswapoverswapdup128
++
+push 5023
+-
+define dropdupover144 drop dup over
++
+push 1770
+dropswapswapswapdropdup82
+push 7493
+push 2183
+push 2278
+push 4080
+push 7531
++
+define swapswapswapswap145 swap swap swap swap
+dupoverswapdropdup131
+push 7198
+*
+-
+define swapswap146 swap swap
+push 1308
+-
+push 4571
+define swapoverdropoverover147 swap over drop over over
+define dropoverdropoverdupoverdupdupdrop148 drop over drop over dup over dup dup drop
+-
++
+*
+push 2707
+dropswapswapswapdropdup82
+define swap149 swap
++
+-
+*
+swapdupdropdupswapdropswap100
+push 1647
+*
+define dropswapdupoverdropdupdropoveroverdrop150 drop swap dup over drop dup drop over over drop
+push 407
+push 7356
+push 4763
+swapswapswapdupswapdup124
+define swapswapswapoverswapdupover151 swap swap swap over swap dup over
+push 1335
+push 6591
+push 1492
+define swapswapswapdropswapdupoverswapdropdup152 swap swap swap drop swap dup over swap drop dup
+define swap153 swap
+push 4318
+push 4087
+define dropswapdropoverdropoverswapswapswap154 drop swap drop over drop over swap swap swap
+overoverswapswapswapdupdup72
+swapdropoveroverdropoveroverdropover142
+*
+push 1294
+push 229
+-
+push 8261
+dupover119
+push 6229
+push 5296
+push 4948
+push 7469
+push 3662
+define dropswapswapdupover155 drop swap swap dup over
+define swapdropswapdropdropoverswapswapdup156 swap drop swap drop drop over swap swap dup
+swapswapswapswap145
+push 8102
+push 1879
+dropoverdupoverdropdupover64
+push 3926
+push 8137
+push 52
+dropswapoverswapswap47
+push 1362
+swapdropoverdropoverdupswapdupdrop116
+push 1912
++
++
+push 4307
+push 5932
+define overswapdupdropdropswapdupswapdropover157 over swap dup drop drop swap dup swap drop over
+drop79
+define swapdropdrop158 swap drop drop
+dropdropdropdupdropdrop135
+dupswapdup127
++
+swapswap130
+define overoveroverdropoverdupdropdup159 over over over drop over dup drop dup
+push 7509
++
+push 3629
+dropswapdropoverdropoverswapswapswap154
+define dupdupoverdupdupdropoveroverdropover160 dup dup over dup dup drop over over drop over
+-
+push 3503
+define dropswapdropswap161 drop swap drop swap
+push 8268
+dropdupdropoverdupswapswapswap134
+push 6068
+define swapswapoverdupoverdropswapoverover162 swap swap over dup over drop swap over over
+drop113
+push 732
+push 663
+dropdropdropoverswapoverswapoverswapover50
++
+dupoveroverswapswapdup114
+define dupswapoveroverdupdup163 dup swap over over dup dup
+push 5970
+dup71
+swapdropswapdropdropoverswapswapdup156
+push 7695
+dupdupoverdupdupdropoveroverdropover160
+define overdupoveroverdropdrop164 over dup over over drop drop
+define overoverdupswapoverdrop165 over over dup swap over drop
+define swapdropdropdupoverdup166 swap drop drop dup over dup
+push 4993
++
+push 7799
+define dupover167 dup over
+push 3551
+dropswapdropswap161
+swapdupswapswapdropdrop55
+push 600
+push 6735
+define dup168 dup
+push 7852
+define dropdupdupdropdropswapoverswapdup169 drop dup dup drop drop swap over swap dup
+push 896
+swapover78
+-
+overoverswapswapswapdupdup72
+overoveroverdropoverdupdropdup159
+*
+push 1818
+swapdropdrop158
+push 1676
+push 8787
+push 2995
+define overdupoverswapdupoverdropdupover170 over dup over swap dup over drop dup over
+push 1121
+-
+define dupoverswapdupoverover171 dup over swap dup over over
+define dupoverdup172 dup over dup
+*
+dupdropdupdupdupdupdropoverswap67
+push 4214
+push 7298
+push 1853
+define drop173 drop
+dupswap73
+define dropdropswapdropswapoverdropswapdropdrop174 drop drop swap drop swap over drop swap drop drop
+swapdupdropswap80
+push 6143
+push 3716
+push 8867
+push 7992
+define overswapdupdupdupswapdup175 over swap dup dup dup swap dup
+*
+push 764
+swapdropoverdropoverdupswapdupdrop116
+push 3309
+dupdrop98
+push 4302
+overswapdropswapoveroverover96
+push 1958
+define dupdupdupoveroverdropswapover176 dup dup dup over over drop swap over
+define dupoverswap177 dup over swap
+*
+push 5606
+dropswapswapdupover155
+swapover78
+drop113
+-
+define dupoverswapswapdropdropover178 dup over swap swap drop drop over
+define overdropswap179 over drop swap
+-
+-
+push 6256
+-
+-
+swapswap146
+define dropoveroverdup180 drop over over dup
++
+*
+push 4726
+swapoverdupswapoverdupdup54
+push 2946
+push 8455
+define swapdropdup181 swap drop dup
+swapswapswapdropswapdupoverswapdropdup152
+define overdropdup182 over drop dup
+swap149
+push 1811
+push 4855
+push 5645
+push 8227
+-
+define over183 over
+push 6782
+push 7194
+push 1006
+*
+push 6957
+-
+push 1599
+dupdropdup109
+push 1146
++
+overdupoveroverdropdrop164
+dupdupdropdupdupdropover103
+-
++
+over183
+overoverswapswapswapdupdup72
+push 410
+overoveroverdropdropdupover66
+push 3326
++
+push 1270
+push 4575
+define dropoverswapdropdupdupswapdropswapdup184 drop over swap drop dup dup swap drop swap dup
+push 3267
+push 3623
+*
+-
+dupdupdupoveroverdropswapover176
+push 754
+push 3370
+dupswapdup127
+push 6517
+*
+-
+push 3336
+push 1950
+overdropdup182
+define overswap185 over swap
+push 718
+dupswapdup127
+define dropswap186 drop swap
+define dropdupoveroveroverdup187 drop dup over over over dup
++
+push 2184
+define swapswapswapoveroverdupdupdropover188 swap swap swap over over dup dup drop over
+define dupover189 dup over
++
+push 3618
+push 5894
++
+swapdrop121
+-
+define overswapdupoveroverdupdup190 over swap dup over over dup dup
+swapdupdupswapswapdupoverdropoverdup88
+push 4910
+dupover139
+-
+*
+push 711
+push 6546
+dupover167
+push 1342
+swapdropoverdropoverdupswapdupdrop116
+overdupoveroverdropdrop164
++
+dropdropdropoverswapoverswapoverswapover50
+push 7458
+swapswapswapoverswapdupover151
+push 8702
+swapdupdupswapswapdupoverdropoverdup88
+define dropdropswapdupoverdupoverover191 drop drop swap dup over dup over over
+push 2258
+push 2244
+define dropswapdropswapdupdup192 drop swap drop swap dup dup
+push 4289
+push 4305
++
+define dropdupdupswapdropoverdropoverswap193 drop dup dup swap drop over drop over swap
+dupoverdup172
+push 3177
+push 6750
+push 373
+swapdropdupoveroverswapdupoveroverswap81
+push 7480
+dropoverdupdropdup132
+push 5297
++
+define overoverdropoverdropswapoverdrop194 over over drop over drop swap over drop
+push 2765
+overoveroverdropoverdupdropdup159
++
+push 2182
+push 4910
+-
+define overoverswap195 over over swap
+push 2604
+swap53
+push 5354
+define swapoverdropswapoveroverdupoverover196 swap over drop swap over over dup over over
+push 6493
+swapswap146
+push 4404
+push 1962
+push 4571
+define dropswapoverdropdupswapdupdupswap197 drop swap over drop dup swap dup dup swap
+define overswapswapdupoverdup198 over swap swap dup over dup
+define dupdupdupdupswap199 dup dup dup dup swap
+swapdrop121
+dup129
+define dupdropdupswapswapoverswap200 dup drop dup swap swap over swap
++
+push 6496
++
+define dupswapdupoveroverover201 dup swap dup over over over
+dupoveroverswapswapdup114
+push 6818
+push 825
+push 5507
+push 25
++
+*
+push 4066
+*
+dropoverdupoverdropdupover64
+define overdropswapswapdup202 over drop swap swap dup
+define swapoverswapdupoverdupdropdropoverover203 swap over swap dup over dup drop drop over over
+define swapswapswap204 swap swap swap
+define swapswapdupoverdropdupswapdrop205 swap swap dup over drop dup swap drop
+dupoveroverdropdupoveroverdrop107
+define swap206 swap
+dupover68
+dupover139
+push 4516
+push 445
+push 4081
+define swapoverdup207 swap over dup
+drop113
+swapswapswapoverswapdupover151
+swapswapdropswapdrop137
+-
++
+define dupoverswapswapdrop208 dup over swap swap drop
+push 1891
+swapdrop121
+*
+-
+define overdupdupoverswapswapdupoveroverswap209 over dup dup over swap swap dup over over swap
+push 1275
+dupdupdropdrop140
+push 6806
+swapswapswapoveroverdupdupdropover188
+define dupdropoveroverswapdupoverswapswapdup210 dup drop over over swap dup over swap swap dup
+swapoverswapoveroverdupswap58
+define dupdupdropdropswapdropdupswapswapswap211 dup dup drop drop swap drop dup swap swap swap
+drop115
+define dropswapswap212 drop swap swap
+dupdrop98
+-
+push 4179
+-
+drop86
+define swapswapswapoverdrop213 swap swap swap over drop
+push 8179
+define swapswapdupdupswap214 swap swap dup dup swap
+define overdupdropdropdropdupdupswap215 over dup drop drop drop dup dup swap
+define dropoverdropswap216 drop over drop swap
+define dropdropdupoverdup217 drop drop dup over dup
+dropdupdupdropdropswapoverswapdup169
+push 6522
+push 7421
+push 3175
+*
+swap99
+push 1796
+*
+push 6872
+push 328
+push 220
+push 2401
+push 7965
+push 4444
+dup168
+-
+push 6168
+-
+define overswapoverswapdupdupdupdup218 over swap over swap dup dup dup dup
+push 603
+*
+define dupoverdropdupdupswap219 dup over drop dup dup swap
+*
+*
+push 4085
+push 2180
++
+overswapdupoveroverdupdup190
++
+*
+push 7793
+-
+define dupover220 dup over
+push 8255
++
++
+-
+push 6208
+push 6810
+swapdropoverdropoverdupswapdupdrop116
+dropswapdropswapdupdup192
+*
+define dropdupswapdropoverswap221 drop dup swap drop over swap
+define overoverdupdropdrop222 over over dup drop drop
+define swapdropdropdropover223 swap drop drop drop over
+define swapswapswapoverdropover224 swap swap swap over drop over
+push 512
++
++
+push 8168
+push 5046
+define swapoveroverdrop225 swap over over drop
++
+push 7216
+push 2525
+overswap85
+push 6564
+define dropover226 drop over
+push 452
+-
+swapdropdupoveroverswapdupoveroverswap81
++
++
+push 5474
+define drop227 drop
+swapdupdropdupswapdropswap100
+*
+swapdupdrop46
+*
+define dropdupdupdrop228 drop dup dup drop
++
+-
+push 7003
+push 6976
++
+define dropoveroveroverswapoverswap229 drop over over over swap over swap
+define dropswapswapswapswapoveroverswapdupdup230 drop swap swap swap swap over over swap dup dup
+push 5893
+push 8026
+push 5038
+swapdupswapdropswapdupdupdropover92
+push 5836
+-
+swapdropdropdupoverdup166
+dupswapdup127
+push 3073
+define dup231 dup
+push 2692
++
+define dropswapdropoverswapoverdup232 drop swap drop over swap over dup
+define dropswap233 drop swap
+push 6416
+-
+-
+*
+push 131
+overswapdropswapoveroverover96
+push 1605
+-
+push 3765
+push 836
+push 6060
+define overdropswapdupoverdupdropdrop234 over drop swap dup over dup drop drop
+define swapdupdropover235 swap dup drop over
+swapoverswapoveroverdupswap58
+define swapdupswapoverdupover236 swap dup swap over dup over
+define dropoverswapswapoveroverdropoverswap237 drop over swap swap over over drop over swap
+define dupdropoverdupdup238 dup drop over dup dup
+push 2371
+*
+define swapdropdrop239 swap drop drop
+define dupswapswapdupswapswap240 dup swap swap dup swap swap
+push 3894
+push 2222
+push 5772
+push 3403
+-
+dupoverdropdupdupswapoverswap59
+push 2258
+push 2562
+define swapswapswapoverover241 swap swap swap over over
+define over242 over
+push 4521
+define swapoveroverdropoverdupdupdropdupover243 swap over over drop over dup dup drop dup over
+define dropdupswapdup244 drop dup swap dup
+define dupoverover245 dup over over
+push 1567
+dropdupswapdup244
+*
+dropoverdupdropdup132
+define dupoveroverover246 dup over over over
+dropoverswapswapoveroverdropoverswap237
+push 6218
+push 276
+push 7984
+define swapdrop247 swap drop
+push 6847
+dropdupswapdropoverswap221
+push 4466
+push 5750
+push 6433
+*
+push 3773
+define over248 over
+swapdupdropswap80
+-
+push 3710
+push 1276
+define overdupswapdropswapdropswap249 over dup swap drop swap drop swap
+push 8403
+push 1732
++
+*
+push 1212
+define swapoverdropswapswap250 swap over drop swap swap
+define dropoverswapdropdupdropdropoverdropdup251 drop over swap drop dup drop drop over drop dup
+push 1279
++
+*
+push 8547
+swapdropswapdropdropoverswapswapdup156
+push 6037
+define swapdrop252 swap drop
+*
+push 8010
+define overswapdupdropswapdupover253 over swap dup drop swap dup over
+define dropdropdrop254 drop drop drop
+dropdup90
+*
+push 6126
+dupoveroverover246
+dropoverdupoverdropdupover64
+define dropdrop255 drop drop
+-
+push 7200
++
+*
+push 1813
+dropdropdropswapdupdropswap87
+define dupdup256 dup dup
+push 7202
+push 4904
+swapoverdropswapoveroverdupoverover196
+push 3087
+define dupdropdupoverdropdupswapdup257 dup drop dup over drop dup swap dup
+push 8996
+define swapdropdropswapoverswap258 swap drop drop swap over swap
+define overoverdropdropswap259 over over drop drop swap
++
+push 5773
+push 17
+*
+dupover139
+push 277
+define dropoverdupdropswapover260 drop over dup drop swap over
+define dupdupdrop261 dup dup drop
+push 8351
+push 8068
+define swapswapswapswapdupdropdropover262 swap swap swap swap dup drop drop over
+push 6142
+-
+dupdropdupdupdupdupdropoverswap67
+define dupswapdupoverdropdropswapdupdrop263 dup swap dup over drop drop swap dup drop
+define swapdropoverdropover264 swap drop over drop over
+push 1859
+define swap265 swap
+define dropswapdupswapdropswap266 drop swap dup swap drop swap
+define dropdup267 drop dup
+define over268 over
+push 6105
+*
+push 8506
+push 1298
+push 7869
+define dropoverswapoverswapdupoverdupoverover269 drop over swap over swap dup over dup over over
+-
+push 5771
+dropoverdupdropswapover260
+define dupoveroverswapdropdup270 dup over over swap drop dup
+dupswap73
+define dropdropdropdupdropover271 drop drop drop dup drop over
++
+define swapswapdropdupoveroverdropswapdrop272 swap swap drop dup over over drop swap drop
+push 3952
+define dropdupoverdropdup273 drop dup over drop dup
+-
+*
+define dupswapswapdupdropoverdropdup274 dup swap swap dup drop over drop dup
+push 5905
+dupswapswapdupdropoverdropdup274
+dupswapdupoverdropdropswapdupdrop263
+dupoverswapswapdropdropover178
+push 7922
+define over275 over
+push 4588
+push 4965
+*
+define swap276 swap
+-
+push 6040
+dupswapoveroverdupdup163
+overdupdupoverswapswapdupoveroverswap209
+swapswapswapoverdropover224
+push 8895
+push 8880
+push 5236
+push 2513
+*
+push 5059
+define dropswapdrop277 drop swap drop
+push 4349
+define swapoverdupswapdropoverdupover278 swap over dup swap drop over dup over
+dupdropdupoverdropdupswapdup257
+push 4184
+push 6826
+push 5900
+push 3412
+swapoverdropswapswap250
+-
++
+push 2037
+push 4906
+swapoveroverdropoverdupdupdropdupover243
+push 7027
+define dupoverdropdropswapdupoveroverdup279 dup over drop drop swap dup over over dup
+define overswap280 over swap
+dupoverswapdupoverover171
+push 8871
+dupoverswapdropdup131
+dropswapdropswapdupdup192
+push 7155
+define dupswapdupswapdupdupswap281 dup swap dup swap dup dup swap
++
+push 7948
+-
+dupdropdupoverdropdupswapdup257
+push 1508
+push 7459
+overswap85
+push 8808
+define dupdupdupdropdup282 dup dup dup drop dup
+dupswapoverdupoverswapdropover75
+dupoverdropdrop57
++
++
+swapdrop252
+swapdupswapdropswapdupdupdropover92
+push 4685
+push 6337
+dupswapoveroverdupdup163
++
+define dupswapswap283 dup swap swap
+push 1871
+push 7179
+*
+push 5095
+define swapdrop284 swap drop
++
+push 7100
+over268
+push 6800
+push 4405
+push 7396
++
++
+push 5041
+define swapswapswapoveroverdupswapoverdup285 swap swap swap over over dup swap over dup
+dropoverdropover105
+define overswapswapoveroverdropdupoverswap286 over swap swap over over drop dup over swap
+swapdropdrop158
+push 6526
+-
+push 434
+push 1952
+swap53
+push 6489
+define over287 over
+push 6950
+dropdupoveroveroverdup187
+push 4373
+*
+push 6503
+define dupdropdropoverdrop288 dup drop drop over drop
+push 6470
+-
+swap99
+push 6471
+push 2679
+push 6509
+overdropoverdupdup110
+swapswapswapoverswapdupover151
+*
+push 538
+define swapover289 swap over
+*
+dupswapdupoveroverover201
+define dupdup290 dup dup
+push 4191
+dropswap186
+push 3982
+push 7284
+swapswapswapoveroverdupdupdropover188
+push 226
+swapdropoverdropoverdupswapdupdrop116
+*
+swapdropdropdropover223
+-
+swapoverdropswapswap250
+define swapdupdrop291 swap dup drop
+define dup292 dup
+dupoverdropdrop57
+-
+push 478
+define dropoveroverdropdupoverover293 drop over over drop dup over over
+-
++
+define dropdrop294 drop drop
+push 4727
+*
+dropoverdupoverdropdupover64
+define overdup295 over dup
+define dupdropoveroveroveroveroverdupoverdrop296 dup drop over over over over over dup over drop
+push 3630
+define dropdupswapdropswapdropdupoverdupover297 drop dup swap drop swap drop dup over dup over
+dropswap118
+define swapdupoverdupdropswapoverswap298 swap dup over dup drop swap over swap
+swapdropdrop239
+push 353
+dropoveroverdup180
+dropdrop294
+*
++
++
+push 7215
+push 8079
+define dupswapoveroveroveroverdupdup299 dup swap over over over over dup dup
+push 8004
+define swapoverswapdupswapdropswapoverover300 swap over swap dup swap drop swap over over
+push 4561
+define drop301 drop
+push 3242
+over108
+push 1848
+push 290
+push 830
+define dropdropswapoveroveroverdropswap302 drop drop swap over over over drop swap
+-
+push 473
++
+define overdropoverdupswapoverdropswapdropdup303 over drop over dup swap over drop swap drop dup
+dropdupdupdrop228
+define dropdupdropswapdupoverdropdup304 drop dup drop swap dup over drop dup
++
+*
+push 8293
+swapswapswapswapdupdropdropover262
+define dropdropdropswapdupdupswapdropdrop305 drop drop drop swap dup dup swap drop drop
+push 8891
+overoveroverdropdropdupover66
+swapswapswapoveroverdupdupdropover188
+push 2640
+push 6883
+define swapdupdup306 swap dup dup
+define dropoverdupdupoverdupdropswapoverover307 drop over dup dup over dup drop swap over over
+dropdupdupdropdropswapoverswapdup169
+-
+dropdupdupdropdropswapoverswapdup169
+push 412
+dropover226
+push 6188
+dropoverdupdupdropdropoverdupdupdrop102
+push 3791
+define swapdupswapswapdrop308 swap dup swap swap drop
+push 5157
+dupoverswapdupdropdropdupdupdup63
++
+swapswapswapswapdupdropdropover262
+push 3085
+push 3386
+define dropdupswap309 drop dup swap
+push 2299
+overswapoverswapdupdupdupdup218
+swapdropdupoveroverswapdupoveroverswap81
+overoverdropoverdropswapoverdrop194
+define dropoverswapoverswapdropdrop310 drop over swap over swap drop drop
++
+push 8523
+define dropswap311 drop swap
+dropswapdrop277
+define swapdupdupoverdropdupdropdupdrop312 swap dup dup over drop dup drop dup drop
+dropswap186
+push 6303
+push 1651
++
+push 1309
+push 237
+push 705
+*
+push 5715
+push 686
++
+dupswapdup127
+push 4190
+push 7004
++
+swapswapswapoverswapdupover151
+dropswapdrop84
+*
+define drop313 drop
+*
+push 5262
+push 281
+-
+-
+define swapswapswap314 swap swap swap
++
+push 1003
++
+dropswapdrop277
+define over315 over
+define overdupdupdup316 over dup dup dup
+push 6273
+-
+push 4431
+push 8783
+dupdropdupdupdupdupdropoverswap67
+swap265
+push 5653
+define overdupdupdropdropdupover317 over dup dup drop drop dup over
+push 2052
+dupover167
+push 6239
+push 6508
+define swapswapdropswapdropdropswapswapdupdup318 swap swap drop swap drop drop swap swap dup dup
+push 7849
+define dropdupdupswapswapdupdupdupswap319 drop dup dup swap swap dup dup dup swap
+define swapswapswapdrop320 swap swap swap drop
+push 2355
+push 7192
+over76
+push 5408
++
+define swapdupoveroveroverdup321 swap dup over over over dup
+define dupswapover322 dup swap over
+define dropswapoverdupdupswap323 drop swap over dup dup swap
+*
+overdupoveroverdropdrop164
+push 4103
+*
+push 620
+push 1627
++
+swap53
+define swapdropswapover324 swap drop swap over
+dupswapdupoverdropdropswapdupdrop263
+define overswap325 over swap
+push 3074
+push 8557
+-
+swapswapdropswapdrop137
+push 1373
++
+push 2619
+swapdupdrop291
+push 2297
+define dupdupdupdup326 dup dup dup dup
+*
+define swapdropoverswapdupdupswapswapdupover327 swap drop over swap dup dup swap swap dup over
+push 5753
+define dupoverdropdupswapdupoverover328 dup over drop dup swap dup over over
+dupoverdropdupswapdupoverover328
+push 5254
+push 8603
+overoverdupdropdrop222
+-
+push 569
++
++
+define dupdropoverdupoverswapdropoverdup329 dup drop over dup over swap drop over dup
+push 7834
+define swapdrop330 swap drop
+push 6395
+push 5472
+dupover220
+push 4668
+define dropdupswapdupover331 drop dup swap dup over
+define swapoverdupswapoverover332 swap over dup swap over over
+define swapswapoveroveroverswap333 swap swap over over over swap
+push 289
+push 3323
+push 6592
+push 494
+push 2281
+overoveroverdropoverdupdropdup159
++
+push 5928
+push 2312
+swapdupdupswapswapdupoverdropoverdup88
+-
++
+*
+push 4742
+push 7239
+define swapswapoveroverdrop334 swap swap over over drop
+define swapoverdupdupswap335 swap over dup dup swap
+push 5447
+swapdropswapdropdropoverswapswapdup156
+push 3718
++
+push 78
+-
+dropswapdupdropswapdup60
+push 8601
+define dropdupswapoverover336 drop dup swap over over
+*
+-
+push 8933
+define dropdrop337 drop drop
+define dropoverdupdropswapswapswapdropswap338 drop over dup drop swap swap swap drop swap
+push 6432
++
++
+dropoverdupoverdropdupover64
+push 7659
+define over339 over
+-
+-
+define overswap340 over swap
+define dupdupdropdupdropdropdropdropswap341 dup dup drop dup drop drop drop drop swap
+define dropdrop342 drop drop
+swapswapdupdupswap214
+push 6140
+push 6982
+define dupdupdupoverdropdropdrop343 dup dup dup over drop drop drop
+-
+swapdupdropdupswapdropswap100
+push 7160
+define dupswap344 dup swap
+overdupdupoverswapswapdupoveroverswap209
++
++
++
+push 331
+push 4783
+dropdup267
+dropoverswapoverswapdupoverdupoverover269
+dupdropdupoverdropdupswapdup257
++
+define swapdropdupoverdupoverdupdrop345 swap drop dup over dup over dup drop
+push 5043
+-
+*
+define overdrop346 over drop
+define dupoverdupswap347 dup over dup swap
+swapswapoveroveroverswap333
+push 2819
+push 3071
+define swapoverdupdropoverswapdropswapover348 swap over dup drop over swap drop swap over
+overoverswapswapswapdupdup72
+*
+dropoverdupoverdropdupover64
+push 3808
+push 2093
++
+define dropdropswap349 drop drop swap
++
+drop227
+-
++
+push 7338
+push 328
+over76
++
+define overdropdupdup350 over drop dup dup
+dropdropswap56
+push 6130
+push 1817
+swapswapswapoverdropover224
+push 1719
+define overdupdropdropdupdropover351 over dup drop drop dup drop over
+push 2532
+dupdupdupoveroverdropswapover176
+overdupoveroverdropdrop164
+push 1205
+dupoverswapswapdropdropover178
+define dupoveroverswap352 dup over over swap
+*
+push 2448
+define overoverswapswapswap353 over over swap swap swap
+push 1486
+push 3843
+push 8895
+define dupoveroverdupdupdrop354 dup over over dup dup drop
+define swap355 swap
+overoverdropswapover89
+define overdropswap356 over drop swap
+push 7126
+push 2942
+-
+dupdup91
+-
+swapoverdup207
+-
+push 6859
+push 5038
+push 7026
+over268
+dupdropdropswap136
+push 7561
+push 731
+push 8803
+push 4103
++
+-
+swapdropdrop239
+define dropdupdupover357 drop dup dup over
+push 3955
+define dupswapswapdropoverdupdropswapdup358 dup swap swap drop over dup drop swap dup
+push 4770
+-
++
+dup71
+push 2147
+define dupdropoverdrop359 dup drop over drop
+*
+dropdropswapoveroveroverdropswap302
+define overswapdropdupdupdropdupdupdropdrop360 over swap drop dup dup drop dup dup drop drop
+push 2365
+push 7842
+push 2593
+drop313
+-
+define overswapover361 over swap over
+define swapdropswapdropdupswapdrop362 swap drop swap drop dup swap drop
+dupdupoverdupoverswapdupdropdup112
+push 7849
++
+swapoverdup207
+push 2320
+dropoverswapswapoveroverdropoverswap237
+drop79
+push 7729
+push 2824
+dropswapdrop277
+define swapoverover363 swap over over
+define swapdupdropswapswapoveroverdupover364 swap dup drop swap swap over over dup over
++
+push 6369
+define dropswapoveroverdupoveroverdupdupdup365 drop swap over over dup over over dup dup dup
+push 3507
+swapdupdupswapswapdupoverdropoverdup88
+swapdupdropswapswapoveroverdupover364
+push 2932
+push 5127
+push 1466
+push 8467
+-
+define overdropswapdropover366 over drop swap drop over
+push 4498
+push 1132
+push 7701
+*
+-
+push 7715
+*
+overdrop346
+push 8878
+swapdupdupoverdropdupdropdupdrop312
+swapdropdrop158
+define dupdupswapoverswapover367 dup dup swap over swap over
+push 2529
+push 5620
++
+push 4678
+push 6161
+push 2138
+swapdupoverdupdropswapoverswap298
+dupdupdropdropswapdropdupswapswapswap211
+push 2901
+define dropdup368 drop dup
+push 4142
+push 4417
+push 3655
+push 4932
+*
+*
+define dropdropdupswapswapoverdropswap369 drop drop dup swap swap over drop swap
+*
+push 1819
+dupswap344
+define overswapoverswapoverdrop370 over swap over swap over drop
+push 5238
+define dropswap371 drop swap
+*
+*
+define swapoverswap372 swap over swap
+push 3762
+push 7931
+overoverdupswapoverdrop165
+push 7777
+push 1941
+*
+-
+push 648
+-
+push 3399
+push 3692
+dupoveroverswapdropdup270
+push 7940
+push 5811
+-
+push 8585
+-
+dropdupdropdupswapdupdropdupover62
+dupswapover111
+swapswap146
+push 497
+define swapoveroverdropswap373 swap over over drop swap
+-
+push 2371
+*
+dropoverswapdropdupdropdropoverdropdup251
+push 749
+define dup374 dup
+push 251
++
+*
+push 4694
+-
+define swapdup375 swap dup
+push 3086
+push 27
+*
+push 71
+push 4506
+push 3440
+define overoveroverdropdropdup376 over over over drop drop dup
+push 7658
+push 6129
+push 4171
+define dropoveroverdupdup377 drop over over dup dup
+-
+-
++
+define overoverdropswap378 over over drop swap
+push 4449
+push 2700
+-
+push 8055
+*
+swapdropdupoverdupoverdupdrop345
+-
+push 736
+dropdropswapdupoverdupoverover191
+-
+drop106
+*
+define dropdropdropdupdropdropdupswapover379 drop drop drop dup drop drop dup swap over
+define dropoveroverdropswapoverover380 drop over over drop swap over over
+dropdupswapdupover331
+dupoverdropdupdupswapoverswap59
+*
+define dupswapoveroverdropdropdropdrop381 dup swap over over drop drop drop drop
+define overover382 over over
+dropswapswapswapdropdup82
+dupdropdup109
+push 1337
+push 4399
+push 7769
+define dupdupoveroverdropdupoverdupdropdup383 dup dup over over drop dup over dup drop dup
+define dupdupswapdupoveroverswapdupdropover384 dup dup swap dup over over swap dup drop over
+-
+push 4734
+push 844
+push 6814
+dupdupoveroverdropdupoverdupdropdup383
+dropoverdupdupoverdupdropswapoverover307
+push 850
+overdupdupdup316
+push 6546
+define overdupoveroverdup385 over dup over over dup
+define overdropdropdropswapdupdup386 over drop drop drop swap dup dup
+push 6824
+push 4155
+push 2633
+push 1540
+define dup387 dup
+define dropswap388 drop swap
+dropdupdupover357
+push 2964
+push 6860
+push 58
+overswapswapoveroverdropdupoverswap286
+swapoveroverdrop225
+dropdropdropdupdropdropdupswapover379
+define overoverdropswapswapdropdropdupdropswap389 over over drop swap swap drop drop dup drop swap
++
+dropoverdupdropswapswapswapdropswap338
+define swapoverdropover390 swap over drop over
+push 4491
+define swapswap391 swap swap
+*
+dropdupdupdropdropswapoverswapdup169
+push 3468
+dropdropdropdupdropover271
++
+-
+dropswap311
+push 4705
+*
+push 3579
+define overswap392 over swap
+define over393 over
+dupdropoverdupdup238
+push 1460
+push 7339
+-
+-
+swapoverdropoverover147
+push 557
+push 6520
+push 6962
+dupdupdrop261
+push 6868
+push 3444
+dropswapdropoverswapoverdup232
+push 6043
+push 4918
+overdupoveroverdropdrop164
+swapdupdrop46
+-
+push 2271
+*
+push 561
+*
+push 3375
+define dropover394 drop over
+dup374
+*
+push 1490
+push 8562
+push 6562
+dropdupswap309
+*
+push 4520
+push 5069
+define dupswapdupdupdropdropoverswap395 dup swap dup dup drop drop over swap
+push 713
+push 7216
+define overdupoverswapswapdropoverdupoverover396 over dup over swap swap drop over dup over over
+push 8906
+define swapswapdup397 swap swap dup
+push 6686
+define swapoverdrop398 swap over drop
+push 2021
+define dropdropswapoverover399 drop drop swap over over
+-
++
++
+push 4505
+define drop400 drop
+push 5796
+define dropswapswapswapdropdrop401 drop swap swap swap drop drop
+-
+overdupdupdup316
+push 1408
+push 6157
+dropoverswapdropdupdupswapdropswapdup184
+push 512
+define swapswapdrop402 swap swap drop
+*
+*
+define dupoveroveroverswapdupoverdupswapdrop403 dup over over over swap dup over dup swap drop
+push 8081
+define dropswap404 drop swap
+push 6314
+push 1365
+define dupswapswapdropdupswapdropswapswap405 dup swap swap drop dup swap drop swap swap
+push 6162
+push 8127
+*
+-
+swapdropoverdropoverdupswapdupdrop116
++
++
+define dupoverdropoverdrop406 dup over drop over drop
+dupdropdup109
++
+define swapdropoverdupoveroverdropswap407 swap drop over dup over over drop swap
+*
+define dropdupoverswapdupswapdrop408 drop dup over swap dup swap drop
+dropdrop294
+push 7863
+define dropdupdrop409 drop dup drop
+push 8246
+*
+define swapswapswapdropdropdropoverover410 swap swap swap drop drop drop over over
+push 8512
+push 2592
+push 7473
+define swap411 swap
+define dropoveroveroverdropdupswapover412 drop over over over drop dup swap over
++
+swapswapdropswapdrop137
++
+*
+swap149
+push 2720
+dup168
+define drop413 drop
+define overdupdropswapdupswapdupoverdup414 over dup drop swap dup swap dup over dup
+push 1679
++
+push 1297
+define dupdupswapdrop415 dup dup swap drop
+push 5844
+define dropdupdup416 drop dup dup
+push 2773
+define over417 over
+over51
+push 2073
+push 2131
+define overoverdupover418 over over dup over
++
+define swapoverswapdupdropdup419 swap over swap dup drop dup
+push 2691
+dropdupdupdrop228
+dupover139
+dropswapswapswapswapoveroverswapdupdup230
+push 1966
+push 5511
+define swapdrop420 swap drop
+push 5834
+define dropoverdropdropdupswapswapdupdrop421 drop over drop drop dup swap swap dup drop
+push 3595
+push 7751
+define dropdupover422 drop dup over
+push 1857
+push 5356
+define overdropoveroverdropdupdupdup423 over drop over over drop dup dup dup
+push 2750
+push 996
+define dropoverswap424 drop over swap
+push 3830
+push 5706
+-
+push 4801
+*
+define dupdupdupdropdropswapoverswap425 dup dup dup drop drop swap over swap
+push 3776
+define overdropswapoverswapoverover426 over drop swap over swap over over
+push 6649
+push 5208
+define dropoveroverdup427 drop over over dup
+push 5081
+push 2998
+push 421
+dropoveroverdup180
+*
+push 5049
+overdropswapdupoverdupdropdrop234
+push 7372
+-
+define dupoverdupoveroverdropdupdupdropdrop428 dup over dup over over drop dup dup drop drop
+swapdrop284
+push 1869
+define dupdropdropswapswapdupdupdupswapover429 dup drop drop swap swap dup dup dup swap over
+define over430 over
+overdupoverswapdupoverdropdupover170
+push 6649
+push 921
+dupoverswapdupoverover171
+overswapoverswapoverdrop370
+push 8549
+*
+push 5882
+push 6059
+dropdupdropdupswapdupdropdupover62
+define drop431 drop
+define swapoverdupoverdupoveroverdropdupover432 swap over dup over dup over over drop dup over
++
+dropoverdupdupdropdropoverdupdupdrop102
+dupoveroverswap352
++
+-
+over76
+define swapswapoverswapoverswapswapswapdup433 swap swap over swap over swap swap swap dup
+define swapoverdupswap434 swap over dup swap
+define dupswapdupdupdupdup435 dup swap dup dup dup dup
+over417
+push 8632
+push 3476
+define dropoverswapswapswapoverdup436 drop over swap swap swap over dup
+push 2795
+dropoverdupdropswapover260
+push 2979
+define overoveroverover437 over over over over
++
+push 6646
+push 2062
+define dropdropdupswapoverswapdupdropdupswap438 drop drop dup swap over swap dup drop dup swap
+push 7331
+dupswapdupoverdropdropswapdupdrop263
+*
+push 5566
+push 88
++
+push 7660
+push 1932
++
++
+define overoverdupswapdupdrop439 over over dup swap dup drop
++
+*
+define dupswapdup440 dup swap dup
+swapdrop247
+dropdropdropdupdropover271
+define dropdupdupswapdropoverswapoverswapdrop441 drop dup dup swap drop over swap over swap drop
+overswap85
+define overdupdupdupswapdropswapswapover442 over dup dup dup swap drop swap swap over
++
+define dropoverdupoveroverswapdup443 drop over dup over over swap dup
+dropdropswap349
++
+push 6932
+-
+push 3487
+define swapdropdropoverdupdupswapdropswap444 swap drop drop over dup dup swap drop swap
+over183
+push 4377
+push 3247
+push 33
+push 8406
+dupoveroveroverswapdupoverdupswapdrop403
+overswap280
+push 3190
+push 5239
+*
+swap355
+define dupdropdropdupdropswapswapoverover445 dup drop drop dup drop swap swap over over
+dupdropoveroverswapdupoverswapswapdup210
+define over446 over
+define overover447 over over
+-
+define dropdropswap448 drop drop swap
+push 6114
+define dupdropdupdropdupswapdup449 dup drop dup drop dup swap dup
+push 2145
+push 3540
+push 3307
+push 5525
+dropdupdupswapswapdupdupdupswap319
+push 6304
+dropdupdupdropdrop93
+-
+push 3617
+push 236
++
+push 485
+push 3142
+define dupdropswapswapdropdropswapdup450 dup drop swap swap drop drop swap dup
+define swapdupdropdupswapdup451 swap dup drop dup swap dup
+define dupdup452 dup dup
+swapswapswap204
++
+push 6994
+overswap133
+define dupdupdropswapdropswapdropoverdropdup453 dup dup drop swap drop swap drop over drop dup
+define overdupswap454 over dup swap
+-
+overdropswapoverswapoverover426
+push 6966
+define dupswapdupswap455 dup swap dup swap
+*
+-
+push 3313
+push 6698
+swapswapswapoveroverdupdupdropover188
+dropdupdupswapdropoverswapoverswapdrop441
++
+swapdropswapdropdropoverswapswapdup156
+push 7066
+swapdupdropswapswapoveroverdupover364
+dupdropoveroveroveroveroverdupoverdrop296
+push 6723
++
+push 20
+*
+define dupdupswapoverdupdropdupoverdupdrop456 dup dup swap over dup drop dup over dup drop
+define dupswapover457 dup swap over
+push 2522
+-
+push 2025
+push 2622
+dupdupdropswapdropswapdropoverdropdup453
+push 1576
+push 1344
+*
+push 1989
+push 7340
+define dropoverdropswapover458 drop over drop swap over
+define dropdupswapdupoverdupdropswap459 drop dup swap dup over dup drop swap
+push 408
+push 5749
+push 8292
+define overover460 over over
+push 4346
+define overdropdropswapoverdropdup461 over drop drop swap over drop dup
+push 6900
+push 8961
+define swapoverdropover462 swap over drop over
+define dropswap463 drop swap
+overswapdupdropdropswapdupswapdropover157
+define overdropdropoverswap464 over drop drop over swap
+push 6014
+push 7141
+-
+define swapoverdupdupoverdropoverdropdropswap465 swap over dup dup over drop over drop drop swap
+push 5683
+overoveroverover437
+-
+-
+dropswapswapswapdropdrop401
+push 6237
+push 2920
+push 1506
+define overdupdropdupoverdrop466 over dup drop dup over drop
+*
+define dropoveroveroverdropdropoverdropdrop467 drop over over over drop drop over drop drop
+push 4946
+define dupoverdropswapdrop468 dup over drop swap drop
+define dupswapdup469 dup swap dup
+push 2035
+push 375
++
+define dupdropswapoveroveroverdrop470 dup drop swap over over over drop
++
+swapswapswap204
+define dropswapoverswapswapoverdupdropswapswap471 drop swap over swap swap over dup drop swap swap
+push 3523
+*
+push 4356
+push 4613
+define swapoveroverswapdropswap472 swap over over swap drop swap
+push 2317
+push 3803
+push 7468
+overswap325
+-
+push 2760
+define dropoverdropdropdupdupswapdrop473 drop over drop drop dup dup swap drop
+push 4028
+define dupdupswapover474 dup dup swap over
+push 6946
++
+drop413
+push 11
+define swapdupswapdup475 swap dup swap dup
+define dropswapdupswapswapdupswapdropdup476 drop swap dup swap swap dup swap drop dup
+-
+push 6619
+define dropswap477 drop swap
+push 6790
+swapswapoveroveroverswap333
+push 1617
+define dropdupdupover478 drop dup dup over
++
+dropdropswap448
+push 7075
+push 4033
+push 3755
+push 8219
+-
+push 2124
++
+swapswapswapdropdropdropoverover410
+define dupswapdupdropdropswapdup479 dup swap dup drop drop swap dup
+push 3183
+*
+push 66
+dropdrop255
+dupswapdupdupdropdropoverswap395
++
+swapoverdropover462
+define dropswapdupdupswapdrop480 drop swap dup dup swap drop
+push 6654
+*
+push 2598
+push 1625
+push 8285
+define overdupoverswapoverdropdrop481 over dup over swap over drop drop
+push 4040
+dropdrop342
+push 2192
+define dropdropswapoverswapdropoverdup482 drop drop swap over swap drop over dup
+define dupdupoverdup483 dup dup over dup
+push 7389
+dropdupdupdropdrop93
++
+push 7220
+define overdropoverdupdropswapdrop484 over drop over dup drop swap drop
+push 7632
+push 6836
+push 1321
+push 5184
+push 6330
+push 7404
+define swapdupdropover485 swap dup drop over
+over183
+push 8167
++
+over108
+push 3942
+push 4785
+dupswapdupdupdupdup435
++
+push 7779
+overswap133
+define overdupdropdup486 over dup drop dup
+*
+push 2401
+-
+push 3571
+define dropdupdupover487 drop dup dup over
+push 3655
++
+push 3995
+define swapswap488 swap swap
+-
++
+dropoveroverdropdupoverover293
+push 3973
+dupdupdupdupswap199
+overswapdupdropdropswapdupswapdropover157
+push 3543
+push 3896
+push 6978
+define overdropoveroverswapdropdropdropdupswap489 over drop over over swap drop drop drop dup swap
+dropdupswapdropswapdropdupoverdupover297
+push 8502
+push 3183
+swapswapswapoveroverdupdupdropover188
+push 4888
+-
+push 1275
++
+push 4771
+-
+push 2411
+overdropoveroverdropdupdupdup423
+*
+define dupswapswapdupover490 dup swap swap dup over
+define over491 over
+swapswapswapswap145
+push 1009
+push 4295
+dupdupdupdup326
+*
+dropswapdropoverdropoverswapswapswap154
+push 6225
++
+define dupdropoverswapswapdropoverdropdup492 dup drop over swap swap drop over drop dup
+push 8034
+dropdupswap309
+push 8702
+push 7886
+drop400
+push 5536
+*
++
+push 8429
+push 4418
++
+-
+push 4963
+define overdropdup493 over drop dup
+push 2205
+push 2951
+push 8588
+define overswap494 over swap
+push 7414
+swapoverdropoverover147
+push 7389
+define dropdropoverswapoverdupdropdropdup495 drop drop over swap over dup drop drop dup
+push 8387
+push 3395
+define overdupdupoverdropdropdup496 over dup dup over drop drop dup
+push 6597
+define swap497 swap
+define overdrop498 over drop
+*
+push 4276
+*
+dupoverdropdropswapdupoveroverdup279
+define dropdropswapoverdropdupover499 drop drop swap over drop dup over
+push 1758
+define dupdropswapdupdropoveroverswapswap500 dup drop swap dup drop over over swap swap
+define dupdupdrop501 dup dup drop
+define dupswapdropswapswapswapoverover502 dup swap drop swap swap swap over over
+swapdrop252
+push 3211
+push 74
+dropdropswap448
+push 7573
+dropdropdupswapoverswapdupdropdupswap438
+dupdupdropdupdupdropover103
+push 7092
+define over503 over
+define dupoverdropoveroverswapoveroverdupdrop504 dup over drop over over swap over over dup drop
+push 6942
+swapdropdropswapoverswap258
+push 1748
+dupoveroverover246
+dupdupswapover474
+define swap505 swap
+push 4058
+push 7307
+push 1955
+push 8495
+push 2994
+dropswap463
+dropdupoverdropdup273
+define dropdropdupoverswapoverswapdup506 drop drop dup over swap over swap dup
+push 4916
+define overdropswapoverdup507 over drop swap over dup
+define dupdupswap508 dup dup swap
+dupdupdupoverdropdropdrop343
+push 4112
+swapdup375
+push 433
+swapdropoverdupoveroverdropswap407
+push 1048
+push 7935
+push 1593
+define dupdupdupdup509 dup dup dup dup
+dropdup90
+push 3742
+define dupdrop510 dup drop
+define dupswapdupswapdup511 dup swap dup swap dup
+push 5135
+dupswapswapdupover490
+push 1867
+define dropoverswapdrop512 drop over swap drop
+define dropdupdropdupdropover513 drop dup drop dup drop over
+-
+define swapswapswapoverdupdupswapswap514 swap swap swap over dup dup swap swap
+push 693
+overdupswap454
+push 7232
+define swap515 swap
+define swapoverswapoverswapoverswapdup516 swap over swap over swap over swap dup
+-
+push 8724
+overdropdup182
+*
+push 4375
+dupdropdropswapswapdupdupdupswapover429
+define overoverdupswapdupdropswapdupdup517 over over dup swap dup drop swap dup dup
+define overswapoverdup518 over swap over dup
+push 5623
+define dupover519 dup over
+define dropswapoverswapover520 drop swap over swap over
+-
+push 8576
+push 7393
+push 2197
+-
+*
+define overswapoveroverswapdupswapoverswap521 over swap over over swap dup swap over swap
+swapdupdupswapswapdupoverdropoverdup88
+define swapswapdup522 swap swap dup
+define swapswap523 swap swap
+define swapswapoverswapdropdropdrop524 swap swap over swap drop drop drop
+push 6930
+push 8796
+push 412
++
+define overoveroverdropdupdupdupswap525 over over over drop dup dup dup swap
+swapdupdropdupswapdropswap100
+push 1913
+define dropoverdup526 drop over dup
+push 5529
++
+define dropdropoverdropswapdupdropdrop527 drop drop over drop swap dup drop drop
+*
++
+push 3120
+push 280
+swap101
+push 2256
+push 1227
+push 433
+dropdropoverswapoverdupdropdropdup495
+define swapdropoverdupoverdropswapswap528 swap drop over dup over drop swap swap
+define dupdupoverdropdropdupoverswapdup529 dup dup over drop drop dup over swap dup
+swapdropswapover324
+push 5857
+push 3741
+push 7634
+define dupdupdropswapover530 dup dup drop swap over
+*
+define swapdupswapover531 swap dup swap over
+push 7092
+push 4664
+push 1788
+push 14
+push 6255
+define overswapswapswapdropswapdupdropover532 over swap swap swap drop swap dup drop over
+push 4894
+define dropoverswapdupswapswapdupoverswapdrop533 drop over swap dup swap swap dup over swap drop
+define swapswapdrop534 swap swap drop
+over108
+*
+push 1904
+overdropdup493
+dupdropoverdupdup238
+push 8549
+push 2619
+push 6554
+push 5193
+define swapoverdupdup535 swap over dup dup
+define overdupdupswap536 over dup dup swap
+push 6419
+push 1841
+push 2612
+dupoverdropdupswapdupoverover328
+define dupswapoveroverswapoverswapdropdupdup537 dup swap over over swap over swap drop dup dup
+dupoverswapdropdup131
+define dupdropswapoverover538 dup drop swap over over
+define dupdupdropdupswapdupswap539 dup dup drop dup swap dup swap
+*
+define dupdupdropdupdupswap540 dup dup drop dup dup swap
+define over541 over
+push 6981
++
+swapoverdupdup535
+define overdupoverswapdupswap542 over dup over swap dup swap
+define dupdupdropoverdrop543 dup dup drop over drop
+define dup544 dup
+push 1869
+dropdropswapoverswapdropoverdup482
+push 557
+*
+define overswapswapover545 over swap swap over
+push 2585
+over430
+push 2755
+*
+push 6173
+-
+push 7177
+define swapdropdupoveroverdropdupdupswapswap546 swap drop dup over over drop dup dup swap swap
+push 7644
+*
++
+push 7688
+define dropdupdup547 drop dup dup
+push 4791
+define dupswapdupover548 dup swap dup over
+define swapdropoverdrop549 swap drop over drop
+*
+push 3108
+*
+overdupdupdupswapdropswapswapover442
+drop400
+push 5035
+push 4502
+push 1937
+*
++
+swapdrop121
+define overoverdupoverdropdropoverdrop550 over over dup over drop drop over drop
+dupdropoveroveroveroveroverdupoverdrop296
+-
+push 1907
+swapdropoveroverdropoveroverdropover142
+push 3265
+-
+swapdropdropdropover223
+define dupdropswapdupdropdropswapswapdupswap551 dup drop swap dup drop drop swap swap dup swap
+dupover119
+push 2250
+push 3262
+define overswapoverdupoverdupswapdropdropswap552 over swap over dup over dup swap drop drop swap
+push 5602
+-
+push 3788
+dropoveroveroverdropdropoverdropdrop467
+*
+dupoveroverswapdropdup270
+define dupdupoveroveroverswapswapswap553 dup dup over over over swap swap swap
+push 7015
++
+push 7195
+dropswapdupswapdropswap266
++
+define dupdup554 dup dup
+push 3461
+push 8413
++
+push 5213
++
+define overdupdropswapdropoveroveroverswapdup555 over dup drop swap drop over over over swap dup
+-
+overdupdropdup486
+push 2660
+dropdropdupoverswapoverswapdup506
+push 1136
++
+push 2578
+push 3332
++
+define dropdupover556 drop dup over
+swapover289
+dropoverdropswapover458
+push 5925
+push 3503
+push 4136
+*
+push 7313
+push 3262
+-
+push 5621
+push 3969
+push 8156
+dupoverdupoveroverdropdupdupdropdrop428
+push 919
+define overdupdropdupoveroverdupdupdrop557 over dup drop dup over over dup dup drop
+define overdrop558 over drop
++
+dupswapswap283
+push 4908
+define overswapoverdup559 over swap over dup
+-
+*
+push 7846
+define dropswapdropover560 drop swap drop over
+push 5937
+*
+push 2257
+-
+overdrop498
+define drop561 drop
+-
+define swapdupover562 swap dup over
+push 1593
+push 6350
+push 7994
+overdupdupdupswapdropswapswapover442
+swapoverdropover390
+define dropswap563 drop swap
+define overdupdropoverdropdropdropoverdropover564 over dup drop over drop drop drop over drop over
+push 4180
+push 6203
+define dupswapdupdropswapoverdup565 dup swap dup drop swap over dup
+push 2650
+push 8496
+-
+-
+define dupdropdrop566 dup drop drop
++
+*
+push 4170
+swapswapdrop534
+push 1396
+push 1764
+dupdropswapswapdropdropswapdup450
+define dropoverdupoverswapdrop567 drop over dup over swap drop
+push 8434
+push 5283
+swapswap391
+push 5812
+define overswapdupoverdup568 over swap dup over dup
+swap355
+push 709
+*
+push 1584
+define dupswapswapdupdropover569 dup swap swap dup drop over
+define overoverswapdropswap570 over over swap drop swap
+define dupdropswapoveroverdupoverdropswapswap571 dup drop swap over over dup over drop swap swap
+push 5623
+dupdupdupoverdropdropdrop343
+push 7296
+define dropswapoveroverswapover572 drop swap over over swap over
++
++
++
+push 1857
++
++
+push 2081
+dropoverswapoverswapdropdrop310
+dropdupoverswapdupswapdrop408
+push 3924
+push 7697
+swapdupoveroveroverdup321
+swapdupswapover531
+push 164
+define swapoveroverdupdropswapdupdropdup573 swap over over dup drop swap dup drop dup
+-
+dupdupdropswapdropswapdropoverdropdup453
+push 7444
+*
+define overdropswapoverover574 over drop swap over over
+push 4591
+overdupswapdropswapdropswap249
+define dup575 dup
+define dupdupdupdropswapdropdupdup576 dup dup dup drop swap drop dup dup
+push 7916
+push 6689
++
+dropdropoverswapoverdupdropdropdup495
+-
+dupdup452
+push 6679
+define dropdropoverdropoverdupswap577 drop drop over drop over dup swap
+push 770
+push 4481
+swapdupdrop46
+define dupover578 dup over
+push 5428
+overswapdupdropdropswapdupswapdropover157
+swapswapswapoverdropover224
+push 747
+*
+push 728
+swap149
+overdrop558
+swapswap488
+push 2420
+overdropdupoverswapover61
+push 8319
+push 1888
+push 2005
++
+*
+dropdropswapdupoverdupoverover191
+push 7690
+push 6277
++
+dupoveroverover246
+define dropdupdupdupoverswapoverswapdrop579 drop dup dup dup over swap over swap drop
+push 8233
+overdupdropdupoveroverdupdupdrop557
+overdrop346
+push 5506
+dupdropoverdupdup238
+*
+dropover394
+define overdropdupswapswapover580 over drop dup swap swap over
+*
+define dupdupoveroverdup581 dup dup over over dup
+dropdropswap448
+*
+push 8019
+define overoverswapoveroveroverdropswapdupdup582 over over swap over over over drop swap dup dup
++
+over491
+push 1802
+push 7242
++
+define overdropdupswapdropdup583 over drop dup swap drop dup
+push 1410
+define dupdupoveroverdupoverdup584 dup dup over over dup over dup
+define over585 over
+overdropswapoverdup507
+push 7843
+push 24
+overdropoveroverdropdupdupdup423
+-
+push 4322
+overdropswap356
++
+push 4753
+push 4008
+-
+define dropswapdropdropoverover586 drop swap drop drop over over
+push 2575
+overoverswapswapswap353
+*
+dropdup368
++
+push 126
+define overdupdupdropswapdropdropdrop587 over dup dup drop swap drop drop drop
+push 3196
+swapoveroverswapdropswap472
+-
+define dupoverswapdupoverdropover588 dup over swap dup over drop over
+*
+swapdropdropswapoverswap258
+push 3016
+swapdropdupoverdupoverdupdrop345
+swapdropdropdropover223
+push 8538
+*
+swapswapswapdrop320
+push 4713
+swapswapdup522
+push 120
+-
+push 5555
+push 4956
+-
+push 1846
+push 4567
+-
+over446
+push 7769
+*
+push 873
+dupdup91
+push 3756
+define overdropdropdropoverdupdup589 over drop drop drop over dup dup
++
+define dropdupdropoverdupswapdupswap590 drop dup drop over dup swap dup swap
++
+push 1115
+push 4269
+dropdrop255
+push 3849
+over417
+swapswapdupdupswap214
+push 221
+*
+*
+swapdupdropswap80
+*
+push 3968
+push 2289
+push 1412
+-
+push 7542
+define drop591 drop
+push 4875
+push 8802
+swapswapoverdupoverdropswapoverover162
+define dropswapoverdrop592 drop swap over drop
+push 7208
+overdupdropdup486
+push 2303
+dropswapdupswapswapdupswapdropdup476
+-
+push 2559
+*
+push 450
+-
+push 4333
+define overdropoverdupswapswapoverover593 over drop over dup swap swap over over
+dropoverswapoverswapdupoverdupoverover269
+swap515
+swapoveroverswapswapdrop143
+dupdropdupoverover120
+*
+swapdropoverdropover264
+push 1227
+push 75
+push 3730
+push 6910
+swapdropdropoverdupdupswapdropswap444
+dropdropdropdrop97
+push 8255
+push 2106
+push 2246
+push 11
+push 462
+push 197
+-
+*
+push 1546
+push 4325
+*
+-
+dupoverdropdupdupswapoverswap59
+*
+push 6925
+dupdupswap508
+push 2441
+define swapdropdropdropoveroverdupover594 swap drop drop drop over over dup over
+*
+-
+push 1260
+over242
+push 2894
+define swapdupdropdropdrop595 swap dup drop drop drop
+push 2016
+push 8983
+dupdupdupoverdropdropdrop343
+push 6507
+push 5176
+swap149
+push 7875
+dupdupdupdropswapdropdupdup576
+swapswapdupdupswap214
+push 249
+push 5746
+push 5960
+push 5565
+push 2889
+push 7121
+push 3424
+-
+push 3957
+over585
+define dupdropdupdupdropdupdupdup596 dup drop dup dup drop dup dup dup
+-
+push 3788
++
+swapoverdropswapoveroverdupoverover196
+define dupoverdupoveroverdropdropover597 dup over dup over over drop drop over
+-
++
+push 3307
+push 8556
++
+push 7385
+push 6827
+-
+push 5870
+push 3765
+*
++
+push 2469
+overoverswapoveroveroverdropswapdupdup582
+-
+push 5282
+define drop598 drop
+define dropoverdropdupswapdupdupdropdupdrop599 drop over drop dup swap dup dup drop dup drop
+define dropswapoverdupswapdupdropover600 drop swap over dup swap dup drop over
++
+swapoveroverdropswap373
+push 6507
+define dupoverover601 dup over over
+push 6736
++
+dupoverdropdupdupswap219
+push 6832
+*
++
+push 3111
+push 4891
+dropdrop294
+push 8156
+*
+push 4591
+define dupswapdupoveroverdup602 dup swap dup over over dup
+define swapoverdup603 swap over dup
+push 3683
+define dropdropover604 drop drop over
+define dropdropswapdropswapdropdup605 drop drop swap drop swap drop dup
+-
++
++
+push 2684
+define dupoveroverswapdropswapswapswapdupdrop606 dup over over swap drop swap swap swap dup drop
+-
+push 6993
+define dropswapdropdupoveroveroverdupdrop607 drop swap drop dup over over over dup drop
+define dupdropdupoveroverswap608 dup drop dup over over swap
+-
+push 7505
+define overswapdropover609 over swap drop over
+define overoverover610 over over over
+dupswapdupswapdupdupswap281
+define dropoverdup611 drop over dup
+overdupdropdupoverdrop466
+push 1025
+swapdupoverdupdropswapoverswap298
+push 4783
+push 8992
+push 1397
+dropoverdropdupswapdupdupdropdupdrop599
+define overswapdupswapswapdupdropdropdrop612 over swap dup swap swap dup drop drop drop
+-
+push 252
+dupdupdropswapover530
+dropdupdup547
+define overdupoverdupdropdropswapdupdupdup613 over dup over dup drop drop swap dup dup dup
+define swapdropswap614 swap drop swap
+push 4977
+*
+overswapoverdupoverdupswapdropdropswap552
+push 6098
+swapoverswapoveroverdupswap58
+dupoverdupswap347
+define swapdupdupdupoverover615 swap dup dup dup over over
+define overdropoverdropdropswapoveroverdrop616 over drop over drop drop swap over over drop
+define overdupdropdropdropoverdupoverdropover617 over dup drop drop drop over dup over drop over
+*
+push 5392
+push 1163
+define dropdupswapswapdupdupoverdrop618 drop dup swap swap dup dup over drop
+define dupswapoverdropdupswapdropdrop619 dup swap over drop dup swap drop drop
+push 5122
+push 3284
+define drop620 drop
+-
+push 8313
+swapoverdup207
++
+dupdropswapoveroverdupoverdropswapswap571
+push 8191
+push 8798
+-
+swapdrop247
+-
+push 7820
+push 539
++
+define dupdupdropoverswapswapdropoverdrop621 dup dup drop over swap swap drop over drop
+*
++
+-
++
+push 7364
+dropdupdupdropdropswapoverswapdup169
+push 2593
+define dropdupswapdropswapdup622 drop dup swap drop swap dup
+push 8861
+push 4610
+push 3732
+push 8789
+push 8905
+dropover226
+overdropdup493
+dropdropoverdropoverdupswap577
+push 4330
++
+*
+push 8134
+define dropdupoverswapdup623 drop dup over swap dup
+push 7467
+define dropdropdupdupswapdropover624 drop drop dup dup swap drop over
+push 2354
+push 3628
+dropswap311
+push 4354
+dupswapswapdupdropover569
+-
+*
+push 3069
+overdropswap179
+overdropdropswapoverdropdup461
+push 463
+push 5271
+define dupswapdropswapdupdrop625 dup swap drop swap dup drop
+push 3542
+push 4687
+overdropoveroverswapdropdropdropdupswap489
++
+over242
+push 1602
+define dropdupdropswapswapoverdrop626 drop dup drop swap swap over drop
+dropdropswapoverdropdupover499
+define swapdupdropswapswap627 swap dup drop swap swap
+push 6915
+swapdupdrop291
+push 277
+push 6045
+push 5710
+push 6753
+push 5479
++
+push 8211
+swapdropdrop239
+-
+-
+define swapdupdropdropdupdropdupdup628 swap dup drop drop dup drop dup dup
+dupdupswapoverswapover367
+push 2966
+push 4384
+push 7006
+push 3215
++
+define dupdupdropdropdup629 dup dup drop drop dup
+define dupdupoverdropoverover630 dup dup over drop over over
+push 3104
+swapswapoverdupoverdropswapoverover162
+-
+define dropoverdupdropoverswapswapswapdupdup631 drop over dup drop over swap swap swap dup dup
+push 2771
+push 4843
+*
+push 4652
+-
+*
+push 1441
+swapdropoverdropoverdupswapdupdrop116
+dupdropdupoverover120
+push 5128
+push 2875
+swap505
+define dropdropdupdropswap632 drop drop dup drop swap
+-
+push 8655
+define swapdupoverswapover633 swap dup over swap over
+*
+define dupdropswapswapswapdropdupover634 dup drop swap swap swap drop dup over
+push 5697
+push 4711
++
+push 204
++
+define overswapdropdropdropdup635 over swap drop drop drop dup
+define dupoverdupswapover636 dup over dup swap over
+push 6703
++
+push 3035
+push 7033
++
+push 1886
+push 2866
+push 2845
+define dup637 dup
++
+push 6674
+*
+push 790
+push 5499
+define dropswapdup638 drop swap dup
++
+define dup639 dup
+push 8782
+define swapdropswapdropdupdropswapdrop640 swap drop swap drop dup drop swap drop
+define dropoverdupdropdropdropdupswap641 drop over dup drop drop drop dup swap
+define overswapoverswap642 over swap over swap
+push 2645
+define dropoveroverover643 drop over over over
+push 7236
+push 5992
+push 2738
+push 5540
+push 5800
+push 6400
+push 4360
+push 3302
+push 1211
+dupswapoveroverdropdropdropdrop381
+swapdupdupoverdropdupdropdupdrop312
+-
+define swapswap644 swap swap
+push 1494
+push 281
+push 6524
++
+define swapswapoverdropdupdupdropdropswapdup645 swap swap over drop dup dup drop drop swap dup
+push 2690
+push 3043
+dupswapoverdropdupswapdropdrop619
+-
+-
+define dupoverdup646 dup over dup
+overswapdupdropswapdupover253
+push 4966
+push 4863
+push 2516
+dropoverswapdupswapswapdupoverswapdrop533
+define dropdupdupdropoverdupdrop647 drop dup dup drop over dup drop
+*
+push 7333
++
+push 415
+push 3575
+push 8577
+push 7013
+dropdupswapdropoverswap221
+-
++
+push 5383
+push 7353
+push 5224
+define dupdrop648 dup drop
+push 6760
+define dup649 dup
+-
+*
+push 7268
+push 36
+define dropdupdropoverswapdrop650 drop dup drop over swap drop
+dropdropdropswapswapswapdropswap74
+push 4397
+push 6703
+-
+dropdrop342
+dropdrop255
+push 3765
+dup544
+push 5852
+push 4789
+define dropdupdupswapover651 drop dup dup swap over
+push 1837
+define overdropswapdropoveroveroverover652 over drop swap drop over over over over
+-
+push 5424
+define dupoveroverdrop653 dup over over drop
+define dropdropoveroverdropoverdropoverdup654 drop drop over over drop over drop over dup
+define swapdup655 swap dup
+dropoveroveroverswapoverswap229
+push 5244
+-
+define dropdropoverswapswap656 drop drop over swap swap
+define overdupdupoverdropswapdropoverswap657 over dup dup over drop swap drop over swap
+define dupswap658 dup swap
++
+overoverdropswapswapdropdropdupdropswap389
+push 4279
+push 5997
+push 5174
+*
+push 137
+push 4593
+-
+push 311
+push 5619
+push 8981
+push 3262
+swapdrop284
+push 10
+dropdropdropswapdupdropswap87
+define over659 over
+push 8841
+overover447
+dupdupdrop261
+-
+push 8554
+dropswapdropswap161
+push 3970
+push 8802
+*
+define overdupdup660 over dup dup
+push 6401
+overdupoverswapdupswap542
+define dropdupswapdropoverdrop661 drop dup swap drop over drop
+push 4463
+define overdupover662 over dup over
+push 7934
+push 7270
+push 3321
+*
+-
+swapoverdupswap434
+define swapdupdropdropoverdropdupdup663 swap dup drop drop over drop dup dup
+overswapdropdupoveroveroverdupdupover49
+define dupswap664 dup swap
+push 359
+define overswapdropdupdupoverdropoverdupswap665 over swap drop dup dup over drop over dup swap
+define overdupswapoverdupswapswap666 over dup swap over dup swap swap
+overswap494
+push 8219
+push 6525
+push 8468
++
++
+define dupswapswapdup667 dup swap swap dup
+*
+define dropswapoverover668 drop swap over over
+push 2131
+dropdropdupswapswapoverdropswap369
+-
+define overoverdupdropswapdropdrop669 over over dup drop swap drop drop
+-
++
+push 3501
+push 3827
+define dropdupdupswap670 drop dup dup swap
+push 3431
+push 8609
+swapswap146
+push 2912
+push 1576
+dupdropdupdupdupdupdropoverswap67
+dupoverswapdupdropdropdupdupdup63
+push 4581
+push 1754
+define dropswapoveroverdropswapover671 drop swap over over drop swap over
+push 2771
+push 5597
+push 8820
+swapdrop247
++
++
+-
+push 3887
+dropswap404
+define swapdupdropswapoverswapswapswapover672 swap dup drop swap over swap swap swap over
+dupdrop648
+*
+overswapdropdupdupdropdupdupdropdrop360
+define dup673 dup
+define dropdupdropdup674 drop dup drop dup
+overswapdropoverswap83
+drop86
+define dupdupdropdropdupoverswapdup675 dup dup drop drop dup over swap dup
+overoverover610
+define dupoveroverdropdrop676 dup over over drop drop
+overdupdupdup316
+define dupdropdropdropswapswapover677 dup drop drop drop swap swap over
+define dropswapdup678 drop swap dup
+-
+dupoveroveroverswapdupoverdupswapdrop403
+*
+push 7959
+define overdupdupdupoverswapdupswap679 over dup dup dup over swap dup swap
+define dropdropswapswapdupoverswapdupover680 drop drop swap swap dup over swap dup over
+overdrop558
+push 3579
+push 4628
+*
+define overdropdropdropswapoverdrop681 over drop drop drop swap over drop
+*
+push 8157
+dupswapdup127
+push 8185
+push 164
+push 6728
+swapdupdropdropoverdropdupdup663
+push 7648
+push 464
++
+*
++
+push 2009
+push 5427
+push 5730
+push 7918
+overoverswapswapswap353
+define overdropswapdup682 over drop swap dup
+push 6614
+push 3529
+push 3655
+overdupdropdup486
+push 4147
+*
+drop620
+define swapswapdropdupswap683 swap swap drop dup swap
+dupoveroveroverswapdupoverdupswapdrop403
+-
+define dropoverdropdupoverdropdup684 drop over drop dup over drop dup
+define overswapdropswapswapdupover685 over swap drop swap swap dup over
+swapdupswapswapdropdrop55
+define overswapswapover686 over swap swap over
+dupswapdropswapswapswapoverover502
+dupdropdupoverdropdupswapdup257
+overdupdropdropdropoverdupoverdropover617
+define swapdupswap687 swap dup swap
+dupswapdupdupdupdup435
+-
+dupoverswapdupoverover171
+-
+overswapover361
+swapdupdrop291
+dropswapdupdupswapdrop480
+push 8024
+define swapoverdropdupdupdropdupdupdropover688 swap over drop dup dup drop dup dup drop over
+-
++
+push 4364
+define dupdupswapswapoverdupdrop689 dup dup swap swap over dup drop
+push 2259
+define swapoverswapswapdropswap690 swap over swap swap drop swap
+push 7756
+push 174
+overswapoverdupoverdupswapdropdropswap552
+*
+-
+define overoverdup691 over over dup
+dropdupdropoverdupswapdupswap590
+dropswapoverdrop592
+-
+push 4255
+push 2861
+dupdropoverswapswapdropoverdropdup492
+push 6930
+dropdropoveroverdropoverdropoverdup654
+drop431
+define dup692 dup
++
+define overdupdropoverdropdropdropoverdup693 over dup drop over drop drop drop over dup
++
+push 6373
+push 8758
+swapswapswapoverswapdupover151
+push 8409
+define swapdropswapoverdupover694 swap drop swap over dup over
+define overoverdropdropdropdupswapdropswapover695 over over drop drop drop dup swap drop swap over
+dropoverswapdropdupdropdropoverdropdup251
+push 5475
++
+define dupdropswapswap696 dup drop swap swap
+dropoverswapswapswapoverdup436
+dupoverswapdupswapdropdropoverover126
+define dropoverswapdupoverswap697 drop over swap dup over swap
++
+push 6531
+push 7031
+push 5319
+dropoverdropdupoverdropdup684
+push 195
+dropoverdropdropdupswapswapdupdrop421
+*
+push 2122
++
+*
+define swapdropdupswapdup698 swap drop dup swap dup
+push 5687
+define dupdropdrop699 dup drop drop
+define dropswapover700 drop swap over
+push 4359
+-
+define drop701 drop
+push 8673
++
+push 4719
++
+push 4597
+push 3746
+-
+overdupdropoverdropdropdropoverdup693
+define swapdropoverswapdupdropoverdup702 swap drop over swap dup drop over dup
+-
+push 7250
+overdupdup660
+dupdropdrop566
+push 5703
+push 7872
+dropdropswapswapdupoverswapdupover680
+push 1825
+push 6407
+push 8442
+push 4271
+define dup703 dup
+dupswapdupdupdupdup435
+push 2172
+dupdropdropswap136
+push 3692
+dropoveroveroverdropdupswapover412
+push 6464
+-
+push 6511
+dropdupdropdupdropover513
+define dropdupdropdrop704 drop dup drop drop
+push 8144
+push 6361
+-
+dropdropdupswapoverswapdupdropdupswap438
+define overdupdupswapdupoverdropdrop705 over dup dup swap dup over drop drop
+push 8801
+push 5596
+push 7681
+push 7376
+-
+push 5088
+define swapdropdupswapover706 swap drop dup swap over
+push 5317
+*
+dropoverdupoveroverswapdup443
+push 6826
+push 5187
+push 5620
+push 3352
+dropdropoverdropswapdupdropdrop527
+push 5787
+push 688
+push 2298
+define dupdupswapdup707 dup dup swap dup
+push 798
+define overswapdropswapdupswapover708 over swap drop swap dup swap over
+push 6329
+push 7113
+define dropswapover709 drop swap over
+*
+push 245
+push 6597
+push 8233
+*
+-
+overoverdupoverdropdropoverdrop550
+push 1542
+-
++
+swapdropdupswapover706
+define swapoveroveroverdupover710 swap over over over dup over
++
+push 3812
+push 6171
+push 1912
+dupswapswapoverswapdup128
+dropdupdupdrop228
+-
++
+dupdupdupdup326
++
+drop115
+dupdropdropswap136
+swapdrop420
+push 7098
+*
+define dupoveroverdupdupswapoveroveroverover711 dup over over dup dup swap over over over over
+dropdupdupover487
+dropswapoverdupswapdupdropover600
+push 4527
+define swapdropdupdupdupoveroverdropdup712 swap drop dup dup dup over over drop dup
+push 6571
+define swapdup713 swap dup
+-
+define overswapoverdropdupdup714 over swap over drop dup dup
++
+push 8444
+push 440
+define dupdupdupdrop715 dup dup dup drop
+push 6251
+-
+push 8691
+push 2013
+define swapdropdropdupdup716 swap drop drop dup dup
+push 2972
+dupswapdupdupdropdropoverswap395
+overswapoverswapdupdupdupdup218
+push 894
+-
+push 6578
+push 7760
+-
+define overover717 over over
+define dropoverdupswapswapswapdropswapdup718 drop over dup swap swap swap drop swap dup
+-
+push 4618
+define overdropdropoverswapdrop719 over drop drop over swap drop
+-
+dropdupdropoverswapdrop650
+swapdropdrop239
+push 5730
+push 6073
+*
+push 4589
+push 6559
+dupswap664
+push 1413
+define overdup720 over dup
+define swapdropoverdropdropswapover721 swap drop over drop drop swap over
+push 3836
+overdupdropoverdropdropdropoverdup693
+push 8891
++
+push 6220
+*
+define swapswapdropdupoverdropswapdrop722 swap swap drop dup over drop swap drop
++
+-
+swapswapswapoverdrop213
+push 1072
+push 8850
++
+*
+*
+push 8071
+define overoverswapdropoverdup723 over over swap drop over dup
+*
+push 7363
+define swap724 swap
+*
+push 6946
+define dropswapoveroverover725 drop swap over over over
+push 3216
+dupoveroveroverswapdupoverdupswapdrop403
+define dupdropdropdrop726 dup drop drop drop
+define swapdropdup727 swap drop dup
+overdropoverdropdropswapoveroverdrop616
+push 8745
+overdrop558
+overoverdupswapdupdropswapdupdup517
+push 1439
+push 8765
+define swapoverdupswapdrop728 swap over dup swap drop
+push 8828
+define dropdropswapswapdup729 drop drop swap swap dup
+push 4509
+push 3032
+swapdropoverdupoveroverdropswap407
+push 6497
+-
++
+push 6932
+define swapdropover730 swap drop over
+swapdropdropdropover223
+push 4620
+push 3134
+push 602
+define dropdropdup731 drop drop dup
+define overswapoverswapswapoverdupswapover732 over swap over swap swap over dup swap over
+-
+push 3368
+*
+swapoverswapdupoverdupdropdropoverover203
+push 3727
+-
+push 805
+push 7083
+push 8620
+push 148
+overdropswapoverover574
+push 7386
+dupswapover322
+-
+push 5131
+swapswapdropdupoveroverdropswapdrop272
+dupdupdropdropdupoverswapdup675
+define overdropoverdropdupswapoveroverswapdup733 over drop over drop dup swap over over swap dup
+*
+define dupdupdropdrop734 dup dup drop drop
+push 7747
+define drop735 drop
+dup71
+define overdupover736 over dup over
+*
+define dropover737 drop over
+-
+push 6529
+dropdupdropoverswapdrop650
+push 3185
+push 7515
+define swapswapswapdupswapoverswapswapover738 swap swap swap dup swap over swap swap over
+define overswapoverswap739 over swap over swap
+push 1608
+push 3080
+*
+push 316
+define dropdupdupoverswapoverswapswap740 drop dup dup over swap over swap swap
+swapswapdropswapdrop137
+push 3052
+push 7863
+push 4403
+push 742
+push 8470
+dupdropswapoveroveroverdrop470
+push 4458
+push 5613
+push 4137
+push 2654
+define swapswap741 swap swap
++
+push 8355
+dropdupdupswapover651
+swapdupdropdupswapdropswap100
+define dupswapdropdupdupswapover742 dup swap drop dup dup swap over
+define dupoveroverdupover743 dup over over dup over
+-
+push 1204
+push 8801
+push 7563
+-
+push 477
+define dupswapswapswapswapdupover744 dup swap swap swap swap dup over
+push 1697
++
+push 6373
+define dup745 dup
+push 3073
+define swapswapover746 swap swap over
+swapoverdupdupswap335
+push 304
+push 1294
+define dropdropoveroverdropswapswapoverdropswap747 drop drop over over drop swap swap over drop swap
+dropdupdropdupswapdupdropdupover62
+push 8437
+push 1717
+dropoverdupdupoverdupdropswapoverover307
++
+push 3843
+push 6718
+push 7339
+dupdropoverswapswapdropoverdropdup492
+dropdupdropswapswapoverdrop626
+define overswapoverdup748 over swap over dup
+*
+push 6671
+define overdropdropswap749 over drop drop swap
+push 8781
+-
+*
+push 5348
+define overdupoverdup750 over dup over dup
+push 4834
+overdupover736
+define dupdupdupswapdropswapswapdup751 dup dup dup swap drop swap swap dup
++
+-
++
+push 8102
+*
+push 3986
+define overdropdupoveroverswapdupswapswapover752 over drop dup over over swap dup swap swap over
+dropswapdropoverdropoverswapswapswap154
+overdropdupswapdropdup583
++
+define swap753 swap
+push 3587
+push 8255
+push 7531
+overswapoverdup518
+push 757
+define dupdupdupdropdropswapswapdupdup754 dup dup dup drop drop swap swap dup dup
+dropoverdropdropdupdupswapdrop473
+push 6880
+*
+define dropdropswapswapdupswapdupswapswap755 drop drop swap swap dup swap dup swap swap
+push 4402
+push 6507
+push 5779
+-
++
+push 2427
+define overoverswapdropdrop756 over over swap drop drop
+define dupoverdupdrop757 dup over dup drop
+push 8061
+push 171
+push 1942
++
+push 3087
+push 1351
+define dupoveroverdrop758 dup over over drop
+define dropswapdropdupdupoverswapdropoverswap759 drop swap drop dup dup over swap drop over swap
+push 6943
+push 3092
+push 544
+push 6983
+push 3373
+push 8106
+push 495
+define dupswapswapswapswapoverdropdropdropover760 dup swap swap swap swap over drop drop drop over
+define overdupdropswapoveroverdropoverdrop761 over dup drop swap over over drop over drop
+*
+define swapdupswapswapdup762 swap dup swap swap dup
+define dropdupdupdropswapdupover763 drop dup dup drop swap dup over
++
+push 2793
+push 1001
+push 5817
+define drop764 drop
+define overswapdropover765 over swap drop over
+push 6274
+push 3169
+dup575
+-
+define dropdupdropdropswapdropdupover766 drop dup drop drop swap drop dup over
+push 119
+push 8769
+-
+push 6237
+push 7831
+push 5731
+swapdupoverdupdropswapoverswap298
+overswapoverswap642
+define dupoverdropdupoverover767 dup over drop dup over over
+push 6877
+dropswap371
+push 202
+push 7879
+push 2255
+push 8368
++
+push 4876
+push 4885
+push 7834
+define dropdupoverdropover768 drop dup over drop over
+push 291
+swapoverdupoverdupoveroverdropdupover432
++
+dropswapswapswapdropdrop401
+-
+push 7678
+swapswapdupdupswap214
+define swap769 swap
+-
+push 3871
+define swapdupoveroverdropdrop770 swap dup over over drop drop
+push 1478
+swapoverdupswapdropoverdupover278
+overoverdupswapdupdropswapdupdup517
+push 7171
+push 6859
+push 8923
+dropoverswapdropdupdropdropoverdropdup251
+push 5212
+define dropoverdropswapswapoverover771 drop over drop swap swap over over
+push 8902
++
+swapdupoverswapover633
+push 4005
+push 471
+push 1216
++
+-
+define dropdropdupswapdropdropdropdrop772 drop drop dup swap drop drop drop drop
+-
+overswapdropdupdupdropdupdupdropdrop360
+*
+dupdupdropswapover530
+push 5669
+define dropswapdupswapoveroverdropdropdropover773 drop swap dup swap over over drop drop drop over
+push 7516
+define overdropdropdupswapoverdropdrop774 over drop drop dup swap over drop drop
+*
+dup77
+define over775 over
+push 1902
+push 473
+push 4613
+define overdropdup776 over drop dup
++
+-
+push 4168
+-
++
+define drop777 drop
+overoverdupswapdupdropswapdupdup517
+define overswapdropover778 over swap drop over
++
+push 231
+define dupdupdropswapswapdropdupover779 dup dup drop swap swap drop dup over
+define swapoverdupswap780 swap over dup swap
+define dropdropswapoverover781 drop drop swap over over
+define overdropoverdropdupdupswapdup782 over drop over drop dup dup swap dup
+push 2789
+push 5311
+push 4885
+define overdropdropdupoveroverdrop783 over drop drop dup over over drop
+-
+overdropdropdropswapdupdup386
+*
+dropswapswapswapswapoveroverswapdupdup230
+push 1541
+dupdupdropdrop734
+define swapswap784 swap swap
+dropdupswap309
+dupoverswapdupoverdropover588
+dropoveroveroverswapoverswap229
+-
+-
+define drop785 drop
+define swapdropdropoverdup786 swap drop drop over dup
+push 336
+swapdropdropswapoverswap258
+-
+-
+push 4782
+push 8658
+push 2647
+swapdropdrop239
+dupswapswapswapswapdupover744
+push 2224
+swapdropoverswapdupdropoverdup702
+swap515
+push 5490
+dropoverswapoverswapdupoverdupoverover269
+dropswapdropdupoveroveroverdupdrop607
+define dropswapswapover787 drop swap swap over
+overswapdropdropdropdup635
+*
+define overswapswapswapdropdrop788 over swap swap swap drop drop
+push 1429
+push 4459
+push 2113
+push 3601
++
++
+push 1671
+define dupswap789 dup swap
+push 5320
+overswapoverswapdupdupdupdup218
+push 8124
++
+push 8476
+define dupdupswap790 dup dup swap
+push 8237
+push 8221
+push 6683
+push 1959
+push 1342
+dropdupdupdropswapdupover763
+*
+push 2266
+-
+define dupdropoverdropover791 dup drop over drop over
+push 6325
+-
+push 6932
+swapswap523
+push 2691
+push 1122
+define overswap792 over swap
+dup77
+push 5064
+dropswapdupswapdropswap266
+push 2115
+define dupdupswapswapdupoverswap793 dup dup swap swap dup over swap
+swapover289
+-
+dupoverdupswap347
+define dupdropdropdropdropdupoverdup794 dup drop drop drop drop dup over dup
+push 5705
+-
+*
+push 3510
+push 6015
+push 5085
+-
+define swapdropoverdupswapdropdupoverdropdup795 swap drop over dup swap drop dup over drop dup
+overdupoverdupdropdropswapdupdupdup613
+define overdupdupdrop796 over dup dup drop
+dupswapdupdupdupdrop70
+-
+push 2488
+push 1127
+dupoveroverover246
+push 8179
+push 961
+push 8474
+push 7459
+*
+define dupoverdropdupoverswapswapswapover797 dup over drop dup over swap swap swap over
+*
+push 5275
+push 706
+push 3406
+define overswapdupdropoverdupswapdrop798 over swap dup drop over dup swap drop
+push 831
+push 3358
+define overswapoveroverswap799 over swap over over swap
+push 689
+dupdupswapoverswapover367
+-
+push 5020
+define dropdupdupdropoverdup800 drop dup dup drop over dup
+define dupdrop801 dup drop
+push 4916
++
+*
+push 4218
+define swapswap802 swap swap
++
+define dup803 dup
+push 2750
+overswapdupdropdropswapdupswapdropover157
+push 3574
+dropoverswapdupoverswap697
++
+push 713
+push 6626
+define dupover804 dup over
+push 1078
+push 8469
+dupdupdropdropdupoverswapdup675
+dupoveroverdrop758
+push 616
+push 1688
+push 7433
+define dropdupdropdupdupswapswapdrop805 drop dup drop dup dup swap swap drop
+define drop806 drop
++
+push 5958
+push 2170
+push 2323
+swapswapdropswapdropdropswapswapdupdup318
+push 552
+swapoverdropoverover147
++
+swapswapoveroverdrop334
+push 6193
+push 1376
+dupdupswapdup707
+*
+push 8340
+dropdropswapdupoverdupoverover191
+define swapswapdupdropdupdupdropoverdrop807 swap swap dup drop dup dup drop over drop
+push 4966
+push 3818
+swapdropswapover324
+over287
+*
+dropoverdupswapswapswapdropswapdup718
+push 3703
+dupdupswapoverdupdropdupoverdupdrop456
+push 8582
+-
+swapoverdupswapoverdupdup54
+swapdupswapoverdupover236
+push 8158
+overdropdropoverswapdrop719
+define swapover808 swap over
+push 8886
+define overswapdropswapswapdropdrop809 over swap drop swap swap drop drop
+overdropdropdupoveroverdrop783
+*
+push 8177
+push 1585
+push 8796
+*
+push 6851
++
+overswapoverswap642
+push 885
+dupdropdupdupdropdupdupdup596
++
+push 7003
+define swapdropoverdrop810 swap drop over drop
+-
+push 3155
+push 3680
+push 905
+push 3196
+-
+-
+define swapoveroverswapoverswapdupdropswapover811 swap over over swap over swap dup drop swap over
+push 888
+push 8930
++
+push 5602
+push 3765
+push 2881
+push 4635
+define dupdrop812 dup drop
+define dropdupoverdropoveroveroverdrop813 drop dup over drop over over over drop
+push 462
+dupover119
+push 98
+dupoveroverover246
+define dup814 dup
+*
+-
+push 1078
+push 6564
+dupdup290
+push 8710
+overswapoverdropdupdup714
+dupdrop812
+push 285
+push 5788
++
+push 3140
+dropdup267
+overdropdropswapoverdropdup461
+define swapswapdropswap815 swap swap drop swap
+swapoveroverdrop225
+push 8800
+push 4836
+define swapdropswap816 swap drop swap
+push 7850
+define over817 over
++
+push 4597
+define swapoverdropoveroverdrop818 swap over drop over over drop
+push 7322
+define dupdropswapover819 dup drop swap over
+push 5106
+define dupoverover820 dup over over
+push 7927
+push 2276
+define dupoverswapdropoverdropswapswap821 dup over swap drop over drop swap swap
+push 8389
+push 1159
+push 6658
+push 3845
+push 4412
+push 7866
+-
+define dropoverdupdupdrop822 drop over dup dup drop
+overswapdupdropoverdupswapdrop798
+push 4780
+define overdupswap823 over dup swap
++
+define dropdropswapoveroverswapdropdup824 drop drop swap over over swap drop dup
+swapoverdropswapswap250
+define dup825 dup
+push 3513
+define dropdropdrop826 drop drop drop
+-
+-
+push 2680
+define swapdropoverdropoverswapdupdupover827 swap drop over drop over swap dup dup over
+swapdupdrop291
+push 6987
+dupdropdrop699
+define overdupover828 over dup over
+push 1398
+push 1932
+define overdropdropoverdropdupdupdropoverswap829 over drop drop over drop dup dup drop over swap
+overdupdropdup486
+push 8477
+define overswap830 over swap
+define dropover831 drop over
+push 3967
+-
+swapdupdupswapswapdupoverdropoverdup88
+push 3409
+push 3766
+*
+define overswapdupoverswapoveroverdup832 over swap dup over swap over over dup
+define dropoverover833 drop over over
+overover382
+-
+-
+define swapdropdropdropswap834 swap drop drop drop swap
+swapdupswapdup475
+push 1604
+-
+push 6262
++
+push 2638
+define overoverswapoverdropdropswapoverdup835 over over swap over drop drop swap over dup
+push 2164
+define dupdrop836 dup drop
+push 2137
+push 8306
+push 4142
+define swap837 swap
+dupdropoverdupdup238
+dupoverswapswapdropdropover178
+dropdupdupoverswapoverswapswap740
+*
+push 1148
+push 6571
+define swapdropdropdropdupdrop838 swap drop drop drop dup drop
+push 458
+dropdropswap448
+-
+push 8206
+-
+define swapswapoveroverdropdupdupdrop839 swap swap over over drop dup dup drop
+push 8821
+overoverswapdropoverdup723
+push 8158
+define dropdrop840 drop drop
+define overdupdrop841 over dup drop
+push 5992
+dupdupswap790
+define dupoverswapoveroverdropswap842 dup over swap over over drop swap
+*
+-
+define dupswapoverdupoveroverdupdupswapdrop843 dup swap over dup over over dup dup swap drop
+define dropswapdupoverdropdup844 drop swap dup over drop dup
+dupdupdupdupswap199
+define swapdropover845 swap drop over
+*
+push 8538
+push 716
+push 5420
+dropdrop342
+push 4173
+*
+define swapoverdropdropswapoverswapswapdup846 swap over drop drop swap over swap swap dup
+define dropoverswapswapdropoverswapdropdropover847 drop over swap swap drop over swap drop drop over
+push 8644
+-
+push 5795
+define dupoverdupswapoverdrop848 dup over dup swap over drop
+push 3098
+overover447
+push 789
+define overswapdropswapoverswapswapswap849 over swap drop swap over swap swap swap
+push 8570
+push 7265
+-
+define dupdupoverswap850 dup dup over swap
+push 8476
+*
+push 5384
++
+push 6029
+define dropdupdupdrop851 drop dup dup drop
+dropswapoverdupdupswap323
+define dupoverdupoverdupdropdropover852 dup over dup over dup drop drop over
+push 1806
++
+define dropswapdupswapdupswapdropoverdrop853 drop swap dup swap dup swap drop over drop
+define dropoverswapdupdupswapswapoverdupdup854 drop over swap dup dup swap swap over dup dup
+push 607
+define dupswapdropswapswap855 dup swap drop swap swap
+push 3926
+push 5621
+push 4522
+define dropswapoveroverswapdupdup856 drop swap over over swap dup dup
+push 2342
+dupswapover111
+overdropoverdupswapswapoverover593
+dropdropdropswapdupdropswap87
+push 473
+overswap392
+dupover139
+dupdupdupdrop715
+push 8144
+push 2775
+push 8393
+define swap857 swap
+dropoverswapswapoveroverdropoverswap237
+define swapdupdupdropswapdupdupover858 swap dup dup drop swap dup dup over
+swapdupdropdupswapdropswap100
+push 213
+push 2690
+-
+define dropdupswapoverdropswap859 drop dup swap over drop swap
+push 8094
+push 491
+push 1620
+push 7786
+push 991
+*
+push 4801
+-
+-
+push 2773
+define swapdropswapdropoverdupover860 swap drop swap drop over dup over
+define overdupdropdropdropdup861 over dup drop drop drop dup
+-
+push 3261
++
+-
+push 1354
++
+define dupover862 dup over
+push 2955
+push 4428
+-
+define swapdropdupswapdropdupdupdupdrop863 swap drop dup swap drop dup dup dup drop
+define dropdropswapdupswapoverover864 drop drop swap dup swap over over
++
+push 1990
++
++
+push 8496
+define swapoverswapdupdupdropdrop865 swap over swap dup dup drop drop
+dropdropdupoverswapoverswapdup506
+define dropoverdropswapdropdropdrop866 drop over drop swap drop drop drop
++
+dropswap233
+push 5427
++
+push 5469
+-
+define swapswap867 swap swap
+push 2610
+define dropdupswapdupdupdup868 drop dup swap dup dup dup
+push 8388
+*
+-
+push 4082
+overswapdropover778
+push 8244
+-
+push 8389
+define dropoverdropdupoverswapdupdropdrop869 drop over drop dup over swap dup drop drop
+*
+push 5329
+define dupdrop870 dup drop
+define dropdupswapdup871 drop dup swap dup
+define overdupdup872 over dup dup
+push 1151
++
+push 2240
+define overdropdropdupswapdupswapdropswapdrop873 over drop drop dup swap dup swap drop swap drop
+push 7695
++
+push 2446
+push 7291
+push 5937
+push 1509
+push 1346
+define swapdropswapdupoverswap874 swap drop swap dup over swap
++
+define dropdropoverdropswapswapdupdupover875 drop drop over drop swap swap dup dup over
+*
+push 3251
+push 6002
+push 6330
+push 559
+dupswapswapswapswapoverdropdropdropover760
+overswap494
+define overoverswapswapswapswapswapoverswap876 over over swap swap swap swap swap over swap
+push 7672
+define overswapswap877 over swap swap
+overdropswapdropoveroveroverover652
+push 1241
+push 581
+overoverswapdropswap570
+dupoverdupswapoverdrop848
+dupswapswapdupdropover569
+drop95
+*
+*
+drop785
+over417
+-
+define swapswapdropswap878 swap swap drop swap
+push 3034
+push 516
+*
+*
+push 3585
+define overdrop879 over drop
+define overdup880 over dup
++
+define dupoverdupoverswapdropdropoverswapswap881 dup over dup over swap drop drop over swap swap
+push 882
+define dupswapswapdupswapoverdupoverdropdup882 dup swap swap dup swap over dup over drop dup
+push 4267
+push 315
+swapoverdupswap434
+push 1914
+-
+over183
+dupdupdupdupswap199
+push 371
+push 5391
+-
+dupdropdupoverover120
+dup292
+overdrop558
+drop764
+push 4707
+push 5268
+swapdropoverdropoverswapdupdupover827
+push 1303
+define swap883 swap
+swapdupoveroveroverdup321
+define over884 over
+*
+dupdupoverdropdropdupoverswapdup529
+push 83
+push 2116
+push 2859
+overdropdropdropoverdupdup589
+push 8791
+dropswap311
+swapswapdrop402
+*
+push 966
+-
+push 7492
+push 1254
+define overdupdupoverdropoverdupdupdrop885 over dup dup over drop over dup dup drop
+push 8376
++
+*
+push 8692
+push 3812
+dropswapdropdupoveroveroverdupdrop607
+-
+dupdupdropdrop140
+define swapdup886 swap dup
++
+push 7662
+push 3876
++
+dupover220
+push 2477
+define swapswapoverswap887 swap swap over swap
+push 2602
+push 6760
+define dropoverswapswapdropdupdrop888 drop over swap swap drop dup drop
++
+push 8014
+dropdropoverswapoverdupdropdropdup495
+define overdupoverswap889 over dup over swap
+define over890 over
+swapoverdupswapoverover332
+define swapoveroveroverswap891 swap over over over swap
+define swapswapdropover892 swap swap drop over
+dupdropswapswapswapdropdupover634
+push 6567
+push 3299
+push 8791
+define swap893 swap
+push 5864
+push 1734
+define over894 over
+define swapdropoverswapswapoveroveroverover895 swap drop over swap swap over over over over
+push 3063
+push 5474
+overswapoveroverswap799
+define swapdropoverdupdupswap896 swap drop over dup dup swap
+dupoverdropoverdrop406
+push 5737
+push 7464
+define swapoverswapswapdropoveroverswapdropswap897 swap over swap swap drop over over swap drop swap
+push 593
+push 3212
+push 1525
+push 7070
+push 1484
+define swapdropdupswapdropover898 swap drop dup swap drop over
+push 6558
++
+push 7915
+overdupdropdupoveroverdupdupdrop557
+define overdupdropswap899 over dup drop swap
+push 6721
+dropswap477
+define dropdupdupdupdropdup900 drop dup dup dup drop dup
+push 4972
+dropswap388
+push 3401
+push 8522
+push 3393
+push 3587
+*
+push 7704
+push 5913
+overoverswapdropdrop756
+push 2756
+define overoverswapdupdupdup901 over over swap dup dup dup
+push 8076
+define overswapover902 over swap over
+define overdrop903 over drop
+push 3393
+push 1885
+overdupdrop841
+dupswap658
++
+push 2044
+define overswapswapdropswapdropoverswapswap904 over swap swap drop swap drop over swap swap
+*
+-
+dupoverdupswap347
+push 2391
+push 7072
+*
+push 1708
+define overdupdupdropdup905 over dup dup drop dup
+define swapoveroverswapdropoveroverover906 swap over over swap drop over over over
+*
++
+dupdup452
+-
+dropdropdropswapswapswapdropswap74
++
+dropoverdupoverdropdupover64
++
+dupoverswapdropoverdropswapswap821
+push 8731
+push 5561
+define dropoverdropdropdropoverswapover907 drop over drop drop drop over swap over
+push 6400
++
+push 45
+dropover226
+push 310
+push 4873
++
+push 7554
+define swap908 swap
+push 5183
+push 8975
+define swapswapoverdup909 swap swap over dup
++
+dropdupdupdropoverdupdrop647
+push 2888
+define swapdupoverover910 swap dup over over
+push 6432
+dupoverdropdrop57
+-
+push 398
+push 2523
+push 1725
+push 7556
+push 8802
+define dropswapoverdropoverdup911 drop swap over drop over dup
+push 2154
+-
+*
++
+define overoverdropoverswap912 over over drop over swap
+swapdupdropdropoverdropdupdup663
+push 8943
+push 7012
+dropswap233
+define dupswapdropdropswapoverswapdupdropswap913 dup swap drop drop swap over swap dup drop swap
+define swapdupswapdropdupswapswapswap914 swap dup swap drop dup swap swap swap
+overdupoverswapoverdropdrop481
+define swapswapoverdropdrop915 swap swap over drop drop
+push 4567
+push 463
+push 7974
+push 5865
+define overdup916 over dup
+push 5968
+define swapdropdropdupdup917 swap drop drop dup dup
+push 8678
+push 7682
+push 4937
+define swapdupoveroveroverdropswapdup918 swap dup over over over drop swap dup
+dropoverswapdropdupdropdropoverdropdup251
+push 7472
+define dupswapdropswapswapdup919 dup swap drop swap swap dup
++
+define dropoverswapdrop920 drop over swap drop
+dropdupoverdropdup273
+*
+push 5229
+swapswapswapdropdropdropoverover410
+*
+dupswapdupdupdupdrop70
+push 1799
++
+push 15
+push 879
+*
+push 2377
+define swapdropswapdupoverdropdrop921 swap drop swap dup over drop drop
+*
+define dup922 dup
+push 8827
+push 5235
+push 6322
+define dropoverdrop923 drop over drop
+dropdropdropdupdropdropdupswapover379
+push 5849
+push 5606
+push 4618
+define overdropdupswapdup924 over drop dup swap dup
+push 5978
+*
+push 6718
+push 1967
+push 670
+dup803
+push 8227
+define swap925 swap
+overswapdropdupdupoverdropoverdupswap665
+define dropdupoverdup926 drop dup over dup
+push 1075
+dropswap186
+push 5112
++
+define dropdupoverdropswapoverswapoverdropdrop927 drop dup over drop swap over swap over drop drop
++
+push 8280
+push 5942
+*
+push 7042
+push 7034
++
++
+push 3495
++
+swapdup375
+push 4451
+overswapoveroverswapdupswapoverswap521
+push 1964
+push 3089
+push 2380
+push 7468
+-
+*
+dupdupoveroverdupoverdup584
+push 5264
+*
+swapswapoverswap887
+swapswap644
+define overswapswapswapswapdup928 over swap swap swap swap dup
+define dropoverdropdupoverover929 drop over drop dup over over
+define swapoveroverdropdupoveroverdrop930 swap over over drop dup over over drop
+define dropdropswapoveroverdropdropswapswapdup931 drop drop swap over over drop drop swap swap dup
+push 5453
+dropdropswapdropswapdropdup605
+push 1047
+push 2545
+push 6877
+dupoverdropdupoverover767
+define dropswapoverswapdupdropdupdupswap932 drop swap over swap dup drop dup dup swap
+define swapoveroverswapswapdrop933 swap over over swap swap drop
+*
+push 2564
++
+overdropswapoverover574
+push 1097
+dupswap789
+push 5243
+push 5691
+-
+define swap934 swap
+overdup94
+push 3408
+push 3062
+-
+overdropdupoverswapover61
+-
+define dupdupdupdupdrop935 dup dup dup dup drop
+overdupdropdup486
++
+push 7264
+push 582
+define over936 over
+*
+dupswapoverdupoveroverdupdupswapdrop843
+push 7973
+define overdropdupdropdupdropdrop937 over drop dup drop dup drop drop
++
+push 933
+push 1820
+define dupdropdropdrop938 dup drop drop drop
+push 5947
+define swap939 swap
+push 2982
+*
+dupover862
+overswapdropdupdupoverdropoverdupswap665
+-
+define over940 over
+push 3110
+define dupdropdropdropswapdupdupoverswapswap941 dup drop drop drop swap dup dup over swap swap
++
+define swapoverdropdropswapswapdropdrop942 swap over drop drop swap swap drop drop
+push 2237
+swapdropdrop239
+push 4715
+dropdupdupdropdrop93
+define dropoverswap943 drop over swap
+push 8099
+overoveroverdropoverdupdropdup159
+*
++
+push 3711
+define swapdropdropoverover944 swap drop drop over over
+swapdropswapdropdupdropswapdrop640
+push 5387
+dropswapoverdupswapdupdropover600
+define dropdupswapswap945 drop dup swap swap
++
+-
+push 3610
+push 2647
+push 1111
+*
+*
+swapswapdropswap878
+push 2144
+dupoveroverswap352
+push 1223
+swapswapdropdupswap683
+push 6864
+define dupdropoverswap946 dup drop over swap
+define swapdropswapdropoverdropdropswapover947 swap drop swap drop over drop drop swap over
+define swap948 swap
+push 3767
+push 3392
+push 156
+push 6749
+push 1673
+dupswapdup127
+push 8029
+swapswapoverdup909
+*
+define overswapoverdupdupdupdupdropover949 over swap over dup dup dup dup drop over
+overoverdropoverdropswapoverdrop194
++
+push 7759
+dup292
+push 315
+dropswapswapswapdropdup82
+-
+dropdupswapdupover331
+dupdropoverdropover791
+dropswapoverdupdupswap323
+-
+push 6790
+overdropdupdropdupdropdrop937
++
+define swapswapoverdupoverdropdupdupswapover950 swap swap over dup over drop dup dup swap over
+define swapdropdropoverdup951 swap drop drop over dup
+define overover952 over over
+define dropswapswapdupswap953 drop swap swap dup swap
+*
++
+swapswapdupdupswap214
+push 670
+overdrop346
+push 8776
+push 6956
+dropdropoverdropswapdupdropdrop527
+define dupdupoverswapdupdupswap954 dup dup over swap dup dup swap
+push 7985
+push 5950
+define overdropdupoverover955 over drop dup over over
+*
+push 8782
+push 7211
+dupdupoverswapdupdupswap954
+dropoverswapdrop920
+over491
+push 3621
+define dropdropdrop956 drop drop drop
+push 2292
+push 5997
+over890
+define swapoveroverdup957 swap over over dup
+*
+dropdupover422
+push 6088
+push 5580
+*
+define dupoverdup958 dup over dup
+*
+define swap959 swap
+-
+define dupdropdropdup960 dup drop drop dup
+define dropswap961 drop swap
+push 176
+*
+define dropdupswapdupdropswapoverswapswapswap962 drop dup swap dup drop swap over swap swap swap
+push 5532
+define dupswapdupswapdropover963 dup swap dup swap drop over
+push 1982
+swap925
+push 3660
++
+dropdupdropoverdupswapdupswap590
+push 68
+push 3059
+swapoverdrop398
+push 8801
+define overoverdrop964 over over drop
+push 465
++
+push 2552
+-
+define dropoverdropswapover965 drop over drop swap over
+overover952
+-
++
+swapdropdropoverdup786
++
+dupswapswapdup667
+define dupdupdupswapoverdupdropdropdup966 dup dup dup swap over dup drop drop dup
+define dropoverover967 drop over over
+push 5082
+-
+push 5072
+push 4181
+push 1244
+overswapoverswapdupdupdupdup218
+-
+push 5231
+push 8863
++
+-
+define dropoverdupdupdupdropswapoveroverswap968 drop over dup dup dup drop swap over over swap
+dropswap404
++
+*
+dropswapdupdropswapdup60
+*
+-
+define dupdupdupoverdupoveroverdropswapdrop969 dup dup dup over dup over over drop swap drop
+push 2377
+dupover119
+define swap970 swap
+swapoverdropover390
+overdupdup660
+push 7678
+push 3447
+-
++
+push 7266
+push 1178
+dropoverdup611
+define overoveroverswapswapdropswapdupswapdup971 over over over swap swap drop swap dup swap dup
+define dropoverswapswapswap972 drop over swap swap swap
+*
+define dup973 dup
+-
+overdupswapoverdupswapswap666
+overdropswapdropover366
+push 7986
+push 7073
+-
+push 1979
+define overdropoveroverdropdupdropdropdrop974 over drop over over drop dup drop drop drop
+drop86
+push 3182
+push 1288
+push 5148
+dupover68
+-
+push 1282
+push 2944
+push 895
+define dup975 dup
+push 1930
+dropdropdropdupdropover271
+push 4318
+*
+push 6368
+define dupdupswapdropswapswapdupdupdrop976 dup dup swap drop swap swap dup dup drop
+push 6802
+define dupoverswapdupdupdropdropdropdrop977 dup over swap dup dup drop drop drop drop
+push 1163
+define swapswapdupswapdropdupdup978 swap swap dup swap drop dup dup
+swapdupswap687
+push 3681
+dropdupdupdropoverdup800
+define dropdropdropdupdropoverswapdrop979 drop drop drop dup drop over swap drop
+swapdrop121
+push 4739
+push 5073
+*
+push 8885
+push 3399
++
++
+push 4066
+-
+push 5494
+overoverswap195
+push 369
+define overoverswapswapoveroverdupoverdup980 over over swap swap over over dup over dup
+dupoverdupswap347
+push 4747
+push 8526
+*
+overdupover662
+overdupdropswapdropoveroveroverswapdup555
+push 5429
+push 7897
+push 7886
+overdropdupswapdropdup583
+push 4486
+push 727
+dup168
+dropswapoveroverswapdupdup856
+dupdupdrop261
+push 5384
+dropdrop294
++
+dupdropdupdupdropdupdupdup596
+-
+define overoverdropdupdupdupdupdropswapswap981 over over drop dup dup dup dup drop swap swap
+overswap392
+*
+*
+-
+swap505
+push 3143
+*
+push 8308
+swapdupdropswapoverswapswapswapover672
+over51
+dupswapswapdropoverdupdropswapdup358
+*
+push 8473
+-
++
+push 5645
+push 132
+push 3664
+-
+-
+push 8211
+swapdropdropswapoverswap258
+push 1456
+dupswapdupswap455
+push 3643
+swapswapover746
+swap153
+dropdupswapdup871
+push 1952
++
+-
+*
++
+push 6837
+define dupdupdropdropdropdupdupswapoverswap982 dup dup drop drop drop dup dup swap over swap
+-
+*
+swap149
+define over983 over
+dropdropswapoverover399
+*
+*
+dupoveroverswapswapdup114
+push 8443
+-
+define dup984 dup
+push 2642
+push 5085
+define dupoverdropswapdropoverswapswap985 dup over drop swap drop over swap swap
+define overdupoverdropswapover986 over dup over drop swap over
+push 7902
+push 8182
+push 3181
+define overdropdupswapdrop987 over drop dup swap drop
+dupoverswapdupoverdropover588
+push 2707
+push 7240
+define overswapswapover988 over swap swap over
+define swapdupdupdupdupoverdup989 swap dup dup dup dup over dup
+define swapdropdupoverdupswapswap990 swap drop dup over dup swap swap
+push 7610
+push 8844
+define dupswapoverdrop991 dup swap over drop
+*
+push 5133
+-
+define dupdup992 dup dup
+dupoveroveroverswapdupoverdupswapdrop403
+define swapdropoveroveroverdropdropdupswapdup993 swap drop over over over drop drop dup swap dup
+define swapoverswapoverdropswapdrop994 swap over swap over drop swap drop
+push 8045
+push 3413
+overdupoveroverdropdrop164
+define swapdupdropswapswapswapover995 swap dup drop swap swap swap over
+push 7500
+push 6087
+push 3853
+*
+*
+define overdupswapswapswapswapover996 over dup swap swap swap swap over
+swapdupswapswapdup762
+push 1116
+dropdropoverswapoverdupdropdropdup495
+push 7458
+push 4729
+push 1202
+push 3863
+*
+overswapdropswapdupswapover708
+push 4663
+define swapdropdupswapoverdropswap997 swap drop dup swap over drop swap
+-
+push 5864
+define overdupswap998 over dup swap
+define overswapdupdup999 over swap dup dup
+define swap1000 swap
+define dupswapoveroverdup1001 dup swap over over dup
+push 3206
+dropdupswapdupoverdupdropswap459
+-
+push 6721
+*
+define dropdup1002 drop dup
+define dupswapdupoverdupdropdropdropdropdup1003 dup swap dup over dup drop drop drop drop dup
+push 5429
+push 8133
+push 2441
+swapoverdropswapoveroverdupoverover196
+push 6073
+define dropoverover1004 drop over over
+define overdupswapoverdropdropdupdup1005 over dup swap over drop drop dup dup
+push 7
++
++
+define dropdupdropdropoverswapswapoverdupover1006 drop dup drop drop over swap swap over dup over
+push 7735
++
+define overdupswap1007 over dup swap
+push 3540
+-
+define overoveroverdropdupdupdupswap1008 over over over drop dup dup dup swap
+define dupdupoveroveroverdrop1009 dup dup over over over drop
++
++
+swapdropdupoverdupswapswap990
+push 6822
++
+overoverswapdropdrop756
+push 5859
+dropdupdropdrop704
+define dropdupdropoveroverswapoverdupswapswap1010 drop dup drop over over swap over dup swap swap
+*
+*
+push 1633
+push 5816
+*
+swapdupoverover910
+overoverswapdropswap570
+push 1024
+-
+*
+define dropdropswap1011 drop drop swap
++
+define dup1012 dup
+push 8317
+define dupdropdupdupswapswapdup1013 dup drop dup dup swap swap dup
+define dropoveroverswapswapover1014 drop over over swap swap over
+define overswapoverdropswapdropdup1015 over swap over drop swap drop dup
+dropoverover967
+push 8892
+push 866
+push 4088
+overswapswapswapdropswapdupdropover532
+push 7437
+-
+dupdropoverdrop359
+*
+swapdupdropdupswapdropswap100
+push 3857
++
+define over1016 over
+push 2705
+define swapswapoverswapoverdrop1017 swap swap over swap over drop
+-
+push 1907
+define swapdropswapdup1018 swap drop swap dup
+dropoverswapdupswapswapdupoverswapdrop533
+push 5103
+push 83
+dropoveroveroverswapoverswap229
+push 4096
+push 8271
+push 5982
+-
+drop598
+dropdropdropdupdropoverswapdrop979
+dupdropdupdupdropdupdupdup596
+swap411
+define dropdropdropswapoveroverdropswap1019 drop drop drop swap over over drop swap
+push 7195
+dupswapoveroveroveroverdupdup299
+push 6487
+dropdupdup547
+push 5546
++
+push 988
+push 3576
+dupoverdropdupoverswapswapswapover797
+*
+push 1947
+push 1124
+dup374
+push 8676
+push 8742
+dupdropdupoverover120
+swapdropdupswapdropdupdupdupdrop863
+define swapdropdupswap1020 swap drop dup swap
+*
+push 5405
++
+define swapdupoverdropoverdupswapdrop1021 swap dup over drop over dup swap drop
+*
+dropdupswapdupdropswapoverswapswapswap962
+push 980
+push 7192
+push 8571
+-
+push 1948
+push 6631
+push 1084
+push 4512
+define swapswapdupswap1022 swap swap dup swap
+push 4091
+dupdupdupdupdrop935
+push 2977
+push 6595
+*
+dupoverover245
++
+push 3350
+push 2157
+swapdupoverdropoverdupswapdrop1021
+dupdupoveroverdup581
+define overdupdupdropswap1023 over dup dup drop swap
+push 3382
+define dupoverswapdropdropover1024 dup over swap drop drop over
+push 8937
+-
+swapdropdropdropswap834
+define overdupswapdupswapdropoveroverdropswap1025 over dup swap dup swap drop over over drop swap
+push 4547
+define swapoverswapdupswapswapdropswapdup1026 swap over swap dup swap swap drop swap dup
+define dupdropswapswapdropdupoverswap1027 dup drop swap swap drop dup over swap
+push 549
+define swapdropoverdropdropdupdrop1028 swap drop over drop drop dup drop
++
+overswapoverswapoverdrop370
+push 6509
+push 5891
+define dropdupswapdup1029 drop dup swap dup
+push 1155
+dropswap118
+swapdupoverswapover633
+define swapoverdropswapswapdupdrop1030 swap over drop swap swap dup drop
+define dropdropdupswapoverswapdrop1031 drop drop dup swap over swap drop
+define dropdropdupswapdropoveroverover1032 drop drop dup swap drop over over over
+-
+push 7605
+swapdupdupdropswapdupdupover858
++
+push 5540
+*
+push 8905
+push 1625
+-
+push 1524
+push 8617
+define overdupoveroverswapswapdropdup1033 over dup over over swap swap drop dup
+push 4939
+push 6736
+dropdupdropswapswapoverdrop626
+push 7030
+push 5007
+*
+-
++
+dropoverover833
+define overoverswapdropdropdupdupover1034 over over swap drop drop dup dup over
+swapdupoverdupdropswapoverswap298
+push 128
+swapdupswapdropdupswapswapswap914
+push 1380
+push 3959
+dropswapdup678
+push 3561
+dupdupdupoverdropdropdrop343
+dupoveroverdupover743
+push 292
+push 2694
+push 4400
+push 5257
+push 4056
+define swapoverdropdropoveroveroverdupoverdrop1035 swap over drop drop over over over dup over drop
+push 1667
+define overswapswap1036 over swap swap
+push 4752
+-
+push 8588
+push 808
+dupswap789
+define swapswapswapswapswapdropdropdupswap1037 swap swap swap swap swap drop drop dup swap
+push 4335
+push 3621
++
+push 1789
+define swapdropdupdropswapdrop1038 swap drop dup drop swap drop
+-
+dupdupdropswapover530
+push 6423
+push 7552
+push 7990
+push 7269
+-
+push 4775
+push 6236
+define dropdupoverswapdupswapdupover1039 drop dup over swap dup swap dup over
+push 8344
+define dupoverswapdrop1040 dup over swap drop
+dup703
+*
++
+-
+push 7379
+dropdropoverdropswapswapdupdupover875
+push 1834
+swap265
+push 1983
+define overdropdropswapdupoverswap1041 over drop drop swap dup over swap
+*
+push 7265
+push 5298
++
+define dropdupswapswapdropswapswapoverdup1042 drop dup swap swap drop swap swap over dup
+dropoverswapdrop512
+push 5602
+push 6710
+drop561
++
+push 1142
+define overdropswapoverdropswapswapdrop1043 over drop swap over drop swap swap drop
+*
+push 7767
+*
+-
+define dupdropswapdupswap1044 dup drop swap dup swap
+push 1599
+dupdropdropdrop726
+*
+push 1769
+push 5419
+dropdupdropoverdupswapdupswap590
+push 7001
+dupdropdup109
+define dropdupdropdropoverswap1045 drop dup drop drop over swap
+push 1003
+swapdupswapoverdupover236
+define dup1046 dup
+push 642
+push 2041
+push 4199
+define dropdropoverswapoverswapdup1047 drop drop over swap over swap dup
+define dupswap1048 dup swap
+push 3757
+define dup1049 dup
+swapswapoverdropdupdupdropdropswapdup645
+define swapdupdropoverdropdropdropswapdrop1050 swap dup drop over drop drop drop swap drop
+*
+push 2748
+push 773
+push 6104
+*
+define overswapswapswapoverdupdupswapoverover1051 over swap swap swap over dup dup swap over over
+push 3925
+define swapdropoverdup1052 swap drop over dup
+swapswapoverdupoverdropswapoverover162
+define overdropoverover1053 over drop over over
+define overoverswapdropoveroverdupswapswap1054 over over swap drop over over dup swap swap
+push 5027
+dup649
+push 2848
+push 6013
+push 8440
+define dropdupdupoverdupdup1055 drop dup dup over dup dup
+push 2511
+push 2260
+push 5246
+define dupoverswap1056 dup over swap
+push 8550
+define swapdrop1057 swap drop
+dupdrop836
+dupswapdupdropswapoverdup565
+push 2514
+push 3429
++
+push 6374
+-
+push 4841
+push 6477
+push 533
+define dropdupdropswapdup1058 drop dup drop swap dup
+over940
+push 5038
+push 8147
+push 3385
+push 8321
+push 3151
+swapoveroverdupdropswapdupdropdup573
+push 8755
+push 8050
+push 5484
+push 550
++
++
++
+-
+dropdupswapdupdupdup868
+push 8531
+define dupoverover1059 dup over over
+push 8488
+define overswapdupdupoverover1060 over swap dup dup over over
+push 7228
+push 8270
+dupdropswapdupdropoveroverswapswap500
+swapdupoverswapover633
+-
+overswap133
+push 7961
+push 4551
+define dropdropdropdropdupswapswapover1061 drop drop drop drop dup swap swap over
+define dupdup1062 dup dup
+push 6076
+push 5811
+define swap1063 swap
+push 3645
+define swapswapswapoverswapover1064 swap swap swap over swap over
+define swapswapswapswapdropdupdrop1065 swap swap swap swap drop dup drop
+overoveroverdropdropdup376
+push 5536
+push 1754
+define dupdropdupdropdropoverswap1066 dup drop dup drop drop over swap
+push 2761
+-
+push 5634
+define dupdupdropdupswapswapoveroverswapdup1067 dup dup drop dup swap swap over over swap dup
+push 865
+push 6735
+swapdupdupswapswapdupoverdropoverdup88
+overswapdropswapoveroverover96
++
+push 6045
+overswapoveroverswap799
+push 5383
++
+*
+dropdup1002
+-
+push 1653
+push 4341
+define overdropdupoverdupdup1068 over drop dup over dup dup
+push 4948
++
+define swap1069 swap
+define dropdupdupswap1070 drop dup dup swap
+push 4808
+overdupswapswapswapswapover996
+-
+push 2031
+push 3615
+define overdupswapswapoverdropdropdup1071 over dup swap swap over drop drop dup
+swapdupoverdropoverdupswapdrop1021
+define dropoverswapdropdropoverdropdupdup1072 drop over swap drop drop over drop dup dup
+define dropswapdropdropdropdupdupdupdrop1073 drop swap drop drop drop dup dup dup drop
+define over1074 over
+push 2159
+dropswapdupdupswapdrop480
+-
+push 1397
+dupover804
+define dupswapswapswapdropswapdup1075 dup swap swap swap drop swap dup
+push 3686
+push 8959
+*
+push 8229
+push 5184
+push 3354
+push 286
+define overswapswapdup1076 over swap swap dup
+overswapdropswapoverswapswapswap849
+push 8634
+*
+define dropoveroverswap1077 drop over over swap
+push 3339
+define dropdrop1078 drop drop
+dropoverswapdropdupdupswapdropswapdup184
+push 5679
+push 7284
+push 2885
+overdupdupoverdropoverdupdupdrop885
+push 6127
+push 3258
+define overdup1079 over dup
+swapoveroverswapswapdrop143
+push 8565
+push 1873
+swapoverdropover462
+define over1080 over
+push 8996
+push 5352
+define swapswapoverswap1081 swap swap over swap
+define dupdupdropdupswapdropdropswapdrop1082 dup dup drop dup swap drop drop swap drop
+dupdupoverswapdupdupswap954
+push 2726
+-
+push 5482
+push 3982
+drop400
+push 1446
+push 4627
+overswapdropdupoveroveroverdupdupover49
+push 557
+push 7123
+push 893
+define dropdropswapdrop1083 drop drop swap drop
+*
+-
+overdupdupdupswapdropswapswapover442
+push 709
+push 6404
+push 5258
+-
+*
+define dupdropoveroverdupoverswapswapdropswap1084 dup drop over over dup over swap swap drop swap
+define swapswapoverdupoveroverdup1085 swap swap over dup over over dup
+push 4583
+drop598
+-
+push 5399
++
+dup745
+push 7848
+push 2972
+define swapswap1086 swap swap
+push 2683
+push 7904
+push 3766
+*
+push 5284
+-
+define drop1087 drop
+dropdrop342
+push 538
++
+-
+push 4699
+define dupdropoveroverover1088 dup drop over over over
++
+push 614
+define swapdropoverdupswapdupdupdrop1089 swap drop over dup swap dup dup drop
+push 181
++
+*
+push 8230
+push 7999
+swap883
++
+define dupswapover1090 dup swap over
+push 2177
+push 1770
+push 3628
+push 8086
+push 215
+push 3088
+*
+push 5155
+overdropswapoverdropswapswapdrop1043
+define dropoverdupdupdup1091 drop over dup dup dup
+push 5906
+drop95
+-
+define swapswapoverswapoverswapdropover1092 swap swap over swap over swap drop over
+push 3104
+push 6642
+swapdupoveroverdropdrop770
+define dropdropdupoverdropdrop1093 drop drop dup over drop drop
+define dropdropdrop1094 drop drop drop
+push 7589
+swapswapswap204
+-
+over393
+-
++
+swap99
+define swap1095 swap
+dropoveroverdupdup377
+*
+*
+dropdrop255
+dropdupdupdropdropswapoverswapdup169
+drop313
+push 1976
+push 196
++
+define overoverdropdropover1096 over over drop drop over
+push 7976
+define overoverdupdropdropswapoverdropdropover1097 over over dup drop drop swap over drop drop over
+push 7078
+define drop1098 drop
+push 1546
+define dupdupswapdupoverdupdropdupdup1099 dup dup swap dup over dup drop dup dup
+push 5239
+define swap1100 swap
+define dupdupdropoveroverdupover1101 dup dup drop over over dup over
+push 3900
+define swapswap1102 swap swap
+define dupoverdupswapdup1103 dup over dup swap dup
+push 7373
+-
+define dupswapoverdropdupdupdropdrop1104 dup swap over drop dup dup drop drop
+overswapswapswapdropswapdupdropover532
+push 2225
+over183
+define dropdropswapdupoverdupdropoverswapdup1105 drop drop swap dup over dup drop over swap dup
+dropoverdropswapswapoverover771
+overoveroverdropdupdupdupswap1008
+push 4760
+define dupoveroverdupoverdropswapover1106 dup over over dup over drop swap over
+push 394
+push 2733
+push 830
+push 4063
+define overswapswapoverdupoverdup1107 over swap swap over dup over dup
+define swapswapoveroveroverdupswap1108 swap swap over over over dup swap
+push 1590
+define over1109 over
+*
+*
+*
+push 5469
+dropdropdupdupswapdropover624
+define dropdupoveroverdup1110 drop dup over over dup
+*
+*
+push 2634
+push 5148
+push 191
+dupdropdupoverover120
+define over1111 over
+push 7534
+push 3186
+*
+*
+dropdupdupdrop851
+-
+push 1043
++
+push 3847
+push 8546
+push 3218
+define swapdrop1112 swap drop
+overswapdropdropdropdup635
+push 663
+define dupswapover1113 dup swap over
++
+push 7399
+define overdropdupswapdrop1114 over drop dup swap drop
+push 8640
+push 2114
+push 3931
+over884
+push 5309
+push 8939
+dup692
+define overoverswapdupdupdropover1115 over over swap dup dup drop over
+push 7669
+dropdropdupoverswapoverswapdup506
+push 857
++
+push 1073
+push 8744
+swapswapswapdropswapdupoverswapdropdup152
+*
+-
+push 3911
+push 4585
+swapswapswap314
+push 2189
+*
+push 5240
+define swapswapswapswap1116 swap swap swap swap
+push 6140
+push 6885
+swap893
+swapdrop1112
+define swapdrop1117 swap drop
++
+define overdup1118 over dup
+dupswapswapdropoverdupdropswapdup358
+push 3258
++
+define swap1119 swap
+dropdupdupover478
+push 6783
+dropswapdupdupswapdrop480
+define swapdropswapoverswapswapdropdup1120 swap drop swap over swap swap drop dup
+define swapdup1121 swap dup
+push 7760
+push 6702
+push 6966
+-
+push 5133
+push 7680
+push 3471
+*
+swapoverswap372
+dropdupdropoveroverswapoverdupswapswap1010
+-
+define swapdropdrop1122 swap drop drop
+push 5385
+define overdup1123 over dup
+swapswapswapoverswapover1064
+define dupdupoverdropdupdropover1124 dup dup over drop dup drop over
+push 347
+overdupdupdropdropdupover317
+push 2315
+push 2149
+push 8690
+*
+define swapoverdropswapoverdropoverdrop1125 swap over drop swap over drop over drop
+dupoverswapdropdup131
+push 6850
+push 5338
+push 5839
+push 7181
+push 7427
+push 609
+push 3768
+-
+push 1224
+push 5897
+push 3242
+push 7251
+push 3953
+define dupoverdupover1126 dup over dup over
+swapswapswapdrop320
+dropdupdropdupswapdupdropdupover62
+define dupswapdropswapswap1127 dup swap drop swap swap
+push 7559
+define dropswapswapdropswapdropdupdup1128 drop swap swap drop swap drop dup dup
+push 3678
+*
+push 1494
+push 5113
+-
+push 4867
+define overdupswapswapswap1129 over dup swap swap swap
+dropoverdupdupdropdropoverdupdupdrop102
+push 8834
+drop764
+swapdropdupswapover706
+swapswapoverdropdrop915
+overdup916
+*
+push 7133
+push 4323
+define dup1130 dup
+define overswapdropswapswapswapswapdrop1131 over swap drop swap swap swap swap drop
+dupoverdup172
+push 8401
+push 329
+define dropdup1132 drop dup
+push 2514
+define overoveroverdropswapdrop1133 over over over drop swap drop
++
+push 32
+dupdupoverdropdropdupoverswapdup529
+overdup1118
+define overdupswapoverdrop1134 over dup swap over drop
+push 5113
++
++
+*
+push 5916
+push 2416
+*
+push 1755
+define swapoveroverdupover1135 swap over over dup over
+push 3295
+push 7930
+*
+dupdropdrop566
+*
+-
+push 621
+push 5213
+swapdupdropdupswapdup451
+push 2514
+push 4114
+swapswap488
+push 1686
+-
++
+push 7822
+push 4320
+define dupoverdropdropdupdupswap1136 dup over drop drop dup dup swap
+dropoverswapswapswapoverdup436
+define dupswapdupdup1137 dup swap dup dup
+push 1226
+push 386
+*
+push 4384
+push 16
+push 2817
+define swapdupover1138 swap dup over
+-
+push 1083
++
++
+over51
++
+-
+swapswapswapoverover241
+dropdupdupdupoverswapoverswapdrop579
+overswapdupoveroverdupdup190
+push 6505
+*
+push 2363
+push 3308
++
+define dropswapdropoveroverswap1139 drop swap drop over over swap
+define dupdropoverswapdupswapoverswap1140 dup drop over swap dup swap over swap
+define swapdropdup1141 swap drop dup
+push 4449
+dropoveroveroverdropdropoverdropdrop467
+push 8192
+push 6967
+define overoverdupdupdropdropdropoverdup1142 over over dup dup drop drop drop over dup
+-
+*
++
+swapdupdropdupswapdup451
+push 3632
+dupdupdupdupdrop935
+-
+define overdupdropswapdrop1143 over dup drop swap drop
+define dropdupoverswap1144 drop dup over swap
+-
+swapoverdupswapdrop728
++
+push 7164
+push 913
+push 7515
+define swapswapdupswapswapswapswapdupoverover1145 swap swap dup swap swap swap swap dup over over
+swapswap1086
+swap1100
+overswapdupoveroverdupdup190
+push 8867
+push 398
+push 3668
+swap934
+dropdupdup547
+push 6409
+push 6668
+*
+swapoverdupswapoverover332
+push 7535
+push 8972
+swapoveroverdropswap373
+define swapoverdropswapswapswapdrop1146 swap over drop swap swap swap drop
++
+dupover862
+push 826
+dropswapdropoverswapoverdup232
+push 2595
+*
+push 1533
+define swapswapdupdropoverswap1147 swap swap dup drop over swap
+define drop1148 drop
+*
++
+push 7705
+push 5753
+push 8374
+push 6996
+define drop1149 drop
+overdropoveroverdropdupdupdup423
+push 2207
+define dup1150 dup
+push 1619
+*
+define overdropover1151 over drop over
+push 7068
+-
+dupswapdupswapdup511
+*
++
+define dupswapdupdropdropdropdup1152 dup swap dup drop drop drop dup
+push 2498
+push 2493
+push 5820
++
+-
+push 6747
+push 2644
++
+define dropdupswapdropswapdupswapover1153 drop dup swap drop swap dup swap over
+dropdrop1078
+define swapdrop1154 swap drop
+swapoverdupswapoverdupdup54
+push 2089
+overdupswapswapoverdropdropdup1071
+dupdropswapdupdropdropswapswapdupswap551
+define overover1155 over over
+swapdrop1112
+define swapswapswapdrop1156 swap swap swap drop
++
+swapswapoverdupoverdropdupdupswapover950
+push 6572
+define dropoverswapdropdupdupoverdupdup1157 drop over swap drop dup dup over dup dup
+dropdropdupswapoverswapdrop1031
+*
+push 4381
+push 1065
++
+push 5353
+push 7955
+swapdupswapdropdupswapswapswap914
+define dropdupdropswapoverdupdropdupoverdup1158 drop dup drop swap over dup drop dup over dup
+define swapdupdrop1159 swap dup drop
+swapdropdropoverover944
+dupoverdropdupswapdupoverover328
+define swapswapswapswapswapoverdropswapswap1160 swap swap swap swap swap over drop swap swap
+*
+push 7425
+dropdupoverdropover768
+define dropswapoveroverswap1161 drop swap over over swap
+overswapoverdropdupdup714
+push 1448
++
+define overoverdropdropdropoverdropswapdropdrop1162 over over drop drop drop over drop swap drop drop
+push 1932
++
+swapswapswapdrop1156
+push 4702
+push 1611
+-
+push 3503
+push 3940
+dropdupdropswapswapoverdrop626
+push 2360
+push 2938
+swapdupswapswapdup762
+swapswapoverswapdropdropdrop524
+*
+define swapswapover1163 swap swap over
+swapdropdropdropdupdrop838
+*
+define overswapdropdropdupoverswap1164 over swap drop drop dup over swap
+push 2999
+push 5936
+push 6230
+push 7036
+dupswapdupoveroverdup602
+define dupdropdropdupoverdropswap1165 dup drop drop dup over drop swap
+define dup1166 dup
+push 5006
+push 3601
+define swapswapdropswapdupdrop1167 swap swap drop swap dup drop
+push 6010
+push 3855
+push 15
+push 4341
++
+push 3804
++
+-
+swapoveroverswapdropoveroverover906
+define swapoverswapdupswap1168 swap over swap dup swap
+*
+push 4842
+define swapdrop1169 swap drop
+push 3579
+push 1464
+push 6378
+*
+overdup720
+push 1578
+define dropswapdropswapdup1170 drop swap drop swap dup
+dropdupswapdropoverswap221
+dropswapswapdropswapdropdupdup1128
+define dropdropdupdupdropdropdupswapdup1171 drop drop dup dup drop drop dup swap dup
+define dropoverdupdupover1172 drop over dup dup over
+push 6871
++
+overdropoverdupdropswapdrop484
++
+define overswapoverswapoverdupoverover1173 over swap over swap over dup over over
+push 5497
+push 6584
+push 5214
+push 6970
+push 7012
+dupdupdupdropdropswapoverswap425
+push 2827
+push 5902
+define dupswapdupswapoverdupswapswapswap1174 dup swap dup swap over dup swap swap swap
+*
+overdropswapoverover574
+define overdupdupoverswapdropoverswapdup1175 over dup dup over swap drop over swap dup
+swapswapdropswapdropdropswapswapdupdup318
+push 1477
+-
+push 3788
+define swapswapdupdup1176 swap swap dup dup
+dropdupoverswapdup623
+swapoverdupdup535
+push 4532
+push 4814
+push 220
++
+define dropdrop1177 drop drop
+overswapswapoverdupoverdup1107
+-
+push 849
+define swapdupswap1178 swap dup swap
+push 982
+dropdupswapoverdropswap859
+swapdrop252
+define dup1179 dup
+push 574
++
+push 3966
+push 8312
+dropswapswapswapswapoveroverswapdupdup230
+push 5308
+swapdrop330
+push 7906
+push 3367
+push 1017
++
+define drop1180 drop
+push 5227
+push 617
+dropswapswap212
+-
+push 6960
+define dupdropoverswapoverdupswapdup1181 dup drop over swap over dup swap dup
+push 7622
+push 7120
+push 1069
+*
+swapdropdropdupdup917
+push 8020
+push 8526
+push 3681
+define overswapoverdropswapoveroverdupoverswap1182 over swap over drop swap over over dup over swap
+push 6327
+overdropdropdupswapdupswapdropswapdrop873
+swapdropswapoverswapswapdropdup1120
+swapswap1086
+push 7628
+define dupdropdupdupdropdupoverdropdrop1183 dup drop dup dup drop dup over drop drop
+swapdrop1117
+*
+*
+define over1184 over
+push 8886
+push 8152
+dupover119
++
+overdupoverswapswapdropoverdupoverover396
+*
+push 8425
+push 5597
+dupswapswapoverswapdup128
+define overdupswapswapdupoverdup1185 over dup swap swap dup over dup
++
+push 303
+push 3209
+push 6610
+swap265
+push 6482
+define overdropswapdropdupswap1186 over drop swap drop dup swap
+-
+swapdropdupdupdupoveroverdropdup712
+push 2044
+overdupdropswapdropoveroveroverswapdup555
+define dupswap1187 dup swap
++
+dropswapdropoverswapoverdup232
+push 2820
+dupdup992
+*
+push 6811
+dupdupdropdropswapdropdupswapswapswap211
+define swapswapswapswapdupswap1188 swap swap swap swap dup swap
+define dupswapdupdupdupswapoverswapoverover1189 dup swap dup dup dup swap over swap over over
+define over1190 over
+push 8407
++
+dupover578
+push 1126
+dropswapdrop277
+push 2375
+push 6724
+define dupswapdrop1191 dup swap drop
+push 1951
+push 4033
+define dropoveroverswapdropswap1192 drop over over swap drop swap
+define swap1193 swap
+overoverover610
+dupdupdropdupdupdropover103
+define dropdupoverdropoverdupover1194 drop dup over drop over dup over
+push 4461
+push 4990
+*
+-
+define over1195 over
+-
+swapoverdupdupswap335
+dropdup1132
+push 4773
+push 2432
+*
+define swapdropdupoverdupoverswap1196 swap drop dup over dup over swap
++
+*
+*
+swap959
+push 139
+push 3006
+overdupswapoverdropdropdupdup1005
+define swapdropdupdupdupdup1197 swap drop dup dup dup dup
+dupdupdropdropswapdropdupswapswapswap211
+push 5985
+dropswapdupswapoveroverdropdropdropover773
+overdupswap998
+push 8425
+push 8889
+push 2208
+push 1581
+define swapswapdup1198 swap swap dup
+define overdropoverdupoveroveroverswap1199 over drop over dup over over over swap
+define dropdupswapswapoverdropdropdupover1200 drop dup swap swap over drop drop dup over
+define dropswap1201 drop swap
++
+dupdropswapswapdropdupoverswap1027
+push 4939
+push 608
+push 1951
+-
+*
+overswapdropswapoverswapswapswap849
++
+push 2741
+overswap280
+overoverdupdropdropswapoverdropdropover1097
+push 619
+define dupswapdupdropdropswap1202 dup swap dup drop drop swap
+-
+define dupover1203 dup over
+push 3875
++
+define overoveroverswapoveroverdrop1204 over over over swap over over drop
+overswap494
+push 5508
+swapoverdropoverover147
+push 8217
+define swapdropswapover1205 swap drop swap over
+*
+swapoverdropswapswapdupdrop1030
+push 6746
+define swapoveroveroverswapdrop1206 swap over over over swap drop
+define dropdropswap1207 drop drop swap
+overdropdropdropswapdupdup386
+*
+-
+define dupdropdropswapoverswapswapswapdupdrop1208 dup drop drop swap over swap swap swap dup drop
+-
+define dupoverdupdupswapdupswap1209 dup over dup dup swap dup swap
++
+*
+-
+swapdupdropover485
+dropdropswapdupoverdupdropoverswapdup1105
+define dropdupdup1210 drop dup dup
+push 3815
+dupswapdupdropdropdropdup1152
+define dupoveroveroverdupdropdup1211 dup over over over dup drop dup
+dropdropdupswapoverswapdrop1031
++
+dupdropswapdropdropswapdrop122
+push 2526
+push 3765
+push 5467
++
+drop113
+swapoveroveroverswap891
+push 4484
+swapswapdupdupswap214
+-
+*
+push 7721
+push 6251
+-
+swapoverover363
+-
+-
+push 878
+push 506
+push 2885
+push 3594
+overdupdropdropdropdupdupswap215
+push 5023
+define dropdropswap1212 drop drop swap
+push 401
+push 7867
+*
+define dropoverdupoverdropdrop1213 drop over dup over drop drop
+define dupdropdropdropdropoverswap1214 dup drop drop drop drop over swap
++
++
+-
+dupdupswapdrop415
+push 6234
+push 5252
+-
+define dupoveroverdupoverdropdropdupover1215 dup over over dup over drop drop dup over
+define dupswap1216 dup swap
+push 3421
+push 6131
+dupswapdupdupdropdropoverswap395
+push 8491
+define dropoverswapswapdupoveroverdup1217 drop over swap swap dup over over dup
+dropoverswapswapswapoverdup436
+define overdrop1218 over drop
+push 1588
+push 8901
+define swapswapdrop1219 swap swap drop
+define dropoverswapswapswapdupdrop1220 drop over swap swap swap dup drop
+push 7063
+dupdropdropdropdropoverswap1214
+over1111
+define swapswapdropdropoverswap1221 swap swap drop drop over swap
+define dup1222 dup
+push 2575
+drop79
+over268
+*
+dupdropswapoveroveroverdrop470
++
+define overswapdupdup1223 over swap dup dup
+push 5995
+push 2085
+push 6176
+define dupdrop1224 dup drop
+push 8193
+push 4592
+*
+push 6821
+-
+push 8164
+-
+push 2151
+*
+dropdupdropdup674
++
+push 7520
+push 5627
+push 5864
+push 8829
+-
+define swapswapswapswap1225 swap swap swap swap
+overoverdropdropswap259
+push 3999
+push 8904
+define dupswapoverdupdropdupdupswapoverswap1226 dup swap over dup drop dup dup swap over swap
+push 8375
+push 6115
+push 7152
+push 959
+dropoverdupdupoverdupdropswapoverover307
+push 8118
+define swapdrop1227 swap drop
+*
+-
+-
+define overdropswap1228 over drop swap
+push 2098
+*
+push 8584
+*
+push 6516
+*
+-
+push 122
+-
+overdrop498
+overdup880
+push 8891
+dropswapdropswap161
+swapoveroverdupdropswapdupdropdup573
+swapoveroverdropswap373
+push 7743
+push 8226
+define dupoverdropswapoverdupdupswapswapdup1229 dup over drop swap over dup dup swap swap dup
+dropdup368
+define dupdropswapoverswapdrop1230 dup drop swap over swap drop
+push 1446
+*
+-
+define overdupdropswapswapswap1231 over dup drop swap swap swap
+push 5629
+define dupoverdupoverdropdupoverswapoverswap1232 dup over dup over drop dup over swap over swap
+dropoverswapswapswapdupdrop1220
+-
+define swapswapswap1233 swap swap swap
+define swapdupswapdrop1234 swap dup swap drop
+define overswapover1235 over swap over
+push 3410
+overdropdupswapdrop1114
+*
+push 4302
+-
+push 6353
+define dupswapswapover1236 dup swap swap over
+push 4230
+*
+push 2629
+push 8881
+define swap1237 swap
+push 1449
+*
+define over1238 over
+*
+push 6734
+swapdropdropoverdup951
+*
++
++
+push 8932
++
+push 2180
+push 3064
+define dropswapdropoverdupswapdropoverdrop1239 drop swap drop over dup swap drop over drop
+push 7107
+push 5095
+push 7440
+overoverswapdropdropdupdupover1034
+overoverdropoverswap912
+push 321
+define over1240 over
+-
+push 6565
+define dupswapdupoveroverswapoverover1241 dup swap dup over over swap over over
+push 3505
+dropoverswapdrop920
+push 3657
+define dupover1242 dup over
+define overdropoverdropdupoverswapdropdropdrop1243 over drop over drop dup over swap drop drop drop
+push 7490
+swap497
+define overdropdrop1244 over drop drop
+-
+dupdupoverdupoverswapdupdropdup112
+define overdropdupoverswapdropswapdropoverover1245 over drop dup over swap drop swap drop over over
+*
+push 5915
++
++
+define overdrop1246 over drop
+push 8473
+push 296
+dropdupswapoverdropswap859
++
+define dupoverswapoverdropdup1247 dup over swap over drop dup
+dropdup267
++
+define dupdropdupswapoverdupover1248 dup drop dup swap over dup over
+define dropoverdupover1249 drop over dup over
+dupoveroverdupdupswapoveroveroverover711
++
+push 4854
+define drop1250 drop
+-
+define overoverswapdropswapswap1251 over over swap drop swap swap
+define overswapoverswapdupdupdropover1252 over swap over swap dup dup drop over
+dropoverdupdupdropdropoverdupdupdrop102
+define overoverdupswapswapoverswap1253 over over dup swap swap over swap
+push 8905
+define dropdupswapdupswap1254 drop dup swap dup swap
++
+push 4182
+push 2923
+push 4292
+-
+dropdupdupswapswapdupdupdupswap319
+-

@@ -1,0 +1,57 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 35114 lines of output.
+ModuleGraph for acquire:
+========================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'admin.rkt'
+  - board.rkt : 270
+  - tree.rkt : 330
+  - basics.rkt : 0
+  - state.rkt : 1780
+Total: 2380
+
+Requires for 'basics.rkt'
+  - auxiliaries.rkt : 0
+Total: 0
+
+Requires for 'board.rkt'
+  - basics.rkt : 13240
+  - auxiliaries.rkt : 0
+Total: 13240
+
+Requires for 'main.rkt'
+  - player.rkt : 30
+  - board.rkt : 0
+  - state.rkt : 0
+  - auxiliaries.rkt : 10
+  - admin.rkt : 10
+Total: 50
+
+Requires for 'player.rkt'
+  - admin.rkt : 0
+  - strategy.rkt : 30
+  - basics.rkt : 100
+  - state.rkt : 8980
+Total: 9110
+
+Requires for 'state.rkt'
+  - auxiliaries.rkt : 10
+  - board.rkt : 5030
+  - basics.rkt : 1380
+Total: 6420
+
+Requires for 'strategy.rkt'
+  - state.rkt : 0
+  - basics.rkt : 1
+  - board.rkt : 60
+  - auxiliaries.rkt : 2
+Total: 63
+
+Requires for 'tree.rkt'
+  - basics.rkt : 0
+  - board.rkt : 2640
+  - state.rkt : 1210
+Total: 3850
+

@@ -1,0 +1,16 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{3}{zo-string}};
+  \node (01) [below of=00,yshift=-0.4cm] {\rkt{4}{zo-transition}};
+  \node (10) [left of=00,xshift=-2cm] {\rkt{1}{zo-find}};
+  \node (20) [left of=10,xshift=-2cm] {\rkt{2}{zo-shell}};
+  \node (30) [left of=20,xshift=-2cm] {\rkt{0}{main}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (10) -- (01);
+  \draw[->] (20) -- (10);
+  \draw[->] (20) -- (01);
+  \draw[->] (20) edge[bend left] (00);
+  \draw[->] (30) -- (20);
+
+\end{tikzpicture}

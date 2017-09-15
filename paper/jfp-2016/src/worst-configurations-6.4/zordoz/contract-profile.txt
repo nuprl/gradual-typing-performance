@@ -1,0 +1,28 @@
+cpu time: 1353 real time: 1356 gc time: 126
+Running time is 32.06% contracts
+475/1480 ms
+
+(-> any/c (recursive-contract (cons/c String (listof (cons/c Stri346 ms
+zo-find.rkt:23:3                                                 
+    zo->spec                                                     346 ms
+
+(-> any/c any/c (values (or/c zo? (listof zo?)) (or/c #f #t)))   52 ms
+zo-find.rkt:20:3                                                 
+    zo-transition                                                52 ms
+
+(-> any/c any/c)                                                 10 ms
+...et/benchmark/gradual-typing-performance/worst-configurations-6
+    let-one-body                                                 10 ms
+
+(-> any/c (listof (cons/c Symbol (cons/c (listof scope?) (cons/c 45 ms
+...et/benchmark/gradual-typing-performance/worst-configurations-6
+    scope-bindings                                               45 ms
+
+(-> scope? (listof (list/c symbol? (listof scope?) binding?)))   10 ms
+<pkgs>/zo-lib/compiler/zo-structs.rkt:205:20                     
+    scope-bindings                                               10 ms
+
+(-> (or/c symbol? vector? empty?) (listof (or/c (quote preserves-11.5 ms
+<pkgs>/zo-lib/compiler/zo-structs.rkt:131:21                     
+    make-lam                                                     11.5 ms
+

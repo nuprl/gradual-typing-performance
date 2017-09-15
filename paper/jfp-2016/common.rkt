@@ -1,7 +1,6 @@
 #lang at-exp racket/base
 
 (provide (all-from-out "bib.rkt")
-         (all-from-out "data.rkt")
          (all-from-out "gradual-bib.rkt")
          (all-from-out scriblib/footnote)
          (all-from-out scriblib/figure)
@@ -20,17 +19,42 @@
 
          step
          def
+         remark
+         inset
          deliverable
          usable
 
+         red
+         green
+         blue
+
+         GTP
+
          id
+         library
+         PHIL
+
+         type
+         ctc ;; aka, 'contract'
+
+         PFDS-BEFORE
+         PFDS-BEFORE-str
+         PFDS-AFTER
+         PFDS-AFTER-str
+
+         noindent
+         NEWPAGE
+         VFILL
+         QED
          )
 
 (require "bib.rkt"
-         "data.rkt"
          "gradual-bib.rkt" ; copied from the github repo
+         "util.rkt"
+         glob
          racket/class
          racket/require
+         racket/string
          scribble/core
          scribble/eval
          scribble/manual
@@ -39,7 +63,11 @@
          scriblib/footnote
          setup/main-collects
          scribble/html-properties
-         scribble/latex-properties)
+         scribble/latex-properties
+         (only-in pict/code
+           current-code-font
+           current-id-color
+           current-keyword-color))
 
 (define autobib-style-extras
   (let ([abs (lambda (s)
@@ -95,11 +123,12 @@
      (define/public (get-group-sep) "; ")
      (define/public (get-item-sep) ", ")
      (define/public (render-citation date-cite i)
+       (printf "HELLO DATE CITE ~a\n" date-cite)
        (make-element
         (make-style "Thyperref" (list (command-extras (list (make-label i)))))
         date-cite))
      (define/public (render-author+dates author dates)
-        (list* author " " dates))
+       (list* author " " dates))
      (define (make-label i)
        (string-append "autobiblab:" (number->string i)))
      (define/public (bibliography-line i e)
@@ -121,31 +150,99 @@
 
 (define (parag . x) (apply elem #:style "paragraph" x))
 
-(define (exact . items)
-  (make-element (make-style "relax" '(exact-chars))
+(define (exact #:style [st "relax"] . items)
+  (make-element (make-style st '(exact-chars))
                 items))
 
 (define (mt-line) (parag))
 
-(define (def #:term (term #false) . x)
-  (make-paragraph plain
-    (list
-      (mt-line)
-      (bold "Definition")
-      (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
-      (mt-line))))
+(define (make-defthing str)
+  (lambda (#:term (term #false) . x)
+    (make-paragraph plain
+      (list
+        (mt-line)
+        (exact #:style #f "\\vspace{-5ex}\\begin{center}\\begin{minipage}{0.88\\textwidth}\n")
+        (bold str)
+        (cons (if term (element #f (list " (" (defterm term) ") ")) " ") x)
+        (exact #:style #f "\\end{minipage}\\end{center}\n")
+        ))))
 
-(define (deliverable N)
-  (make-element plain @list{@math{@N}-deliverable}))
+(define def
+  (make-defthing "Definition"))
 
-(define (usable N M)
-  (make-element plain @list{@(math N"/"M)-usable}))
+(define remark
+  (make-defthing "Remark "))
 
-(define (step L N M)
-  (make-element plain @list{@(math L)-step @(math N "/" M)-usable}))
+(define inset
+  (make-defthing ""))
+
+(define (deliverable [d "D"])
+  (make-element plain @list{@(math d)-deliverable}))
+
+(define (usable [d "D"] [u "U"])
+  (make-element plain @list{@(math d"/"u)-usable}))
+
+(define (step [k "k"] [d "D"])
+  (make-element plain @list{@(math k)-step @(math d)-deliverable}))
 
 ;; Format an identifier
 ;; Usage: @id[x]
 (define (id x)
   (make-element plain @format["~a" x]))
 
+(define (library x)
+  (tt x))
+
+(define GTP
+  (exact "\\textsc{gtp}"))
+
+(define PHIL
+  ;; Dammit Phil
+  "Nguy{\\~{\\^{e}}}n")
+
+(define-values (PFDS-BEFORE PFDS-BEFORE-str)
+  (let ([v 12]
+        [u "seconds"])
+    (values (format "~a ~a" v u)
+            (format "~a ~a" (integer->word v) u))))
+
+(define-values (PFDS-AFTER PFDS-AFTER-str)
+  (let ([v 1]
+        [u "millisecond"])
+    (values (format "~a ~a" v u)
+            (format "~a ~a" (integer->word v) u))))
+
+(define (type t)
+  (exact (string-append "\\RktMeta{" t "}")))
+
+(define (ctc . t)
+  (exact (string-append "$\\ctc{\\RktMeta{" (string-join t) "}}$")))
+
+(define (make-colorizer c)
+  (lambda (txt)
+    (raise-user-error 'colorizer "not implemented")))
+
+(define red
+  (make-colorizer 1)) ;(->pen-color 1)))
+
+(define green
+  (make-colorizer 2)) ;(->pen-color 2)))
+
+(define blue
+  (make-colorizer 3)) ;(->pen-color 3)))
+
+(define (noindent [x 0.8])
+  (exact (format "\\hspace{-~aem}" x)))
+
+(define NEWPAGE
+  (exact "\n\\newpage\n"))
+
+(define VFILL
+  (exact "\n\\vfill\n"))
+
+(define QED
+  (exact "\\hfill$\\blacksquare$"))
+
+(current-code-font 'modern)
+;(current-keyword-color "black")
+;(current-id-color "black")

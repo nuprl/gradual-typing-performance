@@ -1,0 +1,22 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 116196 lines of output.
+ModuleGraph for zordoz.6:
+=========================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'main.rkt'
+  - zo-shell.rkt : 4
+Total: 4
+
+Requires for 'zo-find.rkt'
+  - zo-string.rkt : 25445
+  - zo-transition.rkt : 90722
+Total: 116167
+
+Requires for 'zo-shell.rkt'
+  - zo-string.rkt : 0
+  - zo-find.rkt : 0
+  - zo-transition.rkt : 0
+Total: 0
+

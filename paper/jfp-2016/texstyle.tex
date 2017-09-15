@@ -2,19 +2,26 @@
 \usepackage{booktabs}
 
 % Use Tikz (and other pkgs) for Ben's picture
-% xcolor MUST come first!!! https://en.wikibooks.org/wiki/LaTeX/Colors
-\usepackage[usenames,dvipsnames]{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{shapes.geometric}
 \usepackage{graphicx}
 \usepackage{multicol}
+\usepackage{stmaryrd}
 
 %% Import and print the pictures for a project
 %% Arguments:
 %% - Name of the project
-\newcommand{\pict}[1]{\begin{tabular}{c}\scalebox{0.6}{\input{module-graphs/#1}}\end{tabular}}
+%\newcommand{\modulegraph}[2]{\resizebox{#2\textwidth}{!}{\input{#1}}}
+\newcommand{\modulegraph}[2]{\input{#1}}
 
-\newcommand{\rkt}[2]{$\bullet$}
+% http://tex.stackexchange.com/questions/7032/good-way-to-make-textcircled-numbers
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{\node[shape=circle,draw,inner sep=2pt] (char) {{\small #1}};}}
+%\newcommand{\circled}[1]{\textcircled{\raisebox{-0.9pt}{{\small #1}}}}
+\newcommand{\rkt}[2]{{\circled{#1}}}
+%\newcommand{\rkt}[2]{$\bullet$}
+
+% http://tex.stackexchange.com/questions/132783/how-to-write-checkmark-in-latex
+%\def\checkmark{\tikz\fill[scale=0.4](0,.35) -- (.25,0) -- (1,.7) -- (.25,.15) -- cycle;} 
 
 %% To show overfull, turn off for production!!!
 %\overfullrule=1mm
@@ -25,3 +32,39 @@
 \let\llcorner\relax
 \let\lrcorner\relax
 \usepackage{amssymb}
+
+%% Make sure hats are (uniformly) high enough over variables.
+\newcommand{\myhat}[1]{\hat{\raisebox{0pt}[1.3ex]{$#1$}}}
+
+\newcommand{\ctc}[1]{\llparenthesis #1 \rrparenthesis}
+
+\newcommand{\benchmark}[7]{\vbox{
+  {\noindent\normalfont\bfseries #1}
+
+  \vspace{1ex}{\small
+  \begin{minipage}{0.5\textwidth}\flushleft
+    \makebox[1.1cm][l]{\emph{Origin}}   : ~#3\\
+    \makebox[1.1cm][l]{\emph{Purpose}}  : ~#4
+  \end{minipage}\begin{minipage}{0.5\textwidth}\flushleft
+    \makebox[1.15cm][l]{\emph{Author}}   : ~#2\\
+    \makebox[1.15cm][l]{\emph{Depends}}  : ~#7
+    %#6\hspace{1cm}
+  \end{minipage}}
+
+  \vspace{1ex}
+  {\noindent #5}
+  \vspace{2ex}
+
+}}
+\newcommand{\twoline}[2]{\parbox[s]{1.8cm}{\flushright\hfill #1\newline#2}}
+
+%% -- undo racket/scribble commit 0ca977aecd6
+%%    https://github.com/racket/scribble/commit/0ca977aecd6995690bd7744829abe24dd9d12b5d
+%% -- core issue: this JFP paper is using `smaller` from `scribble/base`
+%%    to render annotated bibs in the appendix
+\renewcommand{\packageRelsize}{\usepackage{relsize}}
+\packageRelsize
+
+%% --- end texstyle.tex
+%% -----------------------------------------------------------------------------
+

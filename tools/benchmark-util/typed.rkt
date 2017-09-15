@@ -8,4 +8,5 @@
 
 (require/typed/provide "count-chap-utils.rkt"
   (*count-chaps-out* (Parameterof String))
-  (count-chaps (-> Void)))
+  (count-chaps (-> Void))
+  (read-num-chaperones (-> Natural)))

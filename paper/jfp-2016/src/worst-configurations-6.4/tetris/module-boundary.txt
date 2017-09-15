@@ -1,0 +1,51 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 124081983 lines of output.
+ModuleGraph for tetris:
+=======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'aux.rkt'
+  - tetras.rkt : 7
+  - data.rkt : 0
+Total: 7
+
+Requires for 'block.rkt'
+  - data.rkt : 82338320
+Total: 82338320
+
+Requires for 'bset.rkt'
+  - block.rkt : 37221940
+  - data.rkt : 4360728
+  - consts.rkt : 22929
+Total: 41605597
+
+Requires for 'elim.rkt'
+  - data.rkt : 0
+  - consts.rkt : 1062
+  - bset.rkt : 89208
+Total: 90270
+
+Requires for 'main.rkt'
+  - bset.rkt : 0
+  - data.rkt : 1
+  - world.rkt : 2060
+  - aux.rkt : 2
+Total: 2063
+
+Requires for 'tetras.rkt'
+  - bset.rkt : 4367
+  - consts.rkt : 0
+  - block.rkt : 0
+  - data.rkt : 18167
+Total: 22534
+
+Requires for 'world.rkt'
+  - consts.rkt : 873
+  - bset.rkt : 2562
+  - tetras.rkt : 4360
+  - data.rkt : 11964
+  - elim.rkt : 1062
+  - aux.rkt : 2370
+Total: 23191
+

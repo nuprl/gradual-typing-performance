@@ -1,0 +1,76 @@
+cpu time: 79750 real time: 79743 gc time: 180
+Running time is 94.65% contracts
+75550/79824 ms
+
+(-> any/c (vectorof (or/c Char Symbol)))                         41309 ms
+typed-data.rkt::-1                                               
+    label-datum                                                  41309 ms
+
+(-> any/c Natural)                                               14350.5 ms
+typed-data.rkt::-1                                               
+    label-i                                                      11973 ms
+    label-j                                                      2377.5 ms
+
+(-> any/c label?)                                                9713 ms
+typed-data.rkt::-1                                               
+    node-up-label                                                9713 ms
+
+(-> any/c (listof node?))                                        3644 ms
+typed-data.rkt::-1                                               
+    node-children                                                3644 ms
+
+(-> (vectorof (or/c Char Symbol)) any/c any/c label?)            2853 ms
+typed-data.rkt:22:3                                              
+    make-label                                                   2853 ms
+
+(-> any/c any/c Void)                                            984.5 ms
+typed-data.rkt:31:3                                              
+    set-node-children!                                           673 ms
+    set-node-parent!                                             221.5 ms
+    set-node-up-label!                                           60 ms
+    tree-add!                                                    30 ms
+
+(-> any/c any/c any/c any/c node?)                               685 ms
+typed-data.rkt:30:3                                              
+    make-node                                                    685 ms
+
+(-> any/c (or/c #f node?))                                       603.5 ms
+typed-data.rkt::-1                                               
+    node-parent                                                  603.5 ms
+
+(-> node? label? (-> any/c any/c) (-> any/c any/c any/c) (-> any/371 ms
+structs.rkt:35:1                                                 
+    node-follow/k                                                371 ms
+
+(-> label? Integer any)                                          251.5 ms
+label.rkt:33:8                                                   
+    label-ref                                                    251.5 ms
+
+(-> node? Index any)                                             211.5 ms
+structs.rkt:32:1                                                 
+    node-position-at-end?                                        211.5 ms
+
+(->* (label? Index) (Index) any)                                 170 ms
+label.rkt:34:8                                                   
+    sublabel                                                     170 ms
+
+(-> node? any/c any)                                             150 ms
+structs.rkt:30:1                                                 
+    node-find-child                                              150 ms
+
+(-> label? any)                                                  113 ms
+label.rkt:32:8                                                   
+    label-length                                                 113 ms
+
+(-> node? Index label? any)                                      71.5 ms
+structs.rkt:34:1                                                 
+    node-up-splice-leaf!                                         71.5 ms
+
+(-> node? any)                                                   48.5 ms
+structs.rkt:31:1                                                 
+    node-root?                                                   48.5 ms
+
+(-> node? label? any)                                            20 ms
+structs.rkt:33:1                                                 
+    node-add-leaf!                                               20 ms
+

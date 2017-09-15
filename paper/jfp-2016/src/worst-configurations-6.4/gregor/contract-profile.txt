@@ -1,0 +1,64 @@
+cpu time: 630 real time: 629 gc time: 14
+Running time is 49.27% contracts
+373/757 ms
+
+(-> any/c Natural)                                               68.5 ms
+1010101011111/gregor-adapter.rkt::-1                             
+    Time-ns                                                      31.5 ms
+    YMD-d                                                        28.5 ms
+    YMD-y                                                        8.5 ms
+
+(-> any/c Rational)                                              71.5 ms
+1010101011111/difference.rkt:35:5                                
+    datetime->jd                                                 71.5 ms
+
+(-> any/c any/c any/c YMD?)                                      40 ms
+#<blame>::-1                                                     
+    YMD3                                                         40 ms
+
+(-> any/c any/c Date?)                                           30 ms
+#<blame>::-1                                                     
+    Date3                                                        30 ms
+
+(-> any/c DateTime?)                                             33 ms
+1010101011111/moment.rkt:21:5                                    
+    posix->datetime                                              21.5 ms
+    Moment-datetime/local                                        11.5 ms
+
+(-> any/c Integer)                                               30 ms
+1010101011111/core-adapter.rkt::-1                               
+    HMSN-m                                                       20 ms
+    tzoffset-utc-seconds                                         10 ms
+
+(-> string? real? tzoffset?)                                     20 ms
+base/tzinfo/main.rkt:27:2                                        
+    utc-seconds->tzoffset                                        20 ms
+
+(-> any/c any/c any/c Moment?)                                   20 ms
+#<blame>::-1                                                     
+    Moment25                                                     20 ms
+
+(-> any/c (or/c #f String))                                      10 ms
+1010101011111/gregor-adapter.rkt::-1                             
+    Moment-zone                                                  10 ms
+
+(-> any/c (or/c 1 2 3 4 5 6 7 8 9 10 11 12))                     10 ms
+1010101011111/core-adapter.rkt::-1                               
+    YMD-m                                                        10 ms
+
+(-> any/c any/c any/c any/c HMSN?)                               10 ms
+#<blame>::-1                                                     
+    HMSN11                                                       10 ms
+
+(->* (any/c) (any/c any/c any/c any/c any/c any/c) DateTime?)    10 ms
+1010101011111/difference.rkt:36:5                                
+    datetime                                                     10 ms
+
+(-> any/c any/c tzoffset?)                                       10 ms
+1010101011111/tzinfo-adapter.rkt:16:3                            
+    utc-seconds->tzoffset                                        10 ms
+
+(-> Integer any)                                                 10 ms
+1010101011111/date.rkt:13:1                                      
+    jdn->date                                                    10 ms
+

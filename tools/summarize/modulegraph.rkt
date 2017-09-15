@@ -6,58 +6,108 @@
 ;; (because their layout requires human intervention)
 ;; so this file provides a (brittle) parser.
 
-(provide:
-  (project-name->modulegraph (-> String ModuleGraph))
-  (directory->modulegraph (-> Path-String ModuleGraph))
+(provide
+  ;; -- things that should not be here
+  get-git-root
+  ; (-> Path-String))
+
+  ;; ---
+
+  project-name->modulegraph
+  ; (-> (U Symbol String) ModuleGraph))
+  directory->modulegraph
+  ; (-> Path-String ModuleGraph))
   ;; Parse a directory into a module graph.
   ;; Does not collect module dependency information.
+  discrete-modulegraph
+  ; (->* [Natural] [String] ModuleGraph)
+  ;; Make a modulegraph with no edges and N anonymous modules
 
-  (tex->modulegraph (-> Path-String ModuleGraph))
+  tex->modulegraph
+  ;(-> Path-String ModuleGraph))
   ;; Parse a tex file into a module graph
 
-  (modulegraph->tex (-> ModuleGraph Output-Port Void))
+  modulegraph->tex
+  ;(-> ModuleGraph Output-Port Void))
   ;; Print a modulegraph to .tex
 
-  (boundaries (-> ModuleGraph (Listof Boundary)))
+  modulegraph->num-modules
+  ;(-> ModuleGraph Natural))
+
+  modulegraph->num-edges
+  ;(-> ModuleGraph Natural))
+
+  modulegraph->num-identifiers
+  ;(-> ModuleGraph Natural))
+
+  modulegraph=?
+  ;(-> ModuleGraph ModuleGraph Boolean))
+
+  adjlist=?
+  ;(-> AdjList AdjList Boolean))
+
+  modulegraph->untyped-loc
+  ; (-> ModuleGraph Natural))
+  modulegraph->typed-loc
+  ; (-> ModuleGraph Natural))
+  modulegraph->other-loc
+  ; (-> ModuleGraph Natural))
+  ;; Count lines of code
+
+  boundaries
+  ; (-> ModuleGraph (Listof Boundary)))
   ;; Return a list of identifier-annotated edges in the program
   ;; Each boundary is a list (TO FROM PROVIDED)
   ;;  where PROVIDED is a list of type Provided (see the data definition below for 'struct provided')
 
-  (boundary-to (-> Boundary String))
-  (boundary-from (-> Boundary String))
-  (boundary-provided* (-> Boundary (Listof Provided)))
+  boundary-to
+  ;(-> Boundary String))
+  boundary-from
+  ;(-> Boundary String))
+  boundary-provided*
+  ;(-> Boundary (Listof Provided)))
 
-  (in-edges (-> ModuleGraph (Sequenceof (Pairof String String))))
+  in-edges
+  ;(-> ModuleGraph (Sequenceof (Pairof String String))))
   ;; Iterate through the edges in a module graph.
   ;; Each edges is a pair of (TO . FROM)
   ;;  the idea is, each edges is a "require" from TO to FROM
   ;; Order of edges is unspecified.
 
-  (module-names (-> ModuleGraph (Listof String)))
+  module-names
+  ;(-> ModuleGraph (Listof String)))
   ;; Return a list of all module names in the project
 
-  (path->project-name (-> Path-String String))
+  path->project-name
+  ;(-> Path-String String))
   ;; Parse a project's name from a filename.
 
-  (project-name (-> ModuleGraph String))
+  project-name
+  ;(-> ModuleGraph String))
   ;; Get the project name direct from the modulegraph
 
-  (name->index (-> ModuleGraph String Natural))
+  name->index
+  ;(-> ModuleGraph String Natural))
   ;; Get the module's index into bitstrings
 
-  (index->name (-> ModuleGraph Natural String))
+  index->name
+  ;(-> ModuleGraph Natural String))
 
-  (provides (-> ModuleGraph String (Listof String)))
+  provides
+  ;(-> ModuleGraph String (Listof String)))
   ;; List of modules that require the given one; i.e., modules the current provides to
 
-  (requires (-> ModuleGraph String (Listof String)))
+  requires
+  ;(-> ModuleGraph String (Listof String)))
   ;; (-> ModuleGraph String (Listof String))
   ;; List of modules required by the given one
 
-  (strip-suffix (-> Path-String String))
+  strip-suffix
+  ;(-> Path-String String))
   ;; Remove the file extension from a path string
 
-  (infer-project-dir (-> String Path-String))
+  infer-project-dir
+  ;(-> (U Symbol String) Path-String))
   ;; Guess where the project is located in the GTP repo
 )
 (provide
@@ -73,16 +123,20 @@
 (require
   glob/typed
   racket/match
+  (only-in racket/set set-count)
   (only-in racket/system system)
-  (only-in racket/port with-output-to-string)
-  (only-in racket/list make-list last drop-right)
+  (only-in racket/port with-output-to-string open-output-nowhere)
+  (only-in racket/list make-list last drop-right append*)
   (only-in racket/path file-name-from-path filename-extension)
   (only-in racket/sequence sequence->list)
+  (only-in racket/file delete-directory/files)
   (only-in racket/string string-split string-contains? string-trim string-join)
 )
-(require/typed syntax/modcode
-  (get-module-code
-   (-> Path Any)))
+(require/typed syntax-sloc
+  (lang-file-sloc (-> Path-String Natural))
+  (directory-sloc (-> Path-String Natural)))
+(require/typed syntax/modresolve
+  (resolve-module-path (-> Path (U #f Path) Path)))
 (require/typed racket/string
   (string-contains? (-> String String Any)))
 
@@ -98,6 +152,33 @@
 ) #:transparent)
 (define-type AdjList (Listof (Listof String)))
 (define-type ModuleGraph modulegraph)
+
+(: modulegraph=? (-> ModuleGraph ModuleGraph Boolean))
+(define (modulegraph=? m1 m2)
+  (and
+    (string=? (modulegraph-project-name m1) (modulegraph-project-name m2))
+    (equal? (modulegraph-src m1) (modulegraph-src m2))
+    (adjlist=? (modulegraph-adjlist m1) (modulegraph-adjlist m2))))
+
+(: adjlist=? (-> AdjList AdjList Boolean))
+(define (adjlist=? a1 a2)
+  (list=? string-list=? a1 a2))
+
+(: string-list=? (-> (Listof String) (Listof String) Boolean))
+(define (string-list=? x* y*)
+  (list=? string=? x* y*))
+
+(: list=? (All (A) (-> (-> A A Boolean) (Listof A) (Listof A) Boolean)))
+(define (list=? f a1 a2)
+  (cond
+   [(and (null? a1) (null? a2))
+    #t]
+   [(or (null? a1) (null? a2))
+    #f]
+   [(f (car a1) (car a2))
+    (list=? f (cdr a1) (cdr a2))]
+   [else
+    #f]))
 
 (: adjlist-add-edge (-> AdjList String String AdjList))
 (define (adjlist-add-edge A* from to)
@@ -142,15 +223,15 @@
 
 (: name->index (-> ModuleGraph String Natural))
 (define (name->index mg name)
-  (: maybe-i (U #f Natural))
-  (define maybe-i
-    ;; Simulated for/first
-    (let loop ([i : Natural 0] [n+n (modulegraph-adjlist mg)])
-      (if (string=? name (caar n+n))
-        i
-        (loop (add1 i) (cdr n+n)))))
-  (or maybe-i
-     (error 'name->index (format "Invalid module name ~a" name))))
+  ;; Simulated for/first
+  (let loop ([i : Natural 0] [n+n (modulegraph-adjlist mg)])
+    (cond
+     [(null? n+n)
+      (error 'name->index (format "Invalid module name '~a'" name))]
+     [(string=? name (caar n+n))
+      i]
+     [else
+      (loop (add1 i) (cdr n+n))])))
 
 (: index->name (-> ModuleGraph Natural String))
 (define (index->name mg i)
@@ -195,9 +276,15 @@
 
 ;; TODO should to/from by symbols?
 (define-type Boundary (List String String (Listof Provided)))
-(define boundary-to car)
-(define boundary-from cadr)
-(define boundary-provided* caddr)
+(: boundary-to (-> Boundary String))
+(define (boundary-to b)
+  (car b))
+(: boundary-from (-> Boundary String))
+(define (boundary-from b)
+  (cadr b))
+(: boundary-provided* (-> Boundary (Listof Provided)))
+(define (boundary-provided* b)
+  (caddr b))
 ;; For now, I guess we don't need a struct
 
 ;; Return a list of:
@@ -228,8 +315,7 @@
 
 (: absolute-path->provided* (-> Path (Listof Provided)))
 (define (absolute-path->provided* p)
-  (define cm (cast (compile (get-module-code p)) Compiled-Module-Expression))
-  (define-values (p* s*) (module-compiled-exports cm))
+  (define-values (p* s*) (path->exports p))
   (append
    (parse-provided p*)
    (parse-provided s* #:syntax? #t)))
@@ -274,17 +360,31 @@
 (define (rkt-file? p)
   (regexp-match? #rx"\\.rkt$" (if (string? p) p (path->string p))))
 
-(: project-name->modulegraph (-> String ModuleGraph))
+(: project-name->modulegraph (-> (U Symbol String) ModuleGraph))
 (define (project-name->modulegraph name)
-  (directory->modulegraph (infer-project-dir name)))
+  ;; Try to compile using the current Racket.
+  ;; On failure, fall back to old Racket.
+  ;with-handlers 
+    (directory->modulegraph (infer-project-dir name) #:project-name name))
 
-(: directory->modulegraph (-> Path-String ModuleGraph))
-(define (directory->modulegraph dir)
+(: directory->modulegraph (->* [Path-String] [#:project-name (U Symbol String #f)] ModuleGraph))
+(define (directory->modulegraph dir #:project-name [project-name #f])
   (define u-dir (infer-untyped-dir dir))
   ;; No edges, just nodes
   (: adjlist AdjList)
   (define adjlist (directory->adjlist u-dir))
-  (modulegraph (path->project-name dir) adjlist dir))
+  (define pn
+    (if project-name
+      (format "~a" project-name)
+      (path->project-name dir)))
+  (modulegraph pn adjlist dir))
+
+(: discrete-modulegraph (->* [Natural] [String] ModuleGraph))
+(define (discrete-modulegraph n [name "<anon-modulegraph>"])
+  (define adjlist
+    (for/list : AdjList ([i (in-range n)])
+      (list (format "mod~a" i))))
+  (modulegraph name adjlist #f))
 
 (define GTP "gradual-typing-performance")
 
@@ -295,16 +395,16 @@
     (with-output-to-string
       (lambda ()
         (set-box! ok? (system "git rev-parse --show-toplevel")))))
-  (when (not (string-contains? outs GTP))
-    (printf "WARNING: unrecognized git repo '~a', was expecting '~a'. Proceeding anyway.\n" GTP))
+  #;(when (not (string-contains? outs GTP))
+    (printf "WARNING: unrecognized git repo '~a', was expecting '~a'. Proceeding anyway.\n" outs GTP))
   (if (unbox ok?)
     (string-trim outs)
     (raise-user-error 'modulegraph "Must be in `gradual-typing-performance` repo to use script")))
 
 ;; Blindly search for a directory called `name`.
-(: infer-project-dir (-> String Path))
+(: infer-project-dir (-> (U Symbol String) Path))
 (define (infer-project-dir name)
-  (define p-dir (build-path (get-git-root) "benchmarks" name))
+  (define p-dir (build-path (get-git-root) "benchmarks" (format "~a" name)))
   (if (directory-exists? p-dir)
     p-dir
     (raise-user-error 'modulegraph "Failed to find project directory for '~a', cannot summarize data" name)))
@@ -543,13 +643,27 @@
                      #:when (member (strip-suffix mod-abspath) src-name*))
             (strip-suffix mod-abspath)))))
 
+;; FYI would be nice to use polymorphism here
+(: path-string->imports (-> Path-String (Listof (Pairof (U #f Integer) (Listof Module-Path-Index)))))
+(define (path-string->imports ps)
+  (define p (if (path? ps) ps (string->path ps)))
+  (define r (resolve-module-path p #f))
+  (parameterize ([current-namespace (make-base-namespace)])
+    (dynamic-require r (void))
+    (module->imports r)))
+
+(: path->exports (-> Path (Values (Listof RawProvided) (Listof RawProvided))))
+(define (path->exports p)
+  (define r (resolve-module-path p #f))
+  (parameterize ([current-namespace (make-base-namespace)])
+    (dynamic-require r (void))
+    (module->exports r)))
+
 (: absolute-path->imports (-> Path-String (Listof Path)))
 (define (absolute-path->imports ps)
-  (define p (if (path? ps) ps (string->path ps)))
-  (define mc (cast (compile (get-module-code p)) Compiled-Module-Expression))
   (for/fold : (Listof Path)
             ([acc : (Listof Path) '()])
-            ([mpi (in-list (apply append (module-compiled-imports mc)))])
+            ([mpi (in-list (apply append (path-string->imports ps)))])
     (if (module-path-index? mpi)
       (let-values (((name _2) (module-path-index-split mpi)))
         (if (string? name)
@@ -627,13 +741,90 @@
     (: get-tikzid (-> String String))
     (define (get-tikzid name)
       (cdr (or (assoc name name+tikzid*) (error 'NONAME))))
+    (: get-pos (-> Natural (-> String Natural)))
+    (define ((get-pos i) tikzid)
+      (cast (string->number (string (string-ref tikzid i))) Natural))
+    (define get-x-pos (get-pos 0))
+    (define get-y-pos (get-pos 1))
     (for* ([group (in-list tsort)]
            [name (in-list group)]
            [req (in-list (requires MG name))])
-      (printf "  \\draw[->] (~a) -- (~a);\n"
-        (get-tikzid name)
-        (get-tikzid req)))
+      (define this-id (get-tikzid name))
+      (define this-x (get-x-pos this-id))
+      (define this-y (get-y-pos this-id))
+      (define that-id (get-tikzid req))
+      (define that-x (get-x-pos that-id))
+      (define that-y (get-y-pos that-id))
+      (printf "  \\draw[->] (~a) ~a (~a);\n"
+        this-id
+        (if (and (= this-y that-y)
+                 (< 1 (- this-x that-x)))
+          "edge[bend left=25]"
+          "--")
+        that-id))
     (displayln "\n\\end{tikzpicture}")))
+
+(: modulegraph->num-edges (-> ModuleGraph Natural))
+(define (modulegraph->num-edges M)
+  (assert
+    (for/sum : Integer ([e (in-edges M)]) 1)
+    exact-nonnegative-integer?))
+
+(: modulegraph->num-identifiers (-> ModuleGraph Natural))
+(define (modulegraph->num-identifiers M)
+  (set-count
+    (for*/set : (Setof (Pairof String Symbol))
+              ([b (in-list (boundaries M))]
+               [p (in-list (boundary-provided* b))])
+      (cons (boundary-from b) (provided->symbol p)))))
+
+(: make-tmp-dir (->* [ModuleGraph] [#:typed? Boolean] Path-String))
+(define (make-tmp-dir M #:typed? [typed? #f])
+  (define src (or (modulegraph-src M)
+                  (raise-user-error 'make-tmp-dir "Missing source for modulegraph '~a'" M)))
+  ;; Dammit TR
+  (define target (build-path src "tmp"))
+  (define tdir (build-path src (if typed? "typed" "untyped")))
+  (define bdir (build-path src "both"))
+  (delete-directory/files target #:must-exist? #f)
+  (make-directory target)
+  (copy-rkt-file* tdir target)
+  (copy-rkt-file* bdir target)
+  target)
+
+(: copy-rkt-file* (-> Path-String Path-String Void))
+(define (copy-rkt-file* src dst)
+  (define str (if (path? src) (path->string src) src))
+  (for ([fname (in-glob (string-append str "/*.rkt"))])
+    (copy-file fname (build-path dst (strip-directory fname)))))
+
+(: modulegraph->num-modules (-> ModuleGraph Natural))
+(define (modulegraph->num-modules M)
+  (length (module-names M)))
+
+(: assert-src (-> ModuleGraph Path-String))
+(define (assert-src M)
+  (or (modulegraph-src M)
+      (raise-user-error 'assert-src "Source folder missing for '~a'" (modulegraph-project-name M))))
+
+(: modulegraph->untyped-loc (->* [ModuleGraph] [(U #f String)] Natural))
+(define (modulegraph->untyped-loc M [module-name #f])
+  (get-loc (build-path (assert-src M) "untyped") module-name))
+
+(: modulegraph->typed-loc (->* [ModuleGraph] [(U #f String)] Natural))
+(define (modulegraph->typed-loc M [module-name #f])
+  (get-loc (build-path (assert-src M) "typed") module-name))
+
+(: get-loc (-> Path (U String #f) Natural))
+(define (get-loc prefix module-name)
+  (if module-name
+    (lang-file-sloc (build-path prefix (format "~a.rkt" module-name)))
+    (directory-sloc prefix)))
+
+(: modulegraph->other-loc (-> ModuleGraph Natural))
+(define (modulegraph->other-loc M)
+  (+ (directory-sloc (build-path (assert-src M) "base"))
+     (directory-sloc (build-path (assert-src M) "both"))))
 
 (: decr-right (-> String String))
 (define (decr-right str)
@@ -688,7 +879,7 @@
     typed/rackunit)
 
   (define SAMPLE-MG-FILE "test/sample-modulegraph.tex")
-  (define SAMPLE-MG-PROJECT-NAME "echo")
+  (define SAMPLE-MG-PROJECT-NAME "stack")
 
   ;; -- Test parsing
 
@@ -705,13 +896,33 @@
   ;; -- module-names
   (check-equal? (sort (module-names MGf) string<?)
                '("collide" "const" "cut-tail" "data" "handlers" "main" "motion" "motion-help"))
-  (check-equal? (module-names MGd) '("client" "constants" "main" "server"))
+  (check-equal? (module-names MGd) '("main" "stack"))
+
+  ;; -- modulegraph->num-modules
+  (check-equal?
+    (modulegraph->num-modules MGf)
+    8)
+
+  (check-equal?
+    (modulegraph->num-modules MGd)
+    2)
+
+  ;; -- modulegraph->lines-of-code
+  (let ([uloc (modulegraph->untyped-loc MGd)]
+        [udir (infer-untyped-dir (infer-project-dir SAMPLE-MG-PROJECT-NAME))])
+    (check-equal?  uloc (directory-sloc udir))
+    (check-true (< uloc 900))
+    (check-true (< 10 uloc))
+    (let ([tdir (build-path udir ".." "typed")]
+          [tloc (modulegraph->typed-loc MGd)])
+      (check-equal? tloc (directory-sloc tdir))
+      (check-true (< uloc tloc))))
 
   ;; -- name->index
   (check-equal? (name->index MGf "collide") 0)
   (check-equal? (name->index MGf "handlers") 4)
 
-  (check-equal? (name->index MGd "main") 2)
+  (check-equal? (name->index MGd "main") 0)
 
   ;; -- index->name
   (check-equal? (index->name MGf 4) "handlers")
@@ -736,7 +947,7 @@
 
   ;; -- adjlist
   (check-equal? (modulegraph-adjlist MGd)
-    '(("client" "constants") ("constants") ("main" "server" "client") ("server" "constants")))
+    '(("main" "stack") ("stack")))
 
   (: lex-pair<? (-> (Pairof String String) (Pairof String String) Boolean))
   (define (lex-pair<? a b)
@@ -750,23 +961,17 @@
 
   (check-equal?
     (sort (sequence->list (in-edges MGd)) lex-pair<?)
-    '(("client" . "constants") ("main" . "client") ("main" . "server") ("server" . "constants")))
+    '(("main" . "stack")))
 
   (let ([bd (boundaries MGd)])
     (check-equal? (length bd) (length (sequence->list (in-edges MGd))))
     (let ([b1 (car bd)])
-      (check-equal? (car b1) "client")
-      (check-equal? (cadr b1) "constants")
+      (check-equal? (car b1) "main")
+      (check-equal? (cadr b1) "stack")
       (let ([p* (caddr b1)])
         (check-equal? (length p*) 2)
-        (check-equal? (provided->symbol (car p*)) 'DATA)
-        (check-equal? (provided->symbol (cadr p*)) 'PORT)))
-    (let ([b3 (caddr bd)])
-      (check-equal? (car b3) "main")
-      (check-equal? (cadr b3) "client")
-      (let ([p* (caddr b3)])
-        (check-equal? (length p*) 1)
-        (check-equal? (provided->symbol (car p*)) 'client))))
+        (check-equal? (provided->symbol (car p*)) 'init)
+        (check-equal? (provided->symbol (cadr p*)) 'push))))
 
   ;; -- directory->modulegraph
   ;; -- tex->modulegraph
@@ -882,7 +1087,7 @@
     '(("data") ("label") ("structs") ("ukkonen") ("lcs") ("main")))
 
   (check-equal?
-    (modulegraph-adjlist (project-name->modulegraph "synth"))
+    (modulegraph-adjlist (project-name->modulegraph 'synth))
     '(("array-broadcast" "data" "array-utils" "array-struct") ("array-struct" "data" "array-utils") ("array-transform" "data" "array-utils" "array-broadcast" "array-struct") ("array-utils") ("data") ("drum" "data" "synth" "array-transform" "array-utils" "array-struct") ("main" "synth" "mixer" "drum" "sequencer") ("mixer" "array-broadcast" "array-struct") ("sequencer" "mixer" "synth" "array-transform" "array-struct") ("synth" "array-utils" "array-struct")))
 
   (check-equal?
@@ -896,10 +1101,40 @@
                  (boundary-from b)
                  (map provided->symbol (boundary-provided* b))))
          (boundaries MGd))
-    '(("client" "constants" (DATA PORT)) ("main" "server" (server)) ("main" "client" (client)) ("server" "constants" (DATA PORT))))
+    '(("main" "stack" (init push))))
+
+  ;; -- adjlist=? modulegraph=?
+  (check-true (adjlist=? (modulegraph-adjlist MGd) (modulegraph-adjlist MGd)))
+  (check-true (modulegraph=? MGd MGd))
+  (check-false (adjlist=? (modulegraph-adjlist MGf) (modulegraph-adjlist MGd)))
+  (check-false (modulegraph=? MGd MGf))
+
+  (let ([a1 (modulegraph-adjlist (project-name->modulegraph 'fsm))]
+        [a2 (modulegraph-adjlist (project-name->modulegraph 'fsmoo))])
+    ;; Too bad, one require isn't needed in fsmoo
+    (check-false (adjlist=? a1 a2)))
+
+  ;; -- modulegraph->num-edges
+  (check-equal?
+    (modulegraph->num-edges MGd)
+    1)
+
+  ;; -- modulegraph->num-identifiers
+  (check-equal?
+    (modulegraph->num-identifiers MGd)
+    2)
 
   ;; -- string->texedge TODO
   ;; -- texnode->modulegraph TODO
   ;; -- directory->adjlist TODO
+
+  (let* ([n 10]
+         [d (discrete-modulegraph n)])
+    (check-equal?
+      (modulegraph->num-modules d)
+      n)
+    (check-equal?
+      (modulegraph->num-edges d)
+      0))
 )
 

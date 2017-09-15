@@ -1,0 +1,24 @@
+cpu time: 199776 real time: 199737 gc time: 681
+Running time is 25.27% contracts
+50503/199843 ms
+
+(-> (cons/c (vectorof automaton?) (vectorof automaton?)) any/c (c25430 ms
+main.rkt:15:2                                                    
+    match-up*                                                    25430 ms
+
+(->* ((cons/c (vectorof automaton?) (vectorof automaton?)) any/c)24949 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    death-birth                                                  24949 ms
+
+(-> any/c (cons/c (vectorof automaton?) (vectorof automaton?)))  102 ms
+main.rkt:10:2                                                    
+    build-random-population                                      102 ms
+
+(-> automaton? any)                                              10 ms
+automata.rkt:15:1                                                
+    automaton-reset                                              10 ms
+
+(-> any/c any/c Real)                                            11.5 ms
+main.rkt:19:2                                                    
+    relative-average                                             11.5 ms
+

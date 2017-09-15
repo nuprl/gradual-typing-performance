@@ -1,0 +1,57 @@
+cpu time: 194700 real time: 194588 gc time: 21292
+Running time is 78.84% contracts
+153555/194777 ms
+
+(-> (hash/c Binding? (set/c Closure?)) (hash/c Binding? (set/c Cl73133.5 ms
+denotable-adapted.rkt:22:4                                       
+    store-join                                                   73133.5 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c any/c (hash/c Bindin24046 ms
+denotable-adapted.rkt:21:4                                       
+    store-update*                                                24046 ms
+
+(-> any/c (hash/c Binding? (set/c Closure?)))                    24702.5 ms
+denotable-adapted.rkt::-1                                        
+    State-store                                                  24702.5 ms
+
+(-> (hash/c Binding? (set/c Closure?)) any/c (set/c Closure?))   18479.5 ms
+denotable-adapted.rkt:19:4                                       
+    store-lookup                                                 18479.5 ms
+
+(-> any/c (hash/c Symbol Binding?) (hash/c Binding? (set/c Closur12950.5 ms
+#<blame>::-1                                                     
+    State3                                                       12950.5 ms
+
+(-> any/c (hash/c Symbol Binding?))                              63.5 ms
+benv-adapted.rkt::-1                                             
+    Closure-benv                                                 33.5 ms
+    State-benv                                                   30 ms
+
+(-> (hash/c Symbol Binding?) any/c any/c (hash/c Symbol Binding?)58.5 ms
+benv-adapted.rkt:18:3                                            
+    benv-extend*                                                 58.5 ms
+
+(-> (hash/c Symbol Binding?) any/c Binding?)                     50 ms
+benv-adapted.rkt:16:3                                            
+    benv-lookup                                                  50 ms
+
+(-> any/c (-> any/c Binding?))                                   18.5 ms
+time-adapted.rkt:13:3                                            
+    alloc                                                        18.5 ms
+
+(-> any/c (hash/c Symbol Binding?) Closure?)                     22 ms
+#<blame>::-1                                                     
+    Closure3                                                     22 ms
+
+(-> any/c any/c (listof Symbol))                                 10 ms
+time-adapted.rkt:12:3                                            
+    tick                                                         10 ms
+
+(-> any/c (listof Symbol))                                       10 ms
+denotable-adapted.rkt::-1                                        
+    State-time                                                   10 ms
+
+(-> any/c (or/c exp? Call?))                                     10 ms
+denotable-adapted.rkt::-1                                        
+    State-call                                                   10 ms
+

@@ -33,7 +33,7 @@
 ;; -----------------------------------------------------------------------------
 
 ;; Overheads to test. Add as many as you want.
-(define N* (vector 1 3 10 20))
+(define N* (vector 1 3  5 10 20))
 
 (define (rnd n)
   (~r n #:precision (list '= 2)))

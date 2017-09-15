@@ -1,6 +1,7 @@
 #lang at-exp racket
 (require scribble/manual
-         scriblib/autobib)
+         scriblib/autobib
+         (only-in scribble/core make-element make-style plain))
 
 (provide (all-defined-out))
 
@@ -24,27 +25,39 @@
 (define Symposium "Symposium ")
 (define Transactions "Transactions on ")
 
+(define racket-con (list "In " (emph "RacketCon")))
 
-(define/short asplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
+(define/short aplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
+(define/short asplos "ASPLOS" (string-append ACM International Conference "on Architectural Support for Programming Languages and Operating Systems"))
 (define/short fpca "FPCA" (string-append ACM International Conference "Functional Programming Languages and Computer Architecture"))
+(define/short sde "SDE" (string-append ACM Symposium "on Practical software development environments"))
+(define/short lfp "LFP" (string-append ACM Symposium "on LISP and functional programming"))
+(define/short sas "SAS" (string-append International "Static Analysis Symposium"))
 (define/short icfp "ICFP" (string-append ACM International Conference "on Functional Programming"))
 (define/short pldi "PLDI" (string-append ACM Conference "on Programming Language Design and Implementation"))
 (define/short popl "POPL" (string-append ACM Symposium "on Principles of Programming Languages"))
 (define/short lncs "LNCS" "Lecture Notes in Computer Science")
+(define/short ismm "ISMM" (string-append ACM International Symposium "on Memory Management"))
 (define/short sigplan-notices "SIGPLAN Notices" (string-append ACM "SIGPLAN Notices"))
+(define/short algorithmica "Algorithmica"  "Algorithmica")
 (define/short scheme-workshop "SFP" (string-append "Scheme and Functional Programming Workshop"))
-(define/short jfp "JFP" (string-append Journal "Functional Programming"))
-(define/short hosc "HOSC" "Higher-Order and Symbolic Programming")
-(define/short lfp "LFP" "LISP and Functional Programming")
+(define/short jfp "JFP" (string-append Journal "of Functional Programming"))
+(define/short spe "SPE" (string-append Journal "of Software --- Practices & Experience"))
+(define/short cj "The Computer Journal" "The Computer Journal")
+(define/short asa "JASA" (string-append Journal "the American Statistical Association"))
+(define/short hosc "HOSC" "Higher-Order and Symbolic Computation")
 (define/short lsc "LSC" "LISP and Symbolic Computation")
 (define/short ifl "IFL" (string-append International Symposium "Functional and Logic Programming"))
+(define/short ip "Information Processing" "Information Processing")
 (define/short tfp "TFP" (string-append Symposium "Trends in Functional Programming"))
 (define/short ecoop "ECOOP" (string-append "European " Conference "Object-Oriented Programming"))
 (define/short oopsla "OOPSLA" (string-append ACM Conference "on Object-Oriented Programming, Systems, Languages and Applications"))
 (define/short ieee-software (string-append IEEE "Software"))
 (define/short toplas "TOPLAS" (string-append ACM Transactions "Programming Languages and Systems"))
+(define/short aplwa "APLWA" "Analysis and Programming Languages for Web Applications and Cloud Applications")
 (define/short dls "DLS" "Dynamic Languages Symposium")
 (define/short flops "FLOPS" (string-append Symposium "Functional and Logic Programming"))
+(define/short snapl "SNAPL" "Summit on Advances in Programming Languages")
 (define/short esop "ESOP" (string-append "European " Symposium "on Programming"))
 (define/short cc "CC" (string-append International Conference "on Compiler Construction"))
 (define/short iclp "ICLP" (string-append  International Conference "on Logic Programming"))
@@ -61,16 +74,24 @@
 (define/short gpce "GPCE" "Generative Programming: Concepts & Experiences")
 (define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications"))
 (define/short issta "ISSTA" (string-append International Symposium "on Software Testing and Analysis"))
+(define/short ppdp "PPDP" (string-append International Symposium "on Principles and Practice of Declarative Programming"))
+(define/short stop "STOP" (string-append "Script to Program Evolution Workshop"))
 
 ;; ----------------------------------------
 
-(define TypedRacket
+(define tfgnvf-popl-2016
   (make-bib
-   #:author (authors "Sam Tobin-Hochstadt" "Matthias Felleisen")
-   #:title "The Design and Implementation of Typed Scheme"
-   #:location (proceedings-location popl
-                                    #:pages '(395 406))
-   #:date "2008"))
+   #:author (authors "Asumu Takikawa" "Daniel Feltey" "Ben Greenman" "Max S. New" "Jan Vitek" "Matthias Felleisen")
+   #:title "Is Sound Gradual Typing Dead?"
+   #:location (proceedings-location popl #:pages '(456 468))
+   #:date 2016))
+
+(define f-popl-2016
+  (make-bib
+   #:author (authors "Matthew Flatt")
+   #:title "Bindings as Sets of Scopes"
+   #:location (proceedings-location popl #:pages '(705 717))
+   #:date 2016))
 
 (define Contracts
   (make-bib
@@ -146,6 +167,50 @@
    #:title "The Art of the Metaobject Protocol"
    #:location (book-location #:publisher "MIT Press")
    #:date "1991"))
+
+(define ls-ppdp-2006
+  (make-bib
+   #:author (authors "Tobias Lindahl" "Konstantinos Sagonas")
+   #:title "Practical Type Inference Based on Success Typings"
+   #:location (proceedings-location ppdp #:pages '(167 178))
+   #:date 2006))
+
+(define l-stop-2015
+  (make-bib
+   #:author "Jukka Lehtosalo"
+   #:title "MyPy, an Optionally-Typed Python"
+   #:location (proceedings-location stop)
+   #:date 2015))
+
+(define aemopssy-oopsla-2014
+  (make-bib
+   #:author (authors "Keith Adams"
+                     "Jason Evans"
+                     "Bertrand Maher"
+                     "Guilherme Ottoni"
+                     "Andrew Paroski"
+                     "Brett Simmers"
+                     "Edwin Smith"
+                     "Owen Yamauchi")
+   #:title "The HipHop Virtual Machine"
+   #:location (proceedings-location oopsla #:pages '(777 790))
+   #:date 2014))
+
+;(define t-artima-2009
+;  (make-bib
+;   #:author "Bill Venners"
+;   #:title "Twitter on Scala"
+;   #:location (hyperlink "http://www.artima.com/scalazine/articles/twitter_on_scala.html" "http://www.artima.com/scalazine/articles/twitter_on_scala.html")
+;   #:date 2009))
+; "https://blog.twitter.com/2011/twitter-search-is-now-3x-faster"
+
+(define armstrong-2007
+  (make-bib
+   #:author "Joe Armstrong"
+   #:is-book? #t
+   #:title "Programming Erlang: software for a concurrent world"
+   #:location (book-location #:publisher "Pragmatic Bookshelf")
+   #:date "2007"))
 
 (define AOP
   (make-bib
@@ -269,13 +334,6 @@
 		 #:number 2
 		 #:pages '("237" "268"))))
 
-(define |Space Efficient Gradual Typing|
-  (make-bib
-   #:title "Space Efficient Gradual Typing"
-   #:author (authors "David Herman" "Aaron Tomb" "Cormac Flanagan")
-   #:location (proceedings-location tfp)
-   #:date "2007"))
-
 (define |Nested and Dynamic Contract Boundaries|
   (make-bib
    #:title "Nested and Dynamic Contract Boundaries"
@@ -340,7 +398,7 @@
 (define no-more-scapegoating
   (make-bib
    #:title "Correct Blame for Contracts: No More Scapegoating"
-   #:author (authors "Christos Dimoulas" "Robert Bruce Findler" "Cormc Flanagan" "Matthias Felleisen")
+   #:author (authors "Christos Dimoulas" "Robert Bruce Findler" "Cormac Flanagan" "Matthias Felleisen")
    #:location (proceedings-location popl)
    #:date 2011))
 
@@ -409,7 +467,7 @@
   (make-bib #:title "Fast and precise type inference for JavaScript"
             #:author (authors (author-name "Brian" "Hackett")
                               (author-name "Shu-Yu" "Guo"))
-            #:location (proceedings-location pldi) ; TODO pages
+            #:location (proceedings-location pldi #:pages '(239 250))
             #:date "2012"))
 
 (define min-cover-salient-curves
@@ -452,6 +510,13 @@
 
 ;; ----------------------------------------
 ; Misc
+
+(define r-icfp-2014
+  (make-bib
+    #:author "Norman Ramsey"
+    #:title "On Teaching 'How to Design Programs'"
+    #:location (proceedings-location icfp #:pages '(153 166))
+    #:date 2014))
 
 (define cm-tech-1985
   (make-bib
@@ -579,7 +644,8 @@
 
 (define nthvh-icfp-2014
   (make-bib
-   #:author (authors "Phúc C. Nguyễn" "Sam Tobin-Hochstadt" "David Van Horn")
+   #:author (authors (make-element (make-style #f '(exact-chars)) "Ph\\'{u}c C. Nguy\\~{\\^{e}}n")
+                     "Sam Tobin-Hochstadt" "David Van Horn")
    #:title "Soft Contract Verification"
    #:location (proceedings-location icfp #:pages '(139 152))
    #:date 2014))
@@ -742,8 +808,8 @@
 ;; ----------------------------------------
 ; Gradual typing
 
-;; for these papers, see
-;; https://github.com/samth/gradual-typing-bib/blob/master/main.rkt
+;; for these papers, see 'gradual-bib.rkt'
+;; or https://github.com/samth/gradual-typing-bib/blob/master/main.rkt
 
 (define typescript
   (make-bib
@@ -752,8 +818,29 @@
                                 #:institution "Microsoft")
    #:date 2013))
 
+(define g-popl-2015
+  (make-bib
+   #:title "Space-Efficient Manifest Contracts"
+   #:author "Michael Greenberg"
+   #:location (proceedings-location popl #:pages '(181 194))
+   #:date 2015))
+
+(define g-tfp-2016
+  (make-bib
+   #:author "Michael Greenberg"
+   #:title "Space-Efficient Latent Contracts"
+   #:location (proceedings-location tfp)
+   #:date 2016))
+
 ;; ----------------------------------------
 ; Components and modules
+
+(define sfrbcsb-popl-2014
+  (make-bib
+   #:author (authors "Nikhil Swamy" "Cedric Fournet" "Aseem Rastogi" "Karthikeyan Bhargavan" "Juan Chen" "Pierre-Yves Strub" "Gavin Bierman")
+   #:title "Gradual Typing Embedded Securely in JavaScript"
+   #:location (proceedings-location popl #:pages '(425 437))
+   #:date 2014))
 
 (define mfh-oopsla-2001
   (make-bib
@@ -804,11 +891,11 @@
    #:location (proceedings-location ecoop #:pages '(248 274))
    #:date 2003))
 
-(define kt-asplas-2004
+(define kt-aplas-2004
   (make-bib
    #:title "McJava – A Design and Implementation of Java with Mixin-Types"
    #:author (authors "Tetsuo Kamina" "Tetsuo Tamai")
-   #:location (proceedings-location asplas #:pages '(398 414))
+   #:location (proceedings-location aplas #:pages '(398 414))
    #:date 2004))
 
 (define sd-ecoop-2005
@@ -882,7 +969,7 @@
   (make-bib
     #:author (authors "Kenichi Asai" "Yukiyoshi Kameyama")
     #:title "Polymorphic Delimited Continuations"
-    #:location (proceedings-location asplas #:pages '(239 254) #;#:series #;"LNCS 4807")
+    #:location (proceedings-location aplas #:pages '(239 254) #;#:series #;"LNCS 4807")
     #:date 2007))
 
 (define Dybvig2007
@@ -954,12 +1041,12 @@
    #:location (proceedings-location icfp #:pages '(138 147))
    #:date 1999))
 
-(define fff-asplas-2006
+(define fff-aplas-2006
   (make-bib
    #:author (authors "Matthew Flatt" "Robert Bruce Findler"
                      "Matthias Felleisen")
    #:title "Scheme with Classes, Mixins, and Traits"
-   #:location (proceedings-location asplas #:pages '(270 289))
+   #:location (proceedings-location aplas #:pages '(270 289))
    #:date 2006))
 
 (define fbf-icfp-2009
@@ -1037,4 +1124,356 @@
    #:author "David A. Moon"
    #:title "MACLISP Reference Manual"
    #:date 1974))
+
+(define shivers-dissertation-1991 ;)
+  (make-bib
+   #:author "Olin Shivers"
+   #:title "Control-Flow Analysis of Higher-Order Languages"
+   #:location (dissertation-location #:institution "Carnegie Mellon University")
+   #:date "1991"))
+
+;; ----------------------------------------
+;; Blog Posts and User Links
+
+(define v-aplwa-2010
+  (make-bib
+   #:author "Jan Vitek"
+   #:title "Of Scripts and Programs, Tall Tales, Urban Legends and Future Prospects"
+   #:location (proceedings-location aplwa)
+   #:date 2010))
+
+(define b-rc-2015
+  ;; Uses Typed Racket
+  ;; http://con.racket-lang.org/2015/burns.pdf
+  (make-bib
+    #:author "Marc Burns"
+    #:title "Rocking with Racket"
+    #:location racket-con
+    #:date 2015))
+
+(define p-rc-2014
+  ;; Uses Racket (probably not Typed)
+  (make-bib
+    #:author "Daniel Prager"
+    #:title "YouPatch: A Racket-powered startup"
+    #:location racket-con
+    #:date 2014))
+
+(define l-rc-2014
+  ;; Uses Racket (maybe Typed, but not sure)
+  (make-bib
+    #:author "Dan Liebgold"
+    #:title "Racket on the Playstation 3? It's Not What you Think!"
+    #:location racket-con
+    #:date 2013))
+
+(define tmv-esop-2014
+  (make-bib
+   #:title "Running Probabilistic Programs Backwards"
+   #:author (authors "Neil Toronto" "Jay McCarthy" "David Van Horn")
+   #:location (proceedings-location esop #:pages '(53 79))
+   #:date 2014))
+
+(define r-ip-1983
+  (make-bib
+   #:title "Types, Abstraction, and Parametric Polymorphism"
+   #:author "John C. Reynolds"
+   #:location (proceedings-location ip)
+   #:date 1983))
+
+(define u-algorithmica-1995
+  (make-bib
+   #:title "On-line construction of suffix trees"
+   #:author "Esko Ukkonen"
+   #:location (journal-location algorithmica
+                                #:volume 14
+                                #:number 3
+                                #:pages '(249 260))
+   #:date 1995))
+
+;; -- GC
+; Zorn's diss : http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-25.pdf
+; Hertz/Berger, GC vs. Explicit : https://people.cs.umass.edu/~emery/pubs/gcvsmalloc.pdf
+; Blackburn, Cheng, McKinley : http://www.cs.utexas.edu/users/mckinley/papers/mmtk-icse-2004.pdf
+; Jones, GC handbook
+
+(define u-sde-1984
+  (make-bib
+   #:title "Generation Scavenging: A non-disruptive high performance storage reclamation algorithm"
+   #:author "David Ungar"
+   #:location (proceedings-location sde #:pages '(157 167))
+   #:date 1984))
+
+(define m-lfp-1984
+  (make-bib
+   #:title "Garbage collection in a large LISP system"
+   #:author "David A. Moon"
+   #:location (proceedings-location lfp #:pages '(235 246))
+   #:date 1984))
+
+;; http://plt.eecs.northwestern.edu/racket-machine/racket-machine.pdf
+(define kff-hosc-2013
+  (make-bib
+   #:title "The Racket Virtual Machine and Randomized Testing"
+   #:author (authors "Casey Klein" "Matthew Flatt" "Robert Bruce Findler")
+   #:location (proceedings-location hosc #:pages '(1 45))
+   #:date 2013))
+
+;; http://kar.kent.ac.uk/33611/7/paper.pdf
+(define kj-ismm-2013
+  (make-bib
+   #:title "Rigorous Benchmarking in Reasonable Time"
+   #:author (authors "Tomas Kalibera" "Richard E. Jones")
+   #:location (proceedings-location ismm #:pages '(63 74))
+   #:date 2013))
+
+;; http://www.cs.umass.edu/~emery/pubs/stabilizer-asplos13.pdf
+(define cb-asplos-2013
+  (make-bib
+   #:title "Stabilizer: Statistically Sound Performance Evaluation"
+   #:author (authors "Charlie Curtsinger" "Emery Berger")
+   #:location (proceedings-location asplos #:pages '(219 228))
+   #:date 2013))
+
+;; -- stats
+(define kj-tr-2013
+  (make-bib
+   #:title "Quantifying performance changes with effect size confidence intervals"
+   #:author (authors "Tomas Kalibera" "Richard Jones")
+   #:location "Technical Report 4--12, University of Kent"
+   #:date 2012))
+
+(define s-asa-1974
+  (make-bib
+   #:title "EDF Statistics for Goodness of Fit and Some Comparisons"
+   #:author "M. A. Stephens"
+   #:location (journal-location asa
+                                #:volume 69
+                                #:number 347
+                                #:pages '(730 737))
+   #:date 1974))
+
+(define ad-asa-1954
+  (make-bib
+   #:title "A Test of Goodness of Fit"
+   #:author (authors "T. W. Anderson" "D. A. Darling")
+   #:location (journal-location asa
+                                #:volume 49
+                                #:number 268
+                                #:pages '(765 769))
+   #:date 1954))
+
+(define bbdt-ecoop-2016
+  (make-bib
+   #:title "Fine-grained Language Composition: A Case Study"
+   #:author (authors "Edd Barrett" "Carl Friedrich Bolz" "Lukas Diekmann" "Laurence Tratt")
+   #:location (proceedings-location ecoop #:pages '(3:1 3:27))
+   #:date 2016))
+
+(define gct-popl-2016
+ (make-bib
+  #:title "Abstracting Gradual Typing"
+  #:author (authors "Ronald Garcia" "Alison M. Clark" "Éric Tanter")
+  #:location (proceedings-location popl #:pages '(429 442))
+  #:date 2016))
+
+(define mfsw-hosc-2005
+  (make-bib
+    #:title "Selectors Make Set-Based Analysis Too Hard"
+    #:author (authors "Philippe Meunier" "Robert Bruce Findler" "Paul Steckler" "Mitchell Wand")
+    #:location (journal-location hosc
+                                 #:volume 18
+                                 #:number 3
+                                 #:pages '(245 269))
+    #:date 2005))
+
+(define n-mthesis-2014
+  (make-bib
+   #:title "Tough Behavior in Repeated Bargaining game, A Computer Simulation Study"
+   #:author "Linh Chi Nguyen"
+   #:location (dissertation-location #:institution "University of Trento" #:degree "Master in Economics")
+   #:date 2014))
+
+(define h-cj-1989
+  (make-bib
+   #:title "Why Functional Programming Matters"
+   #:author "John Hughes"
+   #:location (journal-location cj
+                                #:volume 32
+                                #:number 2
+                                #:pages '(98 107))
+   #:date 1989))
+
+(define l-mthesis-2016
+  (make-bib
+    #:title "Typed Contracts for Gradual Typing"
+    #:author "Brian LaChance"
+    #:location (dissertation-location #:institution "Northeastern University" #:degree "Master in Computer Science")
+    #:date 2016))
+
+(define stf-esop-2009
+  (make-bib
+   #:title "Practical Variable-Arity Polymorphism"
+   #:author (authors "T. Stephen Strickland" "Sam Tobin-Hochstadt" "Matthias Felleisen")
+   #:location (proceedings-location esop #:pages '(32 46))
+   #:date 2009))
+
+(define b-spe-1993
+  ; http://www.cs.colorado.edu/department/publications/reports/docs/CU-CS-573-92.pdf
+  (make-bib
+   #:title "The measured cost of conservative garbage collection"
+   #:author "Ben Zorn"
+   #:location (journal-location spe
+                                #:volume 23
+                                #:number 7
+                                #:pages '(733 756))
+   #:date 1993))
+
+(define rf-pldi-2016
+  (make-bib
+   #:title "Just-in-time Static Type Checking for Dynamic Languages"
+   #:author (authors "Brianna M. Ren" "Jeffrey S. Foster")
+   #:location (proceedings-location pldi #:pages '(462 476))
+   #:date 2016))
+
+(define f-icfp-2014
+  (make-bib
+   #:title "Behavioral Software Contracts"
+   #:author "Robert Bruce Findler"
+   #:location (list "KEYNOTE speech: " (proceedings-location icfp))
+   #:date 2014))
+
+; http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2064100/
+
+(define f-arxiv-2006
+  ; https://arxiv.org/pdf/0710.2024v1.pdf
+  (make-bib
+   #:title "Ratios: A short guide to confidence limits and proper use"
+   #:author "Volker H. Franz"
+   #:location "Unpublished Manuscript"
+   #:date 2007))
+
+(define f-rss-1957
+  (make-bib
+   #:title "Some Problems in Interval Estimation"
+   #:author "E.C. Fieller"
+   #:location (journal-location "Journal of the Royal Statistical Society"
+                                #:volume 16
+                                #:number 2
+                                #:pages '(175 185))
+   #:date 1957))
+
+(define n-ptrs-1937
+  (make-bib
+   #:title "Outline of a Theory of Statistical Estimation Based on the Classical Theory of Probability"
+   #:author "J. Neyman"
+   #:location (journal-location "Philosophical Transactions of the Royal Society of London"
+                                #:volume 236
+                                #:number 767
+                                #:pages '(333 380))
+   #:date 1937))
+
+;(define lf-statistica-2009
+;  (make-bib
+;   #:title "A Geometric Approach to Confidence Sets for Ratios: Fieller's Theorem, Generalizations, and Bootstrap"
+;   #:author (authors "Ulrike von Luxburg" "Volker H. Franz")
+;   #:location (journal-location "Statistica Sinica"
+;                                #:volume 19
+;                                #:number 3
+;                                #:pages '(1095 1117))
+;   #:date 2009))
+
+(define bfwc-pm-2005
+  (make-bib
+   #:title "Researchers Misunderstand Confidence Intervals and Standard Error Bars"
+   #:author (authors "Sarah Belia" "Fiona Fidler" "Jennifer Williams" "Geoff Cumming")
+   #:location (journal-location "Psychological Methods"
+                                #:volume 10
+                                #:number 4
+                                #:pages '(389 396))
+   #:date 2005))
+
+(define mdhs-asplos-2009
+  (make-bib
+   #:title "Producing Wrong Data Without Doing Anything Obviously Wrong"
+   #:author (authors "Todd Mytkowicz" "Amer Diwan" "Matthais Hauswirth" "Peter F. Sweeney")
+   #:location (proceedings-location asplos #:pages '(265 276))
+   #:date 2009))
+
+(define gvg-siu-2005
+  (make-bib
+   #:title "Code Layout as a Source of Noise in JVM Performance"
+   #:author (authors "Dayong Gu" "Clark Verbrugge" "Etienne Gagnon")
+   #:location (journal-location "Studia Informatica Universalis"
+                                #:volume 4
+                                #:number 1
+                                #:pages '(83 99))
+   #:date 2005))
+
+(define stw-pldi-2015
+  (make-bib
+   #:title "Blame and Coercion: Together again for the first time"
+   #:author (authors "Jeremy Siek" "Peter Thiemann" "Philip Wadler")
+   #:location (proceedings-location pldi #:pages '(425 435))
+   #:date 2015))
+
+(define gff-oopsla-2005
+  (make-bib
+   #:title "Fine-Grained Interoperability Through Mirrors and Contracts"
+   #:author (authors "Kathryn E. Gray" "Robert Bruce Findler" "Matthew Flatt")
+   #:location (proceedings-location oopsla #:pages '(231 245))
+   #:date 2005))
+
+(define agd-ecoop-2005
+  (make-bib
+   #:title "Toward Type Inference for JavaScript"
+   #:author (authors "Christopher Anderson" "Paul Giannini" "Sophia Drossopoulou")
+   #:location (proceedings-location ecoop #:pages '(428 452))
+   #:date 2005))
+
+(define svcb-snapl-2015
+  (make-bib
+   #:title "Refined Criteria for Gradual Typing"
+   #:author (authors "Jeremy G. Siek" "Michael M. Vitousek" "Matteo Cimini" "John Tang Boyland")
+   #:location (proceedings-location snapl #:pages '(274 293))
+   #:date 2015))
+
+(define l-freenix-2006
+  ; http://erwan.lemonnier.se/talks/pluto.html
+  (make-bib
+   #:title "Pluto: or how to make Perl juggle with billions"
+   #:author "Erwan Lemonnier"
+   #:location "Forum on Free and Open Source Software (FREENIX)"
+   #:url "http://erwan.lemonnier.se/talks/pluto.html"
+   #:date 2006))
+
+(define h-lfp-1992
+  (make-bib
+   #:title "Global Tagging Optimization by Type Inference"
+   #:author "Fritz Henglein"
+   #:location (proceedings-location lfp #:pages '(205 215))
+   #:date 1992))
+
+(define jw-sas-1995
+  (make-bib
+   #:title "Effective Flow Analysis for Avoiding Run-Time Checks"
+   #:author (authors "Suresh Jagannathan" "Andrew K. Wright")
+   #:location (proceedings-location sas #:pages '(207 224))
+   #:date 1995))
+
+(define sw-sas-1995
+  (make-bib
+   #:title "Bigloo: A Portable and Optimizing Compiler for Strict Functional Languages"
+   #:author (authors "Erick Gallesio" "Manuel Serrano")
+   #:location (proceedings-location sas #:pages '(366 381))
+   #:date 1995))
+
+(define c-esop-1988
+  (make-bib
+   #:title "New Insights into Partial Evaluation: the SCHISM Experiment"
+   #:author "Charles Consel"
+   #:location (proceedings-location esop #:pages '(236 246))
+   #:date 1988))
+
+;; http://www.franktip.org/pubs/ecoop2014.pdf
 

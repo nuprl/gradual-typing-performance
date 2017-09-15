@@ -1,0 +1,85 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 2214806 lines of output.
+ModuleGraph for gregor:
+=======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'clock.rkt'
+  - datetime.rkt : 60
+  - gregor-structs.rkt : 0
+  - moment.rkt : 240
+Total: 300
+
+Requires for 'date.rkt'
+  - core-structs.rkt : 43408
+  - ymd.rkt : 72398
+  - gregor-structs.rkt : 218026
+Total: 333832
+
+Requires for 'datetime.rkt'
+  - hmsn.rkt : 101368
+  - time.rkt : 130716
+  - gregor-structs.rkt : 562721
+  - core-structs.rkt : 0
+  - date.rkt : 130716
+Total: 925521
+
+Requires for 'difference.rkt'
+  - gregor-structs.rkt : 0
+  - datetime.rkt : 223630
+  - date.rkt : 43320
+  - core-structs.rkt : 0
+  - ymd.rkt : 4880
+  - hmsn.rkt : 28880
+Total: 300710
+
+Requires for 'gregor-structs.rkt'
+  - core-structs.rkt : 0
+Total: 0
+
+Requires for 'hmsn.rkt'
+  - core-structs.rkt : 28990
+Total: 28990
+
+Requires for 'main.rkt'
+  - difference.rkt : 43320
+  - moment.rkt : 72250
+  - gregor-structs.rkt : 0
+  - date.rkt : 430
+  - datetime.rkt : 44548
+  - time.rkt : 430
+  - clock.rkt : 130
+Total: 161108
+
+Requires for 'moment-base.rkt'
+  - datetime.rkt : 10
+  - gregor-structs.rkt : 29000
+Total: 29010
+
+Requires for 'moment.rkt'
+  - moment-base.rkt : 29010
+  - datetime.rkt : 57910
+  - gregor-structs.rkt : 28903
+  - hmsn.rkt : 0
+  - offset-resolvers.rkt : 10
+Total: 115833
+
+Requires for 'offset-resolvers.rkt'
+  - gregor-structs.rkt : 0
+  - hmsn.rkt : 0
+  - core-structs.rkt : 0
+  - datetime.rkt : 0
+  - moment-base.rkt : 0
+Total: 0
+
+Requires for 'time.rkt'
+  - gregor-structs.rkt : 202795
+  - core-structs.rkt : 28968
+  - hmsn.rkt : 58748
+Total: 290511
+
+Requires for 'ymd.rkt'
+  - core-structs.rkt : 28990
+Total: 28990
+

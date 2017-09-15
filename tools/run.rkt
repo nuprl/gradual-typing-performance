@@ -19,8 +19,8 @@
   ;; Same as calling from the command line, just pass argv vector
 )
 
-(require benchmark-run/unixtime
-         "stats-helpers.rkt"
+(require benchmark-util/data-lattice
+         gtp-summarize/stats-helpers
          (only-in glob in-glob)
          (only-in racket/file file->value)
          (only-in racket/format ~a ~r)

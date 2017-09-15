@@ -1,0 +1,36 @@
+cpu time: 396 real time: 397 gc time: 116
+Running time is 40% contracts
+212/530 ms
+
+(-> any/c (recursive-contract anonymous-contract #:impersonator))33.5 ms
+tree-adapted.rkt:68:3                                            
+    generate-tree                                                33.5 ms
+
+(recursive-contract g415 #:impersonator)                         20 ms
+admin.rkt:8:1                                                    
+    administrator%                                               20 ms
+
+(-> any/c (or/c #f (recursive-contract g624 #:impersonator)))    20 ms
+state-adapted.rkt::-1                                            
+    player-external                                              20 ms
+
+(or/c struct-predicate-procedure?/c (-> Any (or/c #f #t)))       23.5 ms
+board.rkt:107:2                                                  
+    hotel?                                                       23.5 ms
+
+(-> Natural (listof (recursive-contract anonymous-contract #:impe10 ms
+player.rkt:8:1                                                   
+    ordered-players                                              10 ms
+
+(-> (recursive-contract anonymous-contract #:impersonator) state?55 ms
+tree-adapted.rkt:70:3                                            
+    tree-state                                                   55 ms
+
+(-> any/c any/c any/c any/c any/c any/c any/c (recursive-contract25 ms
+state-adapted.rkt:32:3                                           
+    player0                                                      25 ms
+
+(-> Natural (recursive-contract anonymous-contract #:impersonator25 ms
+player.rkt:9:1                                                   
+    inf-loop-player                                              25 ms
+

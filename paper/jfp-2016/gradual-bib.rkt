@@ -130,13 +130,6 @@
                      "Stephen N. Freund" "Cormac Flanagan")
    #:date 2007))
 
-(define htf-tfp-2007
-  (make-bib
-   #:title "Space Efficient Gradual Typing"
-   #:author (authors "David Herman" "Aaron Tomb" "Cormac Flanagan")
-   #:location (proceedings-location tfp)
-   #:date "2007"))
-
 (define st-ecoop-2007
   (make-bib
    #:title "Gradual Typing for Objects"
@@ -282,7 +275,7 @@
 
 (define htf-hosc-2010
   (make-bib
-   #:title "Space-efficient Gradual Typing"
+   #:title "Space-Efficient Gradual Typing"
    #:author (authors "David Herman" "Aaron Tomb" "Cormac Flanagan")
    #:location (journal-location hosc
                                 #:volume 23
@@ -331,7 +324,7 @@
   (make-bib
    #:title "Gradual Typestate"
    #:author (authors "Roger Wolff" "Ronald Garcia"
-                     "Éric Tanter" "Jonathan Aldritch")
+                     "Éric Tanter" "Jonathan Aldrich")
    #:location (proceedings-location ecoop #:pages '(459 483))
    #:date 2011))
 

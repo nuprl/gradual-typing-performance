@@ -1,0 +1,55 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 703079 lines of output.
+ModuleGraph for quadBG:
+=======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'main.rkt'
+  - world.rkt : 2
+  - render.rkt : 1
+  - quad-main.rkt : 1
+  - quick-sample.rkt : 1
+Total: 5
+
+Requires for 'ocm.rkt'
+  - ocm-struct.rkt : 28160
+Total: 28160
+
+Requires for 'quad-main.rkt'
+  - quads.rkt : 2129
+  - sugar-list.rkt : 2
+  - measure.rkt : 5
+  - utils.rkt : 126
+  - world.rkt : 499
+  - wrap.rkt : 117
+Total: 2878
+
+Requires for 'quick-sample.rkt'
+  - quads.rkt : 17
+Total: 17
+
+Requires for 'render.rkt'
+  - quads.rkt : 4317
+  - world.rkt : 4378
+  - utils.rkt : 1
+Total: 8696
+
+Requires for 'utils.rkt'
+  - quads.rkt : 93814
+  - hyphenate.rkt : 513
+  - world.rkt : 245294
+  - measure.rkt : 53
+Total: 339674
+
+Requires for 'wrap.rkt'
+  - quads.rkt : 119687
+  - ocm-struct.rkt : 0
+  - utils.rkt : 7385
+  - ocm.rkt : 7207
+  - measure.rkt : 21289
+  - penalty-struct.rkt : 47387
+  - world.rkt : 120573
+  - sugar-list.rkt : 120
+Total: 323648
+

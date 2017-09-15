@@ -1,0 +1,21 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 7393 lines of output.
+ModuleGraph for dungeon:
+========================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'cell.rkt'
+  - message-queue.rkt : 0
+Total: 0
+
+Requires for 'grid.rkt'
+  - cell.rkt : 0
+Total: 0
+
+Requires for 'main.rkt'
+  - grid.rkt : 2843
+  - utils.rkt : 405
+  - cell.rkt : 4144
+Total: 7392
+

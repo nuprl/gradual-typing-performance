@@ -438,6 +438,8 @@
   ;; Set the CPU affinity for this script to CPU0. Jobs spawned by this script run
   ;; using CPU1 and above.
   (when (*AFFINITY?*)
+    (unless (find-executable-path "taskset")
+      (raise-user-error 'gtp-run "'taskset' utility not found, cannot set processor affinity. Try again with '-n' flag to run on a single core."))
     (system (format "taskset -pc 0 ~a" (getpid))))
 
   (run-benchmarks basepath entry-point jobs

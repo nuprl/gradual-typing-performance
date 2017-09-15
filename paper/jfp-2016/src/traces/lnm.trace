@@ -1,0 +1,23 @@
+ModuleGraph for lnm:
+====================
+
+Requires for 'lnm-plot.rkt'
+  - summary.rkt : 9558
+  - bitstring.rkt : 3506
+Total: 13064
+
+Requires for 'main.rkt'
+  - summary.rkt : 2
+  - spreadsheet.rkt : 1
+  - lnm-plot.rkt : 1
+Total: 4
+
+Requires for 'spreadsheet.rkt'
+  - bitstring.rkt : 0
+Total: 0
+
+Requires for 'summary.rkt'
+  - bitstring.rkt : 9741
+  - modulegraph.rkt : 7
+Total: 9748
+

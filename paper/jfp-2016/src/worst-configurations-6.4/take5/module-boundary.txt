@@ -1,0 +1,39 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 54871 lines of output.
+ModuleGraph for take5:
+======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'card-pool.rkt'
+  - basics.rkt : 220
+  - card.rkt : 4080
+Total: 4300
+
+Requires for 'dealer.rkt'
+  - player.rkt : 10
+  - basics.rkt : 4440
+  - deck.rkt : 20
+  - card-pool.rkt : 20
+  - card.rkt : 3800
+Total: 8290
+
+Requires for 'deck.rkt'
+  - stack.rkt : 2480
+  - card.rkt : 29000
+  - basics.rkt : 8300
+Total: 39780
+
+Requires for 'main.rkt'
+  - player.rkt : 10
+  - dealer.rkt : 10
+Total: 20
+
+Requires for 'player.rkt'
+  - card.rkt : 0
+Total: 0
+
+Requires for 'stack.rkt'
+  - card.rkt : 2480
+Total: 2480
+

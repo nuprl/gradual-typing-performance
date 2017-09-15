@@ -1,0 +1,16 @@
+cpu time: 677 real time: 676 gc time: 120
+Running time is 83.66% contracts
+686/820 ms
+
+(-> (vectorof (vectorof (recursive-contract (object/c (close (-> 382.5 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    grid-ref                                                     382.5 ms
+
+(-> (vector/c Index Index) (-> any/c (recursive-contract anonymou186.5 ms
+main.rkt:53:3                                                    
+    build-array                                                  186.5 ms
+
+(-> (vectorof (vectorof (recursive-contract (object/c (close (-> 117 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    show-grid                                                    117 ms
+

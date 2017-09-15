@@ -1,0 +1,17 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 2102 lines of output.
+ModuleGraph for fsmoo:
+======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'main.rkt'
+  - population.rkt : 1
+  - utilities.rkt : 1000
+Total: 1001
+
+Requires for 'population.rkt'
+  - utilities.rkt : 1000
+  - automata.rkt : 100
+Total: 1100
+

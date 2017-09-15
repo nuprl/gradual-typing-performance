@@ -1,0 +1,44 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 61733006 lines of output.
+ModuleGraph for snake:
+======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'collide.rkt'
+  - data.rkt : 10520800
+  - const.rkt : 3280400
+Total: 13801200
+
+Requires for 'const.rkt'
+  - data.rkt : 4
+Total: 4
+
+Requires for 'cut-tail.rkt'
+  - data.rkt : 0
+Total: 0
+
+Requires for 'handlers.rkt'
+  - collide.rkt : 3095100
+  - data.rkt : 3095100
+  - motion.rkt : 304200
+Total: 6494400
+
+Requires for 'main.rkt'
+  - motion.rkt : 2167000
+  - data.rkt : 0
+  - handlers.rkt : 3078800
+  - const.rkt : 1
+Total: 5245801
+
+Requires for 'motion-help.rkt'
+  - cut-tail.rkt : 2166700
+  - data.rkt : 15168300
+Total: 17335000
+
+Requires for 'motion.rkt'
+  - const.rkt : 400
+  - motion-help.rkt : 2166900
+  - data.rkt : 16689300
+Total: 18856600
+

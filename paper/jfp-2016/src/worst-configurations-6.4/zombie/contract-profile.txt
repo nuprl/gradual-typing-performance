@@ -1,0 +1,16 @@
+cpu time: 4027 real time: 4024 gc time: 845
+Running time is 78.3% contracts
+3208/4097 ms
+
+(-> (recursive-contract (-> Symbol (or/c (cons/c to-draw (-> imag2650 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    world-on-mouse                                               2650 ms
+
+(-> (recursive-contract (-> Symbol (or/c (cons/c to-draw (-> imag404.5 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    world-on-tick                                                404.5 ms
+
+(recursive-contract (-> Symbol (or/c (cons/c to-draw (-> image?))153.5 ms
+main.rkt:8:3                                                     
+    w0                                                           153.5 ms
+

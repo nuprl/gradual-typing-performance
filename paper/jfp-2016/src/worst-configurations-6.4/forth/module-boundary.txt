@@ -1,0 +1,20 @@
+[DEBUG] : Subprocess running, reading output so far
+[DEBUG] : Subprocess finished cleanly. Produced 21 lines of output.
+ModuleGraph for forth:
+======================
+(Counting uses of _statically-apparent_ required identifiers)
+
+
+Requires for 'command.rkt'
+  - stack.rkt : 16
+Total: 16
+
+Requires for 'eval.rkt'
+  - stack.rkt : 1
+  - command.rkt : 2
+Total: 3
+
+Requires for 'main.rkt'
+  - eval.rkt : 1
+Total: 1
+

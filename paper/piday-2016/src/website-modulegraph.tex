@@ -1,0 +1,30 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{2}{datatypes}};
+  \node (10) [left of=00,xshift=-2cm] {\rkt{9}{universities}};
+  \node (11) [below of=10,yshift=-1cm] {\rkt{10}{venues}};
+  \node (20) [left of=10,xshift=-2cm] {\rkt{5}{people-data}};
+  \node (21) [below of=20,yshift=-1cm] {};
+  \node (30) [left of=20,xshift=-2cm] {};
+  \node (31) [below of=30,yshift=-1cm] {\rkt{8}{templates}};
+  \node (40) [left of=30,xshift=-2cm] {\rkt{0}{about}};
+  \node (41) [below of=40,yshift=-1cm] {\rkt{1}{contact}};
+  \node (42) [below of=41,yshift=-1cm] {\rkt{3}{index}};
+  \node (43) [below of=42,yshift=-1cm] {\rkt{6}{people}};
+  \node (44) [below of=43,yshift=-1cm] {\rkt{7}{research}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (11) -- (00);
+  \draw[->] (20) -- (10);
+  \draw[->] (20) edge[bend left=25] (00);
+  \draw[->] (31) -- (11);
+  \draw[->] (31) -- (10);
+  \draw[->] (31) -- (20);
+  \draw[->] (31) -- (00);
+  \draw[->] (40) -- (31);
+  \draw[->] (41) -- (31);
+  \draw[->] (42) -- (31);
+  \draw[->] (43) -- (31);
+  \draw[->] (44) -- (31);
+
+\end{tikzpicture}

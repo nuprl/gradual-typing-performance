@@ -1,98 +1,102 @@
 #lang scribble/base
 
-@require["common.rkt"]
+@; "The first challenge for computer science is to discover how to maintain
+@;  order in a finite, but very large, discrete universe that is intricately
+@;  intertwined."  -- Dijkstra, 1979 (from Emina's thesis)
 
-@title[#:tag "sec:intro"]{Gradual Typing and Performance}
+@;; More anecdotes
+@;http://archive.oreilly.com/pub/a/oreilly/perl/news/swedishpension_0601.html
+@;http://diyhpl.us/~bryan/papers2/paperbot/7a01e5a892a6d7a9f408df01905f9359.pdf
+@;http://programmers.stackexchange.com/questions/221615/why-do-dynamic-languages-make-it-more-difficult-to-maintain-large-codebases
+@;https://www.quora.com/What-language-is-Facebook-written-in
+@;http://www.zdnet.com/article/why-facebook-hasnt-ditched-php
 
-Over the past couple of decades dynamically-typed languages have become a
- staple of the software engineering world. Programmers use these languages
- to build all kinds of software systems. In many cases, the systems start
- as innocent prototypes. Soon enough, though, they grow into complex,
- multi-module programs, at which point the engineers realize that they are
- facing a maintenance nightmare, mostly due to the lack of reliable type
- information. 
+@require["common.rkt" "util.rkt" "benchmark.rkt"]
 
-Gradual typing@~cite[st-sfp-2006 thf-dls-2006] proposes a language-based
- solution to this pressing software engineering problem. The idea is to
- extend the language so that programmers can incrementally equip programs
- with types. In contrast to optional typing,
- gradual typing provide programmers with soundness guarantees.
+@profile-point{sec:intro}
+@title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
-Realizing type soundness in this world requires run-time checks that watch
- out for potential impedance mismatches between the typed and untyped
- portions of the programs. The granularity of these checks determine
- the peformance overhead of gradual typing. To reduce the frequency of
- checks, @emph{macro-level} gradual typing forces programmers to annotate entire
- modules with types and relies on behavioral contracts@~cite[ff-icfp-2002]
- between typed and untyped modules to enforce soundness.
- In contrast, @emph{micro-level} gradual
- typing instead assigns an implicit type @tt{Dyn}@~cite[TypeDynamic] to all
- unannotated parts of a program; type annotations can then be added to any
- declaration. The implementation must insert casts at the
- appropriate points in the code. Different language designs use slightly
- different semantics with different associated costs and limitations.
+Programmers use dynamically typed languages to build all kinds of applications.
+Telecom companies have been running Erlang programs for years@~cite[armstrong-2007];
+ Sweden's pension system is a Perl program@~cite[l-freenix-2006],
+ and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) are written in dynamic languages (Python, PHP, and Ruby, respectively).
 
-Both approaches to gradual typing come with two implicit claims. First, the
- type systems accommodate common untyped programming idioms.  This allows
- programmers to add types with minimal changes to existing
- code. Second, the cost of soundness is tolerable, meaning programs remain
- performant even as programmers add type annotations. Ideally, types should
- improve performance as they provide invariants that an optimizing compiler
- can leverage. While almost every publication on
-@; The whole point of the Thorn/StrongScript design is to tackle that second
-@; claim. This done by adding restricitions (e.g. nominal...) but we definitely
-@; have no allocation of wrappers.  Tests boil down to constant time checks.
- gradual typing validates some version of the first claim, no projects
- tackle the second claim systematically. Most publications come with qualified remarks about the
- performance of partially typed programs. Some plainly admit that such mixed
- programs may suffer performance degradations of up to two orders of magnitude
- @~cite[vksb-dls-2014 rsfbv-popl-2015 tfdffthf-ecoop-2015].
+Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit type annotations an obstacle to their work.
+Researchers have tried to overcome the lack of type annotations with inference algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 rch-popl-2012], but most have come to realize that there is no substitute for programmer-supplied annotations.
+Explicit annotations communicate a programmer's intent to other human readers.
+Furthermore, tools can check the annotations for logical inconsistencies and leverage types to improve the efficiency of compiled code.
+     @; Confirming problem, and responses:
+     @; - PEP type hints
+     @; - pycharm parsing comments
+     @; - type-testing JITS for php/js
+     @; - typescript flow
 
-This paper presents a single result: a method for systematically evaluating the
-performance of a gradual type system. It is illustrated with an application
-to Typed Racket, a mature implementation of
-macro-level gradual typing. We find that Typed Racket's cost of soundness is @emph{not}
-tolerable. If applying our method to other gradual
-type system implementations yields similar results, then sound gradual typing is dead.
+One solution is to rewrite the entire application in a statically typed language.
+This solution assumes that the application is small enough and the problem is recognized soon enough to make a wholesale migration feasible.
+For example, Twitter was able to port their server-side code from Ruby to Scala because they understood the problem early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
+In other cases, the codebase becomes too large for this approach.
 
-The insight behind the method is that to
- understand the performance of a gradual type system, it is necessary to
- simulate how a maintenance programmer chooses to add types to an existing
- software system. For practical reasons, such as limited developer resources or access to source
- code, it may be possible to add types to only a part of the system.
- Our method must therefore simulate all possibilities.
- Thus, applying our method to Typed Racket requires annotating
- all @exact{$n$} modules with types. The resulting collection of @exact{$2
- \cdot n$} modules is then used to create @exact{$2^n$}
- configurations. The collection of these configurations forms a complete
- lattice with the untyped configuration at the bottom and the fully typed one
- at the top. The points in between represent configurations in which some
- modules are typed and others are untyped. Adding types to an untyped module
- in one of these configurations yields a configuration at the next level of
- the lattice. In short, the lattice mimics all possible choices of single-module
- type conversions a programmer faces when a maintenance task comes up.
+@; Enter GT
+Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006],@note{The term @emph{migratory typing} more accurately describes this particular mode of gradual typing.}
+ a linguistic approach.
+ @; What problem? Is it really clear enough?
+    @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
+    @;       but the cast calculus & gradualizer/foundations have their place
+In a gradually typed language,
+ programmers can incrementally add type annotations to dynamically typed code.
+At the lexical boundaries between annotated code and dynamically
+ typed code, the type system inserts runtime checks to guarantee the soundness
+ of the type annotations.
 
-A performance evaluation of a system for gradual typing must time these
- configurations of a benchmark and extract information from these
- timings. Section@secref{sec:fwk} introduces the evaluation method in
- detail, including the information we retrieve from the lattices and how we
- parameterize these retrievals.  The timings may answer basic questions
- such as how many of these configurations could be deployed without
- degrading performance too much.
+From a syntactic perspective the interaction is seamless, but dynamic checks introduce runtime overhead.
+During execution, if an untyped function flows into a variable @type{$f$} with
+ type @type{$\tau_1 \rightarrow \tau_2$}, then a dynamic check must
+ follow every subsequent call to @type{$f$}
+ because typed code cannot assume
+ that values produced by the untyped function have the syntactic type @type{$\tau_2$}.
+Conversely, typed functions invoked by untyped code must dynamically check their argument values.
+If functions or large data structures frequently cross these
+ @emph{type boundaries},
+ enforcing type soundness might impose a huge runtime cost.
 
-We apply our method to Typed Racket, the gradually typed sister language of
- Racket.  With nine years of development, Typed Racket is the oldest and
- probably most sophisticated implementation of gradual typing.
- Furthermore, Typed Racket has also acquired a fair number of users, which
- suggests adequate performance for these commercial and open source
- communities. The chosen benchmark programs originate from these
- communities and range from 150 to 7,500 lines of code. @Secref{sec:bm}
- presents these benchmarks in detail.
+Optimistically, researchers have continued to explore the theory and practice of sound
+ gradual typing@~cite[ktgff-tech-2007
+                      sgt-esop-2009
+                      thf-popl-2008
+                      wgta-ecoop-2011
+                      acftd-scp-2013
+                      rnv-ecoop-2015
+                      vksb-dls-2014
+                      rsfbv-popl-2015
+                      gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a bibliography.}
+Some research groups have invested significant resources implementing sound gradual type systems.
+But surprisingly few groups have evaluated the performance of gradual typing.
+Most acknowledge an issue with performance in passing.
+Worse, others report only the performance ratio of fully typed programs relative to fully untyped programs, ironically ignoring the entire space of programs that mix typed and untyped components.
 
-Section@secref{sec:tr} presents the results from running all configurations
- of the Typed Racket benchmarks according to the metrics spelled out in
- section@secref{sec:fwk}.  We interpret the ramifications of these rather
- negative results in section@secref{sec:death} and discuss the threats to
- validity of these conclusions. The section also includes our report on a
- preliminary investigation into the possible causes of the slowdowns in our
- benchmark configurations.
+This archival paper presents the first method for evaluating the performance of a gradual type system (@secref{sec:method}), integrating new result with the results of a conference version@~cite[tfgnvf-popl-2016].
+Specifically, this paper contributes:
+@itemlist[
+@item{
+  validation that the method can express the relative performance between @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket (@secref{sec:compare});
+}
+@item{
+  evidence that simple random sampling can accurately approximate the results of a comprehensive evaluation with asymptotically fewer measurements (@secref{sec:scale});
+}
+@item{
+  @integer->word[(- (length ALL-BENCHMARKS) NUM-POPL)] additional benchmark programs (@secref{sec:bm}); and
+}
+@item{
+  a discussion of the pathological overheads in the benchmark programs (@secref{sec:devils}).
+}
+]
+The discussion is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).
+
+This paper begins with an extended introduction to our philosophy of gradual typing and the pragmatics of Typed Racket.
+@Secref{sec:overhead} in particular argues that type soundness is an imperative, despite the performance cost of enforcing it.
+
+@;Experience with Typed Racket provides the broader context for this work and motivates the design of the evaluation method.
+
+
+@;@parag{Disclaimer:} 3x overhead is not "deliverable" performance.
+@;We never claimed so in the conference version and our opinion certainly has not changed.

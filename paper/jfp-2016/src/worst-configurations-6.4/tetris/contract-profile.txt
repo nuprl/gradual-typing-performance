@@ -1,0 +1,29 @@
+cpu time: 14480 real time: 14479 gc time: 49
+Running time is 89.83% contracts
+13325/14834 ms
+
+(-> any/c Real)                                                  11999.5 ms
+base-types.rkt::-1                                               
+    block-x                                                      10766 ms
+    block-y                                                      1233.5 ms
+
+(-> block? block? any)                                           1242 ms
+block.rkt:35:1                                                   
+    block=?                                                      1242 ms
+
+(-> any/c Symbol)                                                30 ms
+base-types.rkt::-1                                               
+    block-color                                                  30 ms
+
+(-> Real Real block? any)                                        22 ms
+block.rkt:36:1                                                   
+    block-move                                                   22 ms
+
+(-> any/c any/c any/c block?)                                    21.5 ms
+#<blame>::-1                                                     
+    block10                                                      21.5 ms
+
+(-> any/c (listof block?))                                       10 ms
+base-types.rkt::-1                                               
+    world-blocks                                                 10 ms
+

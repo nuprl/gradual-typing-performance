@@ -1,24 +1,28 @@
 PAPER=paper
+RACO=raco
+SCRIBBLE=scribble
 
 all: paper.pdf
 
 compiled/paper_scrbl.zo: *.rkt *.scrbl
-	raco make -v $(PAPER).scrbl
+	${RACO} make -v $(PAPER).scrbl
 
-paper.pdf: pkg compiled/paper_scrbl.zo module-graphs/*.tex texstyle.tex scripts/*.rkt
-	scribble ++extra fig-adaptor.tex ++extra module-graphs ++style texstyle.tex --pdf $(PAPER).scrbl
+paper.pdf: paper.tex
+	pdflatex paper.tex
 
 paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
-	scribble ++style texstyle.tex --latex $(PAPER).scrbl
+	${SCRIBBLE} ++style texstyle.tex --latex $(PAPER).scrbl
 
 pkg:
-	raco pkg install --skip-installed glob
-	raco pkg install --skip-installed unstable
+	${RACO} pkg install --auto --skip-installed glob syntax-sloc with-cache require-typed-check
+	${RACO} pkg install --auto --skip-installed ../../tools/benchmark-util
+	${RACO} make ../../tools/benchmark-util/data-lattice.rkt
+	${RACO} pkg install --auto --skip-installed ../../tools/summarize
 
 one: compiled/paper_scrbl.zo texstyle.tex
 	sed -f onecolumn.sed $(PAPER).scrbl > $(PAPER)1.scrbl
 	sed -f onecolumn-2.sed texstyle.tex > texstyle1.tex
-	scribble ++style texstyle1.tex --pdf $(PAPER)1.scrbl
+	${SCRIBBLE} ++style texstyle1.tex --pdf $(PAPER)1.scrbl
 	mv $(PAPER)1.pdf $(PAPER).pdf
 
 # Check style:
@@ -34,6 +38,10 @@ proof:
 	echo
 	echo "duplicates: "
 	perl scripts/duplicates.pl *.scrbl
+
+test:
+	${RACO} make -v jfp-test.scrbl
+	${SCRIBBLE} ++style texstyle.tex --pdf jfp-test.scrbl
 
 clean:
 	rm -r compiled

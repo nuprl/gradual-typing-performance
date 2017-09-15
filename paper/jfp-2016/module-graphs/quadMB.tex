@@ -1,0 +1,50 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{0}{exceptions}};
+  \node (01) [below of=00,yshift=0.2cm] {\rkt{3}{measure}};
+  \node (02) [below of=01,yshift=0.2cm] {\rkt{4}{ocm-struct}};
+  \node (03) [below of=02,yshift=0.2cm] {\rkt{6}{patterns-hashed}};
+  \node (04) [below of=03,yshift=0.2cm] {\rkt{7}{penalty-struct}};
+  \node (05) [below of=04,yshift=0.2cm] {\rkt{9}{quads}};
+  \node (06) [below of=05,yshift=0.2cm] {\rkt{12}{sugar-list}};
+  \node (07) [below of=06,yshift=0.2cm] {\rkt{14}{world}};
+  \node (10) [left of=00,xshift=-1.0cm] {\rkt{1}{hyphenate}};
+  \node (11) [below of=10,yshift=0.2cm] {\rkt{5}{ocm}};
+  \node (12) [below of=11,yshift=0.2cm] {\rkt{10}{quick-sample}};
+  \node (20) [left of=10,xshift=-1.0cm] {\rkt{13}{utils}};
+  \node (30) [left of=20,xshift=-1.0cm] {\rkt{11}{render}};
+  \node (31) [below of=30,yshift=0.2cm] {\rkt{15}{wrap}};
+  \node (40) [left of=30,xshift=-1.0cm] {\rkt{8}{quad-main}};
+  \node (50) [left of=40,xshift=-1.0cm] {\rkt{2}{main}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (10) -- (03);
+  \draw[->] (11) -- (02);
+  \draw[->] (12) -- (05);
+  \draw[->] (20) -- (07);
+  \draw[->] (20) -- (05);
+  \draw[->] (20) -- (01);
+  \draw[->] (20) -- (10);
+  \draw[->] (30) -- (05);
+  \draw[->] (30) -- (20);
+  \draw[->] (30) -- (07);
+  \draw[->] (31) -- (06);
+  \draw[->] (31) -- (11);
+  \draw[->] (31) -- (20);
+  \draw[->] (31) -- (07);
+  \draw[->] (31) -- (05);
+  \draw[->] (31) edge[bend left = 10] (01);
+  \draw[->] (31) -- (04);
+  \draw[->] (31) -- (02);
+  \draw[->] (40) -- (06);
+  \draw[->] (40) edge[bend left] (20);
+  \draw[->] (40) -- (01);
+  \draw[->] (40) -- (07);
+  \draw[->] (40) -- (31);
+  \draw[->] (40) -- (05);
+  \draw[->] (50) edge[bend left] (30);
+  \draw[->] (50) edge[bend right] (12);
+  \draw[->] (50) -- (40);
+  \draw[->] (50) -- (07);
+
+\end{tikzpicture}

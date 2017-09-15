@@ -99,3 +99,41 @@ Meeting notes
   * Feb. meeting format will continue as usual, JFP due Feb 28
   * For next time, Asumu & Ben & Max each have 1 paper to read
     - While reading, look for ways to scale our technique to "large macro" or "micro" systems
+
+2016-03-25
+----------
+  * Have most of 6.2/6.3/6.4 data
+    - Missing OO benchmarks (currently re-running, after Robby's bugfix)
+    - Missing a few 6.2 benchmarks due to compile errors
+  * Not using 3x/10x anymore. Will choose new (lower) numbers from the garbage collection literature.
+  * Draft to Matthias due 1st week in April
+
+2016-04-01
+----------
+  * Chose 20% as GC number
+  * Decided against discretizing the plots
+  * Decided against putting error bars in the plots
+
+2016-04-07
+----------
+  * Comments on benchmark descriptions:
+    - Replace chaperones with 'identifiers'
+    - Remove the 6.3, BG suffixes in the table
+    - Crunch the author/origin info
+    - Remove the module graphs or cartoonize, they are not informative.
+      Better to make them larger or present as tables, in an appendix
+  * Predicitions should be running this weekend, hope to start coloring
+    graphs next weekend
+
+2016-04-13
+----------
+  * Threat to Validity: multicore contention
+    - single core data is statistically different from multi-core data, varying by up to 1 second
+    - no pattern to differences, some faster some slower
+    - currently re-running, and again without 'base' directories
+  * Predictions
+    - morsecode predictions look very good (but overhead is low)
+    - tetris (minus structs) predications on the way
+    - road block: cannot handle external dependencies OR structs
+  * L-NM plots look okay, L-NM tables are ugly but may work out.
+  * Resolved never to use "LNM" to refer to the plots. Going to say "deliverability plots" etc.

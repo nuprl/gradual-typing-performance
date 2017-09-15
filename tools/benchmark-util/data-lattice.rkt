@@ -7,15 +7,34 @@
          racket/format
          racket/list
          data/bit-vector
+         racket/vector
          (except-in math/number-theory permutations)
-         pict
-         unstable/gui/pict)
+         (only-in racket/file file->value)
+         (only-in math/statistics mean stddev)
+         pict)
 
-(provide (contract-out
-          [make-performance-lattice
-           (-> (and/c (vectorof (cons/c number? number?))
-                      power-of-two-length?)
-               pict?)]))
+(provide
+  (contract-out
+    [file->performance-lattice
+     (-> path-string? pict?)]
+    [make-performance-lattice
+     (-> (and/c (vectorof (cons/c number? number?))
+                power-of-two-length?)
+         pict?)]))
+
+(define-syntax-rule (define/provide nm x* ...)
+  (begin (define nm x* ...) (provide nm)))
+
+(define/provide *LATTICE-BORDER-WIDTH* (make-parameter 1))
+(define/provide *LATTICE-BOX-BOT-MARGIN* (make-parameter 4))
+(define/provide *LATTICE-BOX-HEIGHT* (make-parameter 10))
+(define/provide *LATTICE-BOX-SEP* (make-parameter 1.5))
+(define/provide *LATTICE-BOX-TOP-MARGIN* (make-parameter 2))
+(define/provide *LATTICE-BOX-WIDTH* (make-parameter 6))
+(define/provide *LATTICE-CONFIG-MARGIN* (make-parameter 5))
+(define/provide *LATTICE-LEVEL-MARGIN* (make-parameter 10))
+(define/provide *LATTICE-FONT-SIZE* (make-parameter 9))
+(define/provide *LATTICE-TRUNCATE-DECIMALS?* (make-parameter #f))
 
 (module+ test (require rackunit))
 
@@ -36,7 +55,7 @@
   (define level-picts
     (for/list ([on-bits (in-range total-bits -1 -1)])
       (define perms (select (- total-bits on-bits) total-bits))
-      (apply hc-append 5
+      (apply hc-append (*LATTICE-CONFIG-MARGIN*)
        (for/list ([perm (in-list perms)])
          (define bv (apply bit-vector perm))
          (define num (string->number (bit-vector->string bv) 2))
@@ -45,7 +64,7 @@
                                   (vector-ref data-vec 0)))
          (vector-set! pict-vec num pict)
          pict))))
-  (define no-lines-yet (apply vc-append 10 level-picts))
+  (define no-lines-yet (apply vc-append (*LATTICE-LEVEL-MARGIN*) level-picts))
   no-lines-yet)
 
 ;; taken from MF's version
@@ -64,16 +83,20 @@
   (define style "Liberation Serif")
   (define box-pict
     (apply hc-append
-           1
+           (*LATTICE-BOX-SEP*)
            (for/list ([bit (in-bit-vector bv)])
-             (ellipse/border 3 8
-                             #:border-width 1
+             (filled-rectangle (*LATTICE-BOX-WIDTH*) (*LATTICE-BOX-HEIGHT*)
                              #:color (if bit "black" "white")
+                             #:border-width (*LATTICE-BORDER-WIDTH*)
                              #:border-color "black"))))
-  (vc-append (blank 1 2)
+  (define mean-str
+    (if (and (*LATTICE-TRUNCATE-DECIMALS?*) (<= 1 normalized-mean))
+      (number->string (round normalized-mean))
+      (~r normalized-mean #:precision 1)))
+  (vc-append (blank 1 (*LATTICE-BOX-TOP-MARGIN*))
              box-pict
-             (blank 1 4)
-             (text (~a (~r normalized-mean #:precision 1) "x") style 9)))
+             (blank 1 (*LATTICE-BOX-BOT-MARGIN*))
+             (text (~a mean-str "x") style (*LATTICE-FONT-SIZE*))))
 
 ;; adds lines between elements in levels
 (define (add-all-lines base vec bits)
@@ -95,14 +118,14 @@
 
 ;; Driver submodule for rapid visualization
 (module+ main
-  (require racket/file
-           racket/gui/base
-           racket/match
-           racket/vector
-           math/statistics)
+  (require racket/gui/base
+           racket/match)
   (match (current-command-line-arguments)
     [(vector path)
-     (define data (file->value path))
-     (define averaged-results
-       (vector-map (λ (times) (cons (mean times) (stddev times))) data))
-     (show-pict (make-performance-lattice averaged-results))]))
+     (show-pict (file->performance-lattice path))]))
+
+(define (file->performance-lattice path)
+  (define data (file->value path))
+  (define averaged-results
+    (vector-map (λ (times) (cons (mean times) (stddev times))) data))
+  (make-performance-lattice averaged-results))

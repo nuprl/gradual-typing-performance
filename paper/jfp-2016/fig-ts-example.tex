@@ -1,0 +1,33 @@
+\begin{minipage}{0.4\textwidth}
+\flushleft
+\begin{verbatim}
+class Point {
+  x : number;
+  y : number;
+}
+
+function norm(p : Point) : number {
+  return Math.abs(p.x)
+       + Math.abs(p.y);
+}
+
+norm(3);
+\end{verbatim}
+\end{minipage}%
+\hfill%
+\begin{minipage}{0.4\textwidth}
+  \flushright
+  \begin{verbatim}
+var Point = (function () {
+  function Point() {}
+  return Point;
+})();
+
+function norm(p) {
+  return Math.abs(p.x)
+       + Math.abs(p.y);
+}
+
+norm(3);
+\end{verbatim}
+\end{minipage}

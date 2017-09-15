@@ -1,0 +1,40 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{1}{auxiliaries}};
+  \node (10) [left of=00,xshift=-0.48cm] {\rkt{2}{basics}};
+  \node (20) [left of=10,xshift=-0.48cm] {\rkt{3}{board}};
+  \node (30) [left of=20,xshift=-0.48cm] {\rkt{6}{state}};
+  \node (40) [left of=30,xshift=-0.48cm] {\rkt{7}{strategy}};
+  \node (41) [below of=40,yshift=-0.6cm] {\rkt{8}{tree}};
+  \node (50) [left of=40,xshift=-0.48cm] {\rkt{0}{admin}};
+  \node (60) [left of=50,xshift=-0.48cm] {\rkt{5}{player}};
+  \node (70) [left of=60,xshift=-0.48cm] {\rkt{4}{main}};
+
+  \draw[->] (10) -- (00);
+  \draw[->] (20) edge[bend left] (00);
+  \draw[->] (20) -- (10);
+  \draw[->] (30) edge[bend left] (00);
+  \draw[->] (30) edge[bend left] (10);
+  \draw[->] (30) -- (20);
+  \draw[->] (40) edge[bend left] (00);
+  \draw[->] (40) edge[bend left] (10);
+  \draw[->] (40) -- (30);
+  \draw[->] (40) edge[bend left] (20);
+  \draw[->] (41) -- (10);
+  \draw[->] (41) -- (30);
+  \draw[->] (41) -- (20);
+  \draw[->] (50) edge[bend left] (10);
+  \draw[->] (50) -- (41);
+  \draw[->] (50) edge[bend left] (30);
+  \draw[->] (50) edge[bend right] (20);
+  \draw[->] (60) edge[bend right] (40);
+  \draw[->] (60) edge[bend right] (10);
+  \draw[->] (60) -- (50);
+  \draw[->] (60) edge[bend right] (30);
+  \draw[->] (70) edge[bend left] (00);
+  \draw[->] (70) -- (60);
+  \draw[->] (70) edge[bend left] (50);
+  \draw[->] (70) edge[bend left] (30);
+  \draw[->] (70) edge[bend left] (20);
+
+\end{tikzpicture}

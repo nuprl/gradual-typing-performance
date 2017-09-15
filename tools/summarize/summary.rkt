@@ -1,5 +1,8 @@
 #lang typed/racket/base
 
+;; TODO
+;; - add immutable vectors to typed racket, so can parse the file
+
 ;; Data structure representing the results of one experiment.
 ;; Handles queries for raw data and statistical summary data.
 
@@ -47,9 +50,21 @@
    (-> Summary Real))
   ;; Get the mean runtime of the Summary's untyped configuration
 
+  (untyped-runtimes
+   (-> Summary (Listof Index)))
+  ;; Return data for the untyped configuration
+
+  (typed-runtimes
+   (-> Summary (Listof Index)))
+  ;; Return data for the typed configuration
+
   (configuration->mean-runtime
    (-> Summary Bitstring Real))
   ;; Get the mean runtime of a configuration
+
+  (configuration->runtimes
+   (-> Summary Bitstring (Listof Index)))
+  ;; Return runtimes for a configuration
 
   (configuration->stddev
    (-> Summary Bitstring Real))
@@ -75,10 +90,19 @@
    (-> Summary LatticePath Real))
   ;; Get the max runtime of any lattice point along a path
 
-  (summary->label
-   (-> Summary String))
+  (min-runtime
+   (-> Summary Real))
+  ;; Lowest individual running time in lattice
 
-  (summary->version
+  (max-runtime
+   (-> Summary Real))
+  ;; Highest individual running time in lattice
+
+  (get-num-iterations
+   (-> Summary Index))
+  ;; Count number of iterations (columns) in dataset
+
+  (summary->label
    (-> Summary String))
 
   (summary->pict
@@ -95,6 +119,46 @@
 
   (summary-modulegraph
    (-> Summary ModuleGraph))
+
+  (summary-random-sample
+   (-> Summary Natural #:replacement? Boolean (Listof Real)))
+
+  (configuration->standard-error
+   (-> Summary Bitstring Real))
+
+  (configuration->confidence-lo
+   (-> Summary Bitstring Real))
+
+  (configuration->confidence-hi
+   (-> Summary Bitstring Real))
+
+  (untyped-configuration
+   (-> Summary Bitstring))
+
+  (typed-configuration
+   (-> Summary Bitstring))
+
+  (min-overhead
+   (-> Summary Real))
+  (max-overhead
+   (-> Summary Real))
+  (avg-overhead
+   (-> Summary Real))
+
+  (typed/untyped-ratio
+   (-> (U Path-String Summary) Real))
+
+  (summary->version
+   (-> Summary String))
+
+  (path->version
+   (-> Path-String (U #f String)))
+
+  (string->version
+   (-> String (U #f String)))
+
+  (D-deliverable
+   (-> Real (-> Summary Natural)))
 )
 (provide
   ;; -- re-provides from modulegraph.rkt
@@ -105,12 +169,12 @@
 
 (require
   (only-in math/number-theory factorial)
-  (only-in racket/file file->value)
   (only-in racket/format ~r)
   (only-in racket/list last range) ;; because in-range has the wrong type
   (only-in racket/string string-split)
   (only-in racket/port with-input-from-string)
   (only-in racket/vector vector-append)
+  (only-in typed/racket/random random-sample)
   gtp-summarize/bitstring
   gtp-summarize/modulegraph
   math/statistics
@@ -123,83 +187,19 @@
   (valid-version? (-> String Boolean)))
 (require/typed racket/string
   [string-suffix? (-> String String Boolean)])
+(require/typed racket/file
+  [file->value (-> Path-String Dataset)])
+(require/typed gtp-summarize/stats-helpers
+  [confidence-interval (-> (Listof Real) (Pairof Real Real))])
 
 (define-type Pict pict)
-
-;; -----------------------------------------------------------------------------
-;; copied from benchmark-run/unixtime
-
-(struct unixtime (
-  [real       : Milliseconds]
-  [user       : CPU-Seconds]
-  [sys        : CPU-Seconds]
-  [max-kbytes : KB]
-  [udata      : KB]
-  [ustack     : KB]
-  [ictx       : Natural]
-  [vctx       : Natural]
-  [exit       : Natural]
-) #:transparent )
-(define-type UnixTime unixtime)
-(define-type Milliseconds Index) ;; legacy
-(define-type CPU-Seconds Real)
-(define-type KB Natural)
-
-(: time->unixtime (-> Integer UnixTime))
-(define (time->unixtime real)
-  (unixtime (assert real index?) 0 0 0 0 0 0 0 0))
-
-(: unixtime*->index* (-> (Listof UnixTime) (Listof Index)))
-(define (unixtime*->index* ut*)
-  (for/list : (Listof Index) ([ut (in-list ut*)])
-    (unixtime-real ut)))
 
 ;; =============================================================================
 ;; -- data definition: summary
 
-(define-type Dataset (Vectorof (Listof UnixTime)))
+(define-type Dataset (Vectorof (Listof Index)))
 
-(: prefab*->unixtime* (-> (Listof Any) (Listof UnixTime)))
-(define (prefab*->unixtime* a*)
-  (for/list : (Listof UnixTime)
-            ([a (in-list a*)])
-    (prefab->unixtime a)))
-
-(: prefab->unixtime (-> Any UnixTime))
-(define (prefab->unixtime a)
-  (define num*
-    (with-input-from-string (substring (format "~a" a) 2)
-      (lambda () (cast (read) (Listof Any)))))
-  (unless (eq? 'unixtime (car num*))
-    (raise-user-error 'prefab->unixtime "Error parsing '~a'" a))
-  (unixtime
-    (assert (list-ref num* 1) index?)
-    (assert (list-ref num* 2) real?)
-    (assert (list-ref num* 3) real?)
-    (assert (list-ref num* 4) index?)
-    (assert (list-ref num* 5) index?)
-    (assert (list-ref num* 6) index?)
-    (assert (list-ref num* 7) index?)
-    (assert (list-ref num* 8) index?)
-    (assert (list-ref num* 9) index?)))
-
-;; Cast an untyped value to a UnixTime dataset
-(: dataset? (-> Any Dataset))
-(define (dataset? vec0)
-  (define vec (cast vec0 (Vectorof (Listof Any))))
-  (for ([x* (in-vector vec)]
-        [i (in-naturals)])
-    (if (and (list? x*) (not (null? x*)) (index? (car x*)))
-      (vector-set! vec i
-        (for/list : (Listof UnixTime)
-                  ([x x*])
-          (time->unixtime (assert x index?))))
-      (vector-set! vec i
-        ;; First element should be a string
-        (and (assert (car x*) string?)
-             (prefab*->unixtime* (cdr x*))))))
-  (cast vec (Vectorof (Listof UnixTime))))
-
+;; Cast an untyped value to a Dataset
 (struct summary (
   [source : Path-String] ;; the data's origin
   [dataset : Dataset] ;; the underlying experimental data
@@ -263,16 +263,13 @@
   ;; Check .rktd
   (unless (bytes=? #"rktd" (or (filename-extension path) #""))
     (parse-error "Cannot parse dataset '~a', is not .rktd" (path->string path)))
-  ;; Get data
-  (define vec (file->value path))
-  ;; Check invariants
-  (validate-dataset vec))
+  (validate-dataset (file->value path)))
 
 ;; Confirm that the dataset `vec` is a well-formed vector of experiment results.
-(: validate-dataset (-> Any Dataset))
-(define (validate-dataset vec0)
-  (define vec (dataset? vec0))
-  (unless (< 0 (vector-length vec)) (parse-error "Dataset is an empty vector, does not contain any entries"))
+(: validate-dataset (-> Dataset Dataset))
+(define (validate-dataset vec)
+  (unless (< 0 (vector-length vec))
+    (parse-error "Dataset is an empty vector, does not contain any entries"))
   (for ([row-index (in-range (vector-length vec))])
     (when (zero? (length (vector-ref vec row-index)))
       (parse-error "Row ~a has no data" row-index)))
@@ -382,7 +379,7 @@
 ;; Return all data for the untyped configuration
 (: untyped-runtimes (-> Summary (Listof Index)))
 (define (untyped-runtimes sm)
-  (unixtime*->index* (vector-ref (summary-dataset sm) 0)))
+  (vector-ref (summary-dataset sm) 0))
 
 (: untyped-mean (-> Summary Real))
 (define (untyped-mean sm)
@@ -392,7 +389,7 @@
 (: typed-runtimes (-> Summary (Listof Index)))
 (define (typed-runtimes sm)
   (define vec (summary-dataset sm))
-  (unixtime*->index* (vector-ref vec (sub1 (vector-length vec)))))
+  (vector-ref vec (sub1 (vector-length vec))))
 
 (: typed-mean (-> Summary Real))
 (define (typed-mean sm)
@@ -403,12 +400,36 @@
   (assert-configuration-length S v) ;; Is this going to be expensive?
   (index->mean-runtime S (bitstring->natural v)))
 
+(: configuration->runtimes (-> Summary Bitstring (Listof Index)))
+(define (configuration->runtimes S v)
+  (index->runtimes S (bitstring->natural v)))
+
+(: index->runtimes (-> Summary Index (Listof Index)))
+(define (index->runtimes S i)
+  (vector-ref (summary-dataset S) i))
+
 (: configuration->stddev (-> Summary Bitstring Real))
 (define (configuration->stddev S v)
   (let ([m (configuration->mean-runtime S v)]
         [i (bitstring->natural v)])
-    ;; TODO index->runtimes
-    (stddev/mean m (unixtime*->index* (vector-ref (summary-dataset S) i)))))
+    (stddev/mean m (vector-ref (summary-dataset S) i))))
+
+(: index->confidence (-> Summary Index (Pairof Real Real)))
+(define (index->confidence S i)
+  (confidence-interval (index->runtimes S i)))
+
+(: configuration->confidence-lo (-> Summary Bitstring Real))
+(define (configuration->confidence-lo S v)
+  (car (configuration->confidence S v)))
+
+(: configuration->confidence-hi (-> Summary Bitstring Real))
+(define (configuration->confidence-hi S v)
+  (cdr (configuration->confidence S v)))
+
+(: configuration->confidence (-> Summary Bitstring (Pairof Real Real)))
+(define (configuration->confidence S v)
+  (assert-configuration-length S v)
+  (index->confidence S (bitstring->natural v)))
 
 (: configuration->overhead (-> Summary Bitstring Real))
 (define (configuration->overhead S v)
@@ -416,19 +437,29 @@
 
 (: index->mean-runtime (-> Summary Index Real))
 (define (index->mean-runtime sm i)
-  (mean (unixtime*->index* (vector-ref (summary-dataset sm) i))))
+  (mean (vector-ref (summary-dataset sm) i)))
 
 ;; Fold over lattice points. Excludes fully-typed and fully-untyped.
-(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real)] Real))
-(define (fold-lattice sm f #:init [init #f])
-  (define vec (summary-dataset sm))
-  (or
-    (for/fold : (U #f Real)
-              ([prev : (U #f Real) init])
-              ([i    (in-range 1 (sub1 (vector-length vec)))])
-      (define val (mean (unixtime*->index* (vector-ref vec i))))
-      (or (and prev (f prev val)) val))
-    0))
+;; #:init : initial value for the fold
+;; #:pre : converts a row of absolute runtimes to a single real number
+;;         defaults to the `mean` of the absolute runtimes
+(: fold-lattice (->* [Summary (-> Real Real Real)] [#:init (U #f Real) #:pre (U #f (-> (Listof Real) Real))] Real))
+(define (fold-lattice S f #:init [init #f] #:pre [pre #f])
+  (define pre+ (if pre pre mean))
+  (define D (summary-dataset S))
+  (fold-lattice/vector D f init pre+))
+
+(: fold-lattice/vector (-> Dataset (-> Real Real Real) (U #f Real) (-> (Listof Real) Real) Real))
+(define (fold-lattice/vector D f init pre)
+ (or
+  (for/fold : (U #f Real)
+            ([prev : (U #f Real) init])
+            ([i    (in-range (vector-length D))])
+    (define val (pre (vector-ref D i)))
+    (if prev
+      (f prev val)
+      val))
+  0))
 
 (: max-lattice-point (-> Summary Real))
 (define (max-lattice-point sm)
@@ -446,8 +477,39 @@
   (define (f acc mean) (+ acc (* mean 1/N)))
   (fold-lattice sm f #:init 0))
 
+(: min* (-> (Listof Real) Real))
+(define (min* r*)
+  (or (for/fold ([prev : (U #f Real) #f])
+                ([r (in-list r*)])
+        (if prev
+          (min prev r)
+          r))
+      (raise-user-error 'min* "Empty list")))
+
+(: max* (-> (Listof Real) Real))
+(define (max* r*)
+  (or
+    (for/fold ([prev : (U #f Real) #f])
+              ([r (in-list r*)])
+      (if prev
+        (max prev r)
+        r))
+    (raise-user-error 'max* "Empty list")))
+
+(: min-runtime (-> Summary Real))
+(define (min-runtime S)
+  (fold-lattice S min #:pre min*))
+
+(: max-runtime (-> Summary Real))
+(define (max-runtime S)
+  (fold-lattice S max #:pre max*))
+
+(: get-num-iterations (-> Summary Index))
+(define (get-num-iterations S)
+  (assert (fold-lattice S max #:pre length) index?))
+
 ;; Count the number of configurations with performance no worse than N times untyped
-(: deliverable (-> Summary Index Natural))
+(: deliverable (-> Summary Real Natural))
 (define (deliverable sm N)
   (define baseline (* N (untyped-mean sm)))
   (: count-N (-> Natural Real Natural))
@@ -459,6 +521,10 @@
      (if (<= (typed-mean sm) baseline) 1 0)
      ;; Cast should be unnecessary, but can't do polymorphic keyword args in fold-lattice
      (cast (fold-lattice sm count-N #:init 0) Natural)))
+
+(: D-deliverable (-> Real (-> Summary Natural)))
+(define ((D-deliverable D) S)
+  (deliverable S D))
 
 (: usable (-> Summary Index Index Natural))
 (define (usable sm N M)
@@ -474,6 +540,109 @@
     (let ([tm (typed-mean sm)])
       (if (and (< lo tm) (<= tm hi)) 1 0))
     (cast (fold-lattice sm count-NM #:init 0) Natural)))
+
+(: index->stddev (-> Summary Index Real))
+(define (index->stddev S i)
+  (stddev (index->runtimes S i)))
+
+;; -----------------------------------------------------------------------------
+;; misc from JFP branch
+
+(: untyped-configuration (-> Summary Bitstring))
+(define (untyped-configuration S)
+  (make-string (get-num-modules S) #\0))
+
+(: typed-configuration (-> Summary Bitstring))
+(define (typed-configuration S)
+  (make-string (get-num-modules S) #\1))
+
+(: configuration->standard-error (-> Summary Bitstring Real))
+(define (configuration->standard-error S v)
+  (assert-configuration-length S v)
+  (index->stddev S (bitstring->natural v)))
+
+(: summary-random-sample (-> Summary Natural #:replacement? Boolean (Listof Real)))
+(define (summary-random-sample S sample-size #:replacement? r)
+  (summary-random-sample/vector (summary-dataset S) sample-size r))
+
+(: summary-random-sample/vector (-> Dataset Natural Boolean (Listof Real)))
+(define (summary-random-sample/vector D sample-size r)
+  ;; Get a bunch of random means
+  (define t**
+    ((inst random-sample (Listof Index)) D sample-size #:replacement? r))
+  (for/list : (Listof Real)
+            ([t* (in-list t**)])
+    (mean t*)))
+
+(: min-overhead (-> Summary Real))
+(define (min-overhead S)
+  (/ (min-lattice-point S) (untyped-mean S)))
+
+(: max-overhead (-> Summary Real))
+(define (max-overhead S)
+  (/ (max-lattice-point S) (untyped-mean S)))
+
+(: avg-overhead (-> Summary Real))
+(define (avg-overhead S)
+  (/ (avg-lattice-point S) (untyped-mean S)))
+
+(: data-line? (-> (U String EOF) Boolean))
+(define (data-line? str)
+  (if (string? str)
+    (and (< 0 (string-length str))
+         (eq? #\( (string-ref str 0)))
+    #f))
+
+(: string->index* (-> String (Listof Index)))
+(define (string->index* str)
+  (cast (with-input-from-string str read) (Listof Index)))
+
+;;bg: originally accepted path-string input
+(: typed/untyped-ratio (-> (U Path-String Summary) Real))
+(define (typed/untyped-ratio d)
+  (if (summary? d)
+    (typed/untyped-ratio/S d)
+    (typed/untyped-ratio/path d)))
+
+(: typed/untyped-ratio/S (-> Summary Real))
+(define (typed/untyped-ratio/S S)
+  (/ (typed-mean S) (untyped-mean S)))
+
+(: read-untyped (-> (Listof Real)))
+(define (read-untyped)
+  (or (for/or : (U #f (Listof Index))
+              ([ln (in-lines)])
+        (and (data-line? ln) (string->index* ln)))
+      (raise-user-error 'read-untyped "No data lines in current input port")))
+
+(: read-typed (-> (Listof Real)))
+(define (read-typed)
+  (define last-line
+    (or (for/fold : (U #f String)
+                  ([acc : (U #f String) #f])
+                  ([ln (in-lines)])
+          (if (data-line? ln) ln acc))
+        (raise-user-error 'read-typed "No data lines in current input port")))
+  (string->index* last-line))
+
+(: typed/untyped-ratio/path (-> Path-String Real))
+(define (typed/untyped-ratio/path p)
+  (with-input-from-file p
+    (lambda ()
+      (let ([u (mean (read-untyped))]
+            [t (mean (read-typed))])
+        (/ t u)))))
+
+(: string->version (-> String (U #f String)))
+(define (string->version s)
+  (for/or : (Option String)
+             ([x (in-list (string-split s "/"))]
+              #:when (valid-version? x))
+    x))
+
+(: path->version (-> Path-String (U #f String)))
+(define (path->version ps)
+  (string->version (if (path? ps) (path->string ps) ps)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- viewing
@@ -567,7 +736,8 @@
   ;(check-equal? "foo/bar/baz-and-other-ignored-stuff.rktd" "foo/bar/../module-graphs/baz.tex")
 
   ;;; -- from rktd
-  (define S (from-rktd "test/echo-data.rktd"))
+  (define S (from-rktd "test/morsecode-data.rktd"))
+
 
   (check-equal? (get-num-paths S) 24)
 
@@ -575,38 +745,38 @@
 
   (check-equal? (get-num-configurations S) (expt 2 4))
 
-  (check-equal? (get-project-name S) "echo")
+  (check-equal? (get-project-name S) "morsecode")
 
   ;; -- has-typed?
   (check-true (has-typed? S "1111" '("main")))
   (check-true (has-typed? S "0110" '("main")))
-  (check-true (has-typed? S "1001" '("client" "server")))
+  (check-true (has-typed? S "1001" '("levenshtein" "morse-code-table")))
   (check-true (has-typed? S "0000" '()))
 
-  (check-false (has-typed? S "0001" '("constants")))
+  (check-false (has-typed? S "0001" '("levenshtein")))
   (check-false (has-typed? S "0000" '("main")))
-  (check-false (has-typed? S "0011" '("client" "main")))
+  (check-false (has-typed? S "0011" '("levenshtein" "main")))
 
   ;; -- has-untyped?
-  (check-true (has-untyped? S "0001" '("constants")))
+  (check-true (has-untyped? S "0001" '("levenshtein")))
   (check-true (has-untyped? S "0000" '("main")))
-  (check-true (has-untyped? S "0011" '("client" "constants")))
+  (check-true (has-untyped? S "0011" '("levenshtein" "main")))
 
   (check-false (has-untyped? S "1111" '("main")))
-  (check-false (has-untyped? S "1010" '("main")))
-  (check-false (has-untyped? S "1001" '("client" "server")))
+  (check-false (has-untyped? S "1010" '("morse-code-strings")))
+  (check-false (has-untyped? S "1001" '("levenshtein" "main")))
 
   ;; -- typed-modules
   (check-equal? (typed-modules S "1111")
-                '("client" "constants" "main" "server"))
+                '("levenshtein" "main" "morse-code-strings" "morse-code-table"))
   (check-equal? (typed-modules S "0000") '())
-  (check-equal? (typed-modules S "1001") '("client" "server"))
+  (check-equal? (typed-modules S "1001") '("levenshtein" "morse-code-table"))
 
   ;; -- untyped-modules
   (check-equal? (untyped-modules S "0000")
-                '("client" "constants" "main" "server"))
+                '("levenshtein" "main" "morse-code-strings" "morse-code-table"))
   (check-equal? (untyped-modules S "1111") '())
-  (check-equal? (untyped-modules S "1001") '("constants" "main"))
+  (check-equal? (untyped-modules S "1001") '("main" "morse-code-strings"))
 
   ;; -- untyped-mean
   (check-equal? (untyped-mean S) 5666/3)
@@ -619,6 +789,20 @@
   (check-equal? (configuration->stddev S "0000") 59.43923133942953)
   (check-equal? (configuration->stddev S "0111") 27.806394148748513)
 
+  (define (check-confidence-interval [str : String])
+    (let* ([ci (configuration->confidence S str)]
+           [m (configuration->mean-runtime S str)])
+      (check-true (< (car ci) (cdr ci)))
+      (check-true (< (car ci) m))
+      (check-true (< m (cdr ci)))))
+
+  (check-confidence-interval "0000")
+  (check-confidence-interval "0010")
+
+  ;; -- config->stddev
+  (check-equal? (configuration->stddev S "0000") 59.43923133942953)
+  (check-equal? (configuration->stddev S "0111") 27.806394148748513)
+
   ;; -- config->overhead
   (check-equal? (configuration->overhead S "0000") 1)
   (check-equal? (configuration->overhead S "0101") 15221/14165)
@@ -626,7 +810,7 @@
   ;; -- predicate->configs
   (check-equal?
     (sort
-      (sequence->list (predicate->configurations S (lambda (cfg) (has-typed? S cfg '("main")))))
+      (sequence->list (predicate->configurations S (lambda (cfg) (has-typed? S cfg '("morse-code-strings")))))
       string<?)
     '("0010" "0011" "0110" "0111" "1010" "1011" "1110" "1111"))
 
@@ -647,10 +831,24 @@
    '(20883/10 20463/10 20883/10 62093/30 20463/10 62017/30 20883/10 20463/10 12703/6 12703/6 20463/10 31594/15 10563/5 10563/5 12703/6 12703/6 10563/5 10563/5 20463/10 62017/30 20463/10 31594/15 62777/30 31594/15))
 
   ;; -- summary->label
-  (check-equal? (summary->label S) "echo-data")
+  (check-equal? (summary->label S) "morsecode-data")
 
   ;; -- summary->version
-  (check-equal? (summary->version S) "echo-data")
+  (check-equal? (summary->version S) "morsecode-data")
+
+  ;; -- get-num-iterations
+  (check-equal? (get-num-iterations S) 30)
+
+  ;; -- min-overhead max-overhead min-runtime max-runtime
+  (let ([lo-r (min-runtime S)]
+        [lo-o (min-overhead S)]
+        [hi-o (max-overhead S)]
+        [hi-r (max-runtime S)]
+        [u-r (untyped-mean S)])
+    (check-true (< lo-r hi-r))
+    (check-true (< lo-o hi-o))
+    (check-true (< (/ lo-r u-r) lo-o))
+    (check-true (< hi-o (/ hi-r u-r))))
 
   ;; -- summary->pict
   ;; -- summary-modulegraph
@@ -660,28 +858,5 @@
 
   ;; -- all configurations
 
-  (let* ([p "#s(unixtime 0 1 2 3 4 5 6 7 8)"]
-         [u (prefab->unixtime p)]
-         [u* (prefab*->unixtime* (list p p p p))])
-    (check-true (unixtime? u))
-    (check-equal? (unixtime-real u) 0)
-    (check-equal? (unixtime-exit u) 8)
-    (check-true (list? u*))
-    (check-equal? (unixtime-vctx (caddr u*)) 7)
-    (check-equal? (unixtime*->index* u*) '(0 0 0 0)))
-
-  (let* ([t 99]
-         [u (time->unixtime t)])
-    (check-true (unixtime? u))
-    (check-equal? (unixtime-real u) t)
-    (check-equal? (unixtime*->index* (list u)) (list t)))
-
-  (let* ([d (vector (list 1 2 3)
-                    (list "timestamp" "#s(unixtime 0 1 2 3 4 5 6 7 8)"))]
-         [v (dataset? d)])
-    (check-true (and v #t))
-    (check-true (vector? v))
-    (check-equal? (unixtime-real (cadr (vector-ref v 0))) 2))
-
-
 )
+

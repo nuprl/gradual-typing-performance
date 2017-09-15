@@ -22,3 +22,18 @@ Workflow for a new cluster account:
 3. Run the `run` script for as many nodes as possible
 4. ... wait 24 hours, repeat step 3 until done
 
+
+System Information
+---
+
+About Karst: https://kb.iu.edu/d/bezu#info
+
+- All nodes are:
+  - IBM NeXtScale nx360 M4 servers
+  - with 2 Intel Xeon E5-2650 v2 8-core processors
+- 256 compute nodes
+  - 32 GB of RAM
+  - 250 GB of local disk storage
+- 16 data nodes
+  - 64 GB of RAM
+  - 24 TB of local storage

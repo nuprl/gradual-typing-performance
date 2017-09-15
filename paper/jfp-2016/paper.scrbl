@@ -1,50 +1,47 @@
 #lang scribble/jfp
 
-@(require "common.rkt")
+@require["common.rkt" "benchmark.rkt" "util.rkt"]
 
-@title{Is Sound Gradual Typing Dead?}
+@title{How to Evaluate the Performance of Gradual Type Systems}
 
-@((author/short "Ben Greenman, Asumu Takikawa, Max S. New, Jan Vitek, and Matthias Felleisen")
-  "BEN GREENMAN, ASUMU TAKIKAWA, MAX S. NEW, JAN VITEK, and MATTHIAS FELLEISEN"
-  @emph{@(affiliation "Northeastern University")})
+@(@author/short{Greenman, Takikawa, New, Feltey, Findler, Vitek, Felleisen}
+  "BEN GREENMAN" (affiliation-mark "1")
+  " ASUMU TAKIKAWA" (affiliation-mark "1")
+  " MAX S. NEW" (affiliation-mark "1")
+  " DANIEL FELTEY" (affiliation-mark "2")
+  " ROBERT BRUCE FINDLER" (affiliation-mark "2")
+  " JAN VITEK" (affiliation-mark "1")
+  "and MATTHIAS FELLEISEN" (affiliation-mark "1")
+  @(affiliation
+    "Northeastern University, Boston, Mass." (affiliation-mark "1")
+    (affiliation-sep)
+    "Northwestern University, Chicago, Ill." (affiliation-mark "2")
+   ))
 
-@abstract{Programmers have come to embrace dynamically-typed languages for
- prototyping and delivering large and complex systems. When it comes to
- maintaining and evolving these systems, the lack of explicit static typing
- becomes a bottleneck. In response, researchers have explored the idea of
- gradually-typed programming languages which allow the incremental addition of
- type annotations to software written in one of these untyped languages.
- Some of these new, hybrid languages insert run-time checks at the boundary
- between typed and untyped code to establish type soundness for the overall
- system. With sound gradual typing, programmers can rely on the language
- implementation to provide meaningful error messages when type invariants
- are violated.
- While most research on sound gradual typing remains theoretical, the
- few emerging implementations suffer from performance overheads due to these
- checks. None of the publications on this topic comes with a
- comprehensive performance evaluation. Worse, a few report disastrous numbers.
+@abstract{
+  A sound gradual type system ensures that untyped components of a program can never break the guarantees of statically typed components.
+  Currently, this assurance requires run-time checks, which in turn impose performance overhead in proportion to the frequency and nature of interaction between typed and untyped components.
 
- In response, this paper proposes a method for
- evaluating the performance of gradually-typed programming languages.
- The method hinges on exploring the space of partial conversions from
- untyped to typed. For each benchmark, the performance of the different
- versions is reported in a synthetic metric that associates runtime overhead
- to conversion effort.
- The paper reports on the results of applying the method to
- Typed Racket, a mature implementation of sound gradual typing, using a suite
- of real-world programs of various sizes and complexities.  Based on these
- results the paper concludes that, given the current state
- of implementation technologies, sound gradual typing faces significant
- challenges. Conversely, it raises the question of how implementations could 
- reduce the overheads associated with soundness and how
- tools could be used to steer programmers clear from pathological cases.}
+  The literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
+  This gap has consequences for developers who use gradual type systems and the implementors of such systems.
+  Developers cannot predict whether adding types to part of a program will significantly degrade its performance.
+  Implementors cannot precisely determine how improvements to a gradual type system affect the performance of such programs.
+
+  This paper presents the first method for evaluating the performance of gradual type systems.
+  The method quantifies both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.
+  In order to validate the method, the paper reports on its application to @integer->word[(*NUM-BENCHMARKS*)] benchmark programs and @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
+}
 
 @include-section{intro.scrbl}
-@include-section{framework.scrbl}
-@include-section{benchmarks.scrbl}
+@include-section{story.scrbl}
+@include-section{method.scrbl}
+@include-section{benchmark.scrbl}
 @include-section{typed-racket.scrbl}
-@include-section{death.scrbl}
-@include-section{related.scrbl}
+@include-section{scale.scrbl}
+@include-section{threats.scrbl}
+@include-section{devils.scrbl}
 @include-section{conclusion.scrbl}
 
 @generate-bibliography[]
+
+@include-section{appendix.scrbl}

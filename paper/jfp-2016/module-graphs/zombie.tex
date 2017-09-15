@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{0}{image}};
+  \node (01) [below of=00,yshift=-0.4cm] {\rkt{2}{math}};
+  \node (10) [left of=00,xshift=-2cm] {\rkt{3}{zombie}};
+  \node (20) [left of=10,xshift=-2cm] {\rkt{1}{main}};
+
+  \draw[->] (10) -- (01);
+  \draw[->] (10) -- (00);
+  \draw[->] (20) -- (10);
+
+\end{tikzpicture}

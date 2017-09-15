@@ -1,0 +1,17 @@
+\begin{tikzpicture}
+
+  \node (00)  {\rkt{0}{automata}};
+  \node (01) [below of=00,yshift=-1cm] {\rkt{4}{utilities}};
+  \node (10) [left of=00,xshift=-2cm] {\rkt{3}{population}};
+  \node (20) [left of=10,xshift=-2cm] {\rkt{2}{other}};
+  \node (30) [left of=20,xshift=-2cm] {\rkt{1}{main}};
+
+  \draw[->] (10) -- (01);
+  \draw[->] (10) -- (00);
+  \draw[->] (20) -- (10);
+  \draw[->] (20) edge[bend left=25] (00);
+  \draw[->] (30) -- (20);
+  \draw[->] (30) -- (01);
+  \draw[->] (30) edge[bend left=25] (10);
+
+\end{tikzpicture}

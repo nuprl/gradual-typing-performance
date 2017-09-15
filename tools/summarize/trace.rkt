@@ -139,9 +139,10 @@
 (: filename (-> String String))
 (define filename
   (let ()
-    (define-regexp: rx #rx"/?([^/]*)\\.rkt$")
+    (define rx #rx"/?([^/]*)\\.rkt$")
     (lambda ([str : String])
-      (cond
+      (error 'not-now)
+      #;(cond
        [(regexp-match: rx str) => cadr]
        [else (raise-user-error 'trace "Failed to get filename from '~a'" str)]))))
 

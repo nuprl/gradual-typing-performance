@@ -1,0 +1,37 @@
+cpu time: 6307 real time: 6304 gc time: 373
+Running time is 67.28% contracts
+4293/6380 ms
+
+(-> (vectorof Integer) Integer (box/c (or/c #f #t)) (-> Void) (->1599 ms
+data.rkt:8:10                                                    
+    Array                                                        1599 ms
+
+(-> (vectorof Integer) (-> (vectorof Integer) any) Array?)       1146.5 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    unsafe-build-array                                           1076.5 ms
+    build-array                                                  70 ms
+
+(-> any/c (-> (vectorof Integer) Float))                         929.5 ms
+synth.rkt:20:3                                                   
+    unsafe-array-proc                                            929.5 ms
+
+(-> (vectorof Integer) any/c (vectorof Integer) Void)            504 ms
+synth.rkt:15:3                                                   
+    next-indexes!                                                504 ms
+
+(->* ((listof (vectorof Integer))) (any/c) (vectorof Integer))   53.5 ms
+/home/ben/code/racket/benchmark/gradual-typing-performance/worst-
+    array-shape-broadcast                                        53.5 ms
+
+(-> any/c (vectorof Integer))                                    40 ms
+mixer.rkt:10:3                                                   
+    array-shape                                                  40 ms
+
+(-> (vectorof Integer) Integer (box/c (or/c #f #t)) (-> Void) (->10 ms
+data.rkt:14:10                                                   
+    Mutable-Array                                                10 ms
+
+(-> (vectorof Integer) (vectorof Integer))                       10 ms
+array-transform.rkt:20:3                                         
+    vector-copy-all                                              10 ms
+
