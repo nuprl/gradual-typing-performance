@@ -73,16 +73,31 @@
 ;; Get paths for all configuration directories
 ;; Path Path -> Listof Path
 (define (mk-configurations basepath entry-point)
-  (define num-modules
-    (for/sum ([fname (in-list (directory-list (build-path basepath "untyped")))]
-              #:when (regexp-match? "\\.rkt$" (path->string fname))) 1))
+  (define num-modules (count-num-modules basepath))
   (for/list ([i (in-range (expt 2 num-modules))])
     (define bits
       (if (zero? i)
         (make-string num-modules #\0)
         (~r i #:base 2 #:min-width num-modules #:pad-string "0")))
-    (define var-str (format "configuration~a" bits))
-    (build-path basepath "benchmark" var-str entry-point)))
+    (bits->path-string bits basepath entry-point)))
+
+(define (mk-smoke-configurations basepath entry-point)
+  (define num-modules (count-num-modules basepath))
+  (list*
+    (bits->path-string (make-string num-modules #\0) basepath entry-point)
+    (bits->path-string (make-string num-modules #\1) basepath entry-point)
+    (for/list ([i (in-range num-modules)])
+      (define str (make-string num-modules #\0))
+      (string-set! str i #\1)
+      (bits->path-string str basepath entry-point))))
+
+(define (bits->path-string bits basepath entry-point)
+  (define var-str (format "configuration~a" bits))
+  (build-path basepath "benchmark" var-str entry-point))
+
+(define (count-num-modules basepath)
+  (for/sum ([fname (in-list (directory-list (build-path basepath "untyped")))]
+            #:when (regexp-match? "\\.rkt$" (path->string fname))) 1))
 
 ;; Start a thread to monitor CPU temperature
 ;; Delay before returning
@@ -200,21 +215,22 @@
   ut*)
 
 ;; Run the configurations for each configuration directory
-;; Optional argument gives the exact configuration to run.
+;; Optional argument specifies what configurations to run, either:
+;; - #f                               = all configurations
+;; - ConfigString                     = exactly this configuration
+;; - (List ConfigString ConfigString) = all configurations in range, inclusive
+;; - 'smoke                           = a few configurations
 ;; Default is to run all configurations
 ;; (Listof Path) Path Nat Nat [(U (Listof String) #f)] -> Void
 (define (run-benchmarks basepath entry-point jobs
-                        #:config [cfg #f]
-                        #:min/max [min/max #f])
+                        #:config [cfg-spec #f])
   (define benchmark-dir (build-path basepath "benchmark"))
   (unless (directory-exists? benchmark-dir)
     (raise-user-error 'run (format "Directory '~a' does not exist, please run `setup.rkt ~a` and try again." benchmark-dir basepath)))
   (define configurations
     (cond
-      [cfg
-      (list (build-path benchmark-dir (string-append "configuration" cfg) entry-point))]
-      [min/max
-       (match-define (list min max) min/max)
+      [(pair? cfg-spec)
+       (match-define (list min max) cfg-spec)
        (define all-vars (mk-configurations basepath entry-point))
        (define (in-range? var)
          (match-define (list _ bits) (regexp-match "configuration([10]*)/" var))
@@ -222,6 +238,12 @@
          (and (>= n (string->number min))
               (<= n (string->number max))))
        (filter in-range? all-vars)]
+      [(eq? cfg-spec 'smoke)
+       (define cfg* (mk-smoke-configurations basepath entry-point))
+       (printf "SMOKE TEST running configurations ~a~n" cfg*)
+       cfg*]
+      [cfg-spec
+       (list (build-path benchmark-dir (string-append "configuration" cfg-spec) entry-point))]
       [else
        ((*PERMUTE*)
         (mk-configurations basepath entry-point))]))
@@ -350,12 +372,14 @@
     (command-line #:program "benchmark-runner"
                   #:argv vec
                   #:once-any
-                  [("-x" "--exclusive")    x-p
-                                           "Run the given configuration and no others"
-                                           (*EXCLUSIVE-CONFIG* x-p)]
+                  [("--smoke-test") "Test configurations, do not collect results"
+                   (*CONFIGS-TO-RUN* 'smoke)]
+                  [("-x" "--exclusive") x-p
+                                        "Run the given configuration and no others"
+                                        (*CONFIGS-TO-RUN* x-p)]
                   [("-m" "--min-max") min max
                                       "Run the configurations between min and max inclusive"
-                                      (*MIN-MAX-CONFIG* (list min max))]
+                                      (*CONFIGS-TO-RUN* (list min max))]
                   #:once-each
                   [("-w" "--warmup")
                    w
@@ -443,8 +467,7 @@
     (system (format "taskset -pc 0 ~a" (getpid))))
 
   (run-benchmarks basepath entry-point jobs
-                  #:config (*EXCLUSIVE-CONFIG*)
-                  #:min/max (*MIN-MAX-CONFIG*))
+                  #:config (*CONFIGS-TO-RUN*))
 
   (when (and (not (*ONLY-COMPILE?*)) (*OUTPUT-PATH*))
     (with-output-to-file (*OUTPUT-PATH*)

@@ -48,6 +48,30 @@
   (define fname (output-file dir #:tmp? #t))
   (run fname dir))
 
+(define (run-all-rounds bm-dir* outer-iters)
+  (for ([i (in-range outer-iters)])
+    (info "Starting round ~a\n" i)
+    (for ([version (in-list (*RACKET-VERSIONS*))])
+      (info "Running version ~a" version)
+      (parameterize* ([*RACKET-VERSION* version]
+                      [*RACKET-BIN* (racket-bin)])
+        (for-each run-round bm-dir*))))
+  (info "Collecting results\n")
+  (for ([version (in-list (*RACKET-VERSIONS*))])
+    (parameterize ([*RACKET-VERSION* version])
+      (for-each collect-rktd bm-dir*))))
+
+(define (run-smoke-round dir)
+  (setup-benchmark dir)
+  (run-benchmark (vector "--smoke-test" dir)))
+
+(define (run-smoke-test bm-dir*)
+  (for ([version (in-list (*RACKET-VERSIONS*))])
+    (info "Testing version ~a" version)
+    (parameterize* ([*RACKET-VERSION* version]
+                    [*RACKET-BIN* (racket-bin)])
+      (for-each run-smoke-round bm-dir*))))
+
 ;; =============================================================================
 
 ;; "(6.2)" -> ("6.2")
@@ -60,6 +84,7 @@
 
 (module+ main
   (require racket/cmdline)
+  (define smoke-test? (box #f))
   (command-line
    #:program "gtp-run"
    #:once-any
@@ -68,6 +93,7 @@
     "Do NOT set task affinity (runs all jobs on current core)"
     (*AFFINITY?* #f)]
    #:once-each
+   [("--smoke-test") "Spot-check the benchmark" (set-box! smoke-test? #true)]
    [("-i" "--iters") i "Number of iterations to run." (*NUM-ITERATIONS* (string->number i))]
    [("-v" "--version") v* "Racket versions to run e.g. '6.3' or '(6.3 6.5)'"
      (if (valid-version? v*)
@@ -81,20 +107,11 @@
    (begin
      (when (null? BENCHMARK-DIR*)
        (raise-user-error 'gtp-run "Usage: raco gtp-run [OPTION] ... <BENCHMARK-NAME> ..."))
-     (define outer-iters(*NUM-ITERATIONS*))
      (info "Validating benchmark directories")
      (for-each assert-benchmark? BENCHMARK-DIR*)
-     (for ([i (in-range outer-iters)])
-       (info "Starting round ~a\n" i)
-       (for ([version (in-list (*RACKET-VERSIONS*))])
-         (info "Running version ~a" version)
-         (parameterize* ([*RACKET-VERSION* version]
-                         [*RACKET-BIN* (racket-bin)])
-           (for-each run-round BENCHMARK-DIR*))))
-     (info "Collecting results\n")
-     (for ([version (in-list (*RACKET-VERSIONS*))])
-       (parameterize ([*RACKET-VERSION* version])
-         (for-each collect-rktd BENCHMARK-DIR*))))))
+     (if (unbox smoke-test?)
+       (run-smoke-test BENCHMARK-DIR*)
+       (run-all-rounds BENCHMARK-DIR* (*NUM-ITERATIONS*))))))
 
 ;; =============================================================================
 

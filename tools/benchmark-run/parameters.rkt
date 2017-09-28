@@ -41,8 +41,7 @@
 (define *OUTPUT-PATH* (make-parameter #f))
 
 (define *ENTRY-POINT-PARAM* (make-parameter #f))
-(define *EXCLUSIVE-CONFIG* (make-parameter #f))
-(define *MIN-MAX-CONFIG* (make-parameter #f))
+(define *CONFIGS-TO-RUN* (make-parameter #f))
 
 ;; --- begin WARNING: do not set this parameter
 (define *RACKET-BIN* (make-parameter ""))
