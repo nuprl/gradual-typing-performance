@@ -39,7 +39,8 @@ Functional Programming and I look forward to receiving your revision.
 
 Sincerely, Fritz Henglein Journal of Functional Programming henglein@diku.dk
 
-Referees' Comments to Author: Referee: 1
+Referees' Comments to Author:
+Referee: 1
 
 Comments to the Author This paper explains a method for evaluating gradual type
 systems based on Takikawa et al. (POPL 2016); it offers thoroughgoing detail on

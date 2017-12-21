@@ -19,7 +19,7 @@
   * "if the authors feel strongly that migratory typing is a better name,
      then please actually explain the reasoning and argue for it"
 
-- [ ] Section 2.1: elaborate ending
+- [ ] Section 2.1: clarify why this performance overhead is a problem
   * "explain why this unpredictability is unsatisfactory in the gradual typing
      context"
 
@@ -68,8 +68,8 @@
 - [ ] Section 7: change prose before Dimoulas etal 2012 citation,
   * "The citation to Dimoulas et al. 2012 on p24 as saying blame offers
      "practical value for developers" is misleading---that paper is a
-      theoretical reasoning framework, with no evaluation on whether developers
-      find blame practical"
+     theoretical reasoning framework, with no evaluation on whether developers
+     find blame practical"
 
 - [ ] clarify final line of Sec 7
   * "...  is really a question about reconciling a desire for
@@ -81,8 +81,8 @@
 
 - [ ] compare to TypeScript
   * "Rastogi et al. POPL 2015 report a 1.15x slowdown... what's different for
-      racket, or is it just because they're only reporting the topmost node in
-      the performance lattice?"
+     racket, or is it just because they're only reporting the topmost node in
+     the performance lattice?"
   * compare to later Safe TypeScript paper?
 
 - [ ] compare to other space-efficiency papers
@@ -100,7 +100,7 @@
   * "i.e., .7x vs. 30% performance improvement"
 
 - [ ] Ballantyne also offers _much_ worse slowdown: 1275x!
-      Why isn't this example included in the paper?
+  * Why isn't this example included in the paper?
 
 
 ### Referee: 2
@@ -138,10 +138,11 @@
      boundaries in gradual typing (in a compiled implementation) would come
      from boxing (mallocs) and not tag checking (conditionals in generally
      should be very cheap at machine code level)."
-  * "1) if the implementation boxes/unboxes values based on whether they are
-        untyped/typed"
-  * "2) if the implementation is interpreted or compiled (to machine doe)"
-  * "3) if that is done, whether there has been any effort to evaluate the
+  * "state clearly:
+     1) if the implementation boxes/unboxes values based on
+         whether they are untyped/typed
+     2) if the implementation is interpreted or compiled (to machine doe)
+     3) if that is done, whether there has been any effort to evaluate the
         cost of the dynamic allocation in this work"
 
 - [ ] Section 8: add experimental support
