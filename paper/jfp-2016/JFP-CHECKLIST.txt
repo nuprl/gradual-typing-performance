@@ -1,0 +1,150 @@
+### Referee: 1
+
+- [ ] abstract: fix awkward phrase
+  * ""currently, this assurance requires run-time checks"... will it ever not?
+    There is a name for when dynamic checks aren't required: static typing."
+
+- [ ] Section 1: explain "the problem"
+  * "For Twitter, the problems with Ruby were (a) performance, and
+     (b) code anti-patterns"
+  * "It's misleading to say on p1 that the "server-side application" of Twitter
+     is written in Ruby... some of the front-end _may_ still be written in
+     Ruby, but my impression is that very little remains."
+
+- [ ] Section 1: (maybe) address Node.js
+  * "worth adding that for many developers, the default for new services is to
+     use JavaScript on Node."
+
+- [ ] Section 1: defend 'migratory typing'
+  * "if the authors feel strongly that migratory typing is a better name,
+     then please actually explain the reasoning and argue for it"
+
+- [ ] Section 2.1: elaborate ending
+  * "explain why this unpredictability is unsatisfactory in the gradual typing
+     context"
+
+- [ ] Section 2.2: strengthen argument (or remove)
+  * "the short treatment given here isn't so convincing... which weakens the
+     case."
+  * "showing examples from other languages that purport to have gradual
+     typing but are unsound will strengthen the case significantly."
+  * "[the case should address] those the developers who ask for flags to
+     disable contract checking"
+  * "give more, stronger examples"
+  * "what kind of unsoundnesses can happen?"
+
+- [ ] Section 2.2: fix awkward 'recall' about types
+  * "From where should we "recall that types are checkable statements about
+     program expressions"? Checkable seems to imply "dynamically checkable",
+     but not all types can be checked dynamically (e.g., function types can be
+     checked on a finite portion of their domain, but not always exhaustively).
+     There are systems where type checking is in general undecidable... do
+     these systems have types, or something else?"
+
+- [ ] Section 3.1: explain where lattice lines _should_ go
+  * "It's slightly jarring to see something without lines between nodes called
+     a "lattice""
+
+- [ ] Section 3.2: explain `k`, the number of steps
+  * "It took several read-throughs to realize that both graphs depict _all_
+     configurations, when k=0 and when k=1"
+
+- [ ] Section 5.1: why random permutation
+  * "why random permutations of configurations?"
+
+- [ ] Section 5.1: why drop the first run?
+  * "Is there some bytecode/compilation/cache effect that's relevant?"
+
+- [ ] Section 5.1: define number of iterations
+  * "what is N, i.e., how many times does each benchmark run?"
+
+- [ ] Section 5.1: compute-bound? I/O-bound?
+  * "Are these benchmarks compute or I/O bound?"
+
+- [ ] Section 5.1: define green threads; do all threads block on I/O?
+  * "Footnote 12 mentions green threads without defining them or clarifying
+     whether all threads block on I/O."
+
+- [ ] Section 7: change prose before Dimoulas etal 2012 citation,
+  * "The citation to Dimoulas et al. 2012 on p24 as saying blame offers
+     "practical value for developers" is misleading---that paper is a
+      theoretical reasoning framework, with no evaluation on whether developers
+      find blame practical"
+
+- [ ] clarify final line of Sec 7
+  * "...  is really a question about reconciling a desire for
+     (a) blame,
+     (b) soundness,
+     (c) new typed libraries efficiently using legacy untyped Racket code, and
+     (d) efficient new untyped Racket code using new typed libraries."
+  * Referee 2 also asks for clarification
+
+- [ ] compare to TypeScript
+  * "Rastogi et al. POPL 2015 report a 1.15x slowdown... what's different for
+      racket, or is it just because they're only reporting the topmost node in
+      the performance lattice?"
+  * compare to later Safe TypeScript paper?
+
+- [ ] compare to other space-efficiency papers
+  * Herman 2007 TFP
+  * Greenberg's TFP 2016
+  * Garcia 2013 ICFP (less close)
+  * Siek et al. ESOP 2015 (less close)
+
+- [ ] compare to Reticulated
+  * mention Vitousek etal, POPL 2017
+
+- [ ] References to particular sections/figures/etc. should be capitalized
+
+- [ ] use a single format for speedups
+  * "i.e., .7x vs. 30% performance improvement"
+
+- [ ] Ballantyne also offers _much_ worse slowdown: 1275x!
+      Why isn't this example included in the paper?
+
+
+### Referee: 2
+
+- [ ] Section 1: cite the papers we accuse of poor evaluations
+  * "It is inappropriate in scientific literature to make accusations without
+     citing the accused papers, otherwise accusations cannot be checked and
+     debated."
+
+- [ ] Section 2: explain natural embedding
+  * "The performance evaluation of Typed Racket cannot be understood from a
+     scientific perspective without understanding those aspects of the
+     implementation of Typed Racket that influence performance."
+  * Referee 3 also wants explanation
+
+- [ ] Section 3: clarify 'experimental vs. fixed' modules
+  * "some programs, even in their 100% statically typed configuration, rely on
+     libraries that are untyped. This is an inaccurate presentation of the
+     data."
+
+- [ ] Section 4: define GTP
+  * "The acronym GTP needs to be defined."
+  * its just "gradual typing performance"
+
+- [ ] Section 4.1: typo, missing period
+  * "Seventeen of the benchmark programs are adaptations of untyped
+     programs The other"
+
+
+### Referee: 3
+
+- [ ] Section 2: explain natural embedding
+  * "boxing/unboxing overheads are not discussed"
+  * "I have always assumed that the majority of the cost of crossing
+     boundaries in gradual typing (in a compiled implementation) would come
+     from boxing (mallocs) and not tag checking (conditionals in generally
+     should be very cheap at machine code level)."
+  * "1) if the implementation boxes/unboxes values based on whether they are
+        untyped/typed"
+  * "2) if the implementation is interpreted or compiled (to machine doe)"
+  * "3) if that is done, whether there has been any effort to evaluate the
+        cost of the dynamic allocation in this work"
+
+- [ ] Section 8: add experimental support
+  * "It is unfortunate that the paper does not attempt to experimentally
+     establish support for these hypothesis."
+
