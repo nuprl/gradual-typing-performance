@@ -1,0 +1,286 @@
+Dear Dr. Greenman:
+
+Manuscript ID JFP-2016-0042 entitled "How to Evaluate the Performance of
+Gradual Type Systems" which you submitted to the Journal of Functional
+Programming, has been reviewed.  The comments of the referees are included at
+the bottom of this letter.
+
+The referees have suggested some minor revisions to your manuscript.
+Therefore, I invite you to respond to the comments and revise your manuscript.
+
+To revise your manuscript, log into https://mc.manuscriptcentral.com/jfp_submit
+and enter your Author Center, where you will find your manuscript title listed
+under "Manuscripts with Decisions."  Under "Actions," click on "Create a
+Revision."  Your manuscript number has been appended to denote a revision.
+
+You will be unable to make your revisions on the originally submitted version
+of the manuscript.  Instead, please upload your revised manuscript through your
+Author Center.
+
+When submitting your revised manuscript, you will be able to respond to the
+comments made by the referees in the space provided.  You can use this space to
+document any changes you make to the original manuscript.  In order to expedite
+the processing of the revised manuscript, please be as specific as possible in
+your response to the referees.
+
+IMPORTANT:  Your original files are available to you when you upload your
+revised manuscript.  Please delete any redundant files before completing the
+submission.
+
+Because we are trying to facilitate timely publication of manuscripts submitted
+to the Journal of Functional Programming, your revised manuscript should be
+uploaded as soon as possible.  If it is not possible for you to submit your
+revision in a reasonable amount of time, say six weeks, we may have to consider
+your paper as a new submission. Please let me know if this timescale is not
+feasible.
+
+Once again, thank you for submitting your manuscript to the Journal of
+Functional Programming and I look forward to receiving your revision.
+
+Sincerely, Fritz Henglein Journal of Functional Programming henglein@diku.dk
+
+Referees' Comments to Author: Referee: 1
+
+Comments to the Author This paper explains a method for evaluating gradual type
+systems based on Takikawa et al. (POPL 2016); it offers thoroughgoing detail on
+their method and the results from evaluating three different versions of Racket
+on a wide range of benchmarks. The core idea of the methodology is to take a
+program with some number of modules and explore each possible application of
+types, from a completely untyped set of modules to completely typed. By
+exploring every configuration, they can characterize the sorts of performance
+changes a developer might experience as they convert an untyped program to a
+typed one. The paper introduces several notations for exploring these
+benchmarks (performance lattices, overhead graphs) as well as a probabilistic
+methodology if there are too many configurations to efficiently enumerate all
+of them.
+
+The methodology for benchmarks is excellently designed and clearly explained;
+this journal paper will provide helpful direction to a community in PL that has
+not had clearly articulated ways to evaluate implementations. The writing is
+generally clear and the paper is well organized.
+
+The methodology presented here is particularly useful for sound gradual typing,
+but one could just as well use it to evaluate unsound systems. It's slightly
+surprising, then to see the argumentation around Racket and sound gradual
+typing. While it's nice to see rationale and language design principles, the
+short treatment given here isn't so convincing... which weakens the case. If
+the authors are committed to including their language design rationale, I would
+suggest significantly strengthening that section. If not, the paper might be
+stronger _without_ Section 2.2.
+
+* MAKING THE CASE FOR SOUND GRADUAL TYPING
+
+The "case for sound gradual typing" omits comparison to unsound languages; I
+suspect that showing examples from other languages that purport to have gradual
+typing but are unsound will strengthen the case significantly. In particular,
+the authors should compare to TypeScript, Clojure, TypedLua, Flow, and Hack.
+
+The best case will be one that addresses itself to those the developers who ask
+for flags to disable contract checking (as requested by Ballantyne and Griffin
+in the anecdotal evidence provided!); while they may suffer from "moral
+turpitude", calling them out for it doesn't actually resolve the issue.
+
+It would help to give more, stronger examples. For example, what kind of
+unsoundnesses can happen? Adapting Reynolds's example highlights a mistake due
+to poor representation choices (using lists rather than custom structures).
+
+The final line of Section 7---"the question is whether these alternatives are
+sufficiently practical"---is really a question about reconciling a desire for
+(a) blame, (b) soundness, (c) new typed libraries efficiently using legacy
+untyped Racket code, and (d) efficient new untyped Racket code using new typed
+libraries.
+
+* IMPROVING THE EXPOSITION
+
+On some level, the results shown here---that applying sound gradual types to
+only part of a program can _severely_ degrade performance---are unsurprising:
+plenty of things that are supposed to make programs run faster actually don't!
+The authors encountered this issue themselves, as documented in the blog post
+referenced in footnote 15: parallelizing tests slowed down all of the tests. It
+might be helpful to develop the final paragraph of Section 2.1 a little more,
+to explain why this unpredictability is unsatisfactory in the gradual typing
+context, even though programmers seem more or less willing to put up with
+unpredictable changes in performance when it comes to concurrency.
+
+It's slightly jarring to see something without lines between nodes called a
+"lattice", though it might be impractical for large graphs, like Figure 3.
+
+The discussion of the variable k and the overhead graphs is confusing. It took
+several read-throughs to realize that both graphs depict _all_ configurations,
+when k=0 and when k=1; the k=0 graph just plots each configuration, while k=1
+plots the best config within one hop on the lattice.
+
+The performance discussion would be clarified if a single format for speedup
+were used, i.e., .7x vs. 30% performance improvement.
+
+In section 5.1: why random permutations of configurations? Why only keep the
+results of the second run? (Is there some bytecode/compilation/cache effect
+that's relevant?) what is N, i.e., how many times does each benchmark run?
+
+Are these benchmarks compute or I/O bound? Footnote 12 mentions green threads
+without defining them or clarifying whether all threads block on I/O.
+
+Anecdotal evidence includes developer suggestions not discussed, in particular
+their desire for an (unsound!) `-no-check` flag for contracts. Ballantyne also
+offers _much_ worse slowdown: 1275x! Why isn't this example included in the
+paper? Rastogi et al. POPL 2015 report a 1.15x slowdown... what's different for
+racket, or is it just because they're only reporting the topmost node in the
+performance lattice?
+
+* RELATED WORK
+
+The citation to Dimoulas et al. 2012 on p24 as saying blame offers "practical
+value for developers" is misleading---that paper is a theoretical reasoning
+framework, with no evaluation on whether developers find blame practical or in
+what ways.
+
+On the topic of space-efficiency, Herman et al.'s 2007 TFP paper should also be
+cited as being seminal. Greenberg's TFP 2016 is also closely related, with
+Garcia 2013 ICFP and Siek et al. ESOP 2015 being slightly less closely related.
+The paper should probably cite and compare Racket to Vitousek et al.'s 2017
+POPL work, too.
+
+* BITS AND BOBS
+
+In the abstract: "currently, this assurance requires run-time checks"... will
+it ever not? There is a name for when dynamic checks aren't required: static
+typing.
+
+The third paragraph of the intro refers to "the problem" without saying what
+the problem is. For, e.g., Twitter, the problems with Ruby were (a)
+performance, and (b) code anti-patterns (they were manually checking simple
+types at runtime). It's misleading to say on p1 that the "server-side
+application" of Twitter is written in Ruby... some of the front-end _may_ still
+be written in Ruby, but my impression is that very little remains. It may be
+worth adding that for many developers, the default for new services is to use
+JavaScript on Node.
+
+References to particular sections/figures/etc. should be capitalized; e.g., in
+the intro, "section 3" -> "Section 3".
+
+On "migratory typing" in footnote 2: if the authors feel strongly that
+migratory typing is a better name, then please actually explain the reasoning
+and argue for it.
+
+From where should we "recall that types are checkable statements about program
+expressions"? Checkable seems to imply "dynamically checkable", but not all
+types can be checked dynamically (e.g., function types can be checked on a
+finite portion of their domain, but not always exhaustively). There are systems
+where type checking is in general undecidable... do these systems have types,
+or something else?
+
+
+Referee: 2
+
+Comments to the Author Summary and Evaluation ======================
+
+This article presents a methodology for evaluating the performance of gradually
+typed languages and applies the methodology to evaluating Typed Racket. The
+methodology consists of creating a performance lattice, that is, measuring the
+performance of many different versions of a benchmark, with each version
+differing in how much of the benchmark is statically typed and how much is
+dynamically typed.  The performance lattices can be quite large, so the authors
+generate overhead plots to provide an aggregate the data. The article is an
+expanded and updated version of the authors' paper in POPL 2016. In particular,
+the article evaluates Typed Racket across three different versions, evaluates
+random sampling for reducing the number of configurations to test, adds
+additional benchmarks, and discusses the causes of performance overheads. The
+article is well written and makes important contributions. It should be
+accepted after some minor revisions.
+
+The performance evaluation of Typed Racket cannot be understood from a
+scientific perspective without understanding those aspects of the
+implementation of Typed Racket that influence performance.  In other words, if
+I were to try and repeat this experiment by implementing Typed Racket from
+scratch, what choices would I have to make to get the same performance? The
+article as it stands only makes very cursory statements about how Typed Racket
+and Racket are implemented.
+
+It is my understanding based on section 8.5 that some of the benchmark
+programs, even in their 100% statically typed configuration, rely on libraries
+that are untyped. This is an inaccurate presentation of the data.  If a
+benchmark uses libraries that are untyped, the libraries should be considered
+as another module in the configuration, and there should not be a 100%
+configuration, unless the author's obtain a statically typed version of the
+libraries.
+
+
+Comments on Details ===================
+
+p.2
+
+"Most acknowledge an issue with performance in passing. Worse, others report
+only the performance ratio of fully typed programs relative to fully untyped
+programs, ironically ignoring the entire space of programs that mix typed and
+untyped components."
+
+It is inappropriate in scientific literature to make accusations without citing
+the accused papers, otherwise accusations cannot be checked and debated. I
+reccomend adding citations or removing the accusations.
+
+p.6
+
+"The black rectangle at the top of the lattice represents the configuration in
+which all six modules are typed"
+
+But does this benchmark rely on any untyped libraries? If so, that top
+configuration is not fully typed.
+
+p.10
+
+"The GTP Benchmark Programs"
+
+The acronym GTP needs to be defined.
+
+p. 13
+
+"Seventeen of the benchmark programs are adaptations of untyped programs The
+other"
+
+Missing period
+
+p. 24
+
+"The question is whether these alternatives are sufficiently practical."
+
+Could you be more specific? What do you mean by "practical"?
+
+p. 28
+
+"For instance, the mbta and zordoz benchmarks rely on untyped libraries and
+consequently have relatively high typed/untyped ratios on Racket v6.2"
+
+These benchmarks should not be considered to have fully typed configurations if
+they rely on untyped libraries.
+
+
+
+
+Referee: 3
+
+Comments to the Author This paper addresses the issue of performance penalties
+associated with the use of gradual typing. The paper proposes a quantitative
+method for evaluating performance and uses it to demonstrate that the overhead
+can indeed be high. This demonstration uses a set of interesting benchmarks
+(<10KLOC) available in the Racket language. The basic method is costly, since
+it would involve generating an exponential number of variants of the
+implementation. Thus, they also present a sampled variant that uses only a
+fixed number of samples from the exponential space.
+
+The primary contribution of the paper is the quantitative method.  The method
+is of practical utility for language implementors when developing optimizations
+for gradual typing, and can also be of value in comparing implementations of
+gradual typing.
+
+A secondary contribution is brief and somewhat speculative diagnosis of the
+causes of the runtime overheads. It is unfortunate that the paper does not
+attempt to experimentally establish support for these hypothesis. Related to
+this is the fact that boxing/unboxing overheads are not discussed. In
+particular, I have always assumed that the majority of the cost of crossing
+boundaries in gradual typing (in a compiled implementation) would come from
+boxing (mallocs) and not tag checking (conditionals in generally should be very
+cheap at machine code level). The paper should therefore state clearly 1) if
+the implementation boxes/unboxes values based on whether they are
+untyped/typed, 2) if the implementation is interpreted or compiled (to machine
+doe), and 3) if that is done, whether there has been any effort to evaluate the
+cost of the dynamic allocation in this work
