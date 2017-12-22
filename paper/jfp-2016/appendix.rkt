@@ -142,9 +142,10 @@
         (benchmark-name (car m))
         0)))
   (parameterize ([*current-cache-keys* (list (lambda () key))])
-    (with-cache (cachefile "cache-modulegraph-appendix.rktd")
+    (with-cache (build-path "cache" "cache-modulegraph-appendix.rktd")
       #:read deserialize
       #:write serialize
+      #:fasl? #f
       (lambda ()
         (cons (noindent)
               (for/list ([m (in-list m*)])
@@ -155,7 +156,7 @@
 (define (render-pathologies)
   (render-table new-pathologies
     #:title '("Benchmark" "Max Boundary" "Max Wraps" "Contract \\%" "Library \\%" "\\#GC")
-    #:cache (build-path "compiled" "cache-devils.rktd")))
+    #:cache (build-path "cache" "cache-devils.rktd")))
 
 (define (new-pathologies)
   (list

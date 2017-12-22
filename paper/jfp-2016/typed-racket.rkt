@@ -124,7 +124,7 @@
 (define (count-new-oo-benchmarks)
   (*NUM-OO-BENCHMARKS*))
 
-(define COMPILED "./compiled") ;; Where Racket stores compiled files
+(define CACHE "./cache") ;; Where to store 'with-cache' cache files
 (define MODULE-GRAPH "./module-graphs") ;; Where to store module graphs
 
 ;; -----------------------------------------------------------------------------
@@ -138,6 +138,7 @@
   (with-cache (benchmark-savings-cache)
     #:read uncache-dataset
     #:write cache-dataset
+    #:fasl? #false
     new-count-savings))
 
 (define (new-count-savings)
@@ -203,16 +204,17 @@
     (list " \\toprule \n" (apply tex-row title*) " \\midrule \n")
     (apply elem
       (with-cache cache-file
+       #:fasl? #false
        #:read uncache-table
        #:write cache-table
        render-proc))
     "\\end{tabular}\n\n"))
 
 (define ((list-cache-file tag) bm-or-bm*)
-  (ensure-dir COMPILED)
+  (ensure-dir CACHE)
   (define bm* (if (list? bm-or-bm*) bm-or-bm* (list bm-or-bm*)))
   (string-append
-    COMPILED "/" tag
+    CACHE "/" tag
     (string-join (map (compose1 symbol->string benchmark-name) bm*) "-")
     ".rktd"))
 
@@ -226,32 +228,32 @@
   (list-cache-file (format "cache-~a-deliverable-" N)))
 
 (define (lattice-cache-file bm v)
-  (ensure-dir COMPILED)
-  (string-append COMPILED "/cache-lattice-" (symbol->string bm) "-" v ".rktd"))
+  (ensure-dir CACHE)
+  (string-append CACHE "/cache-lattice-" (symbol->string bm) "-" v ".rktd"))
 
 (define (path-table-cache-file)
-  (ensure-dir COMPILED)
-  (build-path COMPILED "cache-path-table.rktd"))
+  (ensure-dir CACHE)
+  (build-path CACHE "cache-path-table.rktd"))
 
 (define (benchmarks-table-cache-file)
-  (ensure-dir COMPILED)
-  (build-path COMPILED (*BENCHMARK-TABLE-CACHE*)))
+  (ensure-dir CACHE)
+  (build-path CACHE (*BENCHMARK-TABLE-CACHE*)))
 
 (define (benchmark-savings-cache)
-  (ensure-dir COMPILED)
-  (build-path COMPILED (*BENCHMARK-SAVINGS-CACHE*)))
+  (ensure-dir CACHE)
+  (build-path CACHE (*BENCHMARK-SAVINGS-CACHE*)))
 
 (define (exact-table-cache)
-  (ensure-dir COMPILED)
-  (build-path COMPILED (*EXACT-TABLE-CACHE*)))
+  (ensure-dir CACHE)
+  (build-path CACHE (*EXACT-TABLE-CACHE*)))
 
 (define (lnm-table-cache)
-  (ensure-dir COMPILED)
-  (build-path COMPILED (*LNM-TABLE-CACHE*)))
+  (ensure-dir CACHE)
+  (build-path CACHE (*LNM-TABLE-CACHE*)))
 
 (define (lnm-table-data-cache)
-  (ensure-dir COMPILED)
-  (build-path COMPILED (*LNM-TABLE-DATA-CACHE*)))
+  (ensure-dir CACHE)
+  (build-path CACHE (*LNM-TABLE-DATA-CACHE*)))
 
 ;; -----------------------------------------------------------------------------
 ;; --- Lattice
@@ -261,6 +263,7 @@
     (with-cache (lattice-cache-file (benchmark-name bm) v)
       #:read deserialize
       #:write serialize
+      #:fasl? #false
       (lambda () (file->performance-lattice (benchmark-rktd bm v))))))
 
 ;; -----------------------------------------------------------------------------
@@ -311,6 +314,7 @@
     (with-cache (cachefile "benchmark-descriptions.rktd")
       #:read deserialize
       #:write serialize
+      #:fasl? #false
       (lambda ()
         ;(check-missing-benchmarks (map (compose1 benchmark-name car) b+d*))
         (define b+d*+ (sort b+d* benchmark<? #:key (lambda (x) (if (list? (car x)) (caar x) (car x)))))
@@ -345,7 +349,7 @@
 (define (render-iterations-table)
   (render-table new-iterations-table
     #:title ITERATIONS-TABLE-TITLE*
-    #:cache (build-path COMPILED "cache-iterations-table.rktd")))
+    #:cache (build-path CACHE "cache-iterations-table.rktd")))
 
 (define (render-path-table)
   (render-table new-path-table
@@ -511,12 +515,14 @@
             (let ([d (uncache-table tag+data)])
               (and d (deserialize d))))
    #:write (compose1 cache-table serialize)
+   #:fasl? #false
    new-lnm-bars))
 
 (define (get-lnm-table-data)
   (with-cache (lnm-table-data-cache)
    #:read uncache-dataset
    #:write cache-dataset
+   #:fasl? #false
    (lambda ()
      (call-with-values new-lnm-table-data list))))
 
@@ -602,6 +608,7 @@
   (with-cache (exact-cache-file bm*)
     #:read deserialize
     #:write serialize
+    #:fasl? #false
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*PLOT-FONT-SCALE* 0.04]
@@ -627,6 +634,7 @@
   (with-cache (typed/untyped-cache-file bm*)
     #:read deserialize
     #:write serialize
+    #:fasl? #false
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*ERROR-BAR-WIDTH* 20]
@@ -645,6 +653,7 @@
   (with-cache ((deliverable-cache-file D) bm*)
     #:read deserialize
     #:write serialize
+    #:fasl? #false
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*ERROR-BAR-WIDTH* (*RECTANGLE-WIDTH*)]
@@ -680,6 +689,7 @@
     (with-cache (cachefile "cache-karst.rktd")
       #:read deserialize
       #:write serialize
+      #:fasl? #false
         (lambda ()
           (render-karst-pict csv))))
 
@@ -688,9 +698,10 @@
     (for/list ([bm (in-list bm*)])
       (for/list ([v (in-list (*RKT-VERSIONS*))])
         (benchmark-rktd bm v))))
-  (with-cache (cachefile "cache-srs-sound.rktd")
+  (with-cache (build-path "cache" "cache-srs-sound.rktd")
     #:read deserialize
     #:write serialize
+    #:fasl? #false
     (lambda ()
       (render-srs-sound-pict rktd** factor*))))
 
@@ -702,6 +713,7 @@
   (with-cache ((list-cache-file "cache-srs-precise-") bm*)
     #:read deserialize
     #:write serialize
+    #:fasl? #false
     (lambda ()
       (render-srs-precise-pict rktd** factor*))))
 
@@ -756,6 +768,7 @@
       (with-cache ((list-cache-file "cache-delta-") bm*)
         #:read deserialize
         #:write serialize
+        #:fasl? #false
         (lambda ()
           (render-delta-pict name* rktd** #:title (format "v~a - v~a" (cadr versions) (car versions)) #:sample-factor sample-factor #:sample-style sample-style))))))
 

@@ -141,9 +141,10 @@
 
 (define (make-benchmark name author num-adaptor origin purpose lib*)
   (define cache-rktd (format "cache-bm-~a.rktd" name))
-  (with-cache (cachefile cache-rktd)
+  (with-cache (build-path "cache" cache-rktd)
     #:read deserialize
     #:write serialize
+    #:fasl? #false
     (lambda ()
       (define M
         (modulegraph-adjlist (name->modulegraph name)))
