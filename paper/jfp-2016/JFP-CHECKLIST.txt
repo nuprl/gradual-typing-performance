@@ -88,12 +88,17 @@ Thank you for catching our mistake!
 Added lines between lattice nodes.
 
 
-## Section 3.2: explain `k`, the number of steps
+## Section 3.3: explain `k`, the number of steps
 
 > It took several read-throughs to realize that both graphs depict _all_
 > configurations, when k=0 and when k=1
 
-???
+Reorganized section 3.3 to clarify the contents of the graphs.
+The revised section says:
+
+1. the goal is to plot k-step D-deliverable configurations
+2. if k is fixed, choosing different D gives a histogram (for the whole lattice)
+3. the graphs fix k=0 and k=1, respectively
 
 
 ## Section 5.1: why random permutation

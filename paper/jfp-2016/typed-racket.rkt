@@ -5,6 +5,8 @@
 ;; - Make L-N/M figures
 
 (provide ;; TEMPORARY
+  ALOT
+  MAX-OVERHEAD
   new-untyped-bars
 )
 (provide
@@ -114,6 +116,9 @@
 ))
 
 ;; =============================================================================
+
+(define MAX-OVERHEAD
+  20)
 
 (define ALOT ;; of samples for the overhead plots
   250)
@@ -474,15 +479,15 @@
                  [*LINE-LABELS?* #f]
                  [*LOG-TRANSFORM?* #t]
                  [*M* #f]
-                 [*MAX-OVERHEAD* 20]
+                 [*MAX-OVERHEAD* MAX-OVERHEAD]
                  [*N* #f]
                  [*NUM-SAMPLES* ALOT]
                  [*PLOT-FONT-SCALE* 0.04]
                  [*PLOT-HEIGHT* 100]
                  [*PLOT-WIDTH* 210]
                  [*SINGLE-PLOT?* #f]
-                 [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 20 2)]) (/ i 10))
-                                          (for/list ([i (in-range 4 20 2)]) i))]
+                 [*X-MINOR-TICKS* (append (for/list ([i (in-range 12 MAX-OVERHEAD 2)]) (/ i 10))
+                                          (for/list ([i (in-range 4 MAX-OVERHEAD 2)]) i))]
                  [*X-TICK-LINES?* #t]
                  [*X-TICKS* '(1 2 20)]
                  ;[*Y-MINOR-TICKS* '(25 75)]

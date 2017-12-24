@@ -47,6 +47,7 @@ Third, @secref{sec:graphs} introduces a visualization that concisely presents th
 @(define suffixtree-num-iters       (number->string (get-num-iterations S)))
 @(define suffixtree-sample-D        2)
 @(define suffixtree-num-D           ((D-deliverable suffixtree-sample-D) S))
+@(define suffixtree-num-D-max       ((D-deliverable MAX-OVERHEAD) S))
 @(define suffixtree-num-D-str       (integer->word suffixtree-num-D))
 @(define suffixtree-sample-k        1)
 @(define suffixtree-num-k           ((count-configurations/mean S suffixtree-sample-k) suffixtree-sample-D))
@@ -218,33 +219,24 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         It is difficult to tell, at a glance, whether a program has good or bad performance relative to its users' requirements.
         Comparing the relative performance of two or more lattices is also difficult, and is in practice limited to programs with an extremely small number of modules.
 
-        The main lesson to extract from a performance lattice is the number of @deliverable{} configurations for various @math{D}.
-        The @emph{overhead plot} on the left half of @figure-ref{fig:suffixtree-plot} presents this information for the performance lattice in @figure-ref{fig:suffixtree-lattice}.
-        On the x-axis, possible values for @math{D} range continuously from one to @integer->word[(*MAX-OVERHEAD*)].
-        Dashed lines to the left of the 2x tick pinpoint overheads of 1.2x, 1.4x, 1.6x, and 1.8x.
-        To the right of the 2x tick, similar dashed lines pinpoint 4x, 6x, 8x, etc.
-        The y-axis gives the proportion of configurations in the lattice that
-         suffer at most @math{D}x performance overhead.
-        Using this plot, one can confirm the observation made in @secref{sec:method:lattice} that @|suffixtree-num-D-str| of the @|suffixtree-num-configs-str| configurations (@(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))%) run within a @id[suffixtree-sample-D]x overhead.
-        Additionally, the typed/untyped ratio above the plot reports the 30% performance improvement for the fully typed configuration.
+        The main lesson to extract from a performance lattice is the proportion of @step{} configurations for various @math{k} and @math{D}.
+        In other words, this proportion describes the number of configurations (out of the entire lattice) that are at most @math{k} steps away from a @deliverable{D} configuration.
+        One way to plot this information is to fix a value for @math{k}, say @math{k=0}, and consider a set of values @exact{$d_0,\ldots,d_{n-1}$} for @math{D}.
+        The set of proportions of @step["0" "d_i"] configurations defines a histogram  with the value of @math{D} on the independent axis and the proportion of configurations on the other.
 
-        Viewed as a cumulative distribution function, the left plot demonstrates how increasing @math{D} increases the number of @deliverable[] configurations.
-        In this case, the shallow slope implies that few configurations become deliverable as the programmer accepts a larger performance overhead.
-        The ideal slope would have a steep incline and a large y-intercept, meaning that few configurations have large overhead and many configurations run more efficiently due to the type annotations.
+        @Figure-ref{fig:suffixtree-plot} demonstrates two such @emph{overhead plots}.
+        The plot on the left fixes @math{k=0} and plots the proportion of @step["0" "D"] configurations.
+        The plot on the right fixes @math{k=1} and plots the proportion of @step["1" "D"] configurations.
+        Both plots consider @math{@id[ALOT]} values of @math{D} evenly spaced between 1x and 20x.
+        The line on each plot is a continuous distribution function defined by the underlying histogram.
+        The x-axis is log scaled to focus on low overheads.
+        Vertical ticks pinpoint the following values of @math{D}: 1.2x, 1.4x, 1.6x, 1.8x, 2x, 4x, 6x, 8x, 10x, 12x, 14x, 16x, and 20x.
 
-        The overhead plot on the right half of @figure-ref{fig:suffixtree-plot} gives
-         the number of @step{1} configurations.
-        A point @math{(X,Y)} on this plot represents the percentage @math{Y}
-         of configurations @exact{$c_1$} such that there exists a configuration
-         @exact{$c_2$} where @exact{$c_1 \rightarrow_1 c_2$} and @exact{$c_2$}
-         runs at most @math{X} times slower than the untyped configuration.@note{Note that @exact{$c_1$} and @exact{$c_2$} may be the same, for instance when @exact{$c_1$} is the fully-typed configuration.}
-        Intuitively, this plot resembles the (0-step) @deliverable[] plot
-         because accounting for one type conversion step does not change the overall
-         characteristics of the benchmark, but only makes
-         more configurations @deliverable[].
-         @;@note{Plotting the @math{k=0} and @math{k=1} curves on the same axis would facilitate comparisons; however, the primary goal is to compare multiple implementations of a gradual type system on a fixed @math{k}.}
+        The plot on the left, in which @math{k=0}, confirms the observation made in @secref{sec:method:lattice} that @(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))% of the @|suffixtree-num-configs-str| configurations (@|suffixtree-num-D-str| configurations) run within a @id[suffixtree-sample-D]x overhead.
+        For larger values of @math{D} the proportion of @deliverable{D} configurations is slightly larger, but even at @id[MAX-OVERHEAD]x overhead this proportion is only @(id (round (* 100 (/ suffixtree-num-D-max suffixtree-num-configs))))%.
+        The plot on the right shows that the proportion of @step["1" "D"] is typically twice as high as the proportion of @deliverable{} configurations for this benchmark.
 
-        These overhead plots concisely summarize the data in @figure-ref{fig:suffixtree-lattice}.
+        These overhead plots concisely summarize the lattice in @figure-ref{fig:suffixtree-lattice}.
         The same presentation scales to arbitrarily large programs because the @math{y}-axis plots the proportion of @deliverable{D} configurations; in contrast, a performance lattice contains exponentially many nodes.
         Furthermore, plotting the overhead for multiple versions of a gradual type system on the same set of axes provides a high-level summary of the versions' relative performance.
       }
