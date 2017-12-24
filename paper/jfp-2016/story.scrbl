@@ -148,8 +148,8 @@ Typed Racket insists on gradual type soundness, therefore types need runtime enf
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:overhead"]{A Case for Sound Gradual Typing}
 
-Recall that types are checkable statements about program expressions.
-Soundness means that every checked statement holds as the program is executed.
+Recall that types are statements about program expressions.
+Soundness means that in a type-correct program, every statement holds at runtime.
 Statically typed languages provide this guarantee by type checking every expression.
 In a gradually typed language, the type system cannot check every expression because some are intentionally untyped. @; by definition of being GT
 Therefore a sound gradual type system monitors the interaction of typed and untyped program components at runtime.

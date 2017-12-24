@@ -76,7 +76,8 @@ Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
 > There are systems where type checking is in general undecidable... do
 > these systems have types, or something else?
 
-???
+Removed 'checkable', clarified the sentence that follows.
+Thank you for catching our mistake!
 
 
 ## Section 3.1: explain where lattice lines _should_ go
