@@ -1,6 +1,7 @@
 PAPER=paper
 RACO=raco
 SCRIBBLE=scribble
+PLT_FLAGS=PLTSTDERR="error info@with-cache"
 
 all: paper.pdf
 
@@ -11,7 +12,7 @@ paper.pdf: paper.tex
 	pdflatex paper.tex
 
 paper.tex: pkg compiled/paper_scrbl.zo texstyle.tex
-	${SCRIBBLE} ++style texstyle.tex --latex $(PAPER).scrbl
+	${PLT_FLAGS} ${SCRIBBLE} ++style texstyle.tex --latex $(PAPER).scrbl
 
 pkg:
 	${RACO} pkg install --auto --skip-installed glob syntax-sloc with-cache require-typed-check
