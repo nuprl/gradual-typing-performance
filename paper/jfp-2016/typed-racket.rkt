@@ -136,6 +136,7 @@
 
 (define (count-savings)
   (with-cache (benchmark-savings-cache)
+    #:keys #false
     #:read uncache-dataset
     #:write cache-dataset
     #:fasl? #false
@@ -606,6 +607,7 @@
 
 (define (render-exact-plot . bm*)
   (with-cache (exact-cache-file bm*)
+    #:keys #false
     #:read deserialize
     #:write serialize
     #:fasl? #false
@@ -635,6 +637,7 @@
     #:read deserialize
     #:write serialize
     #:fasl? #false
+    #:keys #false
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*ERROR-BAR-WIDTH* 20]
@@ -654,6 +657,7 @@
     #:read deserialize
     #:write serialize
     #:fasl? #false
+    #:keys #false
     (lambda ()
       (parameterize ([*LEGEND?* #f]
                      [*ERROR-BAR-WIDTH* (*RECTANGLE-WIDTH*)]
@@ -702,6 +706,7 @@
     #:read deserialize
     #:write serialize
     #:fasl? #false
+    #:keys #false
     (lambda ()
       (render-srs-sound-pict rktd** factor*))))
 
@@ -714,6 +719,7 @@
     #:read deserialize
     #:write serialize
     #:fasl? #false
+    #:keys #false
     (lambda ()
       (render-srs-precise-pict rktd** factor*))))
 

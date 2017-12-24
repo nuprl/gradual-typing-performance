@@ -149,6 +149,7 @@
     #:read deserialize
     #:write serialize
     #:fasl? #false
+    #:keys #f
     (lambda ()
       (define M
         (modulegraph-adjlist (name->modulegraph name)))
