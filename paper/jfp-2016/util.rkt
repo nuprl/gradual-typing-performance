@@ -1,6 +1,7 @@
 #lang racket/base
 
 (provide
+  PAPER-DIRECTORY
   integer->word*
   integer->word
   rnd
@@ -15,9 +16,16 @@
   racket/match
   racket/format
   racket/string
+  (only-in racket/path
+    path-only)
+  (only-in syntax/location
+    quote-source-file)
 )
 
 ;; =============================================================================
+
+(define PAPER-DIRECTORY
+  (path-only (quote-source-file)))
 
 (define SCALE '#(END "thousand" "million" "billion" "trillion"))
 

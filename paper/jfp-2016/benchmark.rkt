@@ -38,6 +38,8 @@
 )
 
 (require
+  (only-in racket/path
+    find-relative-path)
   (only-in racket/list
     last)
   (only-in racket/file
@@ -77,7 +79,9 @@
 (define (data-path bm v [tag "*"])
   (define str (symbol->string bm))
   (define bm-str (if (eq? bm 'zordoz) (string-append str "." v) str))
-  (glob-first (string-append (get-git-root) "/data/" v "/" bm-str "-" tag ".rktd")))
+  (define fname (format "~a-~a.rktd" bm-str tag))
+  (define full-path (simplify-path (glob-first (path->string (build-path PAPER-DIRECTORY ".." ".." "data" v fname)))))
+  (path->string (find-relative-path PAPER-DIRECTORY full-path)))
 
 ;; Resolve a list of unique modulegraphs to a single one.
 (define (choose-modulegraph M* #:src name*)
