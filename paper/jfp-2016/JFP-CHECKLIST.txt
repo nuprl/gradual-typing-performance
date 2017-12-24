@@ -5,7 +5,7 @@
 > "currently, this assurance requires run-time checks"... will it ever not?
 > There is a name for when dynamic checks aren't required: static typing.
 
-???
+Removed the word "currently".
 
 
 ## Section 1: explain "the problem"
