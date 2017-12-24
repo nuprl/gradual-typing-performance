@@ -33,7 +33,12 @@ Removed the word "currently".
 > if the authors feel strongly that migratory typing is a better name,
 > then please actually explain the reasoning and argue for it
 
-???
+Replaced the footnote with one that reads:
+
+  "Others [SNAPL'17] refer to this use of gradual typing as _migratory typing_"
+
+Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
+ Tobin-Hochstadt et al.
 
 
 ## Section 2.1: clarify why this performance overhead is a problem

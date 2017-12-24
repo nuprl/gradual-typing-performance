@@ -1438,6 +1438,21 @@
    #:location (proceedings-location snapl #:pages '(274 293))
    #:date 2015))
 
+(define tfffgksst-snapl-2017
+  (make-bib
+   #:title "Migratory Typing: Ten years later"
+   #:author (authors "Sam Tobin-Hochstadt"
+                     "Matthias Felleisen"
+                     "Robert Bruce Findler"
+                     "Matthew Flatt"
+                     "Ben Greenman"
+                     "Andrew M. Kent"
+                     "Vincent St-Amour"
+                     "T. Stephen Strickland"
+                     "Asumu Takikawa")
+   #:location (proceedings-location snapl)
+   #:date 2017))
+
 (define l-freenix-2006
   ; http://erwan.lemonnier.se/talks/pluto.html
   (make-bib
