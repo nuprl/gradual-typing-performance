@@ -85,7 +85,7 @@ Thank you for catching our mistake!
 > It's slightly jarring to see something without lines between nodes called
 > a "lattice"
 
-???
+Added lines between lattice nodes.
 
 
 ## Section 3.2: explain `k`, the number of steps

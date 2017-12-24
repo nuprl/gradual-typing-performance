@@ -259,8 +259,10 @@
 ;; -----------------------------------------------------------------------------
 ;; --- Lattice
 
+;; NOTE 2017-12-28 : cannot use cache, the white rectangles don't look right
 (define (render-data-lattice bm v)
-  (parameterize ([*use-cache?* #f] [*current-cache-keys* (list *LATTICE-BORDER-WIDTH* *LATTICE-BOX-BOT-MARGIN* *LATTICE-BOX-HEIGHT* *LATTICE-BOX-SEP* *LATTICE-BOX-TOP-MARGIN* *LATTICE-BOX-WIDTH* *LATTICE-CONFIG-MARGIN* *LATTICE-LEVEL-MARGIN* *LATTICE-FONT-SIZE* *LATTICE-TRUNCATE-DECIMALS?*)])
+  (parameterize ([*use-cache?* #false]
+                 #;[*current-cache-keys* (list *LATTICE-BORDER-WIDTH* *LATTICE-BOX-BOT-MARGIN* *LATTICE-BOX-HEIGHT* *LATTICE-BOX-SEP* *LATTICE-BOX-TOP-MARGIN* *LATTICE-BOX-WIDTH* *LATTICE-CONFIG-MARGIN* *LATTICE-LEVEL-MARGIN* *LATTICE-FONT-SIZE* *LATTICE-TRUNCATE-DECIMALS?*)])
     (with-cache (lattice-cache-file (benchmark-name bm) v)
       #:read deserialize
       #:write serialize

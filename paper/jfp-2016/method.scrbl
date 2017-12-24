@@ -70,8 +70,8 @@ Third, @secref{sec:graphs} introduces a visualization that concisely presents th
     ]
 
 The promise of Typed Racket's macro-level gradual typing is that programmers may convert any subset of the modules in an untyped program to Typed Racket.
-A comprehensive performance evaluation must therefore consider the space of typed/untyped @emph{configurations} a programmer could possibly create given a full set of type annotations for each module. 
-These configurations form a lattice.
+A comprehensive performance evaluation must therefore consider the space of typed/untyped @emph{configurations} a programmer could possibly create given type annotations for each module. 
+These configurations form a lattice, ordered by the set of typed modules in a configuration.
 
 @Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a @|suffixtree-num-modules|-module program.
 The black rectangle at the top of the lattice represents the configuration in which all @|suffixtree-num-modules| modules are typed.

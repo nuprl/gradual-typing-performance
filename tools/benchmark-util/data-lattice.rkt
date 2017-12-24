@@ -65,7 +65,7 @@
          (vector-set! pict-vec num pict)
          pict))))
   (define no-lines-yet (apply vc-append (*LATTICE-LEVEL-MARGIN*) level-picts))
-  no-lines-yet)
+  (add-all-lines no-lines-yet pict-vec total-bits))
 
 ;; taken from MF's version
 (define (select i L)
@@ -112,7 +112,8 @@
     (for/fold ([pict pict])
               ([target-idx targets])
       (define target (vector-ref vec target-idx))
-      (pin-arrow-line 2 pict from-pict ct-find target cb-find
+      (pin-line pict from-pict ct-find target cb-find
+                      #:alpha 0.2
                       #:line-width 0.5
                       #:under? #t))))
 
