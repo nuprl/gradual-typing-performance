@@ -105,7 +105,12 @@ The revised section says:
 
 > why random permutations of configurations?
 
-???
+No change to the paper.
+
+We measure the configurations in a random order to control for confounding
+ variables, such as OS-level caching.
+We do not have evidence that measuring the configurations in a fixed order
+ will affect the measurements; randomizing the order is just a precaution.
 
 
 ## Section 5.1: why drop the first run?
