@@ -1446,6 +1446,13 @@
    #:location (proceedings-location snapl #:pages '(274 293))
    #:date 2015))
 
+(define vss-popl-2017
+  (make-bib
+    #:title "Big Types in Little Runtime: Open-World Soundness and Collaborative Blame for Gradual Type Systems"
+    #:author (authors "Michael M. Vitousek" "Cameron Swords" "Jeremy G. Siek")
+    #:location (proceedings-location popl)
+    #:date 2017))
+
 (define tfffgksst-snapl-2017
   (make-bib
    #:title "Migratory Typing: Ten years later"

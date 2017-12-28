@@ -156,7 +156,8 @@ Removed the phrase "green thread", simplified the description in the footnote.
 > theoretical reasoning framework, with no evaluation on whether developers
 > find blame practical
 
-???
+Moved the citation to the phrase 'complete monitoring', slightly revised the
+ paragraph to fit.
 
 
 ## clarify final line of Sec 7

@@ -48,11 +48,12 @@ Contract-aware implementation techniques such soft contracts (@exact{@|PHIL|} @|
  or the Pycket tracing JIT compiler@~cite[bauman-et-al-icfp-2015]
  may significantly reduce the overhead of gradual typing.
 
-Finally, when the Racket contract system discovers a type boundary error, its type soundness theorem guarantees that programmers receive the exact type boundary, type annotation, and incompatible value in the error message.
-This blame assignment has practical value for developers@~cite[dthf-esop-2012], but the runtime system must dynamically track contextual information to implement it.
+Finally, Typed Racket relies on the @emph{complete monitoring} property@~cite[dthf-esop-2012] of the Racket contract system to provide a strong form of type soundness@~cite[tfffgksst-snapl-2017].
+When a type boundary error occurs, Racket deduces the location, type annotation, and incompatible value that led to the fault.
+We believe this information is valuable, but the runtime system must dynamically track contextual information to implement it.
 On one hand, there may be inefficiencies in Racket's implementation of this runtime monitoring.
 On the other hand, a different gradual type system could offer a different soundness guarantee and circumvent the need for this runtime accounting altogether.
-For example, Reticulated Python's transient semantics checks the type of a mutable data structure when typed code reads from the structure, but not when untyped code writes to it, avoiding the need to proxy such data structures@~cite[vksb-dls-2014].
+For example, Reticulated Python's transient semantics checks the type of a mutable data structure when typed code reads from the structure, but not when untyped code writes to it, avoiding the need to proxy such data structures@~cite[vksb-dls-2014 vss-popl-2017].
 StrongScript provides only nominal subtyping for objects, largely because structural subtyping incurs a higher runtime cost@~cite[rnv-ecoop-2015].
     @; SS supports both @emph{optional} types and @emph{concrete} types, only the latter require dynamic enforcement.
 The question is whether these alternatives are sufficiently practical.
