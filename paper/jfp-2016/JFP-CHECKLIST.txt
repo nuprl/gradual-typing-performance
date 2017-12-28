@@ -127,7 +127,9 @@ Yes, Racket has a bytecode compiler and a JIT compiler. See:
 
 > what is N, i.e., how many times does each benchmark run?
 
-???
+Changed `N` to `N >= 10`
+ and clarified the last paragraph of Section 5.1 to say that the appendix also
+ lists running times.
 
 
 ## Section 5.1: compute-bound? I/O-bound?

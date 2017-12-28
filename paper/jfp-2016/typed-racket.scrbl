@@ -36,7 +36,7 @@ The data is the result of applying the following protocol for each benchmark and
   Use the standard Racket compiler, JIT, and runtime settings.
 }
 @item{
-  Repeat the above steps @math{N} times to produce a sequence of @math{N} running times for each configuration.
+  Repeat the above steps @exact{$N \ge 10$} times to produce a sequence of @math{N} running times for each configuration.
 }
 @item{
   Summarize each configuration with the mean of the corresponding running times.
@@ -51,7 +51,8 @@ For all other benchmarks, the script utilized only two physical cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
 The online supplement to this paper contains both the experimental scripts and the full datasets.
-@Secref{sec:threats} reports threats to validity regarding the experimental protocol and the appendix discusses the stability of individual measurements.
+@Secref{sec:threats} reports threats to validity regarding the experimental protocol.
+The appendix discusses the stability of individual measurements and reports the number of running times for each configuration and version of Racket.
 
 
 @; -----------------------------------------------------------------------------
