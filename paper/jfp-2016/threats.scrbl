@@ -20,12 +20,13 @@ First, the benchmark programs are relatively small.
 Larger programs might avoid the pathological overheads in the benchmarks,
  though the results for @bm[quadMB] and @bm[synth] are evidence to the contrary.
 
-Second, a few benchmarks have little data (less than 6 samples per configuration, details in the appendix) due to time limitations.@note{Parallelizing the experiment would yield more samples, but would also add confounding variables to the measurements. See @url{http://prl.ccs.neu.edu/blog/2016/08/03/a-few-cores-too-many/} for one relevant anecdote.}
-It is therefore possible that some samples are not truly representative.
+Second, some benchmarks read from a file during their timed computation.
+These benchmarks are @bm[forth], @bm[mbta], @bm[morsecode], @bm[zombie], @bm[zordoz], @bm[lnm], @bm[suffixtree], @bm[snake], and @bm[tetris].
+Nevertheless, we consider our results representative.
 
 @; TODO say this better? Remove?
 Third, the configurations running in parallel reference the same Racket executable and external libraries.
-This cross-reference is a potential source of bias.
+This cross-reference is a potential source of bias, but we have been unable to detect and adverse effects.
 
 Fourth, the Racket just-in-time compiler includes heuristic optimizations.
 The protocol of compiling and running @emph{once} before collecting one sample does not control for these heuristics@~cite[bbkmt-oopsla-2017].

@@ -136,7 +136,9 @@ Changed `N` to `N >= 10`
 
 > Are these benchmarks compute or I/O bound?
 
-???
+Added "reading from a file" as a threat to validity in Section 7.
+
+We have found no evidence that the benchmarks are compute, I/O, or memory-bound.
 
 
 ## Section 5.1: define green threads; do all threads block on I/O?
