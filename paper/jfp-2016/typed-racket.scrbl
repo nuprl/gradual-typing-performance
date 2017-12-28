@@ -33,7 +33,7 @@ The data is the result of applying the following protocol for each benchmark and
 }
 @item{
   For each configuration: recompile, run twice, and collect the results of the second run.
-  Use the standard Racket compiler and runtime settings.
+  Use the standard Racket compiler, JIT, and runtime settings.
 }
 @item{
   Repeat the above steps @math{N} times to produce a sequence of @math{N} running times for each configuration.
@@ -45,7 +45,7 @@ The data is the result of applying the following protocol for each benchmark and
 @; two AMD Opteron 6376 2.3GHz processors and 128GB RAM
 
 Specifically, a Racket script implementing the above protocol collected the data in this paper.
-The script ran on a dedicated Linux machine; this machine has two physical AMD Opteron 6376 processors (with 16 cores each) and 128GB RAM.@note{The Opteron is a NUMA architecture.}
+The script ran on a dedicated Linux machine; this machine has two physical AMD Opteron 6376 processors (with 16 cores each) and 128GB RAM.@note{The Opteron is a NUMA architecture and uses the @tt{x86_64} instruction set.}
 For the @bm[quadBG] and @bm[quadMB] benchmarks, the script utilized 30 of the machine's physical cores to collect data in parallel.@note{The script invoked 30 green threads; these green threads invoked and monitored system processes to compile and run each configuration. The green threads pinned subprocesses to a fixed CPU core using the Linux @tt{taskset} command.}
 For all other benchmarks, the script utilized only two physical cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).

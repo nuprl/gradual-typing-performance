@@ -28,7 +28,7 @@ Third, the configurations running in parallel reference the same Racket executab
 This cross-reference is a potential source of bias.
 
 Fourth, the Racket just-in-time compiler includes heuristic optimizations.
-The protocol of compiling @emph{once} before collecting one sample does not control for these heuristics.
+The protocol of compiling and running @emph{once} before collecting one sample does not control for these heuristics@~cite[bbkmt-oopsla-2017].
 Nevertheless, the overheads evident in the results are much larger than those attributed to systematic biases in the literature@~cite[mdhs-asplos-2009 gvg-siu-2005 cb-asplos-2013].
 
 @; ===

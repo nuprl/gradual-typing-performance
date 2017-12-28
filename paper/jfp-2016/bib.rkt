@@ -76,6 +76,7 @@
 (define/short issta "ISSTA" (string-append International Symposium "on Software Testing and Analysis"))
 (define/short ppdp "PPDP" (string-append International Symposium "on Principles and Practice of Declarative Programming"))
 (define/short stop "STOP" (string-append "Script to Program Evolution Workshop"))
+(define/short pacm "PACM" (string-append "Proceedings of the ACM on Programming Languages"))
 
 ;; ----------------------------------------
 
@@ -1269,6 +1270,13 @@
    #:author (authors "Edd Barrett" "Carl Friedrich Bolz" "Lukas Diekmann" "Laurence Tratt")
    #:location (proceedings-location ecoop #:pages '(3:1 3:27))
    #:date 2016))
+
+(define bbkmt-oopsla-2017
+  (make-bib
+   #:title "Virtual Machine Warmup Blows Hot and Cold"
+   #:author (authors "Edd Barrett" "Carl Friedrich Bolz-Tereick" "Rebecca Killick" "Sarah Mount" "Laurence Tratt")
+   #:location (journal-location pacm #:volume "1, OOPSLA")
+   #:date 2017))
 
 (define gct-popl-2016
  (make-bib

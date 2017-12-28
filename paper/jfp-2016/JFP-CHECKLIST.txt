@@ -117,7 +117,10 @@ We do not have evidence that measuring the configurations in a fixed order
 
 > Is there some bytecode/compilation/cache effect that's relevant?
 
-???
+Added note about the JIT compiler to Section 5.1.
+
+Yes, Racket has a bytecode compiler and a JIT compiler. See:
+ `http://docs.racket-lang.org/guide/performance.html#%28part._.J.I.T%29`
 
 
 ##  Section 5.1: define number of iterations
