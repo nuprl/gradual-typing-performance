@@ -146,7 +146,7 @@ We have found no evidence that the benchmarks are compute, I/O, or memory-bound.
 > Footnote 12 mentions green threads without defining them or clarifying
 > whether all threads block on I/O.
 
-???
+Removed the phrase "green thread", simplified the description in the footnote.
 
 
 ## Section 7: change prose before Dimoulas etal 2012 citation

@@ -46,7 +46,7 @@ The data is the result of applying the following protocol for each benchmark and
 
 Specifically, a Racket script implementing the above protocol collected the data in this paper.
 The script ran on a dedicated Linux machine; this machine has two physical AMD Opteron 6376 processors (with 16 cores each) and 128GB RAM.@note{The Opteron is a NUMA architecture and uses the @tt{x86_64} instruction set.}
-For the @bm[quadBG] and @bm[quadMB] benchmarks, the script utilized 30 of the machine's physical cores to collect data in parallel.@note{The script invoked 30 green threads; these green threads invoked and monitored system processes to compile and run each configuration. The green threads pinned subprocesses to a fixed CPU core using the Linux @tt{taskset} command.}
+For the @bm[quadBG] and @bm[quadMB] benchmarks, the script utilized 30 of the machine's physical cores to collect data in parallel.@note{Specifically, the script invoked 30 OS processes, pinned each to a CPU core using the @tt{taskset} Linux command, waited for each process to report a running time, and collected the results.}
 For all other benchmarks, the script utilized only two physical cores.
 Each core ran at minimum frequency as determined by the @tt{powersave} CPU governor (approximately @|FREQ-STR|).
 
