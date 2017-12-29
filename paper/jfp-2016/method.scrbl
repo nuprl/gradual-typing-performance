@@ -87,7 +87,7 @@ In general, let the notation @exact{$c_1 \rightarrow_k c_2$} express the idea th
 Configurations in @figure-ref{fig:suffixtree-lattice} are furthermore labeled with their performance overhead relative to the untyped configuration on Racket version 6.2.
 With these labels, a language implementor can draw several conclusions about the performance overhead of gradual typing in this program.
 For instance, @|suffixtree-num-D-str| configurations run within a @id[suffixtree-sample-D]x overhead and @|suffixtree-num-k-str| configurations are at most @integer->word[suffixtree-sample-k] type conversion step from a configuration that runs within a @id[suffixtree-sample-D]x overhead.
-High overheads are common (@id[suffixtree-num-max] configurations have over @id[suffixtree-max]x overhead), but the fully typed configuration runs 30% faster than the untyped configuration because Typed Racket uses the type annotations to compile more efficient code.
+High overheads are common (@id[suffixtree-num-max] configurations have over @id[suffixtree-max]x overhead), but the fully typed configuration runs faster (0.7x overhead) than the untyped configuration because Typed Racket uses the type annotations to compile more efficient code.
 
 @bold{Terminology}
   A labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}.
@@ -250,7 +250,7 @@ Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions a
 The @emph{first assumption} is that configurations with less than 2x overhead are significantly
  more practical than configurations with over 10x overhead.
 Hence the plots use a log-scaled x-axis
- to simultaneously encourage fine-grained comparison in the 20-60% overhead range
+ to simultaneously encourage fine-grained comparison in the 1.2x to 1.6x overhead range
  and blur the distinction between, e.g., 14x and 18x slowdowns.
 
 @; Zorn: 30% of execution time in storage management "represent the worst-case overhead that that might be expected to be associated with garbage collection."

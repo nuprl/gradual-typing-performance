@@ -132,7 +132,7 @@ Refactoring can always spawn bugs.
 
 The third cost is performance overhead due to typed/untyped interaction.
 For example, Typed Racket developers have experienced pathologies including
- a 50% overhead in a commercial web server
+ a 1.5x overhead in a commercial web server
  and 25x-50x slowdowns when using the (typed) math library.
 Another programmer found that converting a script from Racket to Typed Racket improved its performance from @|PFDS-BEFORE| to @|PFDS-AFTER|.@note{The appendix contains a list of user reports.}
 

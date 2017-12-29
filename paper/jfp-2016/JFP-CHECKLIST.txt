@@ -218,7 +218,7 @@ Not according to the Chicago Manual of Style Online (3.9).
 
 > 'i.e., .7x vs. 30% performance improvement'
 
-???
+Replaced all percentages with overhead factors.
 
 
 ## Ballantyne also offers _much_ worse slowdown: 1275x!
