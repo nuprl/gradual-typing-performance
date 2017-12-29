@@ -12,7 +12,12 @@
 @title[#:tag "sec:bm"]{The @|GTP| Benchmark Programs}
 
 The @integer->word[(count-benchmarks)] benchmark programs are representative of actual user code yet small enough to make exhaustive performance evaluation tractable.
-The following descriptions, arranged from smallest performance lattice to largest, briefly summarize each benchmark.
+The following descriptions, arranged from smallest number of experimental modules to largest, briefly summarize each benchmark.
+Each description comes with four fields:
+ @emph{Origin} indicates the benchmark's source,
+ @emph{Purpose} describes what it computes,
+ @emph{Author} credits the original author,
+ and @emph{Depends} lists any libraries of fixed modules that the benchmark depends on.
 This section concludes with a table summarizing the static characteristics of each benchmark.
 
 
@@ -175,8 +180,7 @@ This section concludes with a table summarizing the static characteristics of ea
 @; @subsection{Static Benchmark Characteristics}
 
 @Figure-ref{fig:bm} tabulates the size and complexity of the benchmark programs.@note{The appendix presents the information in @figure-ref{fig:bm} graphically.}
-The lines of code (Untyped LOC) and number of modules (# Mod.) approximate program size.
-    @; Note that the number modules determines the number of gradually typed configurations.
+The lines of code (Untyped LOC) and number of experimental modules (# Mod.) approximate program size.
 The type annotations (Annotation LOC) count additional lines in the typed configuration.
 These lines are primarily type annotations, but also include type casts and assertions.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
 Adaptor modules (# Adp.) roughly correspond to the number of user-defined datatypes in each benchmark;
@@ -218,8 +222,8 @@ The benchmark enforces these conditions with explicit pre and post-conditions on
 
 Fourth, each @emph{static import} of an untyped struct type into typed code generates a unique datatype.
 Typed modules that share instances of an untyped struct must therefore reference a common static import site.
-The benchmarks include @emph{adaptor modules} to provide this canonical import site; for each module @math{M} in the original program that exports a struct, the benchmark includes an adaptor module that provides type annotations for every identifier exported by @math{M}.
-Adaptor modules add a layer of indirection,@note{This indirection did not add measurable performance overhead.} but do not change the size of a configuration lattice.
+The benchmarks include additional fixed modules that we call @emph{adaptor modules} to provide this canonical import site; for each module @math{M} in the original program that exports a struct, the benchmark includes an adaptor module that provides type annotations for every identifier exported by @math{M}.
+Adaptor modules add a layer of indirection, but this indirection did not add measurable performance overhead.
 
 Fifth, some benchmarks use a different modularization than the original program.
 The @bm[kcfa] benchmark is modularized according to comments in the original, single-module program.

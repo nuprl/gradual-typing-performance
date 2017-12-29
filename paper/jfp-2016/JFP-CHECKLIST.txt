@@ -262,7 +262,20 @@ Added citations.
 > libraries that are untyped. This is an inaccurate presentation of the
 > data.
 
-???
+Added two definitions to clarify this part of the method.
+Full changes:
+
+- Section 3.1: define _experimental modules_ and _fixed modules_
+  (experimental modules define the lattice, fixed modules are part of the
+   program but not part of the experiment e.g. because they are part of the
+   Racket runtime library)
+- Section 4.0: explain that the 'Depends' field in the benchmark descriptions
+  lists libraries of _fixed modules_
+- Section 4.0: clarify that `# MOD` in Figure 6 is the number of _experimental
+  modules_
+- Section 4.1: state that adaptor modules are fixed modules
+- Section 6.0: clarify that the method is limited by the number of _experimental
+  modules_
 
 
 ## Section 4: define GTP

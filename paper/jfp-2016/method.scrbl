@@ -70,11 +70,16 @@ Third, @secref{sec:graphs} introduces a visualization that concisely presents th
         (render-data-lattice suffixtree suffixtree-lattice-version))
     ]
 
-The promise of Typed Racket's macro-level gradual typing is that programmers may convert any subset of the modules in an untyped program to Typed Racket.
-A comprehensive performance evaluation must therefore consider the space of typed/untyped @emph{configurations} a programmer could possibly create given type annotations for each module. 
-These configurations form a lattice, ordered by the set of typed modules in a configuration.
+The promise of Typed Racket's macro-level gradual typing is that programmers can add types to any subset of the modules in an untyped program.
+In principle this promise extends to third-party libraries and modules from the Racket runtime system, but in practice a programmer will use those modules as-is (either typed or untyped) and experiment with modules under their direct control.
+@;
+@def[#:term "experimental, fixed"]{
+  The @emph{experimental modules} in a program migrate between untyped to typed; the @emph{fixed modules} do not.
+}@;
+A comprehensive performance evaluation must therefore consider the space of typed/untyped @emph{configurations} a programmer could possibly create given type annotations for each experimental module.
+These configurations form a lattice, ordered by the subset relation on the set of typed modules in a configuration.
 
-@Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a @|suffixtree-num-modules|-module program.
+@Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a program with @|suffixtree-num-modules| experimental modules.
 The black rectangle at the top of the lattice represents the configuration in which all @|suffixtree-num-modules| modules are typed.
 The other @id[(sub1 suffixtree-num-configs)] rectangles represent configurations in which some (or all) modules are untyped.
 
