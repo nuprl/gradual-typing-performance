@@ -50,9 +50,14 @@ Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
 ## Section 2.1: clarify why this performance overhead is a problem
 
 > explain why this unpredictability is unsatisfactory in the gradual typing
-> context
+> context, even though programmers seem more or less willing to put up with
+> unpredictable changes in performance when it comes to concurrency.
 
-???
+Changed the last paragraph of sec. 2.1 to give a clearer example.
+
+We are not sure what the referee means about programmers being 'more or less
+ willing to put up with unpredictable changes in performance'.
+We believe unpredictable changes are always unacceptable (i.e., bugs).
 
 
 ## Section 2.2: strengthen argument (or remove)

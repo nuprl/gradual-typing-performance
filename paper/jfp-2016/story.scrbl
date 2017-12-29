@@ -137,12 +137,10 @@ For example, Typed Racket developers have experienced pathologies including
 Another programmer found that converting a script from Racket to Typed Racket improved its performance from @|PFDS-BEFORE| to @|PFDS-AFTER|.@note{The appendix contains a list of user reports.}
 
 Of these three costs, the performance overhead is the most troublesome.
-Part of the issue is that the magnitude of the cost is difficult to predict.
-Unlike the tangible cost of
- writing type annotations or the perennial risk of introducing bugs, the
- performance overhead of enforcing type soundness is not apparent until runtime.
-Additionally, experience with statically typed languages---or optionally-typed languages such as TypeScript---teaches programmers that type annotations do not impose runtime overhead.
-Typed Racket insists on gradual type soundness, therefore types need runtime enforcement.
+One part of the issue is that the magnitude of the cost is difficult to predict.
+Adding types to one small module can lead to a large performance overhead if the module frequently receives untyped data at runtime.
+A second part is that experience with statically typed languages---or optionally-typed languages such as TypeScript---teaches programmers that type annotations do not impose runtime overhead.
+This overhead is crucial, however, to guarantee type soundness.
 
 
 @; -----------------------------------------------------------------------------
