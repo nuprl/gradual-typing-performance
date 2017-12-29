@@ -49,10 +49,12 @@ This paper provides an answer:
  ]
 Applying the evaluation method to Typed Racket has confirmed that the method works well to uncover performance issues in a gradual type system and to quantify improvements between distinct implementations of the same gradual type system.
 
-The results of the evaluation in @secref{sec:tr} suggest three vectors of future research for gradual typing.
+The results of the evaluation in @secref{sec:tr} suggest three vectors of future research for gradual typing in general.
 The first vector is to evaluate other gradual type systems.
 The second is to apply the sampling technique to large applications and to micro-level gradual typing.
 The third is to build tools that help developers navigate a performance lattice, such as the feature-specific profiler of @citet[saf-cc-2015].
+@citet[gm-pepm-2018] have made progress on the first and second vectors with a performance evaluation of Reticulated; consequently, @citet[gf-pldi-2018] have confirmed that porting Reticulated's notion of soundness@~cite[vss-popl-2017] to Typed Racket can improve its performance at the cost of detailed error messages.
+These are encouraging first steps.
 
 Typed Racket in particular must address the pathologies identified in @secref{sec:devils}.
 Here are a few suggestions.

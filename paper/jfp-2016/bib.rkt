@@ -1515,3 +1515,9 @@
 
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 
+(define gf-pldi-2018
+  (make-bib
+    #:title "The Spectrum of Soundness and Performance"
+    #:author (authors "Ben Greenman" "Matthias Felleisen")
+    #:location "Submitted for review"
+    #:date 2018))

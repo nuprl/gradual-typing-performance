@@ -206,7 +206,7 @@ We cite the journal version of Herman et al.'s 2007 paper and Greenberg's POPL
 
 >  mention Vitousek etal, POPL 2017
 
-???
+Added a brief comparison to Section 7 and Section 9.
 
 
 ## References to particular sections/figures/etc. should be capitalized
