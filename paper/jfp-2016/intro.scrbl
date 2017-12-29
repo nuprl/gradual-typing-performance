@@ -69,9 +69,10 @@ Optimistically, researchers have continued to explore the theory and practice of
                       rsfbv-popl-2015
                       gc-popl-2015].@note{See @url{https://github.com/samth/gradual-typing-bib} for a bibliography.}
 Some research groups have invested significant resources implementing sound gradual type systems.
+@;@~cite[acftd-scp-2013 rsfbv-popl-2015 rnv-ecoop-2015 vss-popl-2017 tfffgksst-snapl-2017].
 But surprisingly few groups have evaluated the performance of gradual typing.
-Most acknowledge an issue with performance in passing.
-Worse, others report only the performance ratio of fully typed programs relative to fully untyped programs, ironically ignoring the entire space of programs that mix typed and untyped components.
+Many acknowledge an issue with performance in passing@~cite[thf-popl-2008 acftd-scp-2013 vksb-dls-2014 rnv-ecoop-2015].
+Others report only the performance of fully typed programs relative to fully untyped programs@~cite[rsfbv-popl-2015 vss-popl-2017], ironically ignoring the entire space of programs that mix typed and untyped components.
 
 This archival paper presents the first method for evaluating the performance of a gradual type system (@secref{sec:method}), integrating new result with the results of a conference version@~cite[tfgnvf-popl-2016].
 Specifically, this paper contributes:
