@@ -172,6 +172,19 @@ Changed the final line to say that the alternative soundness appears to be
  more performant, but offers less help for debugging type boundary errors.
 
 
+## Ballantyne's example
+
+> Ballantyne also offers _much_ worse slowdown: 1275x!
+> Why isn't this example included in the paper?
+
+Added a citation to Section 8.3.
+
+This example definitely belongs in the paper.
+
+It is not one of the benchmarks because (1) the source of performance
+ overhead is clear and (2) we only have one partially-typed configuration for it.
+
+
 ## compare to TypeScript
 
 > Rastogi et al. POPL 2015 report a 1.15x slowdown... what's different for
@@ -219,13 +232,6 @@ Not according to the Chicago Manual of Style Online (3.9).
 > 'i.e., .7x vs. 30% performance improvement'
 
 Replaced all percentages with overhead factors.
-
-
-## Ballantyne also offers _much_ worse slowdown: 1275x!
-
-> Why isn't this example included in the paper?
-
-???
 
 
 # Referee: 2

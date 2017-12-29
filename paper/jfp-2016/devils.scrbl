@@ -114,10 +114,11 @@ One example comes from @bm[quadMB], in which the core datatype is a tagged @math
    })
 Another example is the @bm[kcfa] benchmark, in which hashtable types account for up to a 3x slowdown.
 
-Similarly, the Racket script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
-Changing its language to @code{#lang typed/racket} improves its performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.
-The drastic improvement is due to the elimination of the rather expensive dynamic check for the @tt{trie} type.@note{There is no way for a programmer to predict that the dynamic check for the @tt{trie} type is expensive, short of reading the implementation of Typed Racket and the @tt{pfds/trie} library.}
-@; TODO check w/matthias
+High-cost types may also come from a library that the programmer has no control over.
+For example, the script in @figure-ref{fig:devils:pfds} executes in approximately @|PFDS-BEFORE-str|.
+Changing its language to @code{#lang typed/racket} improves performance to under @|PFDS-AFTER| by removing a type boundary to the @library{trie} library.@note{There is no way for a programmer to predict that the dynamic check for the @tt{trie} type is expensive, short of reading the implementation of Typed Racket and the @tt{pfds/trie} library.}
+Michael Ballantyne encountered a similar issue with a queue library that led to a 1275x slowdown (see Appendix).
+
 
     @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
       @codeblock-pict[@string-join['(
