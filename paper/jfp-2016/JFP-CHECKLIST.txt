@@ -178,7 +178,8 @@ Changed the final line to say that the alternative soundness appears to be
 > racket, or is it just because they're only reporting the topmost node in
 > the performance lattice?
 
-No change to the paper.
+Added a citation to Rastogi et al. POPL 2015 to the conclusion,
+ as one example for how keeping run-time type information might improve performance.
 
 It is difficult to compare to Safe TypeScript based on the ad-hoc evaluation in
  Rastogi et al. POPL 2015.
@@ -194,7 +195,11 @@ We hope that our paper inspires a in-depth comparison.
 > Garcia 2013 ICFP (less close)
 > Siek et al. ESOP 2015 (less close)
 
-???
+Added a citation to Siek et al. ESOP 2015 to the conclusion,
+ as a second example of using run-time type information to improve performance.
+
+We cite the journal version of Herman et al.'s 2007 paper and Greenberg's POPL
+ 2015 paper (Space-Efficient Manifest Contracts) in Section 9.
 
 
 ## compare to Reticulated
