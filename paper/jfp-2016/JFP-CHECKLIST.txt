@@ -277,6 +277,8 @@ Replaced all percentages with overhead factors.
 > Seventeen of the benchmark programs are adaptations of untyped
 > programs The other
 
+Fixed.
+
 
 # Referee: 3
 

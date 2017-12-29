@@ -199,7 +199,7 @@ For example, the one import statement in @bm[sieve] names nine identifiers.
 @(define FREQ-STR "1.40 GHz")
 @(define TYPED-BM* (list fsm synth quad))
 
-@string-titlecase[@integer->word[(- (*NUM-BENCHMARKS*) (length TYPED-BM*))]] of the benchmark programs are adaptations of untyped programs
+@string-titlecase[@integer->word[(- (*NUM-BENCHMARKS*) (length TYPED-BM*))]] of the benchmark programs are adaptations of untyped programs.
 The other three benchmarks (@bm[fsm], @bm[synth], and @bm[quad]) use most of the type annotations and code from originally-typed programs.
 Any differences between the original programs and the benchmarks are due to the following five complications.
 
