@@ -8,16 +8,22 @@
 Removed the word "currently".
 
 
-## Section 1: explain "the problem"
-
-> For Twitter, the problems with Ruby were (a) performance, and
-> (b) code anti-patterns
+## Section 1: Twitter does not currently use Ruby
 
 > It's misleading to say on p1 that the "server-side application" of Twitter
 > is written in Ruby... some of the front-end _may_ still be written in
 > Ruby, but my impression is that very little remains.
 
-???
+Changed to use past-tense ("were originally written").
+
+
+## Section 1: explain "the problem"
+
+> The third paragraph of the intro refers to "the problem" without saying what
+> the problem is. For Twitter, the problems with Ruby were (a) performance, and
+> (b) code anti-patterns
+
+Revised this paragraph, removed the two uses of "the problem".
 
 
 ## Section 1: address Node.js
@@ -25,7 +31,7 @@ Removed the word "currently".
 > worth adding that for many developers, the default for new services is to
 > use JavaScript on Node.
 
-???
+Added an acknowledgement to the first paragraph.
 
 
 ## Section 1: defend 'migratory typing'

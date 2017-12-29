@@ -1521,3 +1521,11 @@
     #:author (authors "Ben Greenman" "Matthias Felleisen")
     #:location "Submitted for review"
     #:date 2018))
+
+(define wmwz-ecoop-2017
+  (make-bib
+    #:title "Mixed Messages: Measuring Conformance and Non-Interference in TypeScript"
+    #:author (authors "Jack Williams" "J. Garrett Morris" "Philip Wadler" "Jakub Zalewski")
+    #:location (proceedings-location ecoop #:pages '(28:1 28:29))
+    #:date 2017))
+

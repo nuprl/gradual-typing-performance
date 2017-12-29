@@ -17,14 +17,12 @@
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
 Programmers use dynamically typed languages to build all kinds of applications.
-Telecom companies have been running Erlang programs for years@~cite[armstrong-2007];
- Sweden's pension system is a Perl program@~cite[l-freenix-2006],
- and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) are written in dynamic languages (Python, PHP, and Ruby, respectively).
+Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006], web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017], and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) were originally written in dynamic languages (Python, PHP, and Ruby, respectively).
 
 Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit type annotations an obstacle to their work.
 Researchers have tried to overcome the lack of type annotations with inference algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 rch-popl-2012], but most have come to realize that there is no substitute for programmer-supplied annotations.
 Explicit annotations communicate a programmer's intent to other human readers.
-Furthermore, tools can check the annotations for logical inconsistencies and leverage types to improve the efficiency of compiled code.
+Furthermore, tools can check the annotations for logical inconsistencies and leverage types during compilation.
      @; Confirming problem, and responses:
      @; - PEP type hints
      @; - pycharm parsing comments
@@ -32,9 +30,8 @@ Furthermore, tools can check the annotations for logical inconsistencies and lev
      @; - typescript flow
 
 One solution is to rewrite the entire application in a statically typed language.
-This solution assumes that the application is small enough and the problem is recognized soon enough to make a wholesale migration feasible.
-For example, Twitter was able to port their server-side code from Ruby to Scala because they understood the problem early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
-In other cases, the codebase becomes too large for this approach.
+This solution assumes that the application is small enough to make a wholesale migration feasible.
+For example, Twitter was able to port their server-side code from Ruby to Scala because they recognized the long-term issues with their Ruby code early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
 
 @; Enter GT
 Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006], a linguistic approach.@note{@citet[tfffgksst-snapl-2017] refer to this use of gradual typing as @emph{migratory typing}.}
