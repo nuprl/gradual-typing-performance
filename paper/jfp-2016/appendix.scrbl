@@ -712,7 +712,7 @@ More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N
 The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save space.
 
 The table in @figure-ref{fig:appendix:devils} provides a few worst-case statistics relevant to @secref{sec:devils}.
-The second column (``Max Boundary'') reports the number of times that a dynamic value flows across the most-frequently-crossed static module boundary in each benchmark.
+The second column (``Max Boundary'') reports the number of times that a value flows across the most-frequently-crossed static module boundary in each benchmark.
 When this boundary is a type boundary, each of these crossings triggers a run-time check.
 The remaining columns report properties of the configuration in each benchmark with the highest performance overhead.
 These properties are:
@@ -724,7 +724,7 @@ These properties are:
   The percentage of overall runtime spent checking contracts (``Contract %''), as reported by Racket's contract profiler@~cite[saf-cc-2015].
 }
 @item{
-  The percentage of contract-checking time (``Contract %'') that was spent checking contracts across a library boundary (``Library %'').
+  The percentage of ``Contract %'' time that was spent checking contracts across a library boundary (``Library %'').
   Benchmarks that do not interact with third-party libraries have a dash (-) in this column.
 }
 @item{

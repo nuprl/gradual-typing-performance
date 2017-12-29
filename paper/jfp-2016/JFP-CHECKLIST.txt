@@ -319,5 +319,28 @@ Fixed.
 > It is unfortunate that the paper does not attempt to experimentally
 > establish support for these hypothesis.
 
-???
+No change to the paper.
 
+Section 8 does have ad-hoc evidence for how the patterns affect the benchmarks.
+Figure 24 in the appendix has some additional evidence.
+
+Here is a listing of all the evidence we provide, ignoring the code samples:
+
+- Section 8.1: High-Frequency Typechecking
+  * 6 million values flow across 4 boundaries in snake
+  * 100 million values flow across 2 boundaries in suffixtree
+  * the "Max Boundary" column in fig. 24
+- Section 8.2: High-Cost Types
+  * 19.4x slowdown in fully-typed quadMB from a type-generated predicate
+  * 3x slowdown due to hashtable types
+- Section 8.3: Complex Type Boundaries
+  * no evidence
+- Section 8.4: Layered Proxies
+  * 235x slowdown in fsm due to layered proxies
+  * 27x slowdown in forth due to layered proxies
+  * 300x slowdown in zombie due to layered proxies
+  * the "Max Wraps" column in fig. 24
+- Section 8.5: Library Boundaries
+  * 2x slowdown in mbta due to an untyped library
+  * 4x slowdown in zordoz due to an untyped library
+  * the "Library %" column in fig. 24
