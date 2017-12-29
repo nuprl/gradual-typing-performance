@@ -211,7 +211,7 @@ Added a brief comparison to Section 7 and Section 9.
 
 ## References to particular sections/figures/etc. should be capitalized
 
-???
+Not according to the Chicago Manual of Style Online (3.9).
 
 
 ## use a single format for speedups
