@@ -461,6 +461,7 @@
 (define (render-lnm-plot pict*->elem #:rktd*** [rktd*** #f] #:index [cache-offset 1])
   ;; Sort & make figures of with 6 plots each or whatever
   (parameterize ([*AXIS-LABELS?* #f]
+                 [*CACHE-PREFIX* "./cache/cache-lnm-"]
                  [*COLOR-OFFSET* 1]
                  [*L* '(0 1)]
                  [*L-LABELS?* #t]

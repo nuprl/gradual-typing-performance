@@ -931,7 +931,7 @@
 
 (define-syntax-rule (simple-commandline-plot make-plot)
   (lambda ([vec : (Vectorof String)])
-    (ensure-dir "./compiled")
+    (ensure-dir "./cache")
     (command-line
      #:program "render-plot"
      #:argv vec
@@ -1002,7 +1002,7 @@
 
 (: render-lnm (-> (Vectorof String) Pict))
 (define (render-lnm vec)
-  (ensure-dir "./compiled")
+  (ensure-dir "./cache")
   (command-line
    #:program "render-lnm"
    #:argv vec
