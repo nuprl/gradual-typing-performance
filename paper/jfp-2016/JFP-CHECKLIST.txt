@@ -282,7 +282,7 @@ Full changes:
 
 > The acronym GTP needs to be defined.
 
-??? its just "gradual typing performance"
+Added a definition.
 
 
 ## Section 4.1: typo, missing period

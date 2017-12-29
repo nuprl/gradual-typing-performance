@@ -11,7 +11,7 @@
 @profile-point{sec:bm}
 @title[#:tag "sec:bm"]{The @|GTP| Benchmark Programs}
 
-The @integer->word[(count-benchmarks)] benchmark programs are representative of actual user code yet small enough to make exhaustive performance evaluation tractable.
+The @integer->word[(count-benchmarks)] @emph{gradual typing performance} (@|GTP|) benchmark programs are representative of actual user code yet small enough to make exhaustive performance evaluation tractable.
 The following descriptions, arranged from smallest number of experimental modules to largest, briefly summarize each benchmark.
 Each description comes with four fields:
  @emph{Origin} indicates the benchmark's source,
