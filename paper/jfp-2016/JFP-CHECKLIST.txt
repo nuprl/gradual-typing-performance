@@ -178,9 +178,13 @@ Changed the final line to say that the alternative soundness appears to be
 > racket, or is it just because they're only reporting the topmost node in
 > the performance lattice?
 
-> compare to later Safe TypeScript paper?
+No change to the paper.
 
-???
+It is difficult to compare to Safe TypeScript based on the ad-hoc evaluation in
+ Rastogi et al. POPL 2015.
+Besides the 1.15x number, they report an average slowdown of 22x for the
+ fully-untyped configuration of six Octane benchmarks programs.
+We hope that our paper inspires a in-depth comparison.
 
 
 ## compare to other space-efficiency papers
