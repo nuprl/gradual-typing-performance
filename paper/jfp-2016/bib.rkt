@@ -74,6 +74,7 @@
 (define/short gpce "GPCE" "Generative Programming: Concepts & Experiences")
 (define/short dyla "DYLA" (string-append Workshop "on Dynamic Languages and Applications"))
 (define/short issta "ISSTA" (string-append International Symposium "on Software Testing and Analysis"))
+(define/short pepm "PEPM" "ACM SIGPLAN Workshop on Partial Evaluation and Program Manipulation")
 (define/short ppdp "PPDP" (string-append International Symposium "on Principles and Practice of Declarative Programming"))
 (define/short stop "STOP" (string-append "Script to Program Evolution Workshop"))
 (define/short pacm "PACM" (string-append "Proceedings of the ACM on Programming Languages"))
@@ -1504,6 +1505,13 @@
    #:author "Charles Consel"
    #:location (proceedings-location esop #:pages '(236 246))
    #:date 1988))
+
+(define gm-pepm-2018
+  (make-bib
+   #:title "On the Cost of Type-Tag Soundness"
+   #:author (authors "Ben Greenman" "Zeina Migeed")
+   #:location (proceedings-location pepm)
+   #:date 2018))
 
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 

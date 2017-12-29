@@ -53,8 +53,5 @@ When a type boundary error occurs, Racket deduces the location, type annotation,
 We believe this information is valuable, but the runtime system must dynamically track contextual information to implement it.
 On one hand, there may be inefficiencies in Racket's implementation of this runtime monitoring.
 On the other hand, a different gradual type system could offer a different soundness guarantee and circumvent the need for this runtime accounting altogether.
-For example, Reticulated Python's transient semantics checks the type of a mutable data structure when typed code reads from the structure, but not when untyped code writes to it, avoiding the need to proxy such data structures@~cite[vksb-dls-2014 vss-popl-2017].
-StrongScript provides only nominal subtyping for objects, largely because structural subtyping incurs a higher runtime cost@~cite[rnv-ecoop-2015].
-    @; SS supports both @emph{optional} types and @emph{concrete} types, only the latter require dynamic enforcement.
-The question is whether these alternatives are sufficiently practical.
-
+For example, Reticulated Python checks the type of a mutable data structure when typed code reads from the structure, but not when untyped code writes to it, avoiding the need to proxy such data structures@~cite[vksb-dls-2014 vss-popl-2017].
+This type-tag notion of soundness can be more performant@~cite[gm-pepm-2018], but gives programmers fewer hints for debugging type boundary errors.

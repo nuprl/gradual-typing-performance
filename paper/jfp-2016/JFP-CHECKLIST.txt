@@ -160,7 +160,7 @@ Moved the citation to the phrase 'complete monitoring', slightly revised the
  paragraph to fit.
 
 
-## clarify final line of Sec 7
+## Section 7: clarify final line
 
 > ...  is really a question about reconciling a desire for
 > (a) blame,
@@ -168,9 +168,8 @@ Moved the citation to the phrase 'complete monitoring', slightly revised the
 > (c) new typed libraries efficiently using legacy untyped Racket code, and
 > (d) efficient new untyped Racket code using new typed libraries.
 
-(Referee 2 also asks for clarification)
-
-???
+Changed the final line to say that the alternative soundness appears to be
+ more performant, but offers less help for debugging type boundary errors.
 
 
 ## compare to TypeScript
