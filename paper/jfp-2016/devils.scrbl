@@ -243,16 +243,3 @@ For instance, the @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries
   @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x, respectively).
 In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs significantly faster when fully typed.
 
-    @figure["fig:devils:vote" @elem{Erasing types would compromise the invariant of @racket[total-votes].}
-      @codeblock-pict[@string-join['(
-        "#lang typed/racket"
-        "(provide add-votes)"
-        ""
-        "(define total-votes : Natural 0)"
-        ""
-        "(: add-votes (Natural -> Void))"
-        "(define (add-votes n)"
-        "  (set! total-votes (+ total-votes n)))"
-      ) "\n"]]
-    ]
-

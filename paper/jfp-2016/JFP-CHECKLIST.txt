@@ -75,7 +75,8 @@ We believe unpredictable changes are always unacceptable (i.e., bugs).
 
 > what kind of unsoundnesses can happen?
 
-???
+Revised the argument, using a less-contrived example and explicit comparison
+ to optional typing.
 
 
 ## Section 2.2: fix awkward 'recall' about types
@@ -264,7 +265,8 @@ Added citations.
 
 (Referee 3 also wants explanation)
 
-???
+Revised sec. 2 to explain how Typed Racket enforces soundness, and how this
+ enforcement leads to performance overhead.
 
 
 ## Section 3: clarify 'experimental vs. fixed' modules
@@ -322,7 +324,17 @@ Fixed.
 > 3) if that is done, whether there has been any effort to evaluate the
 >    cost of the dynamic allocation in this work
 
-???
+Revised sec. 2 to explain how Typed Racket enforces soundness.
+
+We believe the three points are addressed in the revised version of the paper,
+ but just to be clear:
+
+1. The implementation does not box/unbox values based on whether they are
+   typed/untyped, but it does box (in the sense of wrapping with a proxy)
+   some untyped values sent to typed code and some typed values sent to untyped
+   code. For example: mutable data, functions, and objects get proxied.
+2. The implementation is compiled to bytecode and JIT-compiled to machine code.
+3. In this work, we do not measure the cost of runtime mallocs.
 
 
 ## Section 8: add experimental support

@@ -12,6 +12,7 @@
          citet
          etal
          exact
+         $
          generate-bibliography
          nrightarrow
          parag
@@ -36,6 +37,7 @@
 
          type
          ctc ;; aka, 'contract'
+         ctcapp
 
          PFDS-BEFORE
          PFDS-BEFORE-str
@@ -151,8 +153,14 @@
 (define (parag . x) (apply elem #:style "paragraph" x))
 
 (define (exact #:style [st "relax"] . items)
+  (exact* st items))
+
+(define (exact* st items)
   (make-element (make-style st '(exact-chars))
                 items))
+
+(define ($ #:style [st "relax"] . items)
+  (exact* st (append (list "$") items (list "$"))))
 
 (define (mt-line) (parag))
 
@@ -217,6 +225,9 @@
 
 (define (ctc . t)
   (exact (string-append "$\\ctc{\\RktMeta{" (string-join t) "}}$")))
+
+(define (ctcapp t v)
+  (list "(" (ctc "$" t "$") ($ "\\," v) ")"))
 
 (define (make-colorizer c)
   (lambda (txt)
