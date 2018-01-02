@@ -23,8 +23,8 @@
 
 Performance evaluation for gradual type systems must reflect how programmers use such systems.
 Experience with Typed Racket shows that programmers frequently combine typed and untyped code within an application.
-These applications may undergo incremental transitions that add or remove some type annotations; however, it is rare that a programmer adds explicit annotations to every module in the program all at once.
-In a typical evolution, programmers compare the performance of the incrementally modified program with the previous version.
+These applications may undergo gradual transitions that add or remove some type annotations; however, it is rare that a programmer adds explicit annotations to every module in the program all at once.
+In a typical evolution, programmers compare the performance of the modified program with the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may need to address the performance overhead.
 As they continue to develop the application, programmers repeat this process.
@@ -202,7 +202,7 @@ The ratio of @deliverable{D} configurations in such a lattice is a measure of
 When this ratio is high, then no matter how the application evolves, performance
  is likely to remain acceptable.
 Conversely, a low ratio implies that a team may struggle to recover performance after
- incrementally typing a few modules.
+ typing a few modules.
 Practitioners with a fixed performance requirement @math{D} can therefore use the number
  of @deliverable[] configurations to extrapolate the performance of a gradual type system.
 

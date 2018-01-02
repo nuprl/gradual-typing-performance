@@ -87,7 +87,7 @@ The rest of this section explores practical aspects of Typed Racket.
 
 
 @; -----------------------------------------------------------------------------
-@section{Benefits of Migratory Typing}
+@section{Benefits of Gradual Typing}
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
 Furthermore, programmers often migrate Racket modules to Typed Racket as their application evolves.
@@ -130,7 +130,7 @@ Without soundness, the types are statically-checked suggestions about what the p
 
 
 @; -----------------------------------------------------------------------------
-@section{Costs of Migratory Typing}
+@section{Costs of Gradual Typing}
 
 Despite the benefits, adding types to untyped code is a tradeoff.
 In particular, converting an untyped module incurs three immediate engineering costs.
