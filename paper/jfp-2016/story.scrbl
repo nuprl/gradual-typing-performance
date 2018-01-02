@@ -110,7 +110,7 @@ Some common motivations are:
      @; and, unlike untyped modules, suffer no dynamic cost if tightly-coupled to other typed modules.
   }
 ]
-Regarding the final point, there are two sources of so-called friction@~cite[bbdt-ecoop-2016] between typed and untyped code.
+Regarding the final point, there are two sources of friction@note{We borrow this use of the word friction from @citet[bbdt-ecoop-2016], though their work is not directly about typed/untyped interaction.} between typed and untyped code.
 The first is the above-mentioned requirement that typed clients must supply type annotations to use imports from an untyped library.
 Maintainers of such libraries can instead provide a bridge module with the necessary annotations.
 The second is the performance overhead of typed/untyped interaction, such as the overhead of dynamically enforcing the return type of @racket[play] in @figure-ref{fig:story:tr}.
