@@ -124,7 +124,7 @@ Formally, if @exact{$e$} is an expression of type @type{$\tau$} then running @ex
   or the execution ends in a @emph{type boundary error} that points to: a static boundary between typed and untyped code, a type annotation, and a value that does not match@note{A type boundary error occurs when a type annotation imposes a constraint that untyped code does not satisfy.  The error may indicate a latent bug in the untyped code, but it is equally likely that the type annotation is an incorrect specification.  In other words, the slogan @exact{``well-typed programs can't be blamed''}@~cite[wf-esop-2009] misses the point of gradual typing.} the type.
 
 With soundness, programmers can use the types in a program to reason about its runtime behavior.
-Without soundness, the types are statically-checked suggestions about what the program ought to do; in particular, unsound types give no assurance against runtime errors and cannot be leveraged by a compiler.
+Without soundness, the types are statically-checked suggestions about what the program ought to do; in particular, unsound types give no assurance against runtime errors and cannot be trusted by a compiler.
 
 @;@note{Ren and Foster recently applied just-in-time type checking to six Ruby programs and found @emph{zero} latent type errors.}
 
@@ -222,7 +222,7 @@ Since typed/untyped interaction is common and sound typed/untyped interaction
 The reason is because errors matter.
 If an ill-typed value flows into typed code, soundness in Typed Racket guarantees
  that the program will halt with an informative error message.
-We believe that this property is crucial for maintaining a large application.
+This property is crucial for maintaining a large application.
 Otherwise, the program can raise a misleading error message or silently compute a nonsensical result.
 
 To demonstrate the kinds of errors that can occur in an unsound gradually-typed language, @figure-ref["fig:voting-machine"] defines an simple API for a voting machine.
@@ -243,7 +243,7 @@ Depending on the addition function, calls like @racket[(add-votes! "NaN")] and @
 This can also happen if a programmer manually replaces the @racket[+] function based on the static types.
 
 Type soundness eliminates the risk of such errors.
-As such, we believe it is the only reasonable default for a gradually-typed language.
+As such, it is the only reasonable default for a gradually-typed language.
 Worth some performance cost, especially if type-based optimizations can recover some of the overhead.
 
 @;Furthermore, even if a dynamic tag check uncovers a logical type error, debugging such errors in a higher-order functional language is often difficult.
