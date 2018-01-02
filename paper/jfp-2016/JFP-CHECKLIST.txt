@@ -1,4 +1,50 @@
-# Referee: 1
+General Response
+================================================================================
+
+In response to the referees' comments about section 2 (Gradual Typing in Typed
+ Racket), we have significantly re-organized the section.
+Section 2 in the original submission followed this section/subsection outline:
+
+- 2   : brief introduction to Typed Racket
+        + reasons for migrating from Racket to Typed Racket
+- 2.1 : reasons for using both Racket and Typed Racket
+        (rather than migrating the entire application to Racket)
+- 2.2 : a case for sound gradual typing
+
+Section 2 in the revised submission follows a modified outline:
+
+- 2   : brief introduction to Typed Racket
+- 2.1 : reasons for migrating from Racket to Typed Racket
+- 2.2 : reasons for using both Racket and Typed Racket
+- 2.3 : a case for sound gradual typing
+- 2.4 : how Typed Racket enforces soundness
+
+
+The rest of this document addresses specific comments from each referee;
+ sections are labeled "Referee: 1", "Referee: 2", and "Referee: 3".
+
+Each point has the format:
+
+```
+  ## SECTION: TITLE
+
+  > CLARIFICATION
+
+  DELTA
+
+  COMMENT
+```
+
+where:
+- `SECTION` is the relevant section of the paper
+- `TITLE` describes the issue
+- `CLARIFICATION` quotes the referee
+- `DELTA` describes any edits to the paper
+- `COMMENT` is any additional reply to the referee
+
+
+Referee: 1
+================================================================================
 
 ## Abstract: awkward phrase
 
@@ -247,6 +293,7 @@ Replaced all percentages with overhead factors.
 
 
 # Referee: 2
+================================================================================
 
 ## Section 1: cite the papers we accuse of poor evaluations
 
@@ -307,6 +354,7 @@ Fixed.
 
 
 # Referee: 3
+================================================================================
 
 ## Section 2: explain natural embedding
 
