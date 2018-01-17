@@ -7,6 +7,32 @@
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
+@; ROUGH OUTLINE
+@; * Gradual Typing in Typed Racket
+@;   - TR is a sound gradual typing system for Racket
+@;   - originally from Sam + Matthias 2006 2008, grown to GitHub contributors
+@;   - Racket idioms
+@;   - type sound via contracts
+@;   - (type-based optimizations)
+@;   - Figure gives example program
+@; * Obvious Benefits of Migration
+@;   - static checks
+@;   - soundness => trustworthy documentation
+@;   - optimizer
+@;   - great to not convert other modules, saves annotation + refactoring effort
+@;   - conclusion, mixed programs is normal
+@;   - ALSO library users have no control over their favorite library's language
+@; * Less-Obvious Costs
+@;   - over time users discovered programs with abysmal performance
+@;   - we nkew this _could_ happen, quick examples of natural embedding
+@;   - didn't realize would be issue in practice until it was
+@;   - clearly need systematic evaluation
+@;   - hence this paper, and hence the coming section
+
+
+
+
+
 Typed Racket@~cite[thf-popl-2008] is the oldest and most developed implementation of sound gradual typing.
 It supports clients in both academia and industry.
 Typed Racket attracts these clients because it accomodates the idioms of (untyped) Racket;
