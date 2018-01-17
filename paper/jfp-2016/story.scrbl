@@ -87,7 +87,7 @@ The rest of this section explores practical aspects of Typed Racket.
 
 
 @; -----------------------------------------------------------------------------
-@section{Benefits of Gradual Typing}
+@section{The Obvious Benefits of Sound Gradual Typing}
 
 Due to the close integration of Racket and Typed Racket, programmers frequently use both languages within a single application.
 Furthermore, programmers often migrate Racket modules to Typed Racket as their application evolves.
@@ -128,10 +128,6 @@ Without soundness, the types are statically-checked suggestions about what the p
 
 @;@note{Ren and Foster recently applied just-in-time type checking to six Ruby programs and found @emph{zero} latent type errors.}
 
-
-@; -----------------------------------------------------------------------------
-@section{Costs of Gradual Typing}
-
 Despite the benefits, adding types to untyped code is a tradeoff.
 In particular, converting an untyped module incurs three immediate engineering costs.
 These costs explain why programmers might prefer to work with a partially-typed codebase.
@@ -159,63 +155,7 @@ This overhead is crucial, however, to guarantee type soundness in programs that 
 
 
 @; -----------------------------------------------------------------------------
-@section[]{How Typed Racket Enforces Type Soundness}
-
-When typed code expects a value of type @type{$\tau$} from an untyped source,
- Typed Racket compiles the type @type{$\tau$} to a contract @ctc{$\tau$} that
- enforces the type.
-Likewise, when typed code provides a typed value to an untyped context, Typed
- Racket protects the typed value with a contract.
-These contracts are the source of performance overhead in partially-typed Typed
- Racket programs; this section briefly describes the nature of this overhead.
-
-The goal of a contract @ctc{$\tau$} is to enforce type soundness.
-For any value @${v} such that the application of @ctc{$\tau$} to @${v}
- does not error, the result @ctcapp["\\tau" "v"] must behave like a well-typed
- value.
-To a first approximation, one can think of such contracts as dynamic checks;
- however, this reasoning breaks down for mutable values and functional values.
-For example, if @type{$\tau$} is a type representing a mutable cell containing an
- integer, then @ctcapp["\\tau" "v"] must (1) check that @${v} currently contains
- an integer and (2) ensure that every read from @${v} in typed code produces an integer.
-It does not suffice to check the mutable cell at the boundary because untyped
- code might keep a reference to the cell, and later write an ill-typed
- value to it.
-
-Typed Racket's implementation follows the @emph{natural embedding} strategy
- formalized by @citet[mf-toplas-2007].
-In a nutshell, this implementation eagerly checks values when possible and
- otherwise wraps them in a type-checking proxy.
-For example:
-@itemlist[
-@item{
-  If @type{$\tau$} is @type{$\tint$} then @ctcapp["\\tau" "v"] checks that @${v} is an integer value.
-}
-@item{
-  If @type{$\tau$} is @type{$(\tlistof{\tint})$} then @ctcapp["\\tau" "v"] checks that @${v}
-   is a list and checks @ctc{$\tint$} for every value in the list.
-}
-@item{
-  If @type{$\tau$} is @type{$(\tvectorof{\tint})$} then @ctcapp["\\tau" "v"] checks that @${v}
-   is a vector, checks @ctc{$\tint$} for every value in the vector, and wraps @${v}
-   in a proxy that checks @ctc{$\tint$} for every read and write to the vector.
-  @; need to check reads, because untyped could write directly to `v` (bypassing the proxy)
-}
-@item{
-  If @type{$\tau$} is @type{$(\tarrow{\tint}{\tint})$} then @ctcapp["\\tau" "v"] checks that
-   @${v} is a function and wraps @${v} in a proxy that checks @ctc{$\tint$} for
-   every argument to the function and every result computed by the function.
-}
-]
-Note that the cost of checking a type like @type{$\tlistof{\tint}$} is linear in the size of the value.
-Furthermore, if @ctcapp["\\tau" "v"] wraps @${v} in a proxy then
- (@ctc{$\tau$} @ctcapp["\\tau" "v"]) wraps @${v} in two proxies, and therefore adds two levels of indirection.
-
-@; comment: expensive, but enforces soundness and catches errors ASAP ?
-
-
-@; -----------------------------------------------------------------------------
-@section[#:tag "sec:overhead"]{A Case for Sound Gradual Typing}
+@section{The Unexpectedly Large Performance Cost}
 
 Since typed/untyped interaction is common and sound typed/untyped interaction
  adds performance overhead, then the obvious question is: why enforce type soundness?
