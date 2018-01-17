@@ -29,19 +29,10 @@
 @;   - clearly need systematic evaluation
 @;   - hence this paper, and hence the coming section
 
-
-
-
-
-Typed Racket@~cite[thf-popl-2008] is the oldest and most developed implementation of sound gradual typing.
-It supports clients in both academia and industry.
-Typed Racket attracts these clients because it accomodates the idioms of (untyped) Racket;
- its type system can express concepts such as
- variable-arity polymorphism@~cite[stf-esop-2009],
- first-class classes@~cite[tsdthf-oopsla-2012],
- and delimited continuations@~cite[tsth-esop-2013].
-A typed module may incorporate definitions from a Racket module with a type-annotated import statement;
- conversely, a Racket module may use definitions from a Typed Racket module without knowledge that the providing module is typed.
+Typed Racket@~cite[tfffgksst-snapl-2017] is a sound gradual typing system for Racket.
+Consequently, Typed Racket's syntax is an extension of Racket's, its static type checker supports idioms common in (dynamically-typed) Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015], and a Typed Racket module may import definitions from a Racket module.
+A Racket module may likewise import definitions from a Typed Racket module.
+To ensure type soundness@~cite[tfffgksst-snapl-2017], Typed Racket compiles static types to higher-order contracts and applies these contracts at the boundaries between Typed Racket and Racket modules.
 
 @figure["fig:story:tr" "A gradually typed application"
   @(let* ([add-name (lambda (pict name) (rt-superimpose pict (frame (text (string-append " " name " ") "black" 10))))]
@@ -101,15 +92,9 @@ Each call to @racket[play] generates a random number and returns a function that
 The untyped module on the top right implements a @exact|{{na\"ive}}| player.
 The driver module at the bottom combines the game and player.
 It generates a game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
-Unlike the other two, the driver module is implemented in Typed Racket.
-Typed Racket ensures that the game and player follow the type specifications in the driver's @racket[require/typed] clauses.
-More precisely, Typed Racket statically checks that the driver module sends only natural numbers to the guessing game and player, and inserts dynamic checks to enforce the return types of @racket[play], @racket[stubborn-player], and @racket[check-guess].
-
-In general, Typed Racket extends Racket with three ingredients:
- syntax for type annotations,
- a static type checker,
- and a compiler that maps a static type @type{$\tau$} to a contract @ctc{$\tau$} that enforces the type.
-The rest of this section explores practical aspects of Typed Racket.
+Of the three modules, only the driver is implemented in Typed Racket.
+This means that Typed Racket statically checks the body of the driver module under the assumption that its annotations for the @racket[play] and @racket[stubborn-player] functions are correct.  Typed Racket protects this assumption by compiling the types for these functions into contracts; at runtime, the contracts enforce the types.
+For example, one contract ensures that @racket[(play)] returns a function from natural numbers to booleans (by applying a new contract to the returned value), and the other ensures that @racket[stubborn-player] returns natural numbers.
 
 
 @; -----------------------------------------------------------------------------
