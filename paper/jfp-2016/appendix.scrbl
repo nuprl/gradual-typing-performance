@@ -713,7 +713,7 @@ The table lists the number of modules (@math{N}) rather than the number of paths
 
 The table in @figure-ref{fig:appendix:devils} provides a few worst-case statistics relevant to @secref{sec:devils}.
 The second column (``Max Boundary'') reports the number of times that a value flows across the most-frequently-crossed static module boundary in each benchmark.
-When this boundary is a type boundary, each of these crossings triggers a run-time check.
+When this boundary is a type boundary, each of these crossings triggers a runtime check.
 The remaining columns report properties of the configuration in each benchmark with the highest performance overhead.
 These properties are:
 @itemlist[
