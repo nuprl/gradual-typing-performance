@@ -121,7 +121,7 @@ By converting a module to Typed Racket, the maintainer receives:
 ]
 These perceived benefits draw Racket programmers towards Typed Racket.
 
-Another, more subtle, way that Racket users begin using Typed Racket is by importing definitions from a typed library.
+Another, more subtle, way that Racket users start using Typed Racket is by importing definitions from a typed library.
 For example, every program that uses the built-in @racket[plot] library (including the program that generated this paper) interacts with typed code.
 
 Conversely, Typed Racket programmers may use Racket to work with legacy code, prototype new designs, or write program-manipulating programs.
@@ -134,82 +134,24 @@ Programs that use both languages are increasingly common, and this situation see
 @; -----------------------------------------------------------------------------
 @section{The Need for Performance Evaluation}
 
-Due to the close integration of Racket and Typed Racket, programmers frequently combine both languages in an application.
-These hybrid programs occasionally run much slower than the programmer expects.
-As concrete examples, Typed Racket users have reported:
- a 1.5x slowdown in a web server,
- 25x--50x slowdowns when using an array library,
- and an over 1000x slowdown when using a library of functional data structures.@note{The appendix contains a list of user reports.}
-These reports suggest that Typed Racket has a performance problem, but it is unclear how widespread the problem is.
+Typed Racket is an evolving research project.
+The initial release delivered a sound type system that could express the idioms in simple Racket programs.
+Subsequent improvements focused on growing the type system and making it easier to use.
+All along, the maintainers of Typed Racket knew that the performance cost of enforcing type soundness could be high (see @secref{sec:devils} for an overview); however, this cost was not an issue in many programs.
+
+As other programmers began using Typed Racket, a few discovered serious issues with its performance.
+Some users were able to work around their issues, but for others the poor performance became an obstacle to their work.
+For instance, one user experienced a 1.5x slowdown in a web server,
+ others found 25x--50x slowdowns when using an array library,
+ and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix contains a list of user reports.}
+These reports identified the need for a systematic performance evaluation.
+
+The goals of our performance evaluation are to:
+ (1) determine the extent of the issue,
+ (2) identify the sources of poor performance,
+ (3) help users avoid performance issues, and
+ (4) improve the performance of Typed Racket.
+The evaluation method in @secref{sec:method} has been effective for measuring the problem@~cite[tfgnvf-popl-2016], and this paper demonstrates that the same method can quantify improvements to Typed Racket that have appeared since then.
+This paper also discusses the source of poor performance.
 
 
-
-
-Reports of poor performance clearly indicate a problem, but it 
-
-These reports clearly indicate that poor performance is the symptom of some problem,
-It is unclear, 
-
-
-@;Oe these three costs, the performance overhead is the most troublesome.
-@;One part of the issue is that the magnitude of the cost is difficult to predict.
-@;Adding types to one small module can lead to a large performance overhead if the module frequently receives untyped data at runtime.
-@;A second part is that experience with statically typed languages---or optionally-typed languages such as TypeScript---teaches programmers that type annotations do not impose runtime overhead.
-@;This overhead is crucial, however, to guarantee type soundness in programs that mix typed and untyped code.
-@;
-@;
-@;@;;; Regardless of why such mixes of typed and untyped code arise, the lesson for implementors is that they @emph{do} arise as the solution to practical issues and ought to be supported.
-@;@;;; We cannot expect programmers to go fully typed or fully untyped.
-@;
-@;
-@;@; -----------------------------------------------------------------------------
-@;@section{The Need for Systematic Performance Evaluation}
-@;
-@;Since typed/untyped interaction is common and sound typed/untyped interaction
-@; adds performance overhead, then the obvious question is: why enforce type soundness?
-@;The reason is because errors matter.
-@;If an ill-typed value flows into typed code, soundness in Typed Racket guarantees
-@; that the program will halt with an informative error message.
-@;This property is crucial for maintaining a large application.
-@;Otherwise, the program can raise a misleading error message or silently compute a nonsensical result.
-@;
-@;To demonstrate the kinds of errors that can occur in an unsound gradually-typed language, @figure-ref["fig:voting-machine"] defines an simple API for a voting machine.
-@;The function @racket[add-votes!] expects a natural number and adds this number to a running total.
-@;
-@;In Typed Racket, the compiled version of @figure-ref{fig:voting-machine} differs in two ways from the figure.
-@;First, the @racket[provide] statement exports a proxy rather than the unprotected function.
-@;Second, the function @racket[+] is replaced with an addition function specialized to natural numbers.
-@;Consequently, the call @racket[(add-votes! 1)] runs efficiently and the call @racket[(add-votes! "NaN")] raises an error immediately.
-@;
-@;In a language that erases types and does not optimize the @racket[+] function, such as TypeScript@~cite[bat-ecoop-2014],
-@; the call @racket[(add-votes! "NaN")] does not error immediately.
-@;Instead, the function invokes @racket[+] with a string argument; this call to @racket[+] raises an error.
-@;The similar call @racket[(add-votes! -1)] silently decrements the total number of votes.
-@;
-@;A language that erases types and replaces the @racket[+] function with an optimized version is worst off.
-@;Depending on the addition function, calls like @racket[(add-votes! "NaN")] and @racket[(add-votes! add-votes!)] can all increment the total by a nonsensical value.
-@;This can also happen if a programmer manually replaces the @racket[+] function based on the static types.
-@;
-@;Type soundness eliminates the risk of such errors.
-@;As such, it is the only reasonable default for a gradually-typed language.
-@;Worth some performance cost, especially if type-based optimizations can recover some of the overhead.
-@;
-@;@;Furthermore, even if a dynamic tag check uncovers a logical type error, debugging such errors in a higher-order functional language is often difficult.
-@;@;Well-trained functional programmers follow John Hughes' advice and compose many small, re-usable functions to build a program@~cite[h-cj-1989].
-@;@;Unfortunately, this means the root cause of a runtime exception is usually far removed from the point of logical failure.
-@;@;@; Laziness does not pay in the context of type checking.
-@;
-@;    @figure["fig:voting-machine" @elem{Voting machine}
-@;      @codeblock-pict[@string-join['(
-@;        "#lang typed/racket"
-@;        "(provide add-votes)"
-@;        ""
-@;        "(define total-votes : Natural 0)"
-@;        ""
-@;        "(: add-votes (Natural -> Void))"
-@;        "(define (add-votes n)"
-@;        "  (set! total-votes (+ total-votes n)))"
-@;      ) "\n"]]
-@;    ]
-@;
-@;
