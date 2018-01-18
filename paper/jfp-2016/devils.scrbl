@@ -24,6 +24,48 @@
 Our evaluation demonstrates that adding types to an arbitrarily chosen subset of Racket modules in a program can impose large performance overhead.
 This section explains with a few examples how such overheads may arise, both as inspiration for maintainers of gradual type systems and as anti-patterns for developers.
 
+@; -----------------------------------------------------------------------------
+@section{How Typed Racket Enforces Type Soundness}
+
+Typed Racket's strategy for checking the type of Racket values at runtime follows the @emph{natural embedding} strategy formalized by @citet[mf-toplas-2007].
+When a typed context expects a value of base type, Typed Racket enforces the boundary with a predicate for the type.
+When a typed context expects a value of an inductive type, Typed Racket checks the constructor of the value and recursively checks its components.
+If any type parameters to the inductive type are invariant or contravariant (i.e., the value can receive arguments), Typed Racket wraps the incoming value with a proxy@~cite[sthff-oopsla-2012] to monitor its future interactions with typed code.
+
+To illustrate this strategy, we describe how Typed Racket enforces a few types @type{$\tau$} with contracts @ctc{$\tau$}:
+@itemlist[
+@item{
+  If @type{$\tau$} is @type{$\tint$} then @ctcapp["\\tau" "v"] checks that @${v} is an integer value.
+}
+@item{
+  If @type{$\tau$} is @type{$\tbool \cup \tint$} then @ctcapp["\\tau" "v"] checks that @${v} is either a boolean value or an integer value.
+}
+@item{
+  If @type{$\tau$} is @type{$(\tlistof{\tint})$} then @ctcapp["\\tau" "v"] checks that @${v}
+   is a list and checks @ctc{$\tint$} for every value in the list.
+}
+@item{
+  If @type{$\tau$} is @type{$(\tvectorof{\tint})$} then @ctcapp["\\tau" "v"] checks that @${v}
+   is a vector, checks @ctc{$\tint$} for every value in the vector, and wraps @${v}
+   in a proxy that checks @ctc{$\tint$} for every read and write to the vector.
+  @; need to check reads, because untyped could write directly to `v` (bypassing the proxy)
+}
+@item{
+  If @type{$\tau$} is @type{$(\tarrow{\tint}{\tint})$} then @ctcapp["\\tau" "v"] checks that
+   @${v} is a function and wraps @${v} in a proxy that checks @ctc{$\tint$} for
+   every argument to the function and every result computed by the function.
+}
+]
+Note that the cost of checking a type like @${\tau_0 \cup \tau_1} is linear in the number of types in the union, and the cost of a type like @type{$\tlistof{\tint}$} is linear in the size of the value.
+Furthermore, if @ctcapp["\\tau" "v"] wraps @${v} in a proxy then (@ctc{$\tau$} @ctcapp["\\tau" "v"]) wraps @${v} in two proxies, and therefore adds two levels of indirection.
+See @citet[thf-dls-2006] and @citet[tfdffthf-ecoop-2015] for additional details.
+
+This strategy clearly suffers from three kinds of performance costs:
+ the cost of checking a value as it crosses a boundary,
+ the cost of allocating a proxy to monitor the value,
+ and the cost that the proxy imposes on subsequent interactions.
+The rest of this section demonstrates how these costs arise in Typed Racket programs.
+
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:devils:frequency"]{High-Frequency Typechecking}
