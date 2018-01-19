@@ -94,16 +94,20 @@ By converting a module to Typed Racket, the maintainer receives:
     @emph{speed}, when the compiler can use types to generate efficient bytecode.
   }
 ]
-These perceived benefits draw Racket programmers towards Typed Racket.
+These perceived benefits draw Racket programmers to Typed Racket.
+When debugging a Racket module, for example, a programmer can add type annotations to enforce invariants within the module.
+The type checker may then uncover a bug using the annotations, and Typed Racket's runtime checks may discover issues when the now-typed module interacts with the rest of the codebase.
 
-Another, more subtle, way that Racket users start using Typed Racket is by importing definitions from a typed library.
+Another, more subtle, way that Racket programs may rely on Typed Racket is by importing definitions from a typed library.
 For example, every program that uses the built-in @racket[plot] library (including the program that generated this paper) interacts with typed code.
+This kind of interaction is indistinguishable from importing definitions from a Racket library.
 
 Conversely, Typed Racket programmers may use Racket to work with legacy code, prototype new designs, or write program-manipulating programs.
-These are situations where the effort of managing type annotations outweighs the ease of running the Racket code and checking the result.
+These are situations where the effort of managing type annotations may outweigh the ease of running the Racket code and checking the result.
 
-In summary, Racket and Typed Racket complement one another.
-Programs that use both languages are increasingly common, and this situation seems unlikely to change.
+In summary, Typed Racket offers an accessible upgrade path from Racket and is currently used in a variety of programs.@note{@url{https://pkgd.racket-lang.org/pkgn/search?q=typed-racket}}
+These programs frequently combine Racket and Typed Racket code; over time this combination may shift to a larger proportion of typed code, but Racket will likely remain the core language.
+It is therefore essential that Typed Racket programs interact smoothly with existing Racket code.
 
 
 @; -----------------------------------------------------------------------------
@@ -119,14 +123,10 @@ Some users were able to work around their issues, but for others the poor perfor
 For instance, one user experienced a 1.5x slowdown in a web server,
  others found 25x--50x slowdowns when using an array library,
  and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix contains a list of user reports.}
-These reports identified the need for a systematic performance evaluation.
-
-The goals of our performance evaluation are to:
+These reports identified the need for a systematic performance evaluation to:
  (1) determine the extent of the issue,
  (2) identify the sources of poor performance,
  (3) help users avoid performance issues, and
- (4) improve the performance of Typed Racket.
-The evaluation method in @secref{sec:method} has been effective for measuring the problem@~cite[tfgnvf-popl-2016], and this paper demonstrates that the same method can quantify improvements to Typed Racket that have appeared since then.
-This paper also discusses the source of poor performance.
+ (4) improve Typed Racket.
 
 
