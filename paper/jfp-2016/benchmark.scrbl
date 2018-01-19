@@ -124,7 +124,7 @@ This section concludes with a table summarizing the static characteristics of ea
   })
 (cons take5
   @elem{
-    Runs a card game between AI players.
+    Manages a card game between AI players.
     These players communicate infrequently, so gradual typing adds relatively little overhead.
   })
 (cons acquire

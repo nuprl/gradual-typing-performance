@@ -86,7 +86,7 @@ The other @id[(sub1 suffixtree-num-configs)] rectangles represent configurations
 A given row in the lattice groups configurations with the same number of typed modules (black squares).
 For instance, configurations in the second row from the bottom contain two typed modules.
 These represent all possible ways of converting two modules in the untyped configuration to Typed Racket.
-Similarly, configurations in the third row represent all possible configurations a programmer might encounter after applying three @emph{type conversion steps} to the untyped configuration.
+Similarly, configurations in the third row represent all possible configurations a programmer might encounter after applying three such @emph{type conversion steps} to the untyped configuration.
 In general, let the notation @exact{$c_1 \rightarrow_k c_2$} express the idea that a programmer starting from configuration @exact{$c_1$} (in row @exact{$i$}) could reach configuration @exact{$c_2$} (in row @exact{$j$}) after taking at most @exact{$k$} type conversion steps (@exact{$j - i \le k$}).
 
 Configurations in @figure-ref{fig:suffixtree-lattice} are furthermore labeled with their performance overhead relative to the untyped configuration on Racket version 6.2.
@@ -107,18 +107,17 @@ High overheads are common (@id[suffixtree-num-max] configurations have over @id[
 The most basic question about a gradually typed language is
  how fast fully-typed programs are in comparison to their fully untyped relative.
 In principle and in Typed Racket, static types enable optimizations and can serve in place of runtime tag checks.
-The net effect of such improvements may, however, be offset by runtime type checks
- in programs that rely heavily on an untyped library.
+The net effect of such improvements may, however, be offset by the runtime cost of enforcing type soundness.
 Relative performance is therefore best described as a ratio, to capture the possibility of speedups and slowdowns.@;
 @;
     @def[#:term "typed/untyped ratio"]{
      The typed/untyped ratio of a performance
-      lattice is the time needed to run the top configuration divided by the
-      time needed to run the bottom configuration.
+      lattice is the time needed to run the top (fully typed) configuration divided by the
+      time needed to run the bottom (untyped) configuration.
     }@;
 @;
 For users of a gradual type system, the important performance
- question is how much overhead their @emph{current} configuration suffers.
+ question is how much overhead their current configuration suffers.
  @; RELATIVE TO previous version (standardized as "untyped program")
 If the performance overhead is low enough, programmers can release the
  configuration to clients.
@@ -145,7 +144,7 @@ One coarse measure of ``work'' is the number of additional modules that must be 
       and @exact{$c_2$} is @deliverable{}.
     }@;
 @; @profile-point{sec:method:example}
-The number of @step[] configurations therefore captures the experience of a @emph{prescient} programmer that converts the @exact{$k$} modules suited to improve performance.
+The number of @step[] configurations therefore captures the experience of a prescient programmer that converts the @exact{$k$} modules suited to improve performance.
 
 @(define sample-data
   (let* ([mean+std* '#((20 . 0) (15 . 0) (35 . 0) (10 . 0))]
@@ -191,13 +190,12 @@ The label below each configuration is its overhead relative to the untyped confi
       slowdown relative to the untyped configuration.
     Both mixed configurations are
       @deliverable[@id[g-overhead]]
-      because they run within @id[(* g-overhead (sample-data 'c00))] seconds,
       but only one is, e.g., @deliverable[@id[g-overhead2]].
-    Lastly, these configurations are @step[t-str t-str]
+    Lastly, the mixed configurations are @step[t-str t-str]
      because they can reach the typed configuration in one type conversion step.
   })
 
-The ratio of @deliverable{D} configurations in such a lattice is a measure of
+The ratio of @deliverable{D} configurations in a performance lattice is a measure of
  the overall feasibility of gradual typing.
 When this ratio is high, then no matter how the application evolves, performance
  is likely to remain acceptable.
@@ -277,6 +275,6 @@ The one exception is the fully-typed configuration; its overhead is given explic
 @; - limit: angelic choice
 The @emph{second limitation} is that the @step{1} plot optimistically chooses the
  best type conversion step.
-In a program with @math{N} modules, a programmer has up to @math{N} type conversion steps to choose from,
+In a program with @math{N} modules, a programmer has at most @math{N} type conversion steps to choose from,
  some of which may not lead to a @deliverable[] configuration.
-For example, there are six configurations with exactly one typed module in @figure-ref{fig:suffixtree-lattice} but only one of these is @deliverable{2}.
+For example, there are six configurations with exactly one typed module in @figure-ref{fig:suffixtree-lattice} but only one of these is @deliverable{1}.

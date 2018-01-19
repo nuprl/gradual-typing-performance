@@ -186,7 +186,7 @@
 (define-benchmark zordoz
   #:author "Ben Greenman"
   #:num-adaptor 0
-  #:origin (hyperlink "http://github.com/bennn/zordoz" "Tool")
+  #:origin (hyperlink "http://github.com/bennn/zordoz" "Library")
   #:purpose "Explore Racket bytecode"
   #:external-libraries (list (hyperlink "http://docs.racket-lang.org/raco/decompile.html#%28mod-path._compiler%2Fdecompile%29" (library "compiler-lib")))
 )
@@ -279,7 +279,7 @@
 (define-benchmark quadBG
   #:author "Matthew Butterick"
   #:num-adaptor 2
-  #:origin (hyperlink "https://github.com/mbutterick/quad" "Library")
+  #:origin (hyperlink "https://github.com/mbutterick/quad" "Application")
   #:purpose "Typesetting"
   #:external-libraries (list (hyperlink "https://github.com/mbutterick/csp" (library "csp")))
 )
