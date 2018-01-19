@@ -1,36 +1,11 @@
 #lang scribble/base
 
-@; TODO first draft, then fuck with wording
-@; TODO remove the fucking "SUCH THINGS" shit
-
 @require["common.rkt" "benchmark.rkt" "util.rkt" racket/file
          (only-in pict vc-append rt-superimpose hline ht-append pict-width pict-height frame text vline)
          (only-in pict/code codeblock-pict) (only-in racket/string string-join)]
 
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
-
-@; ROUGH OUTLINE
-@; * Gradual Typing in Typed Racket
-@;   - TR is a sound gradual typing system for Racket
-@;   - originally from Sam + Matthias 2006 2008, grown to GitHub contributors
-@;   - Racket idioms
-@;   - type sound via contracts
-@;   - (type-based optimizations)
-@;   - Figure gives example program
-@; * Obvious Benefits of Migration
-@;   - static checks
-@;   - soundness => trustworthy documentation
-@;   - optimizer
-@;   - great to not convert other modules, saves annotation + refactoring effort
-@;   - conclusion, mixed programs is normal
-@;   - ALSO library users have no control over their favorite library's language
-@; * Less-Obvious Costs
-@;   - over time users discovered programs with abysmal performance
-@;   - we nkew this _could_ happen, quick examples of natural embedding
-@;   - didn't realize would be issue in practice until it was
-@;   - clearly need systematic evaluation
-@;   - hence this paper, and hence the coming section
 
 Typed Racket@~cite[tfffgksst-snapl-2017] is a sound gradual typing system for Racket.
 Consequently, Typed Racket's syntax is an extension of Racket's, its static type checker supports idioms common in (dynamically-typed) Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015], and a Typed Racket module may import definitions from a Racket module.

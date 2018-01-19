@@ -71,7 +71,7 @@ But surprisingly few groups have evaluated the performance of gradual typing.
 Many acknowledge an issue with performance in passing@~cite[thf-popl-2008 acftd-scp-2013 vksb-dls-2014 rnv-ecoop-2015].
 Others report only the performance of fully typed programs relative to fully untyped programs@~cite[rsfbv-popl-2015 vss-popl-2017], ironically ignoring the entire space of programs that mix typed and untyped components.
 
-This archival paper presents the first method for evaluating the performance of a gradual type system (@secref{sec:method}), integrating new result with the results of a conference version@~cite[tfgnvf-popl-2016].
+This archival paper presents the first method for evaluating the performance of a gradual type system (@secref{sec:method}), integrating new results with an earlier conference version@~cite[tfgnvf-popl-2016].
 Specifically, this paper contributes:
 @itemlist[
 @item{
@@ -87,13 +87,9 @@ Specifically, this paper contributes:
   a discussion of the pathological overheads in the benchmark programs (@secref{sec:devils}).
 }
 ]
-The discussion is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).
+The discussion in @secref{sec:devils} is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).
 
-This paper begins with an extended introduction to our philosophy of gradual typing and the pragmatics of Typed Racket.
-@Secref{sec:overhead} in particular argues that type soundness is an imperative, despite the performance cost of enforcing it.
-
-@;Experience with Typed Racket provides the broader context for this work and motivates the design of the evaluation method.
-
-
-@;@parag{Disclaimer:} 3x overhead is not "deliverable" performance.
-@;We never claimed so in the conference version and our opinion certainly has not changed.
+This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
+This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
+This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
+This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
