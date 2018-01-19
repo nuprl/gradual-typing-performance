@@ -29,7 +29,7 @@
 
   This paper presents the first method for evaluating the performance of gradual type systems.
   The method quantifies both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.
-  In order to validate the method, the paper reports on its application to @integer->word[(*NUM-BENCHMARKS*)] benchmark programs and @integer->word[(length (*RKT-VERSIONS*))] versions of Typed Racket.
+  To validate the method, the paper reports on its application to @integer->word[(*NUM-BENCHMARKS*)] programs and @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket.
 }
 
 @include-section{intro.scrbl}
