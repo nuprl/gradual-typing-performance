@@ -49,9 +49,9 @@ Contract-aware implementation techniques such soft contracts (@exact{@|PHIL|} @|
  may significantly reduce the overhead of gradual typing.
 
 Finally, Typed Racket relies on the @emph{complete monitoring} property@~cite[dthf-esop-2012] of the Racket contract system to provide a strong form of type soundness@~cite[tfffgksst-snapl-2017].
-When a type boundary error occurs, Racket deduces the location, type annotation, and incompatible value that led to the fault.
+When a type boundary error occurs, Racket deduces original type annotation and Racket value that led to the fault.
 This results in useful error messages, but the runtime system must dynamically track contextual information to implement it.
 On one hand, there may be inefficiencies in Racket's implementation of this runtime monitoring.
 On the other hand, a different gradual type system could offer a different soundness guarantee and circumvent the need for this runtime accounting altogether.
 For example, Reticulated Python checks the type of a mutable data structure when typed code reads from the structure, but not when untyped code writes to it, avoiding the need to proxy such data structures@~cite[vksb-dls-2014 vss-popl-2017].
-This type-tag notion of soundness can be more performant@~cite[gm-pepm-2018], but gives programmers fewer hints for debugging type boundary errors.
+This leads to a type-tag notion of soundness that can be more performant@~cite[gm-pepm-2018], but gives programmers fewer hints for debugging type boundary errors.
