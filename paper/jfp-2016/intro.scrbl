@@ -29,12 +29,12 @@ Furthermore, tools can check the annotations for logical inconsistencies and lev
      @; - type-testing JITS for php/js
      @; - typescript flow
 
-One solution is to rewrite the entire application in a statically typed language.
+One approach to the maintenance problem is to rewrite the entire application in a statically typed langauge.
 This solution assumes that the application is small enough to make a wholesale migration feasible.
 For example, Twitter was able to port their server-side code from Ruby to Scala because they recognized the long-term issues with their Ruby code early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
 
 @; Enter GT
-Another solution to the problem is gradual typing@~cite[st-sfp-2006 thf-dls-2006], a linguistic approach.@note{@citet[tfffgksst-snapl-2017] refer to this use of gradual typing as @emph{migratory typing}.}
+Another approach is gradual typing@~cite[st-sfp-2006 thf-dls-2006].@note{@citet[tfffgksst-snapl-2017] refer to this use of gradual typing as @emph{migratory typing}.}
  @; What problem? Is it really clear enough?
     @; NOTE: a GT "language" is ideally a "superset" of an existing lang,
     @;       but the cast calculus & gradualizer/foundations have their place

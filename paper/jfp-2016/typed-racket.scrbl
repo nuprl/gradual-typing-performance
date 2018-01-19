@@ -33,7 +33,7 @@ The data is the result of applying the following protocol for each benchmark and
 }
 @item{
   For each configuration: recompile, run twice, and collect the results of the second run.
-  Use the standard Racket compiler, JIT, and runtime settings.
+  Use the standard Racket bytecode compiler, JIT compiler, and runtime settings.
 }
 @item{
   Repeat the above steps @exact{$N \ge 10$} times to produce a sequence of @math{N} running times for each configuration.

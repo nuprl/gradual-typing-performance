@@ -71,15 +71,12 @@ Third, @secref{sec:graphs} introduces a visualization that concisely presents th
     ]
 
 The promise of Typed Racket's macro-level gradual typing is that programmers can add types to any subset of the modules in an untyped program.
-In principle this promise extends to third-party libraries and modules from the Racket runtime system, but in practice a programmer will use those modules as-is (either typed or untyped) and experiment with modules under their direct control.
-@;
-@def[#:term "experimental, fixed"]{
-  The @emph{experimental modules} in a program migrate between untyped to typed; the @emph{fixed modules} do not.
-}@;
-A comprehensive performance evaluation must therefore consider the space of typed/untyped @emph{configurations} a programmer could possibly create given type annotations for each experimental module.
+In principle, this promise extends to third-party libraries and modules from the Racket runtime system, but in practice a programmer has no control over such modules.
+Thus we distinguish between the @emph{migrated} modules that a programmer may add types to and the @emph{unchanged} modules in the software ecosystem.
+A comprehensive performance evaluation must therefore consider the @emph{configurations} a programmer could possibly create given type annotations for each migrated module.
 These configurations form a lattice, ordered by the subset relation on the set of typed modules in a configuration.
 
-@Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a program with @|suffixtree-num-modules| experimental modules.
+@Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a program with @|suffixtree-num-modules| migrated modules.
 The black rectangle at the top of the lattice represents the configuration in which all @|suffixtree-num-modules| modules are typed.
 The other @id[(sub1 suffixtree-num-configs)] rectangles represent configurations in which some (or all) modules are untyped.
 
@@ -220,10 +217,10 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
       @elem{
         Although a performance lattice contains a comprehensive description of performance overhead, it does not effectively communicate this information.
         It is difficult to tell, at a glance, whether a program has good or bad performance relative to its users' requirements.
-        Comparing the relative performance of two or more lattices is also difficult, and is in practice limited to programs with an extremely small number of modules.
+        Comparing the relative performance of two or more lattices is also difficult and is in practice limited to programs with an extremely small number of modules.
 
         The main lesson to extract from a performance lattice is the proportion of @step{} configurations for various @math{k} and @math{D}.
-        In other words, this proportion describes the number of configurations (out of the entire lattice) that are at most @math{k} steps away from a @deliverable{D} configuration.
+        In other words, this proportion describes the number of configurations (out of the entire lattice) that are at most @math{k} upward steps from a @deliverable{D} configuration.
         One way to plot this information is to fix a value for @math{k}, say @math{k=0}, and consider a set of values @exact{$d_0,\ldots,d_{n-1}$} for @math{D}.
         The set of proportions of @step["0" "d_i"] configurations defines a histogram  with the value of @math{D} on the independent axis and the proportion of configurations on the other.
 
@@ -231,17 +228,17 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         The plot on the left fixes @math{k=0} and plots the proportion of @step["0" "D"] configurations.
         The plot on the right fixes @math{k=1} and plots the proportion of @step["1" "D"] configurations.
         Both plots consider @math{@id[ALOT]} values of @math{D} evenly spaced between 1x and 20x.
-        The line on each plot is a continuous distribution function defined by the underlying histogram.
+        The line on each plot traces the underlying histogram.
         The x-axis is log scaled to focus on low overheads.
         Vertical ticks pinpoint the following values of @math{D}: 1.2x, 1.4x, 1.6x, 1.8x, 2x, 4x, 6x, 8x, 10x, 12x, 14x, 16x, and 20x.
 
         The plot on the left, in which @math{k=0}, confirms the observation made in @secref{sec:method:lattice} that @(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))% of the @|suffixtree-num-configs-str| configurations (@|suffixtree-num-D-str| configurations) run within a @id[suffixtree-sample-D]x overhead.
-        For larger values of @math{D} the proportion of @deliverable{D} configurations is slightly larger, but even at @id[MAX-OVERHEAD]x overhead this proportion is only @(id (round (* 100 (/ suffixtree-num-D-max suffixtree-num-configs))))%.
+        For larger values of @math{D} than 2x, the proportion of @deliverable{D} configurations is slightly larger, but even at a @id[MAX-OVERHEAD]x overhead, this proportion is only @(id (round (* 100 (/ suffixtree-num-D-max suffixtree-num-configs))))%.
         The plot on the right shows that the proportion of @step["1" "D"] is typically twice as high as the proportion of @deliverable{} configurations for this benchmark.
 
         These overhead plots concisely summarize the lattice in @figure-ref{fig:suffixtree-lattice}.
         The same presentation scales to arbitrarily large programs because the @math{y}-axis plots the proportion of @deliverable{D} configurations; in contrast, a performance lattice contains exponentially many nodes.
-        Furthermore, plotting the overhead for multiple versions of a gradual type system on the same set of axes provides a high-level summary of the versions' relative performance.
+        Furthermore, plotting the overhead for multiple implementations of a gradual type system on the same set of axes provides a high-level summary of their relative performance.
       }
 )))
 
@@ -251,7 +248,7 @@ Plots in the style of @figure-ref{fig:suffixtree-plot} rest on two assumptions a
 
 @; - assn: log scale
 The @emph{first assumption} is that configurations with less than 2x overhead are significantly
- more practical than configurations with over 10x overhead.
+ more practical than configurations with a 10x overhead or more.
 Hence the plots use a log-scaled x-axis
  to simultaneously encourage fine-grained comparison in the 1.2x to 1.6x overhead range
  and blur the distinction between, e.g., 14x and 18x slowdowns.

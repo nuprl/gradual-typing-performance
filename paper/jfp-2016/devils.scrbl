@@ -75,7 +75,7 @@ The rest of this section demonstrates how these costs arise in Typed Racket prog
 @section[#:tag "sec:devils:frequency"]{High-Frequency Typechecking}
 @; -- AKA high-frequency
 
-No matter the cost of a single runtime type check, if the check occurs frequently then the program suffers.
+If values frequently cross one type boundary, then the program will suffer even if the cost of each boundary-crossing is relatively low.
 The program in @figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
 Each call is type-correct; nevertheless, Typed Racket validates the argument @racket[stk] against the specification @ctc{Listof A} one million times.
 These checks dominate the performance of this example program.
