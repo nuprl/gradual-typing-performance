@@ -88,8 +88,6 @@ Specifically, this paper contributes:
 }
 ]
 The discussion in @secref{sec:devils} is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).
+In particular, there are challenges to address both in the implementation of sound gradual type systems and in helping users find combinations of typed and untyped code that meet their performance requirements.
 
-This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
-This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
-This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
-This paper begins with a brief introduction to Typed Racket (@secref{sec:story}).
+This paper begins with a brief introduction to Typed Racket (@secref{sec:story}) and the @emph{migratory} flavor of gradual typing that it supports.
