@@ -25,7 +25,7 @@
 @(define MAX-ITERS-STR "30")
 @(define FREQ-STR "1.40 GHz")
 
-@Secref{sec:plots} and @secref{sec:compare} present the results of a comprehensive performance evaluation of the @integer->word[(*NUM-BENCHMARKS*)] benchmark programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
+@Secref{sec:plots} and @secref{sec:compare} present the results of an exhaustive performance evaluation of the @integer->word[(*NUM-BENCHMARKS*)] benchmark programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
 The data is the result of applying the following protocol for each benchmark and each version of Typed Racket:
 @itemlist[
 @item{

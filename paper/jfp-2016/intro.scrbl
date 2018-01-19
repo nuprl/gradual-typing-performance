@@ -78,7 +78,7 @@ Specifically, this paper contributes:
   validation that the method can express the relative performance between @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket (@secref{sec:compare});
 }
 @item{
-  evidence that simple random sampling can accurately approximate the results of a comprehensive evaluation with asymptotically fewer measurements (@secref{sec:scale});
+  evidence that simple random sampling can approximate the results of an exhaustive evaluation with asymptotically fewer measurements (@secref{sec:scale});
 }
 @item{
   @integer->word[(- (length ALL-BENCHMARKS) NUM-POPL)] additional benchmark programs (@secref{sec:bm}); and
