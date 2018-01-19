@@ -1529,3 +1529,9 @@
     #:location (proceedings-location ecoop #:pages '(28:1 28:29))
     #:date 2017))
 
+(define btsb-oopsla-2017
+  (make-bib
+    #:title "Sound Gradual Typing: Only Mostly Dead"
+    #:author (authors "Spenser Bauman" "Sam Tobin-Hochstadt" "Jeremy G. Siek" "Carl Friedrich Bolz-Tereick")
+    #:location (proceedings-location oopsla)
+    #:date 2017))

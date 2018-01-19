@@ -73,7 +73,7 @@ The appendix discusses the stability of individual measurements and reports the 
       @elem{
         @(apply Figure-ref name*) present the results of measuring the benchmark programs in a series of overhead graphs.
         As in @figure-ref{fig:suffixtree-plot}, the left column of figures are cumulative distribution functions for @deliverable[] configurations and the right column are cumulative distribution functions for @step["1" "D"] configurations.
-        These plots additionally include data for three versions of Racket released between June 2015 and February 2016.
+        These plots include data for three versions of Racket released between June 2015 and February 2016.
         Data for version 6.2 are thin red curves with short dashes.
         Data for version 6.3 are mid-sized green curves with long dashes.
         Data for version 6.4 are thick, solid, blue curves.
@@ -104,18 +104,18 @@ The appendix discusses the stability of individual measurements and reports the 
           @elem{
             Many curves are quite flat; they demonstrate that gradual typing introduces large and widespread performance overhead in the corresponding benchmarks.
             Among benchmarks with fewer than @|suffixtree-num-modules| modules, the most common shape is a flat line near the 50% mark.
-            Such lines imply that the performance of a family of configurations is dominated by a single type boundary.
+            Such lines imply that the performance of a group of configurations is dominated by a single type boundary.
             @; For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present; all eight configurations with this boundary have over @|max-str| overhead.
             Benchmarks with @|suffixtree-num-modules| or more modules generally have smoother slopes, but five such benchmarks have essentially flat curves.
             The underlying message is that for many values of @math{D} between 1 and @|max-str|, few configurations are @deliverable{}.
 
-            For example, in @integer->word[(- num-bm num-mostly-2-deliverable)] of the @|num-bm-str| benchmark programs, @emph{at most} half the configurations are @deliverable{2} on any version.
+            For example, in @integer->word[(- num-bm num-mostly-2-deliverable)] of the @|num-bm-str| benchmark programs, at most half the configurations are @deliverable{2} on any version.
             The situation is worse for lower (more realistic) overheads, and does not improve much for higher overheads.
             Similarly, there are ten benchmarks in which at most half the configurations are @deliverable{10}.
 
             The curves' endpoints describe the extremes of gradual typing.
             The left endpoint gives the percentage of configurations that run at least as quickly as the untyped configuration.
-            Except for @bm[lnm], such configurations are a low proportion of the total.@note{@bm[sieve] is a degenerate case. Only its untyped and fully-typed configurations are @deliverable{1}.}
+            Except for the @bm[lnm] benchmark, such configurations are a low proportion of the total.@note{@bm[sieve] is a degenerate case. Only its untyped and fully-typed configurations are @deliverable{1}.}
             The right endpoint shows how many configurations suffer over 20x performance overhead.@note{Half the configurations for @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes. The overhead graphs report an ``over 20x'' performance overhead for these configurations.}
             @string-titlecase[num-max-deliverable-str] benchmarks have at least one such configuration.
 
@@ -144,7 +144,7 @@ For example in @bm[gregor] (third plot in @figure-ref{fig:lnm:3}), version 6.4 h
 The difference is greatest near @math{x=2}; in terms of configurations, over 80% of @bm[gregor] configurations are not @deliverable{2} on v6.2 but are @deliverable{2} on v6.4.
 The overhead plots for many other benchmarks demonstrate a positive difference between the number of @deliverable{D} configurations on version 6.4 relative to version 6.2.
 
-The plot of @figure-ref{fig:scale:delta} makes explicit how much version 6.4 is improved over version 6.2.
+The plot of @figure-ref{fig:scale:delta} explicitly shows the improvement of version 6.4 over version 6.2.
 It consists of @integer->word[(*NUM-BENCHMARKS*)] purple lines, one for each benchmark.
 These lines plot the difference between the curve for v6.4 and the curve for v6.2 on the corresponding overhead plot.
 For example, the line for @bm[gregor] (labeled @math{r}) demonstrates a large improvement in the number of @deliverable{2} configurations.

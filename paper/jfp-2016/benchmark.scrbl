@@ -223,11 +223,11 @@ The benchmark enforces these conditions with explicit pre and post-conditions on
 Fourth, each @emph{static import} of an untyped struct type into typed code generates a unique datatype.
 Typed modules that share instances of an untyped struct must therefore reference a common static import site.
 The benchmarks include additional fixed modules that we call @emph{adaptor modules} to provide this canonical import site; for each module @math{M} in the original program that exports a struct, the benchmark includes an adaptor module that provides type annotations for every identifier exported by @math{M}.
-Adaptor modules add a layer of indirection, but this indirection did not add measurable performance overhead.
+Adaptor modules add a layer of indirection, but this indirection does not add measurable performance overhead.
 
 Fifth, some benchmarks use a different modularization than the original program.
 The @bm[kcfa] benchmark is modularized according to comments in the original, single-module program.
 The @bm[suffixtree], @bm[synth], and @bm[gregor] benchmarks each have a single file containing all their data structure definitions; the original programs defined these structures in the same module as the functions on the structures.
 Lastly, the @bm[quadBG] benchmark has two fewer modules than @bm[quadMB] because it inlines the definitions of two (large) data structures that @bm[quadMB] keeps in separate files.
-Inlining does not affect overhead due to gradual typing, but greatly reduces the number of configurations.
+This inlining does not affect overhead due to gradual typing, but greatly reduces the number of configurations.
 

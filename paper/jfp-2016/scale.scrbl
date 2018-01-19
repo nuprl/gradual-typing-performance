@@ -32,7 +32,7 @@ In practice, this limits an exhaustive evaluation of Typed Racket to programs wi
 An evaluation of micro-level gradual typing would be severly limited; depending on the definition of a typeable component, such an evaluation might be limited to programs with 20 functions.
 
 Simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
-Instead of measuring every configuration in a benchmark, it suffices to randomly sample a @emph{linear} number of configurations and plot the overhead apparent in the sample.
+Instead of measuring every configuration in a benchmark, it suffices to randomly sample a linear number of configurations and plot the overhead apparent in the sample.
 
 @; @bold{Remark}
 @;     Overhead plots are intuitively a statement about expected values.
@@ -48,13 +48,12 @@ Each line is surrounded by a thin interval generated from @integer->word[srs-sam
 The implicit suggestion of @figure-ref{fig:scale:srs-snake} is that the intervals provide a reasonable approximation of the performance of the @bm[snake] benchmark.
 These intervals capture both the absolute performance (left plot) and relative performance (right plot) of @bm[snake].
 
-@Figure-ref{fig:scale:delta-interval} provides evidence for the linear sampling suggestion of @figure-ref{fig:scale:srs-snake}.
-It describes the @integer->word[(length large-bm*)] largest benchmarks in the @|GTP| suite.
+@Figure-ref{fig:scale:delta-interval} provides evidence for the linear sampling suggestion of @figure-ref{fig:scale:srs-snake} using data for the @integer->word[(length large-bm*)] largest benchmarks in the @|GTP| suite.
 The solid purple lines from @figure-ref{fig:scale:delta} alongside confidence intervals generated from a small number of samples.
 Specifically, the interval for a benchmark with @math{N} modules is generated from @integer->word[srs-samples] samples of @exact{$@id[sample-size-factor]N$} configurations.
 Hence the samples for @bm[lnm] use @id[(* 10 (benchmark->num-modules lnm))] configurations and the samples for @bm[quadMB] use @id[(* 10 (benchmark->num-modules quadMB))] configurations.
 For every benchmark, the true relative performance (solid purple line) lies within the corresponding interval.
-Again, the lesson is that a language designer can quickly approximate performance by computing a similar interval.
+In conclusion, a language designer can quickly approximate performance by computing a similar interval.
 
 
 @section{Statistical Protocol}
@@ -64,7 +63,7 @@ The details for @figure-ref{fig:scale:delta-interval} are analogous:
 
 @itemlist[
 @item{
-  To generate one random sample, select @id[snake-sample-size] configurations without replacement and associate each configuration with its overhead from the exhaustive performance evaluation reported in @secref{sec:tr}.
+  To generate one random sample, select @id[snake-sample-size] configurations (10 times the number of modules) without replacement and associate each configuration with its overhead from the exhaustive performance evaluation reported in @secref{sec:tr}.
   @; Sampling with replacement yielded similar results.
 }
 @item{

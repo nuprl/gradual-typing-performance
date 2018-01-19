@@ -56,7 +56,7 @@ To illustrate this strategy, we describe how Typed Racket enforces a few types @
    every argument to the function and every result computed by the function.
 }
 ]
-Note that the cost of checking a type like @${\tau_0 \cup \tau_1} is linear in the number of types in the union, and the cost of a type like @type{$\tlistof{\tint}$} is linear in the size of the value.
+Note that the cost of checking a type like @type{$\tau_0 \cup \tau_1$} is linear in the number of types in the union, and the cost of a type like @type{$\tlistof{\tau}$} is linear in the size of the list value.
 Furthermore, if @ctcapp["\\tau" "v"] wraps @${v} in a proxy then (@ctc{$\tau$} @ctcapp["\\tau" "v"]) wraps @${v} in two proxies, and therefore adds two levels of indirection.
 See @citet[thf-dls-2006] and @citet[tfdffthf-ecoop-2015] for additional details.
 
@@ -74,7 +74,7 @@ The rest of this section demonstrates how these costs arise in Typed Racket prog
 No matter the cost of a single runtime type check, if the check occurs frequently then the program suffers.
 The program in @figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
 Each call is type-correct; nevertheless, Typed Racket validates the argument @racket[stk] against the specification @ctc{Listof A} one million times.
-These checks dominate the performance of this example program, simply because many values flow across the module boundary.
+These checks dominate the performance of this example program.
 
     @figure["fig:devils:stack" "A high-frequency type boundary"
         @(let ([c1
@@ -149,7 +149,7 @@ One example comes from @bm[quadMB], in which the core datatype is a tagged @math
         [tu (typed/untyped-ratio (benchmark-rktd quadMB v))]
         [tu-str (format "~ax" (~r tu #:precision '(= 1)))])
    @elem{
-     Heavy use of the predicate for this type causes the @|tu-str| typed/untyped ratio in Racket v6.4.
+     Heavy use of a predicate for this type causes the @|tu-str| typed/untyped ratio in Racket v6.4.
     @; @note{Incidentally,
     @;   the programmer who designed this datatype was hoping Typed Racket would improve the application's performance.
     @;   The high overhead was a complete surprise.}
@@ -184,7 +184,7 @@ Michael Ballantyne encountered a similar issue with a queue library that led to 
 
 Higher-order values and metaprogramming features introduce fine-grained, dynamic type boundaries.
 For example, every proxy that enforces a type specification is a dynamically-generated type boundary.
-These boundaries make it difficult to predict the overhead of gradual typing statically.
+These boundaries make it difficult to statically predict the overhead of gradual typing.
 
 The @bm[synth] benchmark illustrates one problematic use of metaprogramming.
 One module in @bm[synth] exports a macro that expands to a low-level iteration construct.
@@ -217,7 +217,6 @@ In order to predict such costs, a programmer must recognize macros and understan
   @figure["fig:devils:forth" @elem{Accumulating proxies in @bm[forth].}
       @codeblock-pict[@string-join['(
       "#lang typed/racket"
-      ""
       "(require (prefix-in C. \"command.rkt\"))"
       ""
       "(: eval (Input-Port -> Env))"
@@ -231,7 +230,7 @@ In order to predict such costs, a programmer must recognize macros and understan
       ) "\n"]]
   ]
 
-Higher-order values that repeatedly flow across type boundaries may accumulate layers of type-checking proxies.
+Higher-order values that repeatedly cross type boundaries may accumulate layers of type-checking proxies.
 These proxies add indirection and space overhead.
 Collapsing layers of proxies and pruning redundant proxies is an area of active research@~cite[htf-hosc-2010 sw-popl-2010 g-popl-2015].
 
@@ -283,5 +282,5 @@ Racket libraries are either typed or untyped; there is no middle ground, therefo
 For instance, the @bm[mbta] and @bm[zordoz] benchmarks rely on untyped libraries and consequently have relatively high typed/untyped ratios on Racket v6.2
  (@rnd[@typed/untyped-ratio[@benchmark-rktd[mbta "6.2"]]]x and
   @rnd[@typed/untyped-ratio[@benchmark-rktd[zordoz "6.2"]]]x, respectively).
-In contrast, the @bm[lnm] benchmark relies on two typed libraries and thus runs significantly faster when fully typed.
+In contrast, the @bm[lnm] benchmark relies on two typed libraries and runs significantly faster when fully typed.
 
