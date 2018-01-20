@@ -9,15 +9,17 @@ Section 2 in the original submission followed this section/subsection outline:
         + reasons for migrating from Racket to Typed Racket
 - 2.1 : reasons for using both Racket and Typed Racket
         (rather than migrating the entire application to Racket)
-- 2.2 : a case for sound gradual typing
+- 2.2 : argument for type soundness instead of type erasure
 
 Section 2 in the revised submission follows a modified outline:
 
 - 2   : brief introduction to Typed Racket
 - 2.1 : reasons for migrating from Racket to Typed Racket
-- 2.2 : reasons for using both Racket and Typed Racket
-- 2.3 : a case for sound gradual typing
-- 2.4 : how Typed Racket enforces soundness
+        + reasons to continue using Racket
+- 2.2 : anecdotes suggesting a need for performance evaluation
+
+Summary; we removed the argument for type soundness, and instead just describe
+ the brief history that led to this work on performance evaluation.
 
 
 The rest of this document addresses specific comments from each referee;
@@ -69,7 +71,8 @@ Changed to use past-tense ("were originally written").
 > the problem is. For Twitter, the problems with Ruby were (a) performance, and
 > (b) code anti-patterns
 
-Revised this paragraph, removed the two uses of "the problem".
+Revised the paragraph before this to explicitly state readability and speed
+ as problems, and revised this paragraph to clarify Twitter's issues with Ruby.
 
 
 ## Section 1: address Node.js
@@ -77,7 +80,7 @@ Revised this paragraph, removed the two uses of "the problem".
 > worth adding that for many developers, the default for new services is to
 > use JavaScript on Node.
 
-Added an acknowledgement to the first paragraph.
+The opening paragraph now cites Node.js
 
 
 ## Section 1: defend 'migratory typing'
@@ -87,7 +90,7 @@ Added an acknowledgement to the first paragraph.
 
 Replaced the footnote with one that reads:
 
-  "Others [SNAPL'17] refer to this use of gradual typing as _migratory typing_"
+  "[SNAPL'17] refer to this use of gradual typing as _migratory typing_"
 
 Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
  Tobin-Hochstadt et al.
@@ -99,11 +102,7 @@ Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
 > context, even though programmers seem more or less willing to put up with
 > unpredictable changes in performance when it comes to concurrency.
 
-Changed the last paragraph of sec. 2.1 to give a clearer example.
-
-We are not sure what the referee means about programmers being 'more or less
- willing to put up with unpredictable changes in performance'.
-We believe unpredictable changes are always unacceptable (i.e., bugs).
+TODO
 
 
 ## Section 2.2: strengthen argument (or remove)
@@ -117,12 +116,7 @@ We believe unpredictable changes are always unacceptable (i.e., bugs).
 > [the case should address] those the developers who ask for flags to
 > disable contract checking
 
-> give more, stronger examples
-
-> what kind of unsoundnesses can happen?
-
-Revised the argument, using a less-contrived example and explicit comparison
- to optional typing.
+Removed the argument.
 
 
 ## Section 2.2: fix awkward 'recall' about types
@@ -134,8 +128,9 @@ Revised the argument, using a less-contrived example and explicit comparison
 > There are systems where type checking is in general undecidable... do
 > these systems have types, or something else?
 
-Removed 'checkable', clarified the sentence that follows.
-Thank you for catching our mistake!
+Removed the phrase.
+
+[[ Saying 'checkable' was an error in our submission. Thank you for catching it. ]]
 
 
 ## Section 3.1: explain where lattice lines _should_ go
@@ -163,22 +158,16 @@ The revised section says:
 
 > why random permutations of configurations?
 
-No change to the paper.
+Added a footnote to clarify.
 
-We measure the configurations in a random order to control for confounding
- variables, such as OS-level caching.
-We do not have evidence that measuring the configurations in a fixed order
- will affect the measurements; randomizing the order is just a precaution.
+We randomize as a precaution against possible confounding effects (OS-level caching).
 
 
 ## Section 5.1: why drop the first run?
 
 > Is there some bytecode/compilation/cache effect that's relevant?
 
-Added note about the JIT compiler to Section 5.1.
-
-Yes, Racket has a bytecode compiler and a JIT compiler. See:
- `http://docs.racket-lang.org/guide/performance.html#%28part._.J.I.T%29`
+Clarified that we drop the first run to control for JIT compiler warmup.
 
 
 ##  Section 5.1: define number of iterations
@@ -196,7 +185,8 @@ Changed `N` to `N >= 10`
 
 Added "reading from a file" as a threat to validity in Section 7.
 
-We have found no evidence that the benchmarks are compute, I/O, or memory-bound.
+In the benchmarks that do perform I/O actions, those actions take only a small
+ fraction of the total running time.
 
 
 ## Section 5.1: define green threads; do all threads block on I/O?
@@ -237,9 +227,7 @@ Changed the final line to say that the alternative soundness appears to be
 
 Added a citation to Section 8.3.
 
-This example definitely belongs in the paper.
-
-It is not one of the benchmarks because (1) the source of performance
+This example is not one of the benchmarks because (1) the source of performance
  overhead is clear and (2) we only have one partially-typed configuration for it.
 
 
@@ -249,14 +237,13 @@ It is not one of the benchmarks because (1) the source of performance
 > racket, or is it just because they're only reporting the topmost node in
 > the performance lattice?
 
-Added a citation to Rastogi et al. POPL 2015 to the conclusion,
- as one example for how keeping run-time type information might improve performance.
+Added a citation to Rastogi et al. POPL 2015 to the conclusion as one example
+ for how keeping run-time type information might improve performance.
 
-It is difficult to compare to Safe TypeScript based on the ad-hoc evaluation in
- Rastogi et al. POPL 2015.
-Besides the 1.15x number, they report an average slowdown of 22x for the
- fully-untyped configuration of six Octane benchmarks programs.
-We hope that our paper inspires a in-depth comparison.
+It is tough to compare to SafeTypeScript based on the POPL 2015 paper.
+The 1.15x number is quite low, but they also report an average slowdown of
+ 22x on six untyped programs from the Octane benchmarks.
+We hope that this journal paper inspires a detailed comparison.
 
 
 ## compare to other space-efficiency papers
@@ -310,10 +297,10 @@ Added citations.
 > scientific perspective without understanding those aspects of the
 > implementation of Typed Racket that influence performance.
 
-(Referee 3 also wants explanation)
-
 Revised sec. 2 to explain how Typed Racket enforces soundness, and how this
  enforcement leads to performance overhead.
+
+[[ cc Referee 3 ]]
 
 
 ## Section 3: clarify 'experimental vs. fixed' modules
@@ -325,16 +312,16 @@ Revised sec. 2 to explain how Typed Racket enforces soundness, and how this
 Added two definitions to clarify this part of the method.
 Full changes:
 
-- Section 3.1: define _experimental modules_ and _fixed modules_
-  (experimental modules define the lattice, fixed modules are part of the
+- Section 3.1: define _migrated modules_ and _unchanged modules_
+  (migrated modules define the lattice, unchanged modules are part of the
    program but not part of the experiment e.g. because they are part of the
    Racket runtime library)
 - Section 4.0: explain that the 'Depends' field in the benchmark descriptions
-  lists libraries of _fixed modules_
-- Section 4.0: clarify that `# MOD` in Figure 6 is the number of _experimental
+  lists libraries of _unchanged modules_
+- Section 4.0: clarify that `# MOD` in Figure 6 is the number of _migrated
   modules_
 - Section 4.1: state that adaptor modules are fixed modules
-- Section 6.0: clarify that the method is limited by the number of _experimental
+- Section 6.0: clarify that the method is limited by the number of _migrated
   modules_
 
 
@@ -372,10 +359,10 @@ Fixed.
 > 3) if that is done, whether there has been any effort to evaluate the
 >    cost of the dynamic allocation in this work
 
-Revised sec. 2 to explain how Typed Racket enforces soundness.
+Revised sec. 8 to explain how Typed Racket enforces soundness.
 
-We believe the three points are addressed in the revised version of the paper,
- but just to be clear:
+We believe the three points above are addressed in the revised version of the
+ paper, but just to be clear:
 
 1. The implementation does not box/unbox values based on whether they are
    typed/untyped, but it does box (in the sense of wrapping with a proxy)

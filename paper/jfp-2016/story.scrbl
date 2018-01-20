@@ -119,10 +119,10 @@ Subsequent improvements focused on growing the type system and making it easier 
 All along, the maintainers of Typed Racket knew that the performance cost of enforcing type soundness could be high (see @secref{sec:devils} for an overview); however, this cost was not an issue in many programs.
 
 As other programmers began using Typed Racket, a few discovered serious issues with its performance.
-Some users were able to work around their issues, but for others the poor performance became an obstacle to their work.
 For instance, one user experienced a 1.5x slowdown in a web server,
  others found 25x--50x slowdowns when using an array library,
  and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix contains a list of user reports.}
+@; TODO clarify why this is a problem
 These reports identified the need for a systematic performance evaluation to:
  (1) determine the extent of the issue,
  (2) identify the sources of poor performance,

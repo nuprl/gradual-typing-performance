@@ -20,6 +20,7 @@ Programmers use dynamically typed languages to build all kinds of applications.
 Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006], web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017], and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) were originally written in dynamic languages (Python, PHP, and Ruby, respectively).
 
 Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit type annotations an obstacle to their work.
+Dynamically typed code can be difficult for humans to reason about and difficult to compile to efficient machine instructions.
 Researchers have tried to overcome the lack of type annotations with inference algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 rch-popl-2012], but most have come to realize that there is no substitute for programmer-supplied annotations.
 Explicit annotations communicate a programmer's intent to other human readers.
 Furthermore, tools can check the annotations for logical inconsistencies and leverage types during compilation.
@@ -31,7 +32,7 @@ Furthermore, tools can check the annotations for logical inconsistencies and lev
 
 One approach to the maintenance problem is to rewrite the entire application in a statically typed langauge.
 This solution assumes that the application is small enough to make a wholesale migration feasible.
-For example, Twitter was able to port their server-side code from Ruby to Scala because they recognized the long-term issues with their Ruby code early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
+For example, Twitter was able to port their server-side code from Ruby to Scala because they recognized the long-term performance and readability issues with their Ruby code early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
 
 @; Enter GT
 Another approach is gradual typing@~cite[st-sfp-2006 thf-dls-2006].@note{@citet[tfffgksst-snapl-2017] refer to this use of gradual typing as @emph{migratory typing}.}
@@ -90,4 +91,4 @@ Specifically, this paper contributes:
 The discussion in @secref{sec:devils} is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).
 In particular, there are challenges to address both in the implementation of sound gradual type systems and in helping users find combinations of typed and untyped code that meet their performance requirements.
 
-This paper begins with a brief introduction to Typed Racket (@secref{sec:story}) and the @emph{migratory} flavor of gradual typing that it supports.
+This paper begins with a brief introduction to Typed Racket (@secref{sec:story}) and the migratory flavor of gradual typing that it supports.
