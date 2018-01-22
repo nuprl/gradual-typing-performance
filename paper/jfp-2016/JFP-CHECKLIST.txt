@@ -3,13 +3,13 @@ General Response
 
 In response to the referees' comments about section 2 (Gradual Typing in Typed
  Racket), we have significantly re-organized the section.
-Section 2 in the original submission followed this section/subsection outline:
+Section 2 in the original submission followed this outline:
 
 - 2   : brief introduction to Typed Racket
         + reasons for migrating from Racket to Typed Racket
 - 2.1 : reasons for using both Racket and Typed Racket
         (rather than migrating the entire application to Racket)
-- 2.2 : argument for type soundness instead of type erasure
+- 2.2 : case for type soundness
 
 Section 2 in the revised submission follows a modified outline:
 
@@ -18,8 +18,8 @@ Section 2 in the revised submission follows a modified outline:
         + reasons to continue using Racket
 - 2.2 : anecdotes suggesting a need for performance evaluation
 
-Summary; we removed the argument for type soundness, and instead just describe
- the brief history that led to this work on performance evaluation.
+Summary: we removed the argument for type soundness and instead describe
+ the history that led to this work on performance evaluation.
 
 
 The rest of this document addresses specific comments from each referee;
@@ -65,6 +65,14 @@ Removed the word "currently".
 Changed to use past-tense ("were originally written").
 
 
+## Section 1: address Node.js
+
+> worth adding that for many developers, the default for new services is to
+> use JavaScript on Node.
+
+The opening paragraph now cites Node.js
+
+
 ## Section 1: explain "the problem"
 
 > The third paragraph of the intro refers to "the problem" without saying what
@@ -73,14 +81,6 @@ Changed to use past-tense ("were originally written").
 
 Revised the paragraph before this to explicitly state readability and speed
  as problems, and revised this paragraph to clarify Twitter's issues with Ruby.
-
-
-## Section 1: address Node.js
-
-> worth adding that for many developers, the default for new services is to
-> use JavaScript on Node.
-
-The opening paragraph now cites Node.js
 
 
 ## Section 1: defend 'migratory typing'
@@ -101,10 +101,11 @@ Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
 > On some level, the results shown here---that applying sound gradual types to
 > only part of a program can _severely_ degrade performance---are unsurprising:
 > plenty of things that are supposed to make programs run faster actually don't!
+
 > ... explain why this unpredictability is unsatisfactory in the gradual typing
 > context
 
-Clarified (in sec 2.2) that the unpredictability goes against programmers'
+Clarified (in the new sec 2.2) that the unpredictability goes against the
  intuition that adding types should improve performance.
 
 
@@ -133,7 +134,8 @@ Removed the argument.
 
 Removed the phrase.
 
-[[ Saying 'checkable' was an error in our submission. Thank you for catching it. ]]
+[[ Saying 'checkable' was an error in our submission.
+   Thank you for catching it. ]]
 
 
 ## Section 3.1: explain where lattice lines _should_ go
@@ -153,7 +155,7 @@ Reorganized section 3.3 to clarify the contents of the graphs.
 The revised section says:
 
 1. the goal is to plot k-step D-deliverable configurations
-2. if k is fixed, choosing different D gives a histogram (for the whole lattice)
+2. if k is fixed, choosing different D gives a histogram for the whole lattice
 3. the graphs fix k=0 and k=1, respectively
 
 
@@ -163,7 +165,8 @@ The revised section says:
 
 Added a footnote to clarify.
 
-We randomize as a precaution against possible confounding effects (OS-level caching).
+We randomize as a precaution against possible confounding effects
+ (for example, OS-level caching).
 
 
 ## Section 5.1: why drop the first run?
@@ -177,9 +180,8 @@ Clarified that we drop the first run to control for JIT compiler warmup.
 
 > what is N, i.e., how many times does each benchmark run?
 
-Changed `N` to `N >= 10`
- and clarified the last paragraph of Section 5.1 to say that the appendix also
- lists running times.
+Changed `N` to `N >= 10` and clarified the last paragraph of Section 5.1 to
+ say that the appendix also lists running times.
 
 
 ## Section 5.1: compute-bound? I/O-bound?
@@ -207,8 +209,7 @@ Removed the phrase "green thread", simplified the description in the footnote.
 > theoretical reasoning framework, with no evaluation on whether developers
 > find blame practical
 
-Moved the citation to the phrase 'complete monitoring', slightly revised the
- paragraph to fit.
+Moved the citation to the phrase 'complete monitoring', revised the paragraph.
 
 
 ## Section 7: clarify final line
@@ -294,18 +295,6 @@ Replaced all percentages with overhead factors.
 Added citations.
 
 
-## Section 2: explain natural embedding
-
-> The performance evaluation of Typed Racket cannot be understood from a
-> scientific perspective without understanding those aspects of the
-> implementation of Typed Racket that influence performance.
-
-Revised sec. 2 to explain how Typed Racket enforces soundness, and how this
- enforcement leads to performance overhead.
-
-[[ cc Referee 3 ]]
-
-
 ## Section 3: clarify 'experimental vs. fixed' modules
 
 > some programs, even in their 100% statically typed configuration, rely on
@@ -319,13 +308,13 @@ Full changes:
   (migrated modules define the lattice, unchanged modules are part of the
    program but not part of the experiment e.g. because they are part of the
    Racket runtime library)
-- Section 4.0: explain that the 'Depends' field in the benchmark descriptions
+- Section 4: explain that the 'Depends' field in the benchmark descriptions
   lists libraries of _unchanged modules_
-- Section 4.0: clarify that `# MOD` in Figure 6 is the number of _migrated
+- Section 4: clarify that `# MOD` in Figure 6 is the number of _migrated
   modules_
 - Section 4.1: state that adaptor modules are fixed modules
-- Section 6.0: clarify that the method is limited by the number of _migrated
-  modules_
+- Section 6: clarify that the method of section 3 is limited to programs
+  with ~20 _migrated modules_
 
 
 ## Section 4: define GTP
@@ -343,10 +332,22 @@ Added a definition.
 Fixed.
 
 
+## Section 8: explain how Typed Racket enforces soundness
+
+> The performance evaluation of Typed Racket cannot be understood from a
+> scientific perspective without understanding those aspects of the
+> implementation of Typed Racket that influence performance.
+
+Revised sec. 8 to explain how Typed Racket enforces soundness, and how this
+ enforcement leads to performance overhead.
+
+[[ cc Referee 3 ]]
+
+
 # Referee: 3
 ================================================================================
 
-## Section 2: explain natural embedding
+## Section 2: explain how Typed Racket enforces soundness
 
 > boxing/unboxing overheads are not discussed
 
@@ -370,7 +371,8 @@ We believe the three points above are addressed in the revised version of the
 1. The implementation does not box/unbox values based on whether they are
    typed/untyped, but it does box (in the sense of wrapping with a proxy)
    some untyped values sent to typed code and some typed values sent to untyped
-   code. For example: mutable data, functions, and objects get proxied.
+   code. These are values that cannot be fully-checked at the boundary; for
+   example, mutable data, functions, and objects get proxied.
 2. The implementation is compiled to bytecode and JIT-compiled to machine code.
 3. In this work, we do not measure the cost of runtime mallocs.
 

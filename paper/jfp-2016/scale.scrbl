@@ -28,7 +28,7 @@
   @; math library ~ 197 modules
 The evaluation method of @secref{sec:method} does not scale to benchmarks with a large number of typeable components.
 Benchmarking a full performance lattice for a program with @math{N} such components requires @exact{$2^N$} measurements.
-In practice, this limits an exhaustive evaluation of Typed Racket to programs with approximately 20 experimental modules.
+In practice, this limits an exhaustive evaluation of Typed Racket to programs with approximately 20 migrated modules.
 An evaluation of micro-level gradual typing would be severly limited; depending on the definition of a typeable component, such an evaluation might be limited to programs with 20 functions.
 
 Simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
