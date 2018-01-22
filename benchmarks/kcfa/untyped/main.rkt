@@ -52,6 +52,6 @@
     (analyze e)))
 
 ;;(time (main 5 standard-example)) ;; 0ms
-;; (time (main 2 mid-test)) ;; 10 seconds
-(time (main 1 ianj)) ;; 20 seconds
+(time (main 2 mid-test)) ;; 3 seconds
+;; (time (main 1 ianj)) ;; 20 seconds
 ;; (time (main 2 ianj)) ;; 47 seconds
