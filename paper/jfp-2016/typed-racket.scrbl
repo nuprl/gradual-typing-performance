@@ -29,7 +29,7 @@
 The data is the result of applying the following protocol for each benchmark and each version of Typed Racket:
 @itemlist[
 @item{
-  Select a random permutation of the configurations in the benchmark.@note{In principle, there is no need to randomize the order, but doing so helps control against confounding variables@~cite[mdhs-asplos-2009].}
+  Select a random permutation of the configurations in the benchmark.@note{In principle, there is no need to randomize the order, but doing so helps control against possible confounding variables@~cite[mdhs-asplos-2009].}
 }
 @item{
   For each configuration: recompile, run once ignoring the result to control against JIT warmup, and run once more and record the running time.
