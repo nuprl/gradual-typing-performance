@@ -21,11 +21,12 @@ Section 2 in the revised submission follows a modified outline:
 Summary: we removed the argument for type soundness and instead describe
  the history that led to this work on performance evaluation.
 
+- - -
 
 The rest of this document addresses specific comments from each referee;
  sections are labeled "Referee: 1", "Referee: 2", and "Referee: 3".
 
-Each point has the format:
+Each response has the format:
 
 ```
   ## SECTION: TITLE
@@ -42,7 +43,7 @@ where:
 - `TITLE` describes the issue
 - `CLARIFICATION` quotes the referee
 - `DELTA` describes any edits to the paper
-- `COMMENT` is any additional reply to the referee
+- `COMMENT` is any extra reply to the referee
 
 
 Referee: 1
@@ -79,8 +80,8 @@ The opening paragraph now cites Node.js
 > the problem is. For Twitter, the problems with Ruby were (a) performance, and
 > (b) code anti-patterns
 
-Revised the paragraph before this to explicitly state readability and speed
- as problems, and revised this paragraph to clarify Twitter's issues with Ruby.
+Revised the second paragraph to explicitly state readability and speed as
+ problems, and revised this paragraph to clarify Twitter's issues with Ruby.
 
 
 ## Section 1: defend 'migratory typing'
@@ -138,7 +139,7 @@ Removed the phrase.
    Thank you for catching it. ]]
 
 
-## Section 3.1: explain where lattice lines _should_ go
+## Section 3.1: add lattice lines
 
 > It's slightly jarring to see something without lines between nodes called
 > a "lattice"
@@ -181,7 +182,7 @@ Clarified that we drop the first run to control for JIT compiler warmup.
 > what is N, i.e., how many times does each benchmark run?
 
 Changed `N` to `N >= 10` and clarified the last paragraph of Section 5.1 to
- say that the appendix also lists running times.
+ say that the appendix also lists the number of iterations.
 
 
 ## Section 5.1: compute-bound? I/O-bound?
@@ -232,7 +233,8 @@ Changed the final line to say that the alternative soundness imposes less
 Added a citation to Section 8.3.
 
 This example is not one of the benchmarks because (1) the source of performance
- overhead is clear and (2) we only have one partially-typed configuration for it.
+ overhead is similar to other benchmarks, like `fsm`, and (2) we only have one
+ partially-typed configuration for it.
 
 
 ## compare to TypeScript
@@ -244,7 +246,7 @@ This example is not one of the benchmarks because (1) the source of performance
 Added a citation to Rastogi et al. POPL 2015 to the conclusion as one example
  for how keeping run-time type information might improve performance.
 
-It is tough to compare to SafeTypeScript based on the POPL 2015 paper.
+It is difficult to compare to SafeTypeScript based on the POPL 2015 paper.
 The 1.15x number is quite low, but they also report an average slowdown of
  22x on six untyped programs from the Octane benchmarks.
 We hope that this journal paper inspires a detailed comparison.
@@ -257,8 +259,8 @@ We hope that this journal paper inspires a detailed comparison.
 > Garcia 2013 ICFP (less close)
 > Siek et al. ESOP 2015 (less close)
 
-Added a citation to Siek et al. ESOP 2015 to the conclusion,
- as a second example of using run-time type information to improve performance.
+Added a citation to Siek et al. ESOP 2015 to the conclusion, as a second
+example of using run-time type information to improve performance.
 
 We cite the journal version of Herman et al.'s 2007 paper and Greenberg's POPL
  2015 paper (Space-Efficient Manifest Contracts) in Section 9.
@@ -295,7 +297,7 @@ Replaced all percentages with overhead factors.
 Added citations.
 
 
-## Section 3: clarify 'experimental vs. fixed' modules
+## Section 3: clarify the role of library modules
 
 > some programs, even in their 100% statically typed configuration, rely on
 > libraries that are untyped. This is an inaccurate presentation of the
@@ -314,7 +316,9 @@ Full changes:
   modules_
 - Section 4.1: state that adaptor modules are fixed modules
 - Section 6: clarify that the method of section 3 is limited to programs
-  with ~20 _migrated modules_
+  with roughly 20 _migrated modules_
+
+Note that some programs rely on typed libraries, i.e., the `lnm` benchmark.
 
 
 ## Section 4: define GTP
