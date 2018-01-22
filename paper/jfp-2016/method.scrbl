@@ -78,7 +78,7 @@ These configurations form a lattice, ordered by the subset relation on the set o
 
 @Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a program with @|suffixtree-num-modules| migrated modules.
 The black rectangle at the top of the lattice represents the configuration in which all @|suffixtree-num-modules| modules are typed.
-The other @id[(sub1 suffixtree-num-configs)] rectangles represent configurations in which some (or all) modules are untyped.
+The other @id[(sub1 suffixtree-num-configs)] rectangles represent configurations with some untyped modules.
 
 A given row in the lattice groups configurations with the same number of typed modules (black squares).
 For instance, configurations in the second row from the bottom contain two typed modules.
@@ -91,11 +91,9 @@ With these labels, a language implementor can draw several conclusions about the
 For instance, @|suffixtree-num-D-str| configurations run within a @id[suffixtree-sample-D]x overhead and @|suffixtree-num-k-str| configurations are at most @integer->word[suffixtree-sample-k] type conversion step from a configuration that runs within a @id[suffixtree-sample-D]x overhead.
 High overheads are common (@id[suffixtree-num-max] configurations have over @id[suffixtree-max]x overhead), but the fully typed configuration runs faster (0.7x overhead) than the untyped configuration because Typed Racket uses the type annotations to compile more efficient code.
 
-@bold{Terminology}
-  A labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}.
-  The same lattice without labels is a @emph{configuration lattice}.
-  The practical distinction is that users of a gradual type system will explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.@;
-@|QED|
+A labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}.
+The same lattice without labels is a @emph{configuration lattice}.
+The practical distinction is that users of a gradual type system will explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.
 
 
 @; -----------------------------------------------------------------------------
@@ -141,7 +139,7 @@ One coarse measure of ``work'' is the number of additional modules that must be 
       and @exact{$c_2$} is @deliverable{}.
     }@;
 @; @profile-point{sec:method:example}
-The number of @step[] configurations therefore captures the experience of a prescient programmer that converts the @exact{$k$} modules suited to improve performance.
+The number of @step[] configurations therefore captures the experience of a prescient programmer that converts the @exact{$k$} modules that maximize performance.
 
 @(define sample-data
   (let* ([mean+std* '#((20 . 0) (15 . 0) (35 . 0) (10 . 0))]
@@ -222,7 +220,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         The main lesson to extract from a performance lattice is the proportion of @step{} configurations for various @math{k} and @math{D}.
         In other words, this proportion describes the number of configurations (out of the entire lattice) that are at most @math{k} upward steps from a @deliverable{D} configuration.
         One way to plot this information is to fix a value for @math{k}, say @math{k=0}, and consider a set of values @exact{$d_0,\ldots,d_{n-1}$} for @math{D}.
-        The set of proportions of @step["0" "d_i"] configurations defines a histogram  with the value of @math{D} on the independent axis and the proportion of configurations on the other.
+        The set of proportions of @step["0" "d_i"] configurations defines a histogram with the value of @math{D} on the independent axis and the proportion of configurations on the dependent axis.
 
         @Figure-ref{fig:suffixtree-plot} demonstrates two such @emph{overhead plots}.
         The plot on the left fixes @math{k=0} and plots the proportion of @step["0" "D"] configurations.

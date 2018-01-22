@@ -17,10 +17,10 @@
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
 Programmers use dynamically typed languages to build all kinds of applications.
-Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006], web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017], and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) were originally written in dynamic languages (Python, PHP, and Ruby, respectively).
+Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006], web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017], and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) were originally written in Python, PHP, and Ruby.
 
 Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit type annotations an obstacle to their work.
-Dynamically typed code can be difficult for humans to reason about and difficult to compile to efficient machine instructions.
+Dynamically typed code can be difficult for humans to reason about and difficult to implement efficiently.
 Researchers have tried to overcome the lack of type annotations with inference algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 rch-popl-2012], but most have come to realize that there is no substitute for programmer-supplied annotations.
 Explicit annotations communicate a programmer's intent to other human readers.
 Furthermore, tools can check the annotations for logical inconsistencies and leverage types during compilation.
@@ -91,4 +91,4 @@ Specifically, this paper contributes:
 The discussion in @secref{sec:devils} is intended to guide implementors of gradual type systems toward promising future directions (@secref{sec:fut}).
 In particular, there are challenges to address both in the implementation of sound gradual type systems and in helping users find combinations of typed and untyped code that meet their performance requirements.
 
-This paper begins with a brief introduction to Typed Racket (@secref{sec:story}) and the migratory flavor of gradual typing that it supports.
+@; This paper begins with a brief introduction to Typed Racket (@secref{sec:story}) and the migratory flavor of gradual typing that it supports.

@@ -28,10 +28,10 @@ This section explains the aspects of Typed Racket that influence performance and
 @; -----------------------------------------------------------------------------
 @section{How Typed Racket Enforces Type Soundness}
 
-Performance overhead in Typed Racket comes from type soundness.
+Performance overhead in Typed Racket comes from its type soundness guarantee.
 When a value flows from Racket to a typed context, there is a runtime cost to check that the value matches the assumptions of the static type checker.
 
-Typed Racket's strategy for checking the type of Racket values at runtime follows the @emph{natural embedding} strategy formalized by @citet[mf-toplas-2007].
+Typed Racket's strategy for checking the type of Racket values at runtime follows the @emph{natural embedding} technique for a multi-language program@~cite[mf-toplas-2007].
 When a typed context expects a value of base type, Typed Racket enforces the boundary with a predicate for the type.
 When a typed context expects a value of an inductive type, Typed Racket checks the constructor of the value and recursively checks its components.
 If any type parameters to the inductive type are invariant or contravariant (i.e., the value is mutable or contains a delayed computation), Typed Racket wraps the incoming value with a proxy@~cite[sthff-oopsla-2012] to monitor its future interactions with typed code.
@@ -60,7 +60,7 @@ To illustrate this strategy, we describe how Typed Racket enforces a few types @
    every argument to the function and every result computed by the function.
 }
 ]
-Note that the cost of checking a type like @type{$\tau_0 \cup \tau_1$} is linear in the number of types in the union, and the cost of a type like @type{$\tlistof{\tau}$} is linear in the size of the list value.
+Note that the cost of checking a type like @type{$\tau_0 \cup \tau_1$} is linear in the number of types in the union, and the cost of a type like (@type{$\tlistof{\tau}$}) is linear in the size of the list value.
 Furthermore, if @ctcapp["\\tau" "v"] wraps @${v} in a proxy then (@ctc{$\tau$} @ctcapp["\\tau" "v"]) wraps @${v} in two proxies, and therefore adds two levels of indirection.
 See @citet[thf-dls-2006] and @citet[tfdffthf-ecoop-2015] for additional details regarding the type-to-contract translation.
 
@@ -68,7 +68,7 @@ This strategy clearly suffers from three kinds of performance costs:
  the cost of checking a value as it crosses a boundary,
  the cost of allocating a proxy to monitor the value,
  and the cost of the indirection that the proxy adds to subsequent operations.
-The rest of this section demonstrates how these costs arise in Typed Racket programs.
+The rest of this section demonstrates how these costs arise in practical examples.
 
 
 @; -----------------------------------------------------------------------------
@@ -78,7 +78,6 @@ The rest of this section demonstrates how these costs arise in Typed Racket prog
 If values frequently cross one type boundary, then the program will suffer even if the cost of each boundary-crossing is relatively low.
 The program in @figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
 Each call is type-correct; nevertheless, Typed Racket validates the argument @racket[stk] against the specification @ctc{Listof A} one million times.
-These checks dominate the performance of this example program.
 
     @figure["fig:devils:stack" "A high-frequency type boundary"
         @(let ([c1

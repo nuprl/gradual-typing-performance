@@ -98,11 +98,14 @@ Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
 
 ## Section 2.1: clarify why this performance overhead is a problem
 
-> explain why this unpredictability is unsatisfactory in the gradual typing
-> context, even though programmers seem more or less willing to put up with
-> unpredictable changes in performance when it comes to concurrency.
+> On some level, the results shown here---that applying sound gradual types to
+> only part of a program can _severely_ degrade performance---are unsurprising:
+> plenty of things that are supposed to make programs run faster actually don't!
+> ... explain why this unpredictability is unsatisfactory in the gradual typing
+> context
 
-TODO
+Clarified (in sec 2.2) that the unpredictability goes against programmers'
+ intuition that adding types should improve performance.
 
 
 ## Section 2.2: strengthen argument (or remove)

@@ -8,9 +8,9 @@
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
 Typed Racket@~cite[tfffgksst-snapl-2017] is a sound gradual typing system for Racket.
-Consequently, Typed Racket's syntax is an extension of Racket's, its static type checker supports idioms common in (dynamically-typed) Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015], and a Typed Racket module may import definitions from a Racket module.
+Typed Racket's syntax is an extension of Racket's, its static type checker supports idioms common in dynamically-typed Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015], and a Typed Racket module may import definitions from a Racket module.
 A Racket module may likewise import definitions from a Typed Racket module.
-To ensure type soundness@~cite[tfffgksst-snapl-2017], Typed Racket compiles static types to higher-order contracts and applies these contracts at the boundaries between Typed Racket and Racket modules.
+To ensure type soundness@~cite[tfffgksst-snapl-2017], Typed Racket compiles static types to higher-order contracts and applies these contracts at the lexical boundaries between Typed Racket and Racket modules.
 
 @figure["fig:story:tr" "A gradually typed application"
   @(let* ([add-name (lambda (pict name) (rt-superimpose pict (frame (text (string-append " " name " ") "black" 10))))]
@@ -71,8 +71,9 @@ The Racket module on the top right implements a @exact|{{na\"ive}}| player.
 The driver module at the bottom combines the game and player.
 It generates a game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
 Of the three modules, only the driver is implemented in Typed Racket.
-This means that Typed Racket statically checks the body of the driver module under the assumption that its annotations for the @racket[play] and @racket[stubborn-player] functions are correct.  Typed Racket protects this assumption by compiling the types for these functions into contracts; at runtime, the contracts enforce the types.
-For example, one contract ensures that @racket[(play)] returns a function from natural numbers to booleans (by applying a new contract to the returned value), and the other ensures that @racket[stubborn-player] returns natural numbers.
+This means that Typed Racket statically checks the body of the driver module under the assumption that its annotations for the @racket[play] and @racket[stubborn-player] functions are correct.
+Typed Racket protects this assumption by compiling these type annotations into contracts; at runtime, the contracts enforce the types.
+For example, one contract checks that @racket[(play)] returns a function from natural numbers to booleans (by applying a new contract to the returned value), and the other checks that @racket[stubborn-player] returns natural numbers.
 
 
 @; -----------------------------------------------------------------------------
@@ -82,7 +83,7 @@ The close integration of Racket and Typed Racket makes gradual typing useful for
 By converting a module to Typed Racket, the maintainer receives:
 @itemlist[
   @item{
-    @emph{assurance} from the typechecker against common bugs;
+    @emph{assurance} from the typechecker against simple logical errors;
   }
   @item{
     @emph{documentation} in the form of type annotations;
@@ -96,7 +97,7 @@ By converting a module to Typed Racket, the maintainer receives:
 ]
 These perceived benefits draw Racket programmers to Typed Racket.
 When debugging a Racket module, for example, a programmer can add type annotations to enforce invariants within the module.
-The type checker may then uncover a bug using the annotations, and Typed Racket's runtime checks may discover issues when the now-typed module interacts with the rest of the codebase.
+Typed Racket's runtime checks may then discover issues when the now-typed module interacts with the rest of the codebase.
 
 Another, more subtle, way that Racket programs may rely on Typed Racket is by importing definitions from a typed library.
 For example, every program that uses the built-in @racket[plot] library (including the program that generated this paper) interacts with typed code.
@@ -122,11 +123,11 @@ As other programmers began using Typed Racket, a few discovered serious issues w
 For instance, one user experienced a 1.5x slowdown in a web server,
  others found 25x--50x slowdowns when using an array library,
  and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix contains a list of user reports.}
-@; TODO clarify why this is a problem
-These reports identified the need for a systematic performance evaluation to:
- (1) determine the extent of the issue,
- (2) identify the sources of poor performance,
- (3) help users avoid performance issues, and
- (4) improve Typed Racket.
+These performance issues were unacceptable to users because they were large, difficult to predict, and difficult to debug.
+Instead of making a program run more efficiently, adding types to the wrong boundary degraded performance by an order of magnitude.
 
-
+Programmers' experience with Typed Racket has articulated the need for a systematic performance evaluation to:
+ (1) determine the extent of the performance issue;
+ (2) identify sources of poor performance;
+ (3) help users resolve performance issues; and
+ (4) improve the implementation of Typed Racket.
