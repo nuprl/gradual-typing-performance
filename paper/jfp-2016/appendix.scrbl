@@ -707,7 +707,7 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
 The table in @figure-ref{fig:appendix:iterations} lists the number of samples per configuration aggregated in @secref{sec:plots}.
 For a fixed benchmark and fixed version of Racket, all configurations have an equal number of samples.
 
-The table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any @emph{performant conversion paths} through a performance lattice.
+The table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any ``deliverable'' conversion paths through a performance lattice.
 More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1 \rightarrow_1 \ldots \rightarrow_1 c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D}.
 The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save space.
 

@@ -220,8 +220,8 @@ Moved the citation to the phrase 'complete monitoring', revised the paragraph.
 > (c) new typed libraries efficiently using legacy untyped Racket code, and
 > (d) efficient new untyped Racket code using new typed libraries.
 
-Changed the final line to say that the alternative soundness appears to be
- more performant, but offers less help for debugging type boundary errors.
+Changed the final line to say that the alternative soundness imposes less
+ overhead, but offers less help for debugging type boundary errors.
 
 
 ## Ballantyne's example
