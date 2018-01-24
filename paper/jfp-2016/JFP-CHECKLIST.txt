@@ -80,8 +80,7 @@ The opening paragraph now cites Node.js
 > the problem is. For Twitter, the problems with Ruby were (a) performance, and
 > (b) code anti-patterns
 
-Revised the second paragraph to explicitly state readability and speed as
- problems, and revised this paragraph to clarify Twitter's issues with Ruby.
+Revised this paragraph to clarify Twitter's issues with Ruby.
 
 
 ## Section 1: defend 'migratory typing'
