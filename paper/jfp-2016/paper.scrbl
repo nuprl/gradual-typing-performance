@@ -6,9 +6,9 @@
 
 @(@author/short{Greenman, Takikawa, New, Feltey, Findler, Vitek, Felleisen}
   "BEN GREENMAN" (affiliation-mark "1")
-  " ASUMU TAKIKAWA" (affiliation-mark "1")
+  " ASUMU TAKIKAWA" (affiliation-mark "1,3")
   " MAX S. NEW" (affiliation-mark "1")
-  " DANIEL FELTEY" (affiliation-mark "2")
+  " DANIEL FELTEY" (affiliation-mark "1,2")
   " ROBERT BRUCE FINDLER" (affiliation-mark "2")
   " JAN VITEK" (affiliation-mark "1")
   "and MATTHIAS FELLEISEN" (affiliation-mark "1")
@@ -16,6 +16,8 @@
     "Northeastern University, Boston, Mass." (affiliation-mark "1")
     (affiliation-sep)
     "Northwestern University, Chicago, Ill." (affiliation-mark "2")
+    (linebreak)
+    "Igalia, San Francisco, Cal." (affiliation-mark "3")
    ))
 
 @abstract{
