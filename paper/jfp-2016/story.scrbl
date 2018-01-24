@@ -122,12 +122,10 @@ All along, the maintainers of Typed Racket knew that the performance cost of enf
 As other programmers began using Typed Racket, a few discovered serious issues with its performance.
 For instance, one user experienced a 1.5x slowdown in a web server,
  others found 25x--50x slowdowns when using an array library,
- and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix contains a list of user reports.}
+ and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix samples these user reports.}
 These performance issues were unacceptable to users because they were large, difficult to predict, and difficult to debug.
 Instead of making a program run more efficiently, adding types to the wrong boundary degraded performance by an order of magnitude.
 
-Programmers' experience with Typed Racket has articulated the need for a systematic performance evaluation to:
- (1) determine the extent of the performance issue;
- (2) identify sources of poor performance;
- (3) help users resolve performance issues; and
- (4) improve the implementation of Typed Racket.
+Programmers' experience with Typed Racket has demonstrated the need for a systematic method for performance evaluation.
+The method must help language implementors discover performance issues before developers stumble upon them.
+
