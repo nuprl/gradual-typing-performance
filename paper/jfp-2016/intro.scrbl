@@ -19,7 +19,7 @@
 Programmers use dynamically typed languages to build all kinds of applications.
 Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006], web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017], and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) were originally written in Python, PHP, and Ruby.
 
-Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit type annotations an obstacle to their work.
+Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit and sound type annotations an obstacle to their work.
 Dynamically typed code can be difficult for humans to reason about and difficult to implement efficiently.
 Researchers have tried to overcome the lack of type annotations with inference algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 rch-popl-2012], but most have come to realize that there is no substitute for programmer-supplied annotations.
 Explicit annotations communicate a programmer's intent to other human readers.
@@ -42,8 +42,8 @@ Another approach is gradual typing@~cite[st-sfp-2006 thf-dls-2006].@note{@citet[
 In a gradually typed language,
  programmers can incrementally add type annotations to dynamically typed code.
 At the lexical boundaries between annotated code and dynamically
- typed code, the type system inserts runtime checks to guarantee the soundness
- of the type annotations.
+ typed code, the type system inserts runtime checks to guarantee type soundness
+ and thereby help programmers reason about typed code@~cite[tfffgksst-snapl-2017].
 
 From a syntactic perspective the interaction is seamless, but dynamic checks introduce runtime overhead.
 During execution, if an untyped function flows into a variable @type{$f$} with
