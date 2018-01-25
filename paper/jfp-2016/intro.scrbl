@@ -17,7 +17,7 @@
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
 Programmers use dynamically typed languages to build all kinds of applications.
-Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006], web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017], and the server-side applications of some contemporary companies (Dropbox, Facebook, Twitter) were originally written in Python, PHP, and Ruby.
+Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006], web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017], and the server-side applications of Dropbox, Facebook, and Twitter were originally written in Python, PHP, and Ruby, respectively.
 
 Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit and sound type annotations an obstacle to their work.
 Researchers have tried to overcome the lack of type annotations with inference algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 ffkwf-pldi-1996], but most have come to realize that there is no substitute for programmer-supplied annotations.
@@ -41,8 +41,8 @@ Another approach is gradual typing@~cite[st-sfp-2006 thf-dls-2006].@note{@citet[
 In a gradually typed language,
  programmers can incrementally add type annotations to dynamically typed code.
 At the lexical boundaries between annotated code and dynamically
- typed code, the type system inserts runtime checks to guarantee type soundness
- and thereby help programmers reason about typed code@~cite[tfffgksst-snapl-2017].
+ typed code, the type system inserts runtime checks to guarantee type soundness,
+ which helps programmers reason about typed code@~cite[tfffgksst-snapl-2017].
 
 From a syntactic perspective the interaction between annotated and unannotated code is seamless, but dynamic checks introduce runtime overhead.
 During execution, if an untyped function flows into a variable @type{$f$} with
@@ -66,11 +66,11 @@ But surprisingly few groups have evaluated the performance of gradual typing.
 Many acknowledge an issue with performance in passing@~cite[thf-popl-2008 acftd-scp-2013 vksb-dls-2014 rnv-ecoop-2015].
 Others report only the performance of fully annotated programs relative to fully unannotated programs@~cite[rsfbv-popl-2015 vss-popl-2017], ignoring the entire space of programs that mix typed and untyped components.
 
-This archival paper presents the first method for evaluating the performance of a gradual type system (@secref{sec:method}), integrating new results with an earlier conference version@~cite[tfgnvf-popl-2016].
+This archival paper presents the first method for evaluating the performance of a gradual type system (@secref{sec:method}), integrating new results with a conference version@~cite[tfgnvf-popl-2016].
 Specifically, this paper contributes:
 @itemlist[
 @item{
-  validation that the method can express the relative performance between @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket (@secref{sec:compare});
+  validation that the method can measure the relative performance of @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket (@secref{sec:compare});
 }
 @item{
   evidence that simple random sampling can approximate the results of an exhaustive evaluation with asymptotically fewer measurements (@secref{sec:scale});

@@ -22,7 +22,7 @@
 
 @abstract{
   A sound gradual type system ensures that untyped components of a program can never break the guarantees of statically typed components.
-  This assurance requires runtime checks, which in turn impose performance overhead in proportion to the frequency and nature of interaction between typed and untyped components.
+  This assurance relies on runtime checks, which in turn impose performance overhead in proportion to the frequency and nature of interaction between typed and untyped components.
 
   The literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
   This gap has consequences for developers who use gradual type systems and the implementors of such systems.

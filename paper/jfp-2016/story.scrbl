@@ -8,7 +8,7 @@
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
 Typed Racket@~cite[tfffgksst-snapl-2017] is a sound gradual typing system for Racket.
-Typed Racket's syntax is an extension of Racket's; its static type checker supports idioms common in dynamically-typed Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015]; and a Typed Racket module may import definitions from a Racket module.
+Consequently, Typed Racket's syntax is an extension of Racket's; its static type checker supports idioms common in dynamically-typed Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015]; and a Typed Racket module may import definitions from a Racket module.
 A Racket module may likewise import definitions from a Typed Racket module.
 To ensure type soundness@~cite[tfffgksst-snapl-2017], Typed Racket compiles static types to higher-order contracts and attaches these contracts at the lexical boundaries between Typed Racket and Racket modules.
 
@@ -69,10 +69,10 @@ The module on the top left implements a guessing game with the function @racket[
 Each call to @racket[play] generates a random number and returns a function that compares a given number to this chosen number.
 The module on the top right implements a simple player.
 The driver module at the bottom combines the game and player.
-It generates a game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
+It instantiates the game, prompts @racket[stubborn-player] for ten guesses, and counts the number of correct guesses using the @racket[for/sum] combinator.
 Of the three modules, only the driver is implemented in Typed Racket.
 This means that Typed Racket statically checks the body of the driver module under the assumption that its annotations for the @racket[play] and @racket[stubborn-player] functions are correct.
-Typed Racket protects this assumption by compiling these type annotations into dynamically-checked contracts.
+Typed Racket guarantees this assumption by compiling these type annotations into dynamically-checked contracts.
 One contract checks that @racket[(play)] returns a function from natural numbers to booleans (by attaching a new contract to the returned value), and the other checks that @racket[stubborn-player] returns natural numbers.
 
 
@@ -96,19 +96,18 @@ By converting a module to Typed Racket, the maintainer receives:
   }
 ]
 These perceived benefits draw Racket programmers to Typed Racket.
-When debugging a Racket module, for example, a programmer can add type annotations to enforce invariants within the module.
-Typed Racket's runtime checks may then uncover the source of the bug when the now-typed module interacts with the rest of the codebase.
 
 Another way that Racket programs may rely on Typed Racket is by importing definitions from a typed library.
 For example, every program that uses the built-in @racket[plot] library (including the program that generated this paper) interacts with typed code.
-This kind of import is indistinguishable from importing definitions from a Racket library,
- and is thus a subtle way of creating a mixed-typed codebase.
+This kind of import is indistinguishable from importing definitions from a Racket library
+ and is thus a rather subtle way of creating a mixed-typed codebase.
 
-Conversely, Typed Racket programmers may use Racket to work with legacy code, prototype new designs, or write program-manipulating programs.
-These are situations where the effort of managing type annotations may outweigh the ease of running the Racket code and checking the result.
+Conversely, Typed Racket programs may rely on Racket in the form of legacy libraries or program-manipulating programs.
+For libraries, the programmer has a choice between writing a type-annotated import statement for the library API and converting the entire library to Typed Racket.
+For meta-programs, Racket is the only choice because Typed Racket lacks types to express properties such as binding structure.
 
 In summary, Typed Racket offers an accessible upgrade path from Racket and is currently used in a variety of programs.@note{@url{https://pkgd.racket-lang.org/pkgn/search?q=typed-racket}}
-These programs frequently combine Racket and Typed Racket code; over time this combination may shift to a larger proportion of typed code, but Racket will likely remain the core language.
+These programs frequently combine Racket and Typed Racket code; over time this combination may shift to a larger proportion of typed code, but Racket is likely to remain the core language.
 It is therefore essential that Typed Racket programs interact smoothly with existing Racket code.
 
 
@@ -118,7 +117,7 @@ It is therefore essential that Typed Racket programs interact smoothly with exis
 Typed Racket is an evolving research project.
 The initial release delivered a sound type system that could express the idioms in common Racket programs.
 Subsequent improvements focused on growing the type system and making it easy to use.
-All along, the maintainers of Typed Racket knew that the performance cost of enforcing type soundness could be high (see @secref{sec:devils} for an overview); however, this cost was not an issue in many programs.
+All along, the maintainers of Typed Racket knew that the performance cost of enforcing type soundness could be high (see @secref{sec:devils} for an overview); however, this cost was not an issue in their programs.
 
 As other programmers began using Typed Racket, a few discovered issues with its performance.
 For instance, one user experienced a 1.5x slowdown in a web server,
@@ -126,4 +125,4 @@ For instance, one user experienced a 1.5x slowdown in a web server,
  and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix samples these user reports.}
 These performance issues were unacceptable to users because they were large, difficult to predict, and difficult to debug.
 Instead of making a program run more efficiently, adding types to the wrong boundary seriously degraded performance.
-Thus programmers' experience with Typed Racket demonstrated the need for a systematic method of performance evaluation.
+In short, programmers' experience with Typed Racket forced us to develop a systematic method of performance evaluation.
