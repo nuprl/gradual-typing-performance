@@ -8,9 +8,9 @@
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
 Typed Racket@~cite[tfffgksst-snapl-2017] is a sound gradual typing system for Racket.
-Consequently, Typed Racket's syntax is an extension of Racket's; its static type checker supports idioms common in dynamically-typed Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015]; and a Typed Racket module may import definitions from a Racket module.
+Its syntax is an extension of Racket's; its static type checker supports idioms common in dynamically-typed Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015]; and a Typed Racket module may import definitions from a Racket module.
 A Racket module may likewise import definitions from a Typed Racket module.
-To ensure type soundness@~cite[tfffgksst-snapl-2017], Typed Racket compiles static types to higher-order contracts and attaches these contracts at the lexical boundaries between Typed Racket and Racket modules.
+To ensure type soundness, Typed Racket compiles static types to higher-order contracts and attaches these contracts at the lexical boundaries between Typed Racket and Racket modules@~cite[tfffgksst-snapl-2017].
 
 @figure["fig:story:tr" "A gradually typed application"
   @(let* ([add-name (lambda (pict name) (rt-superimpose pict (frame (text (string-append " " name " ") "black" 10))))]
@@ -79,8 +79,8 @@ One contract checks that @racket[(play)] returns a function from natural numbers
 @; -----------------------------------------------------------------------------
 @section{How Types Spread}
 
-The close integration of Racket and Typed Racket makes gradual typing useful for refactoring existing programs.
-By converting a module to Typed Racket, the maintainer receives:
+The close integration of Racket and Typed Racket makes it easy to migrate a code base from the former to the latter on an incremental basis.
+By converting modules to Typed Racket, the maintainer receives several benefits:
 @itemlist[
   @item{
     @emph{assurance} from the typechecker against basic logical errors;
@@ -98,13 +98,12 @@ By converting a module to Typed Racket, the maintainer receives:
 These perceived benefits draw Racket programmers to Typed Racket.
 
 Another way that Racket programs may rely on Typed Racket is by importing definitions from a typed library.
-For example, every program that uses the built-in @racket[plot] library (including the program that generated this paper) interacts with typed code.
+For example, the creator of Racket's @racket[plot] library wrote most of the library in Typed Racket, and so the program that generated this paper interacts with typed code.
 This kind of import is indistinguishable from importing definitions from a Racket library
  and is thus a rather subtle way of creating a mixed-typed codebase.
 
-Conversely, Typed Racket programs may rely on Racket in the form of legacy libraries or program-manipulating programs.
-For libraries, the programmer has a choice between writing a type-annotated import statement for the library API and converting the entire library to Typed Racket.
-For meta-programs, Racket is the only choice because Typed Racket lacks types to express properties such as binding structure.
+Conversely, Typed Racket programs may rely on Racket in the form of legacy libraries.
+For such libraries, the programmer has a choice between writing a type-annotated import statement for the library API and converting the entire library to Typed Racket.
 
 In summary, Typed Racket offers an accessible upgrade path from Racket and is currently used in a variety of programs.@note{@url{https://pkgd.racket-lang.org/pkgn/search?q=typed-racket}}
 These programs frequently combine Racket and Typed Racket code; over time this combination may shift to a larger proportion of typed code, but Racket is likely to remain the core language.
@@ -116,13 +115,14 @@ It is therefore essential that Typed Racket programs interact smoothly with exis
 
 Typed Racket is an evolving research project.
 The initial release delivered a sound type system that could express the idioms in common Racket programs.
-Subsequent improvements focused on growing the type system and making it easy to use.
-All along, the maintainers of Typed Racket knew that the performance cost of enforcing type soundness could be high (see @secref{sec:devils} for an overview); however, this cost was not an issue in their programs.
+Subsequent improvements focused on growing the type system to support control operators@~cite[tsth-esop-2013] and the object-oriented extensions to Racket@~cite[tfdffthf-ecoop-2015].
+At the same time, other improvements made the type system easier to use.
+All along, the Typed Racket team knew that the performance cost of enforcing type soundness could be high (see @secref{sec:devils} for an overview); however, this cost was not an issue in many of their programs.
 
 As other programmers began using Typed Racket, a few discovered issues with its performance.
 For instance, one user experienced a 1.5x slowdown in a web server,
  others found 25x--50x slowdowns when using an array library,
  and two others reported over 1000x slowdowns when using a library of functional data structures.@note{The appendix samples these user reports.}
-These performance issues were unacceptable to users because they were large, difficult to predict, and difficult to debug.
+Programmers found these performance issues unacceptable because the slowdowns were large, difficult to predict, and difficult to debug.
 Instead of making a program run more efficiently, adding types to the wrong boundary seriously degraded performance.
-In short, programmers' experience with Typed Racket forced us to develop a systematic method of performance evaluation.
+In short, programmers' experience with Typed Racket forced the Typed Racket team to develop a systematic method of performance evaluation.

@@ -72,11 +72,11 @@ Third, @secref{sec:graphs} introduces a visualization that concisely presents th
 
 The promise of Typed Racket's macro-level gradual typing is that programmers can add types to any subset of the modules in an untyped program.
 In principle, this promise extends to third-party libraries and modules from the Racket runtime system, but in practice a programmer has no control over such modules.
-Thus we distinguish between the @emph{migrated} modules that a programmer may add types to and the @emph{unchanged} modules in the software ecosystem.
-A comprehensive performance evaluation must therefore consider the @emph{configurations} a programmer could possibly create given type annotations for each migrated module.
+Thus we distinguish between two kinds of modules: the @emph{migratable} modules that a programmer may add types to, and the @emph{contextual} modules in the software ecosystem, which remain unchanged.
+A comprehensive performance evaluation must therefore consider the @emph{configurations} a programmer could possibly create given type annotations for each migratable module.
 These configurations form a lattice, ordered by the subset relation on the set of typed modules in a configuration.
 
-@Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a program with @|suffixtree-num-modules| migrated modules.
+@Figure-ref{fig:suffixtree-lattice} demonstrates one such lattice for a program with @|suffixtree-num-modules| migratable modules.
 The black rectangle at the top of the lattice represents the configuration in which all @|suffixtree-num-modules| modules are typed.
 The other @id[(sub1 suffixtree-num-configs)] rectangles represent configurations with some untyped modules.
 
@@ -98,6 +98,15 @@ The practical distinction is that users of a gradual type system will explore co
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:measurements"]{Performance Metrics}
+
+    @figure["fig:demo-lattice" "Sample performance lattice"
+      (parameterize ([*LATTICE-CONFIG-MARGIN* 30]
+                     [*LATTICE-LEVEL-MARGIN* 4]
+                     [*LATTICE-BOX-SEP* 0]
+                     [*LATTICE-LINE-ALPHA* 0.6])
+        (make-performance-lattice (sample-data 'all)))
+    ]
+
 
 The most basic question about a gradually typed language is
  how fast fully-typed programs are in comparison to their fully untyped relative.
@@ -164,13 +173,6 @@ Furthermore, suppose the mixed configurations run in
 @Figure-ref{fig:demo-lattice} is a performance lattice for this hypothetical program.
 The label below each configuration is its overhead relative to the untyped configuration.
 
-    @figure["fig:demo-lattice" "Sample performance lattice"
-      (parameterize ([*LATTICE-CONFIG-MARGIN* 30]
-                     [*LATTICE-LEVEL-MARGIN* 4]
-                     [*LATTICE-BOX-SEP* 0])
-        (make-performance-lattice (sample-data 'all)))
-    ]
-
 @(let* ([tu-ratio (/ (sample-data 'c11) (sample-data 'c00))]
         [t-str @id[(sample-overhead 'c11)]]
         [g-overhead (inexact->exact (max (sample-overhead 'c10) (sample-overhead 'c01)))]
@@ -201,6 +203,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 
 
 @; -----------------------------------------------------------------------------
+@section[#:tag "sec:graphs"]{Overhead Graphs}
 
 @(render-lnm-plot
   #:index 0
@@ -210,7 +213,6 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
       @figure*["fig:suffixtree-plot" @elem{Overhead graphs for @bm[suffixtree], on Racket v@|suffixtree-lattice-version|.}
         (car pict*)
       ]
-@section[#:tag "sec:graphs"]{Overhead Graphs}
       @; less than half of all @bm[suffixtree] configurations run within a @id[(*MAX-OVERHEAD*)]x slowdown.
       @elem{
         Although a performance lattice contains a comprehensive description of performance overhead, it does not effectively communicate this information.
@@ -222,7 +224,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         One way to plot this information is to fix a value for @math{k}, say @math{k=0}, and consider a set of values @exact{$d_0,\ldots,d_{n-1}$} for @math{D}.
         The set of proportions of @step["0" "d_i"] configurations defines a histogram with the value of @math{D} on the independent axis and the proportion of configurations on the dependent axis.
 
-        @Figure-ref{fig:suffixtree-plot} demonstrates two such @emph{overhead plots}.
+        @Figure-ref{fig:suffixtree-plot} demonstrates two such @emph{overhead plots} for the @|suffixtree-num-configs-str| configurations of a program called @bm[suffixtree], measured on Racket v@|suffixtree-lattice-version|.
         The plot on the left fixes @math{k=0} and plots the proportion of @step["0" "D"] configurations.
         The plot on the right fixes @math{k=1} and plots the proportion of @step["1" "D"] configurations.
         Both plots consider @math{@id[ALOT]} values of @math{D} evenly spaced between 1x and 20x.

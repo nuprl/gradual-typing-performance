@@ -35,6 +35,8 @@
 (define/provide *LATTICE-LEVEL-MARGIN* (make-parameter 10))
 (define/provide *LATTICE-FONT-SIZE* (make-parameter 9))
 (define/provide *LATTICE-TRUNCATE-DECIMALS?* (make-parameter #f))
+(define/provide *LATTICE-LINE-WIDTH* (make-parameter 0.5))
+(define/provide *LATTICE-LINE-ALPHA* (make-parameter 0.2))
 
 (module+ test (require rackunit))
 
@@ -100,6 +102,8 @@
 
 ;; adds lines between elements in levels
 (define (add-all-lines base vec bits)
+  (define line-width (*LATTICE-LINE-WIDTH*))
+  (define line-alpha (*LATTICE-LINE-ALPHA*))
   (for/fold ([pict base])
             ([(from-pict idx) (in-indexed (in-vector vec))])
     (define masks
@@ -113,8 +117,8 @@
               ([target-idx targets])
       (define target (vector-ref vec target-idx))
       (pin-line pict from-pict ct-find target cb-find
-                      #:alpha 0.2
-                      #:line-width 0.5
+                      #:alpha line-alpha
+                      #:line-width line-width
                       #:under? #t))))
 
 ;; Driver submodule for rapid visualization

@@ -435,7 +435,7 @@
    #:date 2015
    #:author (authors "Jeremy Siek"
                      "Michael M. Vitousek"
-                     "Matteo Cimmini"
+                     "Matteo Cimini"
                      "Sam Tobin-Hochstadt"
                      "Ronald Garcia")))
 

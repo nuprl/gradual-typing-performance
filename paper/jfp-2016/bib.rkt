@@ -1279,6 +1279,13 @@
    #:location (journal-location pacm #:volume "1, OOPSLA")
    #:date 2017))
 
+(define g-icfp-2013
+  (make-bib
+    #:title "Calculating Threesomes, with Blame"
+    #:author (authors "Ronald Garcia")
+    #:location (proceedings-location icfp #:pages '(417 428))
+    #:date 2013))
+
 (define gct-popl-2016
  (make-bib
   #:title "Abstracting Gradual Typing"

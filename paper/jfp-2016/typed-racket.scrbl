@@ -147,7 +147,7 @@ The overhead plots for many other benchmarks demonstrate a positive difference b
 The plot of @figure-ref{fig:scale:delta} explicitly shows the improvement of version 6.4 over version 6.2.
 It consists of @integer->word[(*NUM-BENCHMARKS*)] purple lines, one for each benchmark.
 These lines plot the difference between the curve for v6.4 and the curve for v6.2 on the corresponding overhead plot.
-For example, the line for @bm[gregor] (labeled @math{r}) demonstrates a large improvement in the number of @deliverable{2} configurations.
+For example, the line for @bm[gregor] (labeled @${\mathsf{r}}) demonstrates a large improvement in the number of @deliverable{2} configurations.
 The plot also shows that fifteen of the @integer->word[(*NUM-BENCHMARKS*)] benchmarks significantly benefit from running on version 6.4.
 Only the line for the @bm[forth] benchmark demonstrates a significant regression.
 

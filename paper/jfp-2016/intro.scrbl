@@ -19,10 +19,10 @@
 Programmers use dynamically typed languages to build all kinds of applications.
 Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006]; web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017]; and the server-side applications of Dropbox, Facebook, and Twitter were originally written in Python, PHP, and Ruby, respectively.
 
-Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit and sound type annotations an obstacle to their work.
-Researchers have tried to overcome the lack of type annotations with inference algorithms@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 ffkwf-pldi-1996], but most have come to realize that there is no substitute for programmer-supplied annotations.
+Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit and reliable type annotations an obstacle to their work.
+Researchers have tried to overcome the lack of type annotations with type inference@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 ffkwf-pldi-1996], but most have come to realize that there is no substitute for programmer-supplied annotations.
 Explicit annotations communicate a programmer's intent to other human readers.
-Furthermore, tools can check the annotations for logical inconsistencies and leverage types during compilation.
+Furthermore, tools can check the annotations for logical inconsistencies.
      @; Confirming problem, and responses:
      @; - PEP type hints
      @; - pycharm parsing comments
@@ -31,7 +31,7 @@ Furthermore, tools can check the annotations for logical inconsistencies and lev
 
 One approach to the maintenance problem is to rewrite the entire application in a statically typed langauge.
 This solution assumes that the application is small enough to make a wholesale migration feasible.
-For example, Twitter was able to port their server-side code from Ruby to Scala because they recognized the long-term performance and readability issues with their Ruby code early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
+For example, engineers at Twitter were able to port their server-side code from Ruby to Scala because they recognized the long-term performance and readability issues with their Ruby code early on.@note{@url{http://www.artima.com/scalazine/articles/twitter_on_scala.html}}
 
 @; Enter GT
 Another approach is gradual typing@~cite[st-sfp-2006 thf-dls-2006].@note{@citet[tfffgksst-snapl-2017] refer to this use of gradual typing as @emph{migratory typing}.}
@@ -41,8 +41,8 @@ Another approach is gradual typing@~cite[st-sfp-2006 thf-dls-2006].@note{@citet[
 In a gradually typed language,
  programmers can incrementally add type annotations to dynamically typed code.
 At the lexical boundaries between annotated code and dynamically
- typed code, the type system inserts runtime checks to guarantee type soundness,
- which helps programmers reason about typed code@~cite[tfffgksst-snapl-2017].
+ typed code, the type system inserts runtime checks to guarantee type soundness@~cite[tfffgksst-snapl-2017],
+ which ensures that no typed operation is applied to arguments outside its domain.
 
 From a syntactic perspective the interaction between annotated and unannotated code is seamless, but dynamic checks introduce runtime overhead.
 During execution, if an untyped function flows into a variable @type{$f$} with

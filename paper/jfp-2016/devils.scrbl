@@ -28,21 +28,23 @@ This section explains the aspects of Typed Racket that influence performance and
 @; -----------------------------------------------------------------------------
 @section{How Typed Racket Enforces Type Soundness}
 
-Performance overhead in Typed Racket comes from its type soundness guarantee.
+Performance overhead in Typed Racket is due to its type soundness guarantee.
 When a value flows from Racket to a typed context, there is a runtime cost to check that the value matches the assumptions of the static type checker.
 
-Typed Racket's strategy for checking the type of Racket values at runtime follows the @emph{natural embedding} technique for a multi-language program@~cite[mf-toplas-2007].
+Typed Racket's strategy for checking the type of a Racket value at runtime follows the @emph{natural embedding} technique for a multi-language program@~cite[mf-toplas-2007].
 When a typed context expects a value of base type, Typed Racket enforces the boundary with a predicate for the type.
 When a typed context expects a value of an inductive type, Typed Racket checks the constructor of the value and recursively checks its components.
-If any type parameters to the inductive type are invariant or contravariant (i.e., the value is mutable or contains a delayed computation), Typed Racket wraps the incoming value with a proxy@~cite[sthff-oopsla-2012] to monitor its future interactions with typed code.
+Lastly, when a typed context expects a value of a coinductive type (e.g. a mutable cell or a function), Typed Racket checks the constructor, recursively checks its components when possible, and wraps the incoming value with a proxy@~cite[sthff-oopsla-2012] to monitor its future interactions with typed code.
 
-To illustrate this strategy, we describe how Typed Racket enforces a few types @type{$\tau$} with contracts @ctc{$\tau$}:
+To illustrate this strategy, we describe how Typed Racket enforces a few types @type{$\tau$} by applying a contract @ctc{$\tau$} to an untyped value @${v}:@note{Technically, this illustration describes half of Typed Racket's strategy.
+    To support separate compilation, Typed Racket additionally protects exported typed values of coinductive types with a dual contract.
+    For example, the dual contract for the function type @type{$(\tarrow{\tint}{\tint})$} checks @ctc{$\tint$} for every argument to the function.}
 @itemlist[
 @item{
-  If @type{$\tau$} is @type{$\tint$} then @ctcapp["\\tau" "v"] checks that @${v} is an integer literal.
+  If @type{$\tau$} is @type{$\tint$} then @ctcapp["\\tau" "v"] checks that @${v} is an integer constant.
 }
 @item{
-  If @type{$\tau$} is @type{$\tbool \cup \tint$} then @ctcapp["\\tau" "v"] checks that @${v} is either a boolean literal or an integer literal.
+  If @type{$\tau$} is @type{$\tbool \cup \tint$} then @ctcapp["\\tau" "v"] checks that @${v} is either a boolean constant or an integer constant.
 }
 @item{
   If @type{$\tau$} is @type{$(\tlistof{\tint})$} then @ctcapp["\\tau" "v"] checks that @${v}
@@ -51,17 +53,16 @@ To illustrate this strategy, we describe how Typed Racket enforces a few types @
 @item{
   If @type{$\tau$} is @type{$(\tvectorof{\tint})$} then @ctcapp["\\tau" "v"] checks that @${v}
    is a vector, checks @ctc{$\tint$} for every value in the vector, and wraps @${v}
-   in a proxy that checks @ctc{$\tint$} for every read and write to the vector.
-  @; need to check reads, because untyped could write directly to `v` (bypassing the proxy)
+   in a proxy that checks @ctc{$\tint$} for every read from the vector.
 }
 @item{
   If @type{$\tau$} is @type{$(\tarrow{\tint}{\tint})$} then @ctcapp["\\tau" "v"] checks that
    @${v} is a function and wraps @${v} in a proxy that checks @ctc{$\tint$} for
-   every argument to the function and every result computed by the function.
+   every result computed by the function.
 }
 ]
 Note that the cost of checking a type like @type{$\tau_0 \cup \tau_1$} is linear in the number of types in the union, and the cost of a type like (@type{$\tlistof{\tau}$}) is linear in the size of the list value.
-Furthermore, if @ctcapp["\\tau" "v"] wraps @${v} in a proxy then (@ctc{$\tau$} @ctcapp["\\tau" "v"]) wraps @${v} in two proxies, and therefore adds two levels of indirection.
+Furthermore, if @ctcapp["\\tau" "v"] wraps @${v} in a proxy then (@ctc{$\tau$} @ctcapp["\\tau" "v"]) may wrap @${v} in two proxies, and thereby add two levels of indirection.
 See @citet[thf-dls-2006] and @citet[tfdffthf-ecoop-2015] for additional details regarding the type-to-contract translation.
 
 This strategy clearly suffers from three kinds of performance costs:
@@ -235,7 +236,6 @@ In order to predict such costs, a programmer must recognize macros and understan
 
 Higher-order values that repeatedly cross type boundaries may accumulate layers of type-checking proxies.
 These proxies add indirection and space overhead.
-Collapsing layers of proxies and pruning redundant proxies is an area of active research@~cite[htf-hosc-2010 sw-popl-2010 g-popl-2015].
 
 Racket's proxies implement a predicate that tells whether the current proxy subsumes another proxy.
 These predicates often remove unnecessary indirections, but a few of the benchmarks still suffer from redundant layers of proxies.

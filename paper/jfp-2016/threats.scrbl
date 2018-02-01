@@ -18,7 +18,7 @@ In particular, both the @emph{experimental protocol} and the @emph{conclusions} 
 There are four significant threats to the protocol.
 First, the benchmark programs are relatively small.
 Larger programs might avoid the pathological overheads in the benchmarks,
- though the results for @bm[quadMB] and @bm[synth] are evidence to the contrary.
+ though the results for @bm[quadMB] and @bm[synth] constitute evidence to the contrary.
 
 Second, some benchmarks read from a file during their timed computation.
 These benchmarks are @bm[forth], @bm[mbta], @bm[morsecode], @bm[zombie], @bm[zordoz], @bm[lnm], @bm[suffixtree], @bm[snake], and @bm[tetris].
@@ -50,8 +50,8 @@ Contract-aware implementation techniques such soft contracts (@exact{@|PHIL|} @|
 
 Finally, Typed Racket relies on the @emph{complete monitoring} property@~cite[dthf-esop-2012] of the Racket contract system to provide a strong form of type soundness@~cite[tfffgksst-snapl-2017].
 When a type boundary error occurs, Racket deduces original type annotation and dynamically-typed value that led to the fault.
-This protocol generates useful error messages, but the runtime system must dynamically track contextual information to implement it.
+This protocol generates extremely precise error messages, but the runtime system must dynamically track contextual information to implement it.
 On one hand, there may be inefficiencies in Racket's implementation of this runtime monitoring.
 On the other hand, a different gradual type system could offer a different soundness guarantee and circumvent the need for this runtime accounting altogether.
 For example, Reticulated Python checks the type of a mutable data structure when typed code reads from the structure, but not when untyped code writes to it, avoiding the need to proxy such data structures@~cite[vksb-dls-2014 vss-popl-2017].
-This leads to a type-tag notion of soundness that may run with less overhead@~cite[gm-pepm-2018], but gives programmers fewer hints for debugging type boundary errors.
+This leads to a type-tag notion of soundness that may run with less overhead@~cite[gm-pepm-2018], but gives programmers far less precise information than Typed Racket for debugging type boundary errors.

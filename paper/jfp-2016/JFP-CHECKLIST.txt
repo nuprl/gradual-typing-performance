@@ -1,7 +1,7 @@
 General Response
 ================================================================================
 
-In response to the referees' comments about section 2 (Gradual Typing in Typed
+In response to the reviewers' comments about section 2 (Gradual Typing in Typed
  Racket), we have significantly re-organized the section.
 Section 2 in the original submission followed this outline:
 
@@ -16,15 +16,16 @@ Section 2 in the revised submission follows a modified outline:
 - 2   : brief introduction to Typed Racket
 - 2.1 : reasons for migrating from Racket to Typed Racket
         + reasons to continue using Racket
-- 2.2 : anecdotes suggesting a need for performance evaluation
+- 2.2 : evidence suggesting a need for rigorous performance evaluation
 
-Summary: we removed the argument for type soundness and instead describe
- the history that led to this work on performance evaluation.
+Summary: at the recommendation of reviewer 1, we removed the argument for type
+ soundness and instead describe the history that led to this work on
+ performance evaluation.
 
 - - -
 
-The rest of this document addresses specific comments from each referee;
- sections are labeled "Referee: 1", "Referee: 2", and "Referee: 3".
+The rest of this document addresses specific comments from each reviewer;
+ sections are labeled "Reviewer: 1", "Reviewer: 2", and "Reviewer: 3".
 
 Each response has the format:
 
@@ -41,12 +42,12 @@ Each response has the format:
 where:
 - `SECTION` is the relevant section of the paper
 - `TITLE` describes the issue
-- `CLARIFICATION` quotes the referee
+- `CLARIFICATION` quotes the reviewer
 - `DELTA` describes any edits to the paper
-- `COMMENT` is any extra reply to the referee
+- `COMMENT` is any extra reply to the reviewer
 
 
-Referee: 1
+Reviewer: 1
 ================================================================================
 
 ## Abstract: awkward phrase
@@ -120,7 +121,8 @@ Clarified (in the new sec 2.2) that the unpredictability goes against the
 > [the case should address] those the developers who ask for flags to
 > disable contract checking
 
-Removed the argument.
+Removed the argument and added a pointer to Tobin-Hochstadt et al. SNAPL 2017
+ in the introduction.
 
 
 ## Section 2.2: fix awkward 'recall' about types
@@ -199,7 +201,8 @@ In the benchmarks that do perform I/O actions, those actions take only a small
 > Footnote 12 mentions green threads without defining them or clarifying
 > whether all threads block on I/O.
 
-Removed the phrase "green thread", simplified the description in the footnote.
+Removed the phrase "green thread", simplified the description in this footnote
+ (footnote #10 in the revision).
 
 
 ## Section 7: change prose before Dimoulas etal 2012 citation
@@ -209,7 +212,7 @@ Removed the phrase "green thread", simplified the description in the footnote.
 > theoretical reasoning framework, with no evaluation on whether developers
 > find blame practical
 
-Moved the citation to the phrase 'complete monitoring', revised the paragraph.
+Moved the citation to the phrase 'complete monitoring'.
 
 
 ## Section 7: clarify final line
@@ -248,28 +251,26 @@ Added a citation to Rastogi et al. POPL 2015 to the conclusion as one example
 It is difficult to compare to SafeTypeScript based on the POPL 2015 paper.
 The 1.15x number is quite low, but they also report an average slowdown of
  22x on six untyped programs from the Octane benchmarks.
-We hope that this journal paper inspires a detailed comparison.
+We hope that this journal paper inspires these authors to produce a detailed
+ comparison for SafeTypeScript.
 
 
-## compare to other space-efficiency papers
+## cite other space-efficiency papers
 
 > Herman 2007 TFP
 > Greenberg's TFP 2016
 > Garcia 2013 ICFP (less close)
 > Siek et al. ESOP 2015 (less close)
 
-Added a citation to Siek et al. ESOP 2015 to the conclusion, as a second
-example of using run-time type information to improve performance.
-
-We cite the journal version of Herman et al.'s 2007 paper and Greenberg's POPL
- 2015 paper (Space-Efficient Manifest Contracts) in Section 9.
+The revised conclusion cites all the above.
+(Though, we cite the HOSC 2010 version of Herman's work.)
 
 
 ## compare to Reticulated
 
 >  mention Vitousek etal, POPL 2017
 
-Added a brief comparison to Section 7 and Section 9.
+Added a brief comparison to the end of Section 7 and the beginning of Section 9.
 
 
 ## References to particular sections/figures/etc. should be capitalized
@@ -284,7 +285,7 @@ Not according to the Chicago Manual of Style Online (3.9).
 Replaced all percentages with overhead factors.
 
 
-# Referee: 2
+# Reviewer: 2
 ================================================================================
 
 ## Section 1: cite the papers we accuse of poor evaluations
@@ -305,17 +306,17 @@ Added citations.
 Added two definitions to clarify this part of the method.
 Full changes:
 
-- Section 3.1: define _migrated modules_ and _unchanged modules_
-  (migrated modules define the lattice, unchanged modules are part of the
+- Section 3.1: define _migratable modules_ and _contextual modules_
+  (migratable modules define the lattice, contextual modules are part of the
    program but not part of the experiment e.g. because they are part of the
    Racket runtime library)
 - Section 4: explain that the 'Depends' field in the benchmark descriptions
-  lists libraries of _unchanged modules_
-- Section 4: clarify that `# MOD` in Figure 6 is the number of _migrated
+  lists libraries of _contextual modules_
+- Section 4: clarify that `# MOD` in Figure 6 is the number of _migratable
   modules_
 - Section 4.1: state that adaptor modules are fixed modules
 - Section 6: clarify that the method of section 3 is limited to programs
-  with roughly 20 _migrated modules_
+  with roughly 20 _migratable modules_
 
 Note that some programs rely on typed libraries, i.e., the `lnm` benchmark.
 
@@ -344,10 +345,10 @@ Fixed.
 Revised sec. 8 to explain how Typed Racket enforces soundness, and how this
  enforcement leads to performance overhead.
 
-[[ cc Referee 3 ]]
+[[ cc Reviewer 3 ]]
 
 
-# Referee: 3
+# Reviewer: 3
 ================================================================================
 
 ## Section 2: explain how Typed Racket enforces soundness
@@ -387,10 +388,10 @@ We believe the three points above are addressed in the revised version of the
 
 No change to the paper.
 
-Section 8 does have ad-hoc evidence for how the patterns affect the benchmarks.
+Section 8 provides some first evidence of how the patterns affect the benchmarks.
 Figure 24 in the appendix has some additional evidence.
 
-Here is a listing of all the evidence we provide, ignoring the code samples:
+Here is a listing of the evidence we already provide, ignoring the code samples:
 
 - Section 8.1: High-Frequency Typechecking
   * 6 million values flow across 4 boundaries in snake

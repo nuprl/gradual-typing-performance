@@ -61,7 +61,7 @@ Typed Racket in particular must address the pathologies identified in @secref{se
 Here are a few suggestions.
 To reduce the cost of high-frequency checks, the runtime system could cache the results of successful checks@~cite[rf-pldi-2016] or implement a tracing JIT compiler tailored to identify dynamic type assertions@~cite[bauman-et-al-icfp-2015 btsb-oopsla-2017].
 High-cost types may be a symptom of inefficiencies in the translation from types to dynamic checks.
-Recent calculi for space-efficient contracts@~cite[stw-pldi-2015 g-popl-2015] may provide insight for eliminating proxies.
+Recent calculi for space-efficient contracts@~cite[htf-hosc-2010 stw-pldi-2015 g-popl-2015 g-tfp-2016 g-icfp-2013] may provide insight for eliminating proxies.
 Storing runtime type information in the heap may prove to be more efficient than encoding it with contracts@~cite[rsfbv-popl-2015 vcgts-esop-2015].
 Lastly, there is a long history of related work on improving the performance of dynamically typed languages@~cite[h-lfp-1992 jw-sas-1995 sw-sas-1995 c-esop-1988].
 
