@@ -10,7 +10,9 @@
                "glob"
                "trivial"
                "math-lib"
-               "plot-lib"))
+               "plot-lib"
+               "pict-lib"
+               "syntax-sloc"))
 (define build-deps '("rackunit-lib"
                      "racket-doc"))
 (define pkg-desc "Summary scripts for gradual typing performance (gtp)")
