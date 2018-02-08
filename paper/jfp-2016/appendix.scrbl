@@ -6,6 +6,7 @@
 @; - (online only) copy of emails
 
 
+@para[#:style 'pretitle]{@exact{\clearpage}}
 @title[#:tag "appendix"]{Appendix}
 @; =============================================================================
 @profile-point{appendix:bib}
@@ -709,7 +710,7 @@ For a fixed benchmark and fixed version of Racket, all configurations have an eq
 
 The table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any ``deliverable'' conversion paths through a performance lattice.
 More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1 \rightarrow_1 \ldots \rightarrow_1 c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D}.
-The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save space.
+The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save horizontal space.
 
 The table in @figure-ref{fig:appendix:devils} provides a few worst-case statistics relevant to @secref{sec:devils}.
 The second column (``Max Boundary'') reports the number of times that a value flows across the most-frequently-crossed static module boundary in each benchmark.
@@ -718,7 +719,7 @@ The remaining columns report properties of the configuration in each benchmark w
 These properties are:
 @itemlist[
 @item{
-  The maximum number of proxies layered on any single value (``Max Wraps''), recorded using the patch described in @citet[sthff-oopsla-2012].
+  The maximum number of function, vector or struct proxies layered on any single value (``Max Wraps''), recorded using the patch described in @citet[sthff-oopsla-2012].
 }
 @item{
   The percentage of overall runtime spent checking contracts (``Contract %''), as reported by Racket's contract profiler@~cite[saf-cc-2015].
