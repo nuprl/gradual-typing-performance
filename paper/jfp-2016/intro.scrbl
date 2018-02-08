@@ -17,10 +17,10 @@
 @title[#:tag "sec:intro"]{The Gradual Typing Design Space}
 
 Programmers use dynamically typed languages to build all kinds of applications.
-Telecom companies have been running Erlang programs for years@~cite[armstrong-2007]; Sweden's pension system is a Perl program@~cite[l-freenix-2006]; web developers build large programs with JavaScript and Node.js@~cite[wmwz-ecoop-2017]; and the server-side applications of Dropbox, Facebook, and Twitter were originally written in Python, PHP, and Ruby, respectively.
+Telecom companies have been running Erlang programs for years; Sweden's pension system is a Perl program@~cite[l-freenix-2006]; web developers build large programs with JavaScript and Node.js; and the server-side applications of Dropbox, Facebook, and Twitter were originally written in Python, PHP, and Ruby, respectively.
 
 Regardless of why programmers choose dynamically typed languages, the maintainers of these applications inevitably find the lack of explicit and reliable type annotations an obstacle to their work.
-Researchers have tried to overcome the lack of type annotations with type inference@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 ffkwf-pldi-1996], but most have come to realize that there is no substitute for programmer-supplied annotations.
+Researchers have tried to overcome the lack of type annotations with type inference for at least two decades@~cite[cf-pldi-1991 awl-popl-1994 hr-fpca-1995 agd-ecoop-2005 fafh-sac-2009 ffkwf-pldi-1996 suzuki-popl-1981], but most have come to realize that there is no substitute for programmer-supplied annotations.
 Explicit annotations communicate a programmer's intent to other human readers.
 Furthermore, tools can check the annotations for logical inconsistencies.
      @; Confirming problem, and responses:
@@ -45,7 +45,7 @@ At the lexical boundaries between annotated code and dynamically
  which ensures that no typed operation is applied to arguments outside its domain.
 
 From a syntactic perspective the interaction between annotated and unannotated code is seamless, but dynamic checks introduce runtime overhead.
-During execution, if an untyped function flows into a variable @type{$f$} with
+If, during execution, an untyped function flows into a variable @type{$f$} with
  type @type{$\tau_1 \rightarrow \tau_2$}, then a dynamic check must
  guard every subsequent call to @type{$f$}
  because typed code cannot assume

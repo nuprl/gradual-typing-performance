@@ -29,7 +29,7 @@
   Developers cannot predict whether adding types to part of a program will significantly degrade its performance.
   Implementors cannot precisely determine how improvements to a gradual type system affect the performance of such programs.
 
-  This paper presents the first method for evaluating the performance of gradual type systems.
+  This paper presents the first method for evaluating the performance of sound gradual type systems.
   The method quantifies both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.
   To validate the method, the paper reports on its application to @integer->word[(*NUM-BENCHMARKS*)] programs and @integer->word[(length (*RKT-VERSIONS*))] implementations of Typed Racket.
 }

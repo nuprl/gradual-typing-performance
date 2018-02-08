@@ -125,7 +125,6 @@
      (define/public (get-group-sep) "; ")
      (define/public (get-item-sep) ", ")
      (define/public (render-citation date-cite i)
-       (printf "HELLO DATE CITE ~a\n" date-cite)
        (make-element
         (make-style "Thyperref" (list (command-extras (list (make-label i)))))
         date-cite))

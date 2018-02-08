@@ -24,7 +24,7 @@ Industry labs instead built @emph{optionally typed} languages@;
 @note{@url{http://flowtype.org/}}
 @note{@url{http://mypy-lang.org/}}
 that provide static checks but sacrifice type soundness.
-Programs written in such languages run with zero overhead, but are suceptible to bugs and silent failures.
+Programs written in such languages run with zero overhead, but are suceptible to silent failures@~cite[tfffgksst-snapl-2017].
 
 As implementations of gradual typing matured, programmers using them had mixed experiences about the performance overhead of gradual typing.
 Some programmers did not notice any significant overhead.
@@ -63,7 +63,7 @@ To reduce the cost of high-frequency checks, the runtime system could cache the 
 High-cost types may be a symptom of inefficiencies in the translation from types to dynamic checks.
 Recent calculi for space-efficient contracts@~cite[htf-hosc-2010 stw-pldi-2015 g-popl-2015 g-tfp-2016 g-icfp-2013] may provide insight for eliminating proxies.
 Storing runtime type information in the heap may prove to be more efficient than encoding it with contracts@~cite[rsfbv-popl-2015 vcgts-esop-2015].
-Lastly, there is a long history of related work on improving the performance of dynamically typed languages@~cite[h-lfp-1992 jw-sas-1995 sw-sas-1995 c-esop-1988].
+Lastly, there is a long history of related work on improving the performance of dynamically typed languages@~cite[h-lfp-1992 jw-sas-1995 sw-sas-1995 c-esop-1988]; some of it may apply here.
 
 Finally, researchers must ask whether the specific problems reported in this paper indicate a fundamental limitation of gradual typing.
 The only way to know is through further systematic evaluation of gradual type systems.
@@ -76,7 +76,7 @@ The only way to know is through further systematic evaluation of gradual type sy
 
 @section[#:style 'unnumbered]{Acknowledgments}
 
-The authors gratefully acknowledge support from the National Science Foundation (SHF 1518844).
+The authors gratefully acknowledge support from the National Science Foundation (SHF 1518844) and thank the anonymous JFP reviewers.
 They owe the implementors of Typed Racket a large debt, especially Sam Tobin-Hochstadt.
 They also thank Matthew Butterick, John Clements, Matt Might, Linh Chi Nguyen,Vincent St-Amour, Neil Toronto, David Van Horn, Danny Yoo, and Jon Zeppieri for providing programs that inspired the benchmarks.
 Sam Tobin-Hochstadt and Brian LaChance provided feedback on early drafts.

@@ -12,7 +12,7 @@
 @title[#:tag "sec:bm"]{The @|GTP| Benchmark Programs}
 
 The @integer->word[(count-benchmarks)] @emph{gradual typing performance} (@|GTP|) benchmark programs are representative of actual user code yet small enough to make exhaustive performance evaluation tractable.
-The following descriptions, arranged from fewest to most migratable modules, briefly summarize each benchmark.
+The following descriptions of the benchmark programs---arranged by size as measured in number of migratable modules---briefly summarize their relevant characteristics.
 Each description comes with four fields:
  @emph{Origin} indicates the benchmark's source,
  @emph{Purpose} describes what it computes,
@@ -157,7 +157,7 @@ This section concludes with a table summarizing the static characteristics of ea
     This version has a high typed/untyped ratio
      because it explicitly compiles types to runtime predicates
      and uses these predicates to eagerly check data invariants.
-    In other words, the typed configuration is slower than the untyped configuration because it does more work.
+    In other words, the typed configuration is slower than the untyped configuration because it performs more work.
 
     The second version, @bm[quadBG], uses identical code but weakens types to match the untyped configuration.
     This version is therefore suitable for judging the implementation
@@ -179,14 +179,14 @@ This section concludes with a table summarizing the static characteristics of ea
 @profile-point{sec:tr:characteristics}
 @; @subsection{Static Benchmark Characteristics}
 
-@Figure-ref{fig:bm} tabulates the size and complexity of the benchmark programs.@note{The appendix presents the information in @figure-ref{fig:bm} graphically.}
+@Figure-ref{fig:bm} tabulates the size and complexity of the benchmark programs.
 The lines of code (Untyped LOC) and number of migratable modules (# Mod.) approximate program size.
 The type annotations (Annotation LOC) count additional lines in the typed configuration.
 These lines are primarily type annotations, but also include type casts and assertions.@note{The benchmarks use more annotations than Typed Racket requires because they give full type signatures for each import. Only imports from untyped modules require annotation.}
 Adaptor modules (# Adp.) roughly correspond to the number of user-defined datatypes in each benchmark;
  the next section provides a precise explanation.
-Lastly, the boundaries (# Bnd.) and exports (# Exp.) distill each benchmark's graph structure.
-Boundaries are import statements from one module to another, excluding imports for runtime or third-party libraries.
+Lastly, the boundaries (# Bnd.) and exports (# Exp.) distill each benchmark's graph structure.@note{The appendix contains actual module dependence graphs.}
+Boundaries are import statements from one module to another, excluding imports from runtime or third-party libraries.
 An identifier named in such an import statement counts as an export.
 For example, the one import statement in @bm[sieve] names nine identifiers.
 
@@ -229,5 +229,5 @@ Fifth, some benchmarks use a different modularization than the original program.
 The @bm[kcfa] benchmark is modularized according to comments in the original, single-module program.
 The @bm[suffixtree], @bm[synth], and @bm[gregor] benchmarks each have a single file containing all their data structure definitions; the original programs defined these structures in the same module as the functions on the structures.
 Lastly, the @bm[quadBG] benchmark has two fewer modules than @bm[quadMB] because it inlines the definitions of two (large) data structures that @bm[quadMB] keeps in separate files.
-This inlining does not affect overhead due to gradual typing, but greatly reduces the number of configurations.
+Removing these boundaries has a negligible affect on performance overhead and greatly reduces the number of configurations.
 

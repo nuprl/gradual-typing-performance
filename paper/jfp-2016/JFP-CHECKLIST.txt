@@ -1,3 +1,7 @@
+Thank you very much for the reviews.
+We address your comments below.
+
+
 General Response
 ================================================================================
 
@@ -7,7 +11,7 @@ Section 2 in the original submission followed this outline:
 
 - 2   : brief introduction to Typed Racket
         + reasons for migrating from Racket to Typed Racket
-- 2.1 : reasons for using both Racket and Typed Racket
+- 2.1 : reasons for mixing Racket and Typed Racket
         (rather than migrating the entire application to Racket)
 - 2.2 : case for type soundness
 
@@ -20,7 +24,8 @@ Section 2 in the revised submission follows a modified outline:
 
 Summary: at the recommendation of reviewer 1, we removed the argument for type
  soundness and instead describe the history that led to this work on
- performance evaluation.
+ performance evaluation.  We point to other publications that make the case
+ for soundness.
 
 - - -
 
@@ -107,7 +112,8 @@ Where SNAPL'17 is a citation to "Migratory Typing: Ten years later" by
 > context
 
 Clarified (in the new sec 2.2) that the unpredictability goes against the
- intuition that adding types should improve performance.
+ intuition that adding types should in principle improve performance,
+ and the unpredictable performance is difficult to debug.
 
 
 ## Section 2.2: strengthen argument (or remove)
@@ -192,8 +198,14 @@ Changed `N` to `N >= 10` and clarified the last paragraph of Section 5.1 to
 
 Added "reading from a file" as a threat to validity in Section 7.
 
-In the benchmarks that do perform I/O actions, those actions take only a small
- fraction of the total running time.
+A few benchmarks perform I/O actions.  We have measured these benchmarks with
+ and without I/O and found:
+
+- the difference in running time is miniscule in all but one case
+- the difference does not affect the conclusions in the paper
+
+For the one benchmark (zombie) where removing I/O significantly changed running
+ time, we have updated the data in the paper.
 
 
 ## Section 5.1: define green threads; do all threads block on I/O?
@@ -235,8 +247,9 @@ Changed the final line to say that the alternative soundness imposes less
 Added a citation to Section 8.3.
 
 This example is not one of the benchmarks because (1) the source of performance
- overhead is similar to other benchmarks, like `fsm`, and (2) we only have one
- partially-typed configuration for it.
+ overhead is similar to other benchmarks, like `fsm`, and (2) Typed Racket does
+ not support all gradually-typed configurations of this program as it is
+ currently written.
 
 
 ## compare to TypeScript
@@ -411,3 +424,6 @@ Here is a listing of the evidence we already provide, ignoring the code samples:
   * 2x slowdown in mbta due to an untyped library
   * 4x slowdown in zordoz due to an untyped library
   * the "Library %" column in fig. 24
+
+An even deeper analysis would require new research, distinct from this work on
+ methodology.

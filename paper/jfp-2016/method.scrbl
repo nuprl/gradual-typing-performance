@@ -7,6 +7,7 @@
   "typed-racket.rkt"
   benchmark-util/data-lattice
   (only-in racket/format ~r)
+  (only-in racket/list take)
   (only-in gtp-summarize/summary
     from-rktd
     get-num-modules
@@ -21,13 +22,14 @@
 @profile-point{sec:method}
 @title[#:tag "sec:method"]{Evaluation Method, Part I}
 
-Performance evaluation for gradual type systems must reflect how programmers use such systems.
-Experience with Typed Racket shows that programmers frequently combine typed and untyped code within an application.
-These applications may undergo gradual transitions that add or remove some type annotations; however, it is rare that a programmer adds explicit annotations to every module in the program all at once.
+A performance evaluation of gradual type systems must reflect how programmers use such systems.
+Since experience with Typed Racket shows that programmers frequently combine typed and untyped code within an application, an evaluation method must account for the large space of code between untyped and fully-typed programs.
+These applications may also undergo gradual transitions that add or remove some type annotations.
 In a typical evolution, programmers compare the performance of the modified program with the previous version.
 If type-driven optimizations result in a performance improvement, all is well.
 Otherwise, the programmer may need to address the performance overhead.
 As they continue to develop the application, programmers repeat this process.
+Again, an evaluation method must take into account gradual evolution to reflect practice.
 
 The following subsections build an evaluation method from these observations in three steps.
 First, @secref{sec:method:lattice} describes the space over which a performance evaluation must take place.
@@ -89,26 +91,17 @@ In general, let the notation @exact{$c_1 \rightarrow_k c_2$} express the idea th
 Configurations in @figure-ref{fig:suffixtree-lattice} are furthermore labeled with their performance overhead relative to the untyped configuration on Racket version 6.2.
 With these labels, a language implementor can draw several conclusions about the performance overhead of gradual typing in this program.
 For instance, @|suffixtree-num-D-str| configurations run within a @id[suffixtree-sample-D]x overhead and @|suffixtree-num-k-str| configurations are at most @integer->word[suffixtree-sample-k] type conversion step from a configuration that runs within a @id[suffixtree-sample-D]x overhead.
-High overheads are common (@id[suffixtree-num-max] configurations have over @id[suffixtree-max]x overhead), but the fully typed configuration runs faster (0.7x overhead) than the untyped configuration because Typed Racket uses the type annotations to compile more efficient code.
+High overheads are common (@id[suffixtree-num-max] configurations have over @id[suffixtree-max]x overhead), but the fully typed configuration runs faster (0.7x overhead) than the untyped configuration because Typed Racket uses the type annotations to compile efficient bytecode.
 
 A labeled lattice such as @figure-ref{fig:suffixtree-lattice} is a @emph{performance lattice}.
 The same lattice without labels is a @emph{configuration lattice}.
-The practical distinction is that users of a gradual type system will explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.
+Practically speaking, users of a gradual type system explore configuration lattices and maintainers of such systems may use performance lattices to evaluate overall performance.
 
 
 @; -----------------------------------------------------------------------------
 @section[#:tag "sec:measurements"]{Performance Metrics}
 
-    @figure["fig:demo-lattice" "Sample performance lattice"
-      (parameterize ([*LATTICE-CONFIG-MARGIN* 30]
-                     [*LATTICE-LEVEL-MARGIN* 4]
-                     [*LATTICE-BOX-SEP* 0]
-                     [*LATTICE-LINE-ALPHA* 0.6])
-        (make-performance-lattice (sample-data 'all)))
-    ]
-
-
-The most basic question about a gradually typed language is
+The most basic question, and least important, about a gradually typed language is
  how fast fully-typed programs are in comparison to their fully untyped relative.
 In principle and in Typed Racket, static types enable optimizations and can serve in place of runtime tag checks.
 The net effect of such improvements may, however, be offset by the runtime cost of enforcing type soundness.
@@ -148,36 +141,54 @@ One coarse measure of ``work'' is the number of additional modules that must be 
       and @exact{$c_2$} is @deliverable{}.
     }@;
 @; @profile-point{sec:method:example}
-The number of @step[] configurations therefore captures the experience of a prescient programmer that converts the @exact{$k$} modules that maximize performance.
+The number of @step[] configurations captures the experience of a prescient programmer that converts the @exact{$k$} modules that maximize the performance improvement.
 
 @(define sample-data
-  (let* ([mean+std* '#((20 . 0) (15 . 0) (35 . 0) (10 . 0))]
+  (let* ([rng (vector->pseudo-random-generator (vector 0 1 2 3 4 5))]
+         [approx (lambda (n) (let ([offset (/ n (random 1 10 rng))]) (if (zero? (random 0 1 rng)) (+ n offset) (- n offset))))]
+         [mean+std* `#((20 . 0)
+                       (50 . 0) (,(approx 50) . 0) (,(approx 50) . 0)
+                       (30 . 0) (,(approx 30) . 0) (,(approx 30) . 0)
+                       (10 . 0))]
          [mean (lambda (i) (car (vector-ref mean+std* i)))])
     (lambda (tag)
       (case tag
-       [(c00) (mean 0)]
-       [(c01) (mean 1)]
-       [(c10) (mean 2)]
-       [(c11) (mean 3)]
+       [(c000) (mean 0)]
+       [(c001) (mean 1)]
+       [(c010) (mean 2)]
+       [(c100) (mean 3)]
+       [(c011) (mean 4)]
+       [(c101) (mean 5)]
+       [(c110) (mean 6)]
+       [(c111) (mean 7)]
        [(all) mean+std*]
-       [else (raise-user-error 'sample-data "Invalid configuration '~a'. Use e.g. c00 for untyped." tag)]))))
+       [else (raise-user-error 'sample-data "Invalid configuration '~a'. Use e.g. c000 for untyped." tag)]))))
 @(define (sample-overhead cfg)
-  (ceiling (/ (sample-data cfg) (sample-data 'c00))))
+  (ceiling (/ (sample-data cfg) (sample-data 'c000))))
+
+    @figure["fig:demo-lattice" "Sample performance lattice"
+      (parameterize ([*LATTICE-CONFIG-MARGIN* 30]
+                     [*LATTICE-LEVEL-MARGIN* 8]
+                     [*LATTICE-BOX-SEP* 0]
+                     [*LATTICE-LINE-ALPHA* 0.8])
+        (make-performance-lattice (sample-data 'all)))
+    ]
+
 
 Let us illustrate these terms with an example.
 Suppose there is a project with
- two modules where the untyped configuration runs in @id[(sample-data 'c00)]
- seconds and the typed configuration runs in @id[(sample-data 'c11)] seconds.
-Furthermore, suppose the mixed configurations run in
-  @id[(sample-data 'c01)] and @id[(sample-data 'c10)] seconds.
+ three modules where the untyped configuration runs in @id[(sample-data 'c000)]
+ seconds and the typed configuration runs in @id[(sample-data 'c111)] seconds.
+Furthermore, suppose half the mixed configurations run in
+  approximately @id[(sample-data 'c001)] seconds and the other half run in approximately @id[(sample-data 'c011)] seconds.
 @Figure-ref{fig:demo-lattice} is a performance lattice for this hypothetical program.
 The label below each configuration is its overhead relative to the untyped configuration.
 
-@(let* ([tu-ratio (/ (sample-data 'c11) (sample-data 'c00))]
-        [t-str @id[(sample-overhead 'c11)]]
-        [g-overhead (inexact->exact (max (sample-overhead 'c10) (sample-overhead 'c01)))]
-        [g-min-overhead (inexact->exact (min (sample-overhead 'c10) (sample-overhead 'c01)))]
-        [g-overhead2 (~r (+ g-min-overhead (/ (- g-overhead g-min-overhead) 2)) #:precision '(= 1))])
+@(let* ([tu-ratio (/ (sample-data 'c111) (sample-data 'c000))]
+        [t-str @id[(sample-overhead 'c111)]]
+        [g-overheads (map sample-overhead '(c011 c101 c110 c001 c010 c100))]
+        [min-g (inexact->exact (apply max (take g-overheads 3)))]
+        [max-g (inexact->exact (apply max g-overheads))])
   @elem{
     The typed/untyped ratio is @id[tu-ratio],
      indicating a performance improvement due to adding types.
@@ -185,10 +196,10 @@ The label below each configuration is its overhead relative to the untyped confi
       @deliverable[t-str]
       because it runs within a @elem[t-str]x
       slowdown relative to the untyped configuration.
-    Both mixed configurations are
-      @deliverable[@id[g-overhead]]
-      but only one is, e.g., @deliverable[@id[g-overhead2]].
-    Lastly, the mixed configurations are @step[t-str t-str]
+    All mixed configurations are
+      @deliverable[@id[max-g]], but only three are, e.g.,
+      @deliverable[@id[min-g]].
+    Lastly, the mixed configurations are all @step["1" t-str]
      because they can reach the typed configuration in one type conversion step.
   })
 
@@ -224,7 +235,9 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         One way to plot this information is to fix a value for @math{k}, say @math{k=0}, and consider a set of values @exact{$d_0,\ldots,d_{n-1}$} for @math{D}.
         The set of proportions of @step["0" "d_i"] configurations defines a histogram with the value of @math{D} on the independent axis and the proportion of configurations on the dependent axis.
 
-        @Figure-ref{fig:suffixtree-plot} demonstrates two such @emph{overhead plots} for the @|suffixtree-num-configs-str| configurations of a program called @bm[suffixtree], measured on Racket v@|suffixtree-lattice-version|.
+        @Figure-ref{fig:suffixtree-plot} demonstrates two such @emph{overhead plots}, summarizing the data in @figure-ref{fig:suffixtree-lattice}.
+        @; TODO awkward
+        Specifically, each plots the @|suffixtree-num-configs-str| configurations of a program called @bm[suffixtree] using data measured on Racket v@|suffixtree-lattice-version|.
         The plot on the left fixes @math{k=0} and plots the proportion of @step["0" "D"] configurations.
         The plot on the right fixes @math{k=1} and plots the proportion of @step["1" "D"] configurations.
         Both plots consider @math{@id[ALOT]} values of @math{D} evenly spaced between 1x and 20x.
@@ -233,12 +246,11 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         Vertical ticks pinpoint the following values of @math{D}: 1.2x, 1.4x, 1.6x, 1.8x, 2x, 4x, 6x, 8x, 10x, 12x, 14x, 16x, and 20x.
 
         The plot on the left, in which @math{k=0}, confirms the observation made in @secref{sec:method:lattice} that @(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))% of the @|suffixtree-num-configs-str| configurations (@|suffixtree-num-D-str| configurations) run within a @id[suffixtree-sample-D]x overhead.
-        For larger values of @math{D} than 2x, the proportion of @deliverable{D} configurations is slightly larger, but even at a @id[MAX-OVERHEAD]x overhead, this proportion is only @(id (round (* 100 (/ suffixtree-num-D-max suffixtree-num-configs))))%.
+        For values of @math{D} larger than 2x, the proportion of @deliverable{D} configurations is slightly larger, but even at a @id[MAX-OVERHEAD]x overhead, this proportion is only @(id (round (* 100 (/ suffixtree-num-D-max suffixtree-num-configs))))%.
         The plot on the right shows that the proportion of @step["1" "D"] is typically twice as high as the proportion of @deliverable{} configurations for this benchmark.
 
-        These overhead plots concisely summarize the lattice in @figure-ref{fig:suffixtree-lattice}.
-        The same presentation scales to arbitrarily large programs because the @math{y}-axis plots the proportion of @deliverable{D} configurations; in contrast, a performance lattice contains exponentially many nodes.
-        Furthermore, plotting the overhead for multiple implementations of a gradual type system on the same set of axes provides a high-level summary of their relative performance.
+        Clearly, this presentation scales to arbitrarily large programs because the @math{y}-axis plots the proportion of @deliverable{D} configurations; in contrast, a performance lattice contains exponentially many nodes.
+        Furthermore, plotting the overhead for multiple implementations of a gradual type system on the same set of axes conveys their relative performance.
       }
 )))
 

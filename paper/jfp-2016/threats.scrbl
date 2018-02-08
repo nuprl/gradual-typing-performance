@@ -20,12 +20,12 @@ First, the benchmark programs are relatively small.
 Larger programs might avoid the pathological overheads in the benchmarks,
  though the results for @bm[quadMB] and @bm[synth] constitute evidence to the contrary.
 
-Second, some benchmarks read from a file during their timed computation.
-These benchmarks are @bm[forth], @bm[mbta], @bm[morsecode], @bm[zombie], @bm[zordoz], @bm[lnm], @bm[suffixtree], @bm[snake], and @bm[tetris].
-Nevertheless, we consider our results representative.
+Second, some benchmarks have minor interactions with the filesystem.
+The following benchmarks read from a configuration file: @bm[forth], @bm[zordoz], @bm[lnm], @bm[suffixtree], @bm[snake], and @bm[tetris].
+The following benchmarks write output to a file: @bm[sieve], @bm[quadBG], and @bm[quadMB].
+Removing these I/O actions does not change the overhead presented in @secref{sec:plots}, thus we consider our results representative.
 
-@; TODO say this better? Remove?
-Third, the configurations running in parallel reference the same Racket executable and external libraries.
+Third, the @bm[quadBG] and @bm[quadMB] configurations that ran in parallel referenced the same Racket executable and external libraries.
 This cross-reference is a potential source of bias, but we have been unable to detect adverse effects.
 
 Fourth, the Racket JIT compiler includes heuristic optimizations.
@@ -37,8 +37,8 @@ Nevertheless, the overheads evident in the results are much larger than those at
 The conclusions have three limitations.
 First, the evaluation does not systematically measure the effects of annotating the same code with different types.
 This is an issue because type annotations determine the runtime constraints on untyped code.
-Therefore if two programmers give the same code different type annotations, they may experience different performance.
-For example, @bm[quadBG] and @bm[quadMB] describe the same code with different types and have very different performance.
+Therefore if two programmers give the same code different type annotations, they may experience different performance problems.
+For example, @bm[quadBG] and @bm[quadMB] describe the same code with different types and have extremely different performance characteristics.
 Whereas all configurations of the former are @deliverable{6}, only a small fraction of @bm[quadMB] configurations are @deliverable{20}.
 
 Second, the conclusions rely on Typed Racket's implementation technology and do not necessarily generalize to other implementations of gradual typing.
@@ -49,7 +49,7 @@ Contract-aware implementation techniques such soft contracts (@exact{@|PHIL|} @|
  may significantly reduce the overhead of gradual typing.
 
 Finally, Typed Racket relies on the @emph{complete monitoring} property@~cite[dthf-esop-2012] of the Racket contract system to provide a strong form of type soundness@~cite[tfffgksst-snapl-2017].
-When a type boundary error occurs, Racket deduces original type annotation and dynamically-typed value that led to the fault.
+When a type boundary error occurs, Racket produces the original type annotation and the dynamically-typed value that violates the annotation.
 This protocol generates extremely precise error messages, but the runtime system must dynamically track contextual information to implement it.
 On one hand, there may be inefficiencies in Racket's implementation of this runtime monitoring.
 On the other hand, a different gradual type system could offer a different soundness guarantee and circumvent the need for this runtime accounting altogether.

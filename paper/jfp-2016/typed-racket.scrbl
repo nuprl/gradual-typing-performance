@@ -25,7 +25,8 @@
 @(define MAX-ITERS-STR "30")
 @(define FREQ-STR "1.40 GHz")
 
-@Secref{sec:plots} and @secref{sec:compare} present the results of an exhaustive performance evaluation of the @integer->word[(*NUM-BENCHMARKS*)] benchmark programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
+@; @seclink is gross here, but it makes a good PDF
+Sections @seclink["sec:plots"]{5.2} and @seclink["sec:compare"]{5.3} present the results of an exhaustive performance evaluation of the @integer->word[(*NUM-BENCHMARKS*)] benchmark programs on @integer->word[(length (*RKT-VERSIONS*))] versions of Racket.
 The data is the result of applying the following protocol for each benchmark and each version of Typed Racket:
 @itemlist[
 @item{
@@ -72,7 +73,7 @@ The appendix discusses the stability of individual measurements and reports the 
     (cons
       @elem{
         @(apply Figure-ref name*) present the results of measuring the benchmark programs in a series of overhead graphs.
-        As in @figure-ref{fig:suffixtree-plot}, the left column of figures are cumulative distribution functions for @deliverable[] configurations and the right column are cumulative distribution functions for @step["1" "D"] configurations.
+        As in @figure-ref{fig:suffixtree-plot}, the left column of the figures are cumulative distribution functions for @deliverable[] configurations and the right column are cumulative distribution functions for @step["1" "D"] configurations.
         These plots include data for three versions of Racket released between June 2015 and February 2016.
         Data for version 6.2 are thin red curves with short dashes.
         Data for version 6.3 are mid-sized green curves with long dashes.
@@ -107,7 +108,7 @@ The appendix discusses the stability of individual measurements and reports the 
             Such lines imply that the performance of a group of configurations is dominated by a single type boundary.
             @; For instance, there is one type boundary in @bm[fsm] that adds overwhelming slowdown when present; all eight configurations with this boundary have over @|max-str| overhead.
             Benchmarks with @|suffixtree-num-modules| or more modules generally have smoother slopes, but five such benchmarks have essentially flat curves.
-            The underlying message is that for many values of @math{D} between 1 and @|max-str|, few configurations are @deliverable{}.
+            The overall message is that for many values of @math{D} between 1 and @|max-str|, few configurations are @deliverable{}.
 
             For example, in @integer->word[(- num-bm num-mostly-2-deliverable)] of the @|num-bm-str| benchmark programs, at most half the configurations are @deliverable{2} on any version.
             The situation is worse for lower (more realistic) overheads, and does not improve much for higher overheads.
@@ -115,7 +116,7 @@ The appendix discusses the stability of individual measurements and reports the 
 
             The curves' endpoints describe the extremes of gradual typing.
             The left endpoint gives the percentage of configurations that run at least as quickly as the untyped configuration.
-            Except for the @bm[lnm] benchmark, such configurations are a low proportion of the total.@note{@bm[sieve] is a degenerate case. Only its untyped and fully-typed configurations are @deliverable{1}.}
+            Except for the @bm[lnm] benchmark, such configurations are a low proportion of the total.@note{The @bm[sieve] case is degenerate. Only its untyped and fully-typed configurations are @deliverable{1}.}
             The right endpoint shows how many configurations suffer over 20x performance overhead.@note{Half the configurations for @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes. The overhead graphs report an ``over 20x'' performance overhead for these configurations.}
             @string-titlecase[num-max-deliverable-str] benchmarks have at least one such configuration.
 
@@ -146,12 +147,12 @@ The overhead plots for many other benchmarks demonstrate a positive difference b
 
 The plot of @figure-ref{fig:scale:delta} explicitly shows the improvement of version 6.4 over version 6.2.
 It consists of @integer->word[(*NUM-BENCHMARKS*)] purple lines, one for each benchmark.
-These lines plot the difference between the curve for v6.4 and the curve for v6.2 on the corresponding overhead plot.
+These lines plot the difference between the curves for v6.4 and v6.2 on the corresponding overhead plot.
 For example, the line for @bm[gregor] (labeled @${\mathsf{r}}) demonstrates a large improvement in the number of @deliverable{2} configurations.
 The plot also shows that fifteen of the @integer->word[(*NUM-BENCHMARKS*)] benchmarks significantly benefit from running on version 6.4.
 Only the line for the @bm[forth] benchmark demonstrates a significant regression.
 
-The improved performance in Racket version 6.4 is due to revisions of the contract system and Typed Racket's use of contracts to enforce static types.
+The improved performance of Racket version 6.4 is due to revisions of the contract system and Typed Racket's use of contracts to enforce static types.
 In particular, the contract system allocates fewer closures to track the labels that Typed Racket uses to report type boundary errors.
 The regression in the @bm[forth] benchmark is due to a bug in the implementation of class contracts in version 6.2.
 This bug would suppress the allocation of certain necessary class contracts.

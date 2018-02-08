@@ -26,26 +26,20 @@
 
   @; plot library ~ 80 modules
   @; math library ~ 197 modules
-The evaluation method of @secref{sec:method} does not scale to benchmarks with a large number of typeable components.
+The evaluation method of @secref{sec:method} does not scale to benchmarks with a large number of migratable modules.
 Benchmarking a full performance lattice for a program with @math{N} such components requires @exact{$2^N$} measurements.
 In practice, this limits an exhaustive evaluation of Typed Racket to programs with approximately 20 migratable modules.
-An evaluation of micro-level gradual typing would be severly limited; depending on the definition of a typeable component, such an evaluation might be limited to programs with 20 functions.
+An evaluation of micro-level gradual typing would be severly limited; depending on the definition of a migratable component, such an evaluation might be limited to programs with 20 functions.
 
-Simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
+Fortunately, simple random sampling can approximate the ground truth presented in @secref{sec:tr}.
 Instead of measuring every configuration in a benchmark, it suffices to randomly sample a linear number of configurations and plot the overhead apparent in the sample.
-
-@; @bold{Remark}
-@;     Overhead plots are intuitively a statement about expected values.
-@;     If 10% of the configurations are @deliverable{5}, then one in ten randomly sampled configurations will be @deliverable{5}.
-@;     The same holds for any value of @math{D}, so an overhead plot generated from one sample population will, in expectation, approximate the true overhead plot.@;
-@; @|QED|
 
 @Figure-ref{fig:scale:srs-snake} plots the true performance of the @bm[snake] benchmark against confidence intervals@~cite[n-ptrs-1937] generated from random samples.
 The plot on the left shows the absolute performance of @bm[snake] on version 6.2 (dashed red line) and version 6.4 (solid blue line).
 The plot on the right shows the improvement of version 6.4  relative to version 6.2 (solid purple line).
 Each line is surrounded by a thin interval generated from @integer->word[srs-samples] samples of @id[snake-sample-size] configurations each.
 
-The implicit suggestion of @figure-ref{fig:scale:srs-snake} is that the intervals provide a reasonable approximation of the performance of the @bm[snake] benchmark.
+The graphs in @figure-ref{fig:scale:srs-snake} suggest that the intervals provide a reasonable approximation of the performance of the @bm[snake] benchmark.
 These intervals capture both the absolute performance (left plot) and relative performance (right plot) of @bm[snake].
 
 @Figure-ref{fig:scale:delta-interval} provides evidence for the linear sampling suggestion of @figure-ref{fig:scale:srs-snake} using data for the @integer->word[(length large-bm*)] largest benchmarks in the @|GTP| suite.

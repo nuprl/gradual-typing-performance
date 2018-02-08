@@ -36,9 +36,7 @@ When a typed context expects a value of base type, Typed Racket enforces the bou
 When a typed context expects a value of an inductive type, Typed Racket checks the constructor of the value and recursively checks its components.
 Lastly, when a typed context expects a value of a coinductive type (e.g. a mutable cell or a function), Typed Racket checks the constructor, recursively checks its components when possible, and wraps the incoming value with a proxy@~cite[sthff-oopsla-2012] to monitor its future interactions with typed code.
 
-To illustrate this strategy, we describe how Typed Racket enforces a few types @type{$\tau$} by applying a contract @ctc{$\tau$} to an untyped value @${v}:@note{Technically, this illustration describes half of Typed Racket's strategy.
-    To support separate compilation, Typed Racket additionally protects exported typed values of coinductive types with a dual contract.
-    For example, the dual contract for the function type @type{$(\tarrow{\tint}{\tint})$} checks @ctc{$\tint$} for every argument to the function.}
+To illustrate this strategy, we describe for a few types @type{$\tau$} how Typed Racket enforces the invariant by applying a contract @ctc{$\tau$} when an untyped value @${v} flows into a typed region:@note{When a typed value flows into an untyped region, Typed Racket dualizes these contracts.}
 @itemlist[
 @item{
   If @type{$\tau$} is @type{$\tint$} then @ctcapp["\\tau" "v"] checks that @${v} is an integer constant.
@@ -76,7 +74,7 @@ The rest of this section demonstrates how these costs arise in practical example
 @section[#:tag "sec:devils:frequency"]{High-Frequency Typechecking}
 @; -- AKA high-frequency
 
-If values frequently cross one type boundary, then the program will suffer even if the cost of each boundary-crossing is relatively low.
+If values frequently cross one type boundary, then the program suffers even if the cost of each boundary-crossing is relatively low.
 The program in @figure-ref{fig:devils:stack}, for example, calls the typed function @racket[stack-empty?] one million times from untyped code.
 Each call is type-correct; nevertheless, Typed Racket validates the argument @racket[stk] against the specification @ctc{Listof A} one million times.
 
@@ -166,7 +164,7 @@ Changing its language to @code{#lang typed/racket} improves performance to under
 Michael Ballantyne encountered a similar issue with a queue library that led to a 1275x slowdown (see Appendix).
 
 
-    @figure["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
+    @figure-here["fig:devils:pfds" "Performance pitfall, discovered by John Clements."
       @codeblock-pict[@string-join['(
       "#lang racket"
       "(require pfds/trie) ;; a Typed Racket library"
@@ -197,12 +195,6 @@ Thus, when the server and client are separated by a type boundary, the macro ins
 In order to predict such costs, a programmer must recognize macros and understand each macro's namespace.
 
 
-@; -----------------------------------------------------------------------------
-@section[#:tag "sec:devils:wrapping"]{Layered Proxies}
-@; -- AKA repeated wrapping
-
-@; TODO note issue with space-efficiency, translating suffixtree to use list/vector gave 'out of memory'
-
   @figure["fig:devils:fsm" @elem{Accumulating proxies in @bm[fsm].}
       @codeblock-pict[@string-join['(
       "#lang typed/racket"
@@ -218,7 +210,7 @@ In order to predict such costs, a programmer must recognize macros and understan
       ) "\n"]]
   ]
 
-  @figure["fig:devils:forth" @elem{Accumulating proxies in @bm[forth].}
+  @figure-here["fig:devils:forth" @elem{Accumulating proxies in @bm[forth].}
       @codeblock-pict[@string-join['(
       "#lang typed/racket"
       "(require (prefix-in C. \"command.rkt\"))"
@@ -233,6 +225,12 @@ In order to predict such costs, a programmer must recognize macros and understan
       "      (send c eval-line env line))))"
       ) "\n"]]
   ]
+
+@; -----------------------------------------------------------------------------
+@section[#:tag "sec:devils:wrapping"]{Layered Proxies}
+@; -- AKA repeated wrapping
+
+@; TODO note issue with space-efficiency, translating suffixtree to use list/vector gave 'out of memory'
 
 Higher-order values that repeatedly cross type boundaries may accumulate layers of type-checking proxies.
 These proxies add indirection and space overhead.
