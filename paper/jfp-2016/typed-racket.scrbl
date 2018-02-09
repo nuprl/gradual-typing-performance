@@ -150,7 +150,8 @@ It consists of @integer->word[(*NUM-BENCHMARKS*)] purple lines, one for each ben
 These lines plot the difference between the curves for v6.4 and v6.2 on the corresponding overhead plot.
 For example, the line for @bm[gregor] (labeled @${\mathsf{r}}) demonstrates a large improvement in the number of @deliverable{2} configurations.
 The plot also shows that fifteen of the @integer->word[(*NUM-BENCHMARKS*)] benchmarks significantly benefit from running on version 6.4.
-Only the line for the @bm[forth] benchmark demonstrates a significant regression.
+Only the line for the @bm[forth] benchmark demonstrates a significant regression;
+ the @bm[zombie] benchmark demonstrates a small regression due to an increase in the cost of type casts.
 
 The improved performance of Racket version 6.4 is due to revisions of the contract system and Typed Racket's use of contracts to enforce static types.
 In particular, the contract system allocates fewer closures to track the labels that Typed Racket uses to report type boundary errors.
