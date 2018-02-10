@@ -12,9 +12,7 @@
 @profile-point{appendix:bib}
 @section{Anecdotal Evidence of Performance Costs}
 
-The following enumeration contains links to some of the anecdotes that triggered this investigation into the performance of gradual typing.
-The online supplement to this paper includes copies of the email threads and documents cited below.
-
+The following enumeration presents links to some of the anecdotes that triggered this investigation into the performance of gradual typing:
 @render-annotated-bib[@list[
   @annotated-bib[#:title "warning on use trie functions in #lang racket?"
                  #:author "John B. Clements"
@@ -60,6 +58,11 @@ The online supplement to this paper includes copies of the email threads and doc
   }
 ]]
 
+@parag[]
+
+@noindent[] The online supplement to this paper includes copies of these email threads and documents.
+
+
 
 @; =============================================================================
 @exact{\newpage}
@@ -73,7 +76,7 @@ In particular, the summaries include:
     the name and size of each module;
   }
   @item{
-    whether each module has an adaptor;
+    information about any adaptor modules;
   }
   @item{
     the number of identifiers imported and exported by the module;
@@ -84,7 +87,7 @@ In particular, the summaries include:
 ]
 @; + miscellaneous stats, like number of wraps?
 
-Modules are ordered alphabetically.
+The modules in each benchmark are ordered alphabetically.
 @Figure-ref{fig:suffixtree-lattice} uses this ordering on modules to represent configurations as black and white rectangles.
 For example, the node in @figure-ref{fig:suffixtree-lattice} in which only the left-most segment is white represents the configuration where module @tt{data.rkt} is untyped and all other modules are typed.
 Similarly, @figure-ref{fig:appendix:morsecode} derives a natural number for each configuration using the alphabetical order of module names.
@@ -666,7 +669,7 @@ The implicit assumption is that the mean of a configuration's running times is a
 
 @Figure-ref{fig:appendix:morsecode} plots exact running times for all @integer->word[(benchmark->num-configurations morsecode)] @bm[morsecode] configurations.
 The data for one configuration consists of three sequences of color-coded points; the data for version 6.2 are red triangles, the data for version 6.3 are green circles, and the data for version 6.4 are blue squares.
-Each sequence of running times is arranged left-to-right in the order the experiment recorded them.
+Each sequence of running times is arranged left-to-right in the order in which they were recorded.
 
 For all configurations, the data in each sequence is similar and there is no apparent pattern between the left-to-right order of points and the running time they represent.
 This suggests that the absolute running times for a given configuration in @bm[morsecode] are independent samples from a population with a stable mean.
@@ -697,7 +700,7 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
 @profile-point{appendix:worst-case}
 @section{Miscellaneous Figures}
 
-@figure["fig:appendix:paths" @elem{Proportion of @deliverable{D} conversion paths.}
+@figure["fig:appendix:paths" @elem{Percent of @deliverable{D} conversion paths, v6.4}
   @render-path-table[]
 ]
 
@@ -708,8 +711,8 @@ Nevertheless, @figure-ref{fig:appendix:ratio} provides some evidence that the av
 The table in @figure-ref{fig:appendix:iterations} lists the number of samples per configuration aggregated in @secref{sec:plots}.
 For a fixed benchmark and fixed version of Racket, all configurations have an equal number of samples.
 
-The table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any ``deliverable'' conversion paths through a performance lattice.
-More precisely, a @deliverable{D} @emph{conversion path} in a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1 \rightarrow_1 \ldots \rightarrow_1 c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D}.
+The table in @figure-ref{fig:appendix:paths} answers the hypothetical question of whether there exists any ``deliverable'' conversion paths through a performance lattice in the data for Racket version 6.4.
+More precisely, a @deliverable{D} @emph{conversion path} for a program of @math{N} modules is a sequence of @math{N} configurations @exact{$c_1 \rightarrow_1 \ldots \rightarrow_1 c_N$} such that for all @exact{$i$} between 1 and @math{N}, configuration @exact{$c_i$} is @deliverable{D}.
 The table lists the number of modules (@math{N}) rather than the number of paths (@math{N!}) to save horizontal space.
 
 The table in @figure-ref{fig:appendix:devils} provides a few worst-case statistics relevant to @secref{sec:devils}.

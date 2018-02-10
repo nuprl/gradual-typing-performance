@@ -406,7 +406,7 @@
                               (cdr (drop-right c* 1))))
         1))
   (define total-paths (factorial (get-num-modules S)))
-  (/ num-deliv total-paths))
+  (* 100 (/ num-deliv total-paths)))
 
 (define (new-path-table)
   (for/list ([bm (in-list ALL-BENCHMARKS)]
@@ -416,7 +416,7 @@
            (format "{\\tt ~a}" (benchmark-name bm))
            (format "~a" (benchmark->num-modules bm))
            (for/list ([D (in-list PATH-D*)])
-             (~r (deliverable-paths% S D) #:precision 2)))))
+             (number->string (deliverable-paths% S D))))))
 
     ;(tex-row      "{\\tt sieve}"  "2"    "0"   "0"     "0"    "0" "0.50")
     ;(tex-row      "{\\tt forth}"  "4"    "0"   "0"     "0"    "0"    "0")
