@@ -28,8 +28,7 @@
 
   The literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
   This gap has consequences for the implementors of gradual type systems and developers who use such systems.
-  @;Without systematic evaluation of mixed-typed programs,
-  Implementors cannot precisely determine how improvements to a gradual type system affect performance.
+  Without systematic evaluation of mixed-typed programs, implementors cannot precisely determine how improvements to a gradual type system affect performance.
   Developers cannot predict whether adding types to part of a program will significantly degrade (or improve) its performance.
 
   This paper presents the first method for evaluating the performance of sound gradual type systems.
