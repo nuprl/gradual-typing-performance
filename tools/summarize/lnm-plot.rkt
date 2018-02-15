@@ -1035,33 +1035,38 @@
       (for/list : (Listof (Listof Real))
                 ([i (in-range (*NUM-SIMPLE-RANDOM-SAMPLES*))])
         (summary-random-sample S sample-size #:replacement? #f)))
+    (define X-OFFSET 0.4)
     (define p
       (plot-pict
         (cons
-          (parameterize ([line-alpha 0.5])
+          (parameterize ([line-alpha 0.9])
             (hrule 0 #:color 0 #:width (line-width) #:style 'short-dash))
           (for/list : (Listof (Listof renderer2d))
                     ([S* (in-list S**)]
                      [i (in-naturals)])
             (define x-min (* i 10))
-            (define x-max (+ x-min 10))
+            (define x-max (- (+ x-min 10) X-OFFSET))
             (define f-6.2 (real->percent (car S*)))
             (define f-6.4 (real->percent (cadr S*)))
             (define log-diff
               (- (log (*MAX-OVERHEAD*)) (log 1)))
-            (list*
-              (parameterize ([line-alpha 0.5])
-                (vrule x-min #:color 0 #:width (* 0.3 (line-width))))
-              (function (lambda ([pre-r : Real])
-                          (define pct (/ (- pre-r x-min) 10))
-                          (define r (exp (* log-diff pct)))
-                          (- (f-6.4 r) (f-6.2 r)))
-                x-min x-max
-                #:color "DarkViolet"
-                #:label #f
-                #:samples (*NUM-SAMPLES*)
-                #:style 'solid
-                #:width (*LNM-WIDTH*))
+            (append
+              (parameterize ([line-alpha (*DELTA-SECTION-ALPHA*)]
+                             [line-width (* 0.3 (line-width))])
+                (list
+                  (vrule x-min #:color 0)
+                  (vrule (- x-min X-OFFSET) #:color 0)))
+              (list
+                (function (lambda ([pre-r : Real])
+                            (define pct (/ (- pre-r x-min) 10))
+                            (define r (exp (* log-diff pct)))
+                            (- (f-6.4 r) (f-6.2 r)))
+                  x-min x-max
+                  #:color "DarkViolet"
+                  #:label #f
+                  #:samples (*NUM-SAMPLES*)
+                  #:style 'solid
+                  #:width (*LNM-WIDTH*)))
               (if (or (not sample-factor) (not sample-style))
                 '()
                 (let* ([sample-size (* (get-num-modules (car S*)) sample-factor)]
