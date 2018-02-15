@@ -7,8 +7,8 @@
 @profile-point{sec:story}
 @title[#:tag "sec:story"]{Gradual Typing in Typed Racket}
 
-Typed Racket@~cite[tfffgksst-snapl-2017] is a sound gradual type system for Racket.
-Its syntax is an extension of Racket's; its static type checker supports idioms common in dynamically-typed Racket programs@~cite[thf-popl-2008 stf-esop-2009 tfdffthf-ecoop-2015]; and a Typed Racket module may import definitions from a Racket module.
+Typed Racket@~cite[thf-popl-2008 tfffgksst-snapl-2017] is a sound gradual type system for Racket.
+Its syntax is an extension of Racket's; its static type checker supports idioms common in dynamically-typed Racket programs@~cite[stf-esop-2009 tfdffthf-ecoop-2015]; and a Typed Racket module may import definitions from a Racket module.
 A Racket module may likewise import definitions from a Typed Racket module.
 To ensure type soundness, Typed Racket compiles static types to higher-order contracts and attaches these contracts at the lexical boundaries between Typed Racket and Racket modules@~cite[tfffgksst-snapl-2017].
 
@@ -77,7 +77,7 @@ One contract checks that @racket[(play)] returns a function from natural numbers
 
 
 @; -----------------------------------------------------------------------------
-@section{How Types Spread}
+@section{How Mixed-Typed Code Emerges}
 
 The close integration of Racket and Typed Racket makes it easy to migrate a code base from the former to the latter on an incremental basis.
 By converting modules to Typed Racket, the maintainer obtains several benefits:
@@ -98,7 +98,7 @@ By converting modules to Typed Racket, the maintainer obtains several benefits:
 These benefits draw numerous Racket programmers to Typed Racket.
 
 Another way that Racket programs may rely on Typed Racket is by importing definitions from a typed library.
-For example, the creator of Racket's @racket[plot] library wrote most of the library in Typed Racket, and thus the program that generated this paper interacts with typed code.
+For example, the creator of Racket's @racket[plot] library wrote most of the library in Typed Racket, and thus the program that typeset this paper interacts with typed code.
 This kind of import is indistinguishable from importing definitions from a Racket library
  and is a rather subtle way of creating a mixed-typed codebase.
 

@@ -654,3 +654,10 @@
    #:author (authors "André Murbach Maidl" "Fabio Mascarenhas" "Roberto Ierusalimschy")
    #:location (proceedings-location dyla #:pages '(1 10))
    #:date 2014))
+
+(define s-cl-1990
+  (make-bib
+    #:title "Common Lisp the Language"
+    #:author (authors "Guy L. Steele")
+    #:location (book-location #:edition "2nd" #:publisher "Digital Press")
+    #:date 1990))

@@ -39,7 +39,7 @@ The plot on the left shows the absolute performance of @bm[snake] on version 6.2
 The plot on the right shows the improvement of version 6.4  relative to version 6.2 (solid purple line).
 Each line is surrounded by a thin interval generated from @integer->word[srs-samples] samples of @id[snake-sample-size] configurations each.
 
-The graphs in @figure-ref{fig:scale:srs-snake} suggest that the intervals provide a reasonable approximation of the performance of the @bm[snake] benchmark.
+The plots in @figure-ref{fig:scale:srs-snake} suggest that the intervals provide a reasonable approximation of the performance of the @bm[snake] benchmark.
 These intervals capture both the absolute performance (left plot) and relative performance (right plot) of @bm[snake].
 
 @Figure-ref{fig:scale:delta-interval} provides evidence for the linear sampling suggestion of @figure-ref{fig:scale:srs-snake} using data for the @integer->word[(length large-bm*)] largest benchmarks in the @|GTP| suite.
@@ -84,8 +84,9 @@ The details for @figure-ref{fig:scale:delta-interval} are analogous:
 
 @(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
                 [*PLOT-HEIGHT* 140]
-                [*PLOT-WIDTH* 430]
+                [*PLOT-WIDTH* 440]
                 [*PLOT-FONT-SCALE* 0.02]
+                [*DELTA-SECTION-ALPHA* 0.6]
                 [*NUM-SIMPLE-RANDOM-SAMPLES* srs-samples]
                 [*TICKS-START-FROM* (- (length ALL-BENCHMARKS) (length large-bm*))])
  (list

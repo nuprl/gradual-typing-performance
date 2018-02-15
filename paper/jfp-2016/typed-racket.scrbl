@@ -68,11 +68,11 @@ The appendix discusses the stability of individual measurements and reports the 
         (format "fig:lnm:~a" i)))
     (define get-caption
       (let ([N (length name*)])
-        (lambda (i) @elem{@|GTP| overhead graphs (@id[i]/@id[N])})))
+        (lambda (i) @elem{@|GTP| overhead plots (@id[i]/@id[N])})))
     (define NUMV (integer->word (length (*RKT-VERSIONS*))))
     (cons
       @elem{
-        @(apply Figure-ref name*) present the results of measuring the benchmark programs in a series of overhead graphs.
+        @(apply Figure-ref name*) present the results of measuring the benchmark programs in a series of overhead plots.
         As in @figure-ref{fig:suffixtree-plot}, the left column of the figures are cumulative distribution functions for @deliverable[] configurations and the right column are cumulative distribution functions for @step["1" "D"] configurations.
         These plots include data for three versions of Racket released between June 2015 and February 2016.
         Data for version 6.2 are thin red curves with short dashes.
@@ -117,11 +117,11 @@ The appendix discusses the stability of individual measurements and reports the 
             The curves' endpoints describe the extremes of gradual typing.
             The left endpoint gives the percentage of configurations that run at least as quickly as the untyped configuration.
             Except for the @bm[lnm] benchmark, such configurations are a low proportion of the total.@note{The @bm[sieve] case is degenerate. Only its untyped and fully-typed configurations are @deliverable{1}.}
-            The right endpoint shows how many configurations suffer over 20x performance overhead.@note{Half the configurations for @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes. The overhead graphs report an ``over 20x'' performance overhead for these configurations.}
+            The right endpoint shows how many configurations suffer over 20x performance overhead.@note{Half the configurations for @bm[dungeon] do not run on versions 6.2 and 6.3 due to a defect in the way these versions proxy first-class classes. The overhead plots report an ``over 20x'' performance overhead for these configurations.}
             @string-titlecase[num-max-deliverable-str] benchmarks have at least one such configuration.
 
             Moving from @math{k=0} to @math{k=1} in a fixed version of Racket does little to improve the number of @deliverable{} configurations.
-            Given the slopes of the @math{k=0} graphs, this result is not surprising.
+            Given the slopes of the @math{k=0} plots, this result is not surprising.
             One type conversion step can eliminate a pathological boundary, such as those in @bm[fsm] and @bm[zombie], but the overhead in larger benchmarks comes from a variety of type boundaries.
             Except in configurations with many typed modules, adding types to one additional module is not likely to improve performance.
 
@@ -161,8 +161,9 @@ With the bug fixed, @bm[forth] generates the contracts but suffers additional pe
 
 @(parameterize ([*RKT-VERSIONS* '("6.2" "6.4")]
                 [*PLOT-HEIGHT* 180]
-                [*PLOT-WIDTH* 430]
+                [*PLOT-WIDTH* 440]
                 [*PLOT-FONT-SCALE* 0.02]
+                [*DELTA-SECTION-ALPHA* 0.5]
                 [*X-TICK-LINES?* #t])
  (list
   @figure["fig:scale:delta" @elem{Relative performance of v6.4 versus v6.2}

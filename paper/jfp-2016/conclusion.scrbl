@@ -18,13 +18,14 @@ Others have since explored this and similar questions in languages ranging from 
 From the beginning, researchers speculated that the cost of enforcing type soundness at runtime would be high.
 @citet[thf-dls-2006] anticipated this cost and attempted to reduce it by permitting only module-level type boundaries.
 @citet[htf-hosc-2010] and @citet[sw-popl-2010] developed calculi to remove the space-inefficiency apparent in models of gradual typing.
-Industry labs instead built @emph{optionally typed} languages@;
-@note{@url{http://www.typescriptlang.org/}}
-@note{@url{http://hacklang.org/}}
-@note{@url{http://flowtype.org/}}
-@note{@url{http://mypy-lang.org/}}
-that provide static checks but sacrifice type soundness.
+Industry labs instead built languages with @emph{optional} type annotations@~cite[moon-maclisp-1974 s-cl-1990]
+that provide static checks but sacrifice type soundness (see
+ @hyperlink["http://www.typescriptlang.org/"]{TypeScript},
+ @hyperlink["http://hacklang.org/"]{Hack},
+ @hyperlink["http://flowtype.org/"]{Flow}, and
+ @hyperlink["http://mypy-lang.org/"]{mypy}).
 Programs written in such languages run with zero overhead, but are suceptible to silent failures@~cite[tfffgksst-snapl-2017].
+At least three research languages attempted to provide a middle ground@~cite[rnv-ecoop-2015 vss-popl-2017 bfnorsvw-oopsla-2009].
 
 As implementations of gradual typing matured, programmers using them had mixed experiences about the performance overhead of gradual typing.
 Some programmers did not notice any significant overhead.
@@ -40,11 +41,11 @@ This paper provides an answer:
      If an exhaustive evaluation is not feasible, the sampling technique of @secref{sec:scale} provides an approximate measure.
    }
    @item{
-     To express the @emph{absolute performance} of the gradual type system, report the proportion of configurations in each benchmark that are @step{} using @emph{overhead graphs}.
+     To express the @emph{absolute performance} of the gradual type system, report the proportion of configurations in each benchmark that are @step{} using @emph{overhead plots}.
      Ideally, many configurations should be @step["0" "1.1"].
    }
    @item{
-     To express the @emph{relative performance} of two implementations of a gradual type system, plot two overhead graphs on the same axis and test whether the distance is statistically significant.
+     To express the @emph{relative performance} of two implementations of a gradual type system, plot two overhead plots on the same axis and test whether the distance is statistically significant.
      Ideally, the curve for the improved system should demonstrate a complete and significant ``left shift.''
    }
  ]

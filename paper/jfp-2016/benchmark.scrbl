@@ -11,7 +11,7 @@
 @profile-point{sec:bm}
 @title[#:tag "sec:bm"]{The @|GTP| Benchmark Programs}
 
-The @integer->word[(count-benchmarks)] @emph{gradual typing performance} (@|GTP|) benchmark programs are representative of actual user code yet small enough to make exhaustive performance evaluation tractable.
+This section introduces @integer->word[(count-benchmarks)] @emph{gradual typing performance} (@|GTP|) benchmark programs that are representative of actual user code yet small enough to make exhaustive performance evaluation tractable.
 The following descriptions of the benchmark programs---arranged by size as measured in number of migratable modules---briefly summarize their relevant characteristics.
 Each description comes with four fields:
  @emph{Origin} indicates the benchmark's source,
@@ -103,7 +103,7 @@ This section concludes with a table summarizing the static characteristics of ea
   })
 (cons lnm
   @elem{
-    Renders overhead graphs@~cite[tfgnvf-popl-2016].
+    Renders overhead plots@~cite[tfgnvf-popl-2016].
     Two modules are tightly-coupled to Typed Racket libraries; typing both modules improves performance.
   })
 (cons suffixtree
@@ -135,13 +135,13 @@ This section concludes with a table summarizing the static characteristics of ea
 (cons tetris
   @elem{
     Replays a pre-recorded game of Tetris.
-    Frequent interactions, rather than proxies or expensive runtime checks, are the source of performance overhead.
+    Frequent type boundary crossings, rather than proxies or expensive runtime checks, are the source of performance overhead.
   })
 (cons synth
   @elem{
     Converts a description of notes and drum beats to @tt{WAV} format.
     Modules in the benchmark come from two sources, a music library and an array library.
-    The worst overhead occurs when arrays frequently cross type boundaries.
+    The worst overhead occurs because arrays frequently cross type boundaries.
   })
 (cons gregor
   @elem{

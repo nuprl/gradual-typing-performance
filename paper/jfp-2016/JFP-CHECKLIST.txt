@@ -163,7 +163,8 @@ Reorganized section 3.3 to clarify the contents of the graphs.
 The revised section says:
 
 1. the goal is to plot k-step D-deliverable configurations
-2. if k is fixed, choosing different D gives a histogram for the whole lattice
+2. if k is fixed, varying D gives a cumulative distribution function for
+   the lattice
 3. the graphs fix k=0 and k=1, respectively
 
 
@@ -276,7 +277,7 @@ We hope that this journal paper inspires these authors to produce a detailed
 > Siek et al. ESOP 2015 (less close)
 
 The revised conclusion cites all the above.
-(Though, we cite the HOSC 2010 version of Herman's work.)
+(Though, we cite the journal version of Herman's work [HOSC 2010].)
 
 
 ## compare to Reticulated

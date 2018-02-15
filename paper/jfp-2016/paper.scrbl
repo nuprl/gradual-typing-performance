@@ -10,7 +10,7 @@
   " MAX S. NEW" (affiliation-mark "1")
   " DANIEL FELTEY" (affiliation-mark "1,2")
   " ROBERT BRUCE FINDLER" (affiliation-mark "2")
-  " JAN VITEK" (affiliation-mark "1")
+  " JAN VITEK" (affiliation-mark "1,4")
   "and MATTHIAS FELLEISEN" (affiliation-mark "1")
   @(affiliation
     "Northeastern University, Boston, Mass." (affiliation-mark "1")
@@ -18,6 +18,8 @@
     "Northwestern University, Chicago, Ill." (affiliation-mark "2")
     (linebreak)
     "Igalia, San Francisco, Cal." (affiliation-mark "3")
+    (affiliation-sep)
+    "Czech Technical University, Prague, CZ " (affiliation-mark "4")
    ))
 
 @abstract{
@@ -25,9 +27,10 @@
   This assurance relies on runtime checks, which in turn impose performance overhead in proportion to the frequency and nature of interaction between typed and untyped components.
 
   The literature on gradual typing lacks rigorous descriptions of methods for measuring the performance of gradual type systems.
-  This gap has consequences for developers who use gradual type systems and the implementors of such systems.
-  Developers cannot predict whether adding types to part of a program will significantly degrade its performance.
-  Implementors cannot precisely determine how improvements to a gradual type system affect the performance of such programs.
+  This gap has consequences for the implementors of gradual type systems and developers who use such systems.
+  @;Without systematic evaluation of mixed-typed programs,
+  Implementors cannot precisely determine how improvements to a gradual type system affect performance.
+  Developers cannot predict whether adding types to part of a program will significantly degrade (or improve) its performance.
 
   This paper presents the first method for evaluating the performance of sound gradual type systems.
   The method quantifies both the absolute performance of a gradual type system and the relative performance of two implementations of the same gradual type system.

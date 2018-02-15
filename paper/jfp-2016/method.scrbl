@@ -199,8 +199,8 @@ The label below each configuration is its overhead relative to the untyped confi
     All mixed configurations are
       @deliverable[@id[max-g]], but only three are, e.g.,
       @deliverable[@id[min-g]].
-    Lastly, the mixed configurations are all @step["1" t-str]
-     because they can reach the typed configuration in one type conversion step.
+    Lastly, the mixed configurations are all @step["2" t-str]
+     because they can reach the typed configuration in at most two type conversion steps.
   })
 
 The ratio of @deliverable{D} configurations in a performance lattice is a measure of
@@ -214,14 +214,18 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
 
 
 @; -----------------------------------------------------------------------------
-@section[#:tag "sec:graphs"]{Overhead Graphs}
+@section[#:tag "sec:graphs"]{Overhead Plots}
 
 @(render-lnm-plot
   #:index 0
   #:rktd*** (list (list (list (benchmark-rktd suffixtree suffixtree-lattice-version))))
   (lambda (pict*)
     (list
-      @figure*["fig:suffixtree-plot" @elem{Overhead graphs for @bm[suffixtree], on Racket v@|suffixtree-lattice-version|.}
+      @figure*["fig:suffixtree-plot" @elem{Overhead plots for @bm[suffixtree], on Racket v@|suffixtree-lattice-version|.
+      The unlabeled vertical ticks mark, from left-to-right: 
+        1.2x, 1.4x, 1.6x, 1.8x, 4x, 6x, 8x, 10x, 12x, 14x, 16x, and 18x.
+
+      }
         (car pict*)
       ]
       @; less than half of all @bm[suffixtree] configurations run within a @id[(*MAX-OVERHEAD*)]x slowdown.
@@ -233,7 +237,7 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         The main lesson to extract from a performance lattice is the proportion of @step{} configurations for various @math{k} and @math{D}.
         In other words, this proportion describes the number of configurations (out of the entire lattice) that are at most @math{k} upward steps from a @deliverable{D} configuration.
         One way to plot this information is to fix a value for @math{k}, say @math{k=0}, and consider a set of values @exact{$d_0,\ldots,d_{n-1}$} for @math{D}.
-        The set of proportions of @step["0" "d_i"] configurations defines a histogram with the value of @math{D} on the independent axis and the proportion of configurations on the dependent axis.
+        The set of proportions of @step["0" "d_i"] configurations defines a cumulative distribution function with the value of @math{D} on the independent axis and the proportion of configurations on the dependent axis.
 
         @Figure-ref{fig:suffixtree-plot} demonstrates two such @emph{overhead plots}, summarizing the data in @figure-ref{fig:suffixtree-lattice}.
         @; TODO awkward
@@ -241,15 +245,14 @@ Practitioners with a fixed performance requirement @math{D} can therefore use th
         The plot on the left fixes @math{k=0} and plots the proportion of @step["0" "D"] configurations.
         The plot on the right fixes @math{k=1} and plots the proportion of @step["1" "D"] configurations.
         Both plots consider @math{@id[ALOT]} values of @math{D} evenly spaced between 1x and 20x.
-        The line on each plot traces the underlying histogram.
+        The line on each plot represents the cumulative distribution function.
         The x-axis is log scaled to focus on low overheads.
-        Vertical ticks pinpoint the following values of @math{D}: 1.2x, 1.4x, 1.6x, 1.8x, 2x, 4x, 6x, 8x, 10x, 12x, 14x, 16x, and 20x.
 
         The plot on the left, in which @math{k=0}, confirms the observation made in @secref{sec:method:lattice} that @(id (round (* 100 (/ suffixtree-num-D suffixtree-num-configs))))% of the @|suffixtree-num-configs-str| configurations (@|suffixtree-num-D-str| configurations) run within a @id[suffixtree-sample-D]x overhead.
         For values of @math{D} larger than 2x, the proportion of @deliverable{D} configurations is slightly larger, but even at a @id[MAX-OVERHEAD]x overhead, this proportion is only @(id (round (* 100 (/ suffixtree-num-D-max suffixtree-num-configs))))%.
         The plot on the right shows that the proportion of @step["1" "D"] is typically twice as high as the proportion of @deliverable{} configurations for this benchmark.
 
-        Clearly, this presentation scales to arbitrarily large programs because the @math{y}-axis plots the proportion of @deliverable{D} configurations; in contrast, a performance lattice contains exponentially many nodes.
+        This presentation scales to arbitrarily large programs because the @math{y}-axis plots the proportion of @deliverable{D} configurations; in contrast, a performance lattice contains exponentially many nodes.
         Furthermore, plotting the overhead for multiple implementations of a gradual type system on the same set of axes conveys their relative performance.
       }
 )))
@@ -282,8 +285,8 @@ The @emph{first limitation} of the overhead plots is that they do not report the
 The one exception is the fully-typed configuration; its overhead is given explicitly through the typed/untyped ratio above the left plot.
 
 @; - limit: angelic choice
-The @emph{second limitation} is that the @step{1} plot optimistically chooses the
- best type conversion step.
+The @emph{second limitation} is that the @step{1} plot does not show how we
+ optimistically chose the best type conversion step.
 In a program with @math{N} modules, a programmer has at most @math{N} type conversion steps to choose from,
  some of which may not lead to a @deliverable[] configuration.
 For example, there are six configurations with exactly one typed module in @figure-ref{fig:suffixtree-lattice} but only one of these is @deliverable{1}.

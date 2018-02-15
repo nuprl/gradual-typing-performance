@@ -1122,6 +1122,7 @@
 ; Ancient history
 
 (define moon-maclisp-1974
+  ;; optional type annotations S.14.2
   (make-bib
    #:author "David A. Moon"
    #:title "MACLISP Reference Manual"
