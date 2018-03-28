@@ -17,7 +17,7 @@
 
 (require "zo-transition.rkt"
  "zo-string.rkt"
- compiler/zo-structs)
+ "../base/compiler-zo-structs.rkt")
 
 ;; -----------------------------------------------------------------------------
 

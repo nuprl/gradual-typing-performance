@@ -11,7 +11,7 @@
    (Pair String (Listof (Pair String (-> (U Spec String)))))))
 (provide Spec)
 
-(require/typed/provide compiler/zo-structs
+(require/typed/provide "compiler-zo-structs.rkt"
                [#:struct zo ()]
                [#:struct (compilation-top zo) (
                  [max-let-depth : Exact-Nonnegative-Integer]

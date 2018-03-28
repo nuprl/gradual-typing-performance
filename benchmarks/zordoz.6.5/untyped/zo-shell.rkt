@@ -13,7 +13,7 @@
 (require "zo-string.rkt"
  "zo-transition.rkt"
  "zo-find.rkt"
- compiler/zo-parse)
+ "../base/compiler-zo-parse.rkt")
 
 ;; -----------------------------------------------------------------------------
 
