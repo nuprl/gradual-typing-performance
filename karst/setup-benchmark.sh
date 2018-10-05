@@ -14,7 +14,6 @@ lnm \
 mbta \
 morsecode \
 quadBG \
-quadMB \
 sieve \
 snake \
 stack \

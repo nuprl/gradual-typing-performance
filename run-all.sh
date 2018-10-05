@@ -24,6 +24,5 @@ then
 fi
 #    fsmoo \
 #    quadBG \
-#    quadMB \
 #    gregor \
 #    sieve

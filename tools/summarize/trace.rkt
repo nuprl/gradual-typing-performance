@@ -568,21 +568,6 @@
       (to->total-count DMG "main")
       9))
 
-  (let* ([DMG (check-dmg "mini-quadMB")]
-         [B* (dynamic-modulegraph-boundary* DMG)])
-    (check-equal?
-      (to->total-count DMG "hyphenate")
-      0)
-    (check-equal?
-      (to->total-count DMG "main")
-      5)
-    (check-equal?
-      (to->total-count DMG "quad-main")
-      381)
-    (check-equal?
-      (dyn-boundary*-ref/fail B* "ocm" "ocm-struct")
-      '(($ocm . 1) ($ocm-base . 1) ($ocm-entry->value . 1) ($ocm-finished . 5) ($ocm-matrix-proc . 1) ($ocm-min-entrys . 3) ($ocm-min-row-indices . 2) ($ocm-tentative . 2) ($ocm? . 0) (set-$ocm-base! . 0) (set-$ocm-entry->value! . 0) (set-$ocm-finished! . 1) (set-$ocm-matrix-proc! . 0) (set-$ocm-min-entrys! . 1) (set-$ocm-min-row-indices! . 1) (set-$ocm-tentative! . 1) (struct:$ocm . 0))))
-
   (let* ([DMG (check-dmg "data-structure")]
          [B* (dynamic-modulegraph-boundary* DMG)])
     (check-equal?
