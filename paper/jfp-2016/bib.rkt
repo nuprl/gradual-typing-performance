@@ -27,6 +27,7 @@
 
 (define racket-con (list "In " (emph "RacketCon")))
 
+(define/short pacmpl "PACMPL" "Proceedings of the ACM on Programming Languages")
 (define/short aplas "APLAS" (string-append "Asian " Symposium "Programming Languages and Systems"))
 (define/short asplos "ASPLOS" (string-append ACM International Conference "on Architectural Support for Programming Languages and Operating Systems"))
 (define/short fpca "FPCA" (string-append ACM International Conference "Functional Programming Languages and Computer Architecture"))
@@ -1523,12 +1524,12 @@
 
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
 
-(define gf-pldi-2018
+(define gf-icfp-2018
   (make-bib
-    #:title "The Spectrum of Soundness and Performance"
+    #:title "A Spectrum of Type Soundness and Performance"
     #:author (authors "Ben Greenman" "Matthias Felleisen")
-    #:location "Submitted for review"
-    #:date 2018))
+    #:date 2018
+    #:location (journal-location pacmpl #:volume "2" #:number "ICFP" #:pages '("71:1" "71:32"))))
 
 (define wmwz-ecoop-2017
   (make-bib
