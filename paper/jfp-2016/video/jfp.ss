@@ -18,9 +18,7 @@
                  [current-titlet string->title])
     (void)
     (sec:title)
-    #;(sec:gt)
-    #;(sec:claims)
-    #;(sec:main-result)
+    (sec:contribution)
     #;(pslide #:go CENTER-COORD (make-section-break "Three Strategies"))
     #;(sec:type-boundary) ;; LOW PRIORITY
     #;(pslide #:go CENTER-COORD (make-section-break "Survey Design"))
@@ -54,6 +52,17 @@
     (apply hb-append 40 all-logo*))
   (void))
 
+(define (sec:contribution)
+  (pslide
+    #:go HEADING-COORD
+    (subtitle-text "Contribution:")
+    #:go (coord 1/10 30/100 'lt)
+    (lines-append
+      (hb-append @t{We propose a } @bt{systematic method} @t{ to measure})
+      (hb-append @t{the } @bt{performance implications} @t{ of a gradual})
+      (hb-append @t{typing system})))
+  (void))
+
 ;; -----------------------------------------------------------------------------
 
 (module+ test
@@ -67,6 +76,7 @@
   (define p
     (let ()
       (blank)
+
   ))
   (define (add-bg p)
     (cc-superimpose (blank (+ 100 (pict-width p)) (+ 100 (pict-height p))) p))
