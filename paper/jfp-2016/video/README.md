@@ -5,6 +5,8 @@ JFP accepts (up to) 10-minute videos with accepted papers.
 
 Lets make a video for this paper.
 
+Current plan (2018-10-22): make slides, do a voice-over.
+
 
 Outline
 ---
