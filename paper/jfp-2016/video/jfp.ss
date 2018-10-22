@@ -5,6 +5,7 @@
   ppict/2
   pict/shadow
   (only-in racket/list make-list first second third fourth fifth sixth)
+  "author.rkt"
   "util.rkt")
 
 ;; -----------------------------------------------------------------------------
@@ -28,7 +29,29 @@
 ;; -----------------------------------------------------------------------------
 
 (define (sec:title)
-  (pslide)
+  (pslide
+    #:go (coord SLIDE-LEFT 20/100 'lt)
+    (parameterize ((current-main-font (list* 'bold 'italic TITLE-FONT))
+                   (current-font-size TITLE-FONT-SIZE))
+      (lines-append
+        @t{How to Evaluate the Performance of}
+        @t{Gradual Type Systems}))
+    #:go (coord SLIDE-RIGHT 45/100 'rt)
+    (tag-pict
+      (parameterize ((current-main-font ALL-CAPS-FONT)
+                     (current-font-size SMALL-FONT-SIZE))
+        (columns-append
+          (lines-append
+            @t{Ben Greenman *}
+            @t{Max S. New}
+            @t{Robert Bruce Findler}
+            @t{Matthias Felleisen})
+          (lines-append
+            @t{Asumu Takikawa}
+            @t{Daniel Feltey}
+            @t{Jan Vitek}))) 'the-authors)
+    #:go (coord 1/2 SLIDE-BOTTOM 'cc)
+    (apply hb-append 40 all-logo*))
   (void))
 
 ;; -----------------------------------------------------------------------------

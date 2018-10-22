@@ -36,15 +36,16 @@
 (define CLOUD-COLOR (string->color% "Thistle"))
 (define SURVEY-COLOR (string->color% "Gainsboro"))
 
-(define ALL-CAPS-FONT "Bebas Neue")
-(define MONO-FONT "Triplicate T4s")
+(define ALL-CAPS-FONT "Triplicate C3" #;"Bebas Neue")
+(define MONO-FONT "Triplicate T4")
+(define TITLE-FONT "Triplicate C4" #;"Fira Sans, Heavy")
+
 (define NORMAL-FONT-SIZE 32)
-(define SMALL-FONT-SIZE 27)
+(define SMALL-FONT-SIZE 28)
 (define FOOTNOTE-FONT-SIZE 22)
-(define TITLE-FONT-SIZE 55)
-(define SUBTITLE-FONT-SIZE 50)
-(define SUBSUBTITLE-FONT-SIZE 40)
-(define TITLE-FONT "Fira Sans, Heavy")
+(define TITLE-FONT-SIZE 44)
+(define SUBTITLE-FONT-SIZE 40)
+(define SUBSUBTITLE-FONT-SIZE 36)
 
 (define SLIDE-TOP 1/10)
 (define SLIDE-LEFT 1/50)
@@ -60,6 +61,7 @@
 (define SUBTITLE-MARGIN 20)
 (define COMPONENT-MARGIN 40)
 (define LINE-MARGIN 4)
+(define INDENT-MARGIN 30)
 (define COLUMN-MARGIN 70)
 
 (define COMPONENT-ARROW-SIZE 11)
@@ -119,7 +121,13 @@
   (lines-append* arg*))
 
 (define (lines-append* arg*)
-  (apply vl-append LINE-MARGIN arg*))
+  (apply vl-append (* 1/2 (current-font-size)) arg*))
+
+(define (columns-append . arg*)
+  (columns-append* arg*))
+
+(define (columns-append* arg*)
+  (apply ht-append (* 11/6 (current-font-size)) arg*))
 
 (define (text/color str c)
   (text str (cons c (current-main-font)) (current-font-size)))
@@ -186,14 +194,27 @@
   (scale p 2))
 
 (define (scale-logo p)
-  (scale-to-fit p 200 200))
+  (scale-to-fit p 180 80))
+
+(define (add-tax v pct)
+  (+ v (* v pct)))
+
+(define (add-rectangle-background p #:radius [the-radius 10] #:x-margin [x-margin 0] #:y-margin [y-margin 0])
+  (define-values [w h] (values (pict-width p) (pict-height p)))
+  (define bg
+    (filled-rounded-rectangle (add-tax w x-margin) (add-tax h y-margin) the-radius #:color WHITE #:draw-border? #false))
+  (cc-superimpose bg p))
 
 (define (add-rounded-border pp)
   (define-values [w h] (values (pict-width pp) (pict-height pp)))
   (define the-radius 10)
-  (define bg
-    (filled-rounded-rectangle w h the-radius #:color WHITE #:draw-border? #false))
   (define frame
     (rounded-rectangle w h the-radius #:border-width 1 #:border-color BLACK))
-  (cc-superimpose bg pp frame))
+  (cc-superimpose (add-rectangle-background pp #:radius the-radius) frame))
 
+(define neu-logo (bitmap "src/neu-logo.png"))
+(define nwu-logo (bitmap "src/nwu-logo.png"))
+(define ctu-logo (bitmap "src/ctu-logo.png"))
+(define igalia-logo (add-rectangle-background (bitmap "src/igalia-logo.png") #:x-margin 1/10 #:y-margin 1/10))
+
+(define all-logo* (pict-bbox-sup* (map scale-logo (list neu-logo igalia-logo nwu-logo ctu-logo))))

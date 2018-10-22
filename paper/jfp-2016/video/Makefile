@@ -13,7 +13,7 @@ pict: compile
 	@${RACO} pict ${TALK}
 
 test: compile
-	@${RACO} test src/*.rkt
+	@${RACO} test ${TALK}
 
 show: compile
 	@${RACO} slideshow ${TALK}
