@@ -35,6 +35,7 @@
 (define TYPE-BOUNDARY-COLOR (string->color% "Fuchsia"))
 (define CLOUD-COLOR (string->color% "Thistle"))
 (define SURVEY-COLOR (string->color% "Gainsboro"))
+(define BLANK-COLOR (string->color% "LightGoldenrodYellow"))
 
 (define ALL-CAPS-FONT "Triplicate C3" #;"Bebas Neue")
 (define MONO-FONT "Triplicate T4")
