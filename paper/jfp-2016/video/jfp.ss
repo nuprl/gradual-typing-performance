@@ -19,9 +19,11 @@
                  [current-font-size NORMAL-FONT-SIZE]
                  [current-titlet string->title])
     (void)
-    #;(sec:title)
-    #;(sec:contribution)
-    (sec:gt-cost)
+    ;(sec:title)
+    ;(sec:contribution)
+    ;(sec:gt-cost)
+    ;;(sec:anecdotes)
+    (sec:lattice)
     #;(pslide #:go CENTER-COORD (make-section-break "Three Strategies"))
     #;(sec:type-boundary) ;; LOW PRIORITY
     #;(pslide #:go CENTER-COORD (make-section-break "Survey Design"))
@@ -98,24 +100,24 @@
          (sd/ii-0 (add-thought/dyn sd/ii dyn-pict @t{#<function>})))
     (pslide
       #:go (coord 1/2 1/2 'cb)
-      ;#:alt [sd]
-      ;#:alt [sd/int]
-      ;#:alt [sd/int-0 #:next #:go validate-coord (large-check-icon)]
-      ;#:alt [sd]
-      ;#:alt [sd/int]
-      ;#:alt [sd/int-1 #:next #:go validate-coord (large-x-icon)]
-      ;#:alt [sd]
-      ;#:alt [sd/los]
-      ;#:alt [sd/los-0 #:next #:go validate-coord (large-x-icon)]
-      ;#:alt [sd]
-      ;#:alt [sd/ii]
-      ;#:alt [sd/ii-0 #:next #:go validate-coord (large-?-icon)]
+      #:alt [sd]
+      #:alt [sd/int]
+      #:alt [sd/int-0 #:next #:go validate-coord (large-check-icon)]
+      #:alt [sd]
+      #:alt [sd/int]
+      #:alt [sd/int-1 #:next #:go validate-coord (large-x-icon)]
+      #:alt [sd]
+      #:alt [sd/los]
+      #:alt [sd/los-0 #:next #:go validate-coord (large-x-icon)]
+      #:alt [sd]
+      #:alt [sd/ii]
+      #:alt [sd/ii-0 #:next #:go validate-coord (large-?-icon)]
       sd
       #:go (coord 1/2 3/5 'ct)
-      (vc-append (h%->pixels 1/10)
-        @t{Type boundaries impose a run-time cost!}
+      (vc-append (h%->pixels 1/20)
+        @t{Type boundaries impose a run-time cost!*}
         (parameterize ((current-font-size SMALL-FONT-SIZE))
-          @t{(in a sound gradual typing system)}))))
+          @t{* in a sound gradual typing system}))))
   (let ((y-sep (h%->pixels 1/15))
         (x-offset (pict-width @t{1. })))
     (pslide
@@ -134,7 +136,28 @@
       (lines-append
         (hb-append @t{2. What is the overall cost of})
         (hb-append @t{   boundaries in a } @bt{gradual})
-        (hb-append @t{   } @bt{typing system} @t{?}))))
+        (hb-append @t{   } @bt{typing system} @t{?}))
+      #:next
+      #:go (coord 1/2 1/2 'cc)
+      (add-rectangle-background
+        #:color "plum"
+        #:draw-border? #true
+        #:x-margin 2/10
+        #:y-margin 2
+        (hb-append @t{Need a } @bt{method} @t{ to measure performance!}))))
+  (void))
+
+(define (sec:anecdotes)
+  (define note*
+    '(("About twice as slow on common queries" burns)
+      #;("Areas for improvement: untyped matrix performance" setti)
+      ("1275x slowdown" ballantyne)
+      ("12 seconds slower" clements)
+      ("The end-product appears to be a 50% performance hybrid due to boundary contracts" JG)
+      ("50x slower" toronto)))
+  (void))
+
+(define (sec:lattice)
   (void))
 
 ;; -----------------------------------------------------------------------------
@@ -364,21 +387,11 @@
     (let ()
       (blank)
 
-  (ppict-do
-    (blank client-w client-h)
-    #:go CENTER-COORD
-    (let* ((sd* (list->component* '(#true #false)))
-           (sta-pict (car sd*))
-           (dyn-pict (cadr sd*))
-           (acc (apply hb-append (* 2 COLUMN-MARGIN) sd*))
-           (edge-spec `((,sta-pict ,rc-find) (,dyn-pict ,lc-find) 0))
-           (sd/arr (scale (add-boundary-arrows acc edge-spec #:color TYPE-BOUNDARY-COLOR) 2))
-           (sd/arr (vc-append (blank (pict-width sd/arr) (pict-height sd/arr)) sd/arr)))
-      ;sd/arr
-      (hc-append 100
-      (add-thought/sta sd/arr sta-pict (hb-append @t{need } @bt{Integer}) #:adjust-y (lambda (n) (* 2 n)))
-      (add-thought/dyn sd/arr dyn-pict @t{42} #:adjust-x -))
-      )
+  (let ((y-sep (h%->pixels 1/15))
+        (x-offset (pict-width @t{1. })))
+    (ppict-do
+      (blank client-w client-h)
+      (blank))
     )
   ))
   (define (add-bg p)

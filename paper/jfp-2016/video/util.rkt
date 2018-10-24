@@ -214,10 +214,17 @@
 (define (add-tax v pct)
   (+ v (* v pct)))
 
-(define (add-rectangle-background p #:radius [the-radius 10] #:x-margin [x-margin 0] #:y-margin [y-margin 0])
+(define (add-rectangle-background p
+                                  #:radius [the-radius 10]
+                                  #:color [color WHITE]
+                                  #:draw-border? [draw-border? #false]
+                                  #:x-margin [x-margin 0]
+                                  #:y-margin [y-margin 0])
   (define-values [w h] (values (pict-width p) (pict-height p)))
   (define bg
-    (filled-rounded-rectangle (add-tax w x-margin) (add-tax h y-margin) the-radius #:color WHITE #:draw-border? #false))
+    (filled-rounded-rectangle (add-tax w x-margin) (add-tax h y-margin) the-radius
+                              #:color color
+                              #:draw-border? draw-border?))
   (cc-superimpose bg p))
 
 (define (add-rounded-border pp)
@@ -225,7 +232,12 @@
   (define the-radius 10)
   (define frame
     (rounded-rectangle w h the-radius #:border-width 1 #:border-color BLACK))
-  (cc-superimpose (add-rectangle-background pp #:radius the-radius) frame))
+  (define pp/bg
+    (add-rectangle-background pp
+                              #:color WHITE
+                              #:draw-border? #false
+                              #:radius the-radius))
+  (cc-superimpose pp/bg frame))
 
 (define neu-logo (bitmap "src/neu-logo.png"))
 (define nwu-logo (bitmap "src/nwu-logo.png"))
