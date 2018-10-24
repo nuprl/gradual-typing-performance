@@ -1,13 +1,18 @@
 #lang at-exp slideshow
 
 (require
-  data/bit-vector
+  (only-in gtp-util natural->bitstring)
+  (only-in math/statistics mean)
+  (only-in racket/math exact-floor)
+  (only-in scribble-abbrevs/scribble add-commas)
   pict-abbrevs
   pict/balloon
   ppict/2
   pict/shadow
+  (only-in plot/utils ->brush-color)
   (only-in racket/list make-list first second third fourth fifth sixth)
   "author.rkt"
+  "two-tone.rkt"
   "util.rkt")
 
 ;; -----------------------------------------------------------------------------
@@ -23,13 +28,16 @@
     ;(sec:contribution)
     ;(sec:gt-cost)
     ;;(sec:anecdotes)
-    (sec:lattice)
+    ;(sec:lattice)
+    (sec:exhaustive-method)
     #;(pslide #:go CENTER-COORD (make-section-break "Three Strategies"))
     #;(sec:type-boundary) ;; LOW PRIORITY
     #;(pslide #:go CENTER-COORD (make-section-break "Survey Design"))
     (void)))
 
 ;; -----------------------------------------------------------------------------
+
+(define FSM-DATA (file->value "./src/fsm-6.4.rktd"))
 
 (define (sec:title)
   (pslide
@@ -122,21 +130,18 @@
         (x-offset (pict-width @t{1. })))
     (pslide
       #:go (coord 1/2 1/4 'ct)
-      (tag-pict (scale MT 3/2) 'MT)
+      (tag-pict (bigger-program MT) 'MT)
       #:go (at-find-pict 'MT lb-find 'lt #:abs-y y-sep #:abs-x (- x-offset))
       #:next
-      (tag-pict
-        (lines-append
-          (hb-append @t{1. What is the cost of the } @bt{type})
-          (hb-append @t{   } @bt{boundaries} @t{ in a program?})
-          (blank)
-          (blank)) 'Q1)
-      #:next
-      #:go (at-find-pict 'Q1 lb-find 'lt #:abs-y y-sep)
       (lines-append
-        (hb-append @t{2. What is the overall cost of})
+        (hb-append @t{   What is the overall cost of})
         (hb-append @t{   boundaries in a } @bt{gradual})
         (hb-append @t{   } @bt{typing system} @t{?}))
+      ; #:next
+      ; (tag-pict (lines-append (hb-append @t{1. What is the cost of the } @bt{type}) (hb-append @t{   } @bt{boundaries} @t{ in a program?}) (blank) (blank)) 'Q1)
+      ; #:next
+      ; #:go (at-find-pict 'Q1 lb-find 'lt #:abs-y y-sep)
+      ; (lines-append (hb-append @t{2. What is the overall cost of}) (hb-append @t{   boundaries in a } @bt{gradual}) (hb-append @t{   } @bt{typing system} @t{?}))
       #:next
       #:go (coord 1/2 1/2 'cc)
       (add-rectangle-background
@@ -158,9 +163,121 @@
   (void))
 
 (define (sec:lattice)
+  (pslide
+    (make-section-break "The Method"))
+  (let* ((p0 (bigger-program (list->program '(#f #t #t #f))))
+         (the-lattice-coord (coord 1/2 SLIDE-TOP 'ct))
+         (the-step-coord (coord SLIDE-LEFT SLIDE-TOP 'lb #:abs-y -4))
+         (-the-step-coord (coord SLIDE-RIGHT SLIDE-TOP 'rb #:abs-y -4))
+         (make-tag
+           (lambda (b*)
+             (bitstring->tag (bool*->bitstring b*))))
+         (make-node
+           (lambda (b*)
+             (define pp (list->program b* #:margin COMPONENT-LATTICE-MARGIN))
+             (define pp/bg
+               (add-rectangle-background pp
+                                         #:radius 4
+                                         #:color SURVEY-COLOR
+                                         #:draw-border? #true
+                                         #:x-margin 1/16
+                                         #:y-margin 1/7))
+             (tag-pict pp/bg
+                       (make-tag b*))))
+         (p-typed (make-node '(#t #t #t #t)))
+         (time-y-sep -2)
+         (total-bits 4)
+         (baseline (mean (vector-ref FSM-DATA 0)))
+         (make-overhead (lambda (t*) (/ (mean t*) baseline)))
+         (cfg->o-coord (lambda (tag) (at-find-pict tag rt-find 'rb #:abs-y time-y-sep)))
+        )
+    (pslide
+      #:alt [#:go CENTER-COORD
+             p0
+             #:next
+             #:go the-lattice-coord
+             p-typed
+             #:set (let ((pp ppict-do-state)
+                         (lbl ((make-make-step-label) @t{Add types})))
+                     (pin-arrow-line MIGRATION-ARROW-SIZE
+                                     pp
+                                     p0 ct-find
+                                     p-typed cb-find
+                                     #:line-width MIGRATION-ARROW-WIDTH
+                                     #:color BLACK
+                                     #:x-adjust-label (* 5/7 (pict-width lbl))
+                                     #:label lbl))]
+      #:go the-lattice-coord
+      #:alt [p-typed]
+      (make-lattice 4 make-node
+                    #:x-margin (w%->pixels 1/70)
+                    #:y-margin (h%->pixels 1/9))
+      ;#:alt [#:go the-step-coord (make-step-label @t{Make configurations})]
+      #:next
+      #:alt [#:set (for/fold ((acc ppict-do-state))
+                      ((t* (in-vector FSM-DATA))
+                       (i (in-naturals)))
+              (define tag (bitstring->tag (natural->bitstring i #:bits total-bits)))
+              (ppict-do
+                acc
+                #:go (at-find-pict tag lt-find 'lb #:abs-y time-y-sep)
+                (runtime->pict (mean t*))))
+             ;#:go -the-step-coord (make-step-label @t{Measure runtime})
+             ]
+      #:alt [#:set (ppict-do
+                     ppict-do-state
+                     #:go (cfg->o-coord 'cfg-0000)
+                     (overhead->pict 1))]
+      #:set (for/fold ((acc ppict-do-state))
+                      ((t* (in-vector FSM-DATA))
+                       (i (in-naturals)))
+              (define tag (bitstring->tag (natural->bitstring i #:bits total-bits)))
+              (ppict-do
+                acc
+                #:go (cfg->o-coord tag)
+                (overhead->pict (make-overhead t*))))
+      #:next
+      #:set (for/fold ((acc (cellophane ppict-do-state 0.4)))
+                      ((t* (in-vector FSM-DATA))
+                       (i (in-naturals)))
+              (define tag (bitstring->tag (natural->bitstring i #:bits total-bits)))
+              (ppict-do
+                acc
+                #:go (at-find-pict tag cc-find 'cc)
+                (if (< (make-overhead t*) 2)
+                  (large-check-icon)
+                  (large-x-icon))))))
+  (void))
+
+(define (sec:exhaustive-method)
+  (pslide
+    #:go HEADING-COORD
+    (subtitle-text "Method: exhaustive performance evaluation")
+    #:go CENTER-COORD
+    (blank))
   (void))
 
 ;; -----------------------------------------------------------------------------
+
+(define (bitstring->tag str)
+  (string->symbol (string-append "cfg-" str)))
+
+(define make-section-break
+  (let ((*i (box 1)))
+    (lambda (str)
+      (define the-font-size TITLE-FONT-SIZE)
+      (define curr-i (unbox *i))
+      (set-box! *i (+ 1 curr-i))
+      (define txt
+        (text str TITLE-FONT the-font-size))
+      (define bg
+        (rectangle/2t (+ (* margin 2) client-w)
+                      (* 5 the-font-size)
+                      #:border-width 1
+                      #:border-color BLACK
+                      #:color-1 (rgb-triplet->color% (->brush-color curr-i))
+                      #:color-2 WHITE))
+      (cc-superimpose bg txt))))
 
 (define (make-notation-table kv**)
   (table 2
@@ -249,6 +366,10 @@
        (make-component-pict/blank #:body blank-body-pict)]
       [else
         (raise-argument-error 'list->component* "(or/c 0 #true #false)" b)])))
+
+(define (list->program bool* #:margin [margin COMPONENT-MARGIN])
+  (define c* (list->component* bool*))
+  (apply hb-append margin c*))
 
 (define (add-program-edges c* #:show-boundary? [show-boundary? #false])
   (match c*
@@ -361,17 +482,44 @@
                   #:color TYPE-BOUNDARY-COLOR
                   #:line-width TYPE-BOUNDARY-ARROW-WIDTH))
 
-(define (make-lattice total-bits make-node)
+(define (make-lattice total-bits make-node
+                      #:x-margin [x-margin LATTICE-NODE-X-MARGIN]
+                      #:y-margin [y-margin LATTICE-NODE-Y-MARGIN])
   (define posn* (build-list total-bits values))
-  (define LATTICE-X-MARGIN 10)
-  (define LATTICE-Y-MARGIN 20)
   (define level-picts
     (for/list ([on-bits (in-range total-bits -1 -1)])
-      (apply hc-append LATTICE-X-MARGIN
+      (apply hc-append x-margin
        (for/list ([combo (in-combinations posn* on-bits)])
          (define bv (for/list ((b (in-list posn*))) (and (member b combo) #true)))
          (make-node bv)))))
-  (apply vc-append LATTICE-Y-MARGIN level-picts))
+  (apply vc-append y-margin level-picts))
+
+(define (bool*->bitstring b*)
+  (list->string
+    (for/list ((b (in-list b*)))
+      (if b #\1 #\0))))
+
+(define (runtime->pict n)
+  (t (string-append (add-commas (exact-floor n)) " ms")))
+
+(define (overhead->pict n)
+  (define n-str
+    (if (< n 0)
+      (~r n #:precision '(= 2))
+      (add-commas (exact-floor n))))
+  (bt (string-append n-str "x")))
+
+(define (make-make-step-label [n 0])
+  (let ((*count (box n)))
+    (lambda (p)
+      (define current-count (unbox *count))
+      (set-box! *count (+ 1 current-count))
+      (add-rectangle-background
+        #:color LABEL-COLOR
+        #:draw-border? #true
+        #:x-margin 1/10
+        #:y-margin 16/15
+        (hb-append (t (format "~a. " (number->string current-count))) p)))))
 
 ;; -----------------------------------------------------------------------------
 
@@ -387,11 +535,14 @@
     (let ()
       (blank)
 
-  (let ((y-sep (h%->pixels 1/15))
-        (x-offset (pict-width @t{1. })))
+  (let* (
+        )
     (ppict-do
       (blank client-w client-h)
-      (blank))
+    #:go HEADING-COORD
+    (subtitle-text "Method: exhaustive perf. eval.")
+    #:go CENTER-COORD
+    (blank))
     )
   ))
   (define (add-bg p)

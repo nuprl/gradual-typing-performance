@@ -33,7 +33,7 @@
 (define SHALLOW-COLOR (string->color% "MediumSeaGreen"))
 (define ERASURE-COLOR (string->color% "DarkOrange"))
 (define TYPE-BOUNDARY-COLOR (string->color% "Fuchsia"))
-(define CLOUD-COLOR (string->color% "Thistle"))
+(define LABEL-COLOR (string->color% "Plum"))
 (define SURVEY-COLOR (string->color% "Gainsboro"))
 (define BLANK-COLOR (string->color% "LightGoldenrodYellow"))
 
@@ -61,9 +61,12 @@
 (define SMALL-ROUND -0.08)
 (define SUBTITLE-MARGIN 20)
 (define COMPONENT-MARGIN 40)
+(define COMPONENT-LATTICE-MARGIN 6)
 (define LINE-MARGIN 4)
 (define INDENT-MARGIN 30)
 (define COLUMN-MARGIN 70)
+(define LATTICE-NODE-X-MARGIN 20)
+(define LATTICE-NODE-Y-MARGIN 40)
 
 (define BALLOON-RADIUS 10)
 
@@ -72,6 +75,8 @@
 (define TYPE-BOUNDARY-ARROW-SIZE 13)
 (define TYPE-BOUNDARY-ARROW-WIDTH 4)
 (define TYPE-BOUNDARY-TAG 'the-type-boundary)
+(define MIGRATION-ARROW-SIZE 25)
+(define MIGRATION-ARROW-WIDTH 8)
 
 (define STA-TAG 'sta-component)
 (define DYN-TAG 'dyn-component)
@@ -206,7 +211,7 @@
   (scale-to-fit p (* 4/5 client-w) (* 4/5 client-h)))
 
 (define (bigger-program p)
-  (scale p 2))
+  (scale p 3/2))
 
 (define (scale-logo p)
   (scale-to-fit p 180 80))
@@ -245,3 +250,4 @@
 (define igalia-logo (add-rectangle-background (bitmap "src/igalia-logo.png") #:x-margin 1/10 #:y-margin 1/10))
 
 (define all-logo* (pict-bbox-sup* (map scale-logo (list neu-logo igalia-logo nwu-logo ctu-logo))))
+
