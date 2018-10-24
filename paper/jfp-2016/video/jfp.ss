@@ -124,8 +124,7 @@
       #:go (coord 1/2 3/5 'ct)
       (vc-append (h%->pixels 1/20)
         @t{Type boundaries impose a run-time cost!*}
-        (parameterize ((current-font-size SMALL-FONT-SIZE))
-          @t{* in a sound gradual typing system}))))
+        @smallt{* in a sound gradual typing system})))
   (let ((y-sep (h%->pixels 1/15))
         (x-offset (pict-width @t{1. })))
     (pslide
@@ -169,21 +168,6 @@
          (the-lattice-coord (coord 1/2 SLIDE-TOP 'ct))
          (the-step-coord (coord SLIDE-LEFT SLIDE-TOP 'lb #:abs-y -4))
          (-the-step-coord (coord SLIDE-RIGHT SLIDE-TOP 'rb #:abs-y -4))
-         (make-tag
-           (lambda (b*)
-             (bitstring->tag (bool*->bitstring b*))))
-         (make-node
-           (lambda (b*)
-             (define pp (list->program b* #:margin COMPONENT-LATTICE-MARGIN))
-             (define pp/bg
-               (add-rectangle-background pp
-                                         #:radius 4
-                                         #:color SURVEY-COLOR
-                                         #:draw-border? #true
-                                         #:x-margin 1/16
-                                         #:y-margin 1/7))
-             (tag-pict pp/bg
-                       (make-tag b*))))
          (p-typed (make-node '(#t #t #t #t)))
          (time-y-sep -2)
          (total-bits 4)
@@ -250,14 +234,55 @@
   (void))
 
 (define (sec:exhaustive-method)
-  (pslide
-    #:go HEADING-COORD
-    (subtitle-text "Method: exhaustive performance evaluation")
-    #:go CENTER-COORD
-    (blank))
+  (let* ((make-step (make-make-step-label 1))
+         (y-sep (h%->pixels 1/10))
+         (x-sep (w%->pixels 1/4))
+         (y-max (h%->pixels 1/6))
+         (x-max (* 3 y-max))
+         (good-pict @t{"good"})
+         (tp*
+           (list
+             (cons @t{1. Typed program}
+                   (make-node '(#t #t #t #t)))
+             (cons @t{2. Measure all configurations}
+                   (scale-to-fit (make-lattice 4 make-node #:x-margin 4 #:y-margin 2) x-max y-max))
+             (cons (hb-append @t{3. Count % of } good-pict @t{ configs.})
+                   (make-check-x-fraction)))))
+    (pslide
+      (blank client-w client-h)
+      #:go HEADING-COORD
+      (subtitle-text "Method: exhaustive perf. eval.")
+      #:go (coord 1/2 1/4 'ct)
+      (make-notation-table
+        #:col-align (list lc-superimpose cc-superimpose)
+        tp*)
+      #:next
+      #:go (at-find-pict good-pict lb-find 'lt #:abs-y 4)
+      (rule (pict-width good-pict) 6 #:color HIGHLIGHT-COLOR)))
+  (void))
+
+(define (sec:dead-plot)
+  (let ()
+    (pslide
+      #:go CENTER-COORD
+      (blank)))
   (void))
 
 ;; -----------------------------------------------------------------------------
+
+(define (bool*->tag b*)
+  (bitstring->tag (bool*->bitstring b*)))
+
+(define (make-node b*)
+  (define pp (list->program b* #:margin COMPONENT-LATTICE-MARGIN))
+  (define pp/bg
+    (add-rectangle-background pp
+                              #:radius 4
+                              #:color SURVEY-COLOR
+                              #:draw-border? #true
+                              #:x-margin 1/16
+                              #:y-margin 1/7))
+  (tag-pict pp/bg (bool*->tag b*)))
 
 (define (bitstring->tag str)
   (string->symbol (string-append "cfg-" str)))
@@ -279,10 +304,12 @@
                       #:color-2 WHITE))
       (cc-superimpose bg txt))))
 
-(define (make-notation-table kv**)
+(define (make-notation-table kv**
+                             #:col-align [col-align lc-superimpose]
+                             #:row-align [row-align cc-superimpose])
   (table 2
          (flatten kv**)
-         lc-superimpose cc-superimpose
+         col-align row-align
          (w%->pixels 1/15) (h%->pixels 1/10)))
 
 (define (make-component-pict/sta #:body [body (blank)]
@@ -521,6 +548,17 @@
         #:y-margin 16/15
         (hb-append (t (format "~a. " (number->string current-count))) p)))))
 
+(define (smallt str)
+  (parameterize ((current-font-size SMALL-FONT-SIZE)) (t str)))
+
+(define (make-fraction t-pict b-pict)
+  (vc-append t-pict (rule (pict-width t-pict) 8) b-pict))
+
+(define (make-check-x-fraction)
+  (apply make-fraction
+         (pict-bbox-sup (small-check-icon)
+                        (hc-append 6 (small-check-icon) @subtitle-text{+} (small-x-icon)))))
+
 ;; -----------------------------------------------------------------------------
 
 (module+ test
@@ -535,15 +573,12 @@
     (let ()
       (blank)
 
-  (let* (
-        )
+  (let* ()
     (ppict-do
       (blank client-w client-h)
-    #:go HEADING-COORD
-    (subtitle-text "Method: exhaustive perf. eval.")
-    #:go CENTER-COORD
-    (blank))
-    )
+      #:go CENTER-COORD
+      (blank)
+    ))
   ))
   (define (add-bg p)
     (cc-superimpose (blank (+ 100 (pict-width p)) (+ 100 (pict-height p))) p))
