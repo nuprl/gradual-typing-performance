@@ -2,9 +2,12 @@
 
 (require
   (only-in gtp-util natural->bitstring)
-  (only-in math/statistics mean)
   (only-in racket/math exact-floor)
   (only-in scribble-abbrevs/scribble add-commas)
+  gtp-plot/configuration-info
+  gtp-plot/performance-info
+  gtp-plot/plot
+  gtp-plot/typed-racket-info
   pict-abbrevs
   pict/balloon
   ppict/2
@@ -28,8 +31,11 @@
     ;(sec:contribution)
     ;(sec:gt-cost)
     ;;(sec:anecdotes)
+    ;(pslide (make-section-break "The Method"))
     ;(sec:lattice)
-    (sec:exhaustive-method)
+    ;(sec:exhaustive-method)
+    ;(pslide (make-section-break "Presenting the Data (???)"))
+    (sec:dead-plot)
     #;(pslide #:go CENTER-COORD (make-section-break "Three Strategies"))
     #;(sec:type-boundary) ;; LOW PRIORITY
     #;(pslide #:go CENTER-COORD (make-section-break "Survey Design"))
@@ -37,7 +43,7 @@
 
 ;; -----------------------------------------------------------------------------
 
-(define FSM-DATA (file->value "./src/fsm-6.4.rktd"))
+(define FSM-DATA (make-typed-racket-info "./src/fsm-6.4.rktd"))
 
 (define (sec:title)
   (pslide
@@ -162,8 +168,6 @@
   (void))
 
 (define (sec:lattice)
-  (pslide
-    (make-section-break "The Method"))
   (let* ((p0 (bigger-program (list->program '(#f #t #t #f))))
          (the-lattice-coord (coord 1/2 SLIDE-TOP 'ct))
          (the-step-coord (coord SLIDE-LEFT SLIDE-TOP 'lb #:abs-y -4))
@@ -171,8 +175,7 @@
          (p-typed (make-node '(#t #t #t #t)))
          (time-y-sep -2)
          (total-bits 4)
-         (baseline (mean (vector-ref FSM-DATA 0)))
-         (make-overhead (lambda (t*) (/ (mean t*) baseline)))
+         (make-overhead (lambda (cfg) (overhead FSM-DATA (configuration-info->mean-runtime cfg))))
          (cfg->o-coord (lambda (tag) (at-find-pict tag rt-find 'rb #:abs-y time-y-sep)))
         )
     (pslide
@@ -199,53 +202,49 @@
       ;#:alt [#:go the-step-coord (make-step-label @t{Make configurations})]
       #:next
       #:alt [#:set (for/fold ((acc ppict-do-state))
-                      ((t* (in-vector FSM-DATA))
-                       (i (in-naturals)))
-              (define tag (bitstring->tag (natural->bitstring i #:bits total-bits)))
-              (ppict-do
-                acc
-                #:go (at-find-pict tag lt-find 'lb #:abs-y time-y-sep)
-                (runtime->pict (mean t*))))
-             ;#:go -the-step-coord (make-step-label @t{Measure runtime})
-             ]
+                             ((cfg (in-configurations FSM-DATA))
+                              (i (in-naturals)))
+                     (define tag (bitstring->tag (natural->bitstring i #:bits total-bits)))
+                     (ppict-do
+                       acc
+                       #:go (at-find-pict tag lt-find 'lb #:abs-y time-y-sep)
+                       (runtime->pict (configuration-info->mean-runtime cfg))))
+                    ;#:go -the-step-coord (make-step-label @t{Measure runtime})
+                    ]
       #:alt [#:set (ppict-do
                      ppict-do-state
                      #:go (cfg->o-coord 'cfg-0000)
                      (overhead->pict 1))]
       #:set (for/fold ((acc ppict-do-state))
-                      ((t* (in-vector FSM-DATA))
+                      ((cfg (in-configurations FSM-DATA))
                        (i (in-naturals)))
               (define tag (bitstring->tag (natural->bitstring i #:bits total-bits)))
               (ppict-do
                 acc
                 #:go (cfg->o-coord tag)
-                (overhead->pict (make-overhead t*))))
+                (overhead->pict (make-overhead cfg))))
       #:next
       #:set (for/fold ((acc (cellophane ppict-do-state 0.4)))
-                      ((t* (in-vector FSM-DATA))
+                      ((cfg (in-configurations FSM-DATA))
                        (i (in-naturals)))
               (define tag (bitstring->tag (natural->bitstring i #:bits total-bits)))
               (ppict-do
                 acc
                 #:go (at-find-pict tag cc-find 'cc)
-                (if (< (make-overhead t*) 2)
+                (if (< (make-overhead cfg) 2)
                   (large-check-icon)
                   (large-x-icon))))))
   (void))
 
 (define (sec:exhaustive-method)
   (let* ((make-step (make-make-step-label 1))
-         (y-sep (h%->pixels 1/10))
-         (x-sep (w%->pixels 1/4))
-         (y-max (h%->pixels 1/6))
-         (x-max (* 3 y-max))
          (good-pict @t{"good"})
          (tp*
            (list
              (cons @t{1. Typed program}
                    (make-node '(#t #t #t #t)))
              (cons @t{2. Measure all configurations}
-                   (scale-to-fit (make-lattice 4 make-node #:x-margin 4 #:y-margin 2) x-max y-max))
+                   (make-lattice-icon))
              (cons (hb-append @t{3. Count % of } good-pict @t{ configs.})
                    (make-check-x-fraction)))))
     (pslide
@@ -256,19 +255,91 @@
       (make-notation-table
         #:col-align (list lc-superimpose cc-superimpose)
         tp*)
+      #:go (coord 1/2 SLIDE-BOTTOM 'ct)
+      @t{Repeat for other programs}
       #:next
       #:go (at-find-pict good-pict lb-find 'lt #:abs-y 4)
       (rule (pict-width good-pict) 6 #:color HIGHLIGHT-COLOR)))
   (void))
 
 (define (sec:dead-plot)
-  (let ()
+  (let* ((x-sep 50)
+         (ra (right-arrow #:color HIGHLIGHT-COLOR))
+         (lhs-pict
+           (hc-append 4 (make-lattice-icon) @subtitle-text{+} @bt{D}))
+         (rhs-pict
+           (make-check-x-fraction)))
+    (pslide
+      #:go HEADING-COORD
+      (subtitle-text "D-deliverable")
+      #:go (coord 1/10 20/100 'lt)
+      (lines-append
+        (hb-append @t{A configuration is } @bt{D}@it{-deliverable} @t{ if its})
+        (hb-append @t{performance is no worse than a factor })
+        (hb-append @t{of } @bt{D} @t{ slowdown compared to the baseline}))
+      #:go (coord 1/10 50/100 'lt)
+      (hc-append x-sep lhs-pict ra rhs-pict)))
+  (let* ((the-plot-w (w%->pixels 1/2))
+         (the-plot-h (h%->pixels 1/2))
+         (the-max 20)
+         (the-fsm-plot
+           (parameterize ((*OVERHEAD-MAX* the-max)
+                          (*OVERHEAD-PLOT-WIDTH* the-plot-w)
+                          (*OVERHEAD-PLOT-HEIGHT* the-plot-h)
+                          (*OVERHEAD-SHOW-RATIO* #false)
+                          (*OVERHEAD-LEGEND?* #false))
+             (frame (overhead-plot FSM-DATA))))
+         (the-blank-plot (blank the-plot-w the-plot-h)))
     (pslide
       #:go CENTER-COORD
-      (blank)))
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #false)]
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true)]
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max (number->string the-max))]
+      (add-overhead-axis-labels the-fsm-plot #:x-max (number->string the-max))
+      ))
   (void))
 
 ;; -----------------------------------------------------------------------------
+
+(define (add-overhead-axis-labels pp [legend? #t] #:bounds? [bounds? #t] #:x-max [x-max-str "N>1"])
+  (define xy-margin 20)
+  (define label-margin 60)
+  (define y-label (make-check-x-fraction))
+  (define x-label @bt{D})
+  (define y-max @t{100%})
+  (define y-min @t{0%})
+  (define x-min @t{1})
+  (define x-max (t (format "~a" x-max-str)))
+  (define fp (frame-plot pp))
+  (if legend?
+    (let ((p (vc-append label-margin
+                        (hc-append label-margin y-label fp)
+                        (hc-append (+ label-margin (pict-width y-label)) (blank) x-label))))
+      (if bounds?
+        (for/fold ((acc p))
+                  ((pin-spec (list (list y-max lt-find 'rt (- xy-margin) 0)
+                                   (list y-min lb-find 'rb (- xy-margin) 0)
+                                   (list x-max rb-find 'rt 0 xy-margin)
+                                   (list x-min lb-find 'lt 0 xy-margin))))
+          (ppict-do
+            acc
+            #:go (at-find-pict fp (second pin-spec) (third pin-spec) #:abs-x (fourth pin-spec) #:abs-y (fifth pin-spec))
+            (first pin-spec)))
+        p))
+    fp))
+
+(define (frame-plot p)
+  (add-axis-arrow (add-axis-arrow p 'x) 'y))
+
+(define (add-axis-arrow p xy)
+  (define find-dest
+    (case xy
+      ((x)
+       rb-find)
+      ((y)
+       lt-find)
+      (else (raise-argument-error 'add-axis-arrow "(or/c 'x 'y)" 1 p xy))))
+  (pin-arrow-line 20 p p lb-find p find-dest #:line-width 6))
 
 (define (bool*->tag b*)
   (bitstring->tag (bool*->bitstring b*)))
@@ -559,6 +630,11 @@
          (pict-bbox-sup (small-check-icon)
                         (hc-append 6 (small-check-icon) @subtitle-text{+} (small-x-icon)))))
 
+(define (make-lattice-icon)
+  (define y-max (h%->pixels 1/6))
+  (define x-max (* 3 y-max))
+  (scale-to-fit (make-lattice 4 make-node #:x-margin 4 #:y-margin 2) x-max y-max))
+
 ;; -----------------------------------------------------------------------------
 
 (module+ test
@@ -573,12 +649,26 @@
     (let ()
       (blank)
 
-  (let* ()
+  #;(let* ((the-plot-w (w%->pixels 1/2))
+         (the-plot-h (h%->pixels 1/2))
+         (the-max 20)
+         (the-fsm-plot
+           (parameterize ((*OVERHEAD-MAX* the-max)
+                          (*OVERHEAD-PLOT-WIDTH* the-plot-w)
+                          (*OVERHEAD-PLOT-HEIGHT* the-plot-h)
+                          (*OVERHEAD-SHOW-RATIO* #false)
+                          (*OVERHEAD-LEGEND?* #false))
+             (frame (overhead-plot FSM-DATA))))
+         (the-blank-plot (blank the-plot-w the-plot-h)))
     (ppict-do
       (blank client-w client-h)
       #:go CENTER-COORD
-      (blank)
-    ))
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #false)]
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true)]
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max (number->string the-max))]
+      (add-overhead-axis-labels the-fsm-plot #:x-max (number->string the-max))
+      ))
+
   ))
   (define (add-bg p)
     (cc-superimpose (blank (+ 100 (pict-width p)) (+ 100 (pict-height p))) p))
