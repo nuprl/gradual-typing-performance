@@ -3,6 +3,7 @@
 (require
   data/bit-vector
   pict-abbrevs
+  pict/balloon
   ppict/2
   pict/shadow
   (only-in racket/list make-list first second third fourth fifth sixth)
@@ -67,12 +68,82 @@
 
 (define (sec:gt-cost)
   ;; program === components, gt => mixed-typed, mixed-typed => cost
+  (define MT (make-program-pict/mixed #:show-boundary? #true))
   (pslide
-    #:go CENTER-COORD
-    (make-program-pict/mixed))
+    #:go (coord 1/2 1/4 'ct)
+    #:alt [(make-notation-table
+             (list @t{Program} (make-program-pict/blank)
+                   @t{Component} (car (list->component* '(0)))
+                   @t{Dependency} (make-sample-boundary-arrow)))]
+    (let ((sd* (list->component* '(#true #false))))
+      (make-notation-table
+        (list @t{Mixed-Typed Program} MT
+              @t{Statically-typed Component} (car sd*)
+              @t{Dynamically-typed Component} (cadr sd*)
+              @t{Type Boundary} (make-sample-boundary-arrow #:boundary? #true)))))
+  (let* ((sd* (list->component* '(#true #false)))
+         (sta-pict (car sd*))
+         (dyn-pict (cadr sd*))
+         (validate-coord (coord 1/2 1/3 'cc))
+         (acc (apply hb-append (* 2 COLUMN-MARGIN) sd*))
+         (edge-spec `((,sta-pict ,rc-find) (,dyn-pict ,lc-find) 0))
+         (sd (scale (add-boundary-arrows acc edge-spec #:color TYPE-BOUNDARY-COLOR) 2))
+         (sd (vc-append (blank (pict-width sd) (pict-height sd)) sd))
+         (sd/int (add-thought/sta sd sta-pict (need-txt "Integer")))
+         (sd/int-0 (add-thought/dyn sd/int dyn-pict @t{42}))
+         (sd/int-1 (add-thought/dyn sd/int dyn-pict @t{'NaN}))
+         (sd/los (add-thought/sta sd sta-pict (need-txt "Listof(Symbol)")))
+         (sd/los-0 (add-thought/dyn sd/los dyn-pict @t{'(A B 3 D)}))
+         (sd/ii (add-thought/sta sd sta-pict (need-txt "Bool->Bool")))
+         (sd/ii-0 (add-thought/dyn sd/ii dyn-pict @t{#<function>})))
+    (pslide
+      #:go (coord 1/2 1/2 'cb)
+      ;#:alt [sd]
+      ;#:alt [sd/int]
+      ;#:alt [sd/int-0 #:next #:go validate-coord (large-check-icon)]
+      ;#:alt [sd]
+      ;#:alt [sd/int]
+      ;#:alt [sd/int-1 #:next #:go validate-coord (large-x-icon)]
+      ;#:alt [sd]
+      ;#:alt [sd/los]
+      ;#:alt [sd/los-0 #:next #:go validate-coord (large-x-icon)]
+      ;#:alt [sd]
+      ;#:alt [sd/ii]
+      ;#:alt [sd/ii-0 #:next #:go validate-coord (large-?-icon)]
+      sd
+      #:go (coord 1/2 3/5 'ct)
+      (vc-append (h%->pixels 1/10)
+        @t{Type boundaries impose a run-time cost!}
+        (parameterize ((current-font-size SMALL-FONT-SIZE))
+          @t{(in a sound gradual typing system)}))))
+  (let ((y-sep (h%->pixels 1/15))
+        (x-offset (pict-width @t{1. })))
+    (pslide
+      #:go (coord 1/2 1/4 'ct)
+      (tag-pict (scale MT 3/2) 'MT)
+      #:go (at-find-pict 'MT lb-find 'lt #:abs-y y-sep #:abs-x (- x-offset))
+      #:next
+      (tag-pict
+        (lines-append
+          (hb-append @t{1. What is the cost of the } @bt{type})
+          (hb-append @t{   } @bt{boundaries} @t{ in a program?})
+          (blank)
+          (blank)) 'Q1)
+      #:next
+      #:go (at-find-pict 'Q1 lb-find 'lt #:abs-y y-sep)
+      (lines-append
+        (hb-append @t{2. What is the overall cost of})
+        (hb-append @t{   boundaries in a } @bt{gradual})
+        (hb-append @t{   } @bt{typing system} @t{?}))))
   (void))
 
 ;; -----------------------------------------------------------------------------
+
+(define (make-notation-table kv**)
+  (table 2
+         (flatten kv**)
+         lc-superimpose cc-superimpose
+         (w%->pixels 1/15) (h%->pixels 1/10)))
 
 (define (make-component-pict/sta #:body [body (blank)]
                                  #:width [pre-width #f]
@@ -165,24 +236,65 @@
                                       ((,c0 ,rb-find) (,c3 ,lb-find) -50)
                                       ((,c1 ,rc-find) (,c2 ,lc-find)   0)
                                       ((,c2 ,rc-find) (,c3 ,lc-find)   0)))))
-       (define dom-spec (car edge-spec))
-       (define cod-spec (second edge-spec))
-       (define dom-pict (car dom-spec))
-       (define cod-pict (car cod-spec))
        (define boundary-color
-         (if (and show-boundary? (not (eq? (pict-tag dom-pict) (pict-tag cod-pict))))
+         (if (and show-boundary? (not (eq? (pict-tag (caar edge-spec))
+                                           (pict-tag (caadr edge-spec)))))
            TYPE-BOUNDARY-COLOR
            BLACK))
-       (pin-arrows-line COMPONENT-ARROW-SIZE
-                        acc
-                        dom-pict (second dom-spec)
-                        cod-pict (second cod-spec)
-                        #:start-angle (- (caddr edge-spec))
-                        #:end-angle (caddr edge-spec)
-                        #:line-width COMPONENT-ARROW-WIDTH
-                        #:color boundary-color))]
+       (add-boundary-arrows acc edge-spec #:color boundary-color))]
     [_
       (raise-argument-error 'add-program-edges "(list pict? pict? pict? pict?)" c*)]))
+
+(define (add-boundary-arrows acc edge-spec #:color [boundary-color BLACK])
+  (add-boundary-X pin-arrows-line acc edge-spec #:color boundary-color))
+
+(define (add-boundary-arrow acc edge-spec #:color [boundary-color BLACK])
+  (add-boundary-X pin-arrow-line acc edge-spec #:color boundary-color))
+
+(define (add-boundary-X arrow-fn acc edge-spec #:color [boundary-color BLACK])
+  (define dom-spec (car edge-spec))
+  (define cod-spec (second edge-spec))
+  (define dom-pict (car dom-spec))
+  (define cod-pict (car cod-spec))
+  (define the-angle (caddr edge-spec))
+  (arrow-fn
+    COMPONENT-ARROW-SIZE
+    acc
+    dom-pict (second dom-spec)
+    cod-pict (second cod-spec)
+    #:start-angle (- the-angle)
+    #:end-angle the-angle
+    #:line-width COMPONENT-ARROW-WIDTH
+    #:color boundary-color))
+
+(define (add-thought/sta base tgt txt
+                         #:adjust-x [adjust-x values]
+                         #:adjust-y [adjust-y #f])
+  (add-thought base tgt txt WHITE #:adjust-x adjust-x #:adjust-y (or adjust-y (lambda (n) (* 2 n)))))
+
+(define (add-thought/dyn base tgt txt
+                         #:adjust-x [adjust-x #f]
+                         #:adjust-y [adjust-y values])
+  (add-thought base tgt txt WHITE #:adjust-x (or adjust-x -) #:adjust-y adjust-y))
+
+(define (add-thought base tgt txt color
+                     #:adjust-x [adjust-x values]
+                     #:adjust-y [adjust-y values])
+  (define b-x (adjust-x (* 1/10 (pict-width txt))))
+  (define b-y (adjust-y (pict-height txt)))
+  (define b-pict (wrap-balloon txt 's b-x b-y color BALLOON-RADIUS))
+  (pin-balloon b-pict base tgt ct-find))
+
+(define (need-txt str)
+  (hb-append @t{need } (bt str)))
+
+(define (make-sample-boundary-arrow #:boundary? [boundary? #false])
+  (define dom-pict (blank))
+  (define cod-pict (blank))
+  (define acc (hc-append COLUMN-MARGIN dom-pict cod-pict))
+  (define edge-spec `((,dom-pict ,rc-find) (,cod-pict ,lc-find) 0))
+  (define b-color (if boundary? TYPE-BOUNDARY-COLOR BLACK))
+  (add-boundary-arrows acc edge-spec #:color b-color))
 
 (define (make-boundary-pict #:l [pre-l-body-pict #f]
                             #:c [pre-c-body-pict #f]
@@ -255,11 +367,17 @@
   (ppict-do
     (blank client-w client-h)
     #:go CENTER-COORD
-    (let ((x (make-program-pict/blank)))
-      (vc-append
-      (make-lattice 1 (lambda (i) x))
-      (make-lattice 2 (lambda (x) (apply hc-append 4 (list->component* x))) #;(lambda (i) x))
-      (make-lattice 3 (lambda (i) x)))
+    (let* ((sd* (list->component* '(#true #false)))
+           (sta-pict (car sd*))
+           (dyn-pict (cadr sd*))
+           (acc (apply hb-append (* 2 COLUMN-MARGIN) sd*))
+           (edge-spec `((,sta-pict ,rc-find) (,dyn-pict ,lc-find) 0))
+           (sd/arr (scale (add-boundary-arrows acc edge-spec #:color TYPE-BOUNDARY-COLOR) 2))
+           (sd/arr (vc-append (blank (pict-width sd/arr) (pict-height sd/arr)) sd/arr)))
+      ;sd/arr
+      (hc-append 100
+      (add-thought/sta sd/arr sta-pict (hb-append @t{need } @bt{Integer}) #:adjust-y (lambda (n) (* 2 n)))
+      (add-thought/dyn sd/arr dyn-pict @t{42} #:adjust-x -))
       )
     )
   ))

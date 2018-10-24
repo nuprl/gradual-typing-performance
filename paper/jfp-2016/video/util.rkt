@@ -65,6 +65,8 @@
 (define INDENT-MARGIN 30)
 (define COLUMN-MARGIN 70)
 
+(define BALLOON-RADIUS 10)
+
 (define COMPONENT-ARROW-SIZE 11)
 (define COMPONENT-ARROW-WIDTH 3)
 (define TYPE-BOUNDARY-ARROW-SIZE 13)
@@ -96,6 +98,12 @@
 
 (define (pixels->h% x)
   (/ x (+ (* 2 margin) client-h)))
+
+(define (w%->pixels pct)
+  (* pct client-w))
+
+(define (h%->pixels pct)
+  (* pct client-h))
 
 (define (erase-pict p [alpha 0.2])
   (cellophane p alpha))
@@ -144,6 +152,12 @@
 
 (define (small-check-icon)
   (make-icon check-icon #:height 30))
+
+(define (large-?-icon)
+  (make-icon ?-icon #:height 80))
+
+(define (?-icon #:material m #:height h)
+  (text-icon "?" #:color "DarkOrange" #:height h #:material m))
 
 (define (large-x-icon)
   (make-icon x-icon #:height 80))
