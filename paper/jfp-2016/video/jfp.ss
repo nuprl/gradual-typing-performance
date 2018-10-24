@@ -13,10 +13,13 @@
   ppict/2
   pict/shadow
   (only-in plot/utils ->brush-color)
-  (only-in racket/list make-list first second third fourth fifth sixth)
+  racket/sequence
+  (only-in racket/list make-list first second third fourth fifth sixth take)
   "author.rkt"
   "two-tone.rkt"
   "util.rkt")
+
+(module+ test (require rackunit))
 
 ;; -----------------------------------------------------------------------------
 
@@ -34,11 +37,11 @@
     ;(pslide (make-section-break "The Method"))
     ;(sec:lattice)
     ;(sec:exhaustive-method)
-    ;(pslide (make-section-break "Presenting the Data (???)"))
-    (sec:dead-plot)
-    #;(pslide #:go CENTER-COORD (make-section-break "Three Strategies"))
-    #;(sec:type-boundary) ;; LOW PRIORITY
-    #;(pslide #:go CENTER-COORD (make-section-break "Survey Design"))
+    ;(pslide (make-section-break "Presenting the Data"))
+    ;(sec:dead-plot)
+    (pslide (make-section-break "Scaling the Method"))
+    (sec:scale)
+    ;(sec:conclusion)
     (void)))
 
 ;; -----------------------------------------------------------------------------
@@ -297,6 +300,32 @@
       #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max (number->string the-max))]
       (add-overhead-axis-labels the-fsm-plot #:x-max (number->string the-max))
       ))
+  (void))
+
+(define (sec:scale)
+  (let ((lat* (for/list ((i (in-range 4 10 2)))
+                (freeze (make-labeled-lattice i))))
+        (y-sep 1/4))
+    (for ((p* (in-prefixes lat*)))
+      (pslide
+        #:go HEADING-COORD
+        (subtitle-text "Exponential Blowup")
+        #:set (for/fold ((acc ppict-do-state))
+                        ((p (in-list p*))
+                         (i (in-naturals)))
+                (ppict-do
+                  acc
+                  #:go (coord 1/2 (+ y-sep (* i y-sep)))
+                  p)))))
+  (void))
+
+(define (sec:conclusion)
+  ;; more in paper
+  ;; - motivation in full
+  ;; - application to TR
+  ;; - evidence for sampling
+  ;; - inspect pathologies
+  (pslide)
   (void))
 
 ;; -----------------------------------------------------------------------------
@@ -580,6 +609,14 @@
                   #:color TYPE-BOUNDARY-COLOR
                   #:line-width TYPE-BOUNDARY-ARROW-WIDTH))
 
+(define (make-labeled-lattice total-bits)
+  (define (make-small-node x)
+    (scale (make-node x) 1/10))
+  (define the-lattice (make-lattice total-bits make-small-node #:x-margin 2 #:y-margin 2))
+  (vc-append 20
+    the-lattice
+    (t (format "~a components" total-bits))))
+
 (define (make-lattice total-bits make-node
                       #:x-margin [x-margin LATTICE-NODE-X-MARGIN]
                       #:y-margin [y-margin LATTICE-NODE-Y-MARGIN])
@@ -635,10 +672,18 @@
   (define x-max (* 3 y-max))
   (scale-to-fit (make-lattice 4 make-node #:x-margin 4 #:y-margin 2) x-max y-max))
 
+(define (in-prefixes x*)
+  (sequence-map (lambda (i) (take x* (+ i 1))) (in-range (length x*))))
+
+(module+ test
+  (test-case "in-prefixes"
+    (check-equal? (sequence->list (in-prefixes '(1 2 3)))
+                  '((1) (1 2) (1 2 3)))))
+
 ;; -----------------------------------------------------------------------------
 
 (module+ test
-  (require rackunit))
+  )
 
 ;; -----------------------------------------------------------------------------
 
@@ -649,24 +694,18 @@
     (let ()
       (blank)
 
-  #;(let* ((the-plot-w (w%->pixels 1/2))
-         (the-plot-h (h%->pixels 1/2))
-         (the-max 20)
-         (the-fsm-plot
-           (parameterize ((*OVERHEAD-MAX* the-max)
-                          (*OVERHEAD-PLOT-WIDTH* the-plot-w)
-                          (*OVERHEAD-PLOT-HEIGHT* the-plot-h)
-                          (*OVERHEAD-SHOW-RATIO* #false)
-                          (*OVERHEAD-LEGEND?* #false))
-             (frame (overhead-plot FSM-DATA))))
-         (the-blank-plot (blank the-plot-w the-plot-h)))
+  (let* (
+        )
     (ppict-do
       (blank client-w client-h)
-      #:go CENTER-COORD
-      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #false)]
-      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true)]
-      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max (number->string the-max))]
-      (add-overhead-axis-labels the-fsm-plot #:x-max (number->string the-max))
+      #:go HEADING-COORD
+      (subtitle-text "Exponential Blowup")
+      #:go (coord 1/2 2/5)
+      (make-labeled-lattice 4)
+      #:go (coord 1/2 3/5)
+      (make-labeled-lattice 6)
+      #:go (coord 1/2 4/5)
+      (make-labeled-lattice 8)
       ))
 
   ))
