@@ -131,7 +131,7 @@
          (sd/los (add-thought/sta sd sta-pict (need-txt "Listof(Symbol)")))
          (sd/los-0 (add-thought/dyn sd/los dyn-pict @t{'(A B 3 D)}))
          (sd/ii (add-thought/sta sd sta-pict (need-txt "Bool->Bool")))
-         (sd/ii-0 (add-thought/dyn sd/ii dyn-pict @t{#<function>})))
+         (sd/ii-0 (add-thought/dyn sd/ii dyn-pict @t{#<procedure>})))
     (pslide
       #:go (coord 1/2 1/2 'cb)
       #:alt [sd]
