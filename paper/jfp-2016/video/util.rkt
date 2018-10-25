@@ -46,7 +46,7 @@
 (define FOOTNOTE-FONT-SIZE 22)
 (define TITLE-FONT-SIZE 44)
 (define SUBTITLE-FONT-SIZE 40)
-(define SUBSUBTITLE-FONT-SIZE 36)
+(define SUBSUBTITLE-FONT-SIZE 34)
 
 (define SLIDE-TOP 1/10)
 (define SLIDE-LEFT 1/50)
@@ -58,6 +58,7 @@
 (define -HEADING-COORD (coord SLIDE-RIGHT SLIDE-TOP 'rb))
 (define CENTER-COORD (coord 1/2 1/2 'cc))
 (define QUESTION-COORD (coord 98/100 1/2 'rc)) 
+(define NOTATION-COORD (coord 1/2 1/4 'ct))
 (define SMALL-ROUND -0.08)
 (define SUBTITLE-MARGIN 20)
 (define COMPONENT-MARGIN 40)
@@ -87,10 +88,19 @@
     (apply vl-append y-sep (map string*->text str*))))
 
 (define (right-arrow [size 30] #:color [c #f])
-  (maybe-colorize (arrow size 0) c))
+  (my-arrow size 0 c))
 
 (define (up-arrow [size 30] #:color [c #f])
-  (maybe-colorize (arrow size (/ pi 2)) c))
+  (my-arrow size (* 1/4 revolution) c))
+
+(define (left-arrow [size 30] #:color [c #f])
+  (my-arrow size (* 1/2 revolution) c))
+
+(define (down-arrow [size 30] #:color [c #f])
+  (my-arrow size (* 3/4 revolution) c))
+
+(define (my-arrow size angle color)
+  (maybe-colorize (arrow size angle) color))
 
 (define (maybe-colorize p c)
   (if c (colorize p c) p))
@@ -159,10 +169,13 @@
   (make-icon check-icon #:height 30))
 
 (define (large-?-icon)
-  (make-icon ?-icon #:height 80))
+  (make-icon (my-text-icon "?" #:color "DarkOrange") #:height 80))
 
-(define (?-icon #:material m #:height h)
-  (text-icon "?" #:color "DarkOrange" #:height h #:material m))
+(define (large-~-icon)
+  (make-icon (my-text-icon "~" #:color "dimgray") #:height 20))
+
+(define ((my-text-icon str #:color c) #:material m #:height h)
+  (text-icon str #:color c #:height h #:material m))
 
 (define (large-x-icon)
   (make-icon x-icon #:height 80))

@@ -4,6 +4,8 @@
   (only-in gtp-util natural->bitstring)
   (only-in racket/math exact-floor)
   (only-in scribble-abbrevs/scribble add-commas)
+  racket/random
+  racket/set
   gtp-plot/configuration-info
   gtp-plot/performance-info
   gtp-plot/plot
@@ -23,25 +25,40 @@
 
 ;; -----------------------------------------------------------------------------
 
+(define ((add-bg-assembler default-assembler #:color color) s v-sep c)
+  (define fg (default-assembler s v-sep c))
+  (define bg
+    (inset (filled-rectangle
+             (+ (* 2 margin) client-w)
+             (+ (* 2 margin) client-h)
+             #:color color
+             #:draw-border? #false) (- margin)))
+  (cc-superimpose bg fg))
+
 (module+ main
   (set-page-numbers-visible! #true)
   (set-spotlight-style! #:size 60 #:color (color%-update-alpha HIGHLIGHT-COLOR 0.6))
   (parameterize ([current-main-font MONO-FONT]
                  [current-font-size NORMAL-FONT-SIZE]
+                 [current-slide-assembler (add-bg-assembler (current-slide-assembler)
+                                                            #:color (color%-update-alpha (string->color% "WhiteSmoke") 0.5))]
                  [current-titlet string->title])
     (void)
-    ;(sec:title)
-    ;(sec:contribution)
-    ;(sec:gt-cost)
-    ;;(sec:anecdotes)
-    ;(pslide (make-section-break "The Method"))
-    ;(sec:lattice)
-    ;(sec:exhaustive-method)
-    ;(pslide (make-section-break "Presenting the Data"))
-    ;(sec:dead-plot)
+    (sec:title)
+    (sec:contribution)
+    (sec:gt-cost)
+    ;(sec:anecdotes)
+    (pslide (make-section-break "The Method"))
+    (sec:lattice)
+    (sec:exhaustive-method)
+    (pslide (make-section-break "Presenting the Data"))
+    (sec:dead-plot)
     (pslide (make-section-break "Scaling the Method"))
     (sec:scale)
-    ;(sec:conclusion)
+    (pslide (make-section-break "More in Paper"))
+    (sec:conclusion)
+    (sec:thanks)
+    (sec:title)
     (void)))
 
 ;; -----------------------------------------------------------------------------
@@ -89,7 +106,7 @@
   ;; program === components, gt => mixed-typed, mixed-typed => cost
   (define MT (make-program-pict/mixed #:show-boundary? #true))
   (pslide
-    #:go (coord 1/2 1/4 'ct)
+    #:go NOTATION-COORD
     #:alt [(make-notation-table
              (list @t{Program} (make-program-pict/blank)
                    @t{Component} (car (list->component* '(0)))
@@ -142,16 +159,16 @@
       #:go (at-find-pict 'MT lb-find 'lt #:abs-y y-sep #:abs-x (- x-offset))
       #:next
       (lines-append
-        (hb-append @t{   What is the overall cost of})
-        (hb-append @t{   boundaries in a } @bt{gradual})
-        (hb-append @t{   } @bt{typing system} @t{?}))
+        (hb-append @t{ What is the overall cost of})
+        (hb-append @t{ boundaries in a } @bt{gradual})
+        (hb-append @t{ } @bt{typing system} @t{?}))
       ; #:next
       ; (tag-pict (lines-append (hb-append @t{1. What is the cost of the } @bt{type}) (hb-append @t{   } @bt{boundaries} @t{ in a program?}) (blank) (blank)) 'Q1)
       ; #:next
       ; #:go (at-find-pict 'Q1 lb-find 'lt #:abs-y y-sep)
       ; (lines-append (hb-append @t{2. What is the overall cost of}) (hb-append @t{   boundaries in a } @bt{gradual}) (hb-append @t{   } @bt{typing system} @t{?}))
       #:next
-      #:go (coord 1/2 1/2 'cc)
+      #:go (coord 1/2 SLIDE-BOTTOM 'cb)
       (add-rectangle-background
         #:color "plum"
         #:draw-border? #true
@@ -188,7 +205,7 @@
              #:go the-lattice-coord
              p-typed
              #:set (let ((pp ppict-do-state)
-                         (lbl ((make-make-step-label) @t{Add types})))
+                         (lbl ((make-make-step-label 1) @t{Add types})))
                      (pin-arrow-line MIGRATION-ARROW-SIZE
                                      pp
                                      p0 ct-find
@@ -217,7 +234,9 @@
       #:alt [#:set (ppict-do
                      ppict-do-state
                      #:go (cfg->o-coord 'cfg-0000)
-                     (overhead->pict 1))]
+                     (tag-pict (overhead->pict 1) 'the-tgt)
+                     #:go (at-find-pict 'the-tgt rc-find 'lc #:abs-x 10)
+                     (left-arrow #:color HIGHLIGHT-COLOR))]
       #:set (for/fold ((acc ppict-do-state))
                       ((cfg (in-configurations FSM-DATA))
                        (i (in-naturals)))
@@ -254,11 +273,11 @@
       (blank client-w client-h)
       #:go HEADING-COORD
       (subtitle-text "Method: exhaustive perf. eval.")
-      #:go (coord 1/2 1/4 'ct)
+      #:go NOTATION-COORD
       (make-notation-table
         #:col-align (list lc-superimpose cc-superimpose)
         tp*)
-      #:go (coord 1/2 SLIDE-BOTTOM 'ct)
+      #:go (coord 1/2 SLIDE-BOTTOM 'ct #:abs-y 10)
       @t{Repeat for other programs}
       #:next
       #:go (at-find-pict good-pict lb-find 'lt #:abs-y 4)
@@ -292,18 +311,20 @@
                           (*OVERHEAD-SHOW-RATIO* #false)
                           (*OVERHEAD-LEGEND?* #false))
              (frame (overhead-plot FSM-DATA))))
+         (the-xmax @t{20})
          (the-blank-plot (blank the-plot-w the-plot-h)))
     (pslide
       #:go CENTER-COORD
       #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #false)]
-      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true)]
-      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max (number->string the-max))]
-      (add-overhead-axis-labels the-fsm-plot #:x-max (number->string the-max))
-      ))
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max @t{N>1})]
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max the-xmax)
+             #:go (at-find-pict the-xmax rc-find 'lc #:abs-x 10)
+             (left-arrow #:color HIGHLIGHT-COLOR)]
+      (add-overhead-axis-labels the-fsm-plot #:x-max the-xmax)))
   (void))
 
 (define (sec:scale)
-  (let ((lat* (for/list ((i (in-range 4 10 2)))
+  #;(let ((lat* (for/list ((i (in-range 4 10 2)))
                 (freeze (make-labeled-lattice i))))
         (y-sep 1/4))
     (for ((p* (in-prefixes lat*)))
@@ -317,20 +338,55 @@
                   acc
                   #:go (coord 1/2 (+ y-sep (* i y-sep)))
                   p)))))
+  (let* ((total-bits 8)
+         (e-lat (freeze (make-small-lattice total-bits)))
+         (s-lat (freeze (make-sample-lattice total-bits)))
+         (txt @t{1. Sample O(n) configurations})
+         (s-desc @t{2. Count the % of "good" configs.})
+         (s-pict (hc-append -10 (vr-append 40 (large-~-icon) (blank)) (make-check-x-fraction)))
+         (tbl-0 (list (lc-superimpose (blank (pict-width s-desc) 0) txt)
+                      (blank (pict-width s-pict) 0)))
+         (tbl-1 (append tbl-0 (list s-desc s-pict))))
+    (pslide
+      #:go HEADING-COORD
+      (subtitle-text "Simple Random Sampling")
+      #:go (coord 1/2 65/100 'ct)
+      #:alt [e-lat]
+      s-lat
+      #:go NOTATION-COORD
+      #:alt [(make-notation-table tbl-0)]
+      (make-notation-table tbl-1)))
   (void))
 
 (define (sec:conclusion)
-  ;; more in paper
-  ;; - motivation in full
-  ;; - application to TR
-  ;; - evidence for sampling
-  ;; - inspect pathologies
-  (pslide)
+  (pslide
+    #:go NOTATION-COORD
+    (make-notation-table
+      (list @t{+ justification for O(N) sampling} (blank)
+            @t{+ exhaustive method applied to Typed Racket} (blank)
+            @t{+ comparison: TR v6.2, v6.3, & v6.4} (blank)
+            @t{+ discussion of pathologies} (blank))))
+  (void))
+
+(define (sec:thanks)
+  (pslide
+    #:go HEADING-COORD
+    (subtitle-text "Thank you")
+    #:go (coord 1/2 1/2)
+    (vl-append
+      60
+      (subsubtitle-text "Sam Tobin-Hochstadt")
+      (make-notation-table
+        (list (bitmap "src/samth.jpg")
+              (lines-append
+                @t{For Typed Racket, and for}
+                @t{significant improvements to}
+                @t{v6.3, v6.4, and beyond.})))))
   (void))
 
 ;; -----------------------------------------------------------------------------
 
-(define (add-overhead-axis-labels pp [legend? #t] #:bounds? [bounds? #t] #:x-max [x-max-str "N>1"])
+(define (add-overhead-axis-labels pp [legend? #t] #:bounds? [bounds? #t] #:x-max [x-max #f])
   (define xy-margin 20)
   (define label-margin 60)
   (define y-label (make-check-x-fraction))
@@ -338,7 +394,6 @@
   (define y-max @t{100%})
   (define y-min @t{0%})
   (define x-min @t{1})
-  (define x-max (t (format "~a" x-max-str)))
   (define fp (frame-plot pp))
   (if legend?
     (let ((p (vc-append label-margin
@@ -609,13 +664,39 @@
                   #:color TYPE-BOUNDARY-COLOR
                   #:line-width TYPE-BOUNDARY-ARROW-WIDTH))
 
+(define (make-small-node x)
+  (scale (make-node x) 1/10))
+
+(define (make-small-lattice total-bits)
+  (make-lattice total-bits make-small-node #:x-margin 2 #:y-margin 2))
+
 (define (make-labeled-lattice total-bits)
-  (define (make-small-node x)
-    (scale (make-node x) 1/10))
-  (define the-lattice (make-lattice total-bits make-small-node #:x-margin 2 #:y-margin 2))
+  (define the-lattice (make-small-lattice total-bits))
   (vc-append 20
     the-lattice
     (t (format "~a components" total-bits))))
+
+(define (make-sample-lattice total-bits)
+  (define sample-size (* 10 total-bits))
+  (define num-configs (expt 2 total-bits))
+  (define the-space (in-range num-configs))
+  (define the-sample
+    (list->set
+      (list*
+        0 (- num-configs 1)
+        (random-sample the-space
+                       sample-size
+                       (vector->pseudo-random-generator '#(7 7 7 6 6 6))
+                       #:replacement? #false))))
+  (define the-blank
+    (let ((baseline (make-small-node (make-list total-bits #false))))
+      (blank (pict-width baseline) 0)))
+  (define (make-sample-node b*)
+    (define n (bool*->natural b*))
+    (if (set-member? the-sample n)
+      (make-small-node b*)
+      the-blank))
+  (make-lattice total-bits make-sample-node #:x-margin 2 #:y-margin 2))
 
 (define (make-lattice total-bits make-node
                       #:x-margin [x-margin LATTICE-NODE-X-MARGIN]
@@ -680,6 +761,19 @@
     (check-equal? (sequence->list (in-prefixes '(1 2 3)))
                   '((1) (1 2) (1 2 3)))))
 
+(define (bool*->natural b*)
+  (define L (length b*))
+  (for/sum ((b (in-list b*))
+            (i (in-naturals 1))
+            #:when b)
+    (expt 2 (- L i))))
+
+(module+ test
+  (test-case "bool*->natural"
+    (check-equal? (bool*->natural '(#f #f)) 0)
+    (check-equal? (bool*->natural '(#t #f #f)) 4)
+    (check-equal? (bool*->natural '(#t #t #f #t)) 13)))
+
 ;; -----------------------------------------------------------------------------
 
 (module+ test
@@ -694,19 +788,6 @@
     (let ()
       (blank)
 
-  (let* (
-        )
-    (ppict-do
-      (blank client-w client-h)
-      #:go HEADING-COORD
-      (subtitle-text "Exponential Blowup")
-      #:go (coord 1/2 2/5)
-      (make-labeled-lattice 4)
-      #:go (coord 1/2 3/5)
-      (make-labeled-lattice 6)
-      #:go (coord 1/2 4/5)
-      (make-labeled-lattice 8)
-      ))
 
   ))
   (define (add-bg p)
