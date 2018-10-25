@@ -159,8 +159,8 @@
       #:go (at-find-pict 'MT lb-find 'lt #:abs-y y-sep #:abs-x (- x-offset))
       #:next
       (lines-append
-        (hb-append @t{ What is the overall cost of})
-        (hb-append @t{ boundaries in a } @bt{gradual})
+        (hb-append @t{ Q. What is the overall cost})
+        (hb-append @t{ of boundaries in a } @bt{gradual})
         (hb-append @t{ } @bt{typing system} @t{?}))
       ; #:next
       ; (tag-pict (lines-append (hb-append @t{1. What is the cost of the } @bt{type}) (hb-append @t{   } @bt{boundaries} @t{ in a program?}) (blank) (blank)) 'Q1)
@@ -720,7 +720,7 @@
 
 (define (overhead->pict n)
   (define n-str
-    (if (< n 0)
+    (if (< n 1)
       (~r n #:precision '(= 2))
       (add-commas (exact-floor n))))
   (bt (string-append n-str "x")))
