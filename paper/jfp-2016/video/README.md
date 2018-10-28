@@ -44,3 +44,13 @@ Outline
 - keep measuing in future
 
 - special thanks to Sam TH
+
+
+Script
+---
+
+(introduce self)
+
+This was Ben Greenman explaining our paper to you. Thanks for listening and
+please leave comments on the Journal’s web site. If you have questions, leave
+them there too, and I will answer them in public
