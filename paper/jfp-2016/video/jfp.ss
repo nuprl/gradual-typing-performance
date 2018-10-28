@@ -44,21 +44,21 @@
                                                             #:color (color%-update-alpha (string->color% "WhiteSmoke") 0.5))]
                  [current-titlet string->title])
     (void)
-    (sec:title #:star? #false)
+;    (sec:title #:star? #false)
     (sec:contribution)
-    (sec:gt-cost)
-    ;(sec:anecdotes)
-    (pslide (make-section-break "The Method"))
-    (sec:lattice)
-    (sec:exhaustive-method)
-    (pslide (make-section-break "Presenting the Data"))
-    (sec:dead-plot)
-    (pslide (make-section-break "Scaling the Method"))
-    (sec:scale)
-    (pslide (make-section-break "More in Paper"))
-    (sec:conclusion)
-    (sec:thanks)
-    (sec:title #:star? #true)
+;    (sec:gt-cost)
+;    ;(sec:anecdotes)
+;    (pslide (make-section-break "The Method"))
+;    (sec:lattice)
+;    (sec:exhaustive-method)
+;    (pslide (make-section-break "Presenting the Data"))
+;    (sec:dead-plot)
+;    (pslide (make-section-break "Scaling the Method"))
+;    (sec:scale)
+;    (pslide (make-section-break "More in Paper"))
+;    (sec:conclusion)
+;    (sec:thanks)
+;    (sec:title #:star? #true)
     (void)))
 
 ;; -----------------------------------------------------------------------------
@@ -95,11 +95,12 @@
   (pslide
     #:go HEADING-COORD
     (subtitle-text "Contribution:")
-    #:go (coord 1/10 20/100 'lt)
+    #:go (coord 1/2 25/100 'ct)
     (lines-append
-      (hb-append @t{We propose a systematic } @bt{method} @t{ to measure})
-      (hb-append @t{the } @bt{performance implications} @t{ of a gradual})
-      (hb-append @t{typing system})))
+      (hb-append @t{Our paper presents the first})
+      (hb-append @t{systematic } @bt{method} @t{ to measure})
+      (hb-append @t{the } @bt{performance implications})
+      (hb-append @t{of a gradual typing system.})))
   (void))
 
 (define (sec:gt-cost)
@@ -782,15 +783,26 @@
 ;; -----------------------------------------------------------------------------
 
 (module+ raco-pict
-  ;; ... could be a "pict-provider" and all exports combined?
   (provide raco-pict)
   (define p
-    (let ()
+  (parameterize ([current-main-font MONO-FONT]
+                 [current-font-size NORMAL-FONT-SIZE])
+    (let ((bb (blank client-w client-h)))
       (blank)
 
+  (;pslide
+   ppict-do bb
+    #:go HEADING-COORD
+    (subtitle-text "Contribution:")
+    #:go (coord 1/10 20/100 'lt)
+    (lines-append
+      (hb-append @t{Our paper presents the first})
+      (hb-append @t{systematic } @bt{method} @t{ to measure})
+      (hb-append @t{the } @bt{performance implications})
+      (hb-append @t{of a gradual typing system.})))
 
-  ))
+  )))
   (define (add-bg p)
-    (cc-superimpose (blank (+ 100 (pict-width p)) (+ 100 (pict-height p))) p))
+    (cc-superimpose (blank (+ 100 (pict-width p)) (+ 100 (pict-height p))) (frame p)))
   (define raco-pict (add-bg p))
   (void))
