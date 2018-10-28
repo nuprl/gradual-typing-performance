@@ -44,7 +44,7 @@
                                                             #:color (color%-update-alpha (string->color% "WhiteSmoke") 0.5))]
                  [current-titlet string->title])
     (void)
-    (sec:title)
+    (sec:title #:star? #false)
     (sec:contribution)
     (sec:gt-cost)
     ;(sec:anecdotes)
@@ -58,14 +58,14 @@
     (pslide (make-section-break "More in Paper"))
     (sec:conclusion)
     (sec:thanks)
-    (sec:title)
+    (sec:title #:star? #true)
     (void)))
 
 ;; -----------------------------------------------------------------------------
 
 (define FSM-DATA (make-typed-racket-info "./src/fsm-6.4.rktd"))
 
-(define (sec:title)
+(define (sec:title #:star? [star? #true])
   (pslide
     #:go (coord SLIDE-LEFT 20/100 'lt)
     (parameterize ((current-main-font (list* 'bold 'italic TITLE-FONT))
@@ -79,7 +79,7 @@
                      (current-font-size SMALL-FONT-SIZE))
         (columns-append
           (lines-append
-            @t{Ben Greenman *}
+            (t (string-append "Ben Greenman" (if star? " *" "")))
             @t{Max S. New}
             @t{Robert Bruce Findler}
             @t{Matthias Felleisen})
