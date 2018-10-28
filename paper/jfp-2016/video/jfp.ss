@@ -45,8 +45,8 @@
                  [current-titlet string->title])
     (void)
 ;    (sec:title #:star? #false)
-    (sec:contribution)
-;    (sec:gt-cost)
+;    (sec:contribution)
+    (sec:gt-cost)
 ;    ;(sec:anecdotes)
 ;    (pslide (make-section-break "The Method"))
 ;    (sec:lattice)
@@ -107,11 +107,15 @@
   ;; program === components, gt => mixed-typed, mixed-typed => cost
   (define MT (make-program-pict/mixed #:show-boundary? #true))
   (pslide
-    #:go NOTATION-COORD
-    #:alt [(make-notation-table
+    #:go HEADING-COORD
+    #:alt [(subtitle-text "Notation")
+           #:go NOTATION-COORD
+           (make-notation-table
              (list @t{Program} (make-program-pict/blank)
                    @t{Component} (car (list->component* '(0)))
                    @t{Dependency} (make-sample-boundary-arrow)))]
+    (subtitle-text "Gradual Typing")
+    #:go NOTATION-COORD
     (let ((sd* (list->component* '(#true #false))))
       (make-notation-table
         (list @t{Mixed-Typed Program} MT
