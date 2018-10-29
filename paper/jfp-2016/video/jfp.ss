@@ -51,10 +51,10 @@
 ;    (pslide (make-section-break "The Method"))
 ;    (sec:lattice)
 ;    (sec:exhaustive-method)
-    (pslide (make-section-break "A Method for Presenting the Data"))
-    (sec:dead-plot)
+;    (pslide (make-section-break "A Method for Presenting the Data"))
+;    (sec:dead-plot)
 ;    (pslide (make-section-break "Scaling the Method"))
-;    (sec:scale)
+    (sec:scale)
 ;    (pslide (make-section-break "More in Paper"))
 ;    (sec:conclusion)
 ;    (sec:thanks)
@@ -320,20 +320,26 @@
   (void))
 
 (define (sec:scale)
-  #;(let ((lat* (for/list ((i (in-range 4 10 2)))
+  (let ((lat* (for/list ((i (in-range 4 10 2)))
                 (freeze (make-labeled-lattice i))))
+        (exp-title (subtitle-text "Exponential Blowup"))
         (y-sep 1/4))
     (for ((p* (in-prefixes lat*)))
       (pslide
         #:go HEADING-COORD
-        (subtitle-text "Exponential Blowup")
+        exp-title
         #:set (for/fold ((acc ppict-do-state))
                         ((p (in-list p*))
                          (i (in-naturals)))
                 (ppict-do
                   acc
                   #:go (coord 1/2 (+ y-sep (* i y-sep)))
-                  p)))))
+                  p))))
+    (pslide
+      #:go HEADING-COORD
+      exp-title
+      #:go CENTER-COORD
+      @t{N components => 2^N configurations}))
   (let* ((total-bits 8)
          (e-lat (freeze (make-small-lattice total-bits)))
          (s-lat (freeze (make-sample-lattice total-bits)))
