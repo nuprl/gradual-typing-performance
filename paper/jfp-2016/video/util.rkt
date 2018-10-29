@@ -61,6 +61,7 @@
 (define NOTATION-COORD (coord 1/2 1/4 'ct))
 (define SMALL-ROUND -0.08)
 (define SUBTITLE-MARGIN 20)
+(define SUBSUBTITLE-MARGIN 10)
 (define COMPONENT-MARGIN 40)
 (define COMPONENT-LATTICE-MARGIN 6)
 (define LINE-MARGIN 4)
@@ -278,4 +279,50 @@
 (define igalia-logo (add-rectangle-background (bitmap "src/igalia-logo.png") #:x-margin 1/10 #:y-margin 1/10))
 
 (define all-logo* (pict-bbox-sup* (map scale-logo (list neu-logo igalia-logo nwu-logo ctu-logo))))
+
+(define (round-frame fg #:title [title #false] #:align [align 'left])
+  (add-rounded-frame fg
+                     #:title title
+                     #:align align
+                     #:page-margin 30
+                     #:fg-color WHITE
+                     #:bg-color "plum"))
+
+(define (add-rounded-frame fg
+                           #:title [title #false]
+                           #:align [align 'left]
+                           #:fg-color [fg-color WHITE]
+                           #:bg-color [bg-color BLACK]
+                           #:radius [the-radius 8]
+                           #:border-margin [pre-border-margin #f]
+                           #:page-margin [pre-page-margin #f])
+  (define the-border-margin (or pre-border-margin 20))
+  (define the-page-margin (or pre-page-margin (* 2 the-border-margin)))
+  (define mg
+    (filled-rounded-rectangle (+ the-page-margin (pict-width fg))
+                              (+ the-page-margin (pict-height fg))
+                              the-radius
+                              #:color fg-color
+                              #:draw-border? #true
+                              #:border-width 1
+                              #:border-color BLACK))
+  (define bg
+    (filled-rounded-rectangle (+ the-border-margin (pict-width mg))
+                              (+ the-border-margin (pict-height mg))
+                              the-radius
+                              #:color bg-color
+                              #:draw-border? #true
+                              #:border-width 1
+                              #:border-color BLACK))
+  (define main-pict (cc-superimpose bg mg fg))
+  (if title
+    ((y-align->combiner align) SUBSUBTITLE-MARGIN title main-pict)
+    main-pict))
+
+(define (y-align->combiner k)
+  (case k
+    ((left) vl-append)
+    ((center) vc-append)
+    ((right) vr-append)
+    (else (raise-argument-error 'y-align->combiner "(or/c 'left 'center 'right)" k))))
 

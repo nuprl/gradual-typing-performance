@@ -161,7 +161,7 @@
   (let ((y-sep (h%->pixels 1/15))
         (x-offset (pict-width @t{1. })))
     (pslide
-      #:go (coord 1/2 1/4 'ct)
+      #:go (coord 1/2 1/8 'ct)
       (tag-pict (bigger-program MT) 'MT)
       #:go (at-find-pict 'MT lb-find 'lt #:abs-y y-sep #:abs-x (- x-offset))
       #:next
@@ -169,19 +169,11 @@
         (hb-append @t{ Q. What is the overall cost})
         (hb-append @t{ of boundaries in a } @bt{gradual})
         (hb-append @t{ } @bt{typing system} @t{?}))
-      ; #:next
-      ; (tag-pict (lines-append (hb-append @t{1. What is the cost of the } @bt{type}) (hb-append @t{   } @bt{boundaries} @t{ in a program?}) (blank) (blank)) 'Q1)
-      ; #:next
-      ; #:go (at-find-pict 'Q1 lb-find 'lt #:abs-y y-sep)
-      ; (lines-append (hb-append @t{2. What is the overall cost of}) (hb-append @t{   boundaries in a } @bt{gradual}) (hb-append @t{   } @bt{typing system} @t{?}))
       #:next
       #:go (coord 1/2 SLIDE-BOTTOM 'cb)
-      (add-rectangle-background
-        #:color "plum"
-        #:draw-border? #true
-        #:x-margin 2/10
-        #:y-margin 2
-        (hb-append @t{Need a } @bt{method} @t{ to measure performance!}))))
+      (round-frame
+        @para[#:width (w%->pixels 75/100)
+              #:align 'center]{Need a@bt{method} to measure and evaluate the performance implications of a gradual typing system})))
   (void))
 
 (define (sec:anecdotes)
@@ -795,19 +787,6 @@
                  [current-font-size NORMAL-FONT-SIZE])
     (let ((bb (blank client-w client-h)))
       (blank)
-
-      (make-monitor-icon "Bool?")
-
-  #;(;pslide
-   ppict-do bb
-    #:go HEADING-COORD
-    (subtitle-text "Contribution:")
-    #:go (coord 1/10 20/100 'lt)
-    (lines-append
-      (hb-append @t{Our paper presents the first})
-      (hb-append @t{systematic } @bt{method} @t{ to measure})
-      (hb-append @t{the } @bt{performance implications})
-      (hb-append @t{of a gradual typing system.})))
 
   )))
   (define (add-bg p)
