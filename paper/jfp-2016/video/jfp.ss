@@ -46,13 +46,13 @@
     (void)
 ;    (sec:title #:star? #false)
 ;    (sec:contribution)
-    (sec:gt-cost)
+;    (sec:gt-cost)
 ;    ;(sec:anecdotes)
 ;    (pslide (make-section-break "The Method"))
 ;    (sec:lattice)
-;    (sec:exhaustive-method)
-;    (pslide (make-section-break "Presenting the Data"))
-;    (sec:dead-plot)
+    (sec:exhaustive-method)
+    (pslide (make-section-break "Presenting the Data"))
+    (sec:dead-plot)
 ;    (pslide (make-section-break "Scaling the Method"))
 ;    (sec:scale)
 ;    (pslide (make-section-break "More in Paper"))
@@ -255,35 +255,6 @@
                 (if (< (make-overhead cfg) 2)
                   (large-check-icon)
                   (large-x-icon))))))
-  (void))
-
-(define (sec:exhaustive-method)
-  (let* ((make-step (make-make-step-label 1))
-         (good-pict @t{"good"})
-         (tp*
-           (list
-             (cons @t{1. Typed program}
-                   (make-node '(#t #t #t #t)))
-             (cons @t{2. Measure all configurations}
-                   (make-lattice-icon))
-             (cons (hb-append @t{3. Count % of } good-pict @t{ configs.})
-                   (make-check-x-fraction)))))
-    (pslide
-      (blank client-w client-h)
-      #:go HEADING-COORD
-      (subtitle-text "Method: exhaustive perf. eval.")
-      #:go NOTATION-COORD
-      (make-notation-table
-        #:col-align (list lc-superimpose cc-superimpose)
-        tp*)
-      #:go (coord 1/2 SLIDE-BOTTOM 'ct #:abs-y 10)
-      @t{Repeat for other programs}
-      #:next
-      #:go (at-find-pict good-pict lb-find 'lt #:abs-y 4)
-      (rule (pict-width good-pict) 6 #:color HIGHLIGHT-COLOR)))
-  (void))
-
-(define (sec:dead-plot)
   (let* ((x-sep 50)
          (ra (right-arrow #:color HIGHLIGHT-COLOR))
          (lhs-pict
@@ -300,6 +271,32 @@
         (hb-append @t{of } @bt{D} @t{ slowdown compared to the baseline}))
       #:go (coord 1/10 50/100 'lt)
       (hc-append x-sep lhs-pict ra rhs-pict)))
+  (void))
+
+(define (sec:exhaustive-method)
+  (let* ((make-step (make-make-step-label 1))
+         (good-pict @t{"good"})
+         (tp*
+           (list
+             (cons @t{1. Typed program}
+                   (make-node '(#t #t #t #t)))
+             (cons @t{2. Measure all configurations}
+                   (make-lattice-icon))
+             (cons (hb-append @t{3. Count } @bt{D} @t{-deliverable cfgs.})
+                   (make-check-x-fraction)))))
+    (pslide
+      #:go HEADING-COORD
+      (subtitle-text "Method: exhaustive perf. eval.")
+      #:go NOTATION-COORD
+      (make-notation-table
+        #:col-sep (w%->pixels 1/30)
+        #:col-align (list lc-superimpose cc-superimpose)
+        tp*)
+      #:go (coord 1/2 SLIDE-BOTTOM 'ct #:abs-y 10)
+      @t{Repeat for other programs}))
+  (void))
+
+(define (sec:dead-plot)
   (let* ((the-plot-w (w%->pixels 1/2))
          (the-plot-h (h%->pixels 1/2))
          (the-max 20)
@@ -459,12 +456,14 @@
       (cc-superimpose bg txt))))
 
 (define (make-notation-table kv**
+                             #:col-sep [pre-col-sep #f]
                              #:col-align [col-align lc-superimpose]
                              #:row-align [row-align cc-superimpose])
+  (define col-sep (or pre-col-sep (w%->pixels 1/15)))
   (table 2
          (flatten kv**)
          col-align row-align
-         (w%->pixels 1/15) (h%->pixels 1/10)))
+         col-sep (h%->pixels 1/10)))
 
 (define (make-component-pict/sta #:body [body (blank)]
                                  #:width [pre-width #f]
