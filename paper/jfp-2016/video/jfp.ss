@@ -54,9 +54,9 @@
 ;    (pslide (make-section-break "A Method for Presenting the Data"))
 ;    (sec:dead-plot)
 ;    (pslide (make-section-break "Scaling the Method"))
-    (sec:scale)
+;    (sec:scale)
 ;    (pslide (make-section-break "More in Paper"))
-;    (sec:conclusion)
+    (sec:conclusion)
 ;    (sec:thanks)
 ;    (sec:title #:star? #true)
     (void)))
@@ -364,10 +364,16 @@
   (pslide
     #:go NOTATION-COORD
     (make-notation-table
-      (list @t{+ justification for O(N) sampling} (blank)
+      (list (tag-pict @t{+ justification for O(N) sampling} 'sample) (blank)
             @t{+ exhaustive method applied to Typed Racket} (blank)
-            @t{+ comparison: TR v6.2, v6.3, & v6.4} (blank)
-            @t{+ discussion of pathologies} (blank))))
+            (tag-pict @t{+ comparison: TR v6.2, v6.3, & v6.4} 'TR) (blank)
+            @t{+ discussion of pathologies} (blank)))
+    #:go (at-find-pict 'sample lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
+    (parameterize ((current-font-size SMALL-FONT-SIZE))
+      @t{- N = number of components})
+    #:go (at-find-pict 'TR lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
+    (parameterize ((current-font-size SMALL-FONT-SIZE))
+      @t{- the method quantifies improvements}))
   (void))
 
 (define (sec:thanks)
@@ -792,6 +798,19 @@
                  [current-font-size NORMAL-FONT-SIZE])
     (let ((bb (blank client-w client-h)))
       (blank)
+  (pslide
+    #:go NOTATION-COORD
+    (make-notation-table
+      (list (tag-pict @t{+ justification for O(N) sampling} 'sample) (blank)
+            @t{+ exhaustive method applied to Typed Racket} (blank)
+            (tag-pict @t{+ comparison: TR v6.2, v6.3, & v6.4} 'TR) (blank)
+            @t{+ discussion of pathologies} (blank)))
+    #:go (at-find-pict 'sample lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
+    (parameterize ((current-font-size SMALL-FONT-SIZE))
+      @t{- N = number of components})
+    #:go (at-find-pict 'TR lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
+    (parameterize ((current-font-size SMALL-FONT-SIZE))
+      @t{- the method quantifies improvements}))
 
   )))
   (define (add-bg p)
