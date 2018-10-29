@@ -13,7 +13,7 @@
   (only-in racket/math pi)
   (only-in racket/string string-replace)
   (only-in plot/utils ->pen-color)
-  (only-in slideshow current-font-size current-main-font margin client-w client-h t para))
+  (only-in slideshow bt current-font-size current-main-font margin client-w client-h t para))
 
 (module+ test
   (require rackunit))
@@ -168,8 +168,23 @@
 (define (small-check-icon)
   (make-icon check-icon #:height 30))
 
+(define (make-monitor-icon str)
+  (define the-color "DarkOrange")
+  (define h 50)
+  (hc-append -2
+    (large-text-icon "(" #:color the-color #:height h)
+    (bt str)
+    (cc-superimpose
+      (blank 28 0)
+      (large-text-icon "∘" #:color the-color #:height 22))
+    (rule 40 5 #:color BLACK)
+    (large-text-icon ")" #:color the-color #:height h)))
+
+(define (large-text-icon str #:color c #:height h)
+  (make-icon (my-text-icon str #:color c) #:height h))
+
 (define (large-?-icon)
-  (make-icon (my-text-icon "?" #:color "DarkOrange") #:height 80))
+  (large-text-icon "?"))
 
 (define (large-~-icon)
   (make-icon (my-text-icon "~" #:color "dimgray") #:height 20))

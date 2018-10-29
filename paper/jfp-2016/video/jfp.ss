@@ -138,6 +138,8 @@
          (sd/ii (add-thought/sta sd sta-pict (need-txt "Bool->Bool")))
          (sd/ii-0 (add-thought/dyn sd/ii dyn-pict @t{#<procedure>})))
     (pslide
+      #:go HEADING-COORD
+      (subtitle-text "Typed-Untyped Interaction")
       #:go (coord 1/2 1/2 'cb)
       #:alt [sd]
       #:alt [sd/int]
@@ -150,7 +152,7 @@
       #:alt [sd/los-0 #:next #:go validate-coord (large-x-icon)]
       #:alt [sd]
       #:alt [sd/ii]
-      #:alt [sd/ii-0 #:next #:go validate-coord (large-?-icon)]
+      #:alt [sd/ii-0 #:next #:go validate-coord (make-monitor-icon "Bool?")]
       sd
       #:go (coord 1/2 3/5 'ct)
       (vc-append (h%->pixels 1/20)
@@ -794,7 +796,9 @@
     (let ((bb (blank client-w client-h)))
       (blank)
 
-  (;pslide
+      (make-monitor-icon "Bool?")
+
+  #;(;pslide
    ppict-do bb
     #:go HEADING-COORD
     (subtitle-text "Contribution:")
