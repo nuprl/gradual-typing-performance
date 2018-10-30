@@ -204,7 +204,7 @@
              #:go the-lattice-coord
              p-typed
              #:set (let ((pp ppict-do-state)
-                         (lbl ((make-make-step-label 1) @t{Add types})))
+                         (lbl (blank))) ;; 0. Add Types
                      (pin-arrow-line MIGRATION-ARROW-SIZE
                                      pp
                                      p0 ct-find
@@ -258,7 +258,7 @@
   (let* ((x-sep 50)
          (ra (right-arrow #:color HIGHLIGHT-COLOR))
          (lhs-pict
-           (hc-append 4 (make-lattice-icon) @subtitle-text{+} @bt{D}))
+           (hc-append 12 (make-lattice-icon) @subtitle-text{+} @bt{D}))
          (rhs-pict
            (make-check-x-fraction)))
     (pslide
@@ -292,7 +292,7 @@
         #:col-sep (w%->pixels 1/30)
         #:col-align (list lc-superimpose cc-superimpose)
         tp*)
-      #:go (coord 1/2 SLIDE-BOTTOM 'ct #:abs-y 10)
+      #:go (coord 1/2 SLIDE-BOTTOM 'ct #:abs-y 20)
       @t{Repeat for other programs}))
   (void))
 
@@ -308,7 +308,7 @@
                           (*OVERHEAD-LEGEND?* #false))
              (frame (overhead-plot FSM-DATA))))
          (the-xmax @t{20})
-         (the-blank-plot (blank the-plot-w the-plot-h)))
+         (the-blank-plot (frame (filled-rectangle the-plot-w the-plot-h #:color WHITE #:draw-border? #false))))
     (pslide
       #:go CENTER-COORD
       #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #false)]
@@ -323,7 +323,11 @@
   (let ((lat* (for/list ((i (in-range 4 10 2)))
                 (freeze (make-labeled-lattice i))))
         (exp-title (subtitle-text "Exponential Blowup"))
-        (y-sep 1/4))
+        (y-sep 1/4)
+        (2^N (let* ((base @t{2})
+                    (raise (* 35/100 (pict-height base)))
+                    (expt (text "N" (current-main-font) SMALL-FONT-SIZE)))
+               (hb-append -3 base (vl-append raise expt (blank))))))
     (for ((p* (in-prefixes lat*)))
       (pslide
         #:go HEADING-COORD
@@ -339,11 +343,11 @@
       #:go HEADING-COORD
       exp-title
       #:go CENTER-COORD
-      @t{N components => 2^N configurations}))
+      (hb-append @t{N components => } 2^N @t{ configurations})))
   (let* ((total-bits 8)
          (e-lat (freeze (make-small-lattice total-bits)))
          (s-lat (freeze (make-sample-lattice total-bits)))
-         (txt @t{1. Sample O(n) configurations})
+         (txt @t{1. Sample O(N) configurations})
          (s-desc (vl-append (hb-append @t{2. Count } @bt{D} @t{-deliverable cfgs.})
                                        @t{   in the sample}))
          (s-pict (hc-append -10 (vr-append 40 (large-~-icon) (blank)) (make-check-x-fraction)))
