@@ -50,7 +50,28 @@ Script
 ---
 
 (introduce self)
+3-year team effort
 
-This was Ben Greenman explaining our paper to you. Thanks for listening and
-please leave comments on the Journal’s web site. If you have questions, leave
-them there too, and I will answer them in public
+program = collection of modules
+
+type boundary
+
+if we want to have a relation between types and
+values, need to check (aka soundness)
+
+if 4 components explore all 2^4 possible
+programmer may start at bottom move up to some
+ middle point do not know what must do all
+
+communicate to language implementor
+
+miserable
+
+D = worst thing implementor willing to impose,
+summarize entire lattice as a %
+dont know what D works in practice --- dataset for more
+
+This was Ben Greenman explaining our paper to you.
+Thanks for listening and please leave comments on the
+Journal’s web site. If you have questions, leave them
+there too, and I will answer them in public
