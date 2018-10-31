@@ -37,7 +37,7 @@
 
 (module+ main
   (set-page-numbers-visible! #true)
-  (set-spotlight-style! #:size 60 #:color (color%-update-alpha HIGHLIGHT-COLOR 0.6))
+  (set-spotlight-style! #:size 40 #:color (color%-update-alpha HIGHLIGHT-COLOR 0.6))
   (parameterize ([current-main-font MONO-FONT]
                  [current-font-size NORMAL-FONT-SIZE]
                  [current-slide-assembler (add-bg-assembler (current-slide-assembler)
