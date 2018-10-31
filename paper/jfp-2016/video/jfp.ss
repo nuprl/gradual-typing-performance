@@ -316,7 +316,7 @@
     (pslide
       #:go CENTER-COORD
       #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #false)]
-      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max @t{N>1})]
+      #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max @t{X>1})]
       #:alt [(add-overhead-axis-labels the-blank-plot #:bounds? #true #:x-max the-xmax)
              #:go (at-find-pict the-xmax rc-find 'lc #:abs-x 10)
              (left-arrow #:color HIGHLIGHT-COLOR)]
