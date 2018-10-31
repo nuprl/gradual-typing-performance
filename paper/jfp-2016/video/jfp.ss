@@ -155,9 +155,12 @@
       #:alt [sd/ii-0 #:next #:go validate-coord (make-monitor-icon "Bool?")]
       sd
       #:go (coord 1/2 3/5 'ct)
-      (vc-append (h%->pixels 1/20)
-        @t{Type boundaries impose a run-time cost!*}
-        @smallt{* in a sound gradual typing system})))
+      @t{Type boundaries impose a run-time cost!}
+      #:go (coord 1/2 SLIDE-BOTTOM 'cc)
+      (vl-append 4
+        @smallt{(Some mixed-typed languages do not enforce}
+        @smallt{ types. For these languages, the performance}
+        @smallt{ of type boundaries is not an issue.)})))
   (let ((y-sep (h%->pixels 1/15))
         (x-offset (pict-width @t{1. })))
     (pslide
@@ -198,23 +201,23 @@
          (cfg->o-coord (lambda (tag) (at-find-pict tag rt-find 'rb #:abs-y time-y-sep)))
         )
     (pslide
-      #:alt [#:go CENTER-COORD
-             p0
-             #:next
-             #:go the-lattice-coord
-             p-typed
-             #:set (let ((pp ppict-do-state)
-                         (lbl (blank))) ;; 0. Add Types
-                     (pin-arrow-line MIGRATION-ARROW-SIZE
-                                     pp
-                                     p0 ct-find
-                                     p-typed cb-find
-                                     #:line-width MIGRATION-ARROW-WIDTH
-                                     #:color BLACK
-                                     #:x-adjust-label (* 5/7 (pict-width lbl))
-                                     #:label lbl))]
+      ;#:alt [#:go CENTER-COORD
+      ;       p0
+      ;       #:next
+      ;       #:go the-lattice-coord
+      ;       p-typed
+      ;       #:set (let ((pp ppict-do-state)
+      ;                   (lbl (blank))) ;; 0. Add Types
+      ;               (pin-arrow-line MIGRATION-ARROW-SIZE
+      ;                               pp
+      ;                               p0 ct-find
+      ;                               p-typed cb-find
+      ;                               #:line-width MIGRATION-ARROW-WIDTH
+      ;                               #:color BLACK
+      ;                               #:x-adjust-label (* 5/7 (pict-width lbl))
+      ;                               #:label lbl))]
       #:go the-lattice-coord
-      #:alt [p-typed]
+      ;#:alt [p-typed]
       (make-lattice 4 make-node
                     #:x-margin (w%->pixels 1/70)
                     #:y-margin (h%->pixels 1/9))
@@ -348,6 +351,7 @@
          (e-lat (freeze (make-small-lattice total-bits)))
          (s-lat (freeze (make-sample-lattice total-bits)))
          (txt @t{1. Sample O(N) configurations})
+         (sub-txt (parameterize ((current-font-size SMALL-FONT-SIZE)) @subitem{N = number of components}))
          (s-desc (vl-append (hb-append @t{2. Count } @bt{D} @t{-deliverable cfgs.})
                                        @t{   in the sample}))
          (s-pict (hc-append -10 (vr-append 40 (large-~-icon) (blank)) (make-check-x-fraction)))
@@ -361,24 +365,26 @@
       #:alt [e-lat]
       s-lat
       #:go NOTATION-COORD
-      #:alt [(make-notation-table tbl-0)]
-      (make-notation-table tbl-1)))
+      #:alt [(make-notation-table tbl-0)
+             #:go (at-below txt) sub-txt]
+      (make-notation-table tbl-1)
+      #:go (at-below txt) sub-txt))
   (void))
 
 (define (sec:conclusion)
   (pslide
     #:go NOTATION-COORD
     (make-notation-table
-      (list (tag-pict @t{+ justification for O(N) sampling} 'sample) (blank)
-            @t{+ exhaustive method applied to Typed Racket} (blank)
-            (tag-pict @t{+ comparison: TR v6.2, v6.3, & v6.4} 'TR) (blank)
-            @t{+ discussion of pathologies} (blank)))
-    #:go (at-find-pict 'sample lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
+      (list (tag-pict @t{• justification for O(N) sampling} 'sample) (blank)
+            @t{• exhaustive method applied to Typed Racket} (blank)
+            (tag-pict @t{• comparison: TR v6.2, v6.3, & v6.4} 'TR) (blank)
+            @t{• discussion of pathologies} (blank)))
+    #:go (at-below 'sample)
     (parameterize ((current-font-size SMALL-FONT-SIZE))
-      @t{- N = number of components})
-    #:go (at-find-pict 'TR lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
+      @t{∘ N = number of components})
+    #:go (at-below 'TR)
     (parameterize ((current-font-size SMALL-FONT-SIZE))
-      @t{- the method quantifies improvements}))
+      @t{∘ the method quantifies improvements}))
   (void))
 
 (define (sec:thanks)
@@ -789,6 +795,9 @@
     (check-equal? (bool*->natural '(#t #f #f)) 4)
     (check-equal? (bool*->natural '(#t #t #f #t)) 13)))
 
+(define (at-below pp #:abs-x [abs-x INDENT-MARGIN] #:abs-y [abs-y LINE-MARGIN])
+  (at-find-pict pp lb-find 'lt #:abs-x abs-x #:abs-y abs-y))
+
 ;; -----------------------------------------------------------------------------
 
 (module+ test
@@ -803,19 +812,15 @@
                  [current-font-size NORMAL-FONT-SIZE])
     (let ((bb (blank client-w client-h)))
       (blank)
-  (pslide
-    #:go NOTATION-COORD
-    (make-notation-table
-      (list (tag-pict @t{+ justification for O(N) sampling} 'sample) (blank)
-            @t{+ exhaustive method applied to Typed Racket} (blank)
-            (tag-pict @t{+ comparison: TR v6.2, v6.3, & v6.4} 'TR) (blank)
-            @t{+ discussion of pathologies} (blank)))
-    #:go (at-find-pict 'sample lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
-    (parameterize ((current-font-size SMALL-FONT-SIZE))
-      @t{- N = number of components})
-    #:go (at-find-pict 'TR lb-find 'lt #:abs-x INDENT-MARGIN #:abs-y LINE-MARGIN)
-    (parameterize ((current-font-size SMALL-FONT-SIZE))
-      @t{- the method quantifies improvements}))
+
+      (ppict-do bb
+      #:go (coord 1/2 3/5 'ct)
+      @t{Type boundaries impose a run-time cost!}
+      #:go (coord 1/2 SLIDE-BOTTOM 'cc)
+      (vl-append 4
+        @smallt{(Some mixed-typed languages do not enforce}
+        @smallt{ types. For these languages, the performance}
+        @smallt{ of type boundaries is not an issue.)}))
 
   )))
   (define (add-bg p)
