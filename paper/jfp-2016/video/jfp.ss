@@ -156,7 +156,7 @@
       sd
       #:go (coord 1/2 3/5 'ct)
       @t{Type boundaries impose a run-time cost!}
-      #:go (coord 1/2 SLIDE-BOTTOM 'cc)
+      #:go (coord 1/2 SLIDE-BOTTOM 'ct)
       (vl-append 4
         @smallt{(Some mixed-typed languages do not enforce}
         @smallt{ types. For these languages, the performance}
@@ -308,6 +308,7 @@
                           (*OVERHEAD-PLOT-WIDTH* the-plot-w)
                           (*OVERHEAD-PLOT-HEIGHT* the-plot-h)
                           (*OVERHEAD-SHOW-RATIO* #false)
+                          (*OVERHEAD-LINE-COLOR* 2)
                           (*OVERHEAD-LEGEND?* #false))
              (frame (overhead-plot FSM-DATA))))
          (the-xmax @t{20})
