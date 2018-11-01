@@ -332,17 +332,16 @@
                     (raise (* 35/100 (pict-height base)))
                     (expt (text "N" (current-main-font) SMALL-FONT-SIZE)))
                (hb-append -3 base (vl-append raise expt (blank))))))
-    (for ((p* (in-prefixes lat*)))
       (pslide
         #:go HEADING-COORD
         exp-title
         #:set (for/fold ((acc ppict-do-state))
-                        ((p (in-list p*))
+                        ((p (in-list lat*))
                          (i (in-naturals)))
                 (ppict-do
                   acc
                   #:go (coord 1/2 (+ y-sep (* i y-sep)))
-                  p))))
+                  p)))
     (pslide
       #:go HEADING-COORD
       exp-title
