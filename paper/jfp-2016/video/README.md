@@ -55,8 +55,8 @@ about performance and gradual typing systems.
 
 In particular, I am going to explain a method we have developed to measure
 the performance of a gradual typing system.
-This method is a tool for language designers,
-to understand the implications of their decisions and to systematically
+This method is a tool for language implementors
+to understand the consequences of their decisions and to systematically
 compare different gradual typing systems for the same underlying language.
 
 To begin, let's see why performance is an issue for gradual typing.
@@ -69,16 +69,17 @@ values may cross these dependency edges.
 In a gradually typed language, a developer is free to make some components
 statically typed and other components dynamically typed.
 Static and dynamic components may depend on one another;
-in this case we call the edge a type boundary.
+in this case we call the edge between them a type boundary.
 
 A type boundary is a channel of communication.
 For example, a typed component may ask for an Integer value,
 and an untyped component may respond with the untyped value 42.
 
-If we want to maintain a relation between types and values, then we need to
+In this case the type and value match, but in general
+if we want to maintain a relation between types and values, then we need to
 check for possible mis-communications.
 For example, a typed component may ask for an Integer and receive the untyped
-symbol N A N.
+symbol N A N. To catch this miscommunication we need a runtime check.
 
 These safety checks come at a run time cost.
 The size of the cost depends on the interaction.
