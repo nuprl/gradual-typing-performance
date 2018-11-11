@@ -1,5 +1,6 @@
 #lang at-exp slideshow
 
+(provide sec:lattice)
 (require
   (only-in gtp-util natural->bitstring)
   (only-in racket/math exact-floor)
@@ -132,9 +133,9 @@
          (sd (vc-append (blank (pict-width sd) (pict-height sd)) sd))
          (sd/int (add-thought/sta sd sta-pict (need-txt "Integer")))
          (sd/int-0 (add-thought/dyn sd/int dyn-pict @t{42}))
-         (sd/int-1 (add-thought/dyn sd/int dyn-pict @t{'NaN}))
-         (sd/los (add-thought/sta sd sta-pict (need-txt "Listof(Symbol)")))
-         (sd/los-0 (add-thought/dyn sd/los dyn-pict @t{'(A B 3 D)}))
+         (sd/int-1 (add-thought/dyn sd/int dyn-pict @t{"NaN"}))
+         (sd/los (add-thought/sta sd sta-pict (need-txt "Listof(String)")))
+         (sd/los-0 (add-thought/dyn sd/los dyn-pict @t{(list "A" "B" 27)}))
          (sd/ii (add-thought/sta sd sta-pict (need-txt "Bool->Bool")))
          (sd/ii-0 (add-thought/dyn sd/ii dyn-pict @t{#<procedure>})))
     (pslide
@@ -261,7 +262,7 @@
   (let* ((x-sep 50)
          (ra (right-arrow #:color HIGHLIGHT-COLOR))
          (lhs-pict
-           (hc-append 12 (make-lattice-icon) @subtitle-text{+} @bt{D}))
+           (hc-append (make-lattice-icon) @t{  and  } @bt{D}))
          (rhs-pict
            (make-check-x-fraction)))
     (pslide
@@ -272,7 +273,7 @@
         (hb-append @t{A configuration is } @bt{D}@it{-deliverable} @t{ if its})
         (hb-append @t{performance is no worse than a factor })
         (hb-append @t{of } @bt{D} @t{ slowdown compared to the baseline}))
-      #:go (coord 1/10 50/100 'lt)
+      #:go (coord 8/100 50/100 'lt)
       (hc-append x-sep lhs-pict ra rhs-pict)))
   (void))
 
@@ -376,12 +377,15 @@
     #:go NOTATION-COORD
     (make-notation-table
       (list (tag-pict @t{• justification for O(N) sampling} 'sample) (blank)
-            @t{• exhaustive method applied to Typed Racket} (blank)
+            (tag-pict @t{• exhaustive method applied to Typed Racket} 'validate) (blank)
             (tag-pict @t{• comparison: TR v6.2, v6.3, & v6.4} 'TR) (blank)
             @t{• discussion of pathologies} (blank)))
     #:go (at-below 'sample)
     (parameterize ((current-font-size SMALL-FONT-SIZE))
       @t{∘ N = number of components})
+    #:go (at-below 'validate)
+    (parameterize ((current-font-size SMALL-FONT-SIZE))
+      (hb-append @t{∘ 20 benchmarks, } @make-url{docs.racket-lang.org/gtp-benchmarks}))
     #:go (at-below 'TR)
     (parameterize ((current-font-size SMALL-FONT-SIZE))
       @t{∘ the method quantifies improvements}))

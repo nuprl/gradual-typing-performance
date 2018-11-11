@@ -172,13 +172,14 @@
 (define (make-monitor-icon str)
   (define the-color "DarkOrange")
   (define h 50)
+  (define underline-width 5)
   (hc-append -2
     (large-text-icon "(" #:color the-color #:height h)
     (bt str)
     (cc-superimpose
       (blank 28 0)
       (large-text-icon "∘" #:color the-color #:height 22))
-    (rule 40 5 #:color BLACK)
+    (vc-append (- h (* 5 underline-width)) (blank) (rule 36 underline-width #:color BLACK))
     (large-text-icon ")" #:color the-color #:height h)))
 
 (define (large-text-icon str #:color c #:height h)
@@ -325,4 +326,7 @@
     ((center) vc-append)
     ((right) vr-append)
     (else (raise-argument-error 'y-align->combiner "(or/c 'left 'center 'right)" k))))
+
+(define (make-url str)
+  (hyperlinkize (text str MONO-FONT (current-font-size))))
 
