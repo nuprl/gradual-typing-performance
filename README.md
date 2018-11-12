@@ -1,6 +1,16 @@
 gradual-typing-performance
 ===
 
+**NOTE** this repository is deprecated. It contains benchmarks and code
+as of `POPL'16` and `JFP'18`. For up-to-date versions:
+
+- benchmark source code & descriptions : <https://pkgs.racket-lang.org/package/gtp-benchmarks>
+- to collect data : <https://pkgs.racket-lang.org/package/gtp-measure>
+- to plot results : <https://pkgs.racket-lang.org/package/gtp-plot>
+
+
+- - -
+
 The purpose of this repo is to share work among the team members that study
 the performance hypothesis underlying gradual typing.
 
