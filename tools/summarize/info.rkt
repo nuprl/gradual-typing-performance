@@ -6,7 +6,6 @@
                "benchmark-util" ;; local package
                "rackunit-lib"
                "rackunit-abbrevs"
-               "draw-lib" ;; For the mini-quadMB test ... oh well
                "glob"
                "trivial"
                "math-lib"
