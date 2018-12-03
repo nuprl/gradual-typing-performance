@@ -647,7 +647,7 @@
 
 (define nthvh-icfp-2014
   (make-bib
-   #:author (authors (make-element (make-style #f '(exact-chars)) "Ph\\'{u}c C. Nguy\\~{\\^{e}}n")
+   #:author (authors "Phúc C. Nguyễn"
                      "Sam Tobin-Hochstadt" "David Van Horn")
    #:title "Soft Contract Verification"
    #:location (proceedings-location icfp #:pages '(139 152))
@@ -832,7 +832,7 @@
   (make-bib
    #:author "Michael Greenberg"
    #:title "Space-Efficient Latent Contracts"
-   #:location (proceedings-location tfp)
+   #:location #;(proceedings-location tfp) "arXiv:1802.06375v1"
    #:date 2016))
 
 ;; ----------------------------------------
@@ -1127,6 +1127,7 @@
   (make-bib
    #:author "David A. Moon"
    #:title "MACLISP Reference Manual"
+   #:location (techrpt-location #:institution "Massachusetts Institute of Technology" #:number "Revision 0")
    #:date 1974))
 
 (define shivers-dissertation-1991 ;)
@@ -1460,7 +1461,7 @@
   (make-bib
     #:title "Big Types in Little Runtime: Open-World Soundness and Collaborative Blame for Gradual Type Systems"
     #:author (authors "Michael M. Vitousek" "Cameron Swords" "Jeremy G. Siek")
-    #:location (proceedings-location popl)
+    #:location (proceedings-location popl #:pages '(762 774))
     #:date 2017))
 
 (define tfffgksst-snapl-2017
@@ -1475,7 +1476,8 @@
                      "Vincent St-Amour"
                      "T. Stephen Strickland"
                      "Asumu Takikawa")
-   #:location (proceedings-location snapl)
+   #:location (proceedings-location snapl #:pages '(17:1 17:17))
+   ;; http://drops.dagstuhl.de/opus/volltexte/2017/7120/
    #:date 2017))
 
 (define l-freenix-2006
@@ -1485,6 +1487,7 @@
    #:author "Erwan Lemonnier"
    #:location "Forum on Free and Open Source Software (FREENIX)"
    #:url "http://erwan.lemonnier.se/talks/pluto.html"
+   #:note " Accessed 2018-12-03"
    #:date 2006))
 
 (define h-lfp-1992
@@ -1519,7 +1522,7 @@
   (make-bib
    #:title "On the Cost of Type-Tag Soundness"
    #:author (authors "Ben Greenman" "Zeina Migeed")
-   #:location (proceedings-location pepm)
+   #:location (proceedings-location pepm #:pages '(30 39))
    #:date 2018))
 
 ;; http://www.franktip.org/pubs/ecoop2014.pdf
@@ -1542,6 +1545,13 @@
   (make-bib
     #:title "Sound Gradual Typing: Only Mostly Dead"
     #:author (authors "Spenser Bauman" "Sam Tobin-Hochstadt" "Jeremy G. Siek" "Carl Friedrich Bolz-Tereick")
-    #:location (proceedings-location oopsla)
+   #:location (journal-location pacmpl #:volume "1" #:number "OOPSLA" #:pages '("54:1" "54:24"))
     #:date 2017))
+
+(define st-sfp-2006
+  (make-bib
+   #:title "Gradual Typing for Functional Languages"
+   #:author (authors "Jeremy G. Siek" "Walid Taha")
+   #:location @elem{@italic{Scheme and Functional Programming}. University of Chicago, TR-2006-06}
+   #:date 2006))
 

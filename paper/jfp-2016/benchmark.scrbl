@@ -141,7 +141,7 @@ This section concludes with a table summarizing the static characteristics of ea
   @elem{
     Converts a description of notes and drum beats to @tt{WAV} format.
     Modules in the benchmark come from two sources, a music library and an array library.
-    The worst overhead occurs because arrays frequently cross type boundaries.
+    The worst overhead occurs when arrays frequently cross type boundaries.
   })
 (cons gregor
   @elem{

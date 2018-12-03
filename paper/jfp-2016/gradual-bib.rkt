@@ -86,13 +86,6 @@
 ;; ----------------------------------------
 ;; The original papers
 
-(define st-sfp-2006
-  (make-bib
-   #:title "Gradual Typing for Functional Languages"
-   #:author (authors "Jeremy G. Siek" "Walid Taha")
-   #:location (proceedings-location scheme-workshop)
-   #:date 2006))
-
 (define thf-dls-2006
   (make-bib
    #:title "Interlanguage Migration: from Scripts to Programs"

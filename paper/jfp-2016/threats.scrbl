@@ -32,7 +32,7 @@ The conclusions have five limitations.
 First, the evaluation does not systematically measure the effects of annotating the same code with different types.
 This is an issue because type annotations determine the runtime constraints on untyped code.
 Therefore if two programmers give the same code different type annotations, they may experience different performance problems.
-For example, @bm[quadBG] and @bm[quadMB] describe the same code with different types and have extremely different performance characteristics.
+For example, @bm[quadBG] and @bm[quadMB] describe similar code with different types and have extremely different performance characteristics.
 Whereas all configurations of the former are @deliverable{6}, only a small fraction of @bm[quadMB] configurations are @deliverable{20}.
 
 Second, the benchmark programs are relatively small.
@@ -47,7 +47,7 @@ We consider these traces representative, but some users may observe different
 Fourth, the conclusions rely on Typed Racket's implementation technology and do not necessarily generalize to other implementations of gradual typing.
 Typed Racket re-uses Racket's runtime, a conventional JIT technology.
 In particular, the JIT makes no attempt to reduce the overhead of contracts.
-Contract-aware implementation techniques such soft contracts (@exact{@|PHIL|} @|etal| 2014) @; HACK @elem{@~cite[nthvh-icfp-2014]}
+Contract-aware implementation techniques such soft contracts @elem{@~cite[nthvh-icfp-2014]}
  or the Pycket tracing JIT compiler@~cite[bauman-et-al-icfp-2015 btsb-oopsla-2017]
  may significantly reduce the overhead of gradual typing.
 
