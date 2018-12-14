@@ -11,7 +11,7 @@
   gtp-plot/performance-info
   gtp-plot/plot
   gtp-plot/typed-racket-info
-  pict-abbrevs
+  (only-in pict-abbrevs rgb-triplet->color% pict-bbox-sup pict-bbox-sup* rule color%-update-alpha string->color%)
   pict/balloon
   ppict/2
   pict/shadow
