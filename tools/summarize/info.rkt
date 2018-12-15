@@ -8,6 +8,7 @@
                "rackunit-abbrevs"
                "glob"
                "trivial"
+               "draw-lib"
                "math-lib"
                "plot-lib"
                "pict-lib"
